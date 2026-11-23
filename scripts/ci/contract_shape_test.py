@@ -103,7 +103,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
         "title": {"pattern": "\\S", "maxLength": 200},                                  # TITLE_MAX（前後の空白を落として空は 422・生の字で 200 字まで・NFKC で整えない・K-437）
         "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "format": "date"},         # 日付の形・暦に在る日（K-437）。今日より前は 409 E-VAL-012（時刻で決まる）
-        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},                    # :42〜46（空は「無し」）
+        "start_on": {"anyOf": [{"maxLength": 0}, {"format": "date"}]},                    # 空は「無し」・暦に在る日（K-437・0000-00-00 を口が断るので format: date）
         "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
@@ -849,12 +849,25 @@ class ContractShapeTest(unittest.TestCase):
 
     # ---- 体の値の値域（類 G・回 9 の続き・PM の判断 2026-11-09）
     @staticmethod
+    def _is_date(v: str) -> bool:
+        """JSON Schema の format: date（RFC 3339 の full-date）。暦に在る日だけ"""
+        import datetime
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", v):
+            return False
+        try:
+            datetime.date.fromisoformat(v)
+        except ValueError:
+            return False
+        return True
+
+    @staticmethod
     def _fits(v: object, sc: dict) -> bool:
         """契約の欄の形（このチケットで使う言葉だけ）に値が合うか。pattern は JSON Schema と同じく「どこかに合う」（re.search）"""
         if v is None:
             return bool(sc.get("nullable"))
-        if "anyOf" in sc:
-            return any(ContractShapeTest._fits(v, x) for x in sc["anyOf"])
+        if "anyOf" in sc:   # 枝は外側の言葉（type など）を引き継ぐ（K-437：start_on の枝 {maxLength: 0}・{format: date} は type を持たない）
+            base = {k: x for k, x in sc.items() if k != "anyOf"}
+            return any(ContractShapeTest._fits(v, {**base, **x}) for x in sc["anyOf"])
         if "enum" in sc and v not in sc["enum"]:
             return False
         t = sc.get("type")
@@ -864,6 +877,8 @@ class ContractShapeTest(unittest.TestCase):
             if "pattern" in sc and not re.search(sc["pattern"], v):
                 return False
             if len(v) > sc.get("maxLength", 10**9) or len(v) < sc.get("minLength", 0):
+                return False
+            if sc.get("format") == "date" and not ContractShapeTest._is_date(v):   # 暦に在る日（K-437）
                 return False
         elif t == "integer":
             if isinstance(v, bool) or not (isinstance(v, int) or (isinstance(v, float) and v.is_integer())):
