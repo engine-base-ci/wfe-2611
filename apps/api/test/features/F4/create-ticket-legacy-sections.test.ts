@@ -67,7 +67,7 @@ const bodyRow = async (ticketId: unknown) =>
   ).rows;
 
 describe("K-437 作る口の前の道（sections）：K-578 が外すまで", () => {
-  it("K437-API-027 前の道（sections だけ）：body を送らず sections だけで作ると今までどおり区画の行が書かれる（必須の区画が揃えば 201・鍵 body の行は無い）。必須の区画が空なら 422・E-VAL-013・欄 sections・何も作られない", async () => {
+  it("K437-API-027 前の道（sections だけ）：body を送らず sections だけで作ると今までどおり区画の行が書かれる（必須の区画が揃えば 201・鍵 body の行は無い）。必須の区画が空なら 422・E-VAL-013・欄 sections.done・sections.todo・何も作られない", async () => {
     const before = await ticketsIn(T.tenantId);
     const r = await create(writer, body({ sections: { purpose: "目的だけ" } }));
     const j = await json(r);
