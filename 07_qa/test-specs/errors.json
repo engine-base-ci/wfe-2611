@@ -5591,7 +5591,7 @@
   },
   {
    "id": "E-VAL-012",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5654,42 +5654,8 @@
    "support_code": "VAL-013"
   },
   {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
-  },
-  {
    "id": "E-VAL-015",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -7091,6 +7057,168 @@
    ]
   },
   {
+   "id": "E-VAL-028",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの開始日が、最終期限より後の日だった",
+   "false_when": "開始日が期限と同じ日か、それより前（開始は入れなくてもよい）",
+   "message": "開始日は期限より前の日にしてください",
+   "action": "開始日か期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "開始に期限より後の日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.34"
+   ],
+   "support_code": "VAL-028"
+  },
+  {
+   "id": "E-TKT-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケット自身を決めようとした（K-440。親を決める小窓か、口 PATCH /api/v1/tickets/:id の parent_ticket_id）",
+   "false_when": "親に、自分とは別のチケットを決めた",
+   "message": "自分自身は親にできません",
+   "action": "別のチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細",
+    "steps": [
+     "口に、そのチケット自身の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-001"
+  },
+  {
+   "id": "E-TKT-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケットの子・孫（下の段）を決めようとした＝親子が輪になる（K-440。同時に A の親を B・B の親を A にしたときの後の 1 本も）",
+   "false_when": "自分の下の段に無いチケットを親にした",
+   "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+   "action": "自分の下にないチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "親と子のチケット",
+    "steps": [
+     "親のチケットに、その子の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-002"
+  },
+  {
+   "id": "E-TKT-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親を決めると親子が 3 段を超える（親が 3 段目、または自分の下の段を数えて 3 段を超える・K-440）",
+   "false_when": "親子が 3 段までに収まる",
+   "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+   "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3 段の親子のチケット",
+    "steps": [
+     "3 段目のチケットを親にする口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-003"
+  },
+  {
+   "id": "E-TKT-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "今の自分の期限が親の期限より後のチケットに、その親を決めようとした（どちらかの期限が空なら対象外・親の期限より後の期限にする側は期限の口・K-440）",
+   "false_when": "自分の期限が親の期限と同じか前（または、どちらかの期限が空）",
+   "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+   "action": "期限を親の期限以前に直してから親を決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限が親より後のチケット",
+    "steps": [
+     "親の期限より後の期限のチケットに、その親を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-004"
+  },
+  {
    "id": "E-LNK-001",
    "class": "conflict",
    "where": {
@@ -7301,6 +7429,130 @@
     "D-125.62",
     "D-151.16"
    ]
+  },
+  {
+   "id": "E-FLD-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "チケットの種別に出ない会社の項目に値を入れようとした（K-564。項目に種別の行があって、このチケットの種別が入っていない。消した種別の行しか無い項目も同じ）",
+   "false_when": "全部の種別に出る項目、またはこのチケットの種別に出る項目に値を入れた",
+   "message": "この項目は、このチケットの種別では使えません",
+   "action": "項目の一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "種別が違う項目とチケット",
+    "steps": [
+     "その種別に出ない項目の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-001"
+  },
+  {
+   "id": "E-FLD-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "選択肢に無い値を入れようとした（1 つ選ぶ・複数選ぶ。別の項目の選択肢の id・マスタから外した選択肢も同じ・K-564）",
+   "false_when": "その項目の選択肢の id を送った",
+   "message": "選べない値が含まれています。選択肢から選び直してください",
+   "action": "選択肢から選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "選択肢のある項目とチケット",
+    "steps": [
+     "その項目に、知らない選択肢の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-002"
+  },
+  {
+   "id": "E-FLD-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "項目の型と合わない値を入れようとした（数に文字・日付に暦に無い日や別の書き方・チェックに文字・選ぶ型に数・K-564）",
+   "false_when": "項目の型どおりの値を送った",
+   "message": "この項目に入れられない形の値です",
+   "action": "値を入れ直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "数の項目とチケット",
+    "steps": [
+     "その項目に、数でない値を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-003"
+  },
+  {
+   "id": "E-FLD-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "必須の項目を空にしようとした（null・空の文字・空白だけ・空の並び。必須のチェックは false も同じ・K-564）",
+   "false_when": "必須でない項目を空にした、または必須の項目に値を入れた",
+   "message": "必須の項目は空にできません。値を入れてください",
+   "action": "値を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "必須の項目に値が入ったチケット",
+    "steps": [
+     "その項目に null を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-004"
   }
  ],
  "meta": {

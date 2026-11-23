@@ -26,6 +26,7 @@ import { delegateHooks } from "../src/hooks/delegate.js";
 import { approveHooks } from "../src/hooks/approve-complete.js";
 import { bridgeHooks } from "../src/hooks/bridge.js";
 import { setupTaskHooks } from "../src/hooks/setup-tasks.js";
+import { ticketTimelineHooks } from "../src/hooks/ticket-timeline.js";
 import { ticketDecisionHooks } from "../src/hooks/ticket-decisions.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 
@@ -147,6 +148,7 @@ beforeAll(async () => {
         ...delegateHooks(appPool),
         ...approveHooks(appPool),
         ...setupTaskHooks(appPool),
+        ...ticketTimelineHooks(appPool),
         ...ticketDecisionHooks(appPool),
       },
       limits: {},
@@ -178,7 +180,7 @@ beforeAll(async () => {
       title: "数えるためのチケット",
       assignee_member_id: m.id,
       due_on: due,
-      sections: { purpose: "数える", done: "数えた", todo: "- 数える" },
+      body: { doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "数える" }] }] } },
     }),
   });
   expect(made2.status, await made2.clone().text()).toBe(201);

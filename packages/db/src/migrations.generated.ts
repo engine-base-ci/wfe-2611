@@ -139,6 +139,9 @@ export const MIGRATIONS = [
   "20261122090100_ticket_body.sql",
   "20261122090300_custom_fields.sql",
   "20261122093400_test_spec_create.sql",
+  "20261122094000_ticket_sort.sql",
   "20261122094100_ticket_links.sql",
+  "20261122100400_ticket_field_values_set.sql",
+  "20261122100800_ticket_create_fields.sql",
   "20261123082700_ticket_delete_preview.sql",
 ] as const;

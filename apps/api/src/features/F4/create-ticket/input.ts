@@ -1,6 +1,9 @@
-// チケットを作る（K-60）の入力の形の確かめ。同じ会社か・書けるか・必須の区画は DB（app.ticket_create）が確かめる。
-//   表記ゆらぎ（全角半角・前後の空白）は入口（op.ts の normalize）が揃えた後。前後の空白だけの題名は空
+// チケットを作る（K-60・K-437）の入力の形の確かめ。同じ会社か・書けるか・会社の項目の値・確認項目の文の長さは DB（app.ticket_create）が確かめる。
+//   題名は NFKC で整えず前後の空白だけ落とす（D-150.34）：入口（op.ts の normalize）が直す前の生の題名を 3 つ目の引数で受け、長さは生の字で数える（契約の maxLength と同じ TITLE_MAX）。
+//   期限が今日より前は E-VAL-012・開始が期限より後は E-VAL-028（どちらも 409・欄なし。hooks.ts が E-VAL-012 → E-VAL-028 の順に先に返す）。
+//   本文 body があれば body だけを使い sections は載せない／body が無く sections だけなら前の区画の道（K-578 まで）／どちらも無ければ空の本文
 import { isUuid } from "@kaname/contracts";
+import { checkBody, checkFields, checkSpecs } from "./payload.js";
 export const TITLE_MAX = 200;
 export const NOTIFY_MAX = 20;
 /** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
@@ -24,11 +27,25 @@ const isDate = (v: unknown): v is string =>
   !Number.isNaN(Date.parse(`${v}T00:00:00Z`)) &&
   new Date(`${v}T00:00:00Z`).toISOString().startsWith(v);
 
-export function checkCreate(input: Record<string, unknown>, today: string): Checked {
+/** 画面が送ったままの値（入口が揃える前）。題名・本文・確認項目の文に使う。無い鍵は入口が揃えた値を使う */
+export interface RawParts {
+  title?: unknown;
+  body?: unknown;
+  specs?: unknown;
+}
+
+export function checkCreate(
+  input: Record<string, unknown>,
+  today: string,
+  rawTitle?: unknown,
+  raw: RawParts = {},
+): Checked {
   const d: Detail[] = [];
-  const title = typeof input["title"] === "string" ? input["title"].trim() : "";
+  const typed = typeof rawTitle === "string" ? rawTitle : input["title"];
+  const title = typeof typed === "string" ? typed.trim() : "";
   if (!title) d.push({ field: "title", message: "題名を入れてください" });
-  else if ([...title].length > TITLE_MAX) d.push({ field: "title", message: `題名は ${TITLE_MAX} 文字までです` });
+  else if ([...(typed as string)].length > TITLE_MAX)
+    d.push({ field: "title", message: `題名は ${TITLE_MAX} 文字までです` });
   for (const [f, label] of [
     ["scope_id", "グループを選んでください"],
     ["kind_id", "種別を選んでください"],
@@ -44,7 +61,7 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
   if (start !== undefined && start !== "" && !isDate(start))
     d.push({ field: "start_on", message: "開始は日付で入れてください" });
   else if (isDate(start) && isDate(due) && start > due)
-    d.push({ field: "start_on", message: "開始は期限より前の日にしてください" });
+    d.push({ field: "start_on", message: "開始は期限より前の日にしてください", code: "E-VAL-028" });
   const priority = input["priority"] === undefined || input["priority"] === "" ? "mid" : input["priority"];
   if (priority !== "mid" && priority !== "high") d.push({ field: "priority", message: "優先度は 中 か 高 です" });
   const reason = typeof input["priority_reason"] === "string" ? input["priority_reason"].trim() : "";
@@ -62,11 +79,14 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
   if (parent !== undefined && parent !== "" && (typeof parent !== "string" || !UUID.test(parent)))
     d.push({ field: "parent_ticket_id", message: "親のチケットを選び直してください" });
   const sections: Record<string, string> = {};
-  const raw = input["sections"] ?? {};
-  if (!raw || typeof raw !== "object" || Array.isArray(raw))
+  const hasBody = input["body"] !== undefined;
+  const rawSections = input["sections"] ?? {};
+  if (hasBody) {
+    // 本文があれば区画は捨てる（DB にも渡さない・K-561 の決め）
+  } else if (!rawSections || typeof rawSections !== "object" || Array.isArray(rawSections))
     d.push({ field: "sections", message: "区画の形が違います" });
   else
-    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    for (const [k, v] of Object.entries(rawSections as Record<string, unknown>)) {
       if (!/^[a-z][a-z0-9_]{0,40}$/.test(k)) d.push({ field: `sections.${k}`, message: "区画の名前が違います" });
       else if (typeof v !== "string") d.push({ field: `sections.${k}`, message: "区画は文字で書いてください" });
       else sections[k] = v.trim(); // 区画の中身に上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
@@ -85,7 +105,16 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
   const source = input["source_draft_id"];
   if (source !== undefined && source !== "" && (typeof source !== "string" || !UUID.test(source)))
     d.push({ field: "source_draft_id", message: "uuid" });
-  if (d.length) return { ok: false, details: d };
+  // 本文は sections だけで来た作り方（前の道）でないときに載せる。送らなければ空の本文
+  const useSections = !hasBody && input["sections"] !== undefined;
+  const bodyPart = useSections ? null : checkBody("body" in raw ? raw.body : input["body"]);
+  if (bodyPart && !bodyPart.ok) d.push(...bodyPart.details);
+  const fieldsPart = checkFields(input["fields"]);
+  if (!fieldsPart.ok) d.push(...fieldsPart.details);
+  const specsPart = checkSpecs("specs" in raw ? raw.specs : input["specs"]);
+  if (!specsPart.ok) d.push(...specsPart.details);
+  if (d.length || (bodyPart && !bodyPart.ok) || !fieldsPart.ok || !specsPart.ok) return { ok: false, details: d };
+  const bodyValue = bodyPart && bodyPart.ok ? bodyPart.value : null;
   return {
     ok: true,
     value: {
@@ -99,7 +128,9 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
       priority_reason: reason || null,
       estimate_minutes: estimate,
       parent_ticket_id: parent || null,
-      sections,
+      ...(bodyValue ? { body: bodyValue } : { sections }),
+      fields: fieldsPart.value,
+      specs: specsPart.value,
       notify_member_ids: notify,
       draft_id: draft || null,
       source_draft_id: source || null,
