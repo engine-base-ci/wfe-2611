@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 96・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 267・部品 56・設定 41
+API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 267・部品 56・設定 41
 
 ## 共通の処理
 
@@ -366,7 +366,7 @@ API 369（作った 96・後のフェーズの行為だけ 20）・前の道す�
 | `editApproval` | POST /api/v1/approvals/:id/edit | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `returnApproval` | POST /api/v1/approvals/:id/return | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-163 |
 | `stopApproval` | POST /api/v1/approvals/:id/stop | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める／AI を止める・承認を取り下げる | F5 | 作った | K-61,K-732 |
-| `withdrawApproval` | POST /api/v1/approvals/:id/withdraw | 作成・実行（approvals）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61,K-733 |
+| `withdrawApproval` | POST /api/v1/approvals/:id/withdraw | 作成・実行（approvals）— AI を止める・承認を取り下げる | F5 | 作った | K-61,K-733 |
 | `bulkApprove` | POST /api/v1/approvals/bulk | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `listApprovalHistory` | GET /api/v1/approvals/history | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |

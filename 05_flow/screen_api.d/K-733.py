@@ -34,3 +34,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 取り下げる関数か守りの判定か証跡か受け箱の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、承認もチケットも実行も変えない"},
     ],
 }
+
+# 取り下げが通ったときだけ答えを返す。withdrawn_at は関数が now() を書いた値、ticket_id は成果物の承認（kind artifact・ticket_id が在る）だけを取り下げるので null にならない
+NOT_NULL_ANSWERS = {
+    "withdrawApproval.withdrawn_at": "取り下げが通ったときだけ答える。関数が now() を書いた値をそのまま返すので null にならない",
+    "withdrawApproval.ticket_id": "取り下げられるのはチケットの成果物の承認だけ（ticket_id が無い承認は 404）なので null にならない",
+}
