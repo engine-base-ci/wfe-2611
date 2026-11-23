@@ -68,7 +68,8 @@ const shot = async (w: World) => ({
 const body = (w: World, t: Tk, text: string) =>
   h.f.admin.query(
     "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version) values ($1, $2, 'body', 0, $3, 1)",
-    [w.tenantId, t.id, JSON.stringify({ text })],
+    // 鍵 body の行は形の守り（ticket_sections_body_ok・K-561）があるので、doc も入れる
+    [w.tenantId, t.id, JSON.stringify({ text, doc: { type: "doc", content: [] } })],
   );
 const post = (w: World, t: Tk, by: Person, text: string, minAgo: number, kind = "post") =>
   h.f.admin.query(
@@ -328,8 +329,9 @@ describe("K-763 チケットの中で話す：言う", () => {
     expect(p).not.toMatch(/書き込み (1|2|3)(?!\d)/);
     expect(p.indexOf("書き込み 4")).toBeGreaterThan(-1);
     expect(p.indexOf("書き込み 4")).toBeLessThan(p.indexOf("書き込み 12"));
-    expect(p).toContain("い".repeat(400));
-    expect(p).not.toContain("い".repeat(401));
+    // 1 件 400 字：書き込みの字の頭「長い書き込み 」（7 字）＋ い 393 字で切れる
+    expect(p).toContain("長い書き込み " + "い".repeat(393));
+    expect(p).not.toContain("い".repeat(394));
     expect(p).toContain("佐藤");
     expect(p.endsWith(text)).toBe(true);
     // 数字の出どころ（新しい 10 件・1 件 400 字）は K-565 の app.ticket_job_context と同じ：同じ書き込みが入り、同じ書き込みが落ちる
@@ -339,8 +341,8 @@ describe("K-763 チケットの中で話す：言う", () => {
       expect(p, `書き込み ${i}`).toContain(`書き込み ${i}`);
     }
     expect(job).not.toMatch(/書き込み (1|2|3)(?!\d)/);
-    expect(job).toContain("い".repeat(400));
-    expect(job).not.toContain("い".repeat(401));
+    expect(job).toContain("長い書き込み " + "い".repeat(393));
+    expect(job).not.toContain("い".repeat(394));
     // 本文の行が無い前の形のチケット：本文の見出しは出ず、題・確認項目は出る（K-578 が区画を消すまで）
     const old = await h.ticket(w, { title: "前の形のチケット" });
     await h.spec(old.id, { title: "前の形の確認" });
@@ -406,8 +408,8 @@ describe("K-763 チケットの中で話す：言う", () => {
     const before = await shot(w);
     const r = await say(w.me, t, "PC が無いまま話す");
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe(PC_NONE);
     const b = await h.json(r);
+    expect(b["code"]).toBe(PC_NONE);
     expect(String(b["message"] ?? "")).toContain("PC をつなぐ");
     expect(b["details"]).toBeUndefined();
     expect(await shot(w)).toEqual(before);
@@ -435,8 +437,9 @@ describe("K-763 チケットの中で話す：言う", () => {
     await h.f.admin.query("update tickets set deleted_at = now() where id = $1", [t.id]);
     const gone = await say(w.me, t, "消したチケットの話");
     expect(gone.status).toBe(404);
-    expect(await h.json(gone)).toMatchObject({ error: "not_found", code: "NOT_FOUND" });
-    expect((await h.json(gone))["details"]).toBeUndefined();
+    const g = await h.json(gone);
+    expect(g).toMatchObject({ error: "not_found", code: "NOT_FOUND" });
+    expect(g["details"]).toBeUndefined();
     expect(await shot(w)).toEqual(before);
   });
 
@@ -694,8 +697,9 @@ describe("K-763 チケットの中で話す：失敗・守り・組み合わせ"
     const before = await shot(w);
     const r = await say(w.me, t, "21 個目");
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe(TOO_MANY);
-    expect((await h.json(r))["details"]).toBeUndefined();
+    const b = await h.json(r);
+    expect(b["code"]).toBe(TOO_MANY);
+    expect(b["details"]).toBeUndefined();
     expect(await shot(w)).toEqual(before);
     await h.f.admin.query(
       "update bridge_jobs set state_id = 'done' where id = (select id from bridge_jobs where conversation_id = $1 and state_id = 'queued' limit 1)",
