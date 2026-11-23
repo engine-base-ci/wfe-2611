@@ -44,11 +44,10 @@ interface Field {
   value_count: number;
 }
 let s: Settings;
-let A: World;
 let B: World;
 beforeAll(async () => {
   s = await startSettings(["ticket-fields-read", "ticket-fields-write", "ticket-fields-edit"]);
-  A = await s.world("設定 項目 A");
+  await s.world("設定 項目 A"); // 別の会社 A も在る形で流す（A の物は読まない）
   B = await s.world("設定 項目 B");
 });
 afterAll(async () => {
