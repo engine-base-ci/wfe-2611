@@ -801,7 +801,7 @@ row(R["K60-UI-021"], async (page) => {
     status: 422,
     body: {
       error: "validation",
-      code: "VALIDATION_ERROR",
+      code: "E-VAL-014",
       field: "kind_id",
       details: [
         {
