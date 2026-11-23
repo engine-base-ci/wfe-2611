@@ -608,7 +608,8 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals"
+    "E-030 memory_proposals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -13273,6 +13274,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
