@@ -17,11 +17,19 @@ export interface CredentialAnswer {
   use_count?: number;
   last_used_at?: string | null;
   login_check?: Record<string, unknown> | null;
+  /** 書ける（ワークスペースの物で edit が無い人は false）。無ければ書ける */
+  can_edit?: boolean;
 }
 
 export type Layer = "workspace" | "personal";
 export interface CredentialRow extends CredentialItem {
   layer: Layer;
+  /** 2 段階の種類（コードの小窓の出し分け） */
+  twoFactor: string | null;
+  /** 期限（YYYY-MM-DD・上書きの小窓の既定） */
+  expiresOn: string | null;
+  /** コードを待っているときの頼みの印（コードを返す口の request_ref の値・一覧の欄の名前は request_id） */
+  requestRef: string | null;
 }
 
 const TZ = "Asia/Tokyo";
@@ -157,5 +165,9 @@ export function toItem(c: CredentialAnswer, now: Date): CredentialRow {
     usage: usageOf(c.use_count ?? 0, validDate(c.last_used_at), now),
     state,
     note,
+    canEdit: c.can_edit !== false,
+    twoFactor: typeof c.two_factor === "string" ? c.two_factor : null,
+    expiresOn: typeof c.expires_on === "string" && c.expires_on ? c.expires_on : null,
+    requestRef: typeof lc["request_id"] === "string" && lc["request_id"] ? (lc["request_id"] as string) : null,
   };
 }

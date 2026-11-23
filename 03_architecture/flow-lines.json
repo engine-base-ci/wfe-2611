@@ -172,14 +172,6 @@
     "F5→F4"
    ]
   },
-  "class_axes": {
-   "writes": [],
-   "reads": [
-    "F4"
-   ],
-   "boundary": false,
-   "lines": []
-  },
   "client_contacts": {
    "writes": [
     "F11"
@@ -233,6 +225,14 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false,
+   "lines": []
+  },
+  "custom_fields": {
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false,
    "lines": []
   },
