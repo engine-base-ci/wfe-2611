@@ -11,6 +11,7 @@ import type { Row } from "@kaname/db/repository";
 import type { HookReply } from "../../../contract/deps.js";
 import type { GroupResult, TicketFieldGroup } from "../../ticket-update/fields.js";
 import { HOLD_ONLY_MESSAGE, MINUTES_MESSAGE, STAGE_BOTH_MESSAGE, holdMissing, invalid, replyOf } from "./errors.js";
+import { cleanString } from "../well-formed.js";
 
 /** この組が受ける欄（段は stage_id か stage_key のどちらか 1 つ） */
 export const PROGRESS_FIELDS = ["stage_id", "stage_key", "actual_minutes", "hold_reason", "resume_condition"] as const;
@@ -19,9 +20,9 @@ export const STAGE_KEYS = ["todo", "doing", "hold"] as const;
 const HOLD_FIELDS = ["hold_reason", "resume_condition"] as const;
 const MINUTES_MAX = 100000;
 
-/** 空白（JavaScript の \s）と制御文字だけの字か（契約の pattern `[^\s\u0000-\u001f\u007f]` に合わない） */
+/** 契約の pattern に合わない字か：空白（JavaScript の \s）と制御文字だけ、または NUL を含む（NUL はどの口でも入口で 422・黙って取り除かない・answer=c8b3f4c3aef8） */
 // eslint-disable-next-line no-control-regex
-const blank = (v: string): boolean => v.replace(/[\u0000-\u001f\u007f]/g, " ").trim() === "";
+const blank = (v: string): boolean => v.includes("\u0000") || v.replace(/[\u0000-\u001f\u007f]/g, " ").trim() === "";
 
 /** 形の決まり（契約に書ける物だけ）。違えば 422 の答え、合えば null。型の違い（数でない・null の字の欄）は入口の契約の確かめに任せる */
 export function progressIssues(raw: Row): HookReply | null {
@@ -47,12 +48,19 @@ export function progressIssues(raw: Row): HookReply | null {
 
 type Progress = Row & { error?: unknown; fields?: unknown };
 
+/** jsonb に入らない対にならないサロゲートを U+FFFD にする（F6 の口の共通の置き換え・../well-formed.ts） */
+const clean = cleanString;
+const cleaned = (input: Row): Row =>
+  Object.fromEntries(
+    Object.entries(input).map(([k, v]) => [k, (HOLD_FIELDS as readonly string[]).includes(k) ? clean(v) : v]),
+  );
+
 async function apply(cl: pg.PoolClient, ticketId: string, input: Row): Promise<GroupResult> {
   const where = "段・実績・保留を変える";
   const r = (
     await cl.query<{ v: Progress | null }>("select app.ticket_progress_set($1, $2::jsonb) as v", [
       ticketId,
-      JSON.stringify(input),
+      JSON.stringify(cleaned(input)),
     ])
   ).rows[0]?.v;
   if (!r) return { ok: false, reply: replyOf({ error: "empty" }, where, input) };

@@ -90,6 +90,7 @@ export function AssigneeSlot({ ticket, children }: Wrap): ReactNode {
       ticket={ticket}
       entry={entry}
       note={waitingNoteOf(handover, meId)}
+      // approve は AI が動いている・承認待ちの帯（data-busy）だけが数えられる（K-620）。渡せない（D-148.6）の判定にそのまま使う
       blocked={ticket.bands.has("approve")}
       fallback={children}
     />
