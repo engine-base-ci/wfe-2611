@@ -12214,6 +12214,11 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: stopApproval
+    ApprovalWithdrawInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: withdrawApproval
     ScopeOverview:
       type: object
       properties:
@@ -14299,6 +14304,18 @@ components:
           type: string
           nullable: true
       x-operation: stopApproval
+    ApprovalWithdrawn:
+      type: object
+      properties:
+        id:
+          type: string
+        withdrawn_at:
+          type: string
+        ticket_id:
+          type: string
+        approval_id:
+          type: string
+      x-operation: withdrawApproval
     Error:
       type: object
       properties:
@@ -15364,7 +15381,7 @@ paths:
       - D-125.105
       - D-125.167
       x-permission: approver
-      x-permission-scope: 承認した本人だけ・実行中になる前だけ（D-125.105）
+      x-permission-scope: 承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す
       x-step-up: false
       security:
       - session: []
@@ -15380,7 +15397,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalWithdrawInput'
       responses:
         '201':
           description: 成功
@@ -15390,7 +15407,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalWithdrawn'
                   meta:
                     type: object
         '401':
@@ -15412,13 +15429,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-APR-010／E-APR-011／E-APR-012
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15437,12 +15460,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

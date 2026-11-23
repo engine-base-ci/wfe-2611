@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。264 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。267 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4769,6 +4769,63 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-RUN-002",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-010": {
+    "id": "E-APR-010",
+    "cls": "conflict",
+    "message": "もう実行が始まっています。止めるには［止める］を押してください",
+    "action": "［止める］を押す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-010",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-011": {
+    "id": "E-APR-011",
+    "cls": "conflict",
+    "message": "この承認は取り下げられません（まだ承認していない・もう取り下げた・片付けられたのどれかです）",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-011",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-012": {
+    "id": "E-APR-012",
+    "cls": "conflict",
+    "message": "もう実行が終わっています。画面を読み直してください",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-012",
     "must_not": true,
     "layers": [
       "UI",

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:06abba0828cbeced
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:52ab9fb9e2dee609
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -12,7 +12,7 @@ export interface Ops {
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
   stopApproval: { params: { id: string }; query: never; body: T.ApprovalStopInput; data: T.ApprovalStopped };
-  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalWithdrawInput; data: T.ApprovalWithdrawn };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };
   listApprovalHistory: { params: never; query: { "decision"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Approvals[] };
