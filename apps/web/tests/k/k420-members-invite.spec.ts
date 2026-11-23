@@ -580,6 +580,7 @@ test("K420-UI-033 ひとことが 500 字を超えて「招く」：口を呼ば
   await note.fill("あ".repeat(501));
   await sendBtn(page).click();
   await expect(page.locator(`${DLG} .k-inv-note-err`)).toHaveText("ひとことは 500 字までです");
+  await expect(page.locator(`${DLG} .k-err`)).toHaveCount(0);
   await expect(page.locator(DLG)).toBeVisible();
   await expect(page.locator(".k-inv-chip-t")).toHaveText(["kimura@engine-base.example"]);
   await expect(note).toHaveValue("あ".repeat(501));
