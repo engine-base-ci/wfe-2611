@@ -22,7 +22,8 @@ const p = (text: string, marks?: unknown[]) => ({
   type: "paragraph",
   content: [{ type: "text", text, ...(marks ? { marks } : {}) }],
 });
-/** 帯の道具が作れる節・印・属性を全部含む文書（K-567 の単体試験の FULL と同じ） */
+/** 帯の道具が作れる節・印・属性を全部含む文書（番号つき・区切りの線・見出し 4・寄せ・結合した表・色・画像・チェック・引用・コード・リンク・薄い字）。
+ *  各節は 1 つずつ（K567-UI-012 が数える）・表の見出しの行は『項目』『数量』（K577-UI-003 が読む形で数える） */
 const FULL = {
   type: "doc",
   content: [
@@ -32,7 +33,7 @@ const FULL = {
     p("支払期日は 12/15", [
       { type: "bold" },
       { type: "underline" },
-      { type: "color", attrs: { color: "#dc2626" } },
+      { type: "color", attrs: { color: "red" } },
       { type: "highlight", attrs: { color: "#fde68a" } },
     ]),
     { type: "paragraph", attrs: { textAlign: "right" }, content: [{ type: "text", text: "右寄せ" }] },
@@ -46,6 +47,7 @@ const FULL = {
         { type: "text", text: "2", marks: [{ type: "superscript" }] },
         { type: "text", text: "i", marks: [{ type: "subscript" }] },
         { type: "text", text: "青緑", marks: [{ type: "color", attrs: { color: "teal" } }] },
+        { type: "text", text: "赤", marks: [{ type: "color", attrs: { color: "#dc2626" } }] },
         { type: "text", text: "旧", marks: [{ type: "highlight" }] },
       ],
     },
@@ -71,16 +73,23 @@ const FULL = {
       content: [
         {
           type: "tableRow",
-          content: [{ type: "tableHeader", attrs: { colspan: 2, colwidth: [120, 80] }, content: [p("項目")] }],
+          content: [
+            { type: "tableHeader", content: [p("項目")] },
+            { type: "tableHeader", content: [p("数量")] },
+          ],
         },
         {
           type: "tableRow",
           content: [
-            { type: "tableHeader", content: [p("見出しの行の左")] },
             { type: "tableCell", attrs: { rowspan: 2 }, content: [p("保守")] },
+            { type: "tableCell", content: [p("1")] },
           ],
         },
-        { type: "tableRow", content: [{ type: "tableHeader", content: [p("見出しの列")] }] },
+        { type: "tableRow", content: [{ type: "tableCell", content: [p("2")] }] },
+        {
+          type: "tableRow",
+          content: [{ type: "tableCell", attrs: { colspan: 2, colwidth: [120, 80] }, content: [p("合計")] }],
+        },
       ],
     },
     { type: "blockquote", content: [p("先月と同じ書式で")] },
