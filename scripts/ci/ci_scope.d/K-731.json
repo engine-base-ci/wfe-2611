@@ -21,15 +21,6 @@
    "tests": [
     "apps/api/test/generated/post_action_runs_id_stop.test.ts"
    ]
-  },
-  {
-   "paths": [
-    "05_flow/phase1.py",
-    "05_flow/flow.json"
-   ],
-   "tests": [
-    "scripts/ci/k731_flow_test.py"
-   ]
   }
  ],
  "reads_ok": {

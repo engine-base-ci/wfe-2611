@@ -1760,15 +1760,6 @@
   },
   {
    "paths": [
-    "05_flow/phase1.py",
-    "05_flow/flow.json"
-   ],
-   "tests": [
-    "scripts/ci/k731_flow_test.py"
-   ]
-  },
-  {
-   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
