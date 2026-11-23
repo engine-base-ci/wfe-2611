@@ -66,6 +66,7 @@ export function nulIssues(v: unknown, path: string): { field: string; message: s
 //   宣言の無い一覧の口は今までどおり位置の数だけ（契約の生成器 05_flow/build_api.py の KEY_CURSOR_OPS と同じ集まり）
 export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set([
   "listApprovalQueue",
+  "listNotifications",
   "listTickets",
   "listConversations",
   "listConversationMessages",
