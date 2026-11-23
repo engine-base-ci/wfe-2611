@@ -1,6 +1,24 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/f9-knowledge-must.ts", "apps/api/src/features/F9/knowledge/must.ts", "apps/api/src/features/F9/knowledge/page-parts/act-must.ts"],
-   "tests": ["apps/api/test/features/F9/knowledge-must.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-must.ts",
+    "apps/api/src/features/F9/knowledge/must.ts",
+    "apps/api/src/features/F9/knowledge/page-parts/act-must.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-must.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-must.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/put_knowledge_pages_id_must.test.ts"
+   ]
+  }
  ]
 }
