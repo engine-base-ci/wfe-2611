@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 89・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 239・部品 56・設定 41
+API 370（作った 91・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 239・部品 56・設定 41
 
 ## 共通の処理
 
@@ -374,12 +374,12 @@ API 370（作った 89・後のフェーズの行為だけ 20）・前の道す�
 | `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 作った | K-62 |
-| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-760 |
+| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 作った | K-760 |
 | `finishBridgeJob` | POST /api/v1/bridge/jobs/:id/finish | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `reportJobProgress` | POST /api/v1/bridge/jobs/:id/progress | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `callKanameTool` | POST /api/v1/bridge/jobs/:id/tools/:name | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `takeBridgeJob` | POST /api/v1/bridge/jobs/take | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
-| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session） | F5 | 契約だけ（501） | K-760 |
+| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session） | F5 | 作った | K-760 |
 | `markHumanCheck` | POST /api/v1/checks/:id/human | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `getMyClone` | GET /api/v1/clones/me | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
