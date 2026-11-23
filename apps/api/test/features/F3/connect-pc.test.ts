@@ -73,7 +73,8 @@ const fields = (j: Record<string, unknown>) =>
   ((j["details"] as { field: string }[] | undefined) ?? []).map((d) => d.field);
 const newPerson = (o: Parameters<Fixture["person"]>[2] = {}) => f.person(T1.tenantId, T1.rootScope, o);
 const sameAsWrongCode = async (r: Response) => {
-  expect(r.status).toBe(422);
+  // 形どおりのコードが DB で使えない（違う・期限切れ・使い終わった・出し直す前）は 404・E-CONN-013（K-639：422 にしない・欄は付けない）
+  expect(r.status).toBe(404);
   const j = await json(r);
   expect(j["code"]).toBe("E-CONN-013");
   return j;
@@ -711,8 +712,17 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
     ).toHaveLength(80);
     const c = await newPerson();
     expect(
-      (await sessionRow((await claimOk((await pair(c)).code, "My\u0000PC\u0007")).device_id))["device_label"],
+      (await sessionRow((await claimOk((await pair(c)).code, "My\u0001PC\u0007")).device_id))["device_label"],
     ).toBe("MyPC");
+    // K-427：NUL（\u0000）は入口が 422・欄 device_label で断る（前は黙って消して 201 にしていた）。断った後も、同じコードで引き取れる
+    const d = await newPerson();
+    const code = (await pair(d)).code;
+    const nul = await claim(code, "My\u0000PC");
+    expect(nul.status, await nul.clone().text()).toBe(422);
+    const nulBody = (await json(nul)) as { code?: string; details?: { field: string }[] };
+    expect(nulBody.code).toBe("VALIDATION_ERROR");
+    expect((nulBody.details ?? []).map((d) => d.field)).toEqual(["device_label"]);
+    expect((await sessionRow((await claimOk(code, "MyPC")).device_id))["device_label"]).toBe("MyPC");
   });
 
   it("K57-API-031 入力：createPairingCode に member_id・code_hash を入れてくる：422（外から入れさせない）", async () => {
@@ -771,7 +781,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
     const p = await newPerson();
     const c = await pair(p);
     const rs = await Promise.all([claim(c.code, "PC A"), claim(c.code, "PC B")]);
-    expect(rs.map((r) => r.status).sort()).toEqual([201, 422]);
+    expect(rs.map((r) => r.status).sort()).toEqual([201, 404]);
     expect(await devices(p)).toHaveLength(1);
   });
 
@@ -799,7 +809,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
 
   it("K57-API-038 守り：引き取りを 1 分に 6 回：429・待つ秒数（D-089：5 回まで）", async () => {
     const ip = nextIp();
-    for (let i = 0; i < 5; i++) expect((await claim("ZZZZZZ", "PC", ip)).status).toBe(422);
+    for (let i = 0; i < 5; i++) expect((await claim("ZZZZZZ", "PC", ip)).status).toBe(404);
     const r = await claim("ZZZZZZ", "PC", ip);
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBeGreaterThan(0);
