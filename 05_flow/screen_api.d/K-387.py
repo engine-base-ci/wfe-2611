@@ -10,8 +10,8 @@ RESPONSES = {
     "updateTicket": ("TicketUpdated", {"ticket": "object", "stage": "object", "changed": "boolean", "message_id": "uuid?"}),
 }
 
-# 保留の理由と再開の条件は、空白（\s）と制御文字だけでない字（空・空白だけは 422 E-VAL-041・047・字数の上限は置かない D-130.1）
-_NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
+# 保留の理由と再開の条件は、空白（\s）と制御文字だけでない字で、NUL（U+0000）を含まない（空・空白だけ・NUL を含むは 422 E-VAL-041・047・NUL はどの口でも入口で 422 の決め answer=c8b3f4c3aef8・字数の上限は置かない D-130.1）
+_NOT_BLANK = "^[^\\u0000]*[^\\s\\u0000-\\u001f\\u007f][^\\u0000]*$"
 VALUE_RANGES = {
     "updateTicket": {"actual_minutes": {"minimum": 0, "maximum": 100000}, "stage_key": {"enum": ["todo", "doing", "hold"]},
                      "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK}},
@@ -26,8 +26,8 @@ ERRORS_4XX = {
          "trigger": "今の段が仕組みの段（確認中・承認待ち・実行中）か、走っている実行（待ち・実行中・聞いている）・決まっていない承認待ちがあるのに段を変えた（busy）。実績と保留の理由だけならこの間も変えられる",
          "ears_form": "UNWANTED: IF AI が動いている間か承認待ちの間に段を変えようとしたら、Kaname は 409 と E-CONF-030 を返し、何も書かない"},
         {"status": 409, "code": "E-CONF-032", "body": {"error": "conflict", "code": "E-CONF-032"}, "errors": ["E-CONF-032"],
-         "trigger": "今の段が完了なのに、未着手・保留・会社が足した段に変えた（done。作業中への開き直しは K-388）",
-         "ears_form": "UNWANTED: IF 完了したチケットの段を開き直さずに変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない"},
+         "trigger": "今の段が完了なのに、作業中（開き直す）以外の段（未着手・保留・会社が足した段）に変えた（done）。完了 → 作業中は開き直す（K-388）",
+         "ears_form": "UNWANTED: IF 完了したチケットの段を、作業中への開き直し以外に変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない"},
         {"status": 409, "code": "E-CONF-034", "body": {"error": "conflict", "code": "E-CONF-034", "details": []}, "errors": ["E-CONF-034"],
          "trigger": "段の id（stage_id）で、仕組みの段（確認中・承認待ち・実行中）か完了の段を行き先にした（段の口では移せない・欄 stage_id）",
          "ears_form": "UNWANTED: IF 段の口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、何も書かない"},
@@ -52,9 +52,17 @@ ERRORS_4XX = {
     ],
 }
 
-# 契約に書けない値の決まり（口の振る舞いのまま 422・scripts/ci/contract_shape.d/K-387.py と同じ並び）。
-#   K-355 の形全体の決まり（INPUT_RULES）が本線に入ったら、ここは INPUT_RULES に移して空にする
-UNEXPRESSIBLE_422 = {
-    "updateTicket": ["stage_id と stage_key の両方", "stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）",
-                     "stage_key todo・doing に保留の理由か再開の条件を付けた", "ほかの欄（E-VAL-018・前処理）", "空の体"],
+# 形全体の決まり（欄をまたぐ決まり・K-355 の INPUT_RULES の書き方・代表の答え answer=f0f290e785a9：検査の例外は足さない）。口の振る舞いと同じ 422
+#   1 段は stage_id か stage_key の片方だけ／空の体は断る（どれか 1 欄は要る）／stage_key hold は理由と条件が要る／stage_key todo・doing は理由と条件を付けない
+#   「ほかの欄（題名・期限など）」は入力の形に無い欄＝知らない欄なので、形が断る（E-VAL-018 の前処理と同じ 422）
+_FIELDS = ["stage_id", "stage_key", "actual_minutes", "hold_reason", "resume_condition"]
+INPUT_RULES = {
+    "updateTicket": {"allOf": [
+        {"not": {"required": ["stage_id", "stage_key"]}},
+        {"anyOf": [{"required": [f]} for f in _FIELDS]},
+        {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["todo", "doing"]}}},
+                   {"required": ["hold_reason", "resume_condition"]}]},
+        {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["hold"]}}},
+                   {"not": {"anyOf": [{"required": ["hold_reason"]}, {"required": ["resume_condition"]}]}}]},
+    ]},
 }
