@@ -1,4 +1,5 @@
 # K-353 上書きの口（updateCredential）と消す口（deleteCredential）の契約の形の表に足す分（K-325 の断片）
+import credential_patterns as _CP  # 手助けは断片の中で読む（置き場の断片を 1 つずつ実行する試験にも通る・K-383）
 #   消す口は体を受けない（DELETE）ので、どの表にも載せない（NO_REQUIRED_INPUTS は体を受ける口だけ・K144-SHAPE-020）
 NO_REQUIRED_INPUTS = {
     "updateCredential": "どの欄も無くてよい（変える欄だけを送る）。変える物が 1 つも無いときは口が 422 E-CRED-008（features/F3/credentials/update.ts・K-353）",
@@ -7,14 +8,12 @@ NO_REQUIRED_INPUTS = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": "^(?!(?:\\*\\.)?(?:co\\.jp|ne\\.jp|or\\.jp|ac\\.jp|ad\\.jp|ed\\.jp|go\\.jp|gr\\.jp|lg\\.jp|co\\.uk|org\\.uk|ac\\.uk|gov\\.uk|com\\.au|net\\.au|org\\.au|co\\.nz|co\\.kr|com\\.cn|com\\.tw|com\\.sg|com\\.br)$)(?!.*xn--)(?:\\*\\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{1,62}$"}},   # features/F3/credentials/input.ts の DESTINATION_RE と PUBLIC_SUFFIXES（小文字の名前だけ。URL・大文字・全角は口が直してから確かめる）
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}, "description": "契約の pattern に合っても、互換形で書いた公開の接尾辞だけ（ᶜo.jp・ⓒⓞ.jp など）は 422・E-CRED-002 で断る（預けた物がどこでも使えてしまうのを防ぐ守り・K-383）"},
+        "login": {"pattern": _CP.LOGIN},
+        "password": {"minLength": 1},
+        "value": {"minLength": 1},
+        "totp_secret": {"pattern": _CP.TOTP},
+        "expires_on": {"pattern": _CP.EXPIRES},
     },
 }
-UNEXPRESSIBLE_422 = {
-    "updateCredential": [
-        "使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）",
-        "日本の今日より前・暦に無い期限（E-CRED-004）",
-        "種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）",
-        "変える物が無い（空・理由だけ・E-CRED-008）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた。今日より前の期限・預けた物の種類で決まる混ざりは 409（K-383・PM の決め）

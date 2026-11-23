@@ -15,18 +15,29 @@ RESPONSES = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": "^(?!(?:\\*\\.)?(?:co\\.jp|ne\\.jp|or\\.jp|ac\\.jp|ad\\.jp|ed\\.jp|go\\.jp|gr\\.jp|lg\\.jp|co\\.uk|org\\.uk|ac\\.uk|gov\\.uk|com\\.au|net\\.au|org\\.au|co\\.nz|co\\.kr|com\\.cn|com\\.tw|com\\.sg|com\\.br)$)(?!.*xn--)(?:\\*\\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{1,62}$"}},   # features/F3/credentials/input.ts の DESTINATION_RE と PUBLIC_SUFFIXES（小文字の名前だけ。URL・大文字・全角は口が直してから確かめる）
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}, "description": "契約の pattern に合っても、互換形で書いた公開の接尾辞だけ（ᶜo.jp・ⓒⓞ.jp など）は 422・E-CRED-002 で断る（預けた物がどこでも使えてしまうのを防ぐ守り・K-383）"},
+        "login": {"pattern": _CP.LOGIN},
+        "password": {"minLength": 1},
+        "value": {"minLength": 1},
+        "totp_secret": {"pattern": _CP.TOTP},
+        "expires_on": {"pattern": _CP.EXPIRES},
     },
 }
 
-UNEXPRESSIBLE_422 = {
-    "updateCredential": [
-        "使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）",
-        "日本の今日より前・暦に無い期限（E-CRED-004）",
-        "種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）",
-        "変える物が無い（空・理由だけ・E-CRED-008）",
-    ],
+# 形全体の決まり（INPUT_RULES）：変える物が 1 つは要る（E-CRED-008）。中身は、何も替えない・login と password を両方・value だけ、のどれか（E-CRED-005）
+_K353_NO_CONTENT = {"anyOf": [{"required": [x]} for x in ("login", "password", "value", "totp_secret")]}
+INPUT_RULES = {
+    "updateCredential": {"allOf": [
+        {"anyOf": [{"required": [x]} for x in ("login", "password", "value", "two_factor", "totp_secret", "destinations", "expires_on", "description")]},
+        {"anyOf": [
+            {"not": _K353_NO_CONTENT},
+            {"required": ["login", "password"], "not": {"required": ["value"]}},
+            {"required": ["value"], "not": {"anyOf": [{"required": [x]} for x in ("login", "password", "two_factor", "totp_secret")]}},
+        ]},
+    ]},
 }
+
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた。今日より前の期限・預けた物の種類で決まる混ざりは 409（K-383・PM の決め）
 
 # 上書き：権限（403）・本人確認（403）・見えない（404）・ぶつかった（409）・入力（422）・金庫に置けない（502）・預かれない／混んでいる／Kaname の側（503）
 # 消す：権限（403）・見えない（404）・Kaname の側（503）
@@ -44,8 +55,14 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-CRED-009", "body": {"error": "conflict", "code": "E-CRED-009"}, "errors": ["E-CRED-009"],
          "trigger": "同じ物の中身を、ほかの画面が先に上書きした（値の入れ替えがぶつかった）",
          "ears_form": "UNWANTED: IF 同じ物の中身をほかの画面が先に上書きしたなら、Kaname は 409 と E-CRED-009 を返し、置いた金庫の物を失効させて行は先の上書きのままにする"},
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-002", "E-CRED-003", "E-CRED-004", "E-CRED-005", "E-CRED-008", "E-VAL-003"],
-         "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
+        {"status": 409, "code": "E-CRED-004", "body": {"error": "conflict", "code": "E-CRED-004"}, "errors": ["E-CRED-004"],
+         "trigger": "期限が日本の今日より前（時刻で決まる）",
+         "ears_form": "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も変えない"},
+        {"status": 409, "code": "E-CRED-015", "body": {"error": "conflict", "code": "E-CRED-015"}, "errors": ["E-CRED-015"],
+         "trigger": "預けた物の種類や 2 段階の状態と合わない中身（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・認証アプリの鍵の有無が合わない）",
+         "ears_form": "UNWANTED: IF 預けた物の種類や 2 段階の状態と合わない中身なら、Kaname は 409 と E-CRED-015 を返し、金庫に置かず行も変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-002", "E-CRED-003", "E-CRED-005", "E-CRED-008", "E-VAL-003"],
+         "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限の形（暦に無い・年-月-日でない）・中身の欠け（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も変えない"},
         {"status": 502, "code": "E-SEC-001", "body": {"error": "dependency", "code": "E-SEC-001"}, "errors": ["E-SEC-001"],
          "trigger": "新しい中身を預かり先（金庫）に置けなかった",
