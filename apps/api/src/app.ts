@@ -35,13 +35,6 @@ const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
   re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
 }));
 
-/** 字のままの道（:値を持たない道）ごとの、契約にあるメソッド。値を持つ別の道（/…/:id）が同じ字を値として吸うのを止めるのに使う（K-717） */
-const LITERAL_METHODS = new Map<string, string[]>();
-for (const e of ENDPOINTS) {
-  if (e.path.includes(":")) continue;
-  LITERAL_METHODS.set(e.path, [...(LITERAL_METHODS.get(e.path) ?? []), e.method]);
-}
-
 /** 閉じた再設定の部品の道（K-320）。disabledPaths が当たらない /reset-password/… と末尾の「/」もここで 404（/api/auth を外した道） */
 const AUTH_RESET_CLOSED = /^\/(request-password-reset|reset-password)(\/.*)?$/;
 
@@ -193,16 +186,6 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
         }
       : undefined;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
-  // 契約に字のままの道がある（/ticket-fields/order など）のに、契約に無いメソッドで来たら 405 と使えるメソッド（Allow）を返す。
-  //   登録の順では値を持つ別の道（PATCH /ticket-fields/:id）が「order」を id として受けて 422 を返してしまうので、口に入る前に止める（K-717・fuzz の ST204）
-  if (opts.repo && opts.contract !== false)
-    app.use("/api/*", async (c, next) => {
-      const allow = LITERAL_METHODS.get(c.req.path);
-      const method = c.req.method === "HEAD" ? "GET" : c.req.method;
-      if (allow && method !== "OPTIONS" && !allow.includes(method))
-        return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow: allow.join(", ") });
-      return next();
-    });
   if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
   // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・K-35）
   app.notFound((c) => {
