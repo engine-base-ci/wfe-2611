@@ -253,7 +253,7 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery, extra, onExtra,
             <MineFilter columns={columns} name={viewer.name} />
           </F7.MineChipsSlot>
         ) : (
-          <ListTools columns={columns} />
+          <ListTools columns={columns} extra={extra} onExtra={onExtra} />
         )}
         <ListTable
           rows={list.rows}
@@ -280,7 +280,7 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery, extra, onExtra,
             <MineCards />
           </F7.NumberCardsSlot>
         ) : (
-          <ListSearch onQuery={onQuery} />
+          <ListSearch onQuery={onQuery} extra={extra} onExtra={onExtra} />
         )}
         {content}
       </section>
