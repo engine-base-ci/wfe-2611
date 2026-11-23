@@ -365,16 +365,26 @@ test("K682-UI-016 見られないページ（口が 404）：本文の場所に�
   page,
 }) => {
   const mk = await mockKnowledge(page);
+  const urls: string[] = [];
+  page.on("framenavigated", (f) => {
+    if (f === page.mainFrame()) urls.push(f.url());
+  });
   await openAt(page, `/knowledge/${P_GONE}`);
   const box = page.locator(`${CARD} [data-code="E-PAGE-002"]`);
   await expect(box).toBeVisible();
   await expect(box.getByRole("button")).toHaveCount(2);
   const ask = box.getByRole("button", { name: "マネージャーに頼む", exact: true });
   await expect(ask).toHaveAttribute("aria-disabled", "true"); // 頼む口がまだ無い（代表の答え answer=21b765e5e0c8）
+  urls.length = 0;
   await ask.click({ force: true });
-  await expect(page).toHaveURL(new RegExp(`/knowledge/${P_GONE}$`)); // 押しても何も起きない
+  await expect(box).toBeVisible(); // 押しても箱はそのまま
+  await expect(ask).toHaveAttribute("aria-disabled", "true");
   await box.getByRole("button", { name: "戻る", exact: true }).click();
   await expect(page).toHaveURL(/\/knowledge$/);
+  expect(
+    urls.map((u) => new URL(u).pathname),
+    "道の移りは「戻る」の 1 回だけ（頼むでは移らない）",
+  ).toEqual(["/knowledge"]);
   expect(mk.count("tree")).toBe(1);
 });
 
