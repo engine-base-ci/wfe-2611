@@ -168,7 +168,7 @@ export function setupCloneRoom(): CloneHarness {
       const r = await f.admin.query<{ id: string; number: string }>(
         `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, due_on, created_by, updated_by,
                               completed_at, completed_by, deleted_at)
-         values ($1, $2, '', $3, $4, $5, $6, $7, $6, $6, case when $8 then now() end, case when $8 then $6 end, case when $9 then now() end)
+         values ($1, $2, '', $3, $4, $5, $6, $7, $6, $6, case when $8 then now() end, case when $8 then $6::uuid end, case when $9 then now() end)
          returning id, number`,
         [w.tenantId, o.scope ?? w.scopeA, w.kindId, stage, title, who, jst, o.completed === true, o.deleted === true],
       );
@@ -214,7 +214,7 @@ export function setupCloneRoom(): CloneHarness {
         n += 1;
         await f.admin.query(
           `insert into bridge_job_events (tenant_id, member_id, job_id, kind, seq, payload, created_at)
-           values ($1, $2, $3, 'progress', $4, $5, now() + make_interval(secs => $4))`,
+           values ($1, $2, $3, 'progress', $4::int, $5, now() + make_interval(secs => $4::int))`,
           [w.tenantId, by.id, jobId, n, JSON.stringify({ text })],
         );
       }

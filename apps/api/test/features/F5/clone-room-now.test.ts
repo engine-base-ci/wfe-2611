@@ -259,7 +259,11 @@ describe("K-753 分身の今を読む", () => {
     const w = await h.world("k753-019");
     const t = await h.ticket(w, { title: "漏らしてはいけない題名" });
     await h.run(w, t.id, { status: "running" });
-    await h.f.admin.query("update members set suspended_at = now() where id = $1", [w.me.id]);
+    // 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は両方そろう）
+    await h.f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      w.me.id,
+      w.other.id,
+    ]);
     for (const path of ["/clones/me", "/clones/me/now"]) {
       const r = await h.call(w.me, "GET", path);
       expect(r.status, path).toBe(403);
