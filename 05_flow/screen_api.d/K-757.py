@@ -15,6 +15,10 @@ RESPONSES = {
     "listConversations": ("ConversationRow", {"id": "uuid", "title": "string", "updated_at": "string", "last_text": "string?"}),
     "listConversationMessages": ("MessageView", dict(_MESSAGE)),
 }
+# 一覧の題は DB の関数 app.conversation_list が coalesce(title, '新しい会話') で返す（conversations.title は null 可・K144-SHAPE-013）
+NOT_NULL_ANSWERS = {
+    "listConversations.title": "DB の関数 app.conversation_list が coalesce で「新しい会話」にそろえて返し、null にはしない（conversations.title は null 可）",
+}
 # 行の続きは cursor と limit だけ（並べ替え・絞り込みを受けない。新しい側から読み、各回は古い順に並べて返す）
 QUERIES = {
     "listConversationMessages": [],
