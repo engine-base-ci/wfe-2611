@@ -1585,6 +1585,19 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F9/knowledge-draft.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144.d/K-679.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_pages.test.ts",
+    "apps/api/test/generated/patch_knowledge_pages_id_draft.test.ts",
+    "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/f9-knowledge-page-edit.ts",
     "apps/api/src/features/F9/knowledge/page-move.ts",
     "apps/api/src/features/F9/knowledge/page-delete.ts",
@@ -1592,6 +1605,18 @@
    ],
    "tests": [
     "apps/api/test/features/F9/knowledge-page-edit.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-page-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144.d/K-681.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_knowledge_pages_id.test.ts",
+    "apps/api/test/generated/delete_knowledge_pages_id.test.ts"
    ]
   },
   {
