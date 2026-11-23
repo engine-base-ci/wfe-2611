@@ -9,11 +9,16 @@
 //   行を押すと、幅 1024 以上は移らずに右に詳細を開き（URL に open=<番号> を足す・push）、1023 以下は /tickets/<id> へ移る（D-128.165）。
 //   1024〜1279 で開いている間は、列を選んだ列のうち 種別・番号・題名・状態・担当者 にし、左のメニューを 56 に畳む（D-128.14）。
 //   自分に関わるものの右の列は、詳細を開いている間は出さない
+// K-600（段 8 の差し込み口）：概要・カレンダー・ガントの本体・数の札・絞りの行を F7 の差し込み口で包む（入れた時点では今のまま）。
+//   URL の絞りの組（K-472・K-473 の欄の名前と sort）を extra として一覧の口にそのまま足し、答えの meta.counts を札に渡す。
+//   概要・カレンダー・ガントのときは一覧の口を読まない。グループを選んでも、その見え方（区画が本物のとき）を残す
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
+import * as F7 from "@/features/F7/list-slots";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { SCOPES_KEY, TicketShell, readScopes, scopeTone, type ScopeRow } from "../create-ticket/ticket-shell";
@@ -30,6 +35,8 @@ import {
   useOpenLookup,
   useSetupTasks,
   useTicketList,
+  type Counts,
+  type ListExtra,
   type ListView,
   type OpenLookup,
   type TicketList,
@@ -39,6 +46,55 @@ import "./ticket-list.css";
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
 /** 横に開いた間に残す列（D-128.14）。並びは 9 列と同じ */
 const SIDE_COLUMNS = new Set<ColumnKey>(["kind", "number", "title", "stage", "assignee"]);
+
+/** 一覧の口にそのまま足す URL の欄（K-472・K-473 の欄の表の名前と sort）。画面の鍵（view・scope・open・new）は入れない */
+const EXTRA_KEYS = [
+  "assignee_id",
+  "stage_id",
+  "kind_id",
+  "client_id",
+  "done",
+  "due_from",
+  "due_to",
+  "start_from",
+  "start_to",
+  "overdue",
+  "fire",
+  "parent",
+  "sort",
+  "fields",
+  "due",
+  "delegated",
+  "approving",
+] as const;
+
+/** 概要・カレンダー・ガント（F7 の区画が描く見え方） */
+type ViewTab = "overview" | "calendar" | "gantt";
+const isViewTab = (v: ListView): v is ViewTab => v === "overview" || v === "calendar" || v === "gantt";
+const VIEW_LABEL: Record<ListView, string> = {
+  mine: "自分に関わるもの",
+  all: "一覧",
+  overview: "概要",
+  calendar: "カレンダー",
+  gantt: "ガント",
+};
+
+/** URL の問い合わせから絞りの組を読む（値は文字のまま・画面で確かめて捨てない）。替えるときは URL を replaceState で替える */
+function useExtra(): [ListExtra, (next: ListExtra) => void] {
+  const params = useSearchParams();
+  const sig = EXTRA_KEYS.map((k) => `${k}=${params.get(k) ?? ""}`).join("&");
+  const extra = useMemo<ListExtra>(() => {
+    const now = new URLSearchParams(sig);
+    return Object.fromEntries(EXTRA_KEYS.flatMap((k) => (now.get(k) ? [[k, now.get(k)!]] : [])));
+  }, [sig]);
+  const setExtra = useCallback((next: ListExtra) => {
+    const u = new URL(window.location.href);
+    for (const k of EXTRA_KEYS) u.searchParams.delete(k);
+    for (const k of EXTRA_KEYS) if (next[k]) u.searchParams.set(k, next[k]);
+    window.history.replaceState(null, "", `${u.pathname}${u.search}`);
+  }, []);
+  return [extra, setExtra];
+}
 
 /** 幅の段：narrow（1023 以下・移る）／mid（1024〜1279・横で列 5・メニュー 56）／wide（1280 以上） */
 type Band = "narrow" | "mid" | "wide";
@@ -118,7 +174,7 @@ function ListHead({ view, scope }: { view: ListView; scope: ScopeState }) {
           <span className="k-list-dim">すべてのグループ</span>
         ) : null}
       </div>
-      <ListViews view={view} />
+      <ListViews view={view} scope={group ? group.id : null} />
     </header>
   );
 }
@@ -141,9 +197,13 @@ interface BodyProps {
   side: SideState;
   onCreate: () => void;
   onQuery: (q: string) => void;
+  /** URL の絞りの組と、替える関数（数の札・絞りの行の差し込み口に渡す） */
+  extra: ListExtra;
+  onExtra: (next: ListExtra) => void;
+  counts: Counts | null;
 }
 
-function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
+function ListBody({ view, scoped, data, side, onCreate, onQuery, extra, onExtra, counts }: BodyProps) {
   const { list } = data;
   const mine = view === "mine" && !scoped;
   // はじめて（OnHome）は会社にチケットが 1 枚も無いときだけ。自分に関わるものが 0 件でも会社に在れば Main の形で表を空にする
@@ -181,7 +241,20 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
       <ErrorState code={list.code} acts={[data.reload]} />
     ) : (
       <div className="k-list-panel">
-        {mine ? <MineFilter columns={columns} name={viewer.name} /> : <ListTools columns={columns} />}
+        {mine ? (
+          <F7.MineChipsSlot
+            columns={columns}
+            name={viewer.name}
+            extra={extra}
+            onExtra={onExtra}
+            counts={counts}
+            rows={list.rows}
+          >
+            <MineFilter columns={columns} name={viewer.name} />
+          </F7.MineChipsSlot>
+        ) : (
+          <ListTools columns={columns} />
+        )}
         <ListTable
           rows={list.rows}
           columns={shown}
@@ -202,7 +275,13 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
   return (
     <div className="k-list-body" data-split={open || undefined}>
       <section className="k-list-main" aria-labelledby="tickets-title">
-        {mine ? <MineCards /> : <ListSearch onQuery={onQuery} />}
+        {mine ? (
+          <F7.NumberCardsSlot extra={extra} onExtra={onExtra} counts={counts}>
+            <MineCards />
+          </F7.NumberCardsSlot>
+        ) : (
+          <ListSearch onQuery={onQuery} />
+        )}
         {content}
       </section>
       {mine && !open ? <MainSide name={viewer.name} approvals={approvals} /> : null}
@@ -260,21 +339,28 @@ export function TicketListPage({ view, scope = null, open = null, onCreate }: Ti
     else setReady(true);
   }, [view, scope]);
   const group = useScope(scope, ready);
-  const listView: ListView = scope !== null ? "all" : view;
+  // 概要・カレンダー・ガント（tickets-page.tsx が区画の本物の見え方だけを通す）はグループがあっても残す。それ以外でグループがあれば一覧
+  const listView: ListView = isViewTab(view) ? view : scope !== null ? "all" : view;
   // 言葉は今の見え方・グループのときだけ効く（替えたら空から）
   const place = `${listView}|${scope ?? ""}`;
   const [query, setQuery] = useState({ place, q: "" });
   const q = query.place === place ? query.q : "";
   const onQuery = useCallback((next: string) => setQuery({ place, q: next }), [place]);
   const scopeId = group.state === "ok" ? group.row.id : null;
-  const data = useTicketList(listView, ready && (group.state === "none" || group.state === "ok"), { q, scopeId });
+  const [extra, setExtra] = useExtra();
+  // 概要・カレンダー・ガントのときは一覧の口を読まない（その区画が自分の口を読む）
+  const enabled = ready && !isViewTab(listView) && (group.state === "none" || group.state === "ok");
+  const data = useTicketList(listView, enabled, { q, scopeId, extra });
   const band = useBand();
   const side = useSide(open, band);
-  // いまの場所：グループの一覧は「営業 › 一覧」（キャンバス List）、ほかは「チケット › 一覧／自分に関わるもの」
+  // いまの場所：グループは「営業 › <見え方の名前>」（キャンバス List）、ほかは「チケット › <見え方の名前>」
   const crumbs =
     group.state === "ok"
-      ? [{ label: group.row.name, href: `/tickets?scope=${encodeURIComponent(group.row.id)}` }, { label: "一覧" }]
-      : [{ label: "チケット", href: "/tickets" }, { label: listView === "all" ? "一覧" : "自分に関わるもの" }];
+      ? [
+          { label: group.row.name, href: `/tickets?scope=${encodeURIComponent(group.row.id)}` },
+          { label: VIEW_LABEL[listView] },
+        ]
+      : [{ label: "チケット", href: "/tickets" }, { label: VIEW_LABEL[listView] }];
   return (
     <TicketShell screen="tickets" crumbs={crumbs} onCreate={onCreate} railed={side.squeezed}>
       <div className="k-root k-list-page">
@@ -291,6 +377,12 @@ export function TicketListPage({ view, scope = null, open = null, onCreate }: Ti
           <div className="k-list-body">
             <Loading />
           </div>
+        ) : listView === "overview" ? (
+          <F7.OverviewSlot scopeId={scopeId} />
+        ) : listView === "calendar" ? (
+          <F7.CalendarSlot scopeId={scopeId} />
+        ) : listView === "gantt" ? (
+          <F7.GanttSlot scopeId={scopeId} />
         ) : (
           <ListBody
             view={listView}
@@ -299,6 +391,9 @@ export function TicketListPage({ view, scope = null, open = null, onCreate }: Ti
             side={side}
             onCreate={onCreate}
             onQuery={onQuery}
+            extra={extra}
+            onExtra={setExtra}
+            counts={data.counts}
           />
         )}
       </div>
