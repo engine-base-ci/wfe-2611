@@ -42,7 +42,8 @@ const CATALOG = (
   }
 ).errors;
 const msgOf = (id: string) => CATALOG.find((e) => e.id === id)?.message ?? `(${id} が errors.json に無い)`;
-const E_INV_013 = msgOf("E-INV-013");
+// メールの鍵が無い参加を口が断る文（K-422：409 E-INV-016・欄なし。空白だけ／形違いを送ったときの 422 E-INV-013 とは別の番号）
+const E_INV_016 = msgOf("E-INV-016");
 const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 async function openLinkInvite(
@@ -97,21 +98,18 @@ test("K423-UI-001 リンクの招待で参加する（ログインしていな�
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeNull();
 });
 
-test("K423-UI-002 リンクの招待の参加を口が断る：メールが空なら体に email の鍵を入れずに送り、422 E-INV-013（detail.field email）でメールの欄の下に正本の文（名前は残る）。続けてメールを入れて押すと 409 E-INV-006 で、文は入れたメールで「kimura@engine-base.example には、もう Kaname のアカウントがあります。ログインしてから参加してください」・「ログインして参加する」", async ({
+test("K423-UI-002 リンクの招待の参加を口が断る：メールが空なら体に email の鍵を入れずに送り、409 E-INV-016（欄なし）でメールの欄の下に正本の文（名前は残る）。続けてメールを入れて押すと 409 E-INV-006 で、文は入れたメールで「kimura@engine-base.example には、もう Kaname のアカウントがあります。ログインしてから参加してください」・「ログインして参加する」", async ({
   page,
 }) => {
   const bodies = await openLinkInvite(page, (b) =>
     "email" in b
       ? { status: 409, body: { error: "conflict", code: "E-INV-006", message: msgOf("E-INV-006") } }
-      : {
-          status: 422,
-          body: { error: "validation", code: "E-INV-013", message: E_INV_013, detail: { field: "email" } },
-        },
+      : { status: 409, body: { error: "conflict", code: "E-INV-016", message: E_INV_016 } },
   );
   await fillNew(page, null);
   // 文はメールの欄の説明（aria-describedby）につながる。名前の欄にはつながらない（文に「メール」の字が入るので欄の字で絞らない）
-  await expect(inviteForm(page).getByLabel("メール")).toHaveAccessibleDescription(new RegExp(esc(E_INV_013)));
-  await expect(inviteForm(page).getByLabel("名前")).not.toHaveAccessibleDescription(new RegExp(esc(E_INV_013)));
+  await expect(inviteForm(page).getByLabel("メール")).toHaveAccessibleDescription(new RegExp(esc(E_INV_016)));
+  await expect(inviteForm(page).getByLabel("名前")).not.toHaveAccessibleDescription(new RegExp(esc(E_INV_016)));
   await expect(inviteForm(page).getByLabel("名前")).toHaveValue("木村 誠");
   expect(Object.keys(bodies[0]!).sort()).toEqual(["name", "password"]);
   await fillNew(page, "kimura@engine-base.example");
@@ -358,19 +356,16 @@ const MOCK_PV = {
   message: "経理の月次をいっしょに回してもらいます。よろしくお願いします",
   expires_at: "2026-11-25T03:00:00Z",
 };
-const E422: Reply = {
-  status: 422,
-  body: { error: "validation", code: "E-INV-013", message: E_INV_013, detail: { field: "email" } },
-};
+const NO_EMAIL: Reply = { status: 409, body: { error: "conflict", code: "E-INV-016", message: E_INV_016 } };
 const FAILED: Reply = { status: 202, body: { data: { state: "failed", email: "ki****@engine-base.example" } } };
 const DRIVE: Record<string, (p: Page, w: number) => Promise<void>> = {
   "inv-link-new": async (p, w) => {
     await openLinkInvite(p, () => SENT, MOCK_PV, "new", w);
   },
   "inv-link-error": async (p, w) => {
-    await openLinkInvite(p, () => E422, MOCK_PV, "new", w);
+    await openLinkInvite(p, () => NO_EMAIL, MOCK_PV, "new", w);
     await inviteForm(p).getByRole("button", { name: "参加する" }).click();
-    await expect(inviteForm(p).getByLabel("メール")).toHaveAccessibleDescription(new RegExp(esc(E_INV_013)));
+    await expect(inviteForm(p).getByLabel("メール")).toHaveAccessibleDescription(new RegExp(esc(E_INV_016)));
   },
   "inv-link-sent": async (p, w) => {
     await openLinkInvite(p, () => SENT, MOCK_PV, "new", w);
