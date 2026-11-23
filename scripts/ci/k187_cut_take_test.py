@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K-187 の試験：切る段の枝から 1 本の分を持ち込む台本（scripts/tickets/cut_take.py）。行 ID は K187-CT-NNN"""
+"""K-187 の試験（K-1115 の行 K1115-CT-NNN も）：切る段の枝から 1 本の分を持ち込む台本（scripts/tickets/cut_take.py）。行 ID は K187-CT-NNN"""
 from __future__ import annotations
 
 import json
@@ -197,7 +197,7 @@ class CutTake(unittest.TestCase):
         self.assertIn("cut の行", s)
         self.assertIn("本線の後からの行", s, "本線に後から入った変更が消えた")
 
-    def test_K187_CT_012_own_lines_right_below_a_later_merged_stack_base_are_added(self) -> None:
+    def test_K1115_CT_001_own_lines_right_below_a_later_merged_stack_base_are_added(self) -> None:
         # 重ねた元（K-6）が分かれ目の後に本線へ入り、切る段では K-6 の行のすぐ下に自分（K-5）の行がある（K-581 の形）
         git(self.repo, "checkout", "-q", "c/x")
         put(self.repo, {SHARED: "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL])})
@@ -212,7 +212,7 @@ class CutTake(unittest.TestCase):
         s = (self.repo / SHARED).read_text(encoding="utf-8")
         self.assertEqual(s, "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL]))
 
-    def test_K187_CT_013_unmarked_cut_line_missing_from_mainline_stops(self) -> None:
+    def test_K1115_CT_002_unmarked_cut_line_missing_from_mainline_stops(self) -> None:
         # 重ねた元の行のすぐ下に自分の行があり、離れた所に印の無い行（切る段だけの行）もある。本線にはその印の無い行が無い：
         # 自分の印を外した版を元にすると、印の無い行を本線が消したように見えて落ちるので、落とさずに止める
         import cut_take
