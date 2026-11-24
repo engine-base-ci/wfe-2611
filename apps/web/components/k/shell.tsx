@@ -92,10 +92,10 @@ function BellButton({ notices, onNotices, expanded }: BellProps) {
     <button
       type="button"
       className="k-icon-btn k-bell"
-      aria-label={notices ? `知らせ（${notices} 件）` : "知らせ"}
+      aria-label={notices ? `お知らせ（${notices} 件）` : "お知らせ"}
       {...(expanded !== undefined ? { "aria-expanded": expanded, "aria-haspopup": "dialog" as const } : {})}
       aria-disabled={onNotices ? undefined : true}
-      title={onNotices ? undefined : "知らせ（準備中）"}
+      title={onNotices ? undefined : "お知らせ（準備中）"}
       onClick={onNotices}
     >
       <Bell size={18} aria-hidden="true" />

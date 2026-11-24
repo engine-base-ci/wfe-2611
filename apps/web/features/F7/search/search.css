@@ -28,7 +28,7 @@
   inset: 0;
   z-index: calc(var(--k-c-popup-layer-z) - 1);
   background: color-mix(in srgb, var(--k-on-surface) 20%, transparent);
-  /* 押した所は幕の後ろの物が受ける（箱の外を押すと閉じる・K-471） */
+  /* 押し始めは幕の後ろの物が受け、箱の外を押すと閉じる。続く click は search-live が 1 回止める（後ろへ押下を通さない・K-471） */
   pointer-events: none;
 }
 .k-f7-search[data-placement="inline"] {
