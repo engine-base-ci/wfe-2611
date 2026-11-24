@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/tickets/:id/complete", () => {
   it("test_post_tickets_id_complete_ok", () => {
-    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：ナレッジ更新の候補を出す・実行後の確認の結果を添える）
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：実行後の確認の結果を添える）
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-027");
   });

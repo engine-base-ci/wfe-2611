@@ -404,11 +404,12 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
         await f.admin.query(orig);
       }
     };
-    const DECIDE = "app.approval_decide(p_approval uuid, p_decision text, p_reason text)";
+    // K-744 で 4 つ目の引数 p_next（既定 clone）が付いた。create or replace は引数の既定を外せないので、既定ごと同じ形で差し替える
+    const DECIDE = "app.approval_decide(p_approval uuid, p_decision text, p_reason text, p_next text default 'clone')";
     const t = await ticket();
     const d = await delegated(t);
-    await swap("app.approval_decide(uuid,text,text)", DECIDE, () => approve(boss, d.approvalId));
-    await swap("app.approval_decide(uuid,text,text)", DECIDE, () =>
+    await swap("app.approval_decide(uuid,text,text,text)", DECIDE, () => approve(boss, d.approvalId));
+    await swap("app.approval_decide(uuid,text,text,text)", DECIDE, () =>
       giveBack(boss, d.approvalId, "宛名を直してください"),
     );
     expect((await approvalRow(d.approvalId))["decision"]).toBeNull();

@@ -694,6 +694,57 @@
       "D-125.152",
       "D-126.18"
      ]
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm",
+     "table": "invitations",
+     "operation_id": "confirmInvitationJoin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm",
+     "table": "invitations",
+     "operation_id": "confirmInvitationJoin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -797,6 +848,57 @@
       "D-125.152",
       "D-126.18"
      ]
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm",
+     "table": "invitations",
+     "operation_id": "confirmInvitationJoin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm",
+     "table": "invitations",
+     "operation_id": "confirmInvitationJoin",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-004",
+      "E-129",
+      "E-131",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.162",
+      "D-125.167"
+     ]
     }
    ],
    "related_entities": [
@@ -809,7 +911,8 @@
     "E-002",
     "E-001",
     "E-131",
-    "E-080"
+    "E-080",
+    "E-061"
    ],
    "mock_path": "06_mockup/v1/v1-invite-accept.html",
    "route": "/invite/:token",
@@ -3291,6 +3394,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3317,6 +3423,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3331,8 +3440,7 @@
      "related_entities": [
       "E-044",
       "E-039",
-      "E-049",
-      "E-117"
+      "E-049"
      ],
      "choke_points": [
       "C2",
@@ -3344,6 +3452,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3409,6 +3520,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3421,8 +3535,7 @@
      "operation_id": "reportBrowserState",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-046",
-      "E-094"
+      "E-046"
      ],
      "choke_points": [
       "C2",
@@ -3434,6 +3547,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3616,6 +3732,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -3709,6 +3828,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4612,6 +4734,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4638,6 +4763,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4652,8 +4780,7 @@
      "related_entities": [
       "E-044",
       "E-039",
-      "E-049",
-      "E-117"
+      "E-049"
      ],
      "choke_points": [
       "C2",
@@ -4665,6 +4792,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4730,6 +4860,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4742,8 +4875,7 @@
      "operation_id": "reportBrowserState",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-046",
-      "E-094"
+      "E-046"
      ],
      "choke_points": [
       "C2",
@@ -4755,6 +4887,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -4937,6 +5072,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -5030,6 +5168,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -5560,16 +5701,15 @@
     "E-039",
     "E-046",
     "E-049",
-    "E-117",
     "E-080",
-    "E-094",
     "E-043",
     "E-050",
     "E-051",
     "E-106",
     "E-120",
     "E-042",
-    "E-052"
+    "E-052",
+    "E-094"
    ],
    "mock_path": "06_mockup/v1/v1-bridge-setup.html",
    "route": "/setup/bridge",
@@ -7765,7 +7905,7 @@
       "E-038",
       "E-106",
       "E-136",
-      "E-117"
+      "E-116"
      ],
      "choke_points": [
       "C2"
@@ -7803,7 +7943,7 @@
       "E-106",
       "E-039",
       "E-051",
-      "E-117",
+      "E-116",
       "E-119",
       "E-037"
      ],
@@ -8029,8 +8169,7 @@
      "operation_id": "previewBulkApproval",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-038",
-      "E-117"
+      "E-038"
      ],
      "choke_points": [
       "C2"
@@ -8569,7 +8708,7 @@
       "E-038",
       "E-106",
       "E-136",
-      "E-117"
+      "E-116"
      ],
      "choke_points": [
       "C2"
@@ -8607,7 +8746,7 @@
       "E-106",
       "E-039",
       "E-051",
-      "E-117",
+      "E-116",
       "E-119",
       "E-037"
      ],
@@ -8833,8 +8972,7 @@
      "operation_id": "previewBulkApproval",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-038",
-      "E-117"
+      "E-038"
      ],
      "choke_points": [
       "C2"
@@ -9370,6 +9508,7 @@
     "E-138",
     "E-117",
     "E-050",
+    "E-116",
     "E-039",
     "E-051",
     "E-119",
@@ -9923,7 +10062,8 @@
      "related_entities": [
       "E-006",
       "E-004",
-      "E-061"
+      "E-061",
+      "E-006"
      ],
      "choke_points": [
       "C3",
@@ -10246,8 +10386,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
-      "E-039",
-      "E-120"
+      "E-043",
+      "E-049",
+      "E-044",
+      "E-052"
      ],
      "choke_points": [
       "C2",
@@ -10312,8 +10454,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
-      "E-039",
-      "E-120"
+      "E-043",
+      "E-049",
+      "E-044",
+      "E-052"
      ],
      "choke_points": [
       "C2",
@@ -10335,6 +10479,182 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
+      "E-044",
+      "E-046",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations",
+     "table": "conversations",
+     "operation_id": "startDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations",
+     "table": "conversations",
+     "operation_id": "startDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages",
+     "table": "messages",
+     "operation_id": "sendDraftMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages",
+     "table": "messages",
+     "operation_id": "sendDraftMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043",
       "E-039"
      ],
      "choke_points": [
@@ -10935,6 +11255,95 @@
       "D-127.11",
       "D-125.31",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt",
+     "table": "conversations",
+     "operation_id": "adoptDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043",
+      "E-049",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt",
+     "table": "conversations",
+     "operation_id": "adoptDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043",
+      "E-049",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
      ]
     },
     {
@@ -11355,7 +11764,8 @@
      "related_entities": [
       "E-006",
       "E-004",
-      "E-061"
+      "E-061",
+      "E-006"
      ],
      "choke_points": [
       "C3",
@@ -11678,8 +12088,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
-      "E-039",
-      "E-120"
+      "E-043",
+      "E-049",
+      "E-044",
+      "E-052"
      ],
      "choke_points": [
       "C2",
@@ -11744,8 +12156,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
-      "E-039",
-      "E-120"
+      "E-043",
+      "E-049",
+      "E-044",
+      "E-052"
      ],
      "choke_points": [
       "C2",
@@ -11767,6 +12181,182 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
+      "E-044",
+      "E-046",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations",
+     "table": "conversations",
+     "operation_id": "startDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations",
+     "table": "conversations",
+     "operation_id": "startDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages",
+     "table": "messages",
+     "operation_id": "sendDraftMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043",
+      "E-039"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages",
+     "table": "messages",
+     "operation_id": "sendDraftMessage",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-049",
+      "E-043",
       "E-039"
      ],
      "choke_points": [
@@ -12367,6 +12957,95 @@
       "D-127.11",
       "D-125.31",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt",
+     "table": "conversations",
+     "operation_id": "adoptDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043",
+      "E-049",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt",
+     "table": "conversations",
+     "operation_id": "adoptDraftConversation",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-043",
+      "E-049",
+      "E-106"
+     ],
+     "choke_points": [
+      "C2",
+      "C3",
+      "C4"
+     ],
+     "source": [
+      "D-125.147",
+      "D-125.154",
+      "D-125.167",
+      "D-024",
+      "D-037",
+      "D-007",
+      "D-003.9",
+      "D-007.2",
+      "D-024.7",
+      "D-037.5",
+      "D-060.3",
+      "D-104.2",
+      "D-104.3",
+      "D-104.4",
+      "D-104.5",
+      "D-104.6",
+      "D-104.7",
+      "D-104.10",
+      "D-104.12",
+      "D-104.13",
+      "D-104.17",
+      "D-104.18",
+      "D-104.20",
+      "D-111.1",
+      "D-111.2",
+      "D-111.3",
+      "D-111.4",
+      "D-111.5",
+      "D-112.1",
+      "D-112.2",
+      "D-112.3",
+      "D-112.4",
+      "D-112.5",
+      "D-112.6",
+      "D-113.1",
+      "D-113.3",
+      "D-113.4",
+      "D-113.7",
+      "D-114.2",
+      "D-114.3",
+      "D-115.1",
+      "D-115.2",
+      "D-115.3",
+      "D-125.152",
+      "D-126.18"
      ]
     },
     {
@@ -12791,8 +13470,10 @@
     "E-050",
     "E-051",
     "E-061",
+    "E-044",
+    "E-052",
+    "E-046",
     "E-039",
-    "E-120",
     "E-028",
     "E-037",
     "E-095",
@@ -13015,7 +13696,9 @@
      "related_entities": [
       "E-039",
       "E-106",
-      "E-038"
+      "E-038",
+      "E-039",
+      "E-061"
      ],
      "choke_points": [],
      "source": [
@@ -13072,33 +13755,6 @@
       "E-139"
      ],
      "choke_points": [],
-     "source": [
-      "D-125.106",
-      "D-125.107",
-      "D-125.167",
-      "D-062",
-      "D-037",
-      "D-042",
-      "D-037.5",
-      "D-062.6",
-      "D-125.152",
-      "D-126.18"
-     ]
-    },
-    {
-     "act": "A53",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/clones/me/activity/export",
-     "table": "export_jobs",
-     "operation_id": "exportCloneActivity",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-093"
-     ],
-     "choke_points": [
-      "C2"
-     ],
      "source": [
       "D-125.106",
       "D-125.107",
@@ -13558,7 +14214,9 @@
      "related_entities": [
       "E-039",
       "E-106",
-      "E-038"
+      "E-038",
+      "E-039",
+      "E-061"
      ],
      "choke_points": [],
      "source": [
@@ -13615,33 +14273,6 @@
       "E-139"
      ],
      "choke_points": [],
-     "source": [
-      "D-125.106",
-      "D-125.107",
-      "D-125.167",
-      "D-062",
-      "D-037",
-      "D-042",
-      "D-037.5",
-      "D-062.6",
-      "D-125.152",
-      "D-126.18"
-     ]
-    },
-    {
-     "act": "A53",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/clones/me/activity/export",
-     "table": "export_jobs",
-     "operation_id": "exportCloneActivity",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-093"
-     ],
-     "choke_points": [
-      "C2"
-     ],
      "source": [
       "D-125.106",
       "D-125.107",
@@ -14103,10 +14734,10 @@
     "E-097",
     "E-098",
     "E-038",
+    "E-061",
     "E-108",
     "E-028",
-    "E-139",
-    "E-093"
+    "E-139"
    ],
    "mock_path": "06_mockup/v1/v1-ai-activity.html",
    "route": "/ai-staff/activity",
@@ -17489,9 +18120,11 @@
     "1440"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ],
    "edit_roles": [
+    "R1",
     "R2"
    ],
    "related_apis": [
@@ -36027,9 +36660,11 @@
     "1440"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ],
    "edit_roles": [
+    "R1",
     "R2"
    ],
    "related_apis": [
@@ -37956,6 +38591,7 @@
       "D-125.55",
       "D-125.59",
       "D-125.110",
+      "D-153.15",
       "D-125.167"
      ]
     },
@@ -38331,65 +38967,6 @@
      ]
     },
     {
-     "act": "A102",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/checks",
-     "table": "checks",
-     "operation_id": "listChecks",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-117",
-      "E-116",
-      "E-051"
-     ],
-     "choke_points": [
-      "C2",
-      "C3"
-     ],
-     "source": [
-      "D-125.17",
-      "D-125.79",
-      "D-125.82",
-      "D-125.83",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A15",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/checks/:id/human",
-     "table": "checks",
-     "operation_id": "markHumanCheck",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-117"
-     ],
-     "choke_points": [
-      "C2"
-     ],
-     "source": [
-      "D-125.19",
-      "D-125.103",
-      "D-125.85",
-      "D-125.167",
-      "D-012",
-      "D-037",
-      "D-040",
-      "D-008.2",
-      "D-012.1",
-      "D-013.8",
-      "D-013.10",
-      "D-037.5",
-      "D-042.9",
-      "D-060.3",
-      "D-066.3",
-      "D-125.152",
-      "D-126.18"
-     ]
-    },
-    {
      "act": "A104",
      "role": "action",
      "method": "POST",
@@ -38411,6 +38988,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -38457,6 +39037,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -38482,6 +39065,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -38690,8 +39276,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-107",
-      "E-108",
-      "E-117"
+      "E-108"
      ],
      "choke_points": [
       "C2"
@@ -39590,6 +40175,64 @@
       "D-058.7",
       "D-061.3",
       "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
       "D-068.1",
       "D-068.8"
      ]
@@ -40049,6 +40692,7 @@
       "D-125.55",
       "D-125.59",
       "D-125.110",
+      "D-153.15",
       "D-125.167"
      ]
     },
@@ -40424,65 +41068,6 @@
      ]
     },
     {
-     "act": "A102",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/checks",
-     "table": "checks",
-     "operation_id": "listChecks",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-117",
-      "E-116",
-      "E-051"
-     ],
-     "choke_points": [
-      "C2",
-      "C3"
-     ],
-     "source": [
-      "D-125.17",
-      "D-125.79",
-      "D-125.82",
-      "D-125.83",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A15",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/checks/:id/human",
-     "table": "checks",
-     "operation_id": "markHumanCheck",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-117"
-     ],
-     "choke_points": [
-      "C2"
-     ],
-     "source": [
-      "D-125.19",
-      "D-125.103",
-      "D-125.85",
-      "D-125.167",
-      "D-012",
-      "D-037",
-      "D-040",
-      "D-008.2",
-      "D-012.1",
-      "D-013.8",
-      "D-013.10",
-      "D-037.5",
-      "D-042.9",
-      "D-060.3",
-      "D-066.3",
-      "D-125.152",
-      "D-126.18"
-     ]
-    },
-    {
      "act": "A104",
      "role": "action",
      "method": "POST",
@@ -40504,6 +41089,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -40550,6 +41138,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -40575,6 +41166,9 @@
       "D-125.156",
       "D-125.157",
       "D-126.15",
+      "D-153.2",
+      "D-153.18",
+      "D-153.19",
       "D-125.167"
      ]
     },
@@ -40783,8 +41377,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-107",
-      "E-108",
-      "E-117"
+      "E-108"
      ],
      "choke_points": [
       "C2"
@@ -41686,6 +42279,64 @@
       "D-068.1",
       "D-068.8"
      ]
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
     }
    ],
    "related_entities": [
@@ -41720,11 +42371,11 @@
     "E-094",
     "E-050",
     "E-052",
-    "E-051",
     "E-038",
     "E-049",
     "E-080",
     "E-037",
+    "E-051",
     "E-128",
     "E-126",
     "E-061",
@@ -43375,8 +44026,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-097",
-      "E-106",
-      "E-117"
+      "E-106"
      ],
      "choke_points": [
       "C2",
@@ -43602,8 +44252,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-097",
-      "E-106",
-      "E-117"
+      "E-106"
      ],
      "choke_points": [
       "C2",
@@ -43677,7 +44326,6 @@
     "E-133",
     "E-037",
     "E-106",
-    "E-117",
     "E-038",
     "E-080"
    ],

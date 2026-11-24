@@ -237,6 +237,18 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/auth/invitations/confirm",
+   "implementation_path": "apps/api/src/routes/invitations.ts::confirmInvitationJoin",
+   "screen_ids_referencing": [
+    "invite-accept"
+   ],
+   "acts": [
+    "A03",
+    "A96"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/auth/password/forgot",
    "implementation_path": "apps/api/src/routes/security_events.ts::requestPasswordReset",
    "screen_ids_referencing": [
@@ -668,17 +680,6 @@
    ]
   },
   {
-   "method": "POST",
-   "path": "/api/v1/checks/:id/human",
-   "implementation_path": "apps/api/src/routes/checks.ts::markHumanCheck",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A15"
-   ]
-  },
-  {
    "method": "PATCH",
    "path": "/api/v1/client_contacts/:id",
    "implementation_path": "apps/api/src/routes/client_contacts.ts::updateClientContact",
@@ -904,17 +905,6 @@
    "method": "GET",
    "path": "/api/v1/clones/me/activity",
    "implementation_path": "apps/api/src/routes/action_runs.ts::listCloneActivity",
-   "screen_ids_referencing": [
-    "ai-activity"
-   ],
-   "acts": [
-    "A53"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/clones/me/activity/export",
-   "implementation_path": "apps/api/src/routes/export_jobs.ts::exportCloneActivity",
    "screen_ids_referencing": [
     "ai-activity"
    ],
@@ -3183,6 +3173,42 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations",
+   "implementation_path": "apps/api/src/routes/conversations.ts::startDraftConversation",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+   "implementation_path": "apps/api/src/routes/conversations.ts::adoptDraftConversation",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/messages",
+   "implementation_path": "apps/api/src/routes/messages.ts::sendDraftMessage",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
    "method": "PATCH",
    "path": "/api/v1/ticket_handovers/:id",
    "implementation_path": "apps/api/src/routes/ticket_handovers.ts::answerTicketHandover",
@@ -3467,17 +3493,6 @@
    ]
   },
   {
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/checks",
-   "implementation_path": "apps/api/src/routes/checks.ts::listChecks",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A102"
-   ]
-  },
-  {
    "method": "PATCH",
    "path": "/api/v1/tickets/:id/client-share",
    "implementation_path": "apps/api/src/routes/tickets.ts::updateTicketClientShare",
@@ -3564,6 +3579,18 @@
    "acts": [
     "A111",
     "A48",
+    "A51"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handovers",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::listTicketHandovers",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A110",
     "A51"
    ]
   },

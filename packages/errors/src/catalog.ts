@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。276 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。300 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4359,6 +4359,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "invite"
     }
   },
+  "E-INV-013": {
+    "id": "E-INV-013",
+    "cls": "validation",
+    "message": "メールアドレスを入れてください",
+    "action": "メールアドレスを入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-016": {
+    "id": "E-INV-016",
+    "cls": "conflict",
+    "message": "メールアドレスを入れてください",
+    "action": "メールアドレスを入れて、もう一度参加する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-016",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-014": {
+    "id": "E-INV-014",
+    "cls": "not_found",
+    "message": "確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください",
+    "action": "招待のリンクから、もう一度参加する",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-015": {
+    "id": "E-INV-015",
+    "cls": "not_found",
+    "message": "この確認のリンクはもう使われています。ログインして入ってください",
+    "action": "ログインして入る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
   "E-SEC-004": {
     "id": "E-SEC-004",
     "cls": "conflict",
@@ -4978,6 +5050,366 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-RUN-001": {
+    "id": "E-RUN-001",
+    "cls": "permission",
+    "message": "この AI を止められるのは担当者です",
+    "action": "担当者に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-RUN-001",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-RUN-002": {
+    "id": "E-RUN-002",
+    "cls": "conflict",
+    "message": "この実行はもう止まっています（または作り終えています）",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-RUN-002",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-010": {
+    "id": "E-APR-010",
+    "cls": "conflict",
+    "message": "もう実行が始まっています。止めるには［止める］を押してください",
+    "action": "［止める］を押す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-010",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-011": {
+    "id": "E-APR-011",
+    "cls": "conflict",
+    "message": "この承認は取り下げられません（まだ承認していない・もう取り下げた・片付けられたのどれかです）",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-011",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-012": {
+    "id": "E-APR-012",
+    "cls": "conflict",
+    "message": "もう実行が終わっています。画面を読み直してください",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-012",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-APR-020": {
+    "id": "E-APR-020",
+    "cls": "conflict",
+    "message": "先にほかの人が成果物を直していました。開き直して、続きから直してください",
+    "action": "開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-020",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-APR-021": {
+    "id": "E-APR-021",
+    "cls": "conflict",
+    "message": "成果物は変わっていません。直してから保存してください",
+    "action": "字を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-021",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-TALK-010": {
+    "id": "E-TALK-010",
+    "cls": "conflict",
+    "message": "PC がつながっていません。自分の PC をつなぐと話せます",
+    "action": "PC をつなぐ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-011": {
+    "id": "E-TALK-011",
+    "cls": "conflict",
+    "message": "この会話には、ここからは話せません。チケットの右のパネル、または作る画面から話してください",
+    "action": "会話を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-012": {
+    "id": "E-TALK-012",
+    "cls": "conflict",
+    "message": "返事を待っている言葉が多すぎます。いくつか返事が来てから、もう一度送ってください",
+    "action": "少し待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-020": {
+    "id": "E-TALK-020",
+    "cls": "connectivity",
+    "message": "いまは書きながらの返事を送れません。画面が少しずつ読み直します",
+    "action": "待つ（画面が自分で読み直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-030": {
+    "id": "E-TALK-030",
+    "cls": "conflict",
+    "message": "この仕事は会話の仕事ではないので、文を写せません",
+    "action": "写さない（PC は送り直さない）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-030",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "bridge-setup"
+    }
+  },
+  "E-TALK-040": {
+    "id": "E-TALK-040",
+    "cls": "external",
+    "message": "資料の場所を出せませんでした。少し待ってから、もう一度お試しください",
+    "action": "待ってやり直す（PC は取れなかった資料を名前と理由で文に添えて続ける）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-040",
+    "must_not": false,
+    "layers": [
+      "API",
+      "C4"
+    ],
+    "where": {
+      "screen": "clone-chat",
+      "choke_point": "C4"
+    }
+  },
+  "E-TALK-050": {
+    "id": "E-TALK-050",
+    "cls": "conflict",
+    "message": "PC がまだつながっていません。PC をつなぐと、このチケットのことを話せます",
+    "action": "PC をつなぐ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-050",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-060": {
+    "id": "E-TALK-060",
+    "cls": "conflict",
+    "message": "PC がまだつながっていません。PC をつなぐと、AI と話しながらチケットを作れます",
+    "action": "PC をつなぐ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-060",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-061": {
+    "id": "E-TALK-061",
+    "cls": "conflict",
+    "message": "この会話は、チケットを作る画面の会話ではありません。新しく話し始めてください",
+    "action": "新しく話す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-061",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-080": {
+    "id": "E-TALK-080",
+    "cls": "permission",
+    "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
+    "action": "作った人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-080",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-081": {
+    "id": "E-TALK-081",
+    "cls": "conflict",
+    "message": "この会話は、チケットに移せません",
+    "action": "—",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-081",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-082": {
+    "id": "E-TALK-082",
+    "cls": "conflict",
+    "message": "この会話は、もうチケットに移しています",
+    "action": "チケットの右のパネルで続ける",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-082",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-083": {
+    "id": "E-TALK-083",
+    "cls": "conflict",
+    "message": "このチケットの会話が、すでにあります。作る時の会話は、そのまま残ります",
+    "action": "チケットの右のパネルで話す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-083",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
