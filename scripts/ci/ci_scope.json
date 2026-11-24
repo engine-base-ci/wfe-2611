@@ -2006,6 +2006,14 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261125013900_knowledge_guard_specs.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-guard-specs.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],
