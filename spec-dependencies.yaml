@@ -62,7 +62,7 @@ counters:
     json_path: $.screens
     filter:
       release: v1
-  expected_value: 37
+  expected_value: 35
   mirrors: []
 - id: choke_point_count
   description: 関門の数（C1〜C8）

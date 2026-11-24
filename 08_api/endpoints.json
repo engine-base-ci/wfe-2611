@@ -63765,7 +63765,6 @@
   }
  ],
  "acts_without_endpoint": [
-  "A119",
   "A130"
  ],
  "deferred_screens": [
@@ -63802,9 +63801,11 @@
   "record-detail",
   "records",
   "review",
+  "rules",
   "security-brief",
   "services",
   "tasks",
-  "today"
+  "today",
+  "work-types"
  ]
 }

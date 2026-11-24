@@ -136,10 +136,6 @@ SCREEN_API = {
         ("POST", "/learning_candidates/:id/later", "A30", "learning_candidates", "postponeLearningCandidate", []),
         ("POST", "/learning_candidates/:id/exception-request", "A131", "approvals", "requestRuleException", ["learning_candidates", "policies", "notifications"]),
     ],
-    "rules": [
-    ],
-    "work-types": [
-    ],
     "ai-activity": [
         ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals"]),
         ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),

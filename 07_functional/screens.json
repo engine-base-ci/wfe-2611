@@ -9843,6 +9843,7 @@
    "purpose": "壁打ちで相談し、チケットの案を作って確定する。資料を付ける・許可に答える・成果物を書き出す",
    "acts": [
     "A100",
+    "A131",
     "A20",
     "A88",
     "A90",
@@ -42778,8 +42779,54 @@
     "R2",
     "R3"
    ],
-   "related_apis": [],
-   "required_apis": [],
+   "related_apis": [
+    {
+     "act": "A131",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/policies",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-055",
+      "E-002",
+      "E-142"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-126.12",
+      "D-127.11",
+      "D-125.31",
+      "D-125.167"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A131",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/policies",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-037",
+      "E-055",
+      "E-002",
+      "E-142"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-126.12",
+      "D-127.11",
+      "D-125.31",
+      "D-125.167"
+     ]
+    }
+   ],
    "related_entities": [
     "E-037",
     "E-055",
@@ -42796,7 +42843,7 @@
     "screen_name": "ルール",
     "category": "outside",
     "status": "decided",
-    "version": "v1"
+    "version": "v2"
    },
    "h1_text": "ルール",
    "kpi_labels": [],
@@ -42807,14 +42854,15 @@
     "取引先"
    ],
    "checklist": [],
-   "release": "v1",
+   "release": "v2",
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
    "decided_at": "2026-11-24",
    "source": [
     "D-126.12",
-    "D-127.11"
+    "D-127.11",
+    "D-152.20"
    ]
   },
   {
@@ -42859,8 +42907,60 @@
     "R2",
     "R3"
    ],
-   "related_apis": [],
-   "required_apis": [],
+   "related_apis": [
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/skill_attachments",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-098",
+      "E-095",
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-126.4",
+      "D-126.6",
+      "D-126.7",
+      "D-126.9",
+      "D-126.10",
+      "D-152.20"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/skill_attachments",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-098",
+      "E-095",
+      "E-096",
+      "E-097"
+     ],
+     "choke_points": [
+      "C3",
+      "C2"
+     ],
+     "source": [
+      "D-126.4",
+      "D-126.6",
+      "D-126.7",
+      "D-126.9",
+      "D-126.10",
+      "D-152.20"
+     ]
+    }
+   ],
    "related_entities": [
     "E-095",
     "E-096",
@@ -42876,7 +42976,7 @@
     "screen_name": "業務の型",
     "category": "outside",
     "status": "decided",
-    "version": "v1"
+    "version": "v2"
    },
    "h1_text": "業務の型",
    "kpi_labels": [],
@@ -42886,7 +42986,7 @@
     "申請"
    ],
    "checklist": [],
-   "release": "v1",
+   "release": "v2",
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
@@ -42896,7 +42996,8 @@
     "D-126.6",
     "D-126.9",
     "D-126.21",
-    "D-127.11"
+    "D-127.11",
+    "D-152.20"
    ]
   },
   {

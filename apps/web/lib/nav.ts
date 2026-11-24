@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:fc6b22365a67d744
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:c649e1c94ea738eb
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -1452,7 +1452,7 @@ export const NAV: NavData = {
       ],
       "purpose": "会社・層・個人・取引先 ごとにルール（書式・宛名・CC・禁止）を書く。見える・直せる範囲は権限で変わる",
       "primaryAction": "保存する",
-      "release": "v1"
+      "release": "v2"
     },
     "work-types": {
       "id": "work-types",
@@ -1467,7 +1467,7 @@ export const NAV: NavData = {
       ],
       "purpose": "業務の型（運営の全社向け／運営が作った会社向け／会社／グループ／自分）を見る・作る・広げる。見せるのは欄と説明だけで、裏のスキルの作りは見せない",
       "primaryAction": "作る",
-      "release": "v1"
+      "release": "v2"
     },
     "knowledge": {
       "id": "knowledge",

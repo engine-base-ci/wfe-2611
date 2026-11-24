@@ -27,7 +27,10 @@ else:
     v1 = {x["id"] for x in json.load(open("05_flow/flow.json", encoding="utf-8"))["screens"] if x.get("release") == "v1"}
     scr = mp.get("screens", {})
     names = {f.replace(".dc.html", "") for f in files}
-    every = [b for v in scr.values() for b in v] + list(mp.get("common", {}).get("boards", []))
+    # 後のフェーズへ送った画面の絵（later・K-711）：消さずに残す。第1フェーズの画面は載せられず、絵は数えて 2 か所を見る
+    later = {k: v for k, v in mp.get("later", {}).items() if not k.startswith("_")}
+    if set(later) & v1: fails.append(("CV4", f"later の画面が flow の第1フェーズにある {sorted(set(later) & v1)[:8]}"))
+    every = [b for v in scr.values() for b in v] + list(mp.get("common", {}).get("boards", [])) + [b for v in later.values() for b in v]
     # キャンバスの絵が無く、正が本番と同じ部品で作ったモック（段 2 の /dev/mock）の画面は、理由つきで mock_only に載せる（K-315）。
     #   抜け道にしない：理由が空・第1フェーズに無い画面・モックの置き場に screen: "<画面>" の見本が無い画面は赤
     MOCKS = "apps/web/app/(dev)/dev/mock/f1/mocks.tsx"

@@ -5,10 +5,7 @@
   "screens_count": 74,
   "features_count": 32,
   "entities_count": 146,
-  "uncovered_screens": [
-   "rules",
-   "work-types"
-  ],
+  "uncovered_screens": [],
   "static_screens": [
    {
     "screen_id": "legal",
@@ -743,6 +740,7 @@
    "features": [
     "F-004",
     "F-006",
+    "F-011",
     "F-013",
     "F-024",
     "F-026",
@@ -3089,7 +3087,9 @@
     "E-125 client_groups",
     "E-126 client_contacts"
    ],
-   "related_apis": [],
+   "related_apis": [
+    "GET /api/policies"
+   ],
    "access_roles": [
     "R1",
     "R2",
@@ -3113,7 +3113,9 @@
     "E-133 operations",
     "E-037 policies"
    ],
-   "related_apis": [],
+   "related_apis": [
+    "POST /api/skill_attachments"
+   ],
    "access_roles": [
     "R1",
     "R2",
@@ -11215,12 +11217,26 @@
   {
    "screen_id": "rules",
    "screen_name": "ルール",
-   "required_apis": []
+   "required_apis": [
+    {
+     "act": "A131",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/policies"
+    }
+   ]
   },
   {
    "screen_id": "work-types",
    "screen_name": "業務の型",
-   "required_apis": []
+   "required_apis": [
+    {
+     "act": "A119",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/skill_attachments"
+    }
+   ]
   },
   {
    "screen_id": "knowledge",
@@ -11865,6 +11881,7 @@
     "F-004",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-017",
     "F-024"
@@ -12372,6 +12389,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-017",
     "F-021",
@@ -12472,6 +12490,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-014",
     "F-015",
@@ -12594,6 +12613,7 @@
     "F-006",
     "F-007",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-022",
@@ -12617,6 +12637,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-022",
@@ -12852,6 +12873,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-012",
     "F-013",
     "F-016",
@@ -14291,6 +14313,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14314,6 +14337,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14337,6 +14361,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14360,6 +14385,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14384,6 +14410,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-017",
     "F-023",
@@ -15117,6 +15144,7 @@
    "feature_id": "F-011",
    "feature_name": "会社のやり方（ルール・分類・業務の型・ナレッジ）が、人が替わっても効くようにしたい",
    "screens": [
+    "clone-chat",
     "company-model",
     "company-settings",
     "duties",
@@ -15131,6 +15159,7 @@
     "E-001",
     "E-002",
     "E-004",
+    "E-006",
     "E-007",
     "E-011",
     "E-014",
@@ -15143,14 +15172,19 @@
     "E-028",
     "E-036",
     "E-037",
+    "E-038",
     "E-039",
+    "E-043",
     "E-044",
     "E-049",
+    "E-050",
+    "E-051",
     "E-052",
     "E-055",
     "E-057",
     "E-058",
     "E-059",
+    "E-061",
     "E-065",
     "E-066",
     "E-067",
@@ -15189,6 +15223,11 @@
     "E-126",
     "E-133",
     "E-134",
+    "E-135",
+    "E-136",
+    "E-137",
+    "E-138",
+    "E-139",
     "E-142",
     "E-144",
     "E-145",
@@ -15196,6 +15235,7 @@
     "E-147"
    ],
    "api_endpoints_draft": [
+    "GET /api/conversations",
     "GET /api/policies",
     "GET /api/tenants",
     "PATCH /api/duties/:id",
