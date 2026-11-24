@@ -1881,6 +1881,28 @@
   },
   {
    "paths": [
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/retired-endpoints.json",
+    "08_api/phase1/01_チケット.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "03_architecture/ER図.md",
+    "05_flow/screen_api.py",
+    "11_tickets/K-59.md",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "apps/api/src/routes/tickets.ts",
+    "packages/db/src/migrations.generated.ts",
+    "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/work-type-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F1/password-reset/**",
     "apps/api/src/hooks/password-reset.ts",
     "apps/api/src/features/F1/admin-recovery/**"
