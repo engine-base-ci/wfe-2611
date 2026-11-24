@@ -2498,6 +2498,15 @@ K-419,招く（口と DB）：メンバーの並びを読む getWorkspaceMembers
 - [ ] 契約の口 getWorkspaceMembers・createInvitations が 501 でない。生成の試験 2 本の it.todo が、na（理由つき）を除いて 0（ears-elsewhere.d/K-419.json の covers）
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-420,メンバーの画面（/members）と「＋ 招く」の小窓を口につなぐ：並びを読む・メールで招く（グループ・役割・ひとこと）・招待のリンク・管理者として招く前の本人確認。役割の ▾・「⋯」・＋ グループ・送り直すはグレー（K-70 の葉・段 9 の前に出す）,タスク,K-70,未着手,実装,2026-11-25,F10・画面,"段 9 を人が画面で確かめるための 2 人目を、画面から招けるようにする（代表の答え answer=56812da22008・D-148.1）。キャンバス WsPeople（D-148.28）・WsInvite（D-148.29）のとおりに：
+
+- メンバーの画面 `/members`（flow.json の画面 members の道）：ワークスペースの管理の頭（WsHead）と第 2 ナビ（WsSub）・グループごとのカード・1 人 1 行（丸いアイコン・名前とメール・役割・状態・操作）・招待中の行。並びは口 getWorkspaceMembers（K-419）
+- 「＋ 招く」の小窓：メールを入れて「足す」・招く人の並び（× で外す）・グループと役割・「ひとこと・リンクで招く」を開くとひとことと招待のリンク。送るのは口 createInvitations（K-419）。管理者として招くときは本人確認の取り直し（段 2 の StepUp）の後に 1 回だけ送り直す
+- 招待のリンク：口 createInvitationLink（K-421・PM の決め 2026-11-20・代表の決め D-148.22 のとおりリンクまで範囲）。この葉の試験はリンクの口を網の手前で差し替える
+- まだ作らない物はキャンバスに在るのでグレーで押せない形で出す（D-145.9・answer=78cb822fc1f1・D-148.22）：役割の ▾・「⋯」・＋ グループ・＋ このグループに招く・送り直す・第 2 ナビの決まり／記録／設定","- [ ] 下の表の 29 行（K420-UI-001〜022・025・028〜033。025 は人が確かめる・023・024・026・027 は K-423 に移した）が緑：`apps/web/tests/k/k420-members-invite.spec.ts`（画面の試験は取り込んだ後に流す・ticket-flow.yaml の web_defer）
+- [ ] モック /dev/mock/f8/inv-* の 6 つの状態と本番が幅 375・768・1440 で同じ（K420-UI-001・共通の道具 matchMock）
+- [ ] 前からの試験は「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-421,招待のリンク（口と DB）：宛てのメールを持たない招待のリンクを作る createInvitationLink と、そのリンクの下見と、ログイン中の人が今のアカウントで参加できるようにする F2 の直し（新しい人の参加はメールを確かめる K-422）（K-70 の葉・段 9 の前に出す）,タスク,K-70,未着手,実装,2026-11-25,F10・人とアカウント,"代表の決め D-148.22（招く葉の範囲＝並びを読む・招く・**招待のリンクを作る**）の「リンク」の分。K-419 は理由を書いてリンクを外した（宛てのメールを持たない招待になり、F2 の参加の関数を直す要がある）。PM の決め（2026-11-20）で、この葉が持つ：
 
 - `createInvitationLink`（POST /api/v1/invitations/link）：宛てのメールを持たない、7 日・1 回だけの招待のリンクを作る（グループ・役割を選ぶ。管理者として入るリンクは本人確認を取り直す）。答えはリンクの住所と期限
@@ -3186,6 +3195,18 @@ K-685,「必ず守る」を付ける・外す（上限の設定の表・届い�
 - [ ] 契約の口 1 本が 501 でない。生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-685.json` の covers）
 - [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-110（`setKnowledgeMust` の道の id・この葉の葉のファイル `k144.d/K-685.ts`・carry・2026-11-23 に K-675 の葉のファイルから移した）が通る
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-687,上の棚に上げる：頼みの置き場（DB）・頼む・取り下げる・断りのお知らせを消す（requestKnowledgeRaise・withdrawKnowledgeRequest・dismissKnowledgeRequest）（K-69 の葉）,タスク,K-69,未着手,実装,2026-12-02,F9・ナレッジ,"自分の棚（個人）のページをグループへ、グループの棚のページを会社へ、「上の棚に上げる」頼みを出す口 3 本と、頼み・共有の頼みが入る表 `knowledge_requests` を作る。契約はこの葉が宣言する（今は無い）：`requestKnowledgeRaise`（POST /api/v1/knowledge_pages/:id/raise・入力 `{ group_id?, folder_id?, message? }`・201 `KnowledgeRequest`）・`withdrawKnowledgeRequest`（DELETE /api/v1/knowledge/requests/:id・200 `{ id, state }`）・`dismissKnowledgeRequest`（POST /api/v1/knowledge/requests/:id/dismiss・入力 `{}`・200 `{ id, state }`）。名前・入力・答えは土台 2・3.2・4 章（決め切れていない所はこの md が決める）。
+
+- **1 段ずつ**：自分 → グループ（そのグループのマネージャーが承認・上げる人がそのグループに入っていること）／グループ → 会社（管理者が承認・頼めるのはそのグループのマネージャー）。承認する（K-688）と**ページは上の棚に移り、元の棚には残らない**。入れるフォルダは頼むときに選んだ物
+- **承認する人が頼む人でもあるとき（書ける棚へ上げるとき）は、頼みを作らずその場で移る**（勧め・代表に確認中）。答えは 201・`state: ""approved""`・お知らせなし
+- **承認待ちの間**：元のページは**直せる**（承認されるのは承認の時点の公開の版）・動かせない・消せない・必ず守るを変えられない（409 E-KNW-011。前の葉の口は `hasPendingRequest` で断っている）・取り下げられる
+- 断られた頼み（K-688）の帯は頼んだ人が消せる（`dismissKnowledgeRequest`）。消すと断りのお知らせ（受け箱の行）も消える
+- この葉は**後ろの葉が差し替える小さいファイルの持ち主**：K-676 の `tree-parts/request-marks.ts`・K-677 の `page-parts/act-raise.ts`・`request.ts`・`raise-to.ts`・K-681 の `page-guards/pending-request.ts` の中身を差し替える（本体の `tree.ts`・`read.ts`・`index.ts` は直さない）
+- **お知らせの種類 7 つの 1 行ずつを一覧の種類の表（K-461 の `kinds.ts`）に足す**（上げる・共有の 7 つ。K-688・K-689 はこの表に足さず、ここで足した名前を使う）","- [ ] 下の表の 29 行（K687-API-001〜026・K687-DB-001〜003）が緑：`apps/api/test/features/F9/knowledge-raise.test.ts`
+- [ ] 契約の口 3 本が契約に在り 501 でない（`generic: false`）。生成物が最新で、生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-687.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-120〜122（道の id・葉のファイル `k144.d/K-687.ts`・carry）が通る
+- [ ] 前の葉の試験（K-681 の `knowledge-page-edit.test.ts`・K-685 の `knowledge-must.test.ts`・K-676 の `knowledge-tree.test.ts`・K-677 の `knowledge-page-read.test.ts`）が緑のまま
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-705,状態（作業の段）を足す・直す（名前・色）・並べる・消す（書く口 4 本と DB の関数 4 本・色の列 color_key・listTicketStages の答えを決める・始めと終わりと仕組みの状態は消せない）（K-69 の葉）,タスク,K-69,未着手,実装,2026-11-26,F9・チケットの設定,"会社の管理者が「チケットの設定 › 状態」で、チケットの状態（作業の段）を足す・直す（名前・色）・並べる・消すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-stages）。**始めの状態（key が `todo`）と終わりの状態（key が `done`）と仕組みの状態（確認中・承認待ち・実行中）は消せない**。始めと終わりは名前と色を直せる（key は変えないので、作る・完了にする仕組みが探せる）。仕組みの状態は色だけ直せる。
 
 状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。
@@ -3244,6 +3265,12 @@ web と DB を 1 本で両方触らない決まり（`ticket-flow.yaml` の weig
 - [ ] `apps/web` の中に消した名前（`agent/memory`・`MemoryDigest`・`MemoryReviews`・`memoryDigest*`・`memoryEdit`・`memoryDelete`・`memoryReviews`・`dev/memory`・`proposalSend`・`proposalDecide`・`DigestItem`・`DigestResult`・`DigestStatus`）が 0 件。残る名前（`AlwaysAllowList`・`UsagePanel`・`NotifyToggles`・`agentMessagesBefore`・`覚えました：`）は在る
 - [ ] 前からの試験 `clone-chat.spec.ts`（carry）が新しい形で緑：記憶の 3 つの試験（CHT-21-001〜004・CHT-15-005・CHT-22-006 の 1 本／CHT-21-006／CHT-22-001〜005）を外し、`/dev/memory` を開く 3 か所を `/dev/ai-settings` に替えた（切る段で済み）。残す CHT-21-005（「覚えて」と言うと個人の記憶に入り「覚えました」が出る）・CHT-19-005・CHT-20-002・USH-08-012 が緑
 - [ ] `npx tsc --noEmit`（apps/web）が通る（`conversation.tsx` の使わなくなった import〔`Link`・`Route`・`Brain` のうち使われなくなった物〕を外す）・`python3 scripts/ci/design_gate.py … --raw-lengths` の D8（台帳）が緑・`python3 scripts/ci/gen_built_routes.py` の出力が `built-routes.ts` と同じ・`apps/web/tests/reachability.spec.ts`（作った道の一覧が生成物と同じ・USH-00-028）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-727,段 10 の流れ：flow.json の画面・行為・ナビ・流れを新しい形（ナレッジ・チケットの設定）に直し、親 K-69・K-70 の入れ物を直す（流れの正本だけ・K-673 から分けた・K-69 の葉・W0）,タスク,K-69,未着手,実装,2026-11-26,F9・文書,"流れの正本 `05_flow/flow.json` を新しい形（ナレッジ・チケットの設定）に直す（K-673 から分けた：決定ログ §152 は K-673 が先に依存なしで運ぶ）。画面の葉（K-682 ほか・K-707〜K-710）と口の葉の導線は flow.json から作る（作る段で `lib/nav.ts`・`lib/routes.ts`・`lib/built-routes.ts` を作り手が作り直す）。
+
+- **flow.json・flows.json**：画面 `masters` を「チケットの設定」（道 `/workspace/ticket-settings`）に・画面 `knowledge` の目的・行為を新しい形に・行為 A136（上げる・共有・写す）と A137（AI が読んで守る）を足す・A118・A114・A93 の文を直す・ナビから `rules`・`work-types` を外す・第 2 ナビを直す・A117 を F10 に移す
+- **親 K-69・K-70**：K-69 の題・説明・screens を新しい形に（切る段で直した・carry）。K-69 の screens は `[knowledge, masters, rules, work-types]`：`knowledge`・`masters` は画面の葉（K-682・K-704〜706・K-717 ほか）が本線に入るまで親が持つ（外すと coverage_gate の KC1〜KC3 が赤・2026-11-23 PM の決め）。`knowledge`・`masters` を外すのは、その画面の葉が本線に入るときのその葉（K-711 は `rules`・`work-types` だけを外す）。K-70 の screens に `layers` を足す（グループを作る・直すは段 11）","- [ ] 下の表の 9 行（K727-FL-001〜009）が緑：`scripts/ci/k727_flow_test.py`
+- [ ] 画面の導出の検査 `python3 scripts/ci/flow_gate.py --flow 05_flow/flow.json --choke 03_architecture/choke-points.json`（G1〜G10・G17・G22）と `python3 scripts/ci/flow_db_gate.py`（FD1〜）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-780,段 6 の決定ログ §153（D-153.1〜33）と答えの記録を本線に入れる（文書だけ・K-61 の葉・段 6 の最初・依存なし）,タスク,K-61,未着手,実装,2026-11-27,F5・文書,"段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。
 
