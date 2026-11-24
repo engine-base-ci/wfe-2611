@@ -8456,12 +8456,90 @@ components:
         name: *id772
         position: *id773
       additionalProperties: false
+    KnowledgeRequests:
+      type: object
+      properties:
+        kind: &id774
+          type: string
+        page_id: &id775
+          type: string
+          format: uuid
+        folder_id: &id776
+          type: string
+          format: uuid
+        from_scope_id: &id777
+          type: string
+          format: uuid
+        from_is_personal: &id778
+          type: string
+        to_scope_id: &id779
+          type: string
+          format: uuid
+        to_folder_id: &id780
+          type: string
+          format: uuid
+        requested_by: &id781
+          type: string
+          format: uuid
+        message: &id782
+          type: string
+        state: &id783
+          type: string
+        decided_by: &id784
+          type: string
+          format: uuid
+        decided_at: &id785
+          type: string
+          format: date-time
+        decline_reason: &id786
+          type: string
+        dismissed_at: &id787
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: knowledge_requests
+      x-source:
+      - D-125
+      - D-128
+      - D-152.13
+      - D-152.2
+    KnowledgeRequestsInput:
+      type: object
+      properties:
+        kind: *id774
+        page_id: *id775
+        folder_id: *id776
+        from_scope_id: *id777
+        from_is_personal: *id778
+        to_scope_id: *id779
+        to_folder_id: *id780
+        requested_by: *id781
+        message: *id782
+        state: *id783
+        decided_by: *id784
+        decided_at: *id785
+        decline_reason: *id786
+        dismissed_at: *id787
+      additionalProperties: false
     KnowledgeLimits:
       type: object
       properties:
-        shelf: &id774
+        shelf: &id788
           type: string
-        must_max: &id775
+        must_max: &id789
           type: integer
         id:
           type: string
@@ -8485,25 +8563,25 @@ components:
     KnowledgeLimitsInput:
       type: object
       properties:
-        shelf: *id774
-        must_max: *id775
+        shelf: *id788
+        must_max: *id789
       additionalProperties: false
     Clients:
       type: object
       properties:
-        name: &id776
+        name: &id790
           type: string
-        owner_member_id: &id777
+        owner_member_id: &id791
           type: string
           format: uuid
           nullable: true
-        visibility: &id778
+        visibility: &id792
           type: string
-        default_share: &id779 {}
-        routing: &id780
+        default_share: &id793 {}
+        routing: &id794
           type: string
           nullable: true
-        email_domain: &id781
+        email_domain: &id795
           type: string
           nullable: true
         id:
@@ -8542,17 +8620,17 @@ components:
     ClientsInput:
       type: object
       properties:
-        name: *id776
-        owner_member_id: *id777
-        visibility: *id778
-        default_share: *id779
-        routing: *id780
-        email_domain: *id781
+        name: *id790
+        owner_member_id: *id791
+        visibility: *id792
+        default_share: *id793
+        routing: *id794
+        email_domain: *id795
       additionalProperties: false
     ClientGroups:
       type: object
       properties:
-        client_id: &id782
+        client_id: &id796
           type: string
           format: uuid
         scope_id:
@@ -8592,26 +8670,26 @@ components:
     ClientGroupsInput:
       type: object
       properties:
-        client_id: *id782
+        client_id: *id796
       additionalProperties: false
     ClientContacts:
       type: object
       properties:
-        client_id: &id783
+        client_id: &id797
           type: string
           format: uuid
-        name: &id784
+        name: &id798
           type: string
-        email: &id785
+        email: &id799
           type: string
           nullable: true
-        role: &id786
+        role: &id800
           type: string
-        member_id: &id787
+        member_id: &id801
           type: string
           format: uuid
           nullable: true
-        cc_role: &id788
+        cc_role: &id802
           type: string
         id:
           type: string
@@ -8646,44 +8724,44 @@ components:
     ClientContactsInput:
       type: object
       properties:
-        client_id: *id783
-        name: *id784
-        email: *id785
-        role: *id786
-        member_id: *id787
-        cc_role: *id788
+        client_id: *id797
+        name: *id798
+        email: *id799
+        role: *id800
+        member_id: *id801
+        cc_role: *id802
       additionalProperties: false
     ClientRequests:
       type: object
       properties:
-        client_id: &id789
+        client_id: &id803
           type: string
           format: uuid
-        contact_id: &id790
+        contact_id: &id804
           type: string
           format: uuid
           nullable: true
-        title: &id791
+        title: &id805
           type: string
-        body: &id792
+        body: &id806
           type: string
           nullable: true
-        due_on: &id793
+        due_on: &id807
           type: string
           format: date
           nullable: true
-        state: &id794
+        state: &id808
           type: string
-        ticket_id: &id795
-          type: string
-          format: uuid
-          nullable: true
-        routed_scope_id: &id796
+        ticket_id: &id809
           type: string
           format: uuid
           nullable: true
-        questions: &id797 {}
-        decline_reason: &id798
+        routed_scope_id: &id810
+          type: string
+          format: uuid
+          nullable: true
+        questions: &id811 {}
+        decline_reason: &id812
           type: string
           nullable: true
         id:
@@ -8720,48 +8798,48 @@ components:
     ClientRequestsInput:
       type: object
       properties:
-        client_id: *id789
-        contact_id: *id790
-        title: *id791
-        body: *id792
-        due_on: *id793
-        state: *id794
-        ticket_id: *id795
-        routed_scope_id: *id796
-        questions: *id797
-        decline_reason: *id798
+        client_id: *id803
+        contact_id: *id804
+        title: *id805
+        body: *id806
+        due_on: *id807
+        state: *id808
+        ticket_id: *id809
+        routed_scope_id: *id810
+        questions: *id811
+        decline_reason: *id812
       additionalProperties: false
     Acceptances:
       type: object
       properties:
-        ticket_id: &id799
+        ticket_id: &id813
           type: string
           format: uuid
-        artifact_version_id: &id800
+        artifact_version_id: &id814
           type: string
           format: uuid
           nullable: true
-        contact_id: &id801
+        contact_id: &id815
           type: string
           format: uuid
-        due_on: &id802
+        due_on: &id816
           type: string
           format: date
           nullable: true
-        message: &id803
+        message: &id817
           type: string
           nullable: true
-        result: &id804
+        result: &id818
           type: string
           nullable: true
-        comment: &id805
+        comment: &id819
           type: string
           nullable: true
-        decided_at: &id806
+        decided_at: &id820
           type: string
           format: date-time
           nullable: true
-        reminded_at: &id807
+        reminded_at: &id821
           type: string
           format: date-time
           nullable: true
@@ -8799,30 +8877,30 @@ components:
     AcceptancesInput:
       type: object
       properties:
-        ticket_id: *id799
-        artifact_version_id: *id800
-        contact_id: *id801
-        due_on: *id802
-        message: *id803
-        result: *id804
-        comment: *id805
-        decided_at: *id806
-        reminded_at: *id807
+        ticket_id: *id813
+        artifact_version_id: *id814
+        contact_id: *id815
+        due_on: *id816
+        message: *id817
+        result: *id818
+        comment: *id819
+        decided_at: *id820
+        reminded_at: *id821
       additionalProperties: false
     TenantMemberships:
       type: object
       properties:
-        auth_user_id: &id808
+        auth_user_id: &id822
           type: string
           nullable: true
-        member_id: &id809
+        member_id: &id823
           type: string
           format: uuid
-        role: &id810
+        role: &id824
           type: string
-        status: &id811
+        status: &id825
           type: string
-        joined_at: &id812
+        joined_at: &id826
           type: string
           format: date-time
           nullable: true
@@ -8861,22 +8939,22 @@ components:
     TenantMembershipsInput:
       type: object
       properties:
-        auth_user_id: *id808
-        member_id: *id809
-        role: *id810
-        status: *id811
-        joined_at: *id812
+        auth_user_id: *id822
+        member_id: *id823
+        role: *id824
+        status: *id825
+        joined_at: *id826
       additionalProperties: false
     TermsVersions:
       type: object
       properties:
-        kind: &id813
+        kind: &id827
           type: string
         version:
           type: string
-        url: &id814
+        url: &id828
           type: string
-        published_at: &id815
+        published_at: &id829
           type: string
           format: date-time
         id:
@@ -8913,26 +8991,26 @@ components:
     TermsVersionsInput:
       type: object
       properties:
-        kind: *id813
-        url: *id814
-        published_at: *id815
+        kind: *id827
+        url: *id828
+        published_at: *id829
       additionalProperties: false
     TermsConsents:
       type: object
       properties:
-        member_id: &id816
+        member_id: &id830
           type: string
           format: uuid
-        auth_user_id: &id817
+        auth_user_id: &id831
           type: string
           nullable: true
-        terms_version_id: &id818
+        terms_version_id: &id832
           type: string
           format: uuid
-        agreed_at: &id819
+        agreed_at: &id833
           type: string
           format: date-time
-        ip: &id820
+        ip: &id834
           type: string
           nullable: true
         id:
@@ -8969,31 +9047,31 @@ components:
     TermsConsentsInput:
       type: object
       properties:
-        member_id: *id816
-        auth_user_id: *id817
-        terms_version_id: *id818
-        agreed_at: *id819
-        ip: *id820
+        member_id: *id830
+        auth_user_id: *id831
+        terms_version_id: *id832
+        agreed_at: *id833
+        ip: *id834
       additionalProperties: false
     Passkeys:
       type: object
       properties:
-        auth_user_id: &id821
+        auth_user_id: &id835
           type: string
           format: uuid
-        credential_id: &id822
+        credential_id: &id836
           type: string
           format: uuid
-        public_key: &id823
+        public_key: &id837
           type: string
-        name: &id824
+        name: &id838
           type: string
-        transports: &id825
+        transports: &id839
           type: string
-        last_used_at: &id826
+        last_used_at: &id840
           type: string
           format: date-time
-        revoked_at: &id827
+        revoked_at: &id841
           type: string
           format: date-time
         id:
@@ -9020,24 +9098,24 @@ components:
     PasskeysInput:
       type: object
       properties:
-        auth_user_id: *id821
-        credential_id: *id822
-        public_key: *id823
-        name: *id824
-        transports: *id825
-        last_used_at: *id826
-        revoked_at: *id827
+        auth_user_id: *id835
+        credential_id: *id836
+        public_key: *id837
+        name: *id838
+        transports: *id839
+        last_used_at: *id840
+        revoked_at: *id841
       additionalProperties: false
     Operations:
       type: object
       properties:
-        key: &id828
+        key: &id842
           type: string
-        name: &id829
+        name: &id843
           type: string
-        kind: &id830
+        kind: &id844
           type: string
-        current_version: &id831
+        current_version: &id845
           type: integer
         id:
           type: string
@@ -9074,21 +9152,21 @@ components:
     OperationsInput:
       type: object
       properties:
-        key: *id828
-        name: *id829
-        kind: *id830
-        current_version: *id831
+        key: *id842
+        name: *id843
+        kind: *id844
+        current_version: *id845
       additionalProperties: false
     TicketLinks:
       type: object
       properties:
-        from_ticket_id: &id832
+        from_ticket_id: &id846
           type: string
           format: uuid
-        to_ticket_id: &id833
+        to_ticket_id: &id847
           type: string
           format: uuid
-        kind: &id834
+        kind: &id848
           type: string
         id:
           type: string
@@ -9125,46 +9203,46 @@ components:
     TicketLinksInput:
       type: object
       properties:
-        from_ticket_id: *id832
-        to_ticket_id: *id833
-        kind: *id834
+        from_ticket_id: *id846
+        to_ticket_id: *id847
+        kind: *id848
       additionalProperties: false
     TicketHandovers:
       type: object
       properties:
-        ticket_id: &id835
+        ticket_id: &id849
           type: string
           format: uuid
-        kind: &id836
+        kind: &id850
           type: string
-        from_member_id: &id837
-          type: string
-          format: uuid
-        to_member_id: &id838
+        from_member_id: &id851
           type: string
           format: uuid
-          nullable: true
-        to_scope_id: &id839
+        to_member_id: &id852
           type: string
           format: uuid
           nullable: true
-        reason: &id840
+        to_scope_id: &id853
+          type: string
+          format: uuid
+          nullable: true
+        reason: &id854
           type: string
           nullable: true
-        ask: &id841
+        ask: &id855
           type: string
           nullable: true
-        reply_due: &id842
+        reply_due: &id856
           type: string
           format: date-time
           nullable: true
-        switch: &id843 {}
-        state: &id844
+        switch: &id857 {}
+        state: &id858
           type: string
-        decline_reason: &id845
+        decline_reason: &id859
           type: string
           nullable: true
-        decided_at: &id846
+        decided_at: &id860
           type: string
           format: date-time
           nullable: true
@@ -9202,36 +9280,36 @@ components:
     TicketHandoversInput:
       type: object
       properties:
-        ticket_id: *id835
-        kind: *id836
-        from_member_id: *id837
-        to_member_id: *id838
-        to_scope_id: *id839
-        reason: *id840
-        ask: *id841
-        reply_due: *id842
-        switch: *id843
-        state: *id844
-        decline_reason: *id845
-        decided_at: *id846
+        ticket_id: *id849
+        kind: *id850
+        from_member_id: *id851
+        to_member_id: *id852
+        to_scope_id: *id853
+        reason: *id854
+        ask: *id855
+        reply_due: *id856
+        switch: *id857
+        state: *id858
+        decline_reason: *id859
+        decided_at: *id860
       additionalProperties: false
     SavedViews:
       type: object
       properties:
-        member_id: &id847
+        member_id: &id861
           type: string
           format: uuid
-        name: &id848
+        name: &id862
           type: string
-        share: &id849
+        share: &id863
           type: string
         scope_id:
           type: string
           format: uuid
           nullable: true
-        filters: &id850 {}
-        columns: &id851 {}
-        density: &id852
+        filters: &id864 {}
+        columns: &id865 {}
+        density: &id866
           type: string
         id:
           type: string
@@ -9267,31 +9345,31 @@ components:
     SavedViewsInput:
       type: object
       properties:
-        member_id: *id847
-        name: *id848
-        share: *id849
-        filters: *id850
-        columns: *id851
-        density: *id852
+        member_id: *id861
+        name: *id862
+        share: *id863
+        filters: *id864
+        columns: *id865
+        density: *id866
       additionalProperties: false
     TicketImports:
       type: object
       properties:
-        uploaded_by: &id853
+        uploaded_by: &id867
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        source: &id854
+        source: &id868
           type: string
-        mapping: &id855 {}
-        rows: &id856
+        mapping: &id869 {}
+        rows: &id870
           type: integer
-        errors: &id857 {}
-        state: &id858
+        errors: &id871 {}
+        state: &id872
           type: string
-        committed_at: &id859
+        committed_at: &id873
           type: string
           format: date-time
           nullable: true
@@ -9331,42 +9409,42 @@ components:
     TicketImportsInput:
       type: object
       properties:
-        uploaded_by: *id853
-        source: *id854
-        mapping: *id855
-        rows: *id856
-        errors: *id857
-        state: *id858
-        committed_at: *id859
+        uploaded_by: *id867
+        source: *id868
+        mapping: *id869
+        rows: *id870
+        errors: *id871
+        state: *id872
+        committed_at: *id873
       additionalProperties: false
     LearningCandidates:
       type: object
       properties:
-        owner_member_id: &id860
+        owner_member_id: &id874
           type: string
           format: uuid
-        trigger: &id861
+        trigger: &id875
           type: string
-        proposed_as: &id862
+        proposed_as: &id876
           type: string
-        text: &id863
+        text: &id877
           type: string
-        evidence: &id864 {}
-        check_result: &id865 {}
-        decided_by: &id866
+        evidence: &id878 {}
+        check_result: &id879 {}
+        decided_by: &id880
           type: string
           format: uuid
           nullable: true
-        state: &id867
+        state: &id881
           type: string
-        decided_at: &id868
+        decided_at: &id882
           type: string
           format: date-time
           nullable: true
-        result_type: &id869
+        result_type: &id883
           type: string
           nullable: true
-        result_id: &id870
+        result_id: &id884
           type: string
           format: uuid
           nullable: true
@@ -9407,34 +9485,34 @@ components:
     LearningCandidatesInput:
       type: object
       properties:
-        owner_member_id: *id860
-        trigger: *id861
-        proposed_as: *id862
-        text: *id863
-        evidence: *id864
-        check_result: *id865
-        decided_by: *id866
-        state: *id867
-        decided_at: *id868
-        result_type: *id869
-        result_id: *id870
+        owner_member_id: *id874
+        trigger: *id875
+        proposed_as: *id876
+        text: *id877
+        evidence: *id878
+        check_result: *id879
+        decided_by: *id880
+        state: *id881
+        decided_at: *id882
+        result_type: *id883
+        result_id: *id884
       additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
-        member_id: &id871
+        member_id: &id885
           type: string
           format: uuid
-        code_hash: &id872
+        code_hash: &id886
           type: string
-        expires_at: &id873
+        expires_at: &id887
           type: string
           format: date-time
-        used_at: &id874
+        used_at: &id888
           type: string
           format: date-time
           nullable: true
-        used_session_id: &id875
+        used_session_id: &id889
           type: string
           format: uuid
           nullable: true
@@ -9472,11 +9550,11 @@ components:
     BridgePairingCodesInput:
       type: object
       properties:
-        member_id: *id871
-        code_hash: *id872
-        expires_at: *id873
-        used_at: *id874
-        used_session_id: *id875
+        member_id: *id885
+        code_hash: *id886
+        expires_at: *id887
+        used_at: *id888
+        used_session_id: *id889
       additionalProperties: false
     NotificationSettings:
       type: object
@@ -9515,41 +9593,41 @@ components:
     OpsPlanProposals:
       type: object
       properties:
-        plan_id: &id876
+        plan_id: &id890
           type: string
           format: uuid
-        from_version: &id877
+        from_version: &id891
           type: integer
           nullable: true
-        to_version: &id878
+        to_version: &id892
           type: integer
           nullable: true
-        changes: &id879 {}
-        existing_policy: &id880
+        changes: &id893 {}
+        existing_policy: &id894
           type: string
-        notice_days: &id881
+        notice_days: &id895
           type: integer
           nullable: true
-        new_from: &id882
+        new_from: &id896
           type: string
           format: date
           nullable: true
-        reason: &id883
+        reason: &id897
           type: string
-        proposed_by: &id884
+        proposed_by: &id898
           type: string
           format: uuid
-        decided_by: &id885
+        decided_by: &id899
           type: string
           format: uuid
           nullable: true
-        state: &id886
+        state: &id900
           type: string
-        decided_at: &id887
+        decided_at: &id901
           type: string
           format: date-time
           nullable: true
-        return_reason: &id888
+        return_reason: &id902
           type: string
           nullable: true
         id:
@@ -9586,37 +9664,37 @@ components:
     OpsPlanProposalsInput:
       type: object
       properties:
-        plan_id: *id876
-        from_version: *id877
-        to_version: *id878
-        changes: *id879
-        existing_policy: *id880
-        notice_days: *id881
-        new_from: *id882
-        reason: *id883
-        proposed_by: *id884
-        decided_by: *id885
-        state: *id886
-        decided_at: *id887
-        return_reason: *id888
+        plan_id: *id890
+        from_version: *id891
+        to_version: *id892
+        changes: *id893
+        existing_policy: *id894
+        notice_days: *id895
+        new_from: *id896
+        reason: *id897
+        proposed_by: *id898
+        decided_by: *id899
+        state: *id900
+        decided_at: *id901
+        return_reason: *id902
       additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
-        member_id: &id889
+        member_id: &id903
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        is_primary: &id890
+        is_primary: &id904
           type: boolean
-        role: &id891
+        role: &id905
           type: string
-        since: &id892
+        since: &id906
           type: string
           format: date
-        changed_by: &id893
+        changed_by: &id907
           type: string
           format: uuid
           nullable: true
@@ -9655,22 +9733,22 @@ components:
     ScopeMembershipsInput:
       type: object
       properties:
-        member_id: *id889
-        is_primary: *id890
-        role: *id891
-        since: *id892
-        changed_by: *id893
+        member_id: *id903
+        is_primary: *id904
+        role: *id905
+        since: *id906
+        changed_by: *id907
       additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
-        role: &id894
+        role: &id908
           type: string
-        target_kind_id: &id895
+        target_kind_id: &id909
           type: string
-        ability_id: &id896
+        ability_id: &id910
           type: string
-        scope_kind: &id897
+        scope_kind: &id911
           type: string
         id:
           type: string
@@ -9695,10 +9773,10 @@ components:
     RoleBundleDefaultsInput:
       type: object
       properties:
-        role: *id894
-        target_kind_id: *id895
-        ability_id: *id896
-        scope_kind: *id897
+        role: *id908
+        target_kind_id: *id909
+        ability_id: *id910
+        scope_kind: *id911
       additionalProperties: false
     StepUpInput:
       type: object
@@ -26675,7 +26753,7 @@ paths:
   /api/v1/knowledge/ask:
     post:
       operationId: askKnowledge
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -26688,6 +26766,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）
       x-step-up: false
@@ -26756,7 +26842,7 @@ paths:
   /api/v1/knowledge/ask/feedback:
     post:
       operationId: sendKnowledgeAnswerFeedback
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -26769,6 +26855,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 答えを見た本人。「いいえ」は持ち主への直す案になる
       x-step-up: false
@@ -26837,7 +26931,7 @@ paths:
   /api/v1/knowledge/folders:
     post:
       operationId: createKnowledgeFolder
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_folders
       x-acts:
@@ -26850,6 +26944,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 社内の人。その棚に書ける人だけ作れる（口が app.kfolder_writable・棚を決める。見えない棚は 404・書けない棚は 403）
       x-step-up: false
@@ -26924,7 +27026,7 @@ paths:
   /api/v1/knowledge/folders/{id}:
     patch:
       operationId: updateKnowledgeFolder
-      summary: 更新（knowledge）— ナレッジのページを書く・直す
+      summary: 更新（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_folders
       x-acts:
@@ -26937,6 +27039,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのフォルダに書ける人（口が app.kfolder_visible で 404・app.kfolder_writable で 403）。同じ棚の中だけ
       x-step-up: false
@@ -27017,7 +27127,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteKnowledgeFolder
-      summary: 削除（knowledge）— ナレッジのページを書く・直す
+      summary: 削除（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_folders
       x-acts:
@@ -27030,6 +27140,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。中が空で、共有していないフォルダだけ
       x-step-up: false
@@ -27099,7 +27217,7 @@ paths:
   /api/v1/knowledge/home:
     get:
       operationId: getKnowledgeHome
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -27111,6 +27229,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（置き場の権限・自分のページは本人）
       x-step-up: false
@@ -27161,7 +27287,7 @@ paths:
   /api/v1/knowledge/link-targets:
     get:
       operationId: searchKnowledgeLinkTargets
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -27173,6 +27299,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページ・決まり・取引先だけ
       x-step-up: false
@@ -27276,18 +27410,22 @@ paths:
   /api/v1/knowledge/proposals:
     get:
       operationId: listKnowledgeProposals
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: read
       x-permission-scope: 見られるページへの案だけ
       x-step-up: false
@@ -27386,19 +27524,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/accept:
     post:
       operationId: acceptKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る
       x-step-up: false
@@ -27480,19 +27623,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/decline:
     post:
       operationId: declineKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 同上（理由を残す）
       x-step-up: false
@@ -27574,7 +27722,7 @@ paths:
   /api/v1/knowledge/similar:
     post:
       operationId: findSimilarKnowledge
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -27587,6 +27735,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: self
       x-permission-scope: 社内の人（見える棚の公開済みのページだけから探す）
       x-step-up: false
@@ -27649,7 +27805,7 @@ paths:
   /api/v1/knowledge/tree:
     get:
       operationId: getKnowledgeTree
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -27661,6 +27817,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: self
       x-permission-scope: 社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）
       x-step-up: false
@@ -27711,7 +27875,7 @@ paths:
   /api/v1/knowledge/verifications:
     get:
       operationId: listKnowledgeVerifications
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -27723,6 +27887,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ。分身の点検は持ち主の PC がつながっているときに作る
       x-step-up: false
@@ -27831,7 +28003,7 @@ paths:
   /api/v1/knowledge_imports:
     post:
       operationId: createKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -27844,6 +28016,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（取り込む先の置き場に書ける人）。ファイルは検査してから読む（関門 C4）
       x-step-up: false
@@ -27912,7 +28092,7 @@ paths:
   /api/v1/knowledge_imports/{id}:
     get:
       operationId: getKnowledgeImport
-      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -27924,6 +28104,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人
       x-step-up: false
@@ -27987,7 +28175,7 @@ paths:
   /api/v1/knowledge_imports/{id}/commit:
     post:
       operationId: commitKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -28000,6 +28188,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）
       x-step-up: false
@@ -28081,7 +28277,7 @@ paths:
   /api/v1/knowledge_pages:
     get:
       operationId: listKnowledgePages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28093,6 +28289,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。しまったページは書ける人だけ
       x-step-up: false
@@ -28218,7 +28422,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28231,6 +28435,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）
       x-step-up: false
@@ -28305,7 +28517,7 @@ paths:
   /api/v1/knowledge_pages/{id}:
     get:
       operationId: getKnowledgePage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28317,6 +28529,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675
       x-step-up: false
@@ -28379,7 +28599,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       operationId: updateKnowledgePage
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28392,6 +28612,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675
       x-step-up: false
@@ -28472,7 +28700,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteKnowledgePage
-      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28485,6 +28713,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（app.kpage_writable）。必ず守る・共有・承認待ちのページは消せない
       x-step-up: false
@@ -28554,7 +28790,7 @@ paths:
   /api/v1/knowledge_pages/{id}/archive:
     post:
       operationId: archiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28567,6 +28803,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。しまうと探しても出ず分身も読まない。版と記録は残り戻せる
       x-step-up: false
@@ -28648,7 +28892,7 @@ paths:
   /api/v1/knowledge_pages/{id}/attachments:
     post:
       operationId: uploadKnowledgeAttachment
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - attachments
       x-acts:
@@ -28661,6 +28905,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。ファイルは検査してから置く（関門 C4）
       x-step-up: false
@@ -28742,7 +28994,7 @@ paths:
   /api/v1/knowledge_pages/{id}/copy:
     post:
       operationId: copyKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28755,6 +29007,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見えるページを自分の棚へ写す（写す先は自分の棚だけ）
       x-step-up: false
@@ -28836,7 +29096,7 @@ paths:
   /api/v1/knowledge_pages/{id}/draft:
     patch:
       operationId: saveKnowledgeDraft
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -28849,6 +29109,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675
       x-step-up: false
@@ -28929,7 +29197,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: discardKnowledgeDraft
-      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -28942,6 +29210,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675
       x-step-up: false
@@ -29011,7 +29287,7 @@ paths:
   /api/v1/knowledge_pages/{id}/links:
     get:
       operationId: getKnowledgeLinks
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -29023,6 +29299,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。つながりの先も見られるものだけ
       x-step-up: false
@@ -29085,7 +29369,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: linkKnowledgeMention
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -29098,6 +29382,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
       x-step-up: false
@@ -29179,7 +29471,7 @@ paths:
   /api/v1/knowledge_pages/{id}/markdown:
     get:
       operationId: exportKnowledgeMarkdown
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29191,6 +29483,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（期限つきの署名 URL）
       x-step-up: false
@@ -29254,7 +29554,7 @@ paths:
   /api/v1/knowledge_pages/{id}/messages:
     get:
       operationId: listKnowledgeMessages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -29266,6 +29566,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ
       x-step-up: false
@@ -29373,7 +29681,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: postKnowledgeMessage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -29386,6 +29694,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる人なら書ける（閲覧のみも質問できる）
       x-step-up: false
@@ -29467,7 +29783,7 @@ paths:
   /api/v1/knowledge_pages/{id}/must:
     put:
       operationId: setKnowledgeMust
-      summary: 置き換え（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 置き換え（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29480,6 +29796,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（app.kpage_writable）。棚ごとの上限まで
       x-step-up: false
@@ -29561,7 +29885,7 @@ paths:
   /api/v1/knowledge_pages/{id}/publish:
     post:
       operationId: publishKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -29574,6 +29898,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675
       x-step-up: false
@@ -29655,7 +29987,7 @@ paths:
   /api/v1/knowledge_pages/{id}/unarchive:
     post:
       operationId: unarchiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29668,6 +30000,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上
       x-step-up: false
@@ -29749,18 +30089,23 @@ paths:
   /api/v1/knowledge_pages/{id}/usage:
     get:
       operationId: getKnowledgeUsage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項
       tags:
       - reference_logs
       x-acts:
-      - A114
+      - A137
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.12
+      - D-152.17
+      - D-152.23
+      - D-152.24
+      - D-152.29
+      - D-152.4
+      - D-152.5
       x-permission: read
       x-permission-scope: 見られるページだけ。読んだチケットは見られるものだけ出す
       x-step-up: false
@@ -29815,6 +30160,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:
@@ -29824,7 +30175,7 @@ paths:
   /api/v1/knowledge_pages/{id}/verify:
     post:
       operationId: verifyKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29837,6 +30188,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者
       x-step-up: false
@@ -29930,6 +30289,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見えるページだけ（行の守り）。公開した版を新しい順に・K-675
       x-step-up: false
@@ -30011,7 +30378,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions/{v}:
     get:
       operationId: getKnowledgePageVersion
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30023,6 +30390,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見えるページだけ（行の守り）。公開した版の本文
       x-step-up: false
@@ -30092,7 +30467,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions/{v}/restore:
     post:
       operationId: restoreKnowledgeVersion
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30105,6 +30480,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）
       x-step-up: false
@@ -30360,7 +30743,7 @@ paths:
   /api/v1/learning_candidates:
     get:
       operationId: listLearningCandidates
-      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -30388,6 +30771,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分の分身の覚えたいこと。層に上がってきたものはその層のマネージャー
       x-step-up: false
@@ -30488,7 +30874,7 @@ paths:
   /api/v1/learning_candidates/{id}/accept:
     post:
       operationId: acceptLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -30517,6 +30903,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分のものは本人。層・ワークスペースに入れるのはマネージャー・管理者（D-125.110）
       x-step-up: false
@@ -30598,7 +30987,7 @@ paths:
   /api/v1/learning_candidates/{id}/dismiss:
     post:
       operationId: dismissLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -30627,6 +31016,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 同上
       x-step-up: false
@@ -41604,7 +41996,7 @@ paths:
   /api/v1/rules/check:
     post:
       operationId: checkRule
-      summary: 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）
+      summary: 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）
       tags:
       - policies
       x-acts:
@@ -41624,6 +42016,11 @@ paths:
       - D-125.81
       - D-126.12
       - D-127.11
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: self
       x-permission-scope: 書いている本人（点検だけで何も変えない）
       x-step-up: false
@@ -42830,6 +43227,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 会社の項目を直せる人（custom_fields の edit・既定は管理者・D-125.66）。どの種別で出すかと値の数を見る
       x-step-up: false
@@ -42985,7 +43387,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createTicketField
-      summary: 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）
       tags:
       - custom_fields
       x-acts:
@@ -43000,6 +43402,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。項目を足す（型 7 つ・選ぶ物・必須・説明・どの種別で出すか）。項目の数・選ぶ物の数に上限は無い（D-130.1）
       x-step-up: false
@@ -43076,7 +43483,7 @@ paths:
   /api/v1/ticket-fields/{id}:
     patch:
       operationId: updateTicketField
-      summary: 更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（ticket-fields）— チケットの設定を整える（種別・状態・項目）
       tags:
       - custom_fields
       x-acts:
@@ -43091,6 +43498,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 会社の項目を直せる人（custom_fields の edit・既定は管理者・D-125.66）。送った欄だけ直す。値が入っている項目の型は変えられない
       x-step-up: false
@@ -43174,7 +43586,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteTicketField
-      summary: 削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（ticket-fields）— チケットの設定を整える（種別・状態・項目）
       tags:
       - custom_fields
       x-acts:
@@ -43189,6 +43601,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。値が入っていても消せる（値の行は残り、見えなくなるだけ）
       x-step-up: false
@@ -43252,7 +43669,7 @@ paths:
   /api/v1/ticket-fields/order:
     post:
       operationId: reorderTicketFields
-      summary: 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）
       tags:
       - custom_fields
       x-acts:
@@ -43267,6 +43684,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。全部の項目の並びを渡す
       x-step-up: false
@@ -44585,7 +45007,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createTicketStage
-      summary: 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_stages
       x-acts:
@@ -44600,6 +45022,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: チケットの状態を直せる人（ticket_stages の edit・既定は管理者・D-125.66）。作業の状態は 8 まで・終わりの状態の直前に足す
       x-step-up: false
@@ -44668,7 +45095,7 @@ paths:
   /api/v1/ticket_stages/{id}:
     patch:
       operationId: updateTicketStage
-      summary: 更新（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（ticket_stages）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_stages
       x-acts:
@@ -44683,6 +45110,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。名前と色を直す（仕組みの状態は色だけ・始めと終わりは key を変えない）
       x-step-up: false
@@ -44763,7 +45195,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteTicketStage
-      summary: 削除（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（ticket_stages）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_stages
       x-acts:
@@ -44778,6 +45210,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。始め・終わり・仕組みの状態・使っているチケットが在る状態は消せない
       x-step-up: false
@@ -44847,7 +45284,7 @@ paths:
   /api/v1/ticket_stages/order:
     post:
       operationId: reorderTicketStages
-      summary: 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_stages
       x-acts:
@@ -44862,6 +45299,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上。全部の状態の並びを渡す（始めが先頭・終わりが最後）
       x-step-up: false
@@ -50345,7 +50787,7 @@ paths:
   /api/v1/workspace/escalation-rules:
     post:
       operationId: createEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50360,6 +50802,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（D-128.87）
       x-step-up: false
@@ -50428,7 +50875,7 @@ paths:
   /api/v1/workspace/escalation-rules/{id}:
     patch:
       operationId: updateEscalationRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50443,6 +50890,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50517,7 +50969,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteEscalationRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50532,6 +50984,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50595,7 +51052,7 @@ paths:
   /api/v1/workspace/escalation-rules/preview:
     post:
       operationId: previewEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50610,6 +51067,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（当てはまる件数を数えるだけ）
       x-step-up: false
@@ -51100,7 +51562,7 @@ paths:
   /api/v1/workspace/rules:
     get:
       operationId: getWorkspaceRules
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51114,6 +51576,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバーなら読める。直せるのは決まりを直せる人
       x-step-up: false
@@ -51163,7 +51630,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createWorkspaceRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51178,6 +51645,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。層の決まりはその層のマネージャーも（D-127.11）
       x-step-up: false
@@ -51246,7 +51718,7 @@ paths:
   /api/v1/workspace/rules/{id}:
     patch:
       operationId: updateWorkspaceRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51261,6 +51733,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51335,7 +51812,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteWorkspaceRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51350,6 +51827,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51413,7 +51895,7 @@ paths:
   /api/v1/workspace/ticket-shape:
     get:
       operationId: getTicketShape
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51427,6 +51909,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）
       x-step-up: false
@@ -51476,7 +51963,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       operationId: saveTicketShape
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51491,6 +51978,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）
       x-step-up: false
@@ -51553,7 +52045,7 @@ paths:
   /api/v1/workspace/ticket-shape/preview:
     post:
       operationId: previewTicketShapeChange
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51568,6 +52060,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）
       x-step-up: false

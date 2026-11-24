@@ -2670,7 +2670,7 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "mock_path": null,
    "required_apis": [
     {
@@ -3006,7 +3006,7 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/knowledge_pages/:id/usage",
-     "act": "A114"
+     "act": "A137"
     },
     {
      "role": "data_fetch",
@@ -3056,17 +3056,17 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/knowledge/proposals",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge/proposals/:id/accept",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge/proposals/:id/decline",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",

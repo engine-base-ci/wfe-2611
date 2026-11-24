@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0123936112f43fd2
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:2c998225400655a5
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -254,6 +254,8 @@ export type KnowledgeLinks = { nodes?: string[]; edges?: string[]; unlinked_ment
 export type KnowledgeLinksInput = { from_page_id?: string; to_type?: string; to_id?: string; anchor?: string | null };
 export type KnowledgeFolders = { is_personal?: boolean; owner_member_id?: string; parent_folder_id?: string | null; name?: string; position?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
 export type KnowledgeFoldersInput = { is_personal?: boolean; owner_member_id?: string; parent_folder_id?: string | null; name?: string; position?: number };
+export type KnowledgeRequests = { kind?: string; page_id?: string; folder_id?: string; from_scope_id?: string; from_is_personal?: string; to_scope_id?: string; to_folder_id?: string; requested_by?: string; message?: string; state?: string; decided_by?: string; decided_at?: string; decline_reason?: string; dismissed_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type KnowledgeRequestsInput = { kind?: string; page_id?: string; folder_id?: string; from_scope_id?: string; from_is_personal?: string; to_scope_id?: string; to_folder_id?: string; requested_by?: string; message?: string; state?: string; decided_by?: string; decided_at?: string; decline_reason?: string; dismissed_at?: string };
 export type KnowledgeLimits = { shelf?: string; must_max?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type KnowledgeLimitsInput = { shelf?: string; must_max?: number };
 export type Clients = { name?: string; owner_member_id?: string | null; visibility?: string; default_share?: unknown; routing?: string | null; email_domain?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
@@ -1894,7 +1896,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge/proposals",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1905,7 +1907,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/accept",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1916,7 +1918,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/decline",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -2191,7 +2193,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge_pages/:id/usage",
   "acts": [
-   "A114"
+   "A137"
   ],
   "screens": [
    "knowledge"
