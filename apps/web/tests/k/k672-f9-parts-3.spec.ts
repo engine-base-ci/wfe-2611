@@ -58,7 +58,7 @@ test("K672-MK-004 状態 tk-blocked の小窓の部品は、止める行を「�
 });
 
 test("K672-DS-001 G72（D8 生の長さ）で、ticket.css・settings.css・members.css・ticket-views・settings・members に台帳に無い生の値が 0 件", () => {
-  let out = "";
+  let out: string;
   try {
     out = execFileSync(
       "python3",
