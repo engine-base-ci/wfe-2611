@@ -7356,6 +7356,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7385,6 +7386,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7414,6 +7416,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7443,6 +7446,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7479,6 +7483,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7508,6 +7513,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7537,6 +7543,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7566,6 +7573,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -12701,6 +12709,76 @@
   {
    "entity": "ticket_handovers",
    "field": "decided_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "notify_managers",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "reminded_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "overdue_notified_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "switch_applied",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "answered_by",
    "consumed_by_screens": [
     "approvals",
     "clone-chat",
