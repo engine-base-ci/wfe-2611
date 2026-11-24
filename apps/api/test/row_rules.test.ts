@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";
 import { ENDPOINTS } from "@kaname/contracts";
 import type { TenantContext } from "@kaname/db/context";
+import { RULES } from "../../../scripts/ci/row_rules.mjs";
 import { makeHarness, type Harness } from "./harness.js";
 
 const DB_URL = process.env["DATABASE_URL"]!;
@@ -106,7 +107,12 @@ describe("行に結ぶ言葉の条件（K-15）", () => {
 
   it("本人：自分の通知だけを直せる", async () => {
     const id = await h.freshRow("notifications");
-    const r = sqlOf("readNotification");
+    // 既読にする口は入口の行の確かめから外した（row_rules.mjs の ROW_EXEMPT_FIELDS で欄 readNotification.id を名指し・K-462）ので、契約の perm.row には出ない。
+    //   行の決まりの正本（RULES の self × notifications）を直に当てて、同じこと（自分宛てだけ通る）を確かめる
+    const r = {
+      table: "notifications",
+      sql: (RULES as Record<string, Record<string, string>>)["self"]!["notifications"]!,
+    };
     await admin.query("update notifications set member_id = $1 where id = $2", [h.S.staffA, id]);
     expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).toBe("ok");
     await admin.query("update notifications set member_id = $1 where id = $2", [h.S.bossA, id]);

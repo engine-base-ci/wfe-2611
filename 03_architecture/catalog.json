@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 97,
+  "api_built": 103,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 262,
+  "errors": 269,
   "stack": 56,
   "env": 41
  },
@@ -3277,9 +3277,8 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67",
     "K-462",
     "K-467"
    ]
@@ -3296,9 +3295,8 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67",
     "K-462",
     "K-467"
    ]
@@ -4432,9 +4430,9 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-476"
    ]
   },
   {
@@ -4449,9 +4447,9 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-476"
    ]
   },
   {
@@ -4564,7 +4562,7 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-67",
     "K-465",
@@ -5323,9 +5321,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-489"
    ]
   },
   {
@@ -7466,6 +7465,8 @@
    "exports": [
     "Callout",
     "Toaster",
+    "dismissNotify",
+    "notify",
     "useNotify"
    ],
    "what": "知らせ（K-24）。2 つ："

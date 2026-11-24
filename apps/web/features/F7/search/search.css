@@ -1,0 +1,231 @@
+/* 探す（F7・段 8）の部品。値は正本のトークン（--k-*）だけを読む。生の大きさ・色・影を書かない（@media の区切りの幅だけは CSS の決まりで生の値）。
+   空・読み込み中・失敗の箱と札は components/k の型のまま。ここは並べ方だけ。 */
+
+/* ---- 探す箱（中央に重ねる・幅 767 以下は帯の下の全面） ---- */
+.k-f7-search {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--k-card);
+  border-radius: var(--k-r-lg);
+  box-shadow: var(--k-c-dialog-shadow);
+  overflow: hidden;
+}
+.k-f7-search[data-placement="overlay"] {
+  position: fixed;
+  /* ⌘K のパレットの置き方：横は画面の中央、上から少し下がった所。幅は読みやすい幅で固定（帯の探す欄の位置は読まない） */
+  top: var(--k-c-search-panel-top);
+  left: 0;
+  right: 0;
+  z-index: var(--k-c-popup-layer-z);
+  width: min(var(--k-c-search-panel-width), calc(100% - var(--k-s-lg)));
+  max-height: calc(100% - var(--k-c-search-panel-top) - var(--k-s-lg));
+  margin-inline: auto;
+}
+/* 後ろの薄い幕（広い幅だけ）。枠の 1 つ下の層 */
+.k-f7-search-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--k-c-popup-layer-z) - 1);
+  background: color-mix(in srgb, var(--k-on-surface) 20%, transparent);
+}
+.k-f7-search[data-placement="inline"] {
+  width: min(var(--k-c-search-panel-width), 100%);
+}
+
+.k-f7-search-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-shell-bar-height);
+  padding: 0 var(--k-s-md);
+  box-sizing: border-box;
+  border-bottom: var(--k-c-page-head-border);
+  color: var(--k-on-surface-variant);
+}
+.k-f7-search-field {
+  flex: 1;
+  min-width: 0;
+}
+.k-f7-search-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-md);
+  outline: 0;
+}
+/* 打った字の 1 行は幅 767 以下だけ（頭の欄が隠れるので） */
+.k-f7-search-q {
+  display: none;
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md) 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+
+/* ---- 種類の札 ---- */
+.k-f7-search-tabs {
+  display: flex;
+  flex: none;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+  overflow-x: auto;
+}
+.k-f7-search-tab {
+  flex: none;
+  height: var(--k-c-list-search-chip-height);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  border-radius: var(--k-r-full);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f7-search-tab[aria-pressed="true"] {
+  border-color: var(--k-primary);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+
+/* ---- 結果 ---- */
+.k-f7-search-scroll {
+  min-height: 0;
+  padding: var(--k-s-sm) 0;
+  overflow-y: auto;
+}
+.k-f7-search-scroll > .k-state {
+  margin: var(--k-s-xs) var(--k-s-md);
+}
+.k-f7-search-note {
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-search-group + .k-f7-search-group {
+  margin-top: var(--k-s-sm);
+}
+.k-f7-search-group-head {
+  margin: 0;
+  padding: var(--k-s-xs) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body);
+}
+.k-f7-search-group-empty {
+  margin: 0;
+  padding: var(--k-s-xs) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-search-hits {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-hit {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-list-td-height);
+  padding: var(--k-s-xs) var(--k-s-md);
+  box-sizing: border-box;
+  color: var(--k-on-surface);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+.k-f7-hit:hover,
+.k-f7-hit[data-active] {
+  background: var(--k-select);
+}
+.k-f7-hit[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-hit[aria-disabled="true"]:hover {
+  background: transparent;
+}
+.k-f7-hit-lead {
+  flex: none;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-hit-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.k-f7-hit-title {
+  overflow-wrap: anywhere;
+}
+.k-f7-hit-snippet {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-f7-hit-meta {
+  flex: none;
+  margin-left: auto;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f7-hit-mark {
+  padding: 0;
+  border-radius: var(--k-r-sm);
+  background: var(--k-mark);
+  color: inherit;
+  font-weight: var(--k-fw-h3);
+}
+
+.k-f7-search-foot {
+  flex: none;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+  background: var(--k-table-head);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+
+@media (max-width: 767px) {
+  .k-f7-search-scrim {
+    display: none;
+  }
+  .k-f7-search[data-placement="overlay"] {
+    top: var(--k-c-shell-bar-height);
+    right: 0;
+    left: 0;
+    bottom: var(--k-c-shell-tabs-height);
+    width: auto;
+    max-height: none;
+    margin-inline: 0;
+    border-radius: var(--k-r-none);
+    box-shadow: none;
+  }
+  .k-f7-search[data-placement="overlay"] .k-f7-search-head {
+    display: none;
+  }
+  .k-f7-search[data-placement="overlay"] .k-f7-search-q {
+    display: block;
+  }
+  .k-f7-search-keys {
+    display: none;
+  }
+  .k-f7-search-input {
+    font-size: var(--k-text-input);
+  }
+  .k-f7-search-scroll {
+    flex: 1;
+  }
+}
