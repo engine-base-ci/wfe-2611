@@ -1,4 +1,4 @@
--- 20261123088300 人がチケットの期限・開始日を変える（K-483・関門 C2・D-125.33・D-128.65・D-130.1・D-150.4・D-151.6・D-151.11〜13）
+-- 20261123085800 人がチケットの期限・開始日を変える（K-483・関門 C2・D-125.33・D-128.65・D-130.1・D-150.4・D-151.6・D-151.11〜13）
 --   期限・開始日は app.ticket_due_set だけが人の変更として書く（K-483）。列は足さない（due_on・start_on と check (start_on <= due_on) は 0071 に在る）。
 --   口 updateTicket の組 due（apps/api/src/features/F7/due/fields.ts）が呼ぶ。p_member を受けず、呼んだ人を app.user_id() で引く。
 --   security definer・search_path に pg_temp・public から外し、kaname_app だけに渡す。中に begin／commit を書かない（migrate.ts が 1 本を 1 つの取引で当てる）

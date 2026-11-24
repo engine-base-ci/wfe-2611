@@ -8,7 +8,7 @@
 #   完了したチケットでも仕組みの段の間でも変えられる（K-387 の実績と同じ）。DB の中身で決まる断りは無いので 409 の行は足さない
 # K-564：会社の項目の値の組を足す（features/F4/ticket-fields/・DB の関数 app.ticket_fields_set・20261122100400）。fields は { "<項目の id（uuid）>": 値 }（送った項目だけ変える・空にするのは null）。
 #   値の形（文字・数・真偽・文字の並び・null）と鍵（uuid・1 つ以上）は契約に書き、項目の型に合うか・選択肢に在るか・種別に出るか・必須かはマスタ（DB）で決まるので 404 E-PAGE-001／409 E-FLD-001〜004
-# K-483：期限・開始日の組を足す（features/F7/due/・DB の関数 app.ticket_due_set・20261123088300）。due_on・start_on は暦にある YYYY-MM-DD か null。
+# K-483：期限・開始日の組を足す（features/F7/due/・DB の関数 app.ticket_due_set・20261123085800）。due_on・start_on は暦にある YYYY-MM-DD か null。
 #   due_on を送るときは due_reason が要る（なくすときも初めて決めるときも）。理由だけ・expected だけは送れない。
 #   今日より前の期限（409 E-VAL-012）・開始日が期限より後（409 E-VAL-028）は契約に書けないので 409（番号の定義は K-437）
 INPUTS = {
