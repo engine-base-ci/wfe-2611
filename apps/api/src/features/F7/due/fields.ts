@@ -26,7 +26,9 @@ export function isCalendarDate(v: unknown): boolean {
 }
 
 /** 制御文字を除き、前後の空白（全角も）を落とした理由 */
-const cleanReason = (s: string) => s.replace(/[\u0000-\u001f\u007f-\u009f]/g, "").replace(/^[\s　]+|[\s　]+$/g, "");
+// JS の \s は全角の空白（U+3000）も含む
+// eslint-disable-next-line no-control-regex -- 理由の中の制御文字（C0・DEL・C1）を除いてから空かを見る
+const cleanReason = (s: string) => s.replace(/[\u0000-\u001f\u007f-\u009f]/g, "").replace(/^\s+|\s+$/g, "");
 
 /** 形の決まり（契約に書ける物だけ）。違えば 422 の答え、合えば null */
 export function dueIssues(raw: Row): HookReply | null {
