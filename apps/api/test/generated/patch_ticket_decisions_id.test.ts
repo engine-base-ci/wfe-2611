@@ -34,18 +34,16 @@ describe("PATCH /api/v1/ticket_decisions/:id", () => {
     // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decision-update.test.ts", "utf8")).toContain("K391-API-004");
   });
-  it("test_patch_ticket_decisions_id_rejected_422_2", () => {
-    // UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）
-    // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-009」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/decision-update.test.ts", "utf8")).toContain("K391-API-009");
-  });
   it("test_patch_ticket_decisions_id_unavailable", () => {
     // UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
     // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decision-update.test.ts", "utf8")).toContain("K391-API-014");
   });
-  // 当てはまらない（入口の共通の 1MB（D-130.1））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_patch_ticket_decisions_id_too_large");
+  it("test_patch_ticket_decisions_id_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_patch_ticket_decisions_id_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-016」（同じ CI の G3 で流れる）
