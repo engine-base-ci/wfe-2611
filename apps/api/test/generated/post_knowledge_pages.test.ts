@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/knowledge_pages", () => {
   it("test_post_knowledge_pages_ok", () => {
-    // EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す
+    // EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す
     // 本物の試験：apps/api/test/features/F9/knowledge-draft.test.ts の「K679-API-001」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F9/knowledge-draft.test.ts", "utf8")).toContain("K679-API-001");
   });

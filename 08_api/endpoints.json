@@ -20843,7 +20843,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -20949,7 +20957,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -20966,7 +20974,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::askKnowledge",
    "permission": {
     "who": "read",
@@ -21005,7 +21013,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -21108,7 +21124,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask/feedback が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask/feedback が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -21125,7 +21141,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::sendKnowledgeAnswerFeedback",
    "permission": {
     "who": "read",
@@ -21165,7 +21181,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -21315,7 +21339,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/folders が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/folders が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF その棚に書けない人なら、Kaname は 403 を返し、何も作らない",
     "UNWANTED: IF 同じ場所に同じ名前のフォルダがあるなら、Kaname は 409 と E-KNW-020 を返し、ページもフォルダも変えない",
@@ -21335,7 +21359,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_folders.ts::createKnowledgeFolder",
    "permission": {
     "who": "write",
@@ -21374,7 +21398,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -21549,7 +21581,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge/folders/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge/folders/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF フォルダに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF フォルダが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -21571,7 +21603,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（knowledge）— ナレッジのページを書く・直す",
+   "description": "更新（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_folders.ts::updateKnowledgeFolder",
    "permission": {
     "who": "write",
@@ -21615,7 +21647,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -21753,7 +21793,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge/folders/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge/folders/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF フォルダに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF フォルダが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -21772,7 +21812,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（knowledge）— ナレッジのページを書く・直す",
+   "description": "削除（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_folders.ts::deleteKnowledgeFolder",
    "permission": {
     "who": "write",
@@ -21815,7 +21855,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -21906,7 +21954,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/home が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/home が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -21921,7 +21969,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::getKnowledgeHome",
    "permission": {
     "who": "read",
@@ -21965,7 +22013,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -22057,7 +22113,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/link-targets が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/link-targets が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -22072,7 +22128,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::searchKnowledgeLinkTargets",
    "permission": {
     "who": "read",
@@ -22102,7 +22158,7 @@
    "method": "GET",
    "path": "/api/v1/knowledge/proposals",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -22113,9 +22169,13 @@
    ],
    "choke_points": [],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -22205,7 +22265,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -22213,14 +22273,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/knowledge/proposals の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/knowledge/proposals の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::listKnowledgeProposals",
    "permission": {
     "who": "read",
@@ -22250,7 +22312,7 @@
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/accept",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -22261,12 +22323,17 @@
     "E-122"
    ],
    "choke_points": [
-    "C2"
+    "C2",
+    "C6"
    ],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -22380,7 +22447,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -22391,14 +22458,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/accept の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/accept の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::acceptKnowledgeProposal",
    "permission": {
     "who": "write",
@@ -22427,7 +22496,7 @@
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/decline",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -22436,12 +22505,17 @@
     "E-122"
    ],
    "choke_points": [
-    "C2"
+    "C2",
+    "C6"
    ],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -22553,7 +22627,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -22564,14 +22638,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::declineKnowledgeProposal",
    "permission": {
     "who": "write",
@@ -22616,7 +22692,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -22726,7 +22810,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/similar が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/similar が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も変えない",
@@ -22743,7 +22827,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::findSimilarKnowledge",
    "permission": {
     "who": "self",
@@ -22782,7 +22866,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -22873,7 +22965,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/tree が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/tree が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -22888,7 +22980,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::getKnowledgeTree",
    "permission": {
     "who": "self",
@@ -22932,7 +23024,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23023,7 +23123,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/verifications が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/verifications が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -23038,7 +23138,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::listKnowledgeVerifications",
    "permission": {
     "who": "read",
@@ -23083,7 +23183,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23189,7 +23297,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -23206,7 +23314,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/imports.ts::createKnowledgeImport",
    "permission": {
     "who": "write",
@@ -23243,7 +23351,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23339,7 +23455,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_imports/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_imports/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -23355,7 +23471,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_imports）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/imports.ts::getKnowledgeImport",
    "permission": {
     "who": "write",
@@ -23401,7 +23517,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23516,7 +23640,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports/:id/commit が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports/:id/commit が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -23534,7 +23658,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/imports.ts::commitKnowledgeImport",
    "permission": {
     "who": "write",
@@ -23577,7 +23701,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23668,7 +23800,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -23683,7 +23815,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::listKnowledgePages",
    "permission": {
     "who": "read",
@@ -23729,7 +23861,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -23861,7 +24001,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF その棚に書けない人なら、Kaname は 403 を返し、何も作らない",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -23880,7 +24020,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::createKnowledgePage",
    "permission": {
     "who": "write",
@@ -23920,7 +24060,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -24037,7 +24185,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -24054,7 +24202,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::getKnowledgePage",
    "permission": {
     "who": "read",
@@ -24097,7 +24245,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -24244,7 +24400,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページか動かす先が無いか見えないなら、Kaname は 404 を返し、何も変えない",
@@ -24264,7 +24420,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::updateKnowledgePage",
    "permission": {
     "who": "write",
@@ -24308,7 +24464,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -24457,7 +24621,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -24477,7 +24641,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::deleteKnowledgePage",
    "permission": {
     "who": "write",
@@ -24521,7 +24685,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -24635,7 +24807,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/archive が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/archive が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -24653,7 +24825,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::archiveKnowledgePage",
    "permission": {
     "who": "write",
@@ -24696,7 +24868,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -24810,7 +24990,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/attachments が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/attachments が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -24828,7 +25008,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/attachments.ts::uploadKnowledgeAttachment",
    "permission": {
     "who": "write",
@@ -24873,7 +25053,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25020,7 +25208,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/copy が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/copy が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF ページか写す先が無いか見えないなら、Kaname は 404 を返し、何も作らない",
@@ -25040,7 +25228,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::copyKnowledgePage",
    "permission": {
     "who": "read",
@@ -25083,7 +25271,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25217,7 +25413,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id/draft が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id/draft が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -25236,7 +25432,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::saveKnowledgeDraft",
    "permission": {
     "who": "write",
@@ -25279,7 +25475,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25402,7 +25606,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id/draft が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id/draft が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -25420,7 +25624,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::discardKnowledgeDraft",
    "permission": {
     "who": "write",
@@ -25464,7 +25668,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25568,7 +25780,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/links が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/links が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -25584,7 +25796,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_links.ts::getKnowledgeLinks",
    "permission": {
     "who": "read",
@@ -25628,7 +25840,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25742,7 +25962,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/links が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/links が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -25760,7 +25980,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_links.ts::linkKnowledgeMention",
    "permission": {
     "who": "write",
@@ -25801,7 +26021,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -25897,7 +26125,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/markdown が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/markdown が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -25913,7 +26141,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::exportKnowledgeMarkdown",
    "permission": {
     "who": "read",
@@ -25954,7 +26182,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -26050,7 +26286,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/messages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/messages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -26066,7 +26302,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/messages.ts::listKnowledgeMessages",
    "permission": {
     "who": "read",
@@ -26110,7 +26346,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -26225,7 +26469,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/messages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/messages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -26243,7 +26487,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/messages.ts::postKnowledgeMessage",
    "permission": {
     "who": "read",
@@ -26287,7 +26531,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -26461,7 +26713,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PUT /api/v1/knowledge_pages/:id/must が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PUT /api/v1/knowledge_pages/:id/must が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -26483,7 +26735,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "置き換え（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "置き換え（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::setKnowledgeMust",
    "permission": {
     "who": "write",
@@ -26527,7 +26779,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -26673,7 +26933,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/publish が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/publish が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF ページに書けない人なら、Kaname は 403 を返し、何も変えない",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -26693,7 +26953,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::publishKnowledgePage",
    "permission": {
     "who": "write",
@@ -26736,7 +26996,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -26848,7 +27116,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/unarchive が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/unarchive が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -26866,7 +27134,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::unarchiveKnowledgePage",
    "permission": {
     "who": "write",
@@ -26895,7 +27163,7 @@
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/usage",
    "acts": [
-    "A114"
+    "A137"
    ],
    "screens": [
     "knowledge"
@@ -26907,12 +27175,17 @@
    ],
    "choke_points": [],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-152.12",
+    "D-152.17",
+    "D-152.23",
+    "D-152.24",
+    "D-152.29",
+    "D-152.4",
+    "D-152.5"
    ],
    "features": [
-    "F-011"
+    "F-005"
    ],
    "table": "reference_logs",
    "operation_id": "getKnowledgeUsage",
@@ -26979,6 +27252,15 @@
      "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
     },
     {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    },
+    {
      "status": 403,
      "code": "E-AUTH-010",
      "body": {
@@ -27010,23 +27292,26 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「『このチケットで守る物』を見る。必ず守るから入った確認項目にチェックが付くまで完了にできない」として呼ばれたとき THEN Kaname は「開いた記録と破られた数を残す」を行い 2xx を返す（自動側：必ず守るを毎回全部渡す・目次から要るページを開く・確認項目に自動で入れる）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/knowledge_pages/:id/usage の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/knowledge_pages/:id/usage の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "モデル呼び出し"
+   ],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項",
    "implementation_path": "apps/api/src/routes/reference_logs.ts::getKnowledgeUsage",
    "permission": {
     "who": "read",
@@ -27049,7 +27334,7 @@
     "body": "{ data: ReferenceLogs, meta?: { cursor, limit, total } }"
    },
    "id": "EP-152",
-   "feature_id": "F-011"
+   "feature_id": "F-005"
   },
   {
    "method": "POST",
@@ -27069,7 +27354,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -27181,7 +27474,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/verify が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/verify が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -27199,7 +27492,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::verifyKnowledgePage",
    "permission": {
     "who": "write",
@@ -27240,7 +27533,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -27351,7 +27652,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF ページが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
@@ -27413,7 +27714,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -27526,7 +27835,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions/:v が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions/:v が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF ページか版が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさない",
@@ -27543,7 +27852,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::getKnowledgePageVersion",
    "permission": {
     "who": "read",
@@ -27589,7 +27898,15 @@
    "source": [
     "D-125.113",
     "D-125.167",
-    "D-125.34"
+    "D-125.34",
+    "D-152.1",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.28",
+    "D-152.3",
+    "D-152.33",
+    "D-152.34"
    ],
    "features": [
     "F-011"
@@ -27701,7 +28018,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/versions/:v/restore が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/versions/:v/restore が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -27719,7 +28036,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "description": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::restoreKnowledgeVersion",
    "permission": {
     "who": "write",
@@ -28106,9 +28423,13 @@
     "D-125.108",
     "D-125.111",
     "D-125.118",
-    "D-125.167"
+    "D-125.167",
+    "D-152.24",
+    "D-152.25",
+    "D-152.4"
    ],
    "features": [
+    "F-011",
     "F-013"
    ],
    "table": "learning_candidates",
@@ -28194,7 +28515,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/learning_candidates が「覚えてほしいことを伝える」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：記憶にする）",
-    "EVENT-DRIVEN: WHEN GET /api/v1/learning_candidates が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/learning_candidates が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -28209,7 +28530,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "description": "取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "implementation_path": "apps/api/src/routes/learning_candidates.ts::listLearningCandidates",
    "permission": {
     "who": "self",
@@ -28233,7 +28554,7 @@
     "body": "{ data: LearningCandidates[], meta?: { cursor, limit, total } }"
    },
    "id": "EP-159",
-   "feature_id": "F-013"
+   "feature_id": "F-011"
   },
   {
    "method": "POST",
@@ -28272,9 +28593,13 @@
     "D-125.108",
     "D-125.111",
     "D-125.118",
-    "D-125.167"
+    "D-125.167",
+    "D-152.24",
+    "D-152.25",
+    "D-152.4"
    ],
    "features": [
+    "F-011",
     "F-013"
    ],
    "table": "learning_candidates",
@@ -28389,7 +28714,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/accept が「覚えてほしいことを伝える」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：記憶にする）",
-    "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/accept が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/accept が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -28407,7 +28732,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "description": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "implementation_path": "apps/api/src/routes/learning_candidates.ts::acceptLearningCandidate",
    "permission": {
     "who": "self",
@@ -28430,7 +28755,7 @@
     "body": "{ data: LearningCandidates, meta?: { cursor, limit, total } }"
    },
    "id": "EP-160",
-   "feature_id": "F-013"
+   "feature_id": "F-011"
   },
   {
    "method": "POST",
@@ -28466,9 +28791,13 @@
     "D-125.108",
     "D-125.111",
     "D-125.118",
-    "D-125.167"
+    "D-125.167",
+    "D-152.24",
+    "D-152.25",
+    "D-152.4"
    ],
    "features": [
+    "F-011",
     "F-013"
    ],
    "table": "learning_candidates",
@@ -28581,7 +28910,7 @@
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/dismiss が「覚えてほしいことを伝える」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：記憶にする）",
-    "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/dismiss が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/dismiss が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -28599,7 +28928,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "description": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "implementation_path": "apps/api/src/routes/learning_candidates.ts::dismissLearningCandidate",
    "permission": {
     "who": "self",
@@ -28622,7 +28951,7 @@
     "body": "{ data: LearningCandidates, meta?: { cursor, limit, total } }"
    },
    "id": "EP-161",
-   "feature_id": "F-013"
+   "feature_id": "F-011"
   },
   {
    "method": "POST",
@@ -48363,7 +48692,12 @@
     "D-125.70",
     "D-125.81",
     "D-126.12",
-    "D-127.11"
+    "D-127.11",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -48469,7 +48803,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「効く範囲を選んでルールを書く」として呼ばれたとき THEN Kaname は「範囲ごとに保存。取引先のルールはその取引先のチケットだけに効く」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
@@ -48487,7 +48821,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）",
+   "description": "作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）",
    "implementation_path": "apps/api/src/routes/policies.ts::checkRule",
    "permission": {
     "who": "self",
@@ -50819,7 +51153,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -50925,7 +51264,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/ticket-field-master が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/ticket-field-master が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -51148,7 +51487,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -51299,7 +51643,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/ticket-fields が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket-fields が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ名前の項目があるなら、Kaname は 409 と E-FMS-001 を返し、項目を足さない",
@@ -51319,7 +51663,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/custom_fields.ts::createTicketField",
    "permission": {
     "who": "admin",
@@ -51364,7 +51708,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -51542,7 +51891,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/ticket-fields/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/ticket-fields/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 項目か種別か選択肢が無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も変えない",
@@ -51564,7 +51913,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "更新（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/custom_fields.ts::updateTicketField",
    "permission": {
     "who": "admin",
@@ -51610,7 +51959,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -51722,7 +52076,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket-fields/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket-fields/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 項目か種別か選択肢が無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も変えない",
@@ -51739,7 +52093,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "削除（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/custom_fields.ts::deleteTicketField",
    "permission": {
     "who": "admin",
@@ -51785,7 +52139,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -51908,7 +52267,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/ticket-fields/order が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket-fields/order が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 並びが今の生きている項目の全部と合わない（足りない・余る・重なる・消した項目・別の会社の項目）なら、Kaname は 409 と E-FMS-003 を返し、何も変えない",
@@ -51926,7 +52285,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/custom_fields.ts::reorderTicketFields",
    "permission": {
     "who": "admin",
@@ -54392,7 +54751,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -54528,7 +54892,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_stages が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_stages が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ名前の状態があるなら、Kaname は 409 と E-STG-001 を返し、状態を足さない",
@@ -54547,7 +54911,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_stages.ts::createTicketStage",
    "permission": {
     "who": "admin",
@@ -54589,7 +54953,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -54738,7 +55107,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/ticket_stages/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/ticket_stages/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 状態が無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も変えない",
@@ -54758,7 +55127,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "更新（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_stages.ts::updateTicketStage",
    "permission": {
     "who": "admin",
@@ -54805,7 +55174,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -54947,7 +55321,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket_stages/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket_stages/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 状態が無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も変えない",
@@ -54966,7 +55340,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "削除（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_stages.ts::deleteTicketStage",
    "permission": {
     "who": "admin",
@@ -55012,7 +55386,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -55148,7 +55527,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_stages/order が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_stages/order が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 並びが今の状態と合わないなら、Kaname は 409 と E-STG-006 を返し、並びを変えない",
@@ -55167,7 +55546,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_stages.ts::reorderTicketStages",
    "permission": {
     "who": "admin",
@@ -65026,7 +65405,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -65131,7 +65515,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -65148,7 +65532,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::createEscalationRule",
    "permission": {
     "who": "admin",
@@ -65190,7 +65574,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -65295,7 +65684,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/escalation-rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/escalation-rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -65312,7 +65701,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::updateEscalationRule",
    "permission": {
     "who": "admin",
@@ -65358,7 +65747,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -65453,7 +65847,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/escalation-rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/escalation-rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -65469,7 +65863,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::deleteEscalationRule",
    "permission": {
     "who": "admin",
@@ -65516,7 +65910,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -65621,7 +66020,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules/preview が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules/preview が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -65638,7 +66037,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::previewEscalationRule",
    "permission": {
     "who": "admin",
@@ -66501,7 +66900,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -66593,7 +66997,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/workspace/rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/workspace/rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -66608,7 +67012,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::getWorkspaceRules",
    "permission": {
     "who": "read",
@@ -66655,7 +67059,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -66760,7 +67169,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -66777,7 +67186,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::createWorkspaceRule",
    "permission": {
     "who": "admin",
@@ -66819,7 +67228,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -66924,7 +67338,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -66941,7 +67355,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::updateWorkspaceRule",
    "permission": {
     "who": "admin",
@@ -66987,7 +67401,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -67082,7 +67501,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -67098,7 +67517,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/policies.ts::deleteWorkspaceRule",
    "permission": {
     "who": "admin",
@@ -67146,7 +67565,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -67243,7 +67667,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/workspace/ticket-shape が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/workspace/ticket-shape が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -67258,7 +67682,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_kinds.ts::getTicketShape",
    "permission": {
     "who": "read",
@@ -67314,7 +67738,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -67416,7 +67845,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/ticket-shape が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/ticket-shape が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -67432,7 +67861,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_kinds.ts::saveTicketShape",
    "permission": {
     "who": "admin",
@@ -67475,7 +67904,12 @@
     "D-125.66",
     "D-125.67",
     "D-125.70",
-    "D-125.81"
+    "D-125.81",
+    "D-152.18",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.36"
    ],
    "features": [
     "F-011"
@@ -67581,7 +68015,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/ticket-shape/preview が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/workspace/ticket-shape/preview が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -67598,7 +68032,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "description": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "implementation_path": "apps/api/src/routes/ticket_kinds.ts::previewTicketShapeChange",
    "permission": {
     "who": "admin",
