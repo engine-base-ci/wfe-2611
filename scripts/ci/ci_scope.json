@@ -1666,6 +1666,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/versions/",
+    "apps/web/app/(work)/tickets/[id]/versions/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k449-versions.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/notifications-*.ts",
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/notifications/**"
@@ -2175,6 +2184,7 @@
   "apps/api/test/features/F4/ticket-sort.test.ts": "この葉が足す組の口 apps/api/src/hooks/ticket-update.ts（K-387 の hooks のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。また契約 08_api/openapi.yaml の updateTicket の入力の oneOf を readFileSync で読む（K440-API-002）。読む物と使う試験はどれも data_links で結ぶ・K-440",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
   "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
+  "apps/web/tests/k/versions-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-449）",
   "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/notify.harness.ts": "入っている葉の hooks のファイル（notifications-*.ts・shell.ts）を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-461",
   "apps/api/test/features/F7/notifications-list.test.ts": "本線の migration（packages/db/migrations/*.sql）と画面の道（apps/web/app の page.tsx）を読んで、種類の表と行き先を照らす（K461-API-015・016）。読む物は apps/web/app と packages/db/migrations の変更で、試験の対象は同じ試験",

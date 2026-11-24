@@ -55,6 +55,7 @@ export const BUILT_ROUTES: readonly string[] = [
   "/signup",
   "/tickets",
   "/tickets/:id",
+  "/tickets/:id/versions",
   "/verify-email",
 ] as const;
 
