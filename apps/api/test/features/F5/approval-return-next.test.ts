@@ -30,6 +30,7 @@ import {
   messagesOf,
   snapshot,
   breakWritable,
+  details,
 } from "./approve-complete.harness.js";
 import { returnTo } from "./approval-more.kit.js";
 
@@ -67,6 +68,12 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     expect(l).toHaveLength(1);
     expect(l[0]!.body).toContain(`が差し戻しました：${REASON}`);
     expect(l[0]!.body).not.toContain("直すのは自分");
+    expect(
+      await num(
+        "select count(*) as n from audit_events where action = 'approval.return' and target_id = $1 and payload->>'next_actor' = 'clone'",
+        [d.approvalId],
+      ),
+    ).toBe(1);
   });
 
   it("K744-API-002 next_actor を clone と明示した差し戻し：001 と同じ結果（AI が直す）", async () => {
@@ -89,6 +96,10 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
         [t.id],
       ),
       n: await notices(),
+      art: await one<{ body: unknown; version: number }>(
+        "select body, version from ticket_sections where ticket_id = $1 and section_key = 'artifacts'",
+        [t.id],
+      ),
     };
     const r = await back(boss, d.approvalId, REASON, "self");
     expect(r.status, await r.clone().text()).toBe(201);
@@ -115,6 +126,9 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     ).toBe(before.jobs);
     expect(await stageKeyOf(t.id)).toBe("doing");
     expect(await flag(t.id)).toBe(false);
+    expect(
+      await one("select body, version from ticket_sections where ticket_id = $1 and section_key = 'artifacts'", [t.id]),
+    ).toEqual(before.art);
     const l = await lineOf(t.id);
     expect(l).toHaveLength(1);
     expect(l[0]!.body).toContain(`高本${SELF_LINE}${REASON}`);
@@ -135,10 +149,33 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     expect((await back(boss, d.approvalId, REASON, "self")).status).toBe(201);
     await lastSeen(d.pc.sid, 1);
     expect(await take(d.pc)).toBeNull();
-    const again = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(boss) });
+    const made = () =>
+      num("select count(*) as n from action_runs where ticket_id = $1 and phase = 'make' and status_id = 'queued'", [
+        t.id,
+      ]);
+    const queued = await made();
+    const again = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(d.by) });
     expect(again.status, await again.clone().text()).toBe(201);
+    expect(await made()).toBe(queued + 1);
     expect(await flag(t.id)).toBe(true);
     expect(await stageKeyOf(t.id)).toBe("running");
+  });
+
+  it("K744-API-012 利用者の状態 × 任せた人が止められた・PC が閉じている × self：AI を動かさないので任せた人の確かめは要らず 201。実行も仕事も増えず、段は作業中・旗は下りる", async () => {
+    const t = await ticket();
+    const d = await delegated(t);
+    await f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [d.by.id, boss.id]);
+    await lastSeen(d.pc.sid, 3600);
+    const before = await snapshot(t);
+    const r = await back(boss, d.approvalId, REASON, "self");
+    expect(r.status, await r.clone().text()).toBe(201);
+    expect(((await json(r)).data as Record<string, unknown>)["run_id"]).toBeNull();
+    const after = await snapshot(t);
+    expect(after.runs).toBe(before.runs);
+    expect(after.jobs).toBe(before.jobs);
+    expect(await approvalRow(d.approvalId)).toMatchObject({ decision: "return", next_actor: "self" });
+    expect(await stageKeyOf(t.id)).toBe("doing");
+    expect(await flag(t.id)).toBe(false);
   });
 
   it("K744-API-005 入力の形：next_actor が clone・self 以外（ai・空・数・null）・知らない項目：422・何も変わらない。理由が空・空白だけは self でも 422・E-VAL-020（何も変わらない）", async () => {
@@ -148,6 +185,11 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     for (const next of ["ai", "", 1, null, "SELF"]) {
       const r = await back(boss, d.approvalId, REASON, next);
       expect(r.status, JSON.stringify(next)).toBe(422);
+      if (next !== 1)
+        expect(
+          details(await json(r)).map((x) => x.field),
+          JSON.stringify(next),
+        ).toContain("next_actor");
     }
     expect((await returnTo(boss, d.approvalId, { note: REASON, next_actor: "self", extra: 1 })).status).toBe(422);
     for (const note of ["", "   ", "　\n"]) {
@@ -210,7 +252,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     expect(await lineOf(t.id)).toHaveLength(1);
   });
 
-  it("K744-API-009 手順「DB に書く」が失敗（関数が使えない・next_actor が self でも clone でも）：503・E-PAGE-003。承認の行・実行・段・旗・やり取りは変わらない", async () => {
+  it("K744-API-009 手順「DB に書く」が失敗（関数が使えない・next_actor が self でも clone でも）：500・E-PAGE-003。承認の行・実行・段・旗・やり取りは変わらない", async () => {
     for (const next of ["self", "clone"] as const) {
       const t = await ticket();
       const d = await delegated(t);
@@ -218,7 +260,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
       await f.admin.query("revoke execute on function app.approval_decide(uuid, text, text, text) from kaname_app");
       try {
         const r = await back(boss, d.approvalId, REASON, next);
-        expect(r.status, next).toBe(503);
+        expect(r.status, next).toBe(500);
         expect(await code(r), next).toBe("E-PAGE-003");
       } finally {
         await f.admin.query("grant execute on function app.approval_decide(uuid, text, text, text) to kaname_app");
@@ -228,7 +270,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     }
   });
 
-  it("K744-API-010 手順「証跡」が失敗（証跡の書き込みが例外・self）：503・E-PAGE-003。同じ取引なので承認の行も段も切り替わらない", async () => {
+  it("K744-API-010 手順「証跡」が失敗（証跡の書き込みが例外・self）：500・E-PAGE-003。同じ取引なので承認の行も段も切り替わらない", async () => {
     const t = await ticket();
     const d = await delegated(t);
     await f.admin.query(
@@ -240,7 +282,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     );
     try {
       const r = await back(boss, d.approvalId, REASON, "self");
-      expect(r.status).toBe(503);
+      expect(r.status).toBe(500);
       expect(await code(r)).toBe("E-PAGE-003");
     } finally {
       await f.admin.query("drop trigger if exists k744_fail_audit on audit_events");
