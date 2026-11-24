@@ -54,18 +54,7 @@
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
-.k-f4d-multi label,
-.k-f4d-check {
-  display: flex;
-  align-items: center;
-  gap: var(--k-s-sm);
-  font-size: var(--k-text-body);
-  line-height: var(--k-lh-body);
-}
-.k-f4d-multi input,
-.k-f4d-check input {
-  accent-color: var(--k-primary);
-}
+/* 送る書類・原本の郵送の行の並べ方と印は共通の部品（.k-choice・K-642） */
 .k-f4d-hint {
   margin: 0;
   font-size: var(--k-text-body-sm);
@@ -898,10 +887,9 @@
 .k-f4d-specs[data-compact="true"] .k-f4d-spec-list li > .k-btn:last-child {
   margin-left: auto;
 }
-.k-f4d-spec-text {
-  display: flex;
-  align-items: center;
-  gap: var(--k-s-sm);
+/* 確認項目の行の並べ方と印は共通の部品（.k-choice・K-642）。印の色だけ「済」の緑 */
+.k-f4d-spec-text .k-choice-input {
+  accent-color: var(--k-st-success);
 }
 .k-f4d-body-wrap .k-f4d-editor .k-f4d-doc {
   padding: var(--k-s-md) var(--k-s-lg);

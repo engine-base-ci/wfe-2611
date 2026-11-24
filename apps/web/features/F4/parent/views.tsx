@@ -4,7 +4,7 @@
 //   「親の担当・節目を写す」のチェックは既定で入っている・合うチケットが無くても親なしで作れる。
 //   探して 1 つ選ぶ並び（PickList・PickSearch）は、複製の元を選ぶ小窓も使う
 import { Check, X } from "lucide-react";
-import { Button, Callout, Dialog, TextField } from "@/components/k";
+import { Button, Callout, Checkbox, Dialog, TextField } from "@/components/k";
 import "./parent.css";
 
 /** 探して選ぶ並びの 1 行 */
@@ -137,15 +137,9 @@ export function ParentDialog(p: ParentDialogProps) {
             : "親にすると、親の期限より後にはできない。親の進みにこの子が数えられる"}
         </p>
         {p.lateNote ? <Callout tone="warn">{p.lateNote}</Callout> : null}
-        <label className="k-dialog-check">
-          <input
-            type="checkbox"
-            checked={p.copyChecked}
-            readOnly={!p.onCopy}
-            onChange={(e) => p.onCopy?.(e.target.checked)}
-          />
+        <Checkbox size="sm" checked={p.copyChecked} readOnly={!p.onCopy} onChange={(e) => p.onCopy?.(e.target.checked)}>
           親の担当・節目を写す
-        </label>
+        </Checkbox>
       </div>
     </Dialog>
   );

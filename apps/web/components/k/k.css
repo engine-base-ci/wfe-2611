@@ -653,18 +653,82 @@ textarea.k-input {
 .k-dialog-stack textarea.k-input {
   min-height: var(--k-c-dialog-textarea-height);
 }
-/* 小窓の中のチェック・選ぶ印の行（12px・印と字の間 6px） */
-.k-dialog-check {
-  display: flex;
-  gap: var(--k-c-dialog-check-gap);
-  align-items: flex-start;
+/* ---- 丸い選択・四角い選択（K-642・正本 components.choice・choice-box・dialog-check）----
+   label は 2 列の格子（印の列・字の列）。印の箱の高さ＝字の大きさ × 行の高さで、印を箱の縦の真ん中に置く
+   （字が 2 行以上でも印は 1 行目にそろう）。所ごとの CSS で字の大きさ・行の高さを変えない（大きさは size で選ぶ） */
+.k-choice {
+  --choice-text: var(--k-c-choice-text);
+  --choice-lh: var(--k-c-choice-lh);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--k-c-choice-gap);
+  row-gap: 0;
+  align-items: start;
+  align-content: center;
   min-width: 0;
+  font-size: var(--k-c-choice-text);
+  line-height: var(--k-c-choice-lh);
+  cursor: pointer;
+}
+/* 小窓の中（12px・行の高さ 1.6・間 6px） */
+.k-choice[data-size="sm"] {
+  --choice-text: var(--k-c-dialog-check-text);
+  --choice-lh: var(--k-c-dialog-check-lh);
+  gap: var(--k-c-dialog-check-gap);
+  row-gap: 0;
   font-size: var(--k-c-dialog-check-text);
   line-height: var(--k-c-dialog-check-lh);
 }
-.k-dialog-check input {
+/* 大きい字（14px・行の高さ 1.6） */
+.k-choice[data-size="lg"] {
+  --choice-text: var(--k-text-body-md);
+  --choice-lh: var(--k-lh-body-md);
+  font-size: var(--k-text-body-md);
+  line-height: var(--k-lh-body-md);
+}
+.k-choice-box {
+  display: flex;
+  align-items: center;
+  height: calc(var(--choice-text) * var(--choice-lh));
+}
+.k-choice-input {
   flex: none;
-  accent-color: var(--k-primary); /* 余白はブラウザの既定のまま（キャンバスと同じ・左 4px） */
+  width: var(--k-c-choice-box-width);
+  height: var(--k-c-choice-box-height);
+  margin: var(--k-c-choice-box-margin);
+}
+/* 印の色は使う所の決まりが勝つ（確認項目の緑など）ように、詳しさ 0 で置く */
+:where(.k-choice-input) {
+  accent-color: var(--k-primary);
+}
+.k-choice-text {
+  min-width: 0;
+}
+.k-choice-desc {
+  display: block;
+  grid-column: 2;
+  min-width: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+/* 押せない形（印は正本の input-disabled の薄さ） */
+.k-choice[data-disabled] {
+  cursor: not-allowed;
+}
+.k-choice-input:disabled {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 丸の組（fieldset の枠を消す。枠の要る所は className の決まりが上に重なる） */
+:where(.k-choice-group) {
+  min-width: 0;
+  margin-inline: 0; /* 縦の余白は使う所の決まりのまま（fieldset の既定は横の 2px だけ） */
+  padding: 0;
+  border: 0;
+}
+:where(.k-choice-group) > legend {
+  padding: 0;
 }
 /* 押せない欄（正本の input-disabled：input そのものを薄く） */
 .k-dialog input:disabled,
