@@ -7014,6 +7014,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "checked_basis": {
+    "type": "text",
+    "nullable": true
+   },
    "checked_by_ai": {
     "type": "boolean",
     "nullable": false

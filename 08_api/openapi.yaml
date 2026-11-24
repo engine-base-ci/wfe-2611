@@ -21850,7 +21850,7 @@ paths:
         required: true
         schema:
           type: string
-          pattern: ^(?:ticket_read|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$
+          pattern: ^(?:ticket_read|spec_check|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$
       - name: x-kaname-tool-token
         in: header
         required: true
