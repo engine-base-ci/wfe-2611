@@ -2679,6 +2679,24 @@ K-461,知らせを読む口（listNotifications）と、読んだ印の列 read_
 - [ ] 共有の試験 k144-contract.test.ts に、この葉の葉のファイル `k144.d/K-461.ts` の行（K144-API-861）が加わって緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-465,外枠の数と帯を 1 本で返す口（getShell・自分・会社・承認待ち・未読・グループの件数・PC・はじめにやること・障害の帯・保存した検索条件）（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-26,F7・外枠,"外枠（左のメニュー・上の帯・PC の表示）が、今は 4 本の口（`me`・`listScopes`・`listApprovalQueue`・`listMyDevices`）を別々に読んでいる（`ticket-shell.tsx`）。1 画面で口を増やさず 1 本にまとめる（D-128.111・PM の決め P8）ために、契約の口 `getShell`（GET /api/v1/shell）を作る（今は 501）。この葉は **口だけ（apps/api だけ）**。外枠をこの口につなぎ替える画面は K-466。
+
+答え `Shell` の鍵はちょうど 9 個（契約の 7 個に `member` と `saved_views` を足す。`member` は今の `me` の口が答えていた自分の名前と役を外枠が別の口なしで読めるように、`saved_views` は左のメニューの保存した条件の並びを口を増やさず出すため・K-479）：
+
+| 鍵 | 中身 |
+|---|---|
+| `member` | `{ id, name, role_id }`（自分。`me` の口が返していた分） |
+| `workspace` | `{ id, name }`（今の会社。名前は前後の空白を取る。空なら null） |
+| `approvals_waiting` | 整数。`app.approval_queue_count()` の答えそのまま（段 9 の K-405 が渡しを足して直しても、同じ関数を使い続ける） |
+| `notifications_unread` | 整数。K-461 の一覧に出る未読の数（一覧と同じ文 `UNREAD_COUNT_SQL`） |
+| `groups` | `[{ id, name, ticket_prefix, writable, open_count }]`。自分に見えるグループ（作った順）。`open_count`＝そのグループとその下のグループの、完了でない・消していない・自分に見えるチケットの数。**星付き・並べ替えの欄は作らない**（P9・口も表も契約に無い） |
+| `pc` | `{ connected, count }`。アカウント全体の PC：つながっている物があるか・外していない台数 |
+| `setup_left` | 整数。はじめにやることの残り（K-250 の数え方・使えない物・飛ばした物・済みの物・箱を閉じた後は数えない） |
+| `banner` | `{ incidents, maintenance }`。`app.public_service_status()`（0105・K-307）の答えそのまま（直っていない障害と今中のメンテナンス。運営の本文・メモは出ない） |
+| `saved_views` | `SavedView[]`。保存した検索条件（自分の物と、見えるグループの全員向けの物。名前の順・消した物は出ない・500 行まで）。**K-475 の `listSavedViews` と同じ読み方・同じ 13 個の鍵**（`id`・`name`・`share`・`scope_id`・`filters`・`columns`・`density`・`member_id`・`member_name`・`mine`・`can_edit`・`created_at`・`updated_at`）。**契約では任意の鍵**（`saved_views?: array`。外枠の答えの 8 鍵だけを返す古い画面・試験の答えも読めるように。口は毎回この鍵を付ける） |","- [ ] 下の表の 18 行（K465-API-001〜018）が緑：`apps/api/test/features/F7/shell.test.ts`（土台 `notify.harness.ts`・K-461）
+- [ ] 契約の口 `getShell` が 501 でない。生成の試験 `apps/api/test/generated/get_shell.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-465.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`k237_perf_budget.test.ts` に getShell の登録 1 行を足した版を carry で運ぶ・K465-API-018）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-468,探す口の置き場（search・種類ごとのファイル・入力の確かめ）と、チケットの探し方（題名・番号・見えるものだけ・種類ごと上位 5 件・総数なし）（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-24,F7・毎日見る・探す・片付ける,"上の帯の探す欄（⌘K）が呼ぶ契約の口 `search`（GET /api/v1/search・今は 501）を作る。チケット・決定・自分の会話・ナレッジのページを 1 回でまとめて探す（D-127.4）。画面は K-471。
 
 この葉でやるのは 2 つ。
