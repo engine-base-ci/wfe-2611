@@ -1,9 +1,9 @@
 "use client";
-// 詳細の題の行の「完了にする」の差し込み口の先（K-571 が中身の無い形で先に置く・K-572 がボタンと流れを入れ、帯から外す）。今は何も出さない
-import type { ReactNode } from "react";
+// 題の行の差し込み口 CompleteActSlot（K-571・create-ticket/detail-entry-slots.tsx）の先。中身は K-572 の「完了にする」（complete-act.tsx）。
+//   名前と props（ActsProps）は K-571 が決めた物のまま変えない
 import type { ActsProps } from "@/features/F4/create-ticket/detail-types";
+import { CompleteAct } from "./complete-act";
 
-export function CompleteActSlotFill(props: ActsProps): ReactNode {
-  void props; // 中身の葉が使う（今の既定は値を見ない）
-  return null;
+export function CompleteActSlotFill(props: ActsProps) {
+  return <CompleteAct {...props} />;
 }
