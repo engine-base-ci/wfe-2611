@@ -8,7 +8,7 @@ import { idOf } from "../../../auth/ids.js";
 import { conflictDone, invalid, kindOf, notFound, unavailable } from "../../F4/test-spec/reply.js";
 
 const BASIS_MAX = 200;
-const SPACE = /^[\s　]+|[\s　]+$/g;
+const SPACE = /^[\s\u3000]+|[\s\u3000]+$/g;
 
 export interface SpecCheckInput {
   specId: string;
