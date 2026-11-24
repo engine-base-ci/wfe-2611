@@ -4,6 +4,7 @@
 //   一覧の右に開く詳細（layout が side）はパネルを描かないので、読みもしない（先読みも page のときだけ）。
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
+import { makeChangeCtx } from "@/features/F4/thread-lines/change-ctx";
 import { RunLogDialog } from "@/features/F5/delegate/run-log";
 import { usePanelTab } from "../scope";
 import { TalkComposer } from "./composer";
@@ -37,7 +38,10 @@ function PagePanel({ ticket, attrs }: { ticket: SlotTicket; attrs: ReactNode }):
   const [quote, setQuote] = useState<QuoteRef | null>(null);
   const [runLogOpen, setRunLogOpen] = useState(false);
   const openRun = useCallback(() => setRunLogOpen(true), []);
-  const items = useMemo(() => toItems(tl.items ?? [], openRun), [tl.items, openRun]);
+  // 会社の項目の名前は詳細の答え（K-560）の fields から引く（文のために口を足さない・K-574）
+  const fields = ticket.detail["fields"];
+  const changeCtx = useMemo(() => makeChangeCtx(fields), [fields]);
+  const items = useMemo(() => toItems(tl.items ?? [], openRun, changeCtx), [tl.items, openRun, changeCtx]);
   const rowById = useMemo(() => new Map((tl.items ?? []).map((r) => [r.id, r])), [tl.items]);
   // タブ「やり取り」を開いたら最後に開いた時刻を書く（読めてから。1 回開いた画面で 1 回）
   const ready = tl.items !== null;
