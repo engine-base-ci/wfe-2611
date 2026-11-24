@@ -500,14 +500,6 @@
   },
   {
    "paths": [
-    "apps/api/src/auth/agent-tools.ts"
-   ],
-   "tests": [
-    "apps/api/test/bridge_credentials.test.ts"
-   ]
-  },
-  {
-   "paths": [
     "apps/bridge/src/**",
     "apps/bridge/scripts/**"
    ],
@@ -1051,6 +1043,17 @@
     "apps/api/test/generated/post_credentials_id_login_check.test.ts",
     "apps/api/test/generated/post_credentials_id_login_check_answer.test.ts",
     "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/lib/**",
+    "apps/web/app/**",
+    "apps/web/features/**",
+    "apps/bridge/src/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/legacy-credential-routes.test.ts"
    ]
   },
   {
@@ -1903,6 +1906,7 @@
   "apps/bridge/test/k354-credential-bridge.test.ts": "宛先の表 credential-host-cases.json と、口と Bridge の host.ts を字として読む（同じ表と同じ字で両方を試す・K-354）",
   "apps/api/test/features/contract/k144.d/K-355.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/credentials-mock.ts": "試験の共通の道具。文言の正本 07_qa/test-specs/errors.json を読む（口の差し替えの答えの文）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-356",
+  "apps/api/test/features/F3/legacy-credential-routes.test.ts": "画面の道具（apps/web/lib・app・features）と Bridge（apps/bridge/src）の .ts・.tsx を字として読み、前の道すじの字が無いことを見る（K358-API-002・K-358）",
   "apps/bridge/test/k359-claude-setup.test.ts": "一時のフォルダ（mkdtemp）に作り物の claude の台本と記録を書いて読み、子プロセスで動かす（Bridge の入れる・ログインの処理が呼ぶ相手）。リポジトリの中の物は読まない・K-359",
   "apps/web/tests/k/k363-remove-pc.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-363",
   "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
