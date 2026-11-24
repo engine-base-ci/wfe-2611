@@ -1690,6 +1690,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/due/",
+    "apps/web/app/(dev)/dev/mock/f4/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k444-due.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F4/duplicate/",
     "apps/web/features/F4/pick/",
     "apps/web/app/(dev)/dev/mock/f4/"
@@ -2298,6 +2307,7 @@
   "apps/web/test/k442-create-body.test.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UN-004）",
   "apps/web/tests/k/k442-create-body.spec.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UI-008・017）",
   "apps/web/tests/k/parent-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-443）",
+  "apps/web/tests/k/due-create-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-444）",
   "apps/web/tests/k/duplicate-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-446）",
   "apps/web/tests/k/body-edit-mock.ts": "正本の誤りの文（07_qa/test-specs/errors.json）を readFileSync で読み、赤い箱の字と比べる（K-447）",
   "apps/web/tests/k/versions-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-449）",
