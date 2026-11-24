@@ -63764,9 +63764,7 @@
    "feature_id": "F-011"
   }
  ],
- "acts_without_endpoint": [
-  "A130"
- ],
+ "acts_without_endpoint": [],
  "deferred_screens": [
   "account-close",
   "ai-staff",
