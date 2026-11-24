@@ -129,21 +129,24 @@ class RemovedGroupsTest(unittest.TestCase):
         self.assertEqual(self.code(cur, [entry()]), 0, "そろえば通る")
 
     def test_K1300_FR_004_entry_shape(self) -> None:
-        """K1300-FR-004 記録の形：訳が 10 字未満・空白だけ・決定の形が違う・空・知らない欄・文字でない値・4 つの欄のどれかが欠ける・
-        並びでない・要素が入れ物でない、なら、組を消さない設定でも 1 で出力に removed_groups（検査は例外で落ちない）。
+        """K1300-FR-004 記録の形：入っていない組 g3 だけを消した設定（記録なしでも 0・g3 の正しい記録でも 0）で、記録を group="g3" にして
+        訳が 10 字未満・空白だけ・決定の形が違う・空・知らない欄・文字でない値・4 つの欄のどれかが欠ける・並びでない・要素が入れ物でない、なら
+        1 で出力に removed_groups（形のほかに赤になる物が無いので、1 つの確かめが抜けた作りは 0 で落ちる・検査は例外で落ちない）。
         同じ組の記録が 2 つは、g1 を消して 1 つ目の記録が通る設定で 1 で出力に removed_groups"""
+        cur = self.without("g3")
+        self.assertEqual(self.code(copy.deepcopy(cur), [entry(group="g3")]), 0, "土台：g3 だけを消した設定に g3 の正しい記録なら 0")
         bads: dict[str, object] = {
-            "訳が短い": [entry(why="外した")],
-            "訳が空白だけ": [entry(why="            ")],
-            "決定の形": [entry(decision="決めた")],
-            "決定が空": [entry(decision="")],
-            "知らない欄": [{**entry(), "pair": "x"}],
-            "文字でない": [entry(why=12345678901)],
+            "訳が短い": [entry(group="g3", why="外した")],
+            "訳が空白だけ": [entry(group="g3", why="            ")],
+            "決定の形": [entry(group="g3", decision="決めた")],
+            "決定が空": [entry(group="g3", decision="")],
+            "知らない欄": [{**entry(group="g3"), "pair": "x"}],
+            "文字でない": [entry(group="g3", why=12345678901)],
             "並びでない": {"g1": entry()},
             "要素が文字": ["g1"],
         }
         for k in ("group", "ticket", "decision", "why"):
-            e = entry()
+            e = entry(group="g3")
             del e[k]
             bads[f"{k} が欠ける"] = [e]
         for why, rg in bads.items():
@@ -151,7 +154,7 @@ class RemovedGroupsTest(unittest.TestCase):
             if isinstance(rg, list) and rg and isinstance(rg[0], dict) and isinstance(rg[0].get("decision"), str):
                 dec = rg[0]["decision"] or "D-150.35"
             self.f.write("11_tickets/K-900.md", ticket_md(decisions=f"{dec}, D-150.35, D-1"))
-            self.shape_red(copy.deepcopy(self.base), rg)
+            self.shape_red(copy.deepcopy(cur), rg)
         self.f.write("11_tickets/K-900.md", ticket_md())
         self.shape_red(self.without("g1"), [entry(), entry()])
 
