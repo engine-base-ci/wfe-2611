@@ -12,6 +12,7 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import f12_contract_kit as k  # noqa: E402
+from portable_regex import portable  # noqa: E402  作り手が契約に書くときの直し（K-1117）
 
 BILL_STATES = ["unpaid", "paid", "overdue"]
 OPS_INVOICE = {"id", "workspace", "plan_name", "month", "amount_total", "state", "paid_total", "difference", "due_on", "can_record_payment", "payments"}
@@ -37,7 +38,7 @@ class UserBilling(unittest.TestCase):
         for f in ("company", "attn"):
             p = k.input_prop("updateBillingContact", f)
             self.assertEqual((p.get("minLength"), p.get("maxLength")), (1, 100), f)
-            self.assertEqual(p.get("pattern"), "\\S", f"{f} は空白だけを断る（D-156.38）")
+            self.assertEqual(p.get("pattern"), portable("\\S"), f"{f} は空白だけを断る（D-156.38・作り手が JS と同じ字にして書く＝K-1117）")
         self.assertEqual(k.output_fields("updateBillingContact"), {"company", "attn", "email"})
 
     def test_K1005_DC_004_list_plans(self) -> None:
