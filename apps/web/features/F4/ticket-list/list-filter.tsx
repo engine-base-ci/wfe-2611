@@ -1,9 +1,10 @@
 "use client";
 // 一覧（全部）とグループの一覧の、検索条件の箱と表の上の道具（K-252・キャンバス List・D-145.9）。
 //   言葉の欄（題名か番号で絞る）だけが使える：100 字まで・打ち終わってから 300ms で 1 回だけ口を呼ぶ（G-16）・打った字はそのまま渡す（そろえるのは口・K-92）。
-//   かんたん／詳しく・検索条件を保存・畳む・状態・親子・種別・分類・節目・担当者・AI に任せている は機能がまだ（K-67）なので、出すが押せない（aria-disabled・グレー）。
+//   検索条件を保存はグループの一覧で押せる（K-479・保存の小窓）。かんたん／詳しく・畳む・状態・親子・種別・分類・節目・担当者・AI に任せている は機能がまだ（K-67）なので、出すが押せない（aria-disabled・グレー）。
 //   表の上の道具：件数は総数を返さない口なので空（[data-value] の中は空）。まとめて操作・CSV で取り込むは押せない。表示設定は一覧の共通の部品（list-columns.tsx）
 import { useEffect, useRef, useState } from "react";
+import { SaveViewButton } from "@/features/F7/saved/save-view-dialog";
 import { ColumnSettings, type Columns } from "./list-columns";
 
 /** 言葉の欄に入る字の上限（D-128.157） */
@@ -80,7 +81,7 @@ export function ListSearch({ onQuery }: { onQuery: (q: string) => void }) {
           </Off>
         </span>
         <span className="k-list-search-acts">
-          <Off className="k-list-tool">検索条件を保存</Off>
+          <SaveViewButton className="k-list-tool" q={text} />
           <Off className="k-list-tool" label="畳む">
             畳む ▴
           </Off>
