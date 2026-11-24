@@ -60,10 +60,7 @@ test("K670-MK-004 本文は段 5 の部品から読む（境界 B10）：Tiptap�
   const body = ["page-views.tsx", "samples.tsx", "tree.tsx"].map((n) => strip(read(join(KN, n)))).join("\n");
   expect(body).toMatch(/from "@\/features\/F4\/doc\/editor"/);
   expect(body, "仮の部品を読んでいる").not.toMatch(/from "\.\/doc-temp"/);
-  expect(
-    existsSync(join(KN, "doc-temp.tsx")),
-    "doc-temp.tsx は K-672 が消すまで残る（settings と ticket-mocks が読む）",
-  ).toBe(true);
+  expect(existsSync(join(KN, "doc-temp.tsx")), "doc-temp.tsx は K-672 が消した（本文は段 5 の部品だけ）").toBe(false);
 });
 
 test("K670-MK-005 部品は口を呼ばない（features/F9/knowledge の .tsx に fetch・/api/v1 が 0）", () => {
