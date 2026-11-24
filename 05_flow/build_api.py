@@ -240,6 +240,8 @@ for _op in list(_REQ) + list(_RANGES) + list(_RULES):
     if _op not in _in_of: raise SystemExit(f"05_flow/screen_api.py の REQUIRED_INPUTS・VALUE_RANGES・INPUT_RULES の口 {_op} が、体を受ける口に無い")
 _sig = lambda o: json.dumps([_REQ.get(o, []), _RANGES.get(o, {}), _RULES.get(o, {})], ensure_ascii=False, sort_keys=True)
 _EMPTY = _sig("")
+# 値域を書き込む前の形（K-1116）：自分の形はここから写す。書き込んだ後の形を写すと、最初の口の値域がほかの口に漏れる（createMemory → updateMemory）
+_pristine = {n: copy.deepcopy(schemas[n]) for n in dict.fromkeys(n for _, n in _body_ops) if n in schemas}
 for _name in dict.fromkeys(n for _, n in _body_ops):
     _sharers = [o for o, n in _body_ops if n == _name]
     _keep = _EMPTY if any(_sig(o) == _EMPTY for o in _sharers) else _sig(_sharers[0])
@@ -248,7 +250,7 @@ for _name in dict.fromkeys(n for _, n in _body_ops):
         _own = _name if _sig(_op) == _keep else _op[0].upper() + _op[1:] + "Input"
         if _own != _name:
             if _own in schemas: raise SystemExit(f"自分の入力の形 {_own} が既にある")
-            schemas[_own] = copy.deepcopy(schemas[_name]); schemas[_own]["x-operation"] = _op; _in_of[_op] = _own
+            schemas[_own] = copy.deepcopy(_pristine[_name]); schemas[_own]["x-operation"] = _op; _in_of[_op] = _own
         sc = schemas[_own] = copy.deepcopy(schemas[_own])
         for _k in _REQ.get(_op, []) + list(_RANGES.get(_op, {})):
             if _k not in sc["properties"]: raise SystemExit(f"{_op} の欄 {_k} が入力の形 {_own} に無い")
@@ -284,6 +286,8 @@ for e in endpoints:
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
+    for _st in getattr(_sa, "ALSO_2XX", {}).get(op["operationId"], []):   # 同じ口がもう 1 つ返す成功の番号（K-422：リンクの参加は 202）。形は同じ答えの型
+        op["responses"].setdefault(str(_st), {**ok, "description": "受け付けた（まだ決まっていない）"})
     _unx = getattr(_sa, "UNEXPRESSIBLE_422", {}).get(op["operationId"])   # 契約に書けない値の決まり（K-144 ㉑）：口の振る舞いのまま 422
     if _unx:
         if "422" not in op["responses"]: raise SystemExit(f"{op['operationId']} に 422 が無いのに UNEXPRESSIBLE_422 がある")
