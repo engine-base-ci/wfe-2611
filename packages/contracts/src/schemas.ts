@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:6a5a97b8f2abc9c1
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:2ebd73607888cc24
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3588,7 +3588,7 @@ export const TicketCreateInput = z.strictObject({
   kind_id: z.uuid().optional(),
   title: z.string().optional(),
   assignee_member_id: z.uuid().optional(),
-  due_on: z.string().optional(),
+  due_on: z.iso.date().optional(),
   start_on: z.string().optional(),
   priority: z.string().optional(),
   priority_reason: z.string().optional(),
@@ -3598,6 +3598,9 @@ export const TicketCreateInput = z.strictObject({
   notify_member_ids: z.array(z.uuid()).optional(),
   draft_id: z.uuid().optional(),
   source_draft_id: z.uuid().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  fields: z.record(z.string(), z.unknown()).optional(),
+  specs: z.array(z.string()).optional(),
 });
 export const TicketDraftInput = z.strictObject({
   draft_id: z.uuid().optional(),
@@ -3735,6 +3738,10 @@ export const TicketUpdateInput = z.strictObject({
   actual_minutes: z.number().int().nullable().optional(),
   hold_reason: z.string().optional(),
   resume_condition: z.string().optional(),
+  priority: z.string().optional(),
+  priority_reason: z.string().optional(),
+  parent_ticket_id: z.uuid().nullable().optional(),
+  fields: z.record(z.string(), z.unknown()).optional(),
 });
 export const TicketDecisionInput = z.strictObject({
   text: z.string().optional(),
@@ -4543,7 +4550,7 @@ export const TicketMessageStar = z.strictObject({
 });
 export const TicketUpdated = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
-  stage: z.record(z.string(), z.unknown()).optional(),
+  stage: z.record(z.string(), z.unknown()).nullable().optional(),
   changed: z.boolean().optional(),
   message_id: z.uuid().nullable().optional(),
 });
@@ -4643,7 +4650,7 @@ export const TicketField = z.strictObject({
   position: z.number().int().optional(),
 });
 export const UpdateConversationInput = z.strictObject({
-  title: z.string().nullable().optional(),
+  title: z.string().optional(),
   participant_member_ids: z.array(z.uuid()).nullable().optional(),
   area: z.string().nullable().optional(),
   subject_type: z.string().nullable().optional(),
