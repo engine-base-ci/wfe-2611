@@ -9063,6 +9063,100 @@
     "D-153.24",
     "D-153.25"
    ]
+  },
+  {
+   "id": "E-RUN-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認待ちの成果物が無いチケット（作業中・承認済み・差し戻し済み・完了）で試し打ちする",
+   "false_when": "承認待ちの成果物が在るチケットで担当者が押した",
+   "message": "承認待ちの成果物が無いので、試し打ちできません",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちの成果物があるチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで承認する",
+     "もう片方のタブで「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "試し打ちを動かす AI が使えない（AI に任せた人が外された・直せなくなった・PC が無い）",
+   "false_when": "AI に任せた人が使えて、その人の PC がある",
+   "message": "試し打ちを動かす AI が使えません",
+   "action": "理由（detail.reason）を読んで、担当者・PC を直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI に任せた人の PC を外した、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "AI に任せた人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "押した人のメールアドレスが分からない",
+   "false_when": "押した人のログインのメールアドレスが分かる",
+   "message": "あなたのメールアドレスが分からないので、試し打ちできません",
+   "action": "運営に連絡する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログインのメールアドレスに結ばれていない席の担当者で、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "メールアドレスに結ばれていない席"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
   }
  ],
  "meta": {

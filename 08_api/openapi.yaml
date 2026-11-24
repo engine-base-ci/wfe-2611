@@ -14074,6 +14074,11 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: stopApproval
+    DryRunInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: dryRunTicket
     ScopeOverview:
       type: object
       properties:
@@ -16462,6 +16467,18 @@ components:
           type: string
           nullable: true
       x-operation: stopApproval
+    DryRunStarted:
+      type: object
+      properties:
+        run_id:
+          type: string
+        job_id:
+          type: string
+        status:
+          type: string
+        pc:
+          type: string
+      x-operation: dryRunTicket
     Error:
       type: object
       properties:
@@ -47047,7 +47064,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/DryRunInput'
       responses:
         '201':
           description: 成功
@@ -47057,7 +47074,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/DryRunStarted'
                   meta:
                     type: object
         '401':
@@ -47079,13 +47096,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-RUN-003／E-CONF-013／E-RUN-004／E-RUN-005
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -47104,12 +47127,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
