@@ -24991,7 +24991,12 @@
     "scripts/ci/k1303_complete_no_rewrite_test.py"
    ],
    "carry": [
-    "apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts"
+    "apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts",
+    "11_tickets/K-64.md",
+    "11_tickets/K-165.md",
+    "11_tickets/K-166.md",
+    "11_tickets/K-63.md",
+    "11_tickets/K-183.md"
    ],
    "depends_on": [],
    "acts": [],
