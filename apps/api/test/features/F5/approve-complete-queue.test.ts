@@ -3,7 +3,6 @@
 import { describe, expect, it } from "vitest";
 import {
   setupApproveComplete,
-  CHECK_NONE,
   LIMIT_DEFAULT,
   b64url,
   ARTIFACT,
@@ -25,6 +24,9 @@ import {
 } from "./approve-complete.harness.js";
 
 setupApproveComplete();
+
+// K-739：確認項目が 1 つも無いときの印（骨格の間の「検査なし（まだ流していません）」から変わった。使わない理由は承認の帯が getTicket から出す）
+const CHECK_NONE = "検査なし";
 
 describe("K-63 承認して完了する：承認・差し戻し（口・本物の DB）", () => {
   it("K63-API-001 承認待ち × 承認待ちの画面を開く × 承認する人：自分が決めるものだけ、期限の早い順（期限なしは最後）。数は行の数と同じ。検査なしの印", async () => {
@@ -125,7 +127,7 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
 });
 
 describe("K-63 承認して完了する：積む仕事の中身（口・本物の DB）", () => {
-  it("K63-API-064 守り × 一覧を PC の印・取引先の人で呼ぶ：403（社内の人だけ）。何も書かない", async () => {
+  it("K63-API-064 守り × 一覧を PC の印・先方の人（権限）で呼ぶ：403（社内の人だけ）。何も書かない", async () => {
     const tm = await team("一覧を PC で呼ぶ人");
     const t = await ticket({ assignee: tm.by });
     const d = await delegated(t);

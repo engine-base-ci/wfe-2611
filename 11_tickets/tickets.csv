@@ -3237,6 +3237,22 @@ K-733,承認を取り下げる口（withdrawApproval：承認した後・PC が�
 - [ ] 共有の試験 k144 の葉の行 K144-API-982（`k144.d/K-733.ts`・carry）が緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-739,承認の一覧・詳細・実行の 1 件の「確認」を確認項目から出す（数だけ「4 ／ 5 済み」／行は文とチェックだけ／確認項目を使わないときの「検査なし」。だれが・いつ・根拠は答えに出さない＝やり取りの記録に在る）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-03,F5・承認,"承認する人が、承認のカードで「確認項目のうち、いくつが済んだか」を数で見られるようにする（束 B・D-153.3＝代表の答え 2 answer=d9a08e0fb56f：数だけ「4 ／ 5 済み」）。だれが・いつ確かめたか・AI の根拠は答えに出さない（やり取りの記録に出る＝K-736 が書く。D-150.39・D-150.40 と同じ）。今の口は確認を固定の字「検査なし（まだ流していません）」で返している（`app.approval_item_json`・`app.approval_detail`・`app.action_run_json` が固定）。これを**そのチケットの確認項目**（`test_specs`・消していない行）から出す。
+
+| 口 | 変わる所 | 新しい中身 |
+|---|---|---|
+| `listApprovalQueue`（承認待ちの 1 行） | `check_summary`（文字） | 「4 ／ 5 済み」／確認項目が無ければ「検査なし」 |
+| `getApproval`（承認の 1 件） | `checks`（配列）・`check_summary`（文字） | 確認項目 1 行ずつ `{ id, text, checked }`・同じ要約 |
+| `getActionRun`（実行の 1 件） | `checks`（object） | `{ state, counts, summary, rows }` |
+| `listTicketRuns`（実行の一覧） | 各行の `checks` | `{ state, counts, summary }`（行は持たない） |
+
+**どの口も鍵は増えない**（型は変えず、値の中身だけが変わる）。段 9 の K-405 が作り直す `app.approval_item_json`・`app.approval_detail`・`app.approval_queue`（鍵 20 ちょうど・K405-API-008）には**触らない**：新しい関数がその答えを包んで、`check_summary`・`checks` の値だけを差し替える（同じ 1 つの文の中）。
+
+確認を作るのは K-736（AI がチェックを付ける）と K-435（人が付け外す）。この葉は**読むだけ**で、「済み」は付けたのが AI でも人でも同じ（`checked_at` が入っている行）。確認項目を使わない理由（`tickets.no_spec_reason`・K-565）は、詳細 `getTicket` の `ticket.no_spec_reason`（K-560）から画面が読む（K-565 の決め）ので、この葉の答えには足さない。","- [ ] 下の表の 19 行（K739-API-001〜019）が緑：`apps/api/test/features/F5/approval-checks.test.ts`（土台は K-63 の `approve-complete.harness.ts`・変えない）
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり（`approve-complete-queue.test.ts` の 2 か所と K63-API-064 の題の 1 語を切る段で替えた・carry／`delegate-bridge.test.ts` の 1 か所は作る段で替える・changes）で緑。承認待ちの口の文の数の台帳（K-234・K-237）は今のまま緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケット）が緑"
 K-741,使わない口と表を片付ける（markHumanCheck・listChecks・exportCloneActivity を契約・生成物・親の apis から外し、checks の表に凍結の印を付ける。表と行は消さない）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・契約,"代表が「確認項目は文とチェックだけ（機械・AI・人の種類と判定の型は持たない）。だれがチェックしたかは記録を別に作らず、やり取りに 1 行」と決めた（D-150.39・.40）。前の形のまま契約に残っている次の 2 本を、契約・生成物・親チケットの `apis:` から外し、使わない表に凍結の印を付ける。
 
 | 操作 ID | 方法・道 | 前の役割 | 今の代わり |
