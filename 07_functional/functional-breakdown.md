@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-24
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-25
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 145 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 148 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 74 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -152,6 +152,9 @@
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
 | E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
+| E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 D-155.37 |
+| E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
+| E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
