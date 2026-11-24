@@ -1,0 +1,12 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F9/settings/**", "apps/web/app/(work)/workspace/**"],
+      "tests": ["apps/web/tests/k/k707-settings-kinds.spec.ts", "apps/web/test/k707-settings-kinds-shape.test.ts"]
+    }
+  ],
+  "reads_ok": {
+    "07_qa/test-specs/errors.json": "試験の道具 settings-mock.ts が正本の文を読んで期待の字にする・K-707",
+    "scripts/ci/fidelity_compare.mjs": "試験の道具 f9-ws-match.ts がモックと本番の値の比べ方を読む・K-707"
+  }
+}

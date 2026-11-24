@@ -19,7 +19,7 @@ const GROUPS: Group[] = [
   { code: "JD", name: "受託開発", href: "/tickets?scope=jd", pending: true, tone: "plum" },
 ];
 // 段 10 で作る画面は、左のメニューで押せる形にする（本番は作った画面の一覧から出る）
-const BUILT = [...BUILT_ROUTES, "/knowledge", "/members", "/workspace/rules"];
+const BUILT = [...BUILT_ROUTES, "/knowledge", "/members", "/workspace/ticket-settings"];
 
 export interface FrameProps {
   theme: Theme;

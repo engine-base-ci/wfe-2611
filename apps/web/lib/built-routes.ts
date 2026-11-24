@@ -59,6 +59,7 @@ export const BUILT_ROUTES: readonly string[] = [
   "/tickets",
   "/tickets/:id",
   "/verify-email",
+  "/workspace/ticket-settings",
 ] as const;
 
 /** その route の画面がもうあるか（:id は実際の値でも合う） */

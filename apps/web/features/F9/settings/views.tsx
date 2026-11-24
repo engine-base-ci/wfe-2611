@@ -3,8 +3,8 @@
 //   前の「チケットの形（区画を足す）」は無い（本文が自由な 1 枚になったので要らない）。
 //   見た目だけ（値は props・口は呼ばない）
 import { Check, GripVertical, Plus } from "lucide-react";
-import type { ReactNode } from "react";
-import { Badge, Button, Select, Tabs, TextField } from "@/components/k";
+import type { MouseEvent, ReactNode } from "react";
+import { Badge, Button, Loading, NoticeBox, Select, Tabs, TextField } from "@/components/k";
 import type { Block, Doc } from "@kaname/contracts";
 import { DocEditor } from "@/features/F4/doc/editor";
 import "./settings.css";
@@ -45,14 +45,22 @@ const TONES: readonly { tone: Tone; name: string }[] = [
   { tone: "teal-light", name: "浅葱" },
 ];
 
-function ColorPick({ value, name }: { value: Tone; name: string }) {
+/** 色を選ぶ（onChange を渡すと value で制御する。渡さない呼び方（モック）は既定の印だけ） */
+export function ColorPick({ value, name, onChange }: { value: Tone; name: string; onChange?: (t: Tone) => void }) {
   return (
     <fieldset className="k-f9s-colors">
       <legend className="k-label">色</legend>
       <div className="k-f9s-swatches">
         {TONES.map((t) => (
           <label key={t.tone} className="k-f9s-swatch" data-tone={t.tone} title={t.name}>
-            <input type="radio" name={name} defaultChecked={t.tone === value} aria-label={t.name} />
+            <input
+              type="radio"
+              name={name}
+              aria-label={t.name}
+              {...(onChange
+                ? { checked: t.tone === value, onChange: () => onChange(t.tone) }
+                : { defaultChecked: t.tone === value })}
+            />
             <Check size={14} aria-hidden="true" />
           </label>
         ))}
@@ -61,10 +69,31 @@ function ColorPick({ value, name }: { value: Tone; name: string }) {
   );
 }
 
+/** 読み込み中（読み上げの名前「読み込んでいます…」・すぐ出す） */
+export function SettingsLoading() {
+  return (
+    <div role="status" aria-label="読み込んでいます…">
+      <Loading delayMs={0} />
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------- 画面の骨組み（見出しとタブ）
 export type SettingsTab = "kinds" | "stages" | "fields";
 
-export function TicketSettings({ tab, children }: { tab: SettingsTab; children: ReactNode }) {
+export function TicketSettings({
+  tab,
+  children,
+  onTab,
+  inertTabs = [],
+}: {
+  tab: SettingsTab;
+  children: ReactNode;
+  /** タブを押したとき（渡さない呼び方（モック）は動かない） */
+  onTab?: (t: SettingsTab) => void;
+  /** 押せない形のタブ（中身がまだ無い） */
+  inertTabs?: readonly SettingsTab[];
+}) {
   const panel = (t: SettingsTab): ReactNode => (t === tab ? children : null);
   return (
     <section className="k-root k-page k-me-page k-f9s-page" aria-labelledby="tset-title">
@@ -75,12 +104,18 @@ export function TicketSettings({ tab, children }: { tab: SettingsTab; children: 
       <Tabs
         label="チケットの設定の中"
         value={tab}
-        onValueChange={noop}
-        items={[
-          { value: "kinds", label: "種別", panel: panel("kinds") },
-          { value: "stages", label: "状態", panel: panel("stages") },
-          { value: "fields", label: "項目", panel: panel("fields") },
-        ]}
+        onValueChange={(v) => (onTab ?? noop)(v as SettingsTab)}
+        items={(
+          [
+            { value: "kinds", label: "種別" },
+            { value: "stages", label: "状態" },
+            { value: "fields", label: "項目" },
+          ] as const
+        ).map((i) => ({
+          ...i,
+          panel: panel(i.value),
+          ...(inertTabs.includes(i.value) ? { disabled: true } : {}),
+        }))}
       />
     </section>
   );
@@ -94,15 +129,66 @@ export interface KindRow {
   hasTemplate: boolean;
 }
 
-export function KindsPanel({ kinds, current }: { kinds: readonly KindRow[]; current: string }) {
+/** 種別の右の欄の値と動き（渡さない呼び方（モック）は読むだけの見た目） */
+export interface KindsLive {
+  name: string;
+  tone: Tone;
+  template: Doc;
+  /** 種別を替えたら作り直す（前の種別の字を残さない） */
+  editorKey: string;
+  /** 名前の欄の下の赤字 */
+  nameError?: string | undefined;
+  /** 欄の上の赤い箱（口の断りのうち欄に結べない物） */
+  notice?: string | undefined;
+  /** 保存できる（変えた所がある・答えを待っていない） */
+  canSave: boolean;
+  busy: boolean;
+  /** 消せない訳（あれば「この種別を消す…」は押せない形） */
+  deleteBlocked?: string | undefined;
+  onName: (v: string) => void;
+  onTone: (t: Tone) => void;
+  onTemplate: (doc: Doc) => void;
+  onSave: () => void;
+  onDelete: () => void;
+  onAdd: () => void;
+}
+
+export function KindsPanel({
+  kinds,
+  current,
+  hrefOf,
+  onSelect,
+  live,
+}: {
+  kinds: readonly KindRow[];
+  current: string;
+  /** 一覧の行き先（渡さなければ #id） */
+  hrefOf?: (id: string) => string;
+  /** 一覧を押したとき（行き先へは移らず、呼ぶ側が移る） */
+  onSelect?: (id: string) => void;
+  live?: KindsLive;
+}) {
   const k = kinds.find((x) => x.id === current) ?? kinds[0]!;
+  const pick = (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!onSelect || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    onSelect(id);
+  };
+  const guard = (ok: boolean, go: () => void) => () => {
+    if (ok) go();
+  };
   return (
     <div className="k-f9s-md">
       <div className="k-f9s-side">
         <ul className="k-f9s-list" aria-label="種別">
           {kinds.map((x) => (
             <li key={x.id}>
-              <a href={`#${x.id}`} className="k-f9s-item" aria-current={x.id === k.id ? "true" : undefined}>
+              <a
+                href={hrefOf ? hrefOf(x.id) : `#${x.id}`}
+                className="k-f9s-item"
+                aria-current={x.id === k.id ? "true" : undefined}
+                onClick={pick(x.id)}
+              >
                 <span className="k-f9s-dot" data-tone={x.tone} aria-hidden="true" />
                 <span className="k-f9s-item-t">{x.name}</span>
                 <small>{x.hasTemplate ? "ひな形あり" : "ひな形なし"}</small>
@@ -110,23 +196,58 @@ export function KindsPanel({ kinds, current }: { kinds: readonly KindRow[]; curr
             </li>
           ))}
         </ul>
-        <Button variant="outlined" size="sm" icon={<Plus size={14} />}>
+        <Button variant="outlined" size="sm" icon={<Plus size={14} />} onClick={live?.onAdd}>
           種別を足す
         </Button>
       </div>
-      <form className="k-f9s-form" aria-label={`種別「${k.name}」を直す`}>
-        <TextField label="名前" name="kind_name" value={k.name} readOnly required />
-        <ColorPick value={k.tone} name="kind_tone" />
+      <form
+        className="k-f9s-form"
+        aria-label={`種別「${k.name}」を直す`}
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (live?.canSave) live.onSave();
+        }}
+      >
+        {live?.notice ? <NoticeBox>{live.notice}</NoticeBox> : null}
+        {live ? (
+          <TextField
+            label="名前"
+            name="kind_name"
+            value={live.name}
+            required
+            error={live.nameError}
+            onChange={(e) => live.onName(e.target.value)}
+          />
+        ) : (
+          <TextField label="名前" name="kind_name" value={k.name} readOnly required />
+        )}
+        <ColorPick value={live ? live.tone : k.tone} name="kind_tone" {...(live ? { onChange: live.onTone } : {})} />
         <div className="k-field">
           <span className="k-label">本文のひな形</span>
           <p className="k-f9s-hint">
             チケットを作る面で、この種別を選ぶと本文に例として入ります。書く人は消しても、書き換えても構いません。
           </p>
-          <DocEditor doc={KIND_TEMPLATE} onChange={noop} />
+          {live ? (
+            <DocEditor key={live.editorKey} doc={live.template} onChange={live.onTemplate} ariaLabel="本文のひな形" />
+          ) : (
+            <DocEditor doc={KIND_TEMPLATE} onChange={noop} />
+          )}
         </div>
         <div className="k-f9s-acts">
-          <Button variant="outlined">この種別を消す…</Button>
-          <Button>保存する</Button>
+          <Button
+            variant="outlined"
+            {...(live?.deleteBlocked ? { "aria-disabled": true, title: live.deleteBlocked } : {})}
+            onClick={live ? guard(!live.deleteBlocked && !live.busy, live.onDelete) : undefined}
+          >
+            この種別を消す…
+          </Button>
+          <Button
+            {...(live && !live.canSave ? { "aria-disabled": true } : {})}
+            onClick={live ? guard(live.canSave, live.onSave) : undefined}
+          >
+            保存する
+          </Button>
         </div>
       </form>
     </div>
