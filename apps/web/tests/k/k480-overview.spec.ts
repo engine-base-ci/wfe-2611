@@ -272,13 +272,19 @@ test("K480-UI-016 左のメニューのグループの行：概要へのリン�
   expect(m.listCalls).toHaveLength(0);
 });
 
-test("K480-UI-009 概要の口が 404（見えない・無いグループ）：正本 E-PAGE-001 の文「見つかりませんでした。消されたか、見る権限が無いかもしれません」。最近の更新・状態の箱は出ない", async ({
+test("K480-UI-009 概要の口が 404（見えない・無いグループ）：正本 E-PAGE-001 の文「見つかりませんでした。消されたか、見る権限が無いかもしれません」と番号 E-PAGE-001、一手「自分に関わるものへ戻る」（/tickets）。最近の更新・状態の箱は出ない", async ({
   page,
 }) => {
   const { ov } = await mockOverview(page);
   ov.next = () => fail(404, "E-PAGE-001");
   await open(page, PATH);
+  // 正本の文は見出しと本文の 2 つの要素に分かれて出るので、文は含むかで照らし、番号を data-code で確かめる（E-VWS-004 と取り違えない）
   await expect(page.getByText(TEXT.notFound)).toBeVisible();
+  await expect(page.locator('[data-state="error"][data-code="E-PAGE-001"]')).toBeVisible();
+  await expect(page.getByRole("link", { name: "自分に関わるものへ戻る", exact: true })).toHaveAttribute(
+    "href",
+    "/tickets",
+  );
   await expect(feed(page)).toHaveCount(0);
   await expect(side(page)).toHaveCount(0);
 });
