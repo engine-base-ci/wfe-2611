@@ -323,7 +323,8 @@ test("K569-UI-013 用意してある行の既定の中身：状態は選ぶ欄�
   const stage = grid(page).getByRole("combobox", { name: "状態", exact: true });
   await expect(stage).toContainText("未着手");
   await stage.click();
-  await expect(page.getByRole("option")).toHaveText(["未着手", "作業中"]);
+  // 選んである選択肢には印 ✓ が中に出る（Base UI の ItemIndicator）ので、字は含むかで見る
+  await expect(page.getByRole("option")).toHaveText([/未着手$/, /作業中$/]);
   await page.getByRole("option", { name: "作業中", exact: true }).click();
   await expect(box(page, "開始日")).toHaveAttribute("type", "date");
   await expect(pairOf(page, "予定時間").locator(".k-desc")).toHaveText(
