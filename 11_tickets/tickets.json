@@ -3202,7 +3202,8 @@
     "apps/api/test/generated/post_action_runs_id_takeover.test.ts",
     "apps/api/test/generated/post_notifications_read_all.test.ts",
     "apps/api/test/generated/post_saved_views.test.ts",
-    "apps/api/test/generated/post_tickets_id_restore.test.ts"
+    "apps/api/test/generated/post_tickets_id_restore.test.ts",
+    "apps/api/test/features/F7/notifications-sort-fields.test.ts"
    ],
    "depends_on": [],
    "sections": {
