@@ -25791,9 +25791,7 @@
     "A15"
    ],
    "screens": [],
-   "apis": [
-    "listApprovalQueue"
-   ],
+   "apis": [],
    "canvas": [],
    "canvas_none": "見た目を変えないチケット（読む口と DB の関数だけ）。札・並べ替えの箱・押した札を道に残す・0 件のときは画面の葉 K-749 が持つ（正は /dev/mock/f5 の queue-filter-*）",
    "affects": [
