@@ -9002,6 +9002,1207 @@
    "support_code": "CONF-020"
   },
   {
+   "id": "E-KNW-010",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページがまだ一度も書き終わっていない（下書きだけ）のに、必ず守る・写す・上げる・共有をする",
+   "false_when": "一度書き終えたページ",
+   "message": "このページはまだ書き終えていません。書き終えてから使ってください",
+   "action": "書き終える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ページがまだ一度も書き終わっていない（下書きだけ）のに、必ず守る・写す・上げる・共有をする（口 setKnowledgeMust・copyKnowledgePage（後で requestKnowledgeRaise・setKnowledgeShares））"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-011",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "上げる・共有する頼みが承認待ちのページを動かす・消す・必ず守るを変える",
+   "false_when": "承認待ちの頼みが無いページ",
+   "message": "このページを上の棚へ上げる（共有する）頼みが承認待ちです。決まるまでは変えられません",
+   "action": "頼みを取り下げる／決まるのを待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "上げる・共有する頼みが承認待ちのページを動かす・消す・必ず守るを変える（口 updateKnowledgePage・deleteKnowledgePage・setKnowledgeMust（後で requestKnowledgeRaise ほか））"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-012",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかの人がこのページの下書きを書いている間に下書きを保存する",
+   "false_when": "下書きが無い・自分の下書き",
+   "message": "ほかの人がこのページを書いています。書き終えるまで待ってください",
+   "action": "少し待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ほかの人がこのページの下書きを書いている間に下書きを保存する（口 saveKnowledgeDraft）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-020",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "同じ場所に同じ名前のフォルダを作る・名前を変える",
+   "false_when": "名前が違う・場所が違う",
+   "message": "同じ場所に同じ名前のフォルダがあります",
+   "action": "名前を変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "同じ場所に同じ名前のフォルダを作る・名前を変える（口 createKnowledgeFolder・updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-021",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダの入れ子が 6 を超える所に作る・動かす",
+   "false_when": "6 つ入れ子まで",
+   "message": "フォルダは 6 つ入れ子までです",
+   "action": "浅い所に置く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダの入れ子が 6 を超える所に作る・動かす（口 createKnowledgeFolder・updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-022",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダを自分か自分の中のフォルダの下へ動かす",
+   "false_when": "ほかの場所へ動かす",
+   "message": "フォルダを自分の中には動かせません",
+   "action": "別の場所を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダを自分か自分の中のフォルダの下へ動かす（口 updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-023",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダを別の棚のフォルダの下へ動かす",
+   "false_when": "同じ棚の中で動かす",
+   "message": "フォルダは別の棚には動かせません",
+   "action": "同じ棚の中で動かす",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダを別の棚のフォルダの下へ動かす（口 updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-024",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "中にページかフォルダがあるフォルダを消す",
+   "false_when": "空のフォルダ",
+   "message": "中にページかフォルダがあるので消せません",
+   "action": "先に動かすか消す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "中にページかフォルダがあるフォルダを消す（口 deleteKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-030",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "下書きが無いのに下書きを捨てる",
+   "false_when": "自分の下書きがある",
+   "message": "捨てる下書きがありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "下書きが無いのに下書きを捨てる（口 discardKnowledgeDraft）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-040",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "下書きが無いのに書き終える",
+   "false_when": "自分の下書きがある",
+   "message": "書き終える下書きがありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "下書きが無いのに書き終える（口 publishKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-041",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "必ず守るのページを本文 2,000 字を超えて書き終える",
+   "false_when": "2,000 字まで・必ず守るでないページ",
+   "message": "「必ず守る」のページは本文を 2,000 字までにしてください",
+   "action": "本文を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "必ず守るのページを本文 2,000 字を超えて書き終える（口 publishKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-050",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "必ず守るが付いたページを消す",
+   "false_when": "必ず守るが付いていないページ",
+   "message": "「必ず守る」が付いているので消せません",
+   "action": "先に外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "必ず守るが付いたページを消す（口 deleteKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-051",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかのグループに共有しているページ・フォルダを消す",
+   "false_when": "共有していない物",
+   "message": "ほかのグループに共有しているので消せません",
+   "action": "先に共有をやめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ほかのグループに共有しているページ・フォルダを消す（口 deleteKnowledgePage・deleteKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-052",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページを別の棚のフォルダへ動かす",
+   "false_when": "同じ棚の中で動かす",
+   "message": "ページは別の棚には動かせません。上の棚へは「上げる」を使ってください",
+   "action": "「上げる」を使う",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ページを別の棚のフォルダへ動かす（口 updateKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-060",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "棚の必ず守るの数が上限に届いているのに付ける",
+   "false_when": "上限より少ない・外す",
+   "message": "「必ず守る」の上限に届きました",
+   "action": "今付いているページから外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "棚の必ず守るの数が上限に届いているのに付ける（口 setKnowledgeMust）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-061",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "本文が 2,000 字を超えるページに必ず守るを付ける",
+   "false_when": "2,000 字まで・外す",
+   "message": "本文が 2,000 字を超えているので、「必ず守る」は付けられません",
+   "action": "本文を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "本文が 2,000 字を超えるページに必ず守るを付ける（口 setKnowledgeMust）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-080",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを写す",
+   "false_when": "会社・グループの棚のページ",
+   "message": "自分の棚のページは写せません",
+   "action": "上の棚のページを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "自分の棚のページを写す（口 copyKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-100",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページが会社の棚にあるのに、上の棚へ上げる",
+   "false_when": "グループ・自分の棚のページ",
+   "message": "このページは会社の棚にあるので、これより上へは上げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ページが会社の棚にあるのに、上の棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-101",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを、上げる先のグループを選ばずに上げる",
+   "false_when": "上げる先のグループを選んだ・グループの棚のページ",
+   "message": "上げる先のグループを選んでください",
+   "action": "グループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "自分の棚のページを、上げる先のグループを選ばずに上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-102",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "承認できる人（マネージャー・管理者）がいない棚へ上げる",
+   "false_when": "承認できる人がいる棚・自分が書ける棚",
+   "message": "上げる先に承認できる人がいません。管理者に知らせてください",
+   "action": "管理者に知らせる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "承認できる人（マネージャー・管理者）がいない棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-103",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "入れるフォルダを、上げる先でない棚から選んで上げる",
+   "false_when": "上げる先の棚のフォルダ・フォルダを選ばない",
+   "message": "入れるフォルダは、上げる先の棚から選んでください",
+   "action": "フォルダを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "入れるフォルダを、上げる先でない棚から選んで上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-104",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる",
+   "false_when": "承認待ちの頼み",
+   "message": "この頼みはもう決まっているので、取り下げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる（口 withdrawKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-105",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す",
+   "false_when": "断られて帯をまだ消していない頼み",
+   "message": "消せるのは、断られた頼みの帯だけです",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す（口 dismissKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-106",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかのグループに共有している（上のフォルダを含む）ページを上げる",
+   "false_when": "共有していないページ",
+   "message": "共有しているページは上げられません。先に共有をやめてください",
+   "action": "共有をやめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ほかのグループに共有している（上のフォルダを含む）ページを上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-STG-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "状態を足す・名前を直すとき、同じ会社に同じ名前の状態（仕組みの状態の名前も含む）が在る",
+   "false_when": "消した状態の名前・別の会社の同じ名前",
+   "message": "同じ名前の状態がすでにあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "状態を足す・名前を直すとき、同じ会社に同じ名前の状態（仕組みの状態の名前も含む）が在る操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "作業の状態（仕組みの状態を除く）が 8 つある会社で状態を足す",
+   "false_when": "8 つ未満・仕組みの状態は数えない",
+   "message": "状態は 8 つまで足せます",
+   "action": "使っていない状態を消してから足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "作業の状態（仕組みの状態を除く）が 8 つある会社で状態を足す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "始め（未着手）・終わり（完了）・仕組みの状態（確認中・承認待ち・実行中）を消す",
+   "false_when": "作業の状態（使っているチケットが無い物）",
+   "message": "この状態は仕組みが使うので、消せません",
+   "action": "消さずに名前や色を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "始め（未着手）・終わり（完了）・仕組みの状態（確認中・承認待ち・実行中）を消す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "仕組みの状態（確認中・承認待ち・実行中）の名前を変える",
+   "false_when": "色だけを直す・同じ名前のまま送る",
+   "message": "この状態の名前は変えられません",
+   "action": "色だけを直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "仕組みの状態（確認中・承認待ち・実行中）の名前を変える操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "その状態のチケット（消したチケットも数える）が在る状態を消す",
+   "false_when": "チケットが 1 枚も無い状態",
+   "message": "この状態のチケットがあるので、消せません",
+   "action": "チケットを別の状態に移してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "その状態のチケット（消したチケットも数える）が在る状態を消す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-006",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "並べるとき、渡した並びが今の状態の全部と合わない（足りない・余る・重なる・消した状態・別の会社の状態）",
+   "false_when": "今の状態の全部を 1 つずつ渡した並び",
+   "message": "並びが古くなっています。開き直してください",
+   "action": "開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "並べるとき、渡した並びが今の状態の全部と合わない（足りない・余る・重なる・消した状態・別の会社の状態）操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-007",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "並べるとき、始めの状態が先頭でない・終わりの状態が最後でない",
+   "false_when": "始めが先頭・終わりが最後の並び",
+   "message": "始めの状態は先頭に、終わりの状態は最後に置きます",
+   "action": "始めを先頭・終わりを最後にして並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "並べるとき、始めの状態が先頭でない・終わりの状態が最後でない操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目を足す・名前を直すとき、同じ会社に同じ名前の項目（消していない物）が在る",
+   "false_when": "消した項目の名前・別の会社の同じ名前",
+   "message": "同じ名前の項目がすでにあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目を足す・名前を直すとき、同じ会社に同じ名前の項目（消していない物）が在るように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "1 つの項目の選ぶ物に同じ名前が 2 つある（前後の空白を落として比べる）",
+   "false_when": "名前がみな違う選ぶ物",
+   "message": "同じ名前の選ぶ物があります",
+   "action": "選ぶ物の名前を変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "1 つの項目の選ぶ物に同じ名前が 2 つある（前後の空白を落として比べる）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目の型を変えるとき、その項目に値が 1 つでも入っている（消していない値の行）",
+   "false_when": "値が 0 件・同じ型のまま",
+   "message": "値が入っている項目は、型を変えられません",
+   "action": "型はそのままにするか、新しい項目を足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目の型を変えるとき、その項目に値が 1 つでも入っている（消していない値の行）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目を並べるとき、渡した並びが今の生きている項目の全部と合わない（足りない・余る・重なる・消した項目・別の会社の項目）",
+   "false_when": "今の全部の項目をちょうど 1 回ずつ渡す",
+   "message": "並びが今の項目と合いません",
+   "action": "画面を開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目を並べるとき、渡した並びが今の生きている項目の全部と合わない（足りない・余る・重なる・消した項目・別の会社の項目）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "選ぶ型でない項目に、型を変えずに選ぶ物だけを送る",
+   "false_when": "選ぶ型の項目・選ぶ型へ変えるときに一緒に送る",
+   "message": "選ぶ型でない項目には、選ぶ物を付けられません",
+   "action": "型を選ぶ型に変えてから選ぶ物を足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "選ぶ型でない項目に、型を変えずに選ぶ物だけを送るように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-RUN-001",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "担当者でない人（任せた人・マネージャー・担当者のいないチケットの誰でも）が、動いている AI の実行を止めようとした",
+   "false_when": "そのチケットの担当者が押した",
+   "message": "この AI を止められるのは担当者です",
+   "action": "担当者に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを、担当者でない人（任せた人）が開く",
+    "steps": [
+     "帯の「止める」を押す"
+    ],
+    "needs": "担当者でない人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
+  },
+  {
+   "id": "E-RUN-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "もう止まった・作り終えた・取り消した実行を止めようとした（二度押し・別のタブ）",
+   "false_when": "動いている・待っている実行を担当者が押した",
+   "message": "この実行はもう止まっています（または作り終えています）",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで「止める」を押す",
+     "もう片方のタブで「止める」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
+  },
+  {
+   "id": "E-RUN-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認待ちの成果物が無いチケット（作業中・承認済み・差し戻し済み・完了）で試し打ちする",
+   "false_when": "承認待ちの成果物が在るチケットで担当者が押した",
+   "message": "承認待ちの成果物が無いので、試し打ちできません",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちの成果物があるチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで承認する",
+     "もう片方のタブで「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "試し打ちを動かす AI が使えない（AI に任せた人が外された・直せなくなった・PC が無い）",
+   "false_when": "AI に任せた人が使えて、その人の PC がある",
+   "message": "試し打ちを動かす AI が使えません",
+   "action": "理由（detail.reason）を読んで、担当者・PC を直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI に任せた人の PC を外した、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "AI に任せた人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "押した人のメールアドレスが分からない",
+   "false_when": "押した人のログインのメールアドレスが分かる",
+   "message": "あなたのメールアドレスが分からないので、試し打ちできません",
+   "action": "運営に連絡する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログインのメールアドレスに結ばれていない席の担当者で、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "メールアドレスに結ばれていない席"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
    "id": "E-TALK-010",
    "class": "conflict",
    "where": {

@@ -42,6 +42,7 @@ import { register as search } from "./search.js";
 import { register as service_status } from "./service_status.js";
 import { register as shell } from "./shell.js";
 import { register as test_specs } from "./test_specs.js";
+import { register as ticket_field_master } from "./ticket_field_master.js";
 import { register as ticket_fields } from "./ticket_fields.js";
 import { register as ticket_decisions } from "./ticket_decisions.js";
 import { register as ticket_draft_conversations } from "./ticket_draft_conversations.js";
@@ -96,6 +97,7 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   service_status(app, deps);
   shell(app, deps);
   test_specs(app, deps);
+  ticket_field_master(app, deps);
   ticket_fields(app, deps);
   ticket_decisions(app, deps);
   ticket_draft_conversations(app, deps);

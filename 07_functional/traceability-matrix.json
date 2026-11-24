@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-24",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 145,
+  "entities_count": 149,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -3013,18 +3013,17 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "features": [
     "F-011",
     "F-026"
    ],
    "entities": [
-    "E-112 class_axes",
-    "E-113 class_values",
     "E-109 ticket_kinds",
     "E-110 kind_sections",
     "E-111 ticket_stages",
-    "E-115 handover_rules",
+    "E-144 custom_fields",
+    "E-146 ticket_field_values",
     "E-065 distributions",
     "E-037 policies",
     "E-002 scopes",
@@ -3034,9 +3033,13 @@
     "E-052 audit_events",
     "E-038 approvals",
     "E-106 tickets",
+    "E-112 class_axes",
+    "E-113 class_values",
+    "E-115 handover_rules",
     "E-114 ticket_class_values",
     "E-119 ticket_messages",
-    "E-067 tenant_distributions"
+    "E-067 tenant_distributions",
+    "E-145 custom_field_kinds"
    ],
    "related_apis": [
     "GET /api/workspace/rules",
@@ -3052,7 +3055,16 @@
     "POST /api/workspace/ticket-shape/preview",
     "PATCH /api/workspace/ticket-shape",
     "GET /api/ticket_kinds/template-updates",
-    "POST /api/ticket_kinds/template-updates/:id/apply"
+    "POST /api/ticket_kinds/template-updates/:id/apply",
+    "POST /api/ticket_stages",
+    "PATCH /api/ticket_stages/:id",
+    "DELETE /api/ticket_stages/:id",
+    "POST /api/ticket_stages/order",
+    "GET /api/ticket-field-master",
+    "POST /api/ticket-fields",
+    "PATCH /api/ticket-fields/:id",
+    "DELETE /api/ticket-fields/:id",
+    "POST /api/ticket-fields/order"
    ],
    "access_roles": [
     "R1",
@@ -3164,13 +3176,16 @@
    "features": [
     "F-011",
     "F-013",
-    "F-026"
+    "F-026",
+    "F-030"
    ],
    "entities": [
     "E-121 knowledge_pages",
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
-    "E-028 memories",
+    "E-147 knowledge_folders",
+    "E-149 knowledge_requests",
+    "E-150 knowledge_breaches",
     "E-055 layers",
     "E-002 scopes",
     "E-142 scope_memberships",
@@ -3179,12 +3194,11 @@
     "E-044 bridge_jobs",
     "E-037 policies",
     "E-124 clients",
-    "E-095 skills",
-    "E-080 notifications",
     "E-094 attachments",
     "E-106 tickets",
     "E-039 action_runs",
     "E-049 messages",
+    "E-080 notifications",
     "E-089 imports"
    ],
    "related_apis": [
@@ -3218,7 +3232,18 @@
     "POST /api/knowledge/proposals/:id/decline",
     "POST /api/knowledge_imports",
     "GET /api/knowledge_imports/:id",
-    "POST /api/knowledge_imports/:id/commit"
+    "POST /api/knowledge_imports/:id/commit",
+    "GET /api/knowledge_pages/:id/versions/:v",
+    "POST /api/knowledge/folders",
+    "PATCH /api/knowledge/folders/:id",
+    "DELETE /api/knowledge/folders/:id",
+    "DELETE /api/knowledge_pages/:id",
+    "PUT /api/knowledge_pages/:id/must",
+    "POST /api/knowledge/similar",
+    "POST /api/knowledge_pages/:id/copy",
+    "POST /api/knowledge_pages/:id/raise",
+    "DELETE /api/knowledge/requests/:id",
+    "POST /api/knowledge/requests/:id/dismiss"
    ],
    "access_roles": [
     "R1",
@@ -11194,7 +11219,7 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "required_apis": [
     {
      "act": "A118",
@@ -11279,6 +11304,60 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/template-updates/:id/apply"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_stages"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_stages/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_stages/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_stages/order"
+    },
+    {
+     "act": "A118",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ticket-field-master"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket-fields"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket-fields/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket-fields/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket-fields/order"
     }
    ]
   },
@@ -11515,7 +11594,7 @@
      "path_draft": "/api/knowledge_pages/:id/markdown"
     },
     {
-     "act": "A114",
+     "act": "A137",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge_pages/:id/usage"
@@ -11575,19 +11654,19 @@
      "path_draft": "/api/knowledge_pages/:id/unarchive"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge/proposals"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge/proposals/:id/accept"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge/proposals/:id/decline"
@@ -11609,6 +11688,72 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge_imports/:id/commit"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/versions/:v"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/folders"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge/folders/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/folders/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge_pages/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PUT",
+     "path_draft": "/api/knowledge_pages/:id/must"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/similar"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/copy"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/raise"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/requests/:id"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/dismiss"
     }
    ]
   },
@@ -12393,8 +12538,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "used_by_features": [
     "F-001",
@@ -13699,7 +13843,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "used_by_features": [
@@ -14045,7 +14188,8 @@
    "entity_id": "E-144",
    "entity_name": "custom_fields",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -14053,6 +14197,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14063,7 +14208,8 @@
    "entity_id": "E-145",
    "entity_name": "custom_field_kinds",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -14071,6 +14217,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14081,7 +14228,8 @@
    "entity_id": "E-146",
    "entity_name": "ticket_field_values",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -14089,6 +14237,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14253,6 +14402,45 @@
   {
    "entity_id": "E-123",
    "entity_name": "knowledge_links",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-147",
+   "entity_name": "knowledge_folders",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-149",
+   "entity_name": "knowledge_requests",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-148",
+   "entity_name": "knowledge_limits",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-150",
+   "entity_name": "knowledge_breaches",
    "used_by_screens": [
     "knowledge"
    ],
@@ -14986,6 +15174,7 @@
     "GET /api/sessions",
     "GET /api/tenants",
     "GET /api/tickets",
+    "PATCH /api/tickets/:id",
     "POST /api/sessions"
    ]
   },
@@ -15079,6 +15268,7 @@
     "GET /api/tickets",
     "PATCH /api/approvals/:id",
     "PATCH /api/policies/:id",
+    "PATCH /api/tickets/:id",
     "POST /api/conversations",
     "POST /api/tickets"
    ]
@@ -15366,19 +15556,25 @@
     "E-126",
     "E-133",
     "E-134",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146",
+    "E-147",
+    "E-149",
+    "E-150"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
     "GET /api/tenants",
-    "PATCH /api/class_axes/:id",
     "PATCH /api/duties/:id",
     "PATCH /api/invoices/:id",
     "PATCH /api/knowledge_pages/:id",
     "PATCH /api/layers/:id",
     "PATCH /api/ledger_definitions/:id",
-    "POST /api/class_axes",
-    "POST /api/skill_attachments"
+    "PATCH /api/ticket_kinds/:id",
+    "POST /api/skill_attachments",
+    "POST /api/ticket_kinds"
    ]
   },
   {
@@ -15515,15 +15711,19 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-147",
+    "E-149",
+    "E-150"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
-    "GET /api/knowledge_pages",
     "GET /api/messages",
     "GET /api/policies",
     "GET /api/tenants",
+    "GET /api/tickets",
     "PATCH /api/conversations/:id",
+    "PATCH /api/knowledge_pages/:id",
     "PATCH /api/tickets/:id",
     "POST /api/clones",
     "POST /api/conversations",
@@ -16198,6 +16398,7 @@
     "app-setup",
     "clients",
     "inquiry",
+    "knowledge",
     "members",
     "ops-disclosure",
     "ops-notices",

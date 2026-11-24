@@ -3,7 +3,7 @@
 import { describe, it } from "vitest";
 
 describe("POST /api/v1/bridge/jobs/:id/browser", () => {
-  // EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/browser が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）
+  // EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/browser が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））
   it.todo("test_post_bridge_jobs_id_browser_ok");
   // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
   it.todo("test_post_bridge_jobs_id_browser_rejected_401");
