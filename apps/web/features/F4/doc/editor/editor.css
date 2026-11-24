@@ -1,0 +1,67 @@
+/* 本文を見たまま編集する部品（K-567）の見た目の足し。色・字・余白は doc.css・extra.css の k-f4d-* を使い、足りない物だけここに書く（正本のトークンだけ） */
+
+/* 編集欄：外枠は本文の箱（.k-f4d-doc）が持つ。焦点は箱の輪郭で見せる */
+.k-f4d-pm {
+  min-height: inherit;
+  outline: none;
+  overflow-wrap: anywhere;
+}
+.k-f4d-ed2 .k-f4d-editor:focus-within {
+  outline: var(--k-c-f4d-ring-border);
+  outline-offset: var(--k-c-f4d-ring-in-width);
+}
+.k-f4d-pm > * + * {
+  margin-top: var(--k-s-sm);
+}
+/* 薄い字（ひな形・ghost）：段落・見出しとも薄い字の色 */
+.k-f4d-pm [data-ghost="true"] {
+  color: var(--k-neutral-strong);
+}
+/* 押された道具 */
+.k-f4d-bar button[aria-pressed="true"] {
+  background: var(--k-select);
+  color: var(--k-primary);
+}
+/* 広い表・長いコードは本文の中で横に送る（頁は横に溢れない） */
+.k-f4d-pm table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.k-f4d-pm pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.k-f4d-pm ol {
+  margin: 0;
+  padding-left: var(--k-s-lg);
+}
+.k-f4d-pm blockquote {
+  margin: 0;
+  padding-left: var(--k-s-md);
+  border-left: var(--k-c-f4d-rule-strong-border);
+  color: var(--k-on-surface-variant);
+}
+.k-f4d-pm ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.k-f4d-pm ul[data-type="taskList"] li {
+  display: flex;
+  gap: var(--k-s-xs);
+}
+.k-f4d-figure {
+  margin: 0;
+  padding: var(--k-s-sm);
+  border: var(--k-c-f4d-rule-border);
+  border-radius: var(--k-r-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-f4d-figure figcaption {
+  font-size: var(--k-text-body-sm);
+}
+/* 開発用の頁（/dev/mock/f4v2-editor）の出力の欄：長い JSON も頁の幅の中で折り返す */
+.k-f4d-devout pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
