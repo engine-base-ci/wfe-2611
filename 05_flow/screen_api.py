@@ -919,6 +919,11 @@ PATH_PATTERNS = {
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
+import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117・口は packages/auth/src/signup.ts の isLoginEmail）
 _CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 _CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
 VALUE_RANGES = {
@@ -941,7 +946,7 @@ VALUE_RANGES = {
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
     "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
-        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品 better-auth の z.email() の形を前後の空白で挟んだ物（口も z.email() で見る・K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},
         "company_name": {"maxLength": 100},
         "password": {"minLength": 12},
@@ -1207,7 +1212,7 @@ PERMS = {
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ", False),
-    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
+    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
     "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
@@ -1587,10 +1592,6 @@ PERMS = {
 SUCCESS_STATUS: dict[str, int] = {}
 
 # チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
-import sys as _sys  # noqa: E402
-from pathlib import Path as _Path  # noqa: E402
-
-_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
 import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
 
