@@ -327,6 +327,11 @@ describe("K-699 必ず守るのページを確認項目に入れる", () => {
     await untouched(other, w.co.tenantId);
     // 確認項目が 1 件も無くて使わない理由も無い（NO_SPEC）ときも書かない：必ず守るから外れた無チェックの古い行だけが残るチケット
     const stale = await mkTicket(w, w.g1, w.mem1);
+    // 確認項目の数を見るのは本文の行（section_key = body）が在るチケットだけ（K-565）。だから本文の行を 1 つ置く
+    await q(
+      "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version) values ($1, $2, 'body', 0, $3, 1)",
+      [w.co.tenantId, stale, { text: "", doc: { type: "doc", content: [] } }],
+    );
     const off = await pub(w.co.rootScope, w.boss, "外れた決まり", "x");
     await q(
       "insert into test_specs (tenant_id, ticket_id, title, source, source_ref_id) values ($1, $2, 'x', 'knowledge', $3)",
