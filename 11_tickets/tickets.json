@@ -20451,6 +20451,167 @@
    "file": "11_tickets/K-401.md"
   },
   {
+   "id": "K-402",
+   "title": "引き継いでもらう（渡す口 createTicketHandover の kind pass：相手・理由・お願い・返事の期限・一緒に切り替えるもの・上にも知らせる・別の人にする（replaces）→ 渡し中にして相手に知らせる）（K-68 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "渡す・配る",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 3 の K-334（送り直しを頼む：DB の関数 1 本が知らせの行を入れて宛てを返し、口が関門 C6 で送って印を書く・試験 13 行・見込み 1 時間）と段 4 の K-351（migration 1 本・試験 20 行・1 時間）から引いた：DB の関数 1 本（共通の確かめを呼んで行・知らせ・証跡を書く・40 行ほど）20 分・種類のファイル 1 本（呼んで答えを組み、K-401 のメールの部品を呼ぶ・30 行ほど）15 分・別の人にする（replaces：前の渡しを取り消す 10 行ほど）5 分・範囲の地図と生成の試験の断片 5 分・自分の確かめ 15 分。試験 16 行は切る段で書いた",
+   "decisions": [
+    "D-125.14",
+    "D-125.33",
+    "D-125.87",
+    "D-125.88",
+    "D-125.89",
+    "D-130.1",
+    "D-148.2",
+    "D-148.4",
+    "D-148.10",
+    "D-148.11",
+    "D-148.19",
+    "D-148.20",
+    "D-148.30"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-pass.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-401",
+    "K-425"
+   ],
+   "acts": [
+    "A51"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（渡す口の種類 pass の振る舞いと DB の関数だけ）。引き継いでもらうの小窓と渡し中の帯は画面の葉 K-411 が持つ（正は /dev/mock/f8）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "changes": [
+    "apps/api/src/features/F8/handovers/create/pass.ts",
+    "packages/db/migrations/20261121090200_handover_pass.sql",
+    "packages/db/src/migrations.generated.ts",
+    "scripts/ci/ci_scope.d/K-402.json"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "sections": {
+    "目的": "担当者が「引き継いでもらう」の小窓（K-411）で相手・理由・お願い・返事の期限・一緒に切り替えるもの・「上の層にも知らせる」を書いて「引き継いでもらう」を押したときの振る舞いを作る（渡す口 `createTicketHandover` の kind pass）。\n\n- 渡し中（state waiting）の行を作る。**担当者はまだ渡す人のまま**（D-125.88）。相手は答えるまでチケットを読める（D-128.115・K-401 の app.ticket_involved）\n- 相手に知らせる：受け箱の行（handover.requested）とメール（D-148.19：理由とお願いはメールに書かない）\n- 「上の層にも知らせる」に印があれば、そのグループを管理する人全員（渡す人・相手を除く）に受け箱の行（handover.managers・メールは出さない・D-148.10）\n- 返事の期限を書かなければ、次の平日の 18:00（D-148.4・K-401 の app.handover_default_due）\n- **別の人にする**（K-413）：入力に `replaces`（自分の待っている渡しの id）が在れば、同じ取引の中でその渡しを取り消して（withdrawn）前の相手に取り消しの受け箱の行（K-406 の取り消すと同じ event・payload に cause \"replaced\"・dedupe_key `handover_withdrawn:<渡し>:<相手>`）を入れてから、新しい渡しを作る（待っている渡しは 1 つのまま・D-148.20）\n\n口の登録・入力の確かめ・共通の確かめ（見えるか・担当者か・止まり・相手・切り替え）は K-401 の置き場が先にする。この葉は種類のファイル `create/pass.ts` 1 本と DB の関数 1 本だけ。",
+    "完了の条件": "- [ ] 下の表の 16 行（K402-API-001〜016）が緑：`apps/api/test/features/F8/handover-pass.test.ts`（土台 K-401 の `handover.harness.ts`）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, MAIL\n\n- **K-401 の置き場の上に乗る**：振り分け（create/index.ts）が入力・共通の確かめを済ませた後に `createPass(c: CreateCtx)` を呼ぶ。c.gate に整えた切り替え（c.gate.switch）と相手（c.gate.receiver）が入っている。入力の確かめ・共通の確かめはこの葉では書き直さない\n- **待っている渡しは 1 つ**（D-148.20）：DB の関数は最初に `app.handover_gate(p_ticket, p, p_lock => true)` を呼ぶ（チケットの行を for update で取ってから数え直す。一意の索引は無い・K-401 の決定ログ）。同時に 2 本来たら、後の 1 本は前の確定を待ってから数えて E-HND-004\n- 返事の期限は口の前（K-401 の入力）で「今より後」を見ているが、DB の関数の中でも now() と比べ直す（境目で過ぎたら 409・E-HND-008・K-401 の replyOf が答えの言葉 due を 409 にする。欄・details は付かない）\n- 知らせの行の payload は チケットの id・番号・題名・渡した人の名前・返事の期限・渡しの id だけ。**理由とお願いは入れない**（チケットを作ったときの知らせ 0090 と同じ決め・メールにも書かない）\n- メールは 1 回だけ：同じ冪等キーの 2 回目は入口の冪等の器が最初の答えを返し、振る舞いに届かない\n- 証跡（audit_events）の payload に理由・お願いの文は入れない（ticket_id・to_member_id・notify_managers だけ）。理由は渡しの行に残る（D-125.90 と同じ扱い）\n- 文の欄に上限は無い（D-130.1・K-401 の入力が制御文字を落とす）\n- **replaces（別の人にする）の確かめは K-401**：入力（uuid の形・kind pass だけ）と gate（同じ会社・同じチケットで from_member_id が渡す人の渡しでなければ 403・E-HND-002、waiting でなければ 409・E-HND-005・detail 状態、そうなら止まりの waiting をその渡しを除いて数える）は K-401 が先にする。この葉は gate を通った後に、同じ取引の中で前の渡しを取り消す（state withdrawn・decided_at・updated_by）・前の相手に受け箱の行 handover.withdrawn（K-406 の取り消すと同じ event・payload も同じ形・メールなし）を入れてから新しい行を作る。取り消しの証跡は handover.withdraw（payload に replaced_by＝新しい渡しの id）",
+    "依存の理由": "- K-401: 要る — 口の登録（hooks/handovers.ts）・振り分け・種類のファイルの空の形 create/pass.ts・共通の確かめ app.handover_gate・答えの形 app.handover_json・メールの送り方 notify.ts と mail.ts の requested・列 notify_managers の上に、この葉の 2 つ（create/pass.ts・app.handover_pass）を本物にする。K-401 が入る前は口が無い\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う（K-401）：`app.handover_gate`・`app.handover_default_due`・`app.handover_manages`・`app.handover_json`・`sendHandoverMails`（notify.ts）・`handoverMail`（mail.ts の requested）・`replyOf`（errors.ts）\n- 使う：`withTenant`・知らせの行の形（0090 の ticket.assigned と同じ inapp の行・dedupe_key）・証跡 audit_events\n- 作る：`app.handover_pass`。探したが同じ形の物は無かった（前の task_handovers は凍結）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本） | `packages/db/migrations/20261121090200_handover_pass.sql`：`app.handover_pass(p_ticket uuid, p jsonb) returns jsonb`（security definer・search_path に pg_temp・public から外し kaname_app に渡す）。① `v := app.handover_gate(p_ticket, p \\|\\| '{\"kind\":\"pass\"}', true)`。error なら v を返す ② 返事の期限 `coalesce(nullif(p->>'reply_due','')::timestamptz, app.handover_default_due(now()))`。now() 以下なら `{\"error\": \"due\"}` ③ ticket_handovers に 1 行（kind pass・from app.user_id()・to v.receiver・reason・ask・reply_due・switch v.switch・notify_managers・created_by・updated_by）④ 相手に受け箱の行（channel inapp・event handover.requested・payload {handover_id, ticket_id, number, title, from_name, reply_due}・dedupe_key 'handover_requested:'\\|\\|id）⑤ notify_managers が true なら、その会社の active な人のうち `app.handover_manages(人, チケットのグループ)` の人（渡す人・相手を除く）に handover.managers の行（payload に to_name を足す）⑤b p に replaces が在れば（gate が自分の待っている渡しと確かめ済み）、③の前にその行を `for update` で取り直して state withdrawn・decided_at now()・updated_by にし、前の相手に handover.withdrawn の受け箱の行（payload {handover_id, ticket_id, number, title, from_name, cause: \"replaced\"}・dedupe_key `handover_withdrawn:<前の渡しの id>:<前の相手の member_id>`（K-406 の取り消すと同じ形）・メールの宛てに入れない）と証跡 handover.withdraw（payload {ticket_id, replaced_by}）⑥ 証跡 1 行（action handover.pass・target_type ticket_handovers・target_id 渡しの id・payload {ticket_id, to_member_id, notify_managers}・choke_point_id C2）⑦ `{\"ok\": true, \"handover\": app.handover_json(id), \"mails\": [相手にメールがあれば { notification_id, email, event: \"requested\", ticket_id, ticket_number, ticket_title, actor_name, to_name, reply_due }]}`。相手のメールは coalesce(members.auth_user_id, 所属の auth_user_id) の kaname_auth.\"user\".email。一覧は作り手 gen_migrations.py の生成物 |\n| 口（種類のファイル） | `apps/api/src/features/F8/handovers/create/pass.ts` の `createPass`：withTenant の 1 取引で `select app.handover_pass($1, $2) as v`（$2 は c.input をそのまま jsonb）。例外は 503・E-PAGE-003（ログは場所と例外の種類だけ・何も残らない）。error は K-401 の `replyOf` だけを呼ぶ（言葉の表は K-401 の errors.ts の 1 か所。due も表に在る＝422・E-HND-008 欄 reply_due。この葉は errors.ts を直さない）。ok なら取引の後に `sendHandoverMails(c.d, `{ tenantId: c.a の会社, userId: c.a の人 }`（withTenant に渡したのと同じ文脈）, v.mails, `pass:${v.handover.id}`)`（where は K-401 の決め `<種類>:<渡しの id>`。ログ「印を書けなかった」に渡しの id が出る・K402-API-012）→ 201 `{ data: v.handover }` |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-402.json`：`{\"data_links\": [{\"paths\": [\"apps/api/src/features/F8/handovers/create/pass.ts\", \"apps/api/src/features/F8/handovers/notify.ts\", \"apps/api/src/features/F8/handovers/mail.ts\"], \"tests\": [\"apps/api/test/features/F8/handover-pass.test.ts\"]}]}`（土台が hooks を動的に読むので import の地図で辿れない・K-401 と同じ訳） |\n\n### 生成の試験\n\n渡す口の ok_4（引き継いでもらう）と shape は、K402-API-001 が受ける形で試験を書く。生成の試験の ok は **統合の K-418 が K-401 の `ears-elsewhere.d/K-401.json` を 1 回で直して結ぶ**（まとめ役の決め 2026-11-20・C.11 は案 (b)。足し合わせは口ごとに 1 つの断片しか持てないため）。それまでは「本物の試験はまだ無い」の it.todo のまま。この葉は .d の断片を作らない（K-418 は全部の種類の葉に依存しているので順は合う）。",
+    "外に影響する手順": "- S1: DB に書く（渡しの行・相手と上の層の受け箱の行・証跡を app.handover_pass の 1 取引で・関門 C2）。失敗したら 503・E-PAGE-003 で何も残らない（K402-API-011）\n- S2: 相手にメールを 1 通送る（関門 C6・K-401 の sendHandoverMails）[残る] — 送ったメールは取り消せない。送れなければ答えは 201 のまま、受け箱の行に failed_at（K402-API-009）。相手にメールが無ければ送らない（K402-API-010）\n- S3: 送った・送れなかった印を受け箱の行に書く（app.handover_mail_mark・S2 の後片付け）。落ちたら 1 回だけやり直し、それでも落ちたらログに 1 行（渡しの id と「印を書けなかった」・メールは出さない）で、答えは 201（K402-API-012：S3 の失敗と S2 の後片付けの失敗を 1 行で見る）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F8/handover-pass.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン・メールは試験の偽。土台 handover.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作業中・渡しなし | 引き継いでもらうの小窓で押す | 担当者 | 201・待っている・相手に受け箱とメール | このチケット | K402-API-001〜004 |\n| 作業中・渡しなし（相手はグループの外） | 同じ | 担当者 | 201・相手が答えるまで読める | このチケット | K402-API-005 |\n| 作業中・渡しなし | 2 つのタブで同時に押す（別の相手） | 担当者 | 1 本だけ 201・もう 1 本は 409・E-HND-004 | このチケット | K402-API-006 |\n| 断られた・取り消された（前の渡し） | 押す | 担当者 | 201（新しい渡し） | このチケット | K402-API-007 |\n| 作業中・渡しなし | 二度押し（同じ冪等キー） | 担当者 | 2 回とも同じ 201・行とメールは 1 つ | このチケット | K402-API-013 |\n| 待っている（自分が渡した物） | 別の人にする（replaces つきで押す） | 担当者 | 201・前の渡しは取り消された・新しい渡しが待っている | このチケット | K402-API-015 |\n| 待っている（別の人が渡した物）・決まった（断られた） | 別の人にする（replaces つき） | 担当者 | 403・E-HND-002／409・E-HND-005 | このチケット（確かめは K-401 の gate） | K402-API-016 |\n| 待っている・AI が動いている・承認待ち・完了した | 押す | 担当者 | 409（E-HND-004・003・009） | K-401 | K401-API-017 |\n| どれでも | 押す | 担当者でない人・閲覧のみ | 403 | K-401 | K401-API-016 |\n| どれでも | 押す | ログインしていない | 401 | K-401 | K401-API-010 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K402-API-001 | 対象の状態 | 正しい入力で渡す | 201・data の鍵がちょうど 16（ask・created_at・decided_at・decline_reason・from・id・kind・notify_managers・reason・reply_due・state・switch・switch_applied・ticket_id・to・to_scope）・state waiting・kind pass・from {id, name: 高本 聖斗}・to {id, name: 佐藤 花子}・to_scope null・reason と ask は送ったとおり・reply_due は送った時刻・switch {children: false, links: false, group: false, axes: []}・decided_at null。DB の行が 1 つ・チケットの担当者は高本のまま。佐藤に handover.requested の受け箱の行が 1 つ（payload に ticket_id・number・title・from_name・reply_due・handover_id があり、理由とお願いの文が無い・sent_at が入る）。佐藤にメールが 1 通（件名「【Kaname】高本 聖斗さんから引き継ぎの頼みが届きました（<番号>）」・本文に題名・返事の期限の日付と 18:00 の形・`<web>/tickets/<id>` があり、理由とお願いの文が無い） |\n| K402-API-002 | 時間の流れ | 返事の期限を書かない | 201・reply_due は作った時刻の app.handover_default_due（次の平日 18:00・日本時間） |\n| K402-API-003 | 守り | 上の層にも知らせる | 印あり：営業を管理する山口に handover.managers の行が 1 つ（payload に to_name）・渡す人・相手・閲覧のみ・受託開発のマネージャーには無い・山口にメールは無い・notify_managers true。印なし：handover.managers の行は 0 |\n| K402-API-004 | 入力 | 一緒に切り替える | 決まりで links が always の会社：switch.links は選ばなくても true・children を選んだら true・グループの外の相手（受託開発の人）に group を選んだら true。DB の行の switch も同じ |\n| K402-API-005 | 守り | 相手が読める | 受託開発の人（営業のチケットは読めない）に渡すと、待っている間はチケットを読める（行の守りの中で 1 行） |\n| K402-API-006 | 操作の揺れ | 同時に 2 本 | 同じチケットで佐藤と鈴木に同時に渡す → 答えは 201 と 409 が 1 つずつ・409 は E-HND-004・待っている渡しの行は 1 つ・受け箱の行も 1 つ |\n| K402-API-007 | 対象の状態 | 前の渡しが決まった後 | 断られた・取り消された渡しがあるチケットで渡す → 201・待っている行が 1 つ増える |\n| K402-API-008 | 守り | 証跡 | handover.pass の証跡が 1 行（target_id は渡しの id・payload の ticket_id と to_member_id）・payload に理由とお願いの文が無い |\n| K402-API-009 | 失敗 | 手順 S2 失敗（メールを送れない） | 201（渡しは作られる）・受け箱の行に failed_at が入り sent_at は空・ログに「[handover]」の 1 行があり、相手のメールアドレス・理由の文は無い |\n| K402-API-010 | 失敗 | 相手にメールが無い | 201・受け箱の行は 1 つ・メールは 0 通 |\n| K402-API-011 | 失敗 | 手順 S1 失敗（DB の失敗） | 受け箱の行を書く所で DB が落ちる → 503・E-PAGE-003・渡しの行も受け箱の行も証跡も無い・メールは 0 通 |\n| K402-API-012 | 失敗 | 手順 S3 失敗（送った印を書けない＝S2 の後片付けの失敗） | 印を書く所で DB が落ちる → 201・メールは 1 通届く・ログに渡しの id と「印を書けなかった」・受け箱の行の sent_at は空のまま |\n| K402-API-013 | 操作の揺れ | 二度押し | 同じ冪等キーで 2 回 → 2 回とも 201 で同じ id・渡しの行 1 つ・受け箱の行 1 つ・メール 1 通 |\n| K402-API-014 | 入力 | 文の掃除と上限 | 理由とお願いの制御文字（\\u0007 など）は取り除いて残す（改行・タブは残る）。10 万字の理由も 201 で、そのまま全部残る（D-130.1） |\n| K402-API-015 | 対象の状態 | 別の人にする（replaces） | 鈴木への待っている渡しの id を replaces に入れて佐藤に渡す → 201・前の渡しは state withdrawn・decided_at が入る・新しい渡しは waiting で相手は佐藤・待っている渡しは 1 つ・鈴木に handover.withdrawn の受け箱の行が 1 つ（payload の cause は replaced・dedupe_key は `handover_withdrawn:<前の渡し>:<鈴木>`・メール 0 通）・佐藤に handover.requested の行 1 つとメール 1 通・証跡 handover.withdraw が 1 行（payload の replaced_by が新しい渡しの id） |\n| K402-API-016 | 守り | replaces が自分の待っている渡しでない | 別の人（鈴木）が渡した待っている渡しの id → 403・E-HND-002／自分の断られた渡しの id → 409・E-HND-005・detail の状態 declined／でたらめの uuid → 403・E-HND-002。どれも渡しの行は増えず、前の渡しの状態も変わらない・受け箱の行もメールも 0 |\n\n### テストの型の受け（分類 CRUD・MAIL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 作る・作った物を読み直す | K402-API-001（DB の行を読み直す）・002・004 |\n| 二度押し・同時 | K402-API-006・013 |\n| 直す（別の人にする）・取り消したものに触る | K402-API-015・016 |\n| メールの文（理由を書かない）・宛て | K402-API-001・003・010 |\n| メールが送れない・印が書けない | K402-API-009・012 |\n| 権限・別の会社 | 要らない: 振り分けの前の共通の確かめ（K-401 の K401-API-015・016・019）がこの種類にも同じに効く |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（引き継いでもらうの小窓・K-411） | 無い（501） | 押したときに 1 本（createTicketHandover）。下見は小窓を開くときの K-401 の口 |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 確かめの 1 取引（K-401 の gate・文 1 つ）＋書く 1 取引（app.handover_pass・文 1 つ）＋送った印の文 1 つ（取引の外）。メールは取引の後 |\n| 認証の要る答えの Cache-Control | — | 書く口（201）。入口の共通（no-store） |\n| 新しい住所 | — | 増えない（/tickets/:id/handovers は契約に在る） |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"ticket_handovers\\|handover_pass\\|handover.requested\\|handover.managers\" -- 'apps/api/test/*.ts' 'apps/api/test/**/*.ts' 'packages/db/test/*.ts' ':!apps/api/test/generated/*' ':!apps/api/test/features/F8/*'\n3\n```\n\n（F8 の置き場は段 9 の葉が切る段で書いた新しい試験なので外した）\n\n- apps/api/test/features/F4/ticket-list.test.ts: 替えない — 待っている渡しの行を直に入れる（この葉の関数を通らない）\n- apps/api/test/row_rules.test.ts: 替えない — 答える口の行の決まりだけを見る\n- packages/db/test/ticket_around.test.ts: 替えない — 渡しの行の守りを直に見る（この葉は守りを変えない）",
+    "成果物": "- migration 1 本（app.handover_pass）・種類のファイル create/pass.ts・範囲の地図の断片\n- 単体の試験 `handover-pass.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：上の層への知らせ（handover.managers）は受け箱の行だけ（D-148.19 のメールの並びに入っていない）\n- 2026-11-20 切る段の決め：証跡と受け箱の行に理由・お願いの文を入れない。理由は渡しの行に残る",
+    "代表に聞くこと（まとめ役が 1 回で聞く）": "無い",
+    "リスクと懸念": "- メールの文は K-401 の mail.ts（requested）が組む。文が違えば K-401 の置き場の誤りとして切る段に戻す（この葉は mail.ts を changes に持たない）",
+    "申し送り": "- K-413：「別の人にする」は渡す口に `replaces: <待っている渡しの id>` を足して送る（取り消すと渡すを別々に呼ばない）\n- K-411：201 の答え（16 の鍵）で渡し中の帯を描ける（相手の名前・返事の期限・理由）。押した直後の小さな知らせ「佐藤さんに渡しました」は画面が出す（D-148.30）\n- K-416：渡す → 受けるの通しは中間テストで（この葉の試験は受けるを通さない）",
+    "表の住所（2026-11-20）": "- 口の登録・振り分けは K-401（hooks/handovers.ts・create/index.ts）。この葉は create/pass.ts の中身だけ\n- migration は時刻の名前 `packages/db/migrations/20261121090200_handover_pass.sql`（K-327）。一覧は生成物\n- 共通の表に足す分（範囲の地図）は `scripts/ci/ci_scope.d/K-402.json`（K-325）。errors は足さない（K-401 の E-HND-001〜014 を使う）\n- 渡す口の生成の試験の ok_4・shape を結ぶのは K-418（K-401.json を 1 回で直す）。この葉は .d の断片を作らない\n- `08_api/phase1/01_チケット.md`・`scripts/ci/row_rules.mjs` は触らない（replaces の入力と契約は K-401 の screen_api.d/K-401.py・input.ts が持つ）"
+   },
+   "file": "11_tickets/K-402.md"
+  },
+  {
+   "id": "K-403",
+   "title": "受ける／断る（答える口 answerTicketHandover の kind pass：受ける＝担当者が移り渡した人に知らせる／断る＝理由が必須・渡した人に戻り知らせとメール）（K-68 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "渡す・配る",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 1 の K-162・K-163（承認する・差し戻す：DB の関数 1 本が行・段・証跡を 1 取引で書き、言葉を HTTP にする・試験 20 行ほど・見込み 1 時間）と K-402（同じ置き場の種類のファイル 1 本）から引いた：DB の関数 1 本（受けると断るの 2 つの枝・担当者の書き換えと切り替えの関数の呼び出し・40 行ほど）20 分・種類のファイル 1 本 15 分・範囲の地図 5 分・自分の確かめ 20 分。試験 13 行は切る段で書いた",
+   "decisions": [
+    "D-125.14",
+    "D-125.88",
+    "D-125.90",
+    "D-125.156",
+    "D-128.115",
+    "D-130.1",
+    "D-148.5",
+    "D-148.6",
+    "D-148.7",
+    "D-148.19",
+    "D-148.34",
+    "D-148.35"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-answer-pass.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-401",
+    "K-425"
+   ],
+   "acts": [
+    "A110"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（答える口の種類 pass の振る舞いと DB の関数だけ）。承認待ちの「渡された」の行・断る小窓・受けた後の帯は画面の葉 K-412 が持つ（正は /dev/mock/f8）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "changes": [
+    "apps/api/src/features/F8/handovers/answer/pass.ts",
+    "packages/db/migrations/20261121090300_handover_answer_pass.sql",
+    "packages/db/src/migrations.generated.ts",
+    "scripts/ci/ci_scope.d/K-403.json"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "sections": {
+    "目的": "渡された人が承認待ちの行・詳細の帯で「受ける」「断る」を押したときの振る舞いを作る（答える口 `answerTicketHandover` の kind pass・D-125.88「受ける＝移る／断る＝戻る」）。\n\n- **受ける**：チケットの担当者を渡された人にする。同じ取引の中で、渡した人が選んだ「一緒に切り替えるもの」を `app.handover_apply_switch`（K-404 が本物にする）で移し、移した物を渡しの行の switch_applied に残す。渡した人に受け箱の行（handover.accepted・メールは出さない・D-148.19）\n- **断る**：理由が必須（D-125.90）。担当者は渡した人のまま。理由は渡しの行に残る。渡した人に受け箱の行（handover.declined）とメール（理由は書かない）\n- AI が動いている・承認を待っているチケットは受けられない（渡した後に渡した人が AI に任せた場合も・D-148.6）。返事の期限が過ぎていても受ける・断るは押せる（下絵 f8-overdue「今からでも受ける・断るを押せます」）\n\n答える人の確かめ・入力・もう決まった渡し（409）は K-401 の置き場が先にする。この葉は種類のファイル `answer/pass.ts` 1 本と DB の関数 1 本だけ。",
+    "完了の条件": "- [ ] 下の表の 13 行（K403-API-001〜013）が緑：`apps/api/test/features/F8/handover-answer-pass.test.ts`（土台 K-401 の `handover.harness.ts`）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, MAIL\n\n- **K-401 の置き場の上に乗る**：振り分け（answer/index.ts）が入力（decision・decline_reason の空）と共通の確かめ（無い・答える人でない・もう決まった）を済ませた後に `answerPass(c: AnswerCtx)` を呼ぶ\n- DB の関数は最初に `app.handover_answer_gate(p_handover, p_lock => true)`（渡しの行とチケットの行を for update）を呼び直す。受けると断るが同時に来たら、後の 1 つは前の確定を待ってから「もう決まった」（409・E-HND-005）\n- 受けるの止まり：`app.handover_blocked(チケット, p_except => この渡し)` が ai_running か approval なら 409・E-HND-003（何も変えない）。closed なら 409・E-HND-009（完了した・消したチケット。完了・消すときの自動の取り消しは K-406 の物なので、ここでは断るだけ）\n- K-406 の引き金（チケットを完了にする・消すと待っている渡しを自動で withdrawn にする・D-148.5）が入った後は、完了・消したチケットに待っている渡しはほぼ残らないので、答えると E-HND-009 でなく 409・E-HND-005（もう決まっている・detail の状態 withdrawn）になる。closed の枝は K-406 の前と、引き金をすり抜けた行の守りとして残す（行は足さない）\n- 種類 pass の答えでは（受けるも断るも）**switch を受けない**（一緒に切り替えるものは渡した人が小窓で決めた・渡しの行の switch）。送られたら受けるでも断るでも番号なしの 422（VALIDATION_ERROR・欄 switch）。これは切り替えの形・種類の誤り（DB の中身で決まる断りではない）なので E-HND-011（409・ワークスペースの決まりと合わない）は使わない（K-401 の決め・answer=431fc50df51b）\n- **K-404 が入る前**：`app.handover_apply_switch` は空の形（'{}' を返す）。この葉の試験は switch_applied の中身を見ない（object であることだけ）。移るかは K-404 の試験と中間テスト K-416 が見る\n- 受け箱の行・証跡に断る理由の文を入れない（理由は渡しの行の decline_reason に残る）。メールにも書かない（D-148.19）\n- 断る理由に上限は無い（D-130.1）。K-401 の入力が制御文字を落とす（改行・タブは残る）",
+    "依存の理由": "- K-401: 要る — 口の登録・振り分け・種類のファイルの空の形 answer/pass.ts・共通の確かめ app.handover_answer_gate・app.handover_blocked・答えの形 app.handover_json・切り替えの関数の空の形 app.handover_apply_switch・列 switch_applied と answered_by・メールの送り方（mail.ts の declined）の上に、この葉の 2 つを本物にする\n- （K-404 には依存しない：切り替えの関数は K-401 の空の形を呼ぶ。K-404 が入れば同じ名前の関数が本物になる・切り方.md 3 章「9-A4 → 9-A3 は外した（後ろへ移す）」）\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う（K-401）：`app.handover_answer_gate`・`app.handover_blocked`・`app.handover_apply_switch`・`app.handover_json`・`sendHandoverMails`・`handoverMail`（declined）・`replyOf`\n- 使う：`withTenant`・承認する口 K-162 の形（DB の関数が言葉を返し、errors.ts が HTTP にする）・知らせの行の形（0090）・証跡\n- 作る：`app.handover_answer_pass`。探したが同じ形の物は無かった",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本） | `packages/db/migrations/20261121090300_handover_answer_pass.sql`：`app.handover_answer_pass(p_handover uuid, p jsonb) returns jsonb`（security definer・search_path に pg_temp・kaname_app に渡す）。① `v := app.handover_answer_gate(p_handover, true)`。error なら返す ② decision accept：`app.handover_blocked(v.ticket_id, p_handover)` が ai_running／approval → `{\"error\": \"busy\"}`・closed → `{\"error\": \"closed\"}`。`update tickets set assignee_member_id = v.to_member_id, updated_by = app.user_id()`。`m := app.handover_apply_switch(p_handover, v.from_member_id, v.to_member_id)`。`update ticket_handovers set state = 'accepted', decided_at = now(), answered_by = app.user_id(), switch_applied = m, updated_by = app.user_id()`。渡した人に受け箱の行（inapp・handover.accepted・payload {handover_id, ticket_id, number, title, to_name}・dedupe_key 'handover_accepted:'\\|\\|id）。証跡（handover.accept・payload {ticket_id, from_member_id}）。mails は空 ③ decision decline：`update … set state = 'declined', decline_reason = p->>'decline_reason', decided_at = now(), answered_by = app.user_id()`（表の check も理由の空を断る）。渡した人に受け箱の行（handover.declined・payload {handover_id, ticket_id, number, title, to_name}）。証跡（handover.decline・payload {ticket_id, from_member_id}・理由は入れない）。渡した人にメールがあれば mails に { notification_id, email, event: \"declined\", ticket_id, ticket_number, ticket_title, actor_name: 答えた人, to_name: 答えた人, reply_due: null } ④ `{\"ok\": true, \"handover\": app.handover_json(p_handover), \"mails\": …}` |\n| 口（種類のファイル） | `apps/api/src/features/F8/handovers/answer/pass.ts` の `answerPass`：c.input.switch が null でなければ番号なしの 422（invalid(\"switch\", …)・VALIDATION_ERROR・欄 switch）。withTenant の 1 取引で `select app.handover_answer_pass($1, $2) as v`。例外は 503・E-PAGE-003。error は K-401 の `replyOf` だけを呼ぶ（busy 409・E-HND-003／closed 409・E-HND-009／decided 409・E-HND-005。言葉の表は K-401 の errors.ts の 1 か所）。ok なら取引の後に `sendHandoverMails(c.d, `{ tenantId: c.a の会社, userId: c.a の人 }`（withTenant に渡したのと同じ文脈）, v.mails, `answer-pass:${c.handoverId}`)`（where は K-401 の決め `<種類>:<渡しの id>`）→ 200 `{ data: v.handover }` |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-403.json`：`{\"data_links\": [{\"paths\": [\"apps/api/src/features/F8/handovers/answer/pass.ts\", \"apps/api/src/features/F8/handovers/notify.ts\", \"apps/api/src/features/F8/handovers/mail.ts\"], \"tests\": [\"apps/api/test/features/F8/handover-answer-pass.test.ts\"]}]}` |\n\n### 生成の試験\n\n答える口の ok と shape は、K403-API-001 が受ける形で試験を書く。生成の試験の ok は **統合の K-418 が K-401 の `ears-elsewhere.d/K-401.json` を 1 回で直して結ぶ**（まとめ役の決め 2026-11-20・C.11 は案 (b)。足し合わせは口ごとに 1 つの断片しか持てないため）。それまでは「本物の試験はまだ無い」の it.todo のまま。この葉は .d の断片を作らない。",
+    "外に影響する手順": "- S1: DB に書く（担当者・一緒に切り替える物・渡しの行・渡した人の受け箱の行・証跡を app.handover_answer_pass の 1 取引で・関門 C2）。失敗したら 503・E-PAGE-003 で何も残らない（担当者も変わらない・K403-API-010）\n- S2: 断ったときだけ、渡した人にメールを 1 通（関門 C6）[残る] — 送ったメールは取り消せない。送れなければ答えは 200 のまま、受け箱の行に failed_at（K403-API-011）\n- S3: 送った・送れなかった印を書く（app.handover_mail_mark・S2 の後片付け）。落ちたら 1 回だけやり直し、それでも落ちたらログに 1 行で答えは 200（K403-API-013：S3 の失敗と S2 の後片付けの失敗を 1 行で見る）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F8/handover-answer-pass.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン・メールは試験の偽。待っている渡しの行は DB に直に置く＝K-402 に依存しない。土台 handover.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 待っている | 承認待ちの行・詳細の帯の「受ける」 | 渡された人 | 200・受けた・担当者が移る・渡した人に受け箱の行 | このチケット | K403-API-001・003 |\n| 待っている | 「断る」（理由） | 渡された人 | 200・断られた・担当者は戻る（変わらない）・受け箱の行とメール | このチケット | K403-API-002・009 |\n| 期限切れ（waiting で reply_due が過ぎた） | 「受ける」 | 渡された人 | 200・受けた | このチケット | K403-API-008 |\n| 待っている | 受けると断るを同時に（2 つのタブ） | 渡された人 | 1 つだけ 200・もう 1 つは 409・E-HND-005 | このチケット | K403-API-004 |\n| 待っている | 受けるを二度押し | 渡された人 | 200 と 409・E-HND-005・担当者の書き換えは 1 回 | このチケット | K403-API-005 |\n| 待っている・AI が動いている（渡した後に任せた） | 「受ける」 | 渡された人 | 409・E-HND-003・待っているまま | このチケット | K403-API-006 |\n| 待っている・承認待ち | 「受ける」 | 渡された人 | 409・E-HND-003 | このチケット | K403-API-007 |\n| 受けた・断られた・取り消された（もう決まっていた） | 答える | 渡された人 | 409・E-HND-005 | K-401 | K401-API-022 |\n| 待っている | 答える | 渡した人・関係ない人 | 403 | K-401 | K401-API-021 |\n| どれでも | 答える | ログインしていない | 401 | K-401 | K401-API-010 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K403-API-001 | 対象の状態 | 受ける | 200・data の鍵がちょうど 16・state accepted・decided_at が入る・switch_applied が object（中身は K-404）。チケットの担当者が佐藤・渡しの行の answered_by が佐藤。高本に handover.accepted の受け箱の行が 1 つ（payload に to_name 佐藤 花子）・高本へのメールは 0 通。handover.accept の証跡が 1 行 |\n| K403-API-002 | 対象の状態 | 断る | 200・state declined・decline_reason は送った理由（制御文字は取り除き、改行は残る）・担当者は高本のまま。高本に handover.declined の受け箱の行が 1 つ（payload に理由の文が無い）・高本にメールが 1 通（件名「【Kaname】佐藤 花子さんが引き継ぎを断りました（<番号>）」・本文にリンクがあり理由の文が無い）。handover.decline の証跡 1 行で payload に理由の文が無い |\n| K403-API-003 | 守り | 受けた後の役 | 受けた後、佐藤の下見は kinds [\"pass\"]（担当者）・高本の下見は kinds [\"offer\"]（同じグループの書ける人）。佐藤はチケットを読める |\n| K403-API-004 | 操作の揺れ | 同時に受けると断る | 答えは 200 と 409 が 1 つずつ・409 は E-HND-005・渡しの行の state は 200 になった方と同じ・受け箱の行（accepted と declined の合計）は 1 つ |\n| K403-API-005 | 操作の揺れ | 受けるを二度押し（冪等キーなし） | 1 回目 200・2 回目 409・E-HND-005・担当者は佐藤・handover.accepted の行は 1 つ・証跡 1 行 |\n| K403-API-006 | 対象の状態 | 渡した後に AI に任せた | AI の実行が running のチケットで受ける → 409・E-HND-003（文「AI の実行（承認）が終わってから渡してください」）・渡しは待っているまま・担当者は高本のまま。断るは押せる（200・declined） |\n| K403-API-007 | 対象の状態 | 承認待ち | 決めていない承認の行があるチケットで受ける → 409・E-HND-003・待っているまま |\n| K403-API-008 | 時間の流れ | 期限切れ | 返事の期限が 1 時間前に過ぎた渡しでも受ける → 200・accepted・担当者が佐藤 |\n| K403-API-009 | 守り | 断った後の見え方 | 受託開発の人（営業のチケットは読めない）に渡した物を断ると、断った後はチケットを読めない（行の守りの中で 0 行） |\n| K403-API-010 | 失敗 | 手順 S1 失敗（DB の失敗） | 渡しの行を書く所で DB が落ちる → 503・E-PAGE-003・担当者は高本のまま・渡しは待っているまま・受け箱の行と証跡が残らない |\n| K403-API-011 | 失敗 | 手順 S2 失敗（断るのメールを送れない） | 200・declined・高本の受け箱の行に failed_at・ログに「[handover]」の 1 行があり、メールアドレスと理由の文が無い |\n| K403-API-012 | 入力 | 受ける・断るに switch | 種類 pass の渡しに switch つきで受ける・断る（理由つき）のどちらも → 番号なしの 422（code VALIDATION_ERROR・E-HND-011 ではない）・欄 switch・待っているまま（担当者は高本のまま・受け箱の行と証跡は 0） |\n| K403-API-013 | 失敗 | 手順 S3 失敗（送った印を書けない＝S2 の後片付けの失敗） | 印を書く所で DB が落ちる → 200・declined・メールは 1 通届く・ログに「印を書けなかった」 |\n\n### テストの型の受け（分類 CRUD・MAIL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 書いた物を読み直す | K403-API-001・002（DB の行とチケットを読み直す）・003（下見の口で読み直す） |\n| 二度押し・同時 | K403-API-004・005 |\n| メールの文・送れない・印 | K403-API-002・011・013 |\n| 権限・別の会社 | 要らない: 振り分けの前の共通の確かめ（K-401 の K401-API-020・021）がこの種類にも同じに効く |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（承認待ちの行・詳細の帯・K-412） | 無い（501） | 押したときに 1 本（answerTicketHandover） |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 確かめの 1 取引（K-401 の answer_gate）＋書く 1 取引（app.handover_answer_pass・文 1 つ）＋送った印（断るときだけ） |\n| 認証の要る答えの Cache-Control | — | 入口の共通（no-store） |\n| 新しい住所 | — | 増えない |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"ticket_handovers\\|assignee_member_id.*handover\\|handover.accepted\\|handover.declined\" -- 'apps/api/test/*.ts' 'apps/api/test/**/*.ts' 'packages/db/test/*.ts' ':!apps/api/test/generated/*' ':!apps/api/test/features/F8/*'\n3\n```\n\n- apps/api/test/features/F4/ticket-list.test.ts: 替えない — 待っている渡しの行を直に入れて一覧を見る（答える関数を通らない）\n- apps/api/test/row_rules.test.ts: 替えない — 行の決まり（K-401）だけを見る\n- packages/db/test/ticket_around.test.ts: 替えない — 行の守りで直に断る（state declined）形を見る。この葉の関数は守りを変えない",
+    "成果物": "- migration 1 本（app.handover_answer_pass）・種類のファイル answer/pass.ts・範囲の地図の断片\n- 単体の試験 `handover-answer-pass.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：種類 pass の答えでは switch を受けない（渡した人が決めた物を使う・受けるでも断るでも送られたら番号なしの 422・VALIDATION_ERROR。2026-11-20 K-401 の決めに合わせて E-HND-011 から変えた）\n- 2026-11-20 切る段の決め：受けるで完了した・消したチケットに当たったら 409・E-HND-009（自動で取り消すのは K-406 の完了・消すの側）",
+    "代表に聞くこと（まとめ役が 1 回で聞く）": "無い",
+    "リスクと懸念": "- 受けた直後に担当者が変わる。前の担当者が開いていた詳細の「AI に任せる」は、押すと押した人の AI で動く（K-62 の任せる口は担当者でなく「そのチケットを直せる人なら誰でも」で通す・D-128.138）ので、直せる人のままなら任せられる。承認する人は結果が届いた時点の担当者になる（D-128.25）。画面の出し方は K-412・K-416",
+    "申し送り": "- K-404：`app.handover_apply_switch(p_handover, p_from, p_to)` はこの葉の受けるの取引の中で呼ばれる。担当者を書き換えた後に呼ぶ（チケット自身の担当者は書き換え済み）。例外を投げれば受けるごと戻る\n- K-412：200 の答え（16 の鍵）の switch_applied で「子チケット 2 件も一緒に移りました」の帯を描ける（K-404 の形）\n- K-416：受けた後に新しい担当者が AI に任せられることは中間テストで",
+    "表の住所（2026-11-20）": "- 口の登録・振り分けは K-401。この葉は answer/pass.ts の中身だけ\n- migration は時刻の名前 `packages/db/migrations/20261121090300_handover_answer_pass.sql`。一覧は生成物\n- 範囲の地図は `scripts/ci/ci_scope.d/K-403.json`。errors は足さない（K-401 の E-HND-003・005・009・011 を使う）\n- 答える口の生成の試験の ok・shape を結ぶのは K-418（K-401.json を 1 回で直す）。この葉は .d の断片を作らない\n- `08_api/phase1/01_チケット.md`・`scripts/ci/row_rules.mjs` は触らない"
+   },
+   "file": "11_tickets/K-403.md"
+  },
+  {
    "id": "K-404",
    "title": "受けたときに一緒に切り替える（DB の関数 app.handover_apply_switch を本物にする：子・孫／関連・派生元のうち前の担当者の物を移す・グループを移す）（K-68 の葉）",
    "kind": "タスク",
@@ -20702,6 +20863,215 @@
     "表の住所（2026-11-20）": "- migration は時刻の名前 `packages/db/migrations/20261121090700_handover_overdue.sql`（段 9 の枠・NN＝07）\n- 範囲の地図は `scripts/ci/ci_scope.d/K-407.json`（作り手 build_registries.py が ci_scope.json に足す）\n- 新しい口は無い（契約・hooks のファイル・エラーは足さない）。承認待ちの口の振る舞いは K-161 の hooks のファイル（apps/api/src/hooks/approve-complete.ts）の材料だけを直す\n- K-401 の md（2026-11-20）の名前に合わせた。K-401 が名前を変えたら、この md と試験の頭の説明を直す"
    },
    "file": "11_tickets/K-407.md"
+  },
+  {
+   "id": "K-411",
+   "title": "画面：詳細の「担当者 ▾」から相手を選んで引き継いでもらう（相手を選ぶ小窓・引き継いでもらうの小窓・渡し中の帯・渡しの様子を読めない帯・担当者の下の返事待ち）（K-68 の葉・9-W1）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 3 の画面の葉（小窓 1 つを口につなぐ・入力の確かめ・口の断りを出す・見込み 1）と段 1 の K-63 の帯の孫から引いた：▾ と相手を選ぶ小窓（下見を読む・探す）15 分・引き継いでもらうの小窓（欄・確かめ・送る・断りの出し分け）25 分・渡し中の帯と読めない帯 10 分・担当者の下の「返事待ち」5 分・モックとの突き合わせを流して直す 5 分。部品の見た目は K-400 が運ぶ（views.tsx に動きを受ける口も K-400 が足す）ので、この葉は値と動きをつなぐだけ",
+   "decisions": [
+    "D-061",
+    "D-070",
+    "D-125.14",
+    "D-125.87",
+    "D-125.88",
+    "D-125.33",
+    "D-125.70",
+    "D-125.71",
+    "D-128.125",
+    "D-145.9",
+    "D-148.2",
+    "D-148.3",
+    "D-148.4",
+    "D-148.6",
+    "D-148.10",
+    "D-148.11",
+    "D-148.18",
+    "D-148.20",
+    "D-148.21",
+    "D-148.24",
+    "D-148.25",
+    "D-148.30",
+    "D-148.31",
+    "D-148.32",
+    "D-148.33",
+    "D-148.37",
+    "D-148.38"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書くのは口の葉 K-402（渡す）の関門 C2・C6 で、画面は契約の口 createTicketHandover・previewTicketHandover と getTicket（今の渡しは K-405 が答えに載せる）を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k411-pass-detail.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-400",
+    "K-402",
+    "K-405",
+    "K-425"
+   ],
+   "acts": [
+    "A51"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f8-detail-owner",
+    "f8-pick",
+    "f8-pick-search",
+    "f8-pick-none",
+    "f8-pass",
+    "f8-pass-error",
+    "f8-pass-refused",
+    "f8-blocked",
+    "f8-noperm",
+    "f8-failed"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F8/handover/assignee-action.tsx",
+    "apps/web/features/F8/handover/pass-dialog.tsx",
+    "apps/web/features/F8/handover/band-sender.tsx",
+    "scripts/ci/ci_scope.d/K-411.json",
+    "11_tickets/K-68.md"
+   ],
+   "sections": {
+    "目的": "担当者本人が、チケットの詳細の右のパネルの「担当者 ▾」から相手を選び、理由・お願い・返事の期限・一緒に切り替える物を添えて「引き継いでもらう」を頼めるようにする（行為 A51・入口は代表の答え D-148.2）。頼んだ後は題名の下に「渡し中」の帯が出て、担当者の下に「→ 〇〇（返事待ち）」が出る。相手が受けるまで担当者は自分のまま（D-125.88）。帯・担当者の欄・▾ は getTicket の答えの今の渡し（`handover`）と見ている人ができる種類（`handover_kinds`）だけで決める（K-405 が載せる・詳細の口は 6 のまま・PM の決め 2026-11-20）。\n\n- 正の絵はモック `/dev/mock/f8/<状態>`（この葉の 10 の状態・下の mock:）。部品は K-400 が運んだ `features/F8/handover/views.tsx`（`AssigneeValue`・`PickDialog`・`HandoverDialog`・`HandoverBand`）をそのまま使い、値と動きを渡す（views.tsx は触らない）\n- 渡し中の帯のボタン（催促する・取り消す・別の人にする）は K-413 の物。この葉では K-400 の空の形（押せない形で 3 つ出す）のまま\n- 差し込み口の名前は K-380 の書き置き（`段7-段9-共通の差し込み口.md`）と K-400 の slot-dispatch.tsx のとおり（AssigneeSlot → この葉の AssigneeAction・HandoverBandSlot → この葉の band-sender.tsx の帯）\n- 渡された人の帯・承認待ちの行は K-412、配る（マネージャー）は K-415、申し出は K-414",
+    "完了の条件": "- [ ] 担当者本人が ▾ → 相手を選ぶ → 引き継いでもらう を通すと、口に 1 回だけ送られ、帯と担当者の下が「渡し中」になる（開き直しても同じ）\n- [ ] 入力の誤り・口の断り（相手が選べない・別の渡しの返事待ち・AI が動いている・送れない）がモックの字で出て、書いた中身は残る\n- [ ] getTicket の handover_kinds に pass が無い人（閲覧のみ・取引先・担当者でない人）には ▾ が出ない（役の名前で決めない）。AI が動いている・承認待ちでは ▾ を押すと訳が出て選べない\n- [ ] 詳細を開いたときの口は getTicket の 1 回で帯と返事待ちが出る（記録の読む口・下見の口を呼ばない・口の数 6 のまま）\n- [ ] この葉の 10 の状態が幅 375・768・1440 でモックと同じ値（matchMock）\n- [ ] 行の表の全部の行が緑",
+    "前提と制約": "- **口の形は口の葉の md に合わせた**（2026-11-20 に同時に書かれた 11_tickets/K-401・K-402・K-405。形は試験の道具 `apps/web/tests/k/handover-mock.ts` の頭の注・K-400 が運ぶ）。口の葉の md が直ったら、まとめ役が道具とこの md の字を合わせる\n  - 下見 `GET /api/v1/tickets/:id/handover-preview`（K-401）：人の並び（名前・メール・主のグループと役割・今週の件数・選べない訳・相手がチケットのグループに入っているか・相手の主のグループ）・子の数（自分が担当の子・ほかの人の子）・チケットのグループ・一緒に移す物の決まり（毎回聞く／いつも／しない）・渡せない訳・返事の期限の既定\n  - 渡す `POST /api/v1/tickets/:id/handovers`（K-402）← `{ kind: \"pass\", to_member_id, to_scope_id: null, reason, ask, reply_due, switch: { children, links, group, axes: [] }, notify_managers }`（頭 Idempotency-Key）→ 201\n  - 詳細 `GET /api/v1/tickets/:id`（getTicket）の答えに K-405 が足す `handover`（今の渡し 1 件・K-405 の TicketHandover の 1 件と同じ形か null）と `handover_kinds`（見ている人ができる種類・下見の kinds と同じ）。記録の読む口 `GET /api/v1/tickets/:id/handovers`（K-405）はこの葉では呼ばない（記録を開いたときだけ・PM の決め）\n- **エラーの番号は K-401 の共通の番号**（11_tickets/K-401.md の表・2026-11-20 に同時に書かれた）：`E-HND-007` 理由が空・`E-HND-008` 返事の期限が今より後でない・`E-HND-006`（口は 409・口が断る番号の決め answer=431fc50df51b。422 ではない）相手が止まっている／招待中（文「{名前}さんは今は選べません（{訳}）。別の人を選んでください」）・`E-HND-004` 同じチケットに待っている渡し（「いま{名前}さんの返事を待っています。先にその渡しを取り消してください」）・`E-HND-003` AI が動いている・承認を待っている。文は正本の 1 件で、`{名前}`・`{訳}` に口の答えの `detail` の同じ名前の値を入れる（画面で文を作らない・前例 E-LIM-005 の `{秒}`）。下見の答えの形も K-401 の HandoverPreview（candidates・rules・blocked の値 closed／ai_running／approval／waiting）\n- 欄の確かめは手元でも先にする（理由が空・返事の期限が今より前は送らない）。口も同じ確かめをする（両方で守る・K-402）\n- **詳細の口は 6 のまま（PM の決め 2026-11-20・前の「PM に確かめたいこと」の (b)）**：帯と返事待ちは getTicket の `handover` から出す（K-400 の `handoverOf`・`bandKindOf`・`waitingNoteOf`）。渡した後は詳細を読み直す（`ticket.reload()`＝getTicket 1 回）。速さの台帳（perf_budget.json・k237）は替えない\n- **▾ は役の名前で出さない（PM の決め 2026-11-20）**：K-400 の `entryOf(handover_kinds, 担当者が自分か)` が `pass` のときだけ（担当者本人で、DB が pass を返す人）。閲覧のみ・取引先・止まっている人は DB が [] を返すので出ない（D-148.18）。会社を作った人（/me の role_id null）も DB の答えのまま\n- **担当者の下の返事待ちの字（PM の決め 2026-11-20）**：K-400 の `waitingNoteOf` の字をそのまま出す（引き継いでもらう・人に配る＝相手の名前・相手が見ている人なら「あなた」／グループに配る＝「グループ「〇〇」」／申し出＝出さない）。種類を自分で決めない\n- **AI が動いている・承認待ち**：`ticket.bands.has(\"approve\")`（F5 の承認と実行の帯が出ている・K-380 の器）なら mode blocked。最後の判定は下見の `blocked` と口の 409（E-HND-003）\n- 渡し中の相手の名前は帯では姓だけ（「佐藤さん」・モックの字）、担当者の下と小窓では姓名（「佐藤 花子」）。姓は `display_name` の最初の空白の前（空白が無ければ全体）\n- 返事の期限の欄は `HandoverDialog` の `dueType=\"datetime-local\"`（日本時間で表示・送るときは ISO の UTC）。既定は下見の `default_reply_due`（次の平日の 18:00・D-148.4）\n- 一緒に切り替える物（D-148.11）：子は「自分が担当の子・孫」の数があれば 1 行（決まり ask＝印あり・外せる／always＝印あり・外せない／never＝出さない）。グループは相手がチケットのグループに入っていない（candidates の in_group が偽）ときだけ 1 行（「グループを「<下見の group.name>」から「<相手の group.name>」に移す」・既定は印なし・決まり never なら出さない）。関連（links）は下見の links.mine が 1 以上のときだけ同じ形で 1 行\n- 小さな知らせ「佐藤さんに渡しました」は前からの部品 useNotify（5 秒で消える・D-148.30）",
+    "確かめたこと（切る段・2026-11-20）": "- 詳細の前からの試験の土台（`tests/features/F5/approve-complete.harness.ts` の mockApi）は、getTicket の担当者を `{ display_name: \"高本\" }`（id 無し）で返し、`handover`・`handover_kinds` の鍵を持たない。だから前からの詳細の試験では、この葉が出す ▾ は出ず（種類が [] とみなされる）、帯も出ない（今の渡しが null とみなされる）\n- 前からの「操作要素の漏れ」の試験（K62-UI-000・K63-UI-020）は、上の理由で ▾ を見ない\n- モック f8-pass は、相手（佐藤 花子・主のグループは営業 マネージャー）なのに「グループを「営業」から「受託開発」に移す」を描いていた。モックを直した（まとめの直し・2026-11-20）：佐藤は営業（チケットのグループ）にいるので、D-148.11 によりグループを移す行は出ない（受けた帯の「グループは営業のまま」と合う）。試験の下見の佐藤は in_group true・主のグループ 営業（既定の preview()）。グループを移す行が出る形（相手がグループの外）は K411-UI-006 で鈴木をグループの外にして見る",
+    "依存の理由": "- K-400: 要る — 区画のファイル（assignee-action.tsx・band-sender.tsx）と use-handovers.ts・部品の動きを受ける口・試験の道具 handover-mock.ts は K-400 が作る。この葉はそのファイルを本物にする\n- K-402: 要る — 渡す口（kind pass）の振る舞いは K-402。エラーの番号と文（正本の E-HND-003〜008）は K-401 が足し、K-402 は K-401 に依存するので、K-402 の後なら必ず在る（無いと errorText が止まる・正本に無い番号は作り間違い）\n- K-405: 要る — getTicket の答えに今の渡し（handover）と見ている人ができる種類（handover_kinds）を載せるのは K-405（K-387 の後の getTicket の組み立てに足す）。無いと帯も ▾ も出ない\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 担当者の欄 | `assignee-action.tsx` の `AssigneeAction({ ticket, entry, note, blocked, fallback })`（K-400 の slot-dispatch.tsx が `entryOf`・`waitingNoteOf`・`ticket.bands.has(\"approve\")` を渡す）：担当者がいなければ `fallback`。いれば `AssigneeValue` を出す。`entry` が `pass` なら ▾（mode can）・ほかは mode plain（`distribute` の ▾ は K-415 が同じファイルに足す）。`blocked` なら mode blocked（押せる・名前の下に「AI の実行（承認）が終わってから渡してください」・D-148.24）。`note` が在れば名前の下に「→ <note>（返事待ち）」（`waitingFor`） |\n| 相手を選ぶ小窓 | ▾ を押したら下見を 1 回読み（開く前は読まない）、`PickDialog` を開く。intro は「選んだ人に「引き継いでもらう」を頼みます。相手が受けるまで担当者はあなたのままです」。下見の `blocked` が ai_running／approval なら callout「AI の実行（承認）が終わってから渡してください」・intro「AI が動いている・承認を待っているあいだは、担当者を変えられません」・人は全部押せない。探す欄は名前・メールで絞る（`matchesQuery`・NFKC）。人の行は下見の candidates から：名前・メール・「<group.name>（manager なら「 マネージャー」を足す） ・ 今週 <week> 件」。自分（self）は「（自分）」で押せない・今の担当者（current）は ✓ で押せない・state が suspended は「選べません（止まっています）」・invited は「選べません（招待中）」で押せない。Esc・やめるで閉じ、焦点は ▾ に戻る。下見が読めないときは小窓の中に NoticeBox（E-PAGE-007 の文）と「もう一度読む」 |\n| 引き継いでもらうの小窓 | `pass-dialog.tsx`（新しい）：人を押したら `HandoverDialog` を開く（相手を選ぶ小窓は閉じる）。欄は相手（「変える」で相手を選ぶ小窓に戻る・書いた中身は残す）・理由（必須）・お願い・返事の期限（datetime-local・既定は下見）・一緒に切り替える物（上の決まり）・上の層にも知らせる（既定は印なし・D-148.10）。「引き継いでもらう」を押したら手元で確かめ（理由が空→理由の下に E-HND-007 の文・返事の期限が今以前→期限の下に E-HND-008 の文・送らない）、通れば Idempotency-Key（小窓を開いた時に 1 つ作り、押し直しでも同じ）をつけて送る。送っている間はボタンを busy にして 2 回目を送らない |\n| 一続きの口を書き出す（K-413 が使う） | `pass-dialog.tsx` は、相手を選ぶ小窓から引き継いでもらうの小窓までの一続きを `PassFlow({ ticket, open, onClose, onDone, replaces? })` として export する（`AssigneeAction` もこれを使う）。`replaces`（今待っている渡しの id）があれば、送る中身に `replaces: <id>` を足す（K-413 の「別の人にする」・待っている渡しを取り消して別の人に渡すのを口が 1 回でする・K-402 に頼む）。この葉の試験は replaces なしの道を見る（replaces の道は K-413 の試験） |\n| 口の断りの出し分け | 状態でなく答えの `code` で出し分ける（422 は形の誤りの E-HND-007・008、409 は今の状態ではできない E-HND-006・004・003、404 は無い・見えない E-HND-014・012・E-PAGE-001。404・409 に field・details は付かない。409 の `detail` は E-HND-006 が {名前}・{訳}、E-HND-004 が {名前}、E-HND-003 は無し）：E-HND-007・008 → その欄の下（aria-invalid）／E-HND-006 → 相手の欄の下（`{名前}`・`{訳}` に `detail`）／**404 E-HND-014（選んだ人が無い・別の会社・消した・抜けた。detail なし）→ 相手の欄の下に正本の文「選んだ人が見つかりません。選び直してください」**（E-HND-006 と同じ置き場。切る段の決め・PM に確認）／E-HND-004 → 小窓の上の NoticeBox（`{名前}` に `detail.名前`）／E-HND-003 → 小窓の上の callout（橙・D-148.37）／それ以外（上の番号に無い 4xx・5xx・つながらない。画面の手元の確かめと下見で防ぐ物が先に当たるので、ここまで来るのは稀）→ NoticeBox に errorCodeOf の文（D-148.31）。どれも書いた中身を消さない |\n| 渡した後 | 201 で小窓を閉じ、`useNotify` で「〇〇さんに渡しました」、`ticket.reload()`（getTicket を 1 回読み直す・今の渡しが替わり帯が「渡し中」に替わる） |\n| 渡し中の帯 | `band-sender.tsx` の帯の部品（K-400 の形 `{ handover, kind, ticket }`）と `READY = [\"sending\", \"read-failed\"]`：kind sending →`HandoverBand kind=\"sending\"`（題「〇〇さんの返事を待っています（渡し中）」・要約「返事の期限 11/23（月）18:00 ・ 担当者は返事が来るまであなたのまま」・行「理由：…」と「完了にする・消すと、この渡しは取り消され、相手に知らせが届きます」）に `acts={<SenderActions … />}`（K-400 の空の形：押せない 3 つ・K-413 が本物に） |\n| 読めない帯 | 同じファイルの kind read-failed（K-400 の `handoverOf` が getTicket の `handover` の形が違うと返したとき）：`HandoverBand kind=\"failed\"`（題「渡しの様子を読み込めませんでした」・role=alert・「本文はそのまま読めます」）の「もう一度読む」で `ticket.reload()`（getTicket を読み直す・D-148.38）。本文と子チケットはそのまま読める |\n| 親 | `11_tickets/K-68.md` から A51 とこの葉の分の screens・tests の行を外す |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-411.json`：data_links に `{\"paths\": [\"apps/web/features/F8/handover/\"], \"tests\": [\"apps/web/tests/k/k411-pass-detail.spec.ts\"]}`（K-356 の行と同じ形）。`python3 scripts/ci/build_registries.py` で足し合わせる |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 詳細を開いたときの口の数（/tickets/:id） | 6 | 6（帯と返事待ちは getTicket の答えの handover から・記録の読む口は呼ばない・PM の決め 2026-11-20・K411-UI-023） |\n| 下見の口 | 呼ばない | ▾ を押した時だけ 1 回（開くたびに呼ばない・K411-UI-001） |\n| 直列の段・二重の要求 | 1 段・二重なし | 1 段・二重なし（口を足さない。渡した後の読み直しは getTicket 1 回） |\n| 新しい住所 | — | 増えない（詳細の中） |\n| 認証の要る答えの Cache-Control | — | 下見の答えは private, no-store（K-401 が持つ） |\n| staging での答えの時間 | — | getTicket の中央値を staging で測って記録（今の渡しを載せた後・K-405 の行） |",
+    "表の住所": "- 区画のファイル（assignee-action.tsx・band-sender.tsx）・配り分け（slot-dispatch.tsx）・use-handovers.ts（handoverOf・bandKindOf・entryOf・waitingNoteOf）は K-400 が作る。この葉は use-handovers.ts と slot-dispatch.tsx を触らない（読むのを有効にする 1 行はもう無い・PM の決めで getTicket から読む）。差し込み口の名前は K-380 の書き置きのとおり（AssigneeSlot・HandoverBandSlot・SlotTicket・BandSlotProps）\n- 口の形と番号は K-401・K-402・K-405 の md に合わせる（試験の道具 handover-mock.ts と、この試験の頭の CODE だけを直す）\n- CI の範囲の地図は `scripts/ci/ci_scope.d/K-411.json`。口・エラー・ears・契約の形は足さない（口の葉が足す）",
+    "外に影響する手順": "- なし — 画面だけ。書く・知らせるのは口の葉 K-402（関門 C2・C6）。画面は口を呼ぶだけで、DB・外・セッション・錠に直に触らない",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k411-pass-detail.spec.ts`（実 Chrome・口は網の手前で差し替え：前からの土台 mockApi の上に `apps/web/tests/k/handover-mock.ts` の mockHandovers）。モックとの突き合わせは前からの道具 `apps/web/tests/k/stage2-match.ts` の matchMock（base /dev/mock/f8・役は handover-mock.ts の HND_PAIRS）。固定の待ちは使わない（要素と答えを待つ・2 回押しは答えを止めて見る）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 渡しの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 渡しが無い | 詳細の ▾ | 担当者本人（会社を作った人 role_id null・メンバー。handover_kinds に pass） | ▾ → 相手を選ぶ → 引き継いでもらう → 渡し中 | このチケット | K411-UI-001〜009 |\n| 渡しが無い | 詳細 | 担当者でない申し出だけの人（handover_kinds が offer だけ） | ▾ が出ない（名前だけ）。申し出の入口は K-414 | このチケット／K-414 | K411-UI-018 |\n| 渡しが無い | 詳細 | 担当者でない配る権限の人（handover_kinds に distribute） | 配るの ▾ | K-415 | — |\n| 渡しが無い | 詳細 | 閲覧のみ・取引先（handover_kinds が []） | ▾ も申し出も出ない | このチケット | K411-UI-018 |\n| 渡しが無い（AI が動いている・承認待ち） | 詳細の ▾ | 担当者本人 | ▾ は押せ、小窓に訳・人は選べない | このチケット | K411-UI-016・017 |\n| 待っている（自分が渡した） | 詳細を開く・開き直す | 担当者本人 | 渡し中の帯・担当者の下「→ 佐藤 花子（返事待ち）」・帯のボタンは K-413。getTicket 1 回だけ | このチケット／K-413（ボタン） | K411-UI-008・009・023 |\n| 待っている（申し出・担当者が答える） | 詳細を開く | 担当者本人 | 担当者の下に返事待ちの字は無い（申し出の帯は K-414） | このチケット／K-414（帯） | K411-UI-024 |\n| 待っている（グループに配った） | 詳細を開く | 担当者本人（配った人） | 担当者の下「→ グループ「受託開発」（返事待ち）」（配り中の帯は K-415） | このチケット／K-415（帯） | K411-UI-024 |\n| 待っている（別の渡し） | 引き継いでもらうを押す | 担当者本人（別のタブで先に渡した） | 口が 409：小窓の上に「いま鈴木さんの返事を待っています…」 | このチケット | K411-UI-013 |\n| 受けた・断られた・取り消された・期限切れ・もう決まっていた | 詳細 | 渡した人・渡された人 | 帯は K-412（受けた・取り消された）・K-413（断られた・期限切れ） | K-412・K-413 | — |\n| 読めない（getTicket の handover の形が違う） | 詳細を開く | だれでも | 読めない帯・「もう一度読む」で getTicket を読み直す・本文は読める | このチケット | K411-UI-019 |\n| 相手が止まった・招待中 | 相手を選ぶ／送る | 担当者本人 | 選べない行／送った後に相手の欄の下に訳 | このチケット | K411-UI-002・012 |\n| 相手が会社を抜けた・消された（小窓を開いた後） | 引き継いでもらうを押す | 担当者本人 | 口が 404：相手の欄の下に「選んだ人が見つかりません。選び直してください」 | このチケット | K411-UI-025 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K411-UI-001 | 入口 | ▾ と相手を選ぶ小窓 | 担当者本人（会社を作った人・/me の role_id null・handover_kinds [\"pass\"]）の詳細（幅 1440）のパネルに「担当者 高本 聖斗（担当者を変える）」のボタン。開いた時点で下見の口は 0 回。押すと下見が 1 回だけ呼ばれ（押した後に数を待って数える）、題「担当者を選ぶ」・対象「EG-119 問い合わせ（山田様）に一次返信する」・intro「選んだ人に「引き継いでもらう」を頼みます。相手が受けるまで担当者はあなたのままです」の小窓が開く |\n| K411-UI-002 | 対象の状態 | 人の並び | 5 行：「高本 聖斗（自分）」（✓・押せない）・「鈴木 一郎」（「営業 ・ 今週 4 件」）・「佐藤 花子」（「営業 マネージャー ・ 今週 9 件」）・「田中 美咲」（「選べません（止まっています）」・押せない）・「木村 誠」（「選べません（招待中）」・押せない）。押せない行を押しても次の小窓は開かず、口に書かない |\n| K411-UI-003 | 入力 | 探す（表記ゆらぎ） | 「suzuki」「 SUZUKI 」「ＳＵＺＵＫＩ」「鈴木」のどれでも、並びは「鈴木 一郎」の 1 行 |\n| K411-UI-004 | 入力 | 合う人がいない | 「山田」で行は 0、role=status に「「山田」に合う人がいません。名前かメールの一部で探してください（止まっている人・招待中の人も出ます）」 |\n| K411-UI-005 | 入力 | 引き継いでもらうの小窓の中身 | 「佐藤 花子」を押すと、相手を選ぶ小窓が閉じ、題「引き継いでもらう」の小窓：渡す相手「佐藤 花子」と「変える」・理由（必須の印・空）・お願い（空）・返事の期限（2026-11-23T18:00）・「子チケット 2 件も渡す（ほかの人の 1 件はそのまま）」（印あり・外せる）・グループを移す行は無い（佐藤は営業にいる・D-148.11）・「上の層（マネージャー）にも知らせる」（印なし）・注「相手が受けるまで担当者はあなたのまま（渡し中）。断られたら理由つきで戻ってきます。」・ボタン「やめる」「引き継いでもらう」 |\n| K411-UI-006 | 対象の状態 | 一緒に切り替える物の決まり | 子の決まり always：子の行は印ありで外せない（disabled）／never：子の行が無い。相手（鈴木）がチケットのグループに入っている：グループの行が無い／鈴木がチケットのグループの外（主のグループ 受託開発）：「グループを「営業」から「受託開発」に移す」の行が印なしで出る |\n| K411-UI-007 | 操作の揺れ | 相手を変える | 理由に字を入れて「変える」→ 相手を選ぶ小窓に戻る → 「鈴木 一郎」を押す → 引き継いでもらうの小窓の相手が「鈴木 一郎」で、理由の字は残っている |\n| K411-UI-008 | 入力 | 渡す（正常） | 理由を入れて「引き継いでもらう」：口に 1 回、`{ kind: \"pass\", to_member_id: <佐藤>, to_scope_id: null, reason: <入れた字>, reply_due: \"2026-11-23T09:00:00.000Z\", switch: { children: true, links: false, group: false, axes: [] }, notify_managers: false }` と Idempotency-Key。小窓が閉じ、「佐藤さんに渡しました」が出て、帯の題「佐藤さんの返事を待っています（渡し中）」・要約「返事の期限 11/23（月）18:00 ・ 担当者は返事が来るまであなたのまま」・行「理由：<入れた字>」、帯のボタンが 3 つ（催促する・取り消す・別の人にする）、担当者の下「→ 佐藤 花子（返事待ち）」 |\n| K411-UI-009 | 入口 | 開き直す（再取得） | 渡した後に詳細を開き直すと、getTicket をもう一度読み（その答えの今の渡しから）、帯「佐藤さんの返事を待っています（渡し中）」と担当者の下「→ 佐藤 花子（返事待ち）」が出る（作った答えだけで合格にしない）。記録の読む口は 0 回 |\n| K411-UI-010 | 入力 | 理由が空 | 理由を空のまま「引き継いでもらう」：口に 0 回、理由の欄の下に「理由を書いてください」・欄は aria-invalid=true・小窓は開いたまま |\n| K411-UI-011 | 時間の流れ | 返事の期限が過去 | 期限を 2020-01-06T18:00 にして押す：口に 0 回、期限の欄の下に「返事の期限は今より後にしてください」 |\n| K411-UI-012 | 利用者の状態 | 相手が選べなくなった | 口が 409（E-HND-006・detail の名前「田中」・訳「止まっています」）：渡す相手の欄の下に「田中さんは今は選べません（止まっています）。別の人を選んでください」、理由の字は残り、小窓は開いたまま |\n| K411-UI-013 | 操作の揺れ | 別の渡しの返事待ち（別のタブで先に渡した） | 口が 409（E-HND-004・detail の名前「鈴木」）：小窓の上の role=alert に「いま鈴木さんの返事を待っています。先にその渡しを取り消してください」、理由の字は残る |\n| K411-UI-014 | 失敗 | 送れない | 口が 500：小窓の上の role=alert に正本 E-PAGE-007 の文の 1 文目、理由の字は残り、押し直すと同じ Idempotency-Key で 2 回目を送る（2 回目の答えは K-401 の 16 の鍵の形 201）・小窓が閉じる |\n| K411-UI-015 | 操作の揺れ | 二度押し | 答えを止めた間に「引き継いでもらう」を押し、口に 1 回届いたのを待ってから（expect.poll）、ボタンが押せない（busy）のを見てもう 1 回押す：口は 1 回だけ。答えを返すと小窓が閉じる |\n| K411-UI-016 | 対象の状態 | AI が動いている | 実行中のチケット（下見の blocked＝ai_running）：▾ は押せ（aria-disabled が無い）、名前の下に「AI の実行（承認）が終わってから渡してください」。押すと小窓の上に橙の「AI の実行（承認）が終わってから渡してください」・intro「AI が動いている・承認を待っているあいだは、担当者を変えられません」・人の行は全部押せない |\n| K411-UI-017 | 対象の状態 | 承認待ち（口が後から断る） | 下見の blocked＝approval：小窓の訳は UI-016 と同じ。小窓が開いた後に AI に任せて口が 409（E-HND-003）を返す回：引き継いでもらうの小窓の上に橙の「AI の実行（承認）が終わってから渡してください」 |\n| K411-UI-018 | 守り | ▾ を出さない人 | 閲覧のみ（山口・role viewer・handover_kinds []）・取引先（木村・role requester・[]）・担当者でない申し出だけの人（鈴木・role member・[\"offer\"]）の詳細：担当者の欄は「高本 聖斗」の字だけで、▾（.k-hnd-assignee-btn）は 0 個、下見の口は 0 回（役の名前でなく種類で決まる） |\n| K411-UI-019 | 失敗 | 渡しの様子を読めない | getTicket の handover の形が違う（state・from が無い）：帯の区画に role=alert「渡しの様子を読み込めませんでした」と「本文はそのまま読めます」、本文の区画「目的」は見える。「もう一度読む」で getTicket を 2 回目に読み、今の渡しが null なら読めない帯が消える。記録の読む口は 0 回 |\n| K411-UI-020 | 入口 | キーボードで閉じる | ▾ に焦点 → Enter で相手を選ぶ小窓 → Esc で閉じ、焦点は ▾。引き継いでもらうの小窓の「やめる」で閉じ、口に 0 回 |\n| K411-UI-021 | 入力 | 幅 375・768・1440 | 相手を選ぶ小窓と引き継いでもらうの小窓を開いても横溢れ 0、小窓は画面の中（左の端 0 以上・右の端が幅以下・足のボタンが画面の高さの中） |\n| K411-UI-022 | 入力 | モックとの突き合わせ（10 の状態 × 幅 375・768・1440） | f8-detail-owner・f8-pick・f8-pick-search・f8-pick-none・f8-pass・f8-pass-error（欄の誤りの行は数が違う道なので役 dialog-err を除き、字は UI-010〜012 が見る）・f8-pass-refused・f8-blocked・f8-noperm・f8-failed を本番で同じ形にして、HND_PAIRS の値がモックと同じ（px は ±2） |\n| K411-UI-023 | 守り | 口の数（速さ） | 渡し中のチケットの詳細を開くと、getTicket は 1 回で帯「佐藤さんの返事を待っています（渡し中）」と「→ 佐藤 花子（返事待ち）」が出て、記録の読む口（/handovers）と下見の口（/handover-preview）は 0 回（詳細の口の数は 6 のまま） |\n| K411-UI-024 | 対象の状態 | 返事待ちの字は種類で分ける | 担当者本人の詳細で、申し出（kind offer・鈴木 → 高本）が待っているときは担当者の欄に「返事待ち」の字が無い／グループに配った渡し（kind distribute・to null・to_scope 受託開発）が待っているときは「→ グループ「受託開発」（返事待ち）」（PM の決め 2026-11-20・モック f8-offer-band・f8-group-waiting） |\n| K411-UI-025 | 利用者の状態 | 相手が会社を抜けた（小窓を開いた後） | 口が 404（E-HND-014・detail なし）：渡す相手の欄の下に正本の文「選んだ人が見つかりません。選び直してください」、小窓の上の alert は出ない、理由の字は残り、小窓は開いたまま |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 正常の作る | K411-UI-008・009（送った中身・再取得） |\n| 入力の誤り（手元と口の両方） | K411-UI-010・011（手元）・012（口） |\n| 表記ゆらぎ | K411-UI-003 |\n| 二度押し・冪等の鍵 | K411-UI-014・015 |\n| 権限 | K411-UI-018（種類で決める）・K411-UI-024 |\n| 失敗と復旧 | K411-UI-014・019 |\n| 同時（別のタブ） | K411-UI-013 |\n\nほかの観点：時間の流れは返事の期限（UI-011）。期限切れの帯は K-413。G-11（外部リソース）は対象なし（画面だけ）・G-12（切り替わりの瞬間）は渡した直後の帯（UI-008）・G-13（組み合わせ）は AI が動いている × 渡す（UI-016・017）・G-14（口座状態の波及）は相手が止まった（UI-012）・G-15（信号なし終了）は送れない（UI-014）・G-16（資源）は口の数（UI-023）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）は、この葉の changes: を使う前からの試験を 0 本と出した（2026-11-20・区画のファイルと地図はまだ無いので照らしていない。K-400 の後に増えるかは cut-review でまとめ役が見る）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F8/handover/assignee-action.tsx apps/web/features/F8/handover/pass-dialog.tsx apps/web/features/F8/handover/band-sender.tsx scripts/ci/ci_scope.d/K-411.json\n0\n```\n\n振る舞いで響く前からの試験（import では辿れない物）：\n\n- apps/web/tests/k/k400-stage9-mock.spec.ts: 替えない — K-400 の SL の行は、区画を本物にしても崩れない形（差し込み口の先が在る・渡しが無く何もできない詳細は今のまま・字が在る）にした（K-400 の md・精査 2026-11-20）。この葉が出す ▾ と帯は handover_kinds に pass が在り今の渡しが在るときだけなので、SL-002（kinds []・渡し null）は今のまま\n- apps/web/tests/k/k237-screen-budget.spec.ts・scripts/ci/k237_perf_ledger_test.py・apps/api/test/k237_perf_budget.test.ts: 替えない — 詳細で口を足さない（getTicket の答えから読む・PM の決め 2026-11-20）。台帳 perf_budget.json も替えない\n- 詳細を開く前からの画面の試験（k226・k227・k228・k229・k247 など・土台 approve-complete.harness.ts の mockApi）: 替えない — 土台の getTicket に handover・handover_kinds の鍵が無いので、▾ も帯も出ない（上の「確かめたこと」）",
+    "成果物": "- 区画のファイル `assignee-action.tsx`・`band-sender.tsx` の本物・引き継いでもらうの小窓 `pass-dialog.tsx`\n- CI の範囲の地図",
+    "決定ログ": "- 2026-11-20 代表の答え：入口は詳細の右の「担当者 ▾」（D-148.2）・本人は合意の引き継ぎだけ・黙って書き換える道は無し（D-148.3）・AI が動いている・承認待ちは渡せない（D-148.6）・▾ は押せる形で訳を出す（D-148.24）・探す欄（D-148.25）\n- 2026-11-20 PM の決め：詳細の口は 6 のまま。帯と返事待ちは getTicket の今の渡しから（読むのを有効にする 1 行は無くなった・速さの台帳は替えない）。▾ は役の名前でなく handover_kinds で出す。返事待ちの字は渡しの種類で分ける（K-400 の waitingNoteOf）\n- 2026-11-20 切る段の決め：担当者の欄は、担当者がいれば常に AssigneeValue（mode plain を含む）で出す（モックと同じ部品・同じ形にする）\n- 2026-11-20 切る段の直し（口が断る番号の決め answer=431fc50df51b・K-401 の最新に合わせた）：相手が止まっている・招待中は 409 E-HND-006（422 ではない）。相手が無い・抜けたは 404 E-HND-014（相手の欄の下・E-HND-006 と同じ置き場・切る段の決め・PM に確認・K411-UI-025）。画面は状態でなく答えの code で出し分ける",
+    "PM に確かめたいこと": "- 決まった（2026-11-20）：前の問い（詳細の口 6→7）は (b) に決まった（getTicket に今の渡しを載せ、記録の読む口は記録を開く時だけ）\n- 新しく 1 つ：getTicket に載せた後は、渡しの部分だけが読めない時が無い（getTicket ごと失敗すると詳細全体が前からの読めない画面になる）。だから D-148.38 の「渡しの様子を読めない」帯は、getTicket の答えの handover の形が違う時（取り込みの順で古い口・壊れた答え）にだけ出る形にした（K411-UI-019・モック f8-failed はそのまま）。この形でよいか。勧め：このまま（代表の決めの帯と字は変えない・出る時が狭くなるだけ）"
+   },
+   "file": "11_tickets/K-411.md"
+  },
+  {
+   "id": "K-412",
+   "title": "画面：渡された人が受ける／断る（承認待ちの「渡された」の行・詳細の帯・断る小窓・受けた後・取り消された渡し・渡した人の「引き継ぎました」）と、承認待ちのスマホの 1 件 1 枚のカード（K-68 の葉・9-W2）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 1 の K-161〜K-163（承認待ちの行でその場で決める・差し戻しの小窓）と段 3 の画面の葉（帯を口につなぐ・見込み 1）から引いた：承認待ちの渡された行（受ける・断る・断りの出し分け）15 分・断る小窓 10 分・詳細の帯 4 つ（頼まれています・担当者になりました・引き継ぎました・取り消されました）15 分・スマホのカード（表の出し分け・AI の成果物の行も）15 分・前からの試験 2 本は切る段で替えた（運ぶだけ）・突き合わせを流して直す 5 分。超えそうなら、スマホのカード（UI-011〜013 と前からの試験 2 本）を別の葉に分ける（まとめ役に頼むこと）",
+   "decisions": [
+    "D-148.44",
+    "D-125.14",
+    "D-125.87",
+    "D-125.88",
+    "D-125.89",
+    "D-125.90",
+    "D-125.156",
+    "D-128.33",
+    "D-128.34",
+    "D-128.36",
+    "D-128.89",
+    "D-128.115",
+    "D-128.125",
+    "D-145.9",
+    "D-148.5",
+    "D-148.6",
+    "D-148.7",
+    "D-148.13",
+    "D-148.14",
+    "D-148.19",
+    "D-148.21",
+    "D-148.26",
+    "D-148.31",
+    "D-148.32",
+    "D-148.33",
+    "D-148.35",
+    "D-148.36",
+    "D-148.37"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書くのは口の葉 K-403（答える）の関門 C2・C6 で、画面は契約の口 answerTicketHandover・listApprovalQueue と getTicket（今の渡しは K-405 が答えに載せる）を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k412-answer-handover.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/k/k231-approvals.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-queue.spec.ts"
+   ],
+   "depends_on": [
+    "K-400",
+    "K-403",
+    "K-405",
+    "K-411",
+    "K-425"
+   ],
+   "acts": [
+    "A110"
+   ],
+   "screens": [
+    "approvals",
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f8-taken-sender",
+    "f8-queue",
+    "f8-waiting-recipient",
+    "f8-decline",
+    "f8-accepted",
+    "f8-gone"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F8/handover/band-recipient.tsx",
+    "apps/web/features/F8/handover/decline-dialog.tsx",
+    "apps/web/features/F8/handover/queue-row-pass.tsx",
+    "apps/web/features/F5/approve-complete/queue-table.tsx",
+    "apps/web/features/F5/approve-complete/queue-card.tsx",
+    "07_qa/test-specs/k/approve-complete.md",
+    "scripts/ci/ci_scope.d/K-412.json",
+    "11_tickets/K-68.md"
+   ],
+   "sections": {
+    "目的": "渡された人が、承認待ちの「渡された」の行か、詳細の題名の下の帯で「受ける」「断る（理由が必須）」を決められるようにする（行為 A110・D-125.87〜.90）。受けたら担当者が移り（D-125.88）、渡した人には「〇〇さんが引き継ぎました」の帯が 1 回だけ出る（D-148.7・D-148.35）。あわせて、承認待ちをスマホ（幅 767 以下）で表を横に送らず 1 件 1 枚のカードで出す（代表の直し・D-148.26）。カードは全部の種類（AI の成果物・渡された・申し出・グループに配られた）をこの葉が描く（PM の決め 2026-11-20）。\n\n- 正の絵はモック `/dev/mock/f8/<状態>`（この葉の 6 の状態・下の mock:）。部品は K-400 が運んだ `views.tsx`（`HandoverBand`・`DeclineDialog`・`HandoverRow`・`QueueCardMobile`）をそのまま使い、値と動きを渡す\n- 渡し中の帯（渡した人）・▾・担当者の下の「→ あなた（返事待ち）」は K-411、期限切れ・断られた帯（渡した人）は K-413",
+    "完了の条件": "- [ ] 承認待ちの行と詳細の帯のどちらからでも受ける・断るができ、口に 1 回だけ送られ、開き直しても結果が出る\n- [ ] 断る理由が空・もう取り消された・AI が動いている・送れない が、モックの字（正本の 1 件）で出て、書いた中身は残る\n- [ ] 受けた後・引き継がれた後の帯は 1 回だけ、取り消された渡しの帯は開いた画面にいる間だけ\n- [ ] 幅 767 以下の承認待ちは 1 件 1 枚のカード（渡された行も AI の成果物の行も）で、頁の横溢れ 0\n- [ ] この葉の 6 の状態が幅 375・768・1440 でモックと同じ値（matchMock）\n- [ ] 行の表の全部の行が緑",
+    "前提と制約": "- **口の形は口の葉の md に合わせた**（2026-11-20 に同時に書かれた K-401・K-403・K-405）。形は試験の道具 `apps/web/tests/k/handover-mock.ts` の頭の注のとおり\n  - 答える `PATCH /api/v1/ticket_handovers/:id`（K-403）← `{ decision: \"accept\" }` か `{ decision: \"decline\", decline_reason }`（K-401 の TicketHandoverAnswerInput）（頭 Idempotency-Key）\n  - 承認待ちの「渡された」の行（K-405 の `app.handover_item_json`・鍵 20）：`kind: \"handover\"`・`handover_kind`（pass・offer・distribute）・`id`（渡しの id）・`reply_due`・`note`（理由）・`carry_children`（一緒に移る子の数）・`primary_action`／`secondary_action`（渡す accept／decline・申し出 give／decline・グループに配った claim（自分が持つ）／assign（人を決める））・`to_scope_name`・`ticket_scope_name`。AI の成果物の行は 5 つの鍵（handover_kind・reply_due・carry_children・to_scope_name・ticket_scope_name）が null\n  - 詳細の帯は getTicket の答えの `handover`（今の渡し 1 件）から出す（K-405 が載せる・詳細の口は 6 のまま・PM の決め 2026-11-20）。記録の読む口 listTicketHandovers はこの葉では呼ばない\n- **エラーの番号は K-401 の共通の番号**（11_tickets/K-401.md の表）：`E-HND-005` もう決まっている（受けた・断った・取り消された・detail の状態）・`E-HND-007` 理由が空（断る理由にも使う）・`E-HND-003` AI が動いている・承認を待っている（受けるとき）。文は正本の 1 件\n- **差し込み口**：承認待ちの行は K-380 の `QueueRowSlot`（K-400 が `handover_kind` で配る）→ この葉の `QueueRowPass`。表のスマホの出し分けは `queue-table.tsx` を直す（段 9 の葉で queue-table.tsx を触るのはこの葉だけ・切り方.md 0 章の例外）。K-380 の差し込み口の後に入る（K-400 越しの依存）\n- この葉の帯は K-400 の `bandKindOf` の種類（receiving・accepted・taken・gone）で出し、種類を自分で決めない（band-recipient.tsx の `READY` にこの 4 つを足す）。受けた後・断った後は `ticket.reload()`（getTicket 1 回）で今の渡しを読み直す\n- ▾ の有無は K-400 の `entryOf(handover_kinds, …)`（getTicket の handover_kinds）で決まる。役の名前で決めない。渡した人（K412-UI-018・モック f8-taken-sender）は配る権限の無い人（handover_kinds が offer だけ）で ▾ 0 個。配る権限のある人（distribute）なら、担当者でなくても配るの ▾ が出る（D-148.3・K-415）\n- 承認待ちの絞り込みの札は今のまま押せない形（6 つまとめて段 6・D-148.14）。スマホのカードの上の札も同じ（横に送る 1 列）\n- 詳細の帯で受けた直後は小さな知らせを重ねない（帯だけ・D-148.35）。承認待ちの行・カードで受けたときは行が一覧から消え（数も減る）、小さな知らせ「<番号> の担当者になりました」を 5 秒出す（useNotify・決まった：D-148.44・answer=3d444fc8d59f。承認待ちには帯が無いため）\n- 断る理由は渡した人に届き、チケットの記録に残る（D-125.90・記録は K-403）\n- AI に任せた後に受けようとしたら受けられない（D-148.6）：口が 409（E-HND-003）。帯では帯の中の橙の NoticeBox、行では行の中の赤い字",
+    "確かめたこと（切る段・2026-11-20）": "- 本線の承認待ち（`queue-table.tsx` の `QueueCard`）は幅 375 で表をカードの中で横に送る形で、前からの試験 K231-UI-014 がそれを見ている。スマホのカードにすると、K231-UI-014 と K63-UI-001（幅 375 で期限の区切りの見出しの並びを見る）が赤になる。キャンバス MbApprovals もモック f8-queue も、カードに期限の区切りの見出しを描いていない → **2 本を切る段で替えた**（下の「前からの試験を替えた所」）\n- 見出しの横の数・左のメニューの数・頁の横溢れを見る前からの行（K231-UI-015・K63-UI-001 の数の所）は、カードにしても替えずに緑のはず（数は同じ口の total・カードは画面の中）\n- 前からの試験の土台 mockApi の承認待ちの行は `kind: \"artifact\"` だけなので、`QueueRowSlot` は null を返し、前からの表の行のまま",
+    "依存の理由": "- K-400: 要る — 区画のファイル（band-recipient.tsx・queue-row-pass.tsx）・部品の動きを受ける口・帯の種類の決め・試験の道具は K-400 が作る。queue-table.tsx の差し込み口（K-380）も K-400 越し\n- K-403: 要る — 答える口（kind pass）の振る舞いは K-403。エラーの番号と文（E-HND-003・005・007）は K-401（K-403 の依存）が足す\n- K-405: 要る — 承認待ちに渡された行を並べる DB の関数と、getTicket の答えの今の渡し（handover）・見ている人ができる種類（handover_kinds）は K-405\n- K-411: 要る — 担当者の下の「→ あなた（返事待ち）」（K412-UI-014）と、受けた後の ▾（K412-UI-015）は K-411 の assignee-action.tsx が出す。先に入らないとこの葉の試験の 2 行が通らない（この葉は assignee-action.tsx を触らない）\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 承認待ちの渡された行 | `queue-row-pass.tsx` の `QueueRowPass({ row, acts, fallback })`（K-400 の形）：`HandoverRow` に 番号・題名・要約（「高本さんから ・ 子チケット <carry_children> 件も一緒に ・ 理由：<note の初めの 10 字>…」・carry_children が 0 なら子の所を出さない・理由が 10 字以内なら「…」を付けない・理由が無ければ付けない）・誰から（姓）・期限（返事の期限「11/23 18:00」・日本時間）・`href`（/tickets/:id）・ボタン「断る」「受ける」を渡す。「受ける」は小窓を通さずその場で送る（D-128.89）。送っている間は busy。成功したら承認待ちの問い合わせ（`queueKey`）を読み直し（行が消え、数が減る）、`useNotify` で「<番号> の担当者になりました」（5 秒・D-148.44） |\n| 行の断り | 409 E-HND-005 → 一覧を読み直す（行が消える）と、`useNotify` で正本の文／E-HND-003 → 行の中の赤い字（`error`・role=alert）に正本の文・行は残る／それ以外 → 行の中の赤い字に errorCodeOf の文の 1 文目・押し直しは同じ Idempotency-Key |\n| 断る小窓 | `decline-dialog.tsx`（新しい）：行の「断る」と帯の「断る」から開く `DeclineDialog`（題「断る」・対象「EG-119 …」・断る理由（必須）・注「理由は高本さんに届き、チケットの記録に残ります。」・やめる／断る）。理由が空なら送らず欄の下に E-HND-007 の文（aria-invalid）。送ったら閉じて、承認待ち（行から開いたとき）か getTicket（帯から開いたとき・`ticket.reload()`）を読み直す。口の断りは小窓の上の NoticeBox（E-HND-005・003・ほか）で、理由の字は残す |\n| スマホのカード（全部の種類を描く） | `queue-card.tsx`（新しい）の `QueueCards({ rows, total, acts })`：`section.k-hnd-mq`（絞り込みの札の 1 列・押せない 6 つは今の表と同じ）と `QueueCardMobile` の縦の並び。**カードは行の `kind`・`handover_kind`・`primary_action`／`secondary_action` で全部の種類を描く**（PM の決め 2026-11-20・K-400 の差し込み口の表にカードの区画は足さない）：AI の成果物の行は meta「<名前>のAI が作成 ・ 確認 <確かめの要約>」・題名・中身の 1 行（行の note）・今の行と同じ「差し戻す」と「承認する」（decide_inline）か「中身を見る」（リンク）／渡された行（pass）は meta「渡された ・ <from_name>さんから」・題名・中身の 1 行（要約から「〇〇さんから ・ 」を外した物）・note「返事の期限 11/23 18:00」・断る／受ける／申し出の行（offer）は meta「渡された ・ <from_name>さんから」・中身「理由：<note>」・断る／渡す／グループに配られた行（distribute・to_scope_name あり）は meta「渡された ・ <from_name>さんから」・中身「グループ「<to_scope_name>」に配られました ・ 担当者を決めてください」・note「期限 MM/DD」（due_on）・人を決める／自分が持つ。ボタンの字は `primary_action` で決める（accept 受ける・give 渡す・claim 自分が持つ／decline 断る・assign 人を決める）。動き：受ける・渡す・自分が持つは答える口に `{ decision: \"accept\" }`（この葉の答え方と同じ）・断るはこの葉の断る小窓・人を決めるは押せない形（aria-disabled・title「まだ使えません」）。**種類ごとの行の部品が本物の動きを持つときは、その部品にカードの形を描かせる**：カードの 1 枚ずつを `F8.QueueRowSlot`（children＝上の決まりで描いたカード）で包み、カードの中だと分かる文脈 `useQueueLayout()`（\"card\" か \"table\"・この葉の queue-card.tsx が書き出す）を渡す。渡された行の部品（queue-row-pass.tsx・この葉）は \"card\" なら `QueueCardMobile` を描く。申し出（K-414 の queue-row-offer.tsx）・グループ（K-415 の queue-row-group.tsx）の部品も同じ文脈を読んでカードを描く（どちらもこの葉に依存・queue-card.tsx を触らない）。`queue-table.tsx` の `QueueCard` は表の section に `k-hnd-q-table` を足し、その後ろに `QueueCards` を置く（幅 767 以下で表を隠しカードを出すのは handover.css の決まり・K-400 が運ぶ）。行の並びは表と同じ（期限の順）。区切りの見出しは出さない（キャンバス MbApprovals） |\n| 詳細の帯 | `band-recipient.tsx` の帯の部品（K-400 の形 `{ handover, kind, ticket }`）と `READY = [\"receiving\", \"accepted\", \"taken\", \"gone\"]`：receiving → `HandoverBand kind=\"receiving\"`（題「高本さんから、引き継いでほしいと頼まれています」・要約「返事の期限 11/23（月）18:00 ・ 子チケット 2 件も一緒に」・行「理由：…」「お願い：…」・断る／受ける）。受ける・断るは行と同じ口。受けたら `ticket.reload()`（getTicket を 1 回読み直す・今の渡しが受けたに替わる）。accepted → `kind=\"accepted\"`（題「担当者になりました」・要約「高本さんから引き継ぎ ・ 11/20 10:12」・行「子チケット 2 件も一緒に移りました ・ グループは営業のまま」。子の数は渡しの switch.children、グループの名前は getTicket の今の渡しの ticket_scope.name（K-405 の鍵・チケットの今のグループ）・移したら（switch.group が真）「グループも移りました」）。taken（渡した人）→ `kind=\"taken\"`（題「佐藤さんが引き継ぎました」・要約「11/20 10:12 ・ 担当者は佐藤さんです」）。gone（取り消された渡しを渡された人が開いた）→ `kind=\"withdrawn\"`（題「この渡しは取り消されました」・要約「高本さんが 11/20 11:40 に取り消し」・行「あなたが答える必要はなくなりました」）。1 回だけの覚えは K-400 の bandKindOf が持つ（出したら覚える関数を呼ぶ） |\n| 親 | `11_tickets/K-68.md` から A110 とこの葉の分の screens・tests の行を外す |\n| 仕様の表の 1 行 | `07_qa/test-specs/k/approve-complete.md` の K63-UI-001 の期待結果を「768 以上は区切り「期限切れ」「今日」「期限なし」の順に行が並ぶ。767 以下は 1 件 1 枚のカードが期限の順（区切りの見出しは無い・D-148.26）。…」に直す（ほかの字は変えない） |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-412.json`：data_links に `{\"paths\": [\"apps/web/features/F8/handover/\", \"apps/web/features/F5/approve-complete/queue-table.tsx\", \"apps/web/features/F5/approve-complete/queue-card.tsx\"], \"tests\": [\"apps/web/tests/k/k412-answer-handover.spec.ts\", \"apps/web/tests/k/k231-approvals.spec.ts\", \"apps/web/tests/features/F5/approve-complete-queue.spec.ts\"]}`。`python3 scripts/ci/build_registries.py` で足し合わせる |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 承認待ちの口の数（/approvals） | 4 | 4（渡された行は同じ口 listApprovalQueue に並ぶ・K-405。カードは同じ答えを描くだけ） |\n| 詳細の口の数 | 6 | 6（帯は getTicket の今の渡しから・この葉は口を足さない・PM の決め 2026-11-20） |\n| 答えた後の読み直し | — | 承認待ち 1 回（行・カード）／詳細は getTicket 1 回 |\n| 二重の要求 | — | 受ける・断るは 1 回（busy・同じ Idempotency-Key） |\n| 新しい住所 | — | 増えない |\n| 認証の要る答えの Cache-Control | — | 対象なし（口は K-403・K-405） |",
+    "表の住所": "- 区画のファイル（band-recipient.tsx・queue-row-pass.tsx）は K-400 が作る。`QueueRowSlot`（`{ row, acts, children }`）の名前と渡す値は K-380 の書き置きのとおり\n- スマホのカードは全部の種類をこの葉の queue-card.tsx が描く（K-400 の差し込み口の表にカードの区画は足さない・PM の決め）。K-414・K-415 は queue-card.tsx を触らず、自分の行の部品で `useQueueLayout()` を読んでカードを描く（K414-UI-028・K415-UI-023 はこの葉のカードで通る）\n- K412-UI-018 とモック f8-taken-sender は、見ている人（渡した人）を配る権限の無い人（handover_kinds が offer だけ）にそろえた（K-415 と一緒に決めた・PM の決め 2026-11-20）。K-415 が入っても赤にならない\n- 口の形と番号は K-403・K-405 の md に合わせる（試験の道具 handover-mock.ts と、この試験の頭の CODE だけを直す）\n- CI の範囲の地図は `scripts/ci/ci_scope.d/K-412.json`",
+    "外に影響する手順": "- なし — 画面だけ。書く・知らせるのは口の葉 K-403（関門 C2・C6）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k412-answer-handover.spec.ts`（実 Chrome・口は網の手前で差し替え：前からの土台 mockApi の上に handover-mock.ts の mockHandovers）。突き合わせは matchMock（base /dev/mock/f8・役は HND_PAIRS）。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 渡しの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 待っている | 承認待ちの行（幅 768 以上）・カード（767 以下） | 渡された人 | 受ける・断る | このチケット | K412-UI-001〜010・011〜013 |\n| 待っている（申し出・グループに配った） | カード（767 以下） | 答える人（担当者・グループの書ける人） | カードの形と字・渡す／自分が持つで答える口（本物の行の部品は K-414・K-415） | このチケット（カード）／K-414・K-415 | K412-UI-025 |\n| 待っている | 詳細の帯 | 渡された人 | 頼まれています・受ける・断る | このチケット | K412-UI-014・015・017 |\n| 待っている（期限切れ） | 詳細の帯・行 | 渡された人 | 今からでも受ける・断る（帯は同じ） | このチケット | K412-UI-020 |\n| 待っている | 詳細 | ほかの人（担当者でも相手でもない） | 帯は出ない | このチケット | K412-UI-021 |\n| 受けた | 詳細（受けた直後・開き直し） | 渡された人（新しい担当者） | 担当者になりました（1 回だけ）・▾ が出る | このチケット | K412-UI-015・016 |\n| 受けた | 詳細 | 渡した人（配る権限の無い人・handover_kinds offer だけ） | 〇〇さんが引き継ぎました（1 回だけ）・担当者は字だけ（配る権限の人なら配るの ▾ は K-415） | このチケット | K412-UI-018 |\n| 断られた | 詳細 | 渡された人 | 帯は出ない | このチケット | K412-UI-017 |\n| 断られた | 詳細 | 渡した人 | 断られた帯 | K-413 | — |\n| 取り消された | 詳細（古いリンク・開いていた画面） | 渡された人 | この渡しは取り消されました（その画面だけ） | このチケット | K412-UI-019 |\n| 取り消された・もう決まっていた | 行の受ける | 渡された人（別のタブで先に決めた） | 一覧を読み直して行が消える・知らせ | このチケット | K412-UI-006 |\n| 待っている（AI に任せた後） | 行・帯の受ける | 渡された人 | 受けられない・訳 | このチケット | K412-UI-007・022 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K412-UI-001 | 入口 | 承認待ちの渡された行（幅 1440） | 行（tr.k-hnd-row）に 決めること「—」・種別「渡された」・番号「EG-119」（/tickets/<id> へのリンク）・題名・要約「高本さんから ・ 子チケット 2 件も一緒に ・ 理由：先方と面識があるので…」・誰から「高本」・期限「11/23 18:00」・ボタン「断る」（outlined）「受ける」（primary） |\n| K412-UI-002 | 入力 | 行で受ける | 「受ける」：口に 1 回 `{ decision: \"accept\" }` と Idempotency-Key（小窓は出ない・口の数は届くのを待って数える）。承認待ちを読み直し、行が消え、見出しの横の数が 1 減り、小さな知らせ「EG-119 の担当者になりました」が出る（D-148.44） |\n| K412-UI-003 | 入口 | 断る小窓 | 行の「断る」で題「断る」・対象「EG-119 問い合わせ（山田様）に一次返信する」・断る理由（必須・空）・注「理由は高本さんに届き、チケットの記録に残ります。」・やめる／断る の小窓 |\n| K412-UI-004 | 入力 | 断る（正常） | 理由を入れて「断る」：口に 1 回 `{ decision: \"decline\", decline_reason: <入れた字> }`。小窓が閉じ、行が消える |\n| K412-UI-005 | 入力 | 断る理由が空 | 理由を空のまま「断る」：口に 0 回、欄の下に「理由を書いてください」・aria-invalid=true |\n| K412-UI-006 | 操作の揺れ | もう取り消された・もう決まっていた（別のタブで先に決めた） | 「受ける」で口が 409（E-HND-005）：承認待ちを読み直して行が消え、知らせに正本 E-HND-005 の文 |\n| K412-UI-007 | 対象の状態 | AI に任せた後（行） | 「受ける」で口が 409（E-HND-003）：行の中の role=alert に「AI の実行（承認）が終わってから渡してください」、行は残る |\n| K412-UI-008 | 操作の揺れ | 行の二度押し | 答えを止めた間に「受ける」を押し、口に 1 回届いたのを待ってから（expect.poll）、busy で押せないのを見てもう 1 回押す：口は 1 回だけ |\n| K412-UI-009 | 失敗 | 行で送れない | 口が 500：行の中の role=alert に正本 E-PAGE-007 の文の 1 文目・押し直すと同じ Idempotency-Key |\n| K412-UI-010 | 失敗 | 断る小窓で送れない | 口が 500：小窓の上の role=alert に E-PAGE-007 の文の 1 文目・理由の字は残る |\n| K412-UI-011 | 入力 | スマホのカード（幅 375） | 表（section.k-ap-card）は見えず、カード（.k-hnd-mcard）が行の数だけ並ぶ（期限の順は carry の approve-complete-queue.spec.ts の K63-UI-001 が見る）。渡されたカード：meta「渡された ・ 高本さんから」・題名・「子チケット 2 件も一緒に ・ 理由：先方と面識があるので…」・「返事の期限 11/23 18:00」・断る／受ける。AI の成果物のカード：meta に「のAI が作成」・ボタン「差し戻す」と「承認する」（その場で決める行）か「中身を見る」（リンク）。絞り込みの札は 1 列で横に送れ、頁の横溢れ 0 |\n| K412-UI-012 | 入力 | カードで受ける・断る（幅 375） | 渡されたカードの「受ける」で口に `{ decision: \"accept\" }` 1 回・カードが消え、小さな知らせ「EG-119 の担当者になりました」が出る（D-148.44）。「断る」で断る小窓が開く |\n| K412-UI-013 | 入口 | カードの AI の成果物（幅 375） | 「承認する」で前からの確かめの小窓（題「承認します」・番号は出さない前からの ApproveConfirm）が開き、Esc で閉じ、「差し戻す」で前からの差し戻しの小窓が開く（表の行と同じ動き） |\n| K412-UI-014 | 入口 | 詳細の頼まれています帯 | 渡された人（佐藤）が詳細を開く：帯の題「高本さんから、引き継いでほしいと頼まれています」・要約「返事の期限 11/23（月）18:00 ・ 子チケット 2 件も一緒に」・行「理由：…」「お願い：今日中に一次返信だけお願いします」・ボタン「断る」「受ける」。担当者の欄は「高本 聖斗」で ▾ が無く「→ あなた（返事待ち）」 |\n| K412-UI-015 | 入力 | 帯で受ける | 「受ける」：口に `{ decision: \"accept\" }` 1 回。詳細を読み直し、帯の題「担当者になりました」・要約「高本さんから引き継ぎ ・ 11/20 10:12」・行「子チケット 2 件も一緒に移りました ・ グループは営業のまま」。担当者の欄は「佐藤 花子」と ▾（担当者 佐藤 花子（担当者を変える））。小さな知らせは出ない（D-148.35） |\n| K412-UI-016 | 時間の流れ | 1 回だけ | 担当者になりました の帯を見た後に詳細を開き直すと、その帯は出ない（getTicket の今の渡しは同じ受けた渡し） |\n| K412-UI-017 | 入力 | 帯で断る | 帯の「断る」→ 断る小窓 → 理由 → 「断る」：口に `{ decision: \"decline\", decline_reason }` 1 回、帯が消え（渡された人には出さない）、担当者の欄は「高本 聖斗」で「返事待ち」の字が無い |\n| K412-UI-018 | 利用者の状態 | 渡した人の引き継ぎました（1 回だけ） | 渡した人（高本・配る権限の無い人＝role member・handover_kinds [\"offer\"]）が受けた後の詳細を開く：帯の題「佐藤さんが引き継ぎました」・要約「11/20 10:12 ・ 担当者は佐藤さんです」・担当者の欄は「佐藤 花子」で ▾ が無い。開き直すとその帯は出ない |\n| K412-UI-019 | 時間の流れ | 取り消された渡しを開く | 渡された人が取り消された渡しのチケットを開く：帯の題「この渡しは取り消されました」・要約「高本さんが 11/20 11:40 に取り消し」・行「あなたが答える必要はなくなりました」・ボタン 0。開き直すと出ない（その画面にいる間だけ） |\n| K412-UI-020 | 時間の流れ | 返事の期限が過ぎた渡し（渡された人） | getTicket の今の渡しの overdue が true でも、渡された人の帯は「頼まれています」のままで「受ける」「断る」が押せる（D-125.89） |\n| K412-UI-021 | 守り | ほかの人 | 相手でも担当者でもない人（鈴木・役 member）が待っている渡しのチケットを開く：帯（頼まれています・渡し中）が出ない |\n| K412-UI-022 | 対象の状態 | AI に任せた後（帯） | 帯の「受ける」で口が 409（E-HND-003）：帯の区画の中の橙の role=alert に「AI の実行（承認）が終わってから渡してください」、帯は残る |\n| K412-UI-023 | 入力 | 幅 375・768・1024・1440 | 渡された行がある承認待ちと、頼まれています帯の詳細で、頁の横溢れ 0 |\n| K412-UI-024 | 入力 | モックとの突き合わせ（6 の状態 × 幅 375・768・1440） | f8-queue・f8-decline・f8-waiting-recipient・f8-accepted・f8-gone・f8-taken-sender（見ている人は配る権限の無い人）を本番で同じ形にして、HND_PAIRS の値がモックと同じ（px は ±2） |\n| K412-UI-025 | 入力 | スマホのカードは全部の種類（幅 375） | 申し出の行（handover_kind offer・primary give）のカードは meta「渡された ・ 鈴木さんから」・ボタン「断る」「渡す」、グループに配られた行（distribute・to_scope_name 受託開発・primary claim）のカードは meta「渡された ・ 佐藤さんから」・「期限 11/30」・ボタン「人を決める」「自分が持つ」。申し出のカードの「渡す」で答える口に `{ decision: \"accept\" }` が 1 回 |\n\n### テストの型の受け（分類 APPROVE）\n\n| 型 | どこで受けるか |\n|---|---|\n| その場で決める（小窓なし） | K412-UI-002・012 |\n| 理由が必須の断り | K412-UI-003〜005 |\n| 先に決まっていた（別のタブ） | K412-UI-006 |\n| 二度押し・冪等の鍵 | K412-UI-008・009 |\n| 失敗と復旧 | K412-UI-009・010 |\n| 権限（相手だけ） | K412-UI-021 |\n| 決めた後の見え方（1 回だけ） | K412-UI-015・016・018・019 |\n\nほかの観点：G-12（切り替わりの瞬間）は受けた直後（UI-015）と期限の直後（UI-020）・G-13（組み合わせ）は AI に任せた後 × 受ける（UI-007・022）・G-14（口座状態）は相手が止まった後の受ける（口の葉 K-403）・G-15 は送れない（UI-009・010）・G-16 は口の数（速さの表）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験 9 本（2026-11-20 に c/段9 で流した数・区画のファイル・queue-card.tsx・地図はまだ無いので照らしていない）。どれも仕様の表 07_qa/test-specs/k/approve-complete.md を読む試験（queue-table.tsx を import する試験は無い）。そのうち画面を幅 375 で開いて見る 2 本を切る段で替えた（carry:）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F8/handover/band-recipient.tsx apps/web/features/F8/handover/decline-dialog.tsx apps/web/features/F8/handover/queue-row-pass.tsx apps/web/features/F5/approve-complete/queue-table.tsx apps/web/features/F5/approve-complete/queue-card.tsx 07_qa/test-specs/k/approve-complete.md scripts/ci/ci_scope.d/K-412.json\n9\n```\n\n```search\ngit grep -l \"openQueue(page, 375)\\|openQueue(page, w)\" -- apps/web/tests\n2\n```\n\n- apps/web/tests/k/k231-approvals.spec.ts: 替える — K231-UI-014（幅 375：表はカードの中で横に送れる）を「表は出さず 1 件 1 枚のカード・カードは画面の中・横溢れ 0」に替えた（2026-11-20）。UI-015（どの幅でも横溢れ 0）は替えない\n- apps/web/tests/features/F5/approve-complete-approve.spec.ts: 替えない — 仕様の表の行（K63-UI-…）を読み、承認の帯と承認待ちを幅 1440 で見る。直すのは K63-UI-001 の期待結果の字だけで、この試験の行は変わらない\n- apps/web/tests/features/F5/approve-complete-complete.spec.ts: 替えない — 同上（完了の小窓・詳細）\n- apps/web/tests/features/F5/approve-complete-execute.spec.ts: 替えない — 同上（実行の帯・詳細）\n- apps/web/tests/features/F5/approve-complete-guard.spec.ts: 替えない — 同上（権限と入り直し・承認待ちは既定の幅）\n- apps/web/tests/features/F5/approve-complete-return.spec.ts: 替えない — 同上（差し戻しの小窓・承認待ちは既定の幅 1440）\n- apps/web/tests/k/k227-band-approval.spec.ts: 替えない — 仕様の表を読み、詳細の承認の帯を見る（承認待ちの表を開かない）\n- apps/web/tests/k/k229-modals.spec.ts: 替えない — 確かめの小窓と差し戻しの小窓を承認待ち（既定の幅 1440）と詳細で見る。幅を変える行（K229-UI-021）は詳細だけ\n- apps/web/tests/features/F5/approve-complete-queue.spec.ts: 替える — K63-UI-001 を、768 以上は今の区切りの並び、767 以下はカードの題名が期限の順（見積を出す・11 月分の請求書を送る・応募文を出す）に替えた。数・左のメニュー・横溢れの確かめは替えない。仕様の表の字（07_qa/test-specs/k/approve-complete.md の K63-UI-001）はこの葉の changes: で直す",
+    "成果物": "- 区画のファイル `band-recipient.tsx`・`queue-row-pass.tsx` の本物・断る小窓 `decline-dialog.tsx`\n- 承認待ちのスマホのカード `features/F5/approve-complete/queue-card.tsx` と `queue-table.tsx` の出し分け\n- 替えた前からの試験 2 本・仕様の表の 1 行・CI の範囲の地図",
+    "決定ログ": "- 2026-11-20 代表の答え：渡されたものは承認待ちに並べ、行の右端でその場で決める（D-128.89）・帯の消え方（D-148.7・D-148.33〜36）・スマホの承認待ちは 1 件 1 枚のカード（D-148.26）・AI が動いているときは受けられない（D-148.6）\n- 2026-11-20 PM の決め：カードは全部の種類をこの葉が描く（K-400 に区画を足さない）・渡した人の引き継ぎましたは配る権限の無い人で見る・帯は getTicket の今の渡しから・前からの確かめの小窓の字に合わせる（番号を求めない）\n- 2026-11-20 切る段の決め（葉を書く人）：スマホのカードは区切りの見出しを出さない（キャンバス MbApprovals・モック f8-queue）→ 前からの試験 2 本を替えた\n- 2026-11-20 切る段の決め：行の断りは行の中の赤い字（行に小窓が無いため）・もう決まっていた渡しは一覧を読み直して行を消し、知らせを出す",
+    "代表に聞くこと": "- 決まった（answer=3d444fc8d59f・D-148.44）：承認待ちで「受ける」を押した直後は、小さな知らせ「<番号> の担当者になりました」を 5 秒出す（勧め (a)）。K412-UI-002 で見る"
+   },
+   "file": "11_tickets/K-412.md"
   },
   {
    "id": "K-419",
