@@ -638,3 +638,14 @@ test("K1153-UI-025 長い文章（社内メモ）：Enter は改行で口を呼�
   await page.reload();
   await expect(valBtn(page, "社内メモ")).toHaveText("一行目\n二行目", { useInnerText: false });
 });
+
+test("K1153-UI-026 差し込み口（slots=actual の頁）：日付と時間の区で予定時間の次に実績時間の行が出て渡した字「2 時間 30 分」、渡さない頁では実績時間の行が無い", async ({
+  page,
+}) => {
+  await mockFields(page);
+  await detail(page, { slots: "actual" });
+  expect(await namesIn(page, "日付と時間")).toEqual(["開始日", "期限", "予定時間", "実績時間", "支払期日"]);
+  await expect(rowOf(page, "実績時間").locator("dd")).toHaveText("2 時間 30 分");
+  await detail(page);
+  await expect(rowOf(page, "実績時間")).toHaveCount(0);
+});
