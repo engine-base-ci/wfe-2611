@@ -174,4 +174,5 @@ export const MIGRATIONS = [
   "20261125021100_run_stop.sql",
   "20261125021200_approval_stop.sql",
   "20261125021600_ai_spec_check.sql",
+  "20261125022600_ticket_dry_run.sql",
 ] as const;
