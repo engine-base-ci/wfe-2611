@@ -3161,6 +3161,42 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations",
+   "implementation_path": "apps/api/src/routes/conversations.ts::startDraftConversation",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+   "implementation_path": "apps/api/src/routes/conversations.ts::adoptDraftConversation",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/messages",
+   "implementation_path": "apps/api/src/routes/messages.ts::sendDraftMessage",
+   "screen_ids_referencing": [
+    "clone-chat"
+   ],
+   "acts": [
+    "A20",
+    "A99"
+   ]
+  },
+  {
    "method": "PATCH",
    "path": "/api/v1/ticket_handovers/:id",
    "implementation_path": "apps/api/src/routes/ticket_handovers.ts::answerTicketHandover",

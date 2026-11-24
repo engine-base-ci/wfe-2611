@@ -2564,6 +2564,69 @@
     "test_get_conversations_id_messages_upstream_failed": "外を呼ばない（C4 は契約の口の宣言に付いているだけ・会話の行を DB から読むだけ）"
    }
   },
+  "sendConversationMessage": {
+   "file": "apps/api/test/features/F5/talk-say.test.ts",
+   "reason": "言うは、会話の持ち主・会話の種類・PC・待ちの数で答えが変わる。生成の試験の種では会話と PC の組を作れない（K-758）",
+   "covers": {
+    "test_post_conversations_id_messages_ok": "K758-API-001",
+    "test_post_conversations_id_messages_shape": "K758-API-001",
+    "test_post_conversations_id_messages_rejected_401": "K758-API-018",
+    "test_post_conversations_id_messages_rejected_403": "K758-API-006",
+    "test_post_conversations_id_messages_not_found": "K758-API-006",
+    "test_post_conversations_id_messages_conflict": "K758-API-004",
+    "test_post_conversations_id_messages_conflict_2": "K758-API-005",
+    "test_post_conversations_id_messages_conflict_3": "K758-API-008",
+    "test_post_conversations_id_messages_rejected_422": "K758-API-003",
+    "test_post_conversations_id_messages_rate_limited": "K758-API-018",
+    "test_post_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_conversations_id_messages_session_unresolved": "K758-API-015",
+    "test_post_conversations_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_conversations_id_messages_ok_2": "K758-API-007",
+    "test_post_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_conversations_id_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に人の言葉の行と待っている仕事を書くだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "stopConversation": {
+   "file": "apps/api/test/features/F5/talk-say.test.ts",
+   "reason": "止めるは、会話の持ち主と仕事の状態で答えが変わる。生成の試験の種では動いている仕事を作れない（K-758）",
+   "covers": {
+    "test_post_conversations_id_stop_ok": "K758-API-010",
+    "test_post_conversations_id_stop_shape": "K758-API-010",
+    "test_post_conversations_id_stop_rejected_401": "K758-API-018",
+    "test_post_conversations_id_stop_rejected_403": "K758-API-006",
+    "test_post_conversations_id_stop_not_found": "K758-API-006",
+    "test_post_conversations_id_stop_rejected_422": "K758-API-012",
+    "test_post_conversations_id_stop_rate_limited": "K758-API-018",
+    "test_post_conversations_id_stop_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_conversations_id_stop_session_unresolved": "K758-API-015",
+    "test_post_conversations_id_stop_rejected_422_2": "K758-API-012",
+    "test_post_conversations_id_stop_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_conversations_id_stop_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_conversations_id_stop_upstream_failed": "この口はサーバーの外を呼ばない（DB に止める合図と取りやめを書くだけ。止めるのは合図を見る本人の PC・D-097）"
+   }
+  },
   "streamConversation": {
    "file": "apps/api/test/features/F5/talk-stream.test.ts",
    "reason": "流れは知らせの接続（偽を差す）と会話の持ち主で答えが変わる。生成の試験の種では流れを開けず、知らせの接続も差せない（K-759）",
@@ -2688,6 +2751,162 @@
     }
    },
    "na": {}
+  },
+  "getTicketAgentSession": {
+   "file": "apps/api/test/features/F5/talk-ticket.test.ts",
+   "reason": "チケットの会話は、会話の有無・人・チケットの権限で答えが変わる。生成の試験の種では会話と PC を作れない（K-763）",
+   "covers": {
+    "test_get_tickets_id_agent_session_ok": "K763-API-002",
+    "test_get_tickets_id_agent_session_shape": "K763-API-002",
+    "test_get_tickets_id_agent_session_rejected_401": "K763-API-018",
+    "test_get_tickets_id_agent_session_rate_limited": "K763-API-018",
+    "test_get_tickets_id_agent_session_not_found": "K763-API-006",
+    "test_get_tickets_id_agent_session_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-763.ts",
+     "mark": "K144-API-927"
+    },
+    "test_get_tickets_id_agent_session_session_unresolved": "K763-API-019",
+    "test_get_tickets_id_agent_session_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_agent_session_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_agent_session_rejected_403": "読む口はチケットが見えれば通り、見えなければ 404（行の守り・在るかを漏らさない）。見えるのに読めない 403 は無い（受けは K763-API-006・007）",
+    "test_get_tickets_id_agent_session_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書く／読むだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "sendTicketAgentMessage": {
+   "file": "apps/api/test/features/F5/talk-ticket.test.ts",
+   "reason": "チケットの会話に言うのは、チケットの権限・PC・会話の有無で答えが変わる。生成の試験の種では作れない（K-763）",
+   "covers": {
+    "test_post_tickets_id_agent_session_messages_ok": "K763-API-008",
+    "test_post_tickets_id_agent_session_messages_shape": "K763-API-008",
+    "test_post_tickets_id_agent_session_messages_rejected_401": "K763-API-018",
+    "test_post_tickets_id_agent_session_messages_rejected_403": "K763-API-014",
+    "test_post_tickets_id_agent_session_messages_not_found": "K763-API-014",
+    "test_post_tickets_id_agent_session_messages_rejected_422": "K763-API-012",
+    "test_post_tickets_id_agent_session_messages_conflict": "K763-API-013",
+    "test_post_tickets_id_agent_session_messages_conflict_2": "K763-API-027",
+    "test_post_tickets_id_agent_session_messages_rate_limited": "K763-API-018",
+    "test_post_tickets_id_agent_session_messages_session_unresolved": "K763-API-019",
+    "test_post_tickets_id_agent_session_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_agent_session_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_agent_session_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_agent_session_messages_ok_2": "許可に答える・許可のモードを選ぶ道はこの口に作らない（体は text だけ・D-153.16）。許可の答えは承認の口（K-162）が持つ",
+    "test_post_tickets_id_agent_session_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書く／読むだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "startDraftConversation": {
+   "file": "apps/api/test/features/F5/talk-draft.test.ts",
+   "reason": "作る画面の会話を始めるのは、人ごとの数（50）で一番古い会話を片付けるかが変わる。生成の試験の種では 50 個を作れない（K-774）",
+   "covers": {
+    "test_post_ticket_draft_conversations_ok": "K774-API-001",
+    "test_post_ticket_draft_conversations_shape": "K774-API-001",
+    "test_post_ticket_draft_conversations_rejected_401": "K774-API-005",
+    "test_post_ticket_draft_conversations_rate_limited": "K774-API-005",
+    "test_post_ticket_draft_conversations_rejected_403": "K774-API-021",
+    "test_post_ticket_draft_conversations_rejected_422_2": "K774-API-004",
+    "test_post_ticket_draft_conversations_session_unresolved": "K774-API-018",
+    "test_post_ticket_draft_conversations_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_draft_conversations_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_draft_conversations_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ticket_draft_conversations_ok_2": "チケットを作るのは作る口 createTicket（K-437）。この口は作る画面の右の会話を始める・言うだけで、チケットも番号も作らない",
+    "test_post_ticket_draft_conversations_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書くだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）",
+    "test_post_ticket_draft_conversations_rejected_422": "始める口は冪等キーを受けない（体なし）。同時に 2 回押すと 2 つ始まり、人ごとの 50 の数で一番古い会話を片付ける（受けは K774-API-003）"
+   }
+  },
+  "sendDraftMessage": {
+   "file": "apps/api/test/features/F5/talk-draft.test.ts",
+   "reason": "作る画面の会話に言うのは、会話の持ち主・種類・PC・欄の中身で答えが変わる。生成の試験の種では作れない（K-774）",
+   "covers": {
+    "test_post_ticket_draft_conversations_id_messages_ok": "K774-API-006",
+    "test_post_ticket_draft_conversations_id_messages_shape": "K774-API-006",
+    "test_post_ticket_draft_conversations_id_messages_rejected_401": "K774-API-020",
+    "test_post_ticket_draft_conversations_id_messages_rate_limited": "K774-API-020",
+    "test_post_ticket_draft_conversations_id_messages_rejected_403": "K774-API-021",
+    "test_post_ticket_draft_conversations_id_messages_not_found": "K774-API-013",
+    "test_post_ticket_draft_conversations_id_messages_conflict": "K774-API-012",
+    "test_post_ticket_draft_conversations_id_messages_conflict_2": "K774-API-014",
+    "test_post_ticket_draft_conversations_id_messages_conflict_3": "K774-API-023",
+    "test_post_ticket_draft_conversations_id_messages_rejected_422": "K774-API-010",
+    "test_post_ticket_draft_conversations_id_messages_session_unresolved": "K774-API-017",
+    "test_post_ticket_draft_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_draft_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_draft_conversations_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ticket_draft_conversations_id_messages_ok_2": "チケットを作るのは作る口 createTicket（K-437）。この口は作る画面の右の会話を始める・言うだけで、チケットも番号も作らない",
+    "test_post_ticket_draft_conversations_id_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書くだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "adoptDraftConversation": {
+   "file": "apps/api/test/features/F5/draft-adopt.test.ts",
+   "reason": "会話を移す口は、会話の種類・持ち主・チケットを作った人・チケットの会話の有無で答えが変わる。生成の試験の種では会話とチケットの組を作れない（K-776）",
+   "covers": {
+    "test_post_ticket_draft_conversations_id_adopt_ok": "K776-API-001",
+    "test_post_ticket_draft_conversations_id_adopt_shape": "K776-API-001",
+    "test_post_ticket_draft_conversations_id_adopt_rejected_401": "K776-API-015",
+    "test_post_ticket_draft_conversations_id_adopt_rejected_403": "K776-API-003",
+    "test_post_ticket_draft_conversations_id_adopt_not_found": "K776-API-005",
+    "test_post_ticket_draft_conversations_id_adopt_conflict": "K776-API-007",
+    "test_post_ticket_draft_conversations_id_adopt_conflict_2": "K776-API-008",
+    "test_post_ticket_draft_conversations_id_adopt_conflict_3": "K776-API-009",
+    "test_post_ticket_draft_conversations_id_adopt_rejected_422": "K776-API-011",
+    "test_post_ticket_draft_conversations_id_adopt_rate_limited": "K776-API-015",
+    "test_post_ticket_draft_conversations_id_adopt_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_draft_conversations_id_adopt_session_unresolved": "K776-API-016",
+    "test_post_ticket_draft_conversations_id_adopt_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_draft_conversations_id_adopt_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ticket_draft_conversations_id_adopt_ok_2": "チケットを作るのは作る口 createTicket（K-437）。この口は作る画面の会話をチケットの会話に付け替えるだけで、チケットも番号も作らない",
+    "test_post_ticket_draft_conversations_id_adopt_upstream_failed": "この口はサーバーの外を呼ばない（DB の会話の種類と 1 行の知らせと証跡を書くだけ）"
+   }
   }
  }
 }

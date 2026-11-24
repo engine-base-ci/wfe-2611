@@ -12312,6 +12312,22 @@ components:
       - text
       - version
       x-required-by: hooks
+    ConversationSay:
+      type: object
+      properties:
+        text:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: sendConversationMessage
+      required:
+      - text
+      x-required-by: hooks
+    ConversationStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopConversation
     ConversationEntriesInput:
       type: object
       properties:
@@ -12342,6 +12358,74 @@ components:
       required:
       - browser
       - state
+      x-required-by: hooks
+    TicketAgentMessageInput:
+      type: object
+      properties:
+        text:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: sendTicketAgentMessage
+      required:
+      - text
+      x-required-by: hooks
+    DraftConversationStartInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: startDraftConversation
+    DraftMessageInput:
+      type: object
+      properties:
+        text:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        draft:
+          type: object
+          properties:
+            title:
+              type: string
+              maxLength: 200
+            body:
+              type: string
+            checks:
+              type: array
+              maxItems: 50
+              items:
+                type: string
+                maxLength: 200
+          required:
+          - title
+          - body
+          - checks
+          additionalProperties: false
+        edited:
+          type: array
+          items:
+            enum:
+            - title
+            - body
+            - checks
+          nullable: true
+          maxItems: 3
+          uniqueItems: true
+      additionalProperties: false
+      x-operation: sendDraftMessage
+      required:
+      - text
+      - draft
+      x-required-by: hooks
+    ConversationAdoptInput:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: adoptDraftConversation
+      required:
+      - ticket_id
       x-required-by: hooks
     ScopeOverview:
       type: object
@@ -14540,6 +14624,22 @@ components:
           type: object
           nullable: true
       x-operation: listConversationMessages
+    ConversationSaid:
+      type: object
+      properties:
+        id:
+          type: string
+        conversation_id:
+          type: string
+        job_id:
+          type: string
+      x-operation: sendConversationMessage
+    ConversationStopped:
+      type: object
+      properties:
+        state:
+          type: string
+      x-operation: stopConversation
     ConversationEntriesMirrored:
       type: object
       properties:
@@ -14579,6 +14679,72 @@ components:
           type: integer
           nullable: true
       x-operation: getFileForBridge
+    TicketAgentSession:
+      type: object
+      properties:
+        conversation:
+          type: object
+          nullable: true
+        messages:
+          type: array
+          items:
+            type: object
+        has_more:
+          type: boolean
+        running_job_id:
+          type: string
+          format: uuid
+          nullable: true
+        work:
+          type: object
+          nullable: true
+        stopped:
+          type: object
+          nullable: true
+      x-operation: getTicketAgentSession
+    TicketAgentSent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+      x-operation: sendTicketAgentMessage
+    DraftConversationStarted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: startDraftConversation
+    DraftMessageSent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+      x-operation: sendDraftMessage
+    ConversationAdopted:
+      type: object
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+      x-operation: adoptDraftConversation
     Error:
       type: object
       properties:
@@ -23626,7 +23792,7 @@ paths:
       - D-125.6
       - D-126.18
       x-permission: self
-      x-permission-scope: 自分の会話だけ。分身は本人の権限の中でだけ読む・動く
+      x-permission-scope: 自分の AI との会話（clone）だけ。言った字は本人の PC の AI が取りに来る（チケット・作る画面の会話は種類ごとの口）
       x-step-up: false
       security:
       - session: []
@@ -23642,7 +23808,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/ConversationSay'
       responses:
         '201':
           description: 成功
@@ -23652,7 +23818,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/ConversationSaid'
                   meta:
                     type: object
         '401':
@@ -23674,13 +23840,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-TALK-010／E-TALK-011／E-TALK-012
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -23699,12 +23871,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -23876,7 +24042,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: self
-      x-permission-scope: 自分の会話だけ
+      x-permission-scope: 自分の会話だけ（種類を問わない）。動いている仕事に止める合図・待っている仕事は取りやめ
       x-step-up: false
       security:
       - session: []
@@ -23892,7 +24058,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/ConversationStopInput'
       responses:
         '201':
           description: 成功
@@ -23902,7 +24068,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/ConversationStopped'
                   meta:
                     type: object
         '401':
@@ -23935,6 +24101,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -23949,12 +24121,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -41560,6 +41726,437 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/ticket_draft_conversations:
+    post:
+      operationId: startDraftConversation
+      summary: 作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）
+      tags:
+      - conversations
+      x-acts:
+      - A20
+      - A99
+      x-screens:
+      - clone-chat
+      x-choke-points:
+      - C2
+      - C3
+      - C4
+      x-source:
+      - D-003.9
+      - D-007
+      - D-007.2
+      - D-024
+      - D-024.7
+      - D-037
+      - D-037.5
+      - D-060.3
+      - D-104.10
+      - D-104.12
+      - D-104.13
+      - D-104.17
+      - D-104.18
+      - D-104.2
+      - D-104.20
+      - D-104.3
+      - D-104.4
+      - D-104.5
+      - D-104.6
+      - D-104.7
+      - D-111.1
+      - D-111.2
+      - D-111.3
+      - D-111.4
+      - D-111.5
+      - D-112.1
+      - D-112.2
+      - D-112.3
+      - D-112.4
+      - D-112.5
+      - D-112.6
+      - D-113.1
+      - D-113.3
+      - D-113.4
+      - D-113.7
+      - D-114.2
+      - D-114.3
+      - D-115.1
+      - D-115.2
+      - D-115.3
+      - D-125.147
+      - D-125.152
+      - D-125.154
+      - D-125.167
+      - D-125.51
+      - D-125.57
+      - D-125.6
+      - D-126.18
+      x-permission: self
+      x-permission-scope: 自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftConversationStartInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DraftConversationStarted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_draft_conversations/{id}/adopt:
+    post:
+      operationId: adoptDraftConversation
+      summary: 作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）
+      tags:
+      - conversations
+      x-acts:
+      - A20
+      - A99
+      x-screens:
+      - clone-chat
+      x-choke-points:
+      - C2
+      - C3
+      - C4
+      x-source:
+      - D-003.9
+      - D-007
+      - D-007.2
+      - D-024
+      - D-024.7
+      - D-037
+      - D-037.5
+      - D-060.3
+      - D-104.10
+      - D-104.12
+      - D-104.13
+      - D-104.17
+      - D-104.18
+      - D-104.2
+      - D-104.20
+      - D-104.3
+      - D-104.4
+      - D-104.5
+      - D-104.6
+      - D-104.7
+      - D-111.1
+      - D-111.2
+      - D-111.3
+      - D-111.4
+      - D-111.5
+      - D-112.1
+      - D-112.2
+      - D-112.3
+      - D-112.4
+      - D-112.5
+      - D-112.6
+      - D-113.1
+      - D-113.3
+      - D-113.4
+      - D-113.7
+      - D-114.2
+      - D-114.3
+      - D-115.1
+      - D-115.2
+      - D-115.3
+      - D-125.147
+      - D-125.152
+      - D-125.154
+      - D-125.167
+      - D-125.51
+      - D-125.57
+      - D-125.6
+      - D-126.18
+      x-permission: self
+      x-permission-scope: 作る画面の会話の持ち主で、そのチケットを作った人だけ
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationAdoptInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationAdopted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-TALK-080／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-TALK-081／E-TALK-082／E-TALK-083
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_draft_conversations/{id}/messages:
+    post:
+      operationId: sendDraftMessage
+      summary: 作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）
+      tags:
+      - messages
+      x-acts:
+      - A20
+      - A99
+      x-screens:
+      - clone-chat
+      x-choke-points:
+      - C2
+      - C3
+      - C4
+      x-source:
+      - D-003.9
+      - D-007
+      - D-007.2
+      - D-024
+      - D-024.7
+      - D-037
+      - D-037.5
+      - D-060.3
+      - D-104.10
+      - D-104.12
+      - D-104.13
+      - D-104.17
+      - D-104.18
+      - D-104.2
+      - D-104.20
+      - D-104.3
+      - D-104.4
+      - D-104.5
+      - D-104.6
+      - D-104.7
+      - D-111.1
+      - D-111.2
+      - D-111.3
+      - D-111.4
+      - D-111.5
+      - D-112.1
+      - D-112.2
+      - D-112.3
+      - D-112.4
+      - D-112.5
+      - D-112.6
+      - D-113.1
+      - D-113.3
+      - D-113.4
+      - D-113.7
+      - D-114.2
+      - D-114.3
+      - D-115.1
+      - D-115.2
+      - D-115.3
+      - D-125.147
+      - D-125.152
+      - D-125.154
+      - D-125.167
+      - D-125.51
+      - D-125.57
+      - D-125.6
+      - D-126.18
+      x-permission: self
+      x-permission-scope: 自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftMessageInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DraftMessageSent'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-TALK-060／E-TALK-061／E-TALK-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/ticket_handovers/{id}:
     patch:
       operationId: answerTicketHandover
@@ -43510,7 +44107,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Conversations'
+                    $ref: '#/components/schemas/TicketAgentSession'
                   meta:
                     type: object
         '401':
@@ -43537,6 +44134,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -43545,12 +44148,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43730,7 +44327,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/TicketAgentMessageInput'
       responses:
         '201':
           description: 成功
@@ -43740,7 +44337,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/TicketAgentSent'
                   meta:
                     type: object
         '401':
@@ -43762,13 +44359,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-TALK-050／E-TALK-012
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43787,12 +44390,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

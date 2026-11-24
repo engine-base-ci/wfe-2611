@@ -229,7 +229,7 @@
 | approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 16 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
-| clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 78 | 22 | R1 R2 R3 R4 |
+| clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 84 | 24 | R1 R2 R3 R4 |
 | ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 49 | 17 | R1 R2 R3 |
 | records | 台帳 | A24 A47 | 1 | 0 | 2 | 4 | R1 R2 R3 R4 |
 | record-detail | 台帳の1件 | A18 A19 | 1 | 0 | 2 | 7 | R1 R2 R3 R4 |

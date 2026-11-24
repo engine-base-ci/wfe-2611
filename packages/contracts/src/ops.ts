@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:3271940d35fa02a8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:878092ffc7f2487a
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -94,9 +94,9 @@ export interface Ops {
   deleteConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
   createConversationAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MessageView[] };
-  sendConversationMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  sendConversationMessage: { params: { id: string }; query: never; body: T.ConversationSay; data: T.ConversationSaid };
   answerAgentPermission: { params: { id: string; pid: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  stopConversation: { params: { id: string }; query: never; body: T.ConversationStopInput; data: T.ConversationStopped };
   streamConversation: { params: { id: string }; query: never; body: never; data: T.Messages };
   listCredentials: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Credential[] };
   createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };
@@ -288,6 +288,9 @@ export interface Ops {
   deleteTestSpec: { params: { id: string }; query: never; body: never; data: T.TestSpecItem };
   listTicketFields: { params: never; query: { "kind_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketField[] };
   updateTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionUpdateInput; data: T.TicketDecisionChange };
+  startDraftConversation: { params: never; query: never; body: T.DraftConversationStartInput; data: T.DraftConversationStarted };
+  adoptDraftConversation: { params: { id: string }; query: never; body: T.ConversationAdoptInput; data: T.ConversationAdopted };
+  sendDraftMessage: { params: { id: string }; query: never; body: T.DraftMessageInput; data: T.DraftMessageSent };
   answerTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoversInput; data: T.TicketHandovers };
   createTicketImport: { params: never; query: never; body: T.TicketImportsInput; data: T.TicketImports };
   getTicketImport: { params: { id: string }; query: never; body: never; data: T.TicketImports };
@@ -307,9 +310,9 @@ export interface Ops {
   updateTicket: { params: { id: string }; query: never; body: T.TicketUpdateInput; data: T.TicketUpdated };
   deleteTicket: { params: { id: string }; query: { "children"?: string | number; "parent_id"?: string | number; "reason"?: string | number }; body: never; data: T.TicketDeleted };
   requestAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
-  getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.Conversations };
+  getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.TicketAgentSession };
   applyTicketAgentProposal: { params: { id: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
-  sendTicketAgentMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  sendTicketAgentMessage: { params: { id: string }; query: never; body: T.TicketAgentMessageInput; data: T.TicketAgentSent };
   listTicketArtifacts: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Artifacts[] };
   createTicketAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   updateTicketBody: { params: { id: string }; query: never; body: T.TicketBodyInput; data: T.BodySaved };

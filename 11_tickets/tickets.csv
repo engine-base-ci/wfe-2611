@@ -3169,6 +3169,16 @@ K-757,会話の置き場（conversations に種類 talk_kind とチケット tic
 - [ ] 前の道すじの会話の試験（`agent_chat.test.ts` ほか）は「前からの試験を替えた所」のとおり緑（作り直した 4 つの関数は clone の会話では今までと同じ答え）
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-758,自分の AI に言う・止める口（sendConversationMessage・stopConversation）と、言う口の共通の DB の関数 app.talk_enqueue・止める関数 app.talk_stop（言う 3 口＝自分の AI・チケットの右のパネル・作る画面が同じ関数を通る）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-05,F5・自分のAIと話す,"分身の部屋の「話す」で、自分の AI に**言う**・**止める**を、前の道すじ（`/api/auth-ext/agent/say`・`/agent/stop`）から契約の口（`/api/v1/conversations/:id/messages`・`/stop`）へ移す。置き場と読む口は K-757、書きながらの返事は K-759。
+
+1. **言う**（`sendConversationMessage`）：自分の `clone` の会話に `{ text }` を言うと、人の言葉の行と、本人の PC の AI が取りに来る仕事（種類 chat・待っている）が 1 つできる。PC がつながっていなければ 409・E-TALK-010。**言うのは自分の AI との会話だけ**（チケットの会話は K-763・作る画面の会話は K-774 の口から。ここに言うと 409・E-TALK-011）。引用・添付・許可のモード・分岐・場所の文脈は受けない（D-153.16・知らない項目は 422）。
+2. **止める**（`stopConversation`）：その会話で動いている仕事に止める合図を立て、待っている仕事は取りやめにする。会話の種類を問わない（右のパネルも作る画面も同じ口）。止める物が無ければ何もせず `none`。
+3. **共通の仕事の積み方**：`app.talk_enqueue(p_member, p_conv, p_kind, p_text, p_context, p_options)`。会話が自分の物か・種類が合うか・PC があるか・待ちが多すぎないかを見て、前から在る `app.agent_enqueue` で仕事を積む。K-763・K-774 も同じ関数を呼ぶ（仕事の積み方を 3 つ持たない・L-002・L-021）。","- [ ] 下の表の 18 行（K758-API-001〜018）が緑：`apps/api/test/features/F5/talk-say.test.ts`（土台は K-757 が運ぶ `F5/talk.harness.ts`・変えない）
+- [ ] 契約の口 `sendConversationMessage`・`stopConversation` が 501 でない。生成の試験 `apps/api/test/generated/post_conversations_id_messages.test.ts`・`post_conversations_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-758.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-922・923（`k144.d/K-758.ts`・carry）が緑
+- [ ] 前の道すじの言う・止める口の試験（`agent_chat.test.ts` ほか）は替えずに緑（前の口と関数は K-765 が消すまでそのまま）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-759,書きながらの返事を流す口（streamConversation：本人の会話が変わったら合図を流す・1 本 50 秒で区切る・ログインが切れたら閉じる）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"分身の部屋の「話す」（画面は K-762）が、自分の AI の返事が書かれていくのをすぐ読み直せるように、契約の口 `streamConversation`（GET /api/v1/conversations/:id/stream）を作る（今は契約だけで 501）。前の道すじ `GET /api/auth-ext/agent/stream`（apps/api/src/auth/agent-stream.ts）の中身を契約の口へ移す。
 
 流すのは**「変わった」の合図だけ**（会話の字は流さない）。画面は合図を受けるたびに会話を読み直す（読む口は K-757）。見える範囲の決まりは読む口の 1 か所のまま（D-113）。
@@ -3201,6 +3211,45 @@ Bridge の側：資料を取りに行く呼び先を新しい口へ替え、ブ�
 - [ ] 契約の口 `reportBrowserState`・`getFileForBridge` が 501 でない。生成の試験 `post_bridge_jobs_id_browser.test.ts`・`get_bridge_files_ref.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-761.json` の covers）
 - [ ] 共有の試験 k144 の葉の行 K144-API-926・931（`k144.d/K-761.ts`・carry）が緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/bridge/test/loop.test.ts` の資料の呼び先だけ替える）で緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-763,チケットの中で話す口（getTicketAgentSession・sendTicketAgentMessage：チケットごとの会話を読む・言う。AI に渡す中身は呼んだ人の権限の中だけ）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"チケットの右のパネルの「〇〇のAI」タブで、そのチケットのことを自分の AI に相談できるようにする（口は契約だけで 501）。
+
+- `getTicketAgentSession`（GET /api/v1/tickets/:id/agent-session）：そのチケットを見られる人が、**自分の**そのチケットの会話を読む。会話がまだ無ければ会話なしの空の形（何も作らない）。ほかの人の会話・自分の AI との会話・作る画面の会話は出ない
+- `sendTicketAgentMessage`（POST /api/v1/tickets/:id/agent-session/messages・体は `{ text }`）：そのチケットに書ける人が言う。会話が無ければ作り（種類 `ticket`・人 × チケットで 1 つ）、人の言葉の行と、AI への仕事を 1 つ積む。**仕事の頭に付ける文脈（題・本文・確認項目の文とチェック・直近のやり取り）は、呼んだ人が見られる範囲だけで組む**。道具は足さない
+
+許可に答える・提案を反映して確認をやり直す（`applyTicketAgentProposal`・K-59 の物）・添付・引用は作らない（D-153.16）。画面は K-764。","- [ ] 下の表の 27 行（K763-API-001〜027）が緑：`apps/api/test/features/F5/talk-ticket.test.ts`（土台は K-757 が持ち込む `F5/talk.harness.ts`・変えない）
+- [ ] 契約の口 2 本が 501 でない。生成の試験 `get_tickets_id_agent_session`・`post_tickets_id_agent_session_messages` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-763.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-927・928（`k144.d/K-763.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-774,作る画面の会話の口（startDraftConversation・sendDraftMessage：チケットの無い会話を始める・言うたびに欄の今の中身と人が直した欄を付けて仕事を積む）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-08,F5・話す,"チケットを作る画面の右の AI との会話（D-153.17）の口を作る。人は欄に自分で書いてもよく、AI は**言うたびに、その時の欄の中身と人が直した欄を受け取ってから答える**。口は新しい（契約に無かったので `screen_api.py` に行を足す）。
+
+- `startDraftConversation`（POST /api/v1/ticket_draft_conversations・体は空の `{}` だけ。体なし・知らない項目は入口が 422。画面は空の体 `{}` を送る・K-758 の止める口と同じ）：チケットの無い会話を 1 つ始める（種類 `draft`・チケットに結ばない・人ごとに 50 まで：51 個目を始めるときは一番古い作る画面の会話を片付けてから始める）。会話の行・仕事は作らない
+- `sendDraftMessage`（POST /api/v1/ticket_draft_conversations/:id/messages・体は `{ text, draft: { title, body, checks[] }, edited?: (""title""|""body""|""checks"")[] }`）：自分の作る画面の会話に言う。言った字は人の言葉の行に**書いたとおり**残し、人の言葉の行に「人が直した欄」`edited` を `options.passed` として残す（会話を読む口の `passed` に出る＝画面の「…を AI に渡しました」の印）。AI への仕事の頭に、欄の今の中身と「人が直した欄は上書きしない・案は `draft_propose` の道具で出す」の指示を付ける。仕事は共通の関数 `app.talk_enqueue`（K-758）で積む
+
+作る口 `createTicket`（K-437）は変えない。AI の案の道具 `draft_propose` は K-775・作った後の会話の移しは K-776・画面は K-767・K-777。","- [ ] 下の表の 23 行（K774-API-001〜023）が緑：`apps/api/test/features/F5/talk-draft.test.ts`（土台は K-757 の `F5/talk.harness.ts`・変えない）
+- [ ] 契約の口 2 本が 501 でない。生成の試験 `post_ticket_draft_conversations`・`post_ticket_draft_conversations_id_messages` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-774.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-929（`k144.d/K-774.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-776,作った後に会話をチケットへ移す口（adoptDraftConversation：作る画面の会話を、作ったチケットの会話〔右のパネル・K-763 と同じ会話〕にする。作った本人だけ・1 回だけ・会話に 1 行の知らせ。作る口 createTicket は変えない）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-09,F5・分身の部屋,"チケットを作る画面で AI と話して作ったあと、その会話を **作ったチケットの会話**（右のパネル「〇〇のAI」・K-763 の会話）として残し、そこから任せられるようにする（D-153.17）。作る口 `createTicket`（K-437）は変えず、別の口で会話の側を付け替える。
+
+`adoptDraftConversation`（POST /api/v1/ticket_draft_conversations/:id/adopt・体は `{ ticket_id }`）：作る画面の会話（`talk_kind = 'draft'`・K-774）の持ち主で、**そのチケットを作った人**（`tickets.created_by`）が呼ぶと、同じ会話の行が次のように変わる。
+
+- `talk_kind` が `ticket`・`ticket_id` にそのチケットが入る（会話の id・持ち主・今までの行は変わらない）。人 × チケットで 1 つの決まり（K-757 の一意の索引）に入るので、移した後は右のパネルの口（K-763）が同じ会話を見つける
+- 会話の最後に **1 行の知らせ**（`messages`・`kind = 'note'`・「このチケットを作りました（EG-129）。作る時の会話はここに続きます」・書いた人は空）。会話を読む口（K-757）は `who: ""note""` で返す
+- 証跡 1 行（`conversation.adopt`・チケットの id だけで字は入れない）
+
+動いている仕事（AI がいま返事を書いている）があっても、会話ごと移る。仕事の返事は同じ会話に入る。移した後は、その仕事の `draft_propose` は 403（K-775）。
+
+**1 回だけ**：もう移した会話はもう 1 度移せない（409）。**作った本人だけ**：担当者でも、作っていない人は 403。そのチケットの自分の会話がすでに在る（右のパネルで先に話した）ときは移さない（409。聞くこと A）。","- [ ] 下の表の 17 行（K776-API-001〜017）が緑：`apps/api/test/features/F5/draft-adopt.test.ts`（土台は `delegate-kit.ts`・変えない）
+- [ ] 契約の口 `adoptDraftConversation` が 501 でない。生成の試験 `apps/api/test/generated/post_ticket_draft_conversations_id_adopt.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-776.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-930（`k144.d/K-776.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"

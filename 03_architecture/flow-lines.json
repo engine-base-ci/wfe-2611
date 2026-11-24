@@ -197,14 +197,14 @@
   },
   "conversations": {
    "writes": [
-    "F4"
-   ],
-   "reads": [
+    "F4",
     "F5"
    ],
+   "reads": [],
    "boundary": true,
    "lines": [
-    "F4→F5"
+    "F4→F5",
+    "F5→F4"
    ]
   },
   "credentials": {
