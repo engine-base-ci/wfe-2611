@@ -13,6 +13,7 @@
   "checks",
   "clients",
   "conversations",
+  "custom_fields",
   "export_jobs",
   "invitations",
   "kind_sections",
@@ -230,12 +231,16 @@
    "lines": []
   },
   "custom_fields": {
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F9→F4"
+   ]
   },
   "distributions": {
    "writes": [

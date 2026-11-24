@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。269 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。274 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4852,6 +4852,91 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-STG-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-001": {
+    "id": "E-FMS-001",
+    "cls": "conflict",
+    "message": "同じ名前の項目がすでにあります",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-004": {
+    "id": "E-FMS-004",
+    "cls": "conflict",
+    "message": "同じ名前の選ぶ物があります",
+    "action": "選ぶ物の名前を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-002": {
+    "id": "E-FMS-002",
+    "cls": "conflict",
+    "message": "値が入っている項目は、型を変えられません",
+    "action": "型はそのままにするか、新しい項目を足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-003": {
+    "id": "E-FMS-003",
+    "cls": "conflict",
+    "message": "並びが今の項目と合いません",
+    "action": "画面を開き直してから並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-005": {
+    "id": "E-FMS-005",
+    "cls": "conflict",
+    "message": "選ぶ型でない項目には、選ぶ物を付けられません",
+    "action": "型を選ぶ型に変えてから選ぶ物を足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-005",
     "must_not": false,
     "layers": [
       "API",

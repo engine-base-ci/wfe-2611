@@ -3162,6 +3162,17 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/ticket-field-master",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::listTicketFieldMaster",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/ticket-fields",
    "implementation_path": "apps/api/src/routes/custom_fields.ts::listTicketFields",
    "screen_ids_referencing": [
@@ -3169,6 +3180,50 @@
    ],
    "acts": [
     "A103"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket-fields",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::createTicketField",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ticket-fields/:id",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::updateTicketField",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/ticket-fields/:id",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::deleteTicketField",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket-fields/order",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::reorderTicketFields",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
    ]
   },
   {
