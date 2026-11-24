@@ -14552,20 +14552,16 @@ components:
       required:
       - field_ids
       x-required-by: hooks
-    NoticeReadInput:
-      type: object
-      properties: {}
-      additionalProperties: false
-      x-operation: markNoticeRead
-    OpsNoticeCreateInput:
+    InquiryCreateInput:
       type: object
       properties:
-        kind:
+        topic:
           type: string
           enum:
-          - incident
-          - maintenance
-          - release
+          - usage
+          - trouble
+          - billing
+          - other
         title:
           type: string
           minLength: 1
@@ -14576,200 +14572,115 @@ components:
           minLength: 1
           maxLength: 4000
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        audience_mode:
-          type: string
-          enum:
-          - all
-          - plans
-          - workspaces
-        audience_plans:
-          type: array
-          items:
-            type: string
-            enum:
-            - free
-            - team
-            - business
-          uniqueItems: true
-        audience_workspace_ids:
+        attachment_ids:
           type: array
           items:
             type: string
             format: uuid
-          uniqueItems: true
-        placements:
-          type: array
-          items:
-            type: string
-            enum:
-            - band
-            - list
-          minItems: 1
-          maxItems: 2
-          uniqueItems: true
-        publish_at:
-          type: string
-          nullable: true
-          format: date-time
-        maintenance_from:
-          type: string
-          nullable: true
-          format: date-time
-        maintenance_to:
-          type: string
-          nullable: true
-          format: date-time
-        impact:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 200
+          maxItems: 5
+        context:
+          type: object
       additionalProperties: false
-      x-operation: createOpsNotice
+      x-operation: createInquiry
       required:
-      - kind
+      - topic
       - title
       - body
-      - audience_mode
-      - placements
       x-required-by: hooks
-    OpsNoticeUpdateInput:
+    InquiryMessageInput:
       type: object
       properties:
-        kind:
-          type: string
-          enum:
-          - incident
-          - maintenance
-          - release
-        title:
-          type: string
-          minLength: 1
-          maxLength: 100
-          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
         body:
           type: string
           minLength: 1
           maxLength: 4000
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        audience_mode:
-          type: string
-          enum:
-          - all
-          - plans
-          - workspaces
-        audience_plans:
-          type: array
-          items:
-            type: string
-            enum:
-            - free
-            - team
-            - business
-          uniqueItems: true
-        audience_workspace_ids:
+        attachment_ids:
           type: array
           items:
             type: string
             format: uuid
-          uniqueItems: true
-        placements:
-          type: array
-          items:
-            type: string
-            enum:
-            - band
-            - list
-          minItems: 1
-          maxItems: 2
-          uniqueItems: true
-        publish_at:
-          type: string
-          nullable: true
-          format: date-time
-        maintenance_from:
-          type: string
-          nullable: true
-          format: date-time
-        maintenance_to:
-          type: string
-          nullable: true
-          format: date-time
-        impact:
-          type: string
-          nullable: true
-          minLength: 1
-          maxLength: 200
+          maxItems: 5
       additionalProperties: false
-      x-operation: updateOpsNotice
-    OpsNoticePublishInput:
+      x-operation: postInquiryMessage
+      required:
+      - body
+      x-required-by: hooks
+    InquiryResolveInput:
       type: object
       properties: {}
       additionalProperties: false
-      x-operation: publishOpsNotice
-    IncidentUpdateInput:
+      x-operation: resolveMyInquiry
+    InquiryAttachmentInput:
       type: object
       properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content_type:
+          type: string
+          enum:
+          - image/png
+          - image/jpeg
+          - image/gif
+          - image/webp
+          - application/pdf
+          - application/zip
+        size:
+          type: integer
+          minimum: 1
+          maximum: 10485760
+      additionalProperties: false
+      x-operation: uploadInquiryAttachment
+      required:
+      - name
+      - content_type
+      - size
+      x-required-by: hooks
+    OpsInquiryUpdateInput:
+      type: object
+      properties:
+        take:
+          type: boolean
+        release:
+          type: boolean
         state:
           type: string
           enum:
-          - investigating
-          - identified
-          - monitoring
-          - resolved
-        body:
+          - open
+          - done
+        later_until:
           type: string
-          minLength: 1
-          maxLength: 4000
-          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          nullable: true
       additionalProperties: false
-      x-operation: addIncidentUpdate
-      required:
-      - state
-      - body
-      x-required-by: hooks
-    WorkspaceNoticeInput:
+      x-operation: updateOpsInquiry
+    OpsInquiryReplyInput:
       type: object
       properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 100
-          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
         body:
           type: string
           minLength: 1
           maxLength: 4000
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        placements:
-          type: array
-          items:
-            type: string
-            enum:
-            - band
-            - list
-          minItems: 1
-          maxItems: 2
-          uniqueItems: true
-        admins_only:
-          type: boolean
       additionalProperties: false
-      x-operation: sendWorkspaceNotice
+      x-operation: replyOpsInquiry
       required:
-      - title
       - body
-      - placements
       x-required-by: hooks
-      not:
-        properties:
-          admins_only:
-            const: true
-          placements:
-            contains:
-              const: band
-        required:
-        - admins_only
-        - placements
+    OpsInquiryNoteInput:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: addOpsInquiryNote
+      required:
+      - body
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -16378,64 +16289,55 @@ components:
     OpsInquiryDetail:
       type: object
       properties:
-        inquiry:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        workspace:
           type: object
+        asker:
+          type: object
+        owner:
+          type: object
+          nullable: true
+        later_until:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        last_message_at:
+          type: string
+          nullable: true
         messages:
           type: array
           items:
             type: object
         context:
           type: object
-        workspace:
+        workspace_status:
           type: object
       x-operation: getOpsInquiry
     OpsNoticeDetail:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        kind:
-          type: string
-        title:
-          type: string
-        audience:
+        notice:
           type: object
-        state:
-          type: string
-        placements:
-          type: array
-          items:
-            type: string
-        publish_at:
-          type: string
-          nullable: true
-        published_at:
-          type: string
-          nullable: true
-        author_name:
-          type: string
-          nullable: true
-        incident_state:
-          type: string
-          nullable: true
-        admins_only:
-          type: boolean
-        body:
-          type: string
-        maintenance:
-          type: object
-          nullable: true
-        impact:
-          type: string
-          nullable: true
         updates:
           type: array
           items:
             type: object
-        reach:
+        affects:
           type: object
-      x-operation: sendWorkspaceNotice
+        placements:
+          type: array
+          items:
+            type: object
+      x-operation: getOpsNotice
     PublicServiceStatus:
       type: object
       properties:
@@ -16499,13 +16401,10 @@ components:
           type: array
           items:
             type: object
-        bands:
-          type: array
-          items:
-            type: object
-        maintenance_now:
+        banner:
           type: object
-          nullable: true
+        maintenance:
+          type: object
       x-operation: getServiceStatusForMember
     InvitationResendResult:
       type: object
@@ -17277,43 +17176,114 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketField
-    Notice:
+    MyInquiry:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        kind:
-          type: string
         title:
           type: string
-        body:
+        topic:
           type: string
         state:
           type: string
-          nullable: true
-        published_at:
+        created_at:
           type: string
-        unread:
-          type: boolean
-        maintenance:
-          type: object
+        last_reply_at:
+          type: string
           nullable: true
-        updates:
+        has_unread_reply:
+          type: boolean
+      x-operation: resolveMyInquiry
+    MyInquiryDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        created_at:
+          type: string
+        last_reply_at:
+          type: string
+          nullable: true
+        has_unread_reply:
+          type: boolean
+        messages:
           type: array
           items:
             type: object
-      x-operation: listNotices
-    NoticeRead:
+        context:
+          type: object
+          nullable: true
+      x-operation: getMyInquiry
+    MyInquiryMessage:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        read_at:
+        from:
           type: string
-      x-operation: markNoticeRead
-    OpsNoticeRow:
+        author_name:
+          type: string
+        body:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+      x-operation: postInquiryMessage
+    InquiryAttachmentUpload:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        upload_url:
+          type: string
+        done_url:
+          type: string
+        expires_at:
+          type: string
+      x-operation: uploadInquiryAttachment
+    OpsInquiryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        workspace:
+          type: object
+        asker:
+          type: object
+        owner:
+          type: object
+          nullable: true
+        later_until:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        last_message_at:
+          type: string
+          nullable: true
+      x-operation: updateOpsInquiry
+    OpsInquiryMessage:
       type: object
       properties:
         id:
@@ -17321,31 +17291,17 @@ components:
           format: uuid
         kind:
           type: string
-        title:
-          type: string
-        audience:
-          type: object
-        state:
-          type: string
-        placements:
-          type: array
-          items:
-            type: string
-        publish_at:
-          type: string
-          nullable: true
-        published_at:
-          type: string
-          nullable: true
         author_name:
           type: string
-          nullable: true
-        incident_state:
+        body:
           type: string
-          nullable: true
-        admins_only:
-          type: boolean
-      x-operation: listOpsNotices
+        attachments:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+      x-operation: addOpsInquiryNote
     Error:
       type: object
       properties:
@@ -28033,14 +27989,15 @@ paths:
   /api/v1/inquiries:
     get:
       operationId: listMyInquiries
-      summary: 取得（inquiries）— 運営に問い合わせる
+      summary: 取得（inquiries）— 自分の問い合わせ（新しい順・返事ありの印つき）
       tags:
       - inquiries
       x-acts:
       - A67
       x-screens:
       - inquiry
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-042
       - D-075.1
@@ -28065,27 +28022,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - ai_first_answered_at
-          - assignee_ops_member_id
-          - context
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind_id
-          - later_until
-          - opened_by_member_id
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -28097,7 +28033,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Inquiries'
+                      $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -28141,6 +28077,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28157,7 +28094,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/InquiryCreateInput'
       responses:
         '201':
           description: 成功
@@ -28167,7 +28104,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -28222,7 +28159,8 @@ paths:
       - A67
       x-screens:
       - inquiry
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-042
       - D-075.1
@@ -28249,7 +28187,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiryDetail'
                   meta:
                     type: object
         '401':
@@ -28300,6 +28238,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28323,7 +28262,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/InquiryMessageInput'
       responses:
         '201':
           description: 成功
@@ -28333,7 +28272,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/MyInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -28396,6 +28335,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28419,7 +28359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/InquiryResolveInput'
       responses:
         '201':
           description: 成功
@@ -28429,7 +28369,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -28492,6 +28432,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28508,7 +28449,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttachmentsInput'
+              $ref: '#/components/schemas/InquiryAttachmentInput'
       responses:
         '201':
           description: 成功
@@ -28518,7 +28459,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Attachments'
+                    $ref: '#/components/schemas/InquiryAttachmentUpload'
                   meta:
                     type: object
         '401':
@@ -37388,7 +37329,7 @@ paths:
   /api/v1/notices:
     get:
       operationId: listNotices
-      summary: 取得（notices）— 自分に届いたお知らせを新しい順に読む（本文と障害の続報まで・1 件を開く口は無い）
+      summary: 取得（notices）— お知らせを見る
       tags:
       - notices
       x-acts:
@@ -37417,17 +37358,11 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          enum:
-          - incident
-          - maintenance
-          - release
       - name: unread
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          enum:
-          - 'true'
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -37441,6 +37376,32 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - affects
+          - body
+          - created_at
+          - created_by
+          - deleted_at
+          - emailed_admins_at
+          - id
+          - kind_id
+          - maintenance_from
+          - maintenance_to
+          - placements
+          - publish_at
+          - published_by
+          - state
+          - target_plan_ids
+          - target_tenant_id
+          - tenant_id
+          - title
+          - updated_at
+          - updated_by
       responses:
         '200':
           description: 成功
@@ -37452,7 +37413,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Notice'
+                      $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -37524,7 +37485,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticeReadInput'
+              $ref: '#/components/schemas/NoticeDeliveriesInput'
       responses:
         '201':
           description: 成功
@@ -37534,7 +37495,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/NoticeRead'
+                    $ref: '#/components/schemas/NoticeDeliveries'
                   meta:
                     type: object
         '401':
@@ -37861,7 +37822,7 @@ paths:
   /api/v1/ops/inquiries:
     get:
       operationId: listOpsInquiries
-      summary: 取得（ops）— 問い合わせに答える
+      summary: 取得（inquiries）— 運営の受信箱（箱と何について で絞る・数は getOpsShell）
       tags:
       - inquiries
       x-acts:
@@ -37886,32 +37847,22 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-      - name: kind
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: sort
+          enum:
+          - unassigned
+          - mine
+          - waiting
+          - later
+          - done
+      - name: topic
         in: query
         allowEmptyValue: true
         schema:
           type: string
           enum:
-          - ai_first_answered_at
-          - assignee_ops_member_id
-          - context
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind_id
-          - later_until
-          - opened_by_member_id
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
+          - usage
+          - trouble
+          - billing
+          - other
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -37936,12 +37887,9 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Inquiries'
+                      $ref: '#/components/schemas/OpsInquiryRow'
                   meta:
                     type: object
-                    properties:
-                      counts:
-                        type: object
         '401':
           description: UNAUTHENTICATED
           content:
@@ -38084,7 +38032,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/OpsInquiryUpdateInput'
       responses:
         '200':
           description: 成功
@@ -38094,7 +38042,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/OpsInquiryRow'
                   meta:
                     type: object
         '401':
@@ -38175,7 +38123,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/OpsInquiryNoteInput'
       responses:
         '201':
           description: 成功
@@ -38185,7 +38133,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/OpsInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -38272,7 +38220,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/OpsInquiryReplyInput'
       responses:
         '201':
           description: 成功
@@ -38282,7 +38230,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/OpsInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -38515,92 +38463,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/ops/invoices/export:
-    post:
-      operationId: exportOpsInvoices
-      summary: 作成・実行（ops）— 請求書を出し、入金を記録する
-      tags:
-      - export_jobs
-      x-acts:
-      - A72
-      x-screens:
-      - ops-billing
-      x-choke-points:
-      - C2
-      x-source:
-      - D-002
-      - D-002.2
-      - D-075.4
-      - D-075.5
-      - D-077.3
-      - D-125.125
-      - D-125.167
-      - D-127.5
-      x-permission: ops:money
-      x-permission-scope: 同上
-      x-step-up: false
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportJobsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ExportJobs'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39062,7 +38924,7 @@ paths:
   /api/v1/ops/notices:
     get:
       operationId: listOpsNotices
-      summary: 取得（notices）— 運営のお知らせを新しい順に見る（下書き・予定・出した・直った）
+      summary: 取得（ops）— お知らせを出す
       tags:
       - notices
       x-acts:
@@ -39087,20 +38949,11 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          enum:
-          - incident
-          - maintenance
-          - release
       - name: state
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          enum:
-          - draft
-          - scheduled
-          - published
-          - resolved
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -39114,6 +38967,32 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - affects
+          - body
+          - created_at
+          - created_by
+          - deleted_at
+          - emailed_admins_at
+          - id
+          - kind_id
+          - maintenance_from
+          - maintenance_to
+          - placements
+          - publish_at
+          - published_by
+          - state
+          - target_plan_ids
+          - target_tenant_id
+          - tenant_id
+          - title
+          - updated_at
+          - updated_by
       responses:
         '200':
           description: 成功
@@ -39125,7 +39004,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/OpsNoticeRow'
+                      $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -39186,7 +39065,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpsNoticeCreateInput'
+              $ref: '#/components/schemas/NoticesInput'
       responses:
         '201':
           description: 成功
@@ -39196,7 +39075,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsNoticeDetail'
+                    $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -39353,7 +39232,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpsNoticeUpdateInput'
+              $ref: '#/components/schemas/NoticesInput'
       responses:
         '200':
           description: 成功
@@ -39363,7 +39242,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsNoticeDetail'
+                    $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -39444,7 +39323,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpsNoticePublishInput'
+              $ref: '#/components/schemas/NoticesInput'
       responses:
         '201':
           description: 成功
@@ -39454,7 +39333,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsNoticeDetail'
+                    $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -39541,7 +39420,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IncidentUpdateInput'
+              $ref: '#/components/schemas/StatusIncidentsInput'
       responses:
         '201':
           description: 成功
@@ -39551,7 +39430,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsNoticeDetail'
+                    $ref: '#/components/schemas/StatusIncidents'
                   meta:
                     type: object
         '401':
@@ -41802,7 +41681,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorkspaceNoticeInput'
+              $ref: '#/components/schemas/NoticesInput'
       responses:
         '201':
           description: 成功
@@ -41812,7 +41691,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsNoticeDetail'
+                    $ref: '#/components/schemas/Notices'
                   meta:
                     type: object
         '401':
@@ -42221,91 +42100,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/ops/workspaces/export:
-    post:
-      operationId: exportOpsWorkspaces
-      summary: 作成・実行（ops）— 各ワークスペースの様子を見る（気にかける）
-      tags:
-      - export_jobs
-      x-acts:
-      - A60
-      x-screens:
-      - ops-home
-      x-choke-points:
-      - C2
-      x-source:
-      - D-030
-      - D-037
-      - D-073.7
-      - D-125.129
-      - D-125.152
-      - D-125.167
-      - D-126.18
-      x-permission: ops:any
-      x-permission-scope: 同上（名前・プラン・数だけ。管理者のメールは入れない）。書き出したことは運営の記録に残る
-      x-step-up: false
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportJobsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ExportJobs'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:

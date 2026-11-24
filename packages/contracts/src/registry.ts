@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:611efcb514dc27a5
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:97a77d5f156d2ba0
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -5754,16 +5754,18 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Inquiries",
+    "output": "MyInquiry",
     "outputList": true,
-    "generic": true,
+    "generic": false,
     "auth": "member",
     "rateLimit": {
       "perMinute": 120,
       "key": "user"
     },
     "uuidParams": [],
-    "chokePoints": [],
+    "chokePoints": [
+      "C4"
+    ],
     "errors": [
       401,
       403,
@@ -5799,9 +5801,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createInquiry",
     "table": "inquiries",
     "kind": "create",
-    "input": "InquiriesInput",
+    "input": "InquiryCreateInput",
     "success": 201,
-    "output": "Inquiries",
+    "output": "MyInquiry",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5812,6 +5814,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "uuidParams": [],
     "chokePoints": [
       "C2",
+      "C4",
       "C6"
     ],
     "errors": [
@@ -5853,7 +5856,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Inquiries",
+    "output": "MyInquiryDetail",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5864,7 +5867,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "uuidParams": [
       "id"
     ],
-    "chokePoints": [],
+    "chokePoints": [
+      "C4"
+    ],
     "errors": [
       401,
       403,
@@ -5904,9 +5909,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "postInquiryMessage",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "InquiryMessageInput",
     "success": 201,
-    "output": "Messages",
+    "output": "MyInquiryMessage",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5919,6 +5924,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "chokePoints": [
       "C2",
+      "C4",
       "C6"
     ],
     "errors": [
@@ -5962,9 +5968,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "resolveMyInquiry",
     "table": "inquiries",
     "kind": "create",
-    "input": "InquiriesInput",
+    "input": "InquiryResolveInput",
     "success": 201,
-    "output": "Inquiries",
+    "output": "MyInquiry",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5977,6 +5983,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "chokePoints": [
       "C2",
+      "C4",
       "C6"
     ],
     "errors": [
@@ -6020,9 +6027,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "uploadInquiryAttachment",
     "table": "attachments",
     "kind": "create",
-    "input": "AttachmentsInput",
+    "input": "InquiryAttachmentInput",
     "success": 201,
-    "output": "Attachments",
+    "output": "InquiryAttachmentUpload",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -6033,6 +6040,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "uuidParams": [],
     "chokePoints": [
       "C2",
+      "C4",
       "C6"
     ],
     "errors": [
@@ -11062,7 +11070,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Notice",
+    "output": "Notices",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -11107,9 +11115,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "markNoticeRead",
     "table": "notice_deliveries",
     "kind": "create",
-    "input": "NoticeReadInput",
+    "input": "NoticeDeliveriesInput",
     "success": 201,
-    "output": "NoticeRead",
+    "output": "NoticeDeliveries",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -11323,7 +11331,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Inquiries",
+    "output": "OpsInquiryRow",
     "outputList": true,
     "generic": false,
     "auth": "ops",
@@ -11418,9 +11426,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateOpsInquiry",
     "table": "inquiries",
     "kind": "update",
-    "input": "InquiriesInput",
+    "input": "OpsInquiryUpdateInput",
     "success": 200,
-    "output": "Inquiries",
+    "output": "OpsInquiryRow",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -11472,9 +11480,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "addOpsInquiryNote",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "OpsInquiryNoteInput",
     "success": 201,
-    "output": "Messages",
+    "output": "OpsInquiryMessage",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -11527,9 +11535,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "replyOpsInquiry",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "OpsInquiryReplyInput",
     "success": 201,
-    "output": "Messages",
+    "output": "OpsInquiryMessage",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -11671,57 +11679,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": "money",
       "stepUp": "always",
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/ops/invoices/export",
-    "operationId": "exportOpsInvoices",
-    "table": "export_jobs",
-    "kind": "create",
-    "input": "ExportJobsInput",
-    "success": 201,
-    "output": "ExportJobs",
-    "outputList": false,
-    "generic": false,
-    "auth": "ops",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A72"
-    ],
-    "screens": [
-      "ops-billing"
-    ],
-    "perm": {
-      "word": "ops:money",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": "money",
-      "stepUp": null,
       "row": null
     },
     "termsOpen": false,
@@ -11995,7 +11952,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "OpsNoticeRow",
+    "output": "Notices",
     "outputList": true,
     "generic": false,
     "auth": "ops",
@@ -12040,9 +11997,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createOpsNotice",
     "table": "notices",
     "kind": "create",
-    "input": "OpsNoticeCreateInput",
+    "input": "NoticesInput",
     "success": 201,
-    "output": "OpsNoticeDetail",
+    "output": "Notices",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12142,9 +12099,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateOpsNotice",
     "table": "notices",
     "kind": "update",
-    "input": "OpsNoticeUpdateInput",
+    "input": "NoticesInput",
     "success": 200,
-    "output": "OpsNoticeDetail",
+    "output": "Notices",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12196,9 +12153,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "publishOpsNotice",
     "table": "notices",
     "kind": "create",
-    "input": "OpsNoticePublishInput",
+    "input": "NoticesInput",
     "success": 201,
-    "output": "OpsNoticeDetail",
+    "output": "Notices",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12251,9 +12208,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "addIncidentUpdate",
     "table": "status_incidents",
     "kind": "create",
-    "input": "IncidentUpdateInput",
+    "input": "StatusIncidentsInput",
     "success": 201,
-    "output": "OpsNoticeDetail",
+    "output": "StatusIncidents",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -13434,9 +13391,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "sendWorkspaceNotice",
     "table": "notices",
     "kind": "create",
-    "input": "WorkspaceNoticeInput",
+    "input": "NoticesInput",
     "success": 201,
-    "output": "OpsNoticeDetail",
+    "output": "Notices",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -13692,57 +13649,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": "stop",
       "stepUp": "always",
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/ops/workspaces/export",
-    "operationId": "exportOpsWorkspaces",
-    "table": "export_jobs",
-    "kind": "create",
-    "input": "ExportJobsInput",
-    "success": 201,
-    "output": "ExportJobs",
-    "outputList": false,
-    "generic": false,
-    "auth": "ops",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A60"
-    ],
-    "screens": [
-      "ops-home"
-    ],
-    "perm": {
-      "word": "ops:any",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": "any",
-      "stepUp": null,
       "row": null
     },
     "termsOpen": false,
@@ -19163,4 +19069,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "611efcb514dc27a5";
+export const OPENAPI_HASH = "97a77d5f156d2ba0";
