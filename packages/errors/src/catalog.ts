@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。291 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。298 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5022,6 +5022,125 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-KNW-080",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-100": {
+    "id": "E-KNW-100",
+    "cls": "conflict",
+    "message": "このページは会社の棚にあるので、これより上へは上げられません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-100",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-101": {
+    "id": "E-KNW-101",
+    "cls": "conflict",
+    "message": "上げる先のグループを選んでください",
+    "action": "グループを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-101",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-102": {
+    "id": "E-KNW-102",
+    "cls": "conflict",
+    "message": "上げる先に承認できる人がいません。管理者に知らせてください",
+    "action": "管理者に知らせる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-102",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-103": {
+    "id": "E-KNW-103",
+    "cls": "conflict",
+    "message": "入れるフォルダは、上げる先の棚から選んでください",
+    "action": "フォルダを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-103",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-104": {
+    "id": "E-KNW-104",
+    "cls": "conflict",
+    "message": "この頼みはもう決まっているので、取り下げられません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-104",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-105": {
+    "id": "E-KNW-105",
+    "cls": "conflict",
+    "message": "消せるのは、断られた頼みの帯だけです",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-105",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-106": {
+    "id": "E-KNW-106",
+    "cls": "conflict",
+    "message": "共有しているページは上げられません。先に共有をやめてください",
+    "action": "共有をやめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-106",
     "must_not": false,
     "layers": [
       "UI",

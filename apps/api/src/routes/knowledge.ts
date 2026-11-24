@@ -14,6 +14,8 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/knowledge/proposals", op(deps, "listKnowledgeProposals"));
   app.post("/api/v1/knowledge/proposals/:id/accept", op(deps, "acceptKnowledgeProposal"));
   app.post("/api/v1/knowledge/proposals/:id/decline", op(deps, "declineKnowledgeProposal"));
+  app.delete("/api/v1/knowledge/requests/:id", op(deps, "withdrawKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/dismiss", op(deps, "dismissKnowledgeRequest"));
   app.post("/api/v1/knowledge/similar", op(deps, "findSimilarKnowledge"));
   app.get("/api/v1/knowledge/tree", op(deps, "getKnowledgeTree"));
   app.get("/api/v1/knowledge/verifications", op(deps, "listKnowledgeVerifications"));
