@@ -41,7 +41,6 @@ import {
   runsOf,
   jobOf,
   executed,
-  todoVersion,
   completeBody,
   details,
   snapshot,
@@ -133,7 +132,7 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
       ["GET", "/approvals/not-a-uuid", undefined],
       ["POST", "/approvals/not-a-uuid/approve", {}],
       ["POST", "/approvals/not-a-uuid/return", { note: "直して" }],
-      ["POST", "/tickets/not-a-uuid/complete", { todo_checked: [], todo_version: 0, conditions_confirmed: true }],
+      ["POST", "/tickets/not-a-uuid/complete", { conditions_confirmed: true }],
     ] as const) {
       const r = await req(m, p, { body: b, headers: auth(boss, { su: Date.now() }) });
       expect(r.status, p).toBe(422);
@@ -156,9 +155,9 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
     const good = await completeBody(u);
     for (const body of [
       { ...good, stage_id: "x" },
-      { ...good, todo_checked: ["a"] },
+      { ...good, todo_checked: [0] }, // K-578：契約に無い欄は 422（前は形の誤りだけ 422・番号の並びは受けていた）
       { ...good, todo_checked: "0,1" },
-      { ...good, todo_version: "1" },
+      { ...good, todo_version: 1 },
       { ...good, conditions_confirmed: "yes" },
     ]) {
       expect((await complete(boss, u.id, body)).status, JSON.stringify(body)).toBe(422);
@@ -203,7 +202,7 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
           ? approve(who, d.approvalId)
           : op === "returnApproval"
             ? giveBack(who, d.approvalId, "")
-            : complete(who, t.id, { todo_checked: [], todo_version: 0, conditions_confirmed: true });
+            : complete(who, t.id, { conditions_confirmed: true });
       limits[op] = 60;
       try {
         for (let i = 0; i < 60; i++) await call();
@@ -287,7 +286,7 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
 
 describe("K-63 承認して完了する：積む仕事の中身（口・本物の DB）", () => {
   it("K63-API-054 承認する × 実行の仕事を積む：行の prompt にチケットの中身と後ろに足し書き、agent_session_id は前の作る実行と同じ・resume_session_id はその PC。完了の後の作る実行だけを見る（D-128.176・D-125.155・D-131.3）", async () => {
-    const t = await ticket();
+    const t = await ticket({ body: true }); // K-578：prompt のチケットの中身は本文の行から組む（前の区画は読まない）
     const d = await delegated(t);
     await lastSeen(d.pc.sid, 120);
     expect((await approve(boss, d.approvalId)).status).toBe(201);
@@ -350,12 +349,11 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
   it("K63-API-063 失敗 × 完了の守りの判定（書けるか）の所で例外になった：関数は guard_failed を返して何も書かない。口は 503・E-PAGE-003（入口の行の決まり write が先に例外になるので、503 は K-146 の共通の決まり・D-131.7）。段は変わらず、知らせも出ない（fail-closed）", async () => {
     const t = await ticket({ title: "K63 守りが壊れる 完了", creator: writer });
     await executed(t);
-    const v = await todoVersion(t.id);
     await breakWritable("K63 守りが壊れる 完了", async () => {
       // (b) 関数を直に呼ぶと guard_failed を返す（例外を外に投げない・何も書かない）。K-146 に依らない
       const ctx: TenantContext = { tenantId: T.tenantId, userId: boss.id, role: "member", stepUpAt: null };
       const out = await withTenant(f.pool, ctx, (cl) =>
-        cl.query<{ v: { error?: string } }>("select app.ticket_complete($1, $2, $3, true) as v", [t.id, [0, 1], v]),
+        cl.query<{ v: { error?: string } }>("select app.ticket_complete($1, true) as v", [t.id]),
       );
       expect(out.rows[0]!.v.error).toBe("guard_failed");
       // (a) 口：completeTicket の行の決まりは write＝app.ticket_writable なので、例外は関数より先に共通の入口（op.ts の rowAllowed）で起きる。
@@ -415,10 +413,8 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
     const t2 = await ticket({ creator: writer });
     await executed(t2);
     const body = await completeBody(t2);
-    await swap(
-      "app.ticket_complete(uuid,integer[],integer,boolean)",
-      "app.ticket_complete(p_ticket uuid, p_todo_checked integer[], p_todo_version integer, p_confirmed boolean)",
-      () => complete(boss, t2.id, body),
+    await swap("app.ticket_complete(uuid,boolean)", "app.ticket_complete(p_ticket uuid, p_confirmed boolean)", () =>
+      complete(boss, t2.id, body),
     );
     expect(await stageKeyOf(t2.id)).toBe("doing");
   });

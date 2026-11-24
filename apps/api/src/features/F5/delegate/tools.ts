@@ -1,13 +1,14 @@
 // AI に任せる（K-62）の道具の口 callKanameTool（POST /api/v1/bridge/jobs/:id/tools/:name）。前の道すじ /api/auth-ext/bridge/tool（agent-tools.ts）を移した。
 //   道具の鍵（take で渡す・DB にはハッシュだけ）と PC の印の両方が要る。その仕事を受け取った PC から・その仕事の間だけ・押した人の会社と権限の中だけ（D-110）。
-//   道具は仕事の種類で分ける：チケットの仕事は ticket_read だけ・会話の仕事は会話の道具（agent-tools.ts の TOOLS）だけ（K62-API-051）。
+//   道具は仕事の種類で分ける：チケットの仕事は ticket_read と spec_check（K-736）だけ・会話の仕事は会話の道具（agent-tools.ts の TOOLS）だけ（K62-API-051）。
 //   書く・読むのは関門 C2 の関数（app.bridge_tool_job・app.ticket_tool_read・TOOLS の関数）。証跡は関数の中で残す
 import type pg from "pg";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { TOOLS, hashToolToken } from "../../../auth/agent-tools.js";
 import { rawBody } from "./bridge.js";
+import { parseSpecCheckInput, runSpecCheck } from "./spec-check.js";
 
-export const TICKET_TOOLS = ["ticket_read"] as const;
+export const TICKET_TOOLS = ["ticket_read", "spec_check"] as const;
 const ALL_TOOLS = new Set<string>([...TICKET_TOOLS, ...Object.keys(TOOLS)]);
 const TOKEN_HEADER = "x-kaname-tool-token";
 
@@ -73,6 +74,12 @@ export function toolHooks(pool: pg.Pool): Record<string, Hook> {
         }
         const b = await rawBody(a);
         const input = b["input"] && typeof b["input"] === "object" ? (b["input"] as Record<string, unknown>) : {};
+        if (name === "spec_check") {
+          // AI が確認項目にチェックを付ける（2 層目は DB の入口が鍵と PC をもう一度見る・K-736）
+          const parsed = parseSpecCheckInput(input);
+          if ("status" in parsed) return parsed;
+          return runSpecCheck(pool, job.job_id, hashToolToken(token), sid, parsed);
+        }
         const v = (await TOOLS[name]!(pool, job.member_id, job.job_id, input)) as { error?: string } | null;
         if (v && typeof v === "object" && "error" in v && v.error)
           return {

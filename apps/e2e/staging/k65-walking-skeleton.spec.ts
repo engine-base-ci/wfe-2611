@@ -84,7 +84,7 @@ const BODY = {
   done: "先方が見積を受け取った",
   todo: "- 見積を作る\n- 先方に送る",
 } as const;
-/** 実施事項の 2 項目（偽の AI の答えに並ぶ行・完了の小窓のチェックの名前） */
+/** 本文の 2 項目（偽の AI の答えに並ぶ行） */
 const TODO_ITEMS = ["見積を作る", "先方に送る"] as const;
 const titleOf = (tag: string): string => `見積を送る 統合テスト ${tag}`;
 /** K65-STG-05 で、輪を回さない PC が返す決まった結果（AI は呼ばない） */
@@ -196,6 +196,37 @@ async function devicesOf(page: Page): Promise<{ status: number; pcs: [string, st
   return { status: r.status, pcs: rows.map((d) => [d.device_label ?? "", d.state ?? ""]) };
 }
 
+/** 口（POST・道が re に合う）の答えの番号を、押す前から見張る。見張りを外すのは stop（押した結果を待つ間は expect.poll で読む・固定の待ちを置かない） */
+function watchPost(page: Page, re: RegExp): { status: () => number | null; stop: () => void } {
+  let seen: number | null = null;
+  const on = (r: { request(): { method(): string }; url(): string; status(): number }): void => {
+    if (r.request().method() === "POST" && re.test(new URL(r.url()).pathname)) seen = r.status();
+  };
+  page.on("response", on);
+  return { status: () => seen, stop: () => page.off("response", on) };
+}
+
+/** 注意の小窓（役 dialog）が出る前に口が答えたか、小窓が先に出たかを待つ。小窓が先なら true */
+async function noticeBeforeAnswer(page: Page, watch: { status: () => number | null }, what: string): Promise<boolean> {
+  const dialog = page.getByRole("dialog");
+  await expect.poll(async () => watch.status() !== null || (await dialog.isVisible()), { message: what }).toBe(true);
+  return watch.status() === null;
+}
+
+/** 題の行の「AI に任せる」を押して、任せる口の答えの番号を返す（頁全体で役と名前で探す・置き場に左右されない）。
+ *  確認項目が 0 件のときの小窓（K-573）が挟まれば、使わない理由を書いて任せる。小窓が無い間（K-573 の前）も通る */
+async function delegateOnScreen(page: Page): Promise<number> {
+  const watch = watchPost(page, DELEGATE_RE);
+  await delegateBtn(page).click();
+  if (await noticeBeforeAnswer(page, watch, "任せる口が答えるか、確認項目 0 件の小窓が出る")) {
+    await page.getByRole("textbox", { name: "確認項目を使わない理由" }).fill("定型の作業・staging の通し");
+    await page.getByRole("dialog").getByRole("button", { name: "理由を書いて任せる", exact: true }).click();
+  }
+  await expect.poll(() => watch.status(), { message: "任せる口の答えが返る" }).not.toBeNull();
+  watch.stop();
+  return watch.status()!;
+}
+
 test("K65-STG-01 正常・端から端（本物のメール・本物の PC の輪）：登録 → メールのリンク → 続ける → PC をつなぐ → チケットを作る → AI に任せる → 輪が作る段を終える → 承認して送る → 同じ輪が実行の段を終える → 完了にする", async ({
   page,
 }) => {
@@ -217,7 +248,7 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
   // チケットを作る → AI に任せる
   const t = await createTicket(page, me, title, BODY);
   await expect(page.getByText(MSG.todo, { exact: true }), "作った直後は未着手").toBeVisible();
-  expect(await clickAndAnswer(page, delegateBtn(page), DELEGATE_RE), "任せる口が受ける（201）").toBe(201);
+  expect(await delegateOnScreen(page), "任せる口が受ける（201）").toBe(201);
 
   // 輪が作る段を取り、偽の AI の答えで終える → 開いたままの画面が承認待ちの帯に替わる（手で読み直さない）
   await expect(execBand(page), "任せてから 120 秒以内に、承認待ちの帯が自分で出る").toContainText(MSG.waitingMe, {
@@ -262,15 +293,14 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
     timeout: LIMIT.toExecuted,
   });
 
-  // 完了にする（実施事項 2 つと完了の条件を確かめる）
+  // 完了にする（題の行の「完了にする」・本文と確認項目に未チェックが残っていれば注意の小窓が出るので「このまま完了にする」。無ければそのまま完了・K-572）
+  const completed = watchPost(page, COMPLETE_RE);
   await completeBtn(page).click();
-  const d = page.getByRole("dialog");
-  for (const item of TODO_ITEMS) await d.getByRole("checkbox", { name: item }).check();
-  await d.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" }).check();
-  expect(
-    await clickAndAnswer(page, d.getByRole("button", { name: "確かめて完了にする" }), COMPLETE_RE),
-    "完了の口が受ける（201）",
-  ).toBe(201);
+  if (await noticeBeforeAnswer(page, completed, "完了の口が答えるか、未チェックの注意の小窓が出る"))
+    await page.getByRole("dialog").getByRole("button", { name: "このまま完了にする", exact: true }).click();
+  await expect.poll(() => completed.status(), { message: "完了の口の答えが返る" }).not.toBeNull();
+  completed.stop();
+  expect(completed.status(), "完了の口が受ける（201）").toBe(201);
   await expect(
     execBand(page).getByText(/完了しました（.+・\d{1,2}\/\d{1,2} \d{1,2}:\d{2}）/),
     "最後に「完了しました（名前・日時）」が出る",
@@ -397,7 +427,7 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
 
   // A が任せる → B の PC が取りに来ても空。A の PC には A のチケットの仕事が渡る
   expect(await pcA.beat(), "任せる直前に A の PC が生きている").toBe(201);
-  expect(await clickAndAnswer(page, delegateBtn(page), DELEGATE_RE), "A の任せる口が受ける（201）").toBe(201);
+  expect(await delegateOnScreen(page), "A の任せる口が受ける（201）").toBe(201);
   await expect(aiBand(page), "A の仕事が積まれている").toContainText(MSG.queuedLive);
   expect(await pcB.take(), "別の会社の PC の取りは空（201・job は null）").toEqual({ status: 201, job: null });
   let job: Job | null = null;
@@ -497,7 +527,7 @@ test("K65-STG-06 入り直し（口と画面が別の住所）：チケットを
   expect((await devicesOf(again.page)).pcs, "入り直した人の PC の一覧に、前につないだ 1 台").toEqual([
     [pc.label, "live"],
   ]);
-  expect(await clickAndAnswer(again.page, delegateBtn(again.page), DELEGATE_RE), "任せる口が受ける（201）").toBe(201);
+  expect(await delegateOnScreen(again.page), "任せる口が受ける（201）").toBe(201);
   await expect(aiBand(again.page), "任せると、前につないだ PC が受け取るのを待つ").toContainText(MSG.queuedLive);
   await expect
     .poll(async () => (await pc.take()).job?.ticket_id ?? null, {
