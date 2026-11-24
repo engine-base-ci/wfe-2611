@@ -35,7 +35,6 @@ import { register as notices } from "./notices.js";
 import { register as notifications } from "./notifications.js";
 import { register as ops } from "./ops.js";
 import { register as portal } from "./portal.js";
-import { register as rules } from "./rules.js";
 import { register as saved_views } from "./saved_views.js";
 import { register as scopes } from "./scopes.js";
 import { register as search } from "./search.js";
@@ -52,7 +51,6 @@ import { register as ticket_links } from "./ticket_links.js";
 import { register as ticket_messages } from "./ticket_messages.js";
 import { register as ticket_stages } from "./ticket_stages.js";
 import { register as tickets } from "./tickets.js";
-import { register as work_types } from "./work_types.js";
 import { register as workspace } from "./workspace.js";
 
 export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
@@ -89,7 +87,6 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   notifications(app, deps);
   ops(app, deps);
   portal(app, deps);
-  rules(app, deps);
   saved_views(app, deps);
   scopes(app, deps);
   search(app, deps);
@@ -106,6 +103,5 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   ticket_messages(app, deps);
   ticket_stages(app, deps);
   tickets(app, deps);
-  work_types(app, deps);
   workspace(app, deps);
 }

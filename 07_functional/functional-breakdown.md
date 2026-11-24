@@ -263,7 +263,7 @@
 | import | 取り込み | A76 | 1 | 0 | 1 | 8 | R1 R2 |
 | services | 外部サービスの連携 | A77 | 1 | 0 | 1 | 6 | R1 R2 |
 | ops-services | 運営：サービス台帳 | A78 | 1 | 0 | 1 | 4 | R6 |
-| ops-skills | 運営：配るもの | A128 A133 A80 | 4 | 45 | 64 | 19 | R6 |
+| ops-skills | 運営：配るもの | A128 A133 A80 | 4 | 45 | 58 | 19 | R6 |
 | inquiry | 問い合わせ | A67 | 5 | 45 | 51 | 5 | R1 R2 R3 |
 | notices | お知らせ | A68 | 3 | 45 | 48 | 3 | R1 R2 R3 R4 |
 | billing | 請求書 | A69 | 3 | 45 | 48 | 9 | R1 R2 |
@@ -276,12 +276,12 @@
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
 | member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R1 R2 |
 | tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A137 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 89 | 44 | R1 R2 R3 R4 |
-| masters | チケットの設定 | A118 A120 | 1 | 0 | 23 | 21 | R1 R2 |
+| masters | チケットの設定 | A118 A120 | 1 | 0 | 14 | 15 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
-| rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |
-| work-types | 業務の型 | A119 | 1 | 0 | 9 | 10 | R1 R2 R3 |
+| rules | ルール | A131 | 1 | 0 | 0 | 7 | R1 R2 R3 |
+| work-types | 業務の型 | A119 | 1 | 0 | 0 | 6 | R1 R2 R3 |
 | knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 39 | 18 | R1 R2 R3 |
-| clients | 取引先 | A121 | 1 | 0 | 15 | 18 | R1 R2 |
+| clients | 取引先 | A121 | 1 | 0 | 13 | 16 | R1 R2 |
 | requests | 届いた依頼 | A122 | 1 | 0 | 6 | 16 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 4 | 5 | R6 |
 | legal | 規約・プライバシーポリシー | A96 | 1 | 0 | 0 | 2 | R1 R2 R3 R4 |
@@ -292,4 +292,4 @@
 
 - api-design：`traceability-matrix.json` の `screen_to_apis`（path_draft は下書き。確定は api-design）
 - task-decomposition：`features.json` の `ears_ac_seed`（Tier 2）、`screens.json` の `mock_path` / `h1_text` / `section_h2_texts`（Tier 1）、`entities.json` の `access_control_policies`（access control verifier）
-- 未被覆：画面 0 ／ 機能 0
+- 未被覆：画面 2 ／ 機能 0

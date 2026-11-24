@@ -21,12 +21,9 @@
   "messages",
   "notices",
   "notifications",
-  "policies",
   "reference_logs",
   "security_events",
   "sessions",
-  "skill_versions",
-  "skills",
   "status_incidents",
   "tenant_memberships",
   "tenants",
@@ -552,15 +549,11 @@
   },
   "policies": {
    "writes": [
-    "F11",
     "F9"
    ],
    "reads": [],
-   "boundary": true,
-   "lines": [
-    "F11→F9",
-    "F9→F11"
-   ]
+   "boundary": false,
+   "lines": []
   },
   "reference_logs": {
    "writes": [],
@@ -627,38 +620,6 @@
     "F10→F3",
     "F3→F1",
     "F3→F10"
-   ]
-  },
-  "skill_test_runs": {
-   "writes": [
-    "F9"
-   ],
-   "reads": [],
-   "boundary": false,
-   "lines": []
-  },
-  "skill_versions": {
-   "writes": [
-    "F12",
-    "F9"
-   ],
-   "reads": [],
-   "boundary": true,
-   "lines": [
-    "F12→F9",
-    "F9→F12"
-   ]
-  },
-  "skills": {
-   "writes": [
-    "F9"
-   ],
-   "reads": [
-    "F12"
-   ],
-   "boundary": true,
-   "lines": [
-    "F9→F12"
    ]
   },
   "status_incidents": {

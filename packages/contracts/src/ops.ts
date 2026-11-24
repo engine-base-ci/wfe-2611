@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:db0c0aece03f3ea8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:eefd357b4b08a76b
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -249,12 +249,6 @@ export interface Ops {
   listOpsTemplates: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Distributions[] };
   getOpsTemplate: { params: { id: string }; query: never; body: never; data: T.Distributions };
   releaseOpsTemplate: { params: { id: string }; query: never; body: T.DistributionsInput; data: T.Distributions };
-  uploadWorkTypePackage: { params: never; query: never; body: T.SkillVersionsInput; data: T.SkillVersions };
-  getWorkTypeUpload: { params: { id: string }; query: never; body: never; data: T.WorkTypeUploadCheck };
-  listOpsWorkTypes: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Skills[] };
-  getOpsWorkType: { params: { id: string }; query: never; body: never; data: T.Skills };
-  releaseOpsWorkType: { params: { id: string }; query: never; body: T.SkillVersionsInput; data: T.SkillVersions };
-  rollbackOpsWorkType: { params: { id: string; v: string }; query: never; body: T.SkillVersionsInput; data: T.SkillVersions };
   listOpsWorkspaces: { params: never; query: { "q"?: string | number; "attention"?: string | number; "state"?: string | number; "plan"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.OpsWorkspaceRow[] };
   getOpsWorkspace: { params: { id: string }; query: never; body: never; data: T.OpsWorkspace };
   listOpsWorkspaceAudit: { params: { id: string }; query: { "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.OpsAuditEvents[] };
@@ -278,12 +272,6 @@ export interface Ops {
   postPortalRequestMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   askPortalRequestQuestions: { params: never; query: never; body: T.ClientRequestsInput; data: T.PortalQuestions };
   getPortalTicket: { params: { id: string }; query: never; body: never; data: T.PortalTicket };
-  listRules: { params: never; query: { "scope"?: string | number; "client_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Policies[] };
-  createRule: { params: never; query: never; body: T.PoliciesInput; data: T.Policies };
-  getRule: { params: { id: string }; query: never; body: never; data: T.Policies };
-  updateRule: { params: { id: string }; query: never; body: T.PoliciesInput; data: T.Policies };
-  deleteRule: { params: { id: string }; query: never; body: never; data: T.Policies };
-  checkRule: { params: never; query: never; body: T.PoliciesInput; data: T.RuleCheck };
   listSavedViews: { params: never; query: { "share"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.SavedView[] };
   createSavedView: { params: never; query: never; body: T.SavedViewInput; data: T.SavedView };
   updateSavedView: { params: { id: string }; query: never; body: T.SavedViewsInput; data: T.SavedViews };
@@ -360,34 +348,17 @@ export interface Ops {
   listTicketVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketSectionVersions[] };
   restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.TicketSectionVersionsInput; data: T.TicketSectionVersions };
   bulkUpdateTickets: { params: never; query: never; body: T.TicketsInput; data: T.BulkResult };
-  listWorkTypes: { params: never; query: { "origin"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Skills[] };
-  createWorkType: { params: never; query: never; body: T.SkillsInput; data: T.Skills };
-  getWorkType: { params: { id: string }; query: never; body: never; data: T.Skills };
-  copyWorkType: { params: { id: string }; query: never; body: T.SkillsInput; data: T.Skills };
-  updateWorkTypeDraft: { params: { id: string }; query: never; body: T.SkillVersionsInput; data: T.SkillVersions };
-  releaseWorkType: { params: { id: string }; query: never; body: T.SkillVersionsInput; data: T.SkillVersions };
-  requestWorkTypeSpread: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
-  tryWorkType: { params: { id: string }; query: never; body: T.SkillTestRunsInput; data: T.SkillTestRuns };
-  listWorkTypeVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.SkillVersions[] };
   getWorkspaceSettings: { params: never; query: never; body: never; data: T.WorkspaceSettings };
   updateWorkspace: { params: never; query: never; body: T.TenantsInput; data: T.Tenants };
   getBilling: { params: never; query: never; body: never; data: T.Billing };
   updateBillingContact: { params: never; query: never; body: T.SubscriptionsInput; data: T.Subscriptions };
   requestWorkspaceDeletion: { params: never; query: never; body: T.AccountEventsInput; data: T.AccountEvents };
   cancelWorkspaceDeletion: { params: never; query: never; body: never; data: T.AccountEvents };
-  createEscalationRule: { params: never; query: never; body: T.PoliciesInput; data: T.Policies };
-  updateEscalationRule: { params: { id: string }; query: never; body: T.PoliciesInput; data: T.Policies };
-  deleteEscalationRule: { params: { id: string }; query: never; body: never; data: T.Policies };
-  previewEscalationRule: { params: never; query: never; body: T.PoliciesInput; data: T.EscalationPreview };
   uploadWorkspaceLogo: { params: never; query: never; body: T.TenantsInput; data: T.Tenants };
   getWorkspaceMembers: { params: never; query: never; body: never; data: T.WorkspaceMembers };
   updateWorkspacePermissions: { params: never; query: never; body: T.PermissionsInput; data: T.Permissions };
   changePlan: { params: never; query: never; body: T.SubscriptionsInput; data: T.Subscriptions };
   listWorkspacePlans: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.PlanChoice[] };
-  getWorkspaceRules: { params: never; query: never; body: never; data: T.WorkspaceRules };
-  createWorkspaceRule: { params: never; query: never; body: T.PoliciesInput; data: T.Policies };
-  updateWorkspaceRule: { params: { id: string }; query: never; body: T.PoliciesInput; data: T.Policies };
-  deleteWorkspaceRule: { params: { id: string }; query: never; body: never; data: T.Policies };
   getTicketShape: { params: never; query: never; body: never; data: T.TicketShape };
   saveTicketShape: { params: never; query: never; body: T.TicketKindsInput; data: T.TicketKinds };
   previewTicketShapeChange: { params: never; query: never; body: T.TicketKindsInput; data: T.TicketShapeChangePreview };

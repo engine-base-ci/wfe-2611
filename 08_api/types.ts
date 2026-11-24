@@ -426,15 +426,11 @@ export type BridgeFinish = { ok?: boolean; outcome?: string };
 export type BridgeToolResult = { result?: Record<string, unknown> | null };
 export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; taken_over_at?: string | null; reason_kind?: string | null; checks?: Record<string, unknown> };
 export type ResolvedCredential = { credential_id?: string; kind?: string; name?: string; destinations?: string[]; two_factor?: string; expires_at?: string | null; server_key?: string; iv?: string; tag?: string; ciphertext_for_executor?: string };
-export type WorkTypeUploadCheck = { package?: Record<string, unknown>; checks?: string[]; passed?: boolean; test_scenarios?: number; changelog?: string | null };
 export type PlanProposalImpact = { tenants?: number; monthly_revenue_diff?: number; existing_from?: string; new_from?: string | null; by_workspace?: string[] };
-export type RuleCheck = { conflicts?: string[]; similar?: string[]; needs_approval_from?: string; warnings?: string[] };
 export type WorkspaceMembers = { groups?: string[]; invitations?: string[]; alerts?: string[]; count?: number };
 export type InvitationLink = { url?: string; expires_at?: string };
 export type MemberDetail = { member?: Record<string, unknown>; groups?: string[]; role_bundle?: Record<string, unknown>; granted?: string[]; revoked?: string[]; assigned?: Record<string, unknown>; clone?: Record<string, unknown>; login?: Record<string, unknown>; recent_events?: string[] };
 export type MemberRemovalPreview = { tickets?: string[]; handovers_cancelled?: string[]; approvals_reassigned?: string[]; sole_approver?: string[]; deleted?: string[]; kept?: string[]; restorable_until?: string };
-export type WorkspaceRules = { rules?: string[]; rules_by_layer?: string[]; escalations?: string[]; work_types?: string[] };
-export type EscalationPreview = { matched_last_month?: number; examples?: string[] };
 export type ExportStatus = { status?: string; url?: string; expires_at?: string | null };
 export type WorkspaceSettings = { workspace?: Record<string, unknown>; plan?: Record<string, unknown>; subscription?: Record<string, unknown>; price_change?: Record<string, unknown>; permissions?: string[]; fixed_rules?: string[]; deletion?: Record<string, unknown> };
 export type PlanChoice = { plan_id?: string; name?: string | null; price_monthly?: number | null; limits?: Record<string, unknown> | null; current?: boolean; can_choose?: boolean; reason?: string; effective_from?: string };
@@ -3248,72 +3244,6 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-247",
-  "method": "POST",
-  "path": "/api/v1/ops/work_type_uploads",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-248",
-  "method": "GET",
-  "path": "/api/v1/ops/work_type_uploads/:id",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-249",
-  "method": "GET",
-  "path": "/api/v1/ops/work_types",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-250",
-  "method": "GET",
-  "path": "/api/v1/ops/work_types/:id",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-251",
-  "method": "POST",
-  "path": "/api/v1/ops/work_types/:id/versions",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-252",
-  "method": "POST",
-  "path": "/api/v1/ops/work_types/:id/versions/:v/rollback",
-  "acts": [
-   "A80"
-  ],
-  "screens": [
-   "ops-skills"
-  ]
- },
- {
-  "id": "EP-253",
   "method": "GET",
   "path": "/api/v1/ops/workspaces",
   "acts": [
@@ -3324,7 +3254,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-254",
+  "id": "EP-248",
   "method": "GET",
   "path": "/api/v1/ops/workspaces/:id",
   "acts": [
@@ -3335,7 +3265,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-255",
+  "id": "EP-249",
   "method": "GET",
   "path": "/api/v1/ops/workspaces/:id/audit",
   "acts": [
@@ -3346,7 +3276,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-256",
+  "id": "EP-250",
   "method": "GET",
   "path": "/api/v1/ops/workspaces/:id/billing",
   "acts": [
@@ -3357,7 +3287,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-257",
+  "id": "EP-251",
   "method": "GET",
   "path": "/api/v1/ops/workspaces/:id/inquiries",
   "acts": [
@@ -3368,7 +3298,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-258",
+  "id": "EP-252",
   "method": "GET",
   "path": "/api/v1/ops/workspaces/:id/members",
   "acts": [
@@ -3379,7 +3309,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-259",
+  "id": "EP-253",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/members/:mid/resend-verification",
   "acts": [
@@ -3390,7 +3320,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-260",
+  "id": "EP-254",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/notices",
   "acts": [
@@ -3401,7 +3331,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-261",
+  "id": "EP-255",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/peeks",
   "acts": [
@@ -3412,7 +3342,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-262",
+  "id": "EP-256",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/plan",
   "acts": [
@@ -3423,7 +3353,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-263",
+  "id": "EP-257",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/resume",
   "acts": [
@@ -3434,7 +3364,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-264",
+  "id": "EP-258",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/:id/stop",
   "acts": [
@@ -3445,7 +3375,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-265",
+  "id": "EP-259",
   "method": "POST",
   "path": "/api/v1/ops/workspaces/export",
   "acts": [
@@ -3456,7 +3386,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-266",
+  "id": "EP-260",
   "method": "GET",
   "path": "/api/v1/portal",
   "acts": [
@@ -3467,7 +3397,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-267",
+  "id": "EP-261",
   "method": "GET",
   "path": "/api/v1/portal/acceptances/:id",
   "acts": [
@@ -3478,7 +3408,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-268",
+  "id": "EP-262",
   "method": "POST",
   "path": "/api/v1/portal/acceptances/:id/answer",
   "acts": [
@@ -3489,7 +3419,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-269",
+  "id": "EP-263",
   "method": "POST",
   "path": "/api/v1/portal/attachments",
   "acts": [
@@ -3500,7 +3430,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-270",
+  "id": "EP-264",
   "method": "GET",
   "path": "/api/v1/portal/notices",
   "acts": [
@@ -3511,7 +3441,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-271",
+  "id": "EP-265",
   "method": "POST",
   "path": "/api/v1/portal/requests",
   "acts": [
@@ -3522,7 +3452,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-272",
+  "id": "EP-266",
   "method": "GET",
   "path": "/api/v1/portal/requests/:id",
   "acts": [
@@ -3533,7 +3463,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-273",
+  "id": "EP-267",
   "method": "POST",
   "path": "/api/v1/portal/requests/:id/messages",
   "acts": [
@@ -3544,7 +3474,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-274",
+  "id": "EP-268",
   "method": "POST",
   "path": "/api/v1/portal/requests/questions",
   "acts": [
@@ -3555,7 +3485,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-275",
+  "id": "EP-269",
   "method": "GET",
   "path": "/api/v1/portal/tickets/:id",
   "acts": [
@@ -3566,145 +3496,73 @@ export const ENDPOINTS = [
   ]
  },
  {
+  "id": "EP-270",
+  "method": "GET",
+  "path": "/api/v1/saved_views",
+  "acts": [
+   "A58"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-271",
+  "method": "POST",
+  "path": "/api/v1/saved_views",
+  "acts": [
+   "A58"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-272",
+  "method": "PATCH",
+  "path": "/api/v1/saved_views/:id",
+  "acts": [
+   "A58"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-273",
+  "method": "DELETE",
+  "path": "/api/v1/saved_views/:id",
+  "acts": [
+   "A58"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-274",
+  "method": "GET",
+  "path": "/api/v1/scopes",
+  "acts": [
+   "A117"
+  ],
+  "screens": [
+   "layers"
+  ]
+ },
+ {
+  "id": "EP-275",
+  "method": "POST",
+  "path": "/api/v1/scopes",
+  "acts": [
+   "A117"
+  ],
+  "screens": [
+   "layers"
+  ]
+ },
+ {
   "id": "EP-276",
-  "method": "GET",
-  "path": "/api/v1/rules",
-  "acts": [
-   "A121",
-   "A131"
-  ],
-  "screens": [
-   "clients",
-   "rules"
-  ]
- },
- {
-  "id": "EP-277",
-  "method": "POST",
-  "path": "/api/v1/rules",
-  "acts": [
-   "A121",
-   "A131"
-  ],
-  "screens": [
-   "clients",
-   "rules"
-  ]
- },
- {
-  "id": "EP-278",
-  "method": "GET",
-  "path": "/api/v1/rules/:id",
-  "acts": [
-   "A131"
-  ],
-  "screens": [
-   "rules"
-  ]
- },
- {
-  "id": "EP-279",
-  "method": "PATCH",
-  "path": "/api/v1/rules/:id",
-  "acts": [
-   "A131"
-  ],
-  "screens": [
-   "rules"
-  ]
- },
- {
-  "id": "EP-280",
-  "method": "DELETE",
-  "path": "/api/v1/rules/:id",
-  "acts": [
-   "A131"
-  ],
-  "screens": [
-   "rules"
-  ]
- },
- {
-  "id": "EP-281",
-  "method": "POST",
-  "path": "/api/v1/rules/check",
-  "acts": [
-   "A118",
-   "A131"
-  ],
-  "screens": [
-   "masters",
-   "rules"
-  ]
- },
- {
-  "id": "EP-282",
-  "method": "GET",
-  "path": "/api/v1/saved_views",
-  "acts": [
-   "A58"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-283",
-  "method": "POST",
-  "path": "/api/v1/saved_views",
-  "acts": [
-   "A58"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-284",
-  "method": "PATCH",
-  "path": "/api/v1/saved_views/:id",
-  "acts": [
-   "A58"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-285",
-  "method": "DELETE",
-  "path": "/api/v1/saved_views/:id",
-  "acts": [
-   "A58"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-286",
-  "method": "GET",
-  "path": "/api/v1/scopes",
-  "acts": [
-   "A117"
-  ],
-  "screens": [
-   "layers"
-  ]
- },
- {
-  "id": "EP-287",
-  "method": "POST",
-  "path": "/api/v1/scopes",
-  "acts": [
-   "A117"
-  ],
-  "screens": [
-   "layers"
-  ]
- },
- {
-  "id": "EP-288",
   "method": "PATCH",
   "path": "/api/v1/scopes/:id",
   "acts": [
@@ -3715,7 +3573,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-289",
+  "id": "EP-277",
   "method": "GET",
   "path": "/api/v1/scopes/:id/overview",
   "acts": [
@@ -3726,7 +3584,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-290",
+  "id": "EP-278",
   "method": "GET",
   "path": "/api/v1/search",
   "acts": [
@@ -3737,7 +3595,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-291",
+  "id": "EP-279",
   "method": "GET",
   "path": "/api/v1/service-status",
   "acts": [
@@ -3748,7 +3606,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-292",
+  "id": "EP-280",
   "method": "GET",
   "path": "/api/v1/shell",
   "acts": [
@@ -3759,7 +3617,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-293",
+  "id": "EP-281",
   "method": "PATCH",
   "path": "/api/v1/test_specs/:id",
   "acts": [
@@ -3770,7 +3628,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-294",
+  "id": "EP-282",
   "method": "DELETE",
   "path": "/api/v1/test_specs/:id",
   "acts": [
@@ -3781,7 +3639,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-295",
+  "id": "EP-283",
   "method": "GET",
   "path": "/api/v1/ticket-field-master",
   "acts": [
@@ -3792,7 +3650,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-296",
+  "id": "EP-284",
   "method": "GET",
   "path": "/api/v1/ticket-fields",
   "acts": [
@@ -3803,7 +3661,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-297",
+  "id": "EP-285",
   "method": "POST",
   "path": "/api/v1/ticket-fields",
   "acts": [
@@ -3814,7 +3672,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-298",
+  "id": "EP-286",
   "method": "PATCH",
   "path": "/api/v1/ticket-fields/:id",
   "acts": [
@@ -3825,7 +3683,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-299",
+  "id": "EP-287",
   "method": "DELETE",
   "path": "/api/v1/ticket-fields/:id",
   "acts": [
@@ -3836,7 +3694,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-300",
+  "id": "EP-288",
   "method": "POST",
   "path": "/api/v1/ticket-fields/order",
   "acts": [
@@ -3847,7 +3705,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-301",
+  "id": "EP-289",
   "method": "PATCH",
   "path": "/api/v1/ticket_decisions/:id",
   "acts": [
@@ -3858,7 +3716,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-302",
+  "id": "EP-290",
   "method": "PATCH",
   "path": "/api/v1/ticket_handovers/:id",
   "acts": [
@@ -3870,7 +3728,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-303",
+  "id": "EP-291",
   "method": "POST",
   "path": "/api/v1/ticket_imports",
   "acts": [
@@ -3881,7 +3739,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-304",
+  "id": "EP-292",
   "method": "GET",
   "path": "/api/v1/ticket_imports/:id",
   "acts": [
@@ -3892,7 +3750,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-305",
+  "id": "EP-293",
   "method": "POST",
   "path": "/api/v1/ticket_imports/:id/commit",
   "acts": [
@@ -3903,7 +3761,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-306",
+  "id": "EP-294",
   "method": "GET",
   "path": "/api/v1/ticket_kinds",
   "acts": [
@@ -3914,7 +3772,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-307",
+  "id": "EP-295",
   "method": "POST",
   "path": "/api/v1/ticket_kinds/:id/template-from-ticket",
   "acts": [
@@ -3925,7 +3783,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-308",
+  "id": "EP-296",
   "method": "GET",
   "path": "/api/v1/ticket_kinds/template-updates",
   "acts": [
@@ -3936,7 +3794,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-309",
+  "id": "EP-297",
   "method": "POST",
   "path": "/api/v1/ticket_kinds/template-updates/:id/apply",
   "acts": [
@@ -3947,7 +3805,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-310",
+  "id": "EP-298",
   "method": "DELETE",
   "path": "/api/v1/ticket_links/:id",
   "acts": [
@@ -3958,7 +3816,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-311",
+  "id": "EP-299",
   "method": "PATCH",
   "path": "/api/v1/ticket_messages/:id",
   "acts": [
@@ -3969,7 +3827,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-312",
+  "id": "EP-300",
   "method": "DELETE",
   "path": "/api/v1/ticket_messages/:id",
   "acts": [
@@ -3980,7 +3838,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-313",
+  "id": "EP-301",
   "method": "POST",
   "path": "/api/v1/ticket_messages/:id/star",
   "acts": [
@@ -3991,7 +3849,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-314",
+  "id": "EP-302",
   "method": "GET",
   "path": "/api/v1/ticket_stages",
   "acts": [
@@ -4002,7 +3860,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-315",
+  "id": "EP-303",
   "method": "POST",
   "path": "/api/v1/ticket_stages",
   "acts": [
@@ -4013,7 +3871,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-316",
+  "id": "EP-304",
   "method": "PATCH",
   "path": "/api/v1/ticket_stages/:id",
   "acts": [
@@ -4024,7 +3882,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-317",
+  "id": "EP-305",
   "method": "DELETE",
   "path": "/api/v1/ticket_stages/:id",
   "acts": [
@@ -4035,7 +3893,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-318",
+  "id": "EP-306",
   "method": "POST",
   "path": "/api/v1/ticket_stages/order",
   "acts": [
@@ -4046,7 +3904,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-319",
+  "id": "EP-307",
   "method": "GET",
   "path": "/api/v1/tickets",
   "acts": [
@@ -4059,7 +3917,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-320",
+  "id": "EP-308",
   "method": "POST",
   "path": "/api/v1/tickets",
   "acts": [
@@ -4072,7 +3930,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-321",
+  "id": "EP-309",
   "method": "GET",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -4083,7 +3941,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-322",
+  "id": "EP-310",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -4097,7 +3955,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-323",
+  "id": "EP-311",
   "method": "DELETE",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -4108,7 +3966,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-324",
+  "id": "EP-312",
   "method": "POST",
   "path": "/api/v1/tickets/:id/acceptances",
   "acts": [
@@ -4119,7 +3977,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-325",
+  "id": "EP-313",
   "method": "GET",
   "path": "/api/v1/tickets/:id/agent-session",
   "acts": [
@@ -4130,7 +3988,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-326",
+  "id": "EP-314",
   "method": "POST",
   "path": "/api/v1/tickets/:id/agent-session/apply",
   "acts": [
@@ -4141,7 +3999,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-327",
+  "id": "EP-315",
   "method": "POST",
   "path": "/api/v1/tickets/:id/agent-session/messages",
   "acts": [
@@ -4153,7 +4011,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-328",
+  "id": "EP-316",
   "method": "GET",
   "path": "/api/v1/tickets/:id/artifacts",
   "acts": [
@@ -4164,7 +4022,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-329",
+  "id": "EP-317",
   "method": "POST",
   "path": "/api/v1/tickets/:id/attachments",
   "acts": [
@@ -4175,7 +4033,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-330",
+  "id": "EP-318",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id/body",
   "acts": [
@@ -4186,7 +4044,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-331",
+  "id": "EP-319",
   "method": "GET",
   "path": "/api/v1/tickets/:id/checks",
   "acts": [
@@ -4197,7 +4055,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-332",
+  "id": "EP-320",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id/client-share",
   "acts": [
@@ -4208,7 +4066,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-333",
+  "id": "EP-321",
   "method": "POST",
   "path": "/api/v1/tickets/:id/complete",
   "acts": [
@@ -4219,7 +4077,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-334",
+  "id": "EP-322",
   "method": "GET",
   "path": "/api/v1/tickets/:id/decisions",
   "acts": [
@@ -4230,7 +4088,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-335",
+  "id": "EP-323",
   "method": "POST",
   "path": "/api/v1/tickets/:id/decisions",
   "acts": [
@@ -4241,7 +4099,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-336",
+  "id": "EP-324",
   "method": "POST",
   "path": "/api/v1/tickets/:id/delegate",
   "acts": [
@@ -4252,7 +4110,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-337",
+  "id": "EP-325",
   "method": "GET",
   "path": "/api/v1/tickets/:id/delete-preview",
   "acts": [
@@ -4263,7 +4121,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-338",
+  "id": "EP-326",
   "method": "POST",
   "path": "/api/v1/tickets/:id/dry-run",
   "acts": [
@@ -4274,7 +4132,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-339",
+  "id": "EP-327",
   "method": "GET",
   "path": "/api/v1/tickets/:id/handover-preview",
   "acts": [
@@ -4287,7 +4145,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-340",
+  "id": "EP-328",
   "method": "GET",
   "path": "/api/v1/tickets/:id/handovers",
   "acts": [
@@ -4299,7 +4157,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-341",
+  "id": "EP-329",
   "method": "POST",
   "path": "/api/v1/tickets/:id/handovers",
   "acts": [
@@ -4313,7 +4171,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-342",
+  "id": "EP-330",
   "method": "GET",
   "path": "/api/v1/tickets/:id/kind-change-preview",
   "acts": [
@@ -4324,7 +4182,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-343",
+  "id": "EP-331",
   "method": "GET",
   "path": "/api/v1/tickets/:id/links",
   "acts": [
@@ -4335,7 +4193,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-344",
+  "id": "EP-332",
   "method": "POST",
   "path": "/api/v1/tickets/:id/links",
   "acts": [
@@ -4346,7 +4204,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-345",
+  "id": "EP-333",
   "method": "POST",
   "path": "/api/v1/tickets/:id/messages",
   "acts": [
@@ -4357,7 +4215,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-346",
+  "id": "EP-334",
   "method": "GET",
   "path": "/api/v1/tickets/:id/references",
   "acts": [
@@ -4368,7 +4226,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-347",
+  "id": "EP-335",
   "method": "POST",
   "path": "/api/v1/tickets/:id/restore",
   "acts": [
@@ -4380,7 +4238,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-348",
+  "id": "EP-336",
   "method": "GET",
   "path": "/api/v1/tickets/:id/runs",
   "acts": [
@@ -4391,7 +4249,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-349",
+  "id": "EP-337",
   "method": "GET",
   "path": "/api/v1/tickets/:id/test-specs",
   "acts": [
@@ -4402,7 +4260,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-350",
+  "id": "EP-338",
   "method": "POST",
   "path": "/api/v1/tickets/:id/test-specs",
   "acts": [
@@ -4413,7 +4271,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-351",
+  "id": "EP-339",
   "method": "POST",
   "path": "/api/v1/tickets/:id/test-specs/lint",
   "acts": [
@@ -4424,7 +4282,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-352",
+  "id": "EP-340",
   "method": "POST",
   "path": "/api/v1/tickets/:id/test-specs/suggest",
   "acts": [
@@ -4435,7 +4293,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-353",
+  "id": "EP-341",
   "method": "GET",
   "path": "/api/v1/tickets/:id/timeline",
   "acts": [
@@ -4446,7 +4304,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-354",
+  "id": "EP-342",
   "method": "POST",
   "path": "/api/v1/tickets/:id/timeline/seen",
   "acts": [
@@ -4457,7 +4315,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-355",
+  "id": "EP-343",
   "method": "GET",
   "path": "/api/v1/tickets/:id/versions",
   "acts": [
@@ -4468,7 +4326,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-356",
+  "id": "EP-344",
   "method": "POST",
   "path": "/api/v1/tickets/:id/versions/:v/restore",
   "acts": [
@@ -4479,7 +4337,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-357",
+  "id": "EP-345",
   "method": "POST",
   "path": "/api/v1/tickets/bulk",
   "acts": [
@@ -4491,106 +4349,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-358",
-  "method": "GET",
-  "path": "/api/v1/work_types",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-359",
-  "method": "POST",
-  "path": "/api/v1/work_types",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-360",
-  "method": "GET",
-  "path": "/api/v1/work_types/:id",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-361",
-  "method": "POST",
-  "path": "/api/v1/work_types/:id/copy",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-362",
-  "method": "PATCH",
-  "path": "/api/v1/work_types/:id/draft",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-363",
-  "method": "POST",
-  "path": "/api/v1/work_types/:id/release",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-364",
-  "method": "POST",
-  "path": "/api/v1/work_types/:id/spread-requests",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-365",
-  "method": "POST",
-  "path": "/api/v1/work_types/:id/try",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-366",
-  "method": "GET",
-  "path": "/api/v1/work_types/:id/versions",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-367",
+  "id": "EP-346",
   "method": "GET",
   "path": "/api/v1/workspace",
   "acts": [
@@ -4601,7 +4360,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-368",
+  "id": "EP-347",
   "method": "PATCH",
   "path": "/api/v1/workspace",
   "acts": [
@@ -4612,7 +4371,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-369",
+  "id": "EP-348",
   "method": "GET",
   "path": "/api/v1/workspace/billing",
   "acts": [
@@ -4623,7 +4382,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-370",
+  "id": "EP-349",
   "method": "PATCH",
   "path": "/api/v1/workspace/billing-contact",
   "acts": [
@@ -4634,7 +4393,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-371",
+  "id": "EP-350",
   "method": "POST",
   "path": "/api/v1/workspace/deletion",
   "acts": [
@@ -4645,7 +4404,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-372",
+  "id": "EP-351",
   "method": "DELETE",
   "path": "/api/v1/workspace/deletion",
   "acts": [
@@ -4656,51 +4415,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-373",
-  "method": "POST",
-  "path": "/api/v1/workspace/escalation-rules",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-374",
-  "method": "PATCH",
-  "path": "/api/v1/workspace/escalation-rules/:id",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-375",
-  "method": "DELETE",
-  "path": "/api/v1/workspace/escalation-rules/:id",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-376",
-  "method": "POST",
-  "path": "/api/v1/workspace/escalation-rules/preview",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-377",
+  "id": "EP-352",
   "method": "POST",
   "path": "/api/v1/workspace/logo",
   "acts": [
@@ -4711,7 +4426,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-378",
+  "id": "EP-353",
   "method": "GET",
   "path": "/api/v1/workspace/members",
   "acts": [
@@ -4722,7 +4437,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-379",
+  "id": "EP-354",
   "method": "PATCH",
   "path": "/api/v1/workspace/permissions",
   "acts": [
@@ -4733,7 +4448,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-380",
+  "id": "EP-355",
   "method": "POST",
   "path": "/api/v1/workspace/plan",
   "acts": [
@@ -4744,7 +4459,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-381",
+  "id": "EP-356",
   "method": "GET",
   "path": "/api/v1/workspace/plans",
   "acts": [
@@ -4755,51 +4470,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-382",
-  "method": "GET",
-  "path": "/api/v1/workspace/rules",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-383",
-  "method": "POST",
-  "path": "/api/v1/workspace/rules",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-384",
-  "method": "PATCH",
-  "path": "/api/v1/workspace/rules/:id",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-385",
-  "method": "DELETE",
-  "path": "/api/v1/workspace/rules/:id",
-  "acts": [
-   "A118"
-  ],
-  "screens": [
-   "masters"
-  ]
- },
- {
-  "id": "EP-386",
+  "id": "EP-357",
   "method": "GET",
   "path": "/api/v1/workspace/ticket-shape",
   "acts": [
@@ -4810,7 +4481,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-387",
+  "id": "EP-358",
   "method": "PATCH",
   "path": "/api/v1/workspace/ticket-shape",
   "acts": [
@@ -4821,7 +4492,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-388",
+  "id": "EP-359",
   "method": "POST",
   "path": "/api/v1/workspace/ticket-shape/preview",
   "acts": [

@@ -259,153 +259,124 @@
 | EP-244 | GET | `/api/v1/ops/templates` | 取得（ops）— ひな形（層・マスタ）を作って配る | A128 | 1 | ops |  | 401 403 422 429 403 403 503 |
 | EP-245 | GET | `/api/v1/ops/templates/:id` | 取得（ops）— ひな形（層・マスタ）を作って配る | A128 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
 | EP-246 | POST | `/api/v1/ops/templates/:id/versions` | 作成・実行（ops）— ひな形（層・マスタ）を作って配る | A128 | 1 | ops | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-247 | POST | `/api/v1/ops/work_type_uploads` | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向 | A80 | 1 | ops | C2 C4 | 401 403 409 422 413 429 403 403 503 |
-| EP-248 | GET | `/api/v1/ops/work_type_uploads/:id` | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | A80 | 1 | ops | C4 | 401 403 404 422 429 403 403 503 |
-| EP-249 | GET | `/api/v1/ops/work_types` | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | A80 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
-| EP-250 | GET | `/api/v1/ops/work_types/:id` | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | A80 | 1 | ops | C4 | 401 403 404 422 429 403 403 503 |
-| EP-251 | POST | `/api/v1/ops/work_types/:id/versions` | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向 | A80 | 1 | ops | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-252 | POST | `/api/v1/ops/work_types/:id/versions/:v/rollback` | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向 | A80 | 1 | ops | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-253 | GET | `/api/v1/ops/workspaces` | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops |  | 401 403 422 429 403 403 503 |
-| EP-254 | GET | `/api/v1/ops/workspaces/:id` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
-| EP-255 | GET | `/api/v1/ops/workspaces/:id/audit` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
-| EP-256 | GET | `/api/v1/ops/workspaces/:id/billing` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
-| EP-257 | GET | `/api/v1/ops/workspaces/:id/inquiries` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
-| EP-258 | GET | `/api/v1/ops/workspaces/:id/members` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
-| EP-259 | POST | `/api/v1/ops/workspaces/:id/members/:mid/resend-verification` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-260 | POST | `/api/v1/ops/workspaces/:id/notices` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-261 | POST | `/api/v1/ops/workspaces/:id/peeks` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-262 | POST | `/api/v1/ops/workspaces/:id/plan` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-263 | POST | `/api/v1/ops/workspaces/:id/resume` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-264 | POST | `/api/v1/ops/workspaces/:id/stop` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-265 | POST | `/api/v1/ops/workspaces/export` | 作成・実行（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-266 | GET | `/api/v1/portal` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
-| EP-267 | GET | `/api/v1/portal/acceptances/:id` | 取得（portal）— 検収する（OK・直してほしい） | A126 | 1 | client |  | 401 403 404 422 429 403 403 503 |
-| EP-268 | POST | `/api/v1/portal/acceptances/:id/answer` | 作成・実行（portal）— 検収する（OK・直してほしい） | A126 | 1 | client | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-269 | POST | `/api/v1/portal/attachments` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-270 | GET | `/api/v1/portal/notices` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
-| EP-271 | POST | `/api/v1/portal/requests` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-272 | GET | `/api/v1/portal/requests/:id` | 取得（portal）— 依頼を出す・やり取りする | A124 | 1 | client |  | 401 403 404 422 429 403 403 503 |
-| EP-273 | POST | `/api/v1/portal/requests/:id/messages` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-274 | POST | `/api/v1/portal/requests/questions` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-275 | GET | `/api/v1/portal/tickets/:id` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 404 422 429 403 403 503 |
-| EP-276 | GET | `/api/v1/rules` | 取得（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社 | A121 A131 | 2 | member |  | 401 403 422 429 403 403 503 |
-| EP-277 | POST | `/api/v1/rules` | 作成・実行（rules）— 取引先を作り、担当者を招待する／ルールを置く | A121 A131 | 2 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-278 | GET | `/api/v1/rules/:id` | 取得（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-279 | PATCH | `/api/v1/rules/:id` | 更新（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-280 | DELETE | `/api/v1/rules/:id` | 削除（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-281 | POST | `/api/v1/rules/check` | 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ | A118 A131 | 2 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-282 | GET | `/api/v1/saved_views` | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分 | A58 | 1 | member |  | 401 403 422 503 429 403 403 503 |
-| EP-283 | POST | `/api/v1/saved_views` | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・ | A58 | 1 | member | C2 | 401 403 409 422 404 409 422 503 413 429 403 403 503 |
-| EP-284 | PATCH | `/api/v1/saved_views/:id` | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-285 | DELETE | `/api/v1/saved_views/:id` | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-286 | GET | `/api/v1/scopes` | 取得（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-287 | POST | `/api/v1/scopes` | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-288 | PATCH | `/api/v1/scopes/:id` | 更新（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-289 | GET | `/api/v1/scopes/:id/overview` | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガン | A58 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-290 | GET | `/api/v1/search` | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのペー | A21 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-291 | GET | `/api/v1/service-status` | 取得（service-status）— お知らせを見る | A68 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-292 | GET | `/api/v1/shell` | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント | A58 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-293 | PATCH | `/api/v1/test_specs/:id` | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 409 409 409 409 503 413 429 502 403 403 503 |
-| EP-294 | DELETE | `/api/v1/test_specs/:id` | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 409 409 503 429 502 403 403 503 |
-| EP-295 | GET | `/api/v1/ticket-field-master` | 取得（custom_fields）— 会社の項目を並びの順に全部見る（型 | A118 | 1 | member |  | 401 403 422 503 429 403 403 503 |
-| EP-296 | GET | `/api/v1/ticket-fields` | 取得（custom_fields）— その種別で出す会社の項目を並びの順 | A103 | 1 | member |  | 401 403 422 404 429 403 403 503 |
-| EP-297 | POST | `/api/v1/ticket-fields` | 作成・実行（ticket-fields）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 404 409 503 413 429 403 403 503 |
-| EP-298 | PATCH | `/api/v1/ticket-fields/:id` | 更新（ticket-fields）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 409 409 503 413 429 403 403 503 |
-| EP-299 | DELETE | `/api/v1/ticket-fields/:id` | 削除（ticket-fields）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
-| EP-300 | POST | `/api/v1/ticket-fields/order` | 作成・実行（ticket-fields）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 503 413 429 403 403 503 |
-| EP-301 | PATCH | `/api/v1/ticket_decisions/:id` | 更新（ticket_decisions）— 決定を記録する（AI の候補 | A108 | 1 | member | C2 | 401 403 404 422 409 503 413 429 403 403 503 |
-| EP-302 | PATCH | `/api/v1/ticket_handovers/:id` | 更新（ticket_handovers）— 渡されたものを受ける／断る（ | A110 | 2 | member | C2 C6 | 401 403 404 422 409 413 429 403 403 503 |
-| EP-303 | POST | `/api/v1/ticket_imports` | 作成・実行（ticket_imports）— チケットを作る（画面で・下 | A99 | 1 | member | C2 C4 | 401 403 409 422 413 429 403 403 503 |
-| EP-304 | GET | `/api/v1/ticket_imports/:id` | 取得（ticket_imports）— チケットを作る（画面で・下書きか | A99 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-305 | POST | `/api/v1/ticket_imports/:id/commit` | 作成・実行（ticket_imports）— チケットを作る（画面で・下 | A99 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-306 | GET | `/api/v1/ticket_kinds` | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-307 | POST | `/api/v1/ticket_kinds/:id/template-from-ticket` | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・ | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-308 | GET | `/api/v1/ticket_kinds/template-updates` | 取得（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-309 | POST | `/api/v1/ticket_kinds/template-updates/:id/apply` | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-310 | DELETE | `/api/v1/ticket_links/:id` | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
-| EP-311 | PATCH | `/api/v1/ticket_messages/:id` | 更新（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 404 503 503 413 429 403 403 503 |
-| EP-312 | DELETE | `/api/v1/ticket_messages/:id` | 削除（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 503 503 429 403 403 503 |
-| EP-313 | POST | `/api/v1/ticket_messages/:id/star` | 作成・実行（ticket_messages）— チケットのスレッドで話す | A107 | 1 | member | C2 C6 | 401 403 404 409 422 503 503 413 429 403 403 503 |
-| EP-314 | GET | `/api/v1/ticket_stages` | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親 | A103 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-315 | POST | `/api/v1/ticket_stages` | 作成・実行（ticket_stages）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 409 503 413 429 403 403 503 |
-| EP-316 | PATCH | `/api/v1/ticket_stages/:id` | 更新（ticket_stages）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
-| EP-317 | DELETE | `/api/v1/ticket_stages/:id` | 削除（ticket_stages）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 503 429 403 403 503 |
-| EP-318 | POST | `/api/v1/ticket_stages/order` | 作成・実行（ticket_stages）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 409 503 413 429 403 403 503 |
-| EP-319 | GET | `/api/v1/tickets` | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて | A113 A58 A99 | 1 | member |  | 401 403 422 409 429 403 403 503 |
-| EP-320 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 404 409 409 409 409 409 409 404 409 413 429 403 403 503 |
-| EP-321 | GET | `/api/v1/tickets/:id` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-322 | PATCH | `/api/v1/tickets/:id` | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 A113 A115 A17 | 1 | member | C2 | 401 403 404 422 409 409 409 409 409 409 409 409 409 409 409 409 409 422 503 503 413 429 403 403 503 |
-| EP-323 | DELETE | `/api/v1/tickets/:id` | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member | C2 | 401 403 404 422 409 503 429 403 403 503 |
-| EP-324 | POST | `/api/v1/tickets/:id/acceptances` | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-325 | GET | `/api/v1/tickets/:id/agent-session` | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付 | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
-| EP-326 | POST | `/api/v1/tickets/:id/agent-session/apply` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-327 | POST | `/api/v1/tickets/:id/agent-session/messages` | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話 | A20 A91 | 1 | member | C2 C3 C4 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-328 | GET | `/api/v1/tickets/:id/artifacts` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-329 | POST | `/api/v1/tickets/:id/attachments` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-330 | PATCH | `/api/v1/tickets/:id/body` | 更新（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
-| EP-331 | GET | `/api/v1/tickets/:id/checks` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-332 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
-| EP-333 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
-| EP-334 | GET | `/api/v1/tickets/:id/decisions` | 取得（ticket_decisions）— チケットの決定を見る（生きて | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-335 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
-| EP-336 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 409 413 429 502 403 403 503 |
-| EP-337 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 503 429 403 403 503 |
-| EP-338 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-339 | GET | `/api/v1/tickets/:id/handover-preview` | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人 | A111 A48 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-340 | GET | `/api/v1/tickets/:id/handovers` | 取得（ticket_handovers）— チケットの渡しの今と前の渡し | A110 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-341 | POST | `/api/v1/tickets/:id/handovers` | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる | A111 A112 A48 A51 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-342 | GET | `/api/v1/tickets/:id/kind-change-preview` | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-343 | GET | `/api/v1/tickets/:id/links` | 取得（ticket_links）— チケットのつながり（関連・派生元）を | A103 | 1 | member |  | 401 403 404 422 404 503 429 403 403 503 |
-| EP-344 | POST | `/api/v1/tickets/:id/links` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member | C2 | 401 403 404 409 422 404 503 413 429 403 403 503 |
-| EP-345 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 404 409 409 409 409 422 404 503 503 413 429 403 403 503 |
-| EP-346 | GET | `/api/v1/tickets/:id/references` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-347 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-348 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-349 | GET | `/api/v1/tickets/:id/test-specs` | 取得（test_specs）— チケットの確認項目を作った順に見る（文・ | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-350 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 503 413 429 502 403 403 503 |
-| EP-351 | POST | `/api/v1/tickets/:id/test-specs/lint` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-352 | POST | `/api/v1/tickets/:id/test-specs/suggest` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-353 | GET | `/api/v1/tickets/:id/timeline` | 取得（ticket_messages）— やり取りを新しい方から読む（前 | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-354 | POST | `/api/v1/tickets/:id/timeline/seen` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 503 413 429 403 403 503 |
-| EP-355 | GET | `/api/v1/tickets/:id/versions` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-356 | POST | `/api/v1/tickets/:id/versions/:v/restore` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-357 | POST | `/api/v1/tickets/bulk` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 A113 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-358 | GET | `/api/v1/work_types` | 取得（work_types）— 業務の型を作る・広げる | A119 | 1 | member |  | 401 403 422 429 502 403 403 503 |
-| EP-359 | POST | `/api/v1/work_types` | 作成・実行（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 409 422 413 429 502 403 403 503 |
-| EP-360 | GET | `/api/v1/work_types/:id` | 取得（work_types）— 業務の型を作る・広げる | A119 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-361 | POST | `/api/v1/work_types/:id/copy` | 作成・実行（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-362 | PATCH | `/api/v1/work_types/:id/draft` | 更新（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 404 422 413 429 502 403 403 503 |
-| EP-363 | POST | `/api/v1/work_types/:id/release` | 作成・実行（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-364 | POST | `/api/v1/work_types/:id/spread-requests` | 作成・実行（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-365 | POST | `/api/v1/work_types/:id/try` | 作成・実行（work_types）— 業務の型を作る・広げる | A119 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-366 | GET | `/api/v1/work_types/:id/versions` | 取得（work_types）— 業務の型を作る・広げる | A119 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-367 | GET | `/api/v1/workspace` | 取得（workspace）— 会社の設定を決める | A75 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-368 | PATCH | `/api/v1/workspace` | 更新（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
-| EP-369 | GET | `/api/v1/workspace/billing` | 取得（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-370 | PATCH | `/api/v1/workspace/billing-contact` | 更新（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
-| EP-371 | POST | `/api/v1/workspace/deletion` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-372 | DELETE | `/api/v1/workspace/deletion` | 削除（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 429 403 403 503 |
-| EP-373 | POST | `/api/v1/workspace/escalation-rules` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-374 | PATCH | `/api/v1/workspace/escalation-rules/:id` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-375 | DELETE | `/api/v1/workspace/escalation-rules/:id` | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-376 | POST | `/api/v1/workspace/escalation-rules/preview` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-377 | POST | `/api/v1/workspace/logo` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-378 | GET | `/api/v1/workspace/members` | 取得（workspace）— 人を招く（層・権限の束） | A36 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-379 | PATCH | `/api/v1/workspace/permissions` | 更新（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
-| EP-380 | POST | `/api/v1/workspace/plan` | 作成・実行（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-381 | GET | `/api/v1/workspace/plans` | 取得（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-382 | GET | `/api/v1/workspace/rules` | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-383 | POST | `/api/v1/workspace/rules` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-384 | PATCH | `/api/v1/workspace/rules/:id` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-385 | DELETE | `/api/v1/workspace/rules/:id` | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-386 | GET | `/api/v1/workspace/ticket-shape` | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-387 | PATCH | `/api/v1/workspace/ticket-shape` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
-| EP-388 | POST | `/api/v1/workspace/ticket-shape/preview` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-247 | GET | `/api/v1/ops/workspaces` | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-248 | GET | `/api/v1/ops/workspaces/:id` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
+| EP-249 | GET | `/api/v1/ops/workspaces/:id/audit` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
+| EP-250 | GET | `/api/v1/ops/workspaces/:id/billing` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
+| EP-251 | GET | `/api/v1/ops/workspaces/:id/inquiries` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
+| EP-252 | GET | `/api/v1/ops/workspaces/:id/members` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
+| EP-253 | POST | `/api/v1/ops/workspaces/:id/members/:mid/resend-verification` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-254 | POST | `/api/v1/ops/workspaces/:id/notices` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-255 | POST | `/api/v1/ops/workspaces/:id/peeks` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-256 | POST | `/api/v1/ops/workspaces/:id/plan` | 作成・実行（ops）— ワークスペースの 1 社を扱う（いまの状態・メン | A64 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-257 | POST | `/api/v1/ops/workspaces/:id/resume` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-258 | POST | `/api/v1/ops/workspaces/:id/stop` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-259 | POST | `/api/v1/ops/workspaces/export` | 作成・実行（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-260 | GET | `/api/v1/portal` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
+| EP-261 | GET | `/api/v1/portal/acceptances/:id` | 取得（portal）— 検収する（OK・直してほしい） | A126 | 1 | client |  | 401 403 404 422 429 403 403 503 |
+| EP-262 | POST | `/api/v1/portal/acceptances/:id/answer` | 作成・実行（portal）— 検収する（OK・直してほしい） | A126 | 1 | client | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-263 | POST | `/api/v1/portal/attachments` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-264 | GET | `/api/v1/portal/notices` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
+| EP-265 | POST | `/api/v1/portal/requests` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-266 | GET | `/api/v1/portal/requests/:id` | 取得（portal）— 依頼を出す・やり取りする | A124 | 1 | client |  | 401 403 404 422 429 403 403 503 |
+| EP-267 | POST | `/api/v1/portal/requests/:id/messages` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-268 | POST | `/api/v1/portal/requests/questions` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-269 | GET | `/api/v1/portal/tickets/:id` | 取得（portal）— 進みと成果物を見る | A125 | 1 | client |  | 401 403 404 422 429 403 403 503 |
+| EP-270 | GET | `/api/v1/saved_views` | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分 | A58 | 1 | member |  | 401 403 422 503 429 403 403 503 |
+| EP-271 | POST | `/api/v1/saved_views` | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・ | A58 | 1 | member | C2 | 401 403 409 422 404 409 422 503 413 429 403 403 503 |
+| EP-272 | PATCH | `/api/v1/saved_views/:id` | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-273 | DELETE | `/api/v1/saved_views/:id` | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
+| EP-274 | GET | `/api/v1/scopes` | 取得（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-275 | POST | `/api/v1/scopes` | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-276 | PATCH | `/api/v1/scopes/:id` | 更新（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-277 | GET | `/api/v1/scopes/:id/overview` | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガン | A58 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-278 | GET | `/api/v1/search` | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのペー | A21 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-279 | GET | `/api/v1/service-status` | 取得（service-status）— お知らせを見る | A68 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-280 | GET | `/api/v1/shell` | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント | A58 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-281 | PATCH | `/api/v1/test_specs/:id` | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 409 409 409 409 503 413 429 502 403 403 503 |
+| EP-282 | DELETE | `/api/v1/test_specs/:id` | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 409 409 503 429 502 403 403 503 |
+| EP-283 | GET | `/api/v1/ticket-field-master` | 取得（custom_fields）— 会社の項目を並びの順に全部見る（型 | A118 | 1 | member |  | 401 403 422 503 429 403 403 503 |
+| EP-284 | GET | `/api/v1/ticket-fields` | 取得（custom_fields）— その種別で出す会社の項目を並びの順 | A103 | 1 | member |  | 401 403 422 404 429 403 403 503 |
+| EP-285 | POST | `/api/v1/ticket-fields` | 作成・実行（ticket-fields）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 404 409 503 413 429 403 403 503 |
+| EP-286 | PATCH | `/api/v1/ticket-fields/:id` | 更新（ticket-fields）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 409 409 503 413 429 403 403 503 |
+| EP-287 | DELETE | `/api/v1/ticket-fields/:id` | 削除（ticket-fields）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
+| EP-288 | POST | `/api/v1/ticket-fields/order` | 作成・実行（ticket-fields）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 503 413 429 403 403 503 |
+| EP-289 | PATCH | `/api/v1/ticket_decisions/:id` | 更新（ticket_decisions）— 決定を記録する（AI の候補 | A108 | 1 | member | C2 | 401 403 404 422 409 503 413 429 403 403 503 |
+| EP-290 | PATCH | `/api/v1/ticket_handovers/:id` | 更新（ticket_handovers）— 渡されたものを受ける／断る（ | A110 | 2 | member | C2 C6 | 401 403 404 422 409 413 429 403 403 503 |
+| EP-291 | POST | `/api/v1/ticket_imports` | 作成・実行（ticket_imports）— チケットを作る（画面で・下 | A99 | 1 | member | C2 C4 | 401 403 409 422 413 429 403 403 503 |
+| EP-292 | GET | `/api/v1/ticket_imports/:id` | 取得（ticket_imports）— チケットを作る（画面で・下書きか | A99 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-293 | POST | `/api/v1/ticket_imports/:id/commit` | 作成・実行（ticket_imports）— チケットを作る（画面で・下 | A99 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-294 | GET | `/api/v1/ticket_kinds` | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-295 | POST | `/api/v1/ticket_kinds/:id/template-from-ticket` | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・ | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-296 | GET | `/api/v1/ticket_kinds/template-updates` | 取得（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-297 | POST | `/api/v1/ticket_kinds/template-updates/:id/apply` | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-298 | DELETE | `/api/v1/ticket_links/:id` | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
+| EP-299 | PATCH | `/api/v1/ticket_messages/:id` | 更新（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 404 503 503 413 429 403 403 503 |
+| EP-300 | DELETE | `/api/v1/ticket_messages/:id` | 削除（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 503 503 429 403 403 503 |
+| EP-301 | POST | `/api/v1/ticket_messages/:id/star` | 作成・実行（ticket_messages）— チケットのスレッドで話す | A107 | 1 | member | C2 C6 | 401 403 404 409 422 503 503 413 429 403 403 503 |
+| EP-302 | GET | `/api/v1/ticket_stages` | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親 | A103 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-303 | POST | `/api/v1/ticket_stages` | 作成・実行（ticket_stages）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 409 503 413 429 403 403 503 |
+| EP-304 | PATCH | `/api/v1/ticket_stages/:id` | 更新（ticket_stages）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
+| EP-305 | DELETE | `/api/v1/ticket_stages/:id` | 削除（ticket_stages）— チケットの設定を整える（種別・状態 | A118 | 1 | member | C2 | 401 403 404 422 409 409 503 429 403 403 503 |
+| EP-306 | POST | `/api/v1/ticket_stages/order` | 作成・実行（ticket_stages）— チケットの設定を整える（種別 | A118 | 1 | member | C2 | 401 403 409 422 409 503 413 429 403 403 503 |
+| EP-307 | GET | `/api/v1/tickets` | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて | A113 A58 A99 | 1 | member |  | 401 403 422 409 429 403 403 503 |
+| EP-308 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 404 409 409 409 409 409 409 404 409 413 429 403 403 503 |
+| EP-309 | GET | `/api/v1/tickets/:id` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-310 | PATCH | `/api/v1/tickets/:id` | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 A113 A115 A17 | 1 | member | C2 | 401 403 404 422 409 409 409 409 409 409 409 409 409 409 409 409 409 422 503 503 413 429 403 403 503 |
+| EP-311 | DELETE | `/api/v1/tickets/:id` | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member | C2 | 401 403 404 422 409 503 429 403 403 503 |
+| EP-312 | POST | `/api/v1/tickets/:id/acceptances` | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-313 | GET | `/api/v1/tickets/:id/agent-session` | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付 | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
+| EP-314 | POST | `/api/v1/tickets/:id/agent-session/apply` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-315 | POST | `/api/v1/tickets/:id/agent-session/messages` | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話 | A20 A91 | 1 | member | C2 C3 C4 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-316 | GET | `/api/v1/tickets/:id/artifacts` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-317 | POST | `/api/v1/tickets/:id/attachments` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-318 | PATCH | `/api/v1/tickets/:id/body` | 更新（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
+| EP-319 | GET | `/api/v1/tickets/:id/checks` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
+| EP-320 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
+| EP-321 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
+| EP-322 | GET | `/api/v1/tickets/:id/decisions` | 取得（ticket_decisions）— チケットの決定を見る（生きて | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-323 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
+| EP-324 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 409 413 429 502 403 403 503 |
+| EP-325 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 503 429 403 403 503 |
+| EP-326 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-327 | GET | `/api/v1/tickets/:id/handover-preview` | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人 | A111 A48 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-328 | GET | `/api/v1/tickets/:id/handovers` | 取得（ticket_handovers）— チケットの渡しの今と前の渡し | A110 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-329 | POST | `/api/v1/tickets/:id/handovers` | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる | A111 A112 A48 A51 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-330 | GET | `/api/v1/tickets/:id/kind-change-preview` | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-331 | GET | `/api/v1/tickets/:id/links` | 取得（ticket_links）— チケットのつながり（関連・派生元）を | A103 | 1 | member |  | 401 403 404 422 404 503 429 403 403 503 |
+| EP-332 | POST | `/api/v1/tickets/:id/links` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member | C2 | 401 403 404 409 422 404 503 413 429 403 403 503 |
+| EP-333 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 404 409 409 409 409 422 404 503 503 413 429 403 403 503 |
+| EP-334 | GET | `/api/v1/tickets/:id/references` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-335 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-336 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
+| EP-337 | GET | `/api/v1/tickets/:id/test-specs` | 取得（test_specs）— チケットの確認項目を作った順に見る（文・ | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
+| EP-338 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 503 413 429 502 403 403 503 |
+| EP-339 | POST | `/api/v1/tickets/:id/test-specs/lint` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-340 | POST | `/api/v1/tickets/:id/test-specs/suggest` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-341 | GET | `/api/v1/tickets/:id/timeline` | 取得（ticket_messages）— やり取りを新しい方から読む（前 | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-342 | POST | `/api/v1/tickets/:id/timeline/seen` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 503 413 429 403 403 503 |
+| EP-343 | GET | `/api/v1/tickets/:id/versions` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-344 | POST | `/api/v1/tickets/:id/versions/:v/restore` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-345 | POST | `/api/v1/tickets/bulk` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 A113 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-346 | GET | `/api/v1/workspace` | 取得（workspace）— 会社の設定を決める | A75 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-347 | PATCH | `/api/v1/workspace` | 更新（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
+| EP-348 | GET | `/api/v1/workspace/billing` | 取得（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-349 | PATCH | `/api/v1/workspace/billing-contact` | 更新（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
+| EP-350 | POST | `/api/v1/workspace/deletion` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-351 | DELETE | `/api/v1/workspace/deletion` | 削除（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 429 403 403 503 |
+| EP-352 | POST | `/api/v1/workspace/logo` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-353 | GET | `/api/v1/workspace/members` | 取得（workspace）— 人を招く（層・権限の束） | A36 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-354 | PATCH | `/api/v1/workspace/permissions` | 更新（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
+| EP-355 | POST | `/api/v1/workspace/plan` | 作成・実行（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-356 | GET | `/api/v1/workspace/plans` | 取得（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-357 | GET | `/api/v1/workspace/ticket-shape` | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-358 | PATCH | `/api/v1/workspace/ticket-shape` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
+| EP-359 | POST | `/api/v1/workspace/ticket-shape/preview` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 
 ## 3. 画面 ↔ API カバレッジ
 
-- 画面 37 ／ OK 36 ／ 未カバー ['legal']
-- endpoint の無い行為（v1）['A130']
+- 画面 37 ／ OK 34 ／ 未カバー ['rules', 'work-types', 'legal']
+- endpoint の無い行為（v1）['A119', 'A130']
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
@@ -419,4 +390,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-24 凍結（endpoints 388）
+- v1.0 2026-11-24 凍結（endpoints 359）

@@ -5,7 +5,7 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 388,
+  "api": 359,
   "api_built": 112,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
@@ -4050,108 +4050,6 @@
    ]
   },
   {
-   "op": "uploadWorkTypePackage",
-   "method": "POST",
-   "path": "/api/v1/ops/work_type_uploads",
-   "what": "作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
-   "op": "getWorkTypeUpload",
-   "method": "GET",
-   "path": "/api/v1/ops/work_type_uploads/:id",
-   "what": "取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
-   "op": "listOpsWorkTypes",
-   "method": "GET",
-   "path": "/api/v1/ops/work_types",
-   "what": "取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
-   "op": "getOpsWorkType",
-   "method": "GET",
-   "path": "/api/v1/ops/work_types/:id",
-   "what": "取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
-   "op": "releaseOpsWorkType",
-   "method": "POST",
-   "path": "/api/v1/ops/work_types/:id/versions",
-   "what": "作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
-   "op": "rollbackOpsWorkType",
-   "method": "POST",
-   "path": "/api/v1/ops/work_types/:id/versions/:v/rollback",
-   "what": "作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）",
-   "flows": [
-    "F12"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-72"
-   ]
-  },
-  {
    "op": "listOpsWorkspaces",
    "method": "GET",
    "path": "/api/v1/ops/workspaces",
@@ -4495,104 +4393,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": []
-  },
-  {
-   "op": "listRules",
-   "method": "GET",
-   "path": "/api/v1/rules",
-   "what": "取得（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F11",
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-71"
-   ]
-  },
-  {
-   "op": "createRule",
-   "method": "POST",
-   "path": "/api/v1/rules",
-   "what": "作成・実行（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F11",
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-71"
-   ]
-  },
-  {
-   "op": "getRule",
-   "method": "GET",
-   "path": "/api/v1/rules/:id",
-   "what": "取得（rules）— ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "updateRule",
-   "method": "PATCH",
-   "path": "/api/v1/rules/:id",
-   "what": "更新（rules）— ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "deleteRule",
-   "method": "DELETE",
-   "path": "/api/v1/rules/:id",
-   "what": "削除（rules）— ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "checkRule",
-   "method": "POST",
-   "path": "/api/v1/rules/check",
-   "what": "作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
   },
   {
    "op": "listSavedViews",
@@ -5898,141 +5698,6 @@
    ]
   },
   {
-   "op": "listWorkTypes",
-   "method": "GET",
-   "path": "/api/v1/work_types",
-   "what": "取得（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "createWorkType",
-   "method": "POST",
-   "path": "/api/v1/work_types",
-   "what": "作成・実行（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "getWorkType",
-   "method": "GET",
-   "path": "/api/v1/work_types/:id",
-   "what": "取得（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "copyWorkType",
-   "method": "POST",
-   "path": "/api/v1/work_types/:id/copy",
-   "what": "作成・実行（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "updateWorkTypeDraft",
-   "method": "PATCH",
-   "path": "/api/v1/work_types/:id/draft",
-   "what": "更新（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "releaseWorkType",
-   "method": "POST",
-   "path": "/api/v1/work_types/:id/release",
-   "what": "作成・実行（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "requestWorkTypeSpread",
-   "method": "POST",
-   "path": "/api/v1/work_types/:id/spread-requests",
-   "what": "作成・実行（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "approvals"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "tryWorkType",
-   "method": "POST",
-   "path": "/api/v1/work_types/:id/try",
-   "what": "作成・実行（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_test_runs"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "listWorkTypeVersions",
-   "method": "GET",
-   "path": "/api/v1/work_types/:id/versions",
-   "what": "取得（work_types）— 業務の型を作る・広げる",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skill_versions"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
    "op": "getWorkspaceSettings",
    "method": "GET",
    "path": "/api/v1/workspace",
@@ -6123,74 +5788,6 @@
    "owner_tickets": []
   },
   {
-   "op": "createEscalationRule",
-   "method": "POST",
-   "path": "/api/v1/workspace/escalation-rules",
-   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "updateEscalationRule",
-   "method": "PATCH",
-   "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "deleteEscalationRule",
-   "method": "DELETE",
-   "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "previewEscalationRule",
-   "method": "POST",
-   "path": "/api/v1/workspace/escalation-rules/preview",
-   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
    "op": "uploadWorkspaceLogo",
    "method": "POST",
    "path": "/api/v1/workspace/logo",
@@ -6267,74 +5864,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": []
-  },
-  {
-   "op": "getWorkspaceRules",
-   "method": "GET",
-   "path": "/api/v1/workspace/rules",
-   "what": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "createWorkspaceRule",
-   "method": "POST",
-   "path": "/api/v1/workspace/rules",
-   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "updateWorkspaceRule",
-   "method": "PATCH",
-   "path": "/api/v1/workspace/rules/:id",
-   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
-  },
-  {
-   "op": "deleteWorkspaceRule",
-   "method": "DELETE",
-   "path": "/api/v1/workspace/rules/:id",
-   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
-   "flows": [
-    "F9"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "policies"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-69"
-   ]
   },
   {
    "op": "getTicketShape",
@@ -7293,11 +6822,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F11",
     "F9"
    ],
    "reads": [],
-   "boundary": true
+   "boundary": false
   },
   {
    "table": "procedure_steps",
@@ -7480,9 +7008,7 @@
    "table": "skill_test_runs",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F9"
-   ],
+   "writes": [],
    "reads": [],
    "boundary": false
   },
@@ -7490,24 +7016,17 @@
    "table": "skill_versions",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F12",
-    "F9"
-   ],
+   "writes": [],
    "reads": [],
-   "boundary": true
+   "boundary": false
   },
   {
    "table": "skills",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F9"
-   ],
-   "reads": [
-    "F12"
-   ],
-   "boundary": true
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "status_incidents",

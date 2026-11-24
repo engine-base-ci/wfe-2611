@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 388（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
+API 359（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
 
 ## 共通の処理
 
@@ -104,7 +104,7 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `payments` | skeleton | F12 |  |  |
 | `permissions` | skeleton | F10 |  |  |
 | `plans` | skeleton |  | F12 |  |
-| `policies` | skeleton | F11,F9 |  | ○ |
+| `policies` | skeleton | F9 |  |  |
 | `reference_logs` | skeleton |  | F4,F9 | ○ |
 | `saved_views` | skeleton | F7 |  |  |
 | `schema_migrations` | internal |  |  |  |
@@ -112,9 +112,9 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `scopes` | skeleton | F10 |  |  |
 | `security_events` | skeleton | F1,F10,F12 |  | ○ |
 | `sessions` | skeleton | F1,F10,F3 |  | ○ |
-| `skill_test_runs` | skeleton | F9 |  |  |
-| `skill_versions` | skeleton | F12,F9 |  | ○ |
-| `skills` | skeleton | F9 | F12 | ○ |
+| `skill_test_runs` | skeleton |  |  |  |
+| `skill_versions` | skeleton |  |  |  |
+| `skills` | skeleton |  |  |  |
 | `status_incidents` | skeleton | F12 | F1 | ○ |
 | `subscriptions` | skeleton | F12 |  |  |
 | `support_access_grants` | skeleton | F12 |  |  |
@@ -238,8 +238,6 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `postPortalRequestMessage` | POST /api/v1/portal/requests/:id/messages | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `askPortalRequestQuestions` | POST /api/v1/portal/requests/questions | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `getPortalTicket` | GET /api/v1/portal/tickets/:id | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
-| `listRules` | GET /api/v1/rules | 取得（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | K-71 |
-| `createRule` | POST /api/v1/rules | 作成・実行（rules）— 取引先を作り、担当者を招待する／ルールを置く（会社・層・個人・取引先） | F11,F9 | 契約だけ（501） | K-71 |
 | `requestAcceptance` | POST /api/v1/tickets/:id/acceptances | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | K-71 |
 | `updateTicketClientShare` | PATCH /api/v1/tickets/:id/client-share | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | K-71 |
 | `listMyInquiries` | GET /api/v1/inquiries | 取得（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |
@@ -285,12 +283,6 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `listOpsTemplates` | GET /api/v1/ops/templates | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | K-72 |
 | `getOpsTemplate` | GET /api/v1/ops/templates/:id | 取得（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | K-72 |
 | `releaseOpsTemplate` | POST /api/v1/ops/templates/:id/versions | 作成・実行（ops）— ひな形（層・マスタ）を作って配る | F12 | 契約だけ（501） | K-72 |
-| `uploadWorkTypePackage` | POST /api/v1/ops/work_type_uploads | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
-| `getWorkTypeUpload` | GET /api/v1/ops/work_type_uploads/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
-| `listOpsWorkTypes` | GET /api/v1/ops/work_types | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
-| `getOpsWorkType` | GET /api/v1/ops/work_types/:id | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
-| `releaseOpsWorkType` | POST /api/v1/ops/work_types/:id/versions | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
-| `rollbackOpsWorkType` | POST /api/v1/ops/work_types/:id/versions/:v/rollback | 作成・実行（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | F12 | 契約だけ（501） | K-72 |
 | `listOpsWorkspaces` | GET /api/v1/ops/workspaces | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | F12 | 契約だけ（501） |  |
 | `getOpsWorkspace` | GET /api/v1/ops/workspaces/:id | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・プ | F12 | 契約だけ（501） |  |
 | `listOpsWorkspaceAudit` | GET /api/v1/ops/workspaces/:id/audit | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・プ | F12 | 契約だけ（501） |  |
@@ -479,10 +471,6 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `updateMemory` | PATCH /api/v1/memories/:id | 更新（memories）— 自分の AI に教える（覚えて） | F9 | 作った | K-69 |
 | `deleteMemory` | DELETE /api/v1/memories/:id | 削除（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `promoteMemoryToRule` | POST /api/v1/memories/:id/promote | 作成・実行（memories）— ルールを置く（会社・層・個人・取引先）／自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
-| `getRule` | GET /api/v1/rules/:id | 取得（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
-| `updateRule` | PATCH /api/v1/rules/:id | 更新（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
-| `deleteRule` | DELETE /api/v1/rules/:id | 削除（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
-| `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
 | `listTicketFieldMaster` | GET /api/v1/ticket-field-master | 取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数） | F9 | 作った | K-706 |
 | `createTicketField` | POST /api/v1/ticket-fields | 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-706 |
 | `updateTicketField` | PATCH /api/v1/ticket-fields/:id | 更新（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-717 |
@@ -494,23 +482,6 @@ API 388（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `updateTicketStage` | PATCH /api/v1/ticket_stages/:id | 更新（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
 | `deleteTicketStage` | DELETE /api/v1/ticket_stages/:id | 削除（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
 | `reorderTicketStages` | POST /api/v1/ticket_stages/order | 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
-| `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `createWorkType` | POST /api/v1/work_types | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `getWorkType` | GET /api/v1/work_types/:id | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `copyWorkType` | POST /api/v1/work_types/:id/copy | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `updateWorkTypeDraft` | PATCH /api/v1/work_types/:id/draft | 更新（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `releaseWorkType` | POST /api/v1/work_types/:id/release | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `requestWorkTypeSpread` | POST /api/v1/work_types/:id/spread-requests | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `tryWorkType` | POST /api/v1/work_types/:id/try | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `listWorkTypeVersions` | GET /api/v1/work_types/:id/versions | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `createEscalationRule` | POST /api/v1/workspace/escalation-rules | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `updateEscalationRule` | PATCH /api/v1/workspace/escalation-rules/:id | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `deleteEscalationRule` | DELETE /api/v1/workspace/escalation-rules/:id | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `previewEscalationRule` | POST /api/v1/workspace/escalation-rules/preview | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `getWorkspaceRules` | GET /api/v1/workspace/rules | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `createWorkspaceRule` | POST /api/v1/workspace/rules | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `updateWorkspaceRule` | PATCH /api/v1/workspace/rules/:id | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
-| `deleteWorkspaceRule` | DELETE /api/v1/workspace/rules/:id | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
 | `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
 | `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
 | `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
