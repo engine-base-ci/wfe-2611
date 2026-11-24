@@ -372,7 +372,7 @@ API 372（作った 125・後のフェーズの行為だけ 20）・前の道す
 | `bulkApprove` | POST /api/v1/approvals/bulk | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-61,K-768 |
 | `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-61,K-768 |
 | `listApprovalHistory` | GET /api/v1/approvals/history | 取得（approvals）— 自分が決めた AI の成果物の承認を、決めた新しい順に読む（決めと期間で絞る・取り下げられるかの印） | F5 | 作った | K-61,K-750 |
-| `listApprovalQueue` | GET /api/v1/approvals/queue | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-161,K-748 |
+| `listApprovalQueue` | GET /api/v1/approvals/queue | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-161 |
 | `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 作った | K-62 |
