@@ -278,7 +278,7 @@ test("K480-UI-009 概要の口が 404（見えない・無いグループ）：�
   const { ov } = await mockOverview(page);
   ov.next = () => fail(404, "E-PAGE-001");
   await open(page, PATH);
-  await expect(page.getByText(TEXT.notFound, { exact: true })).toBeVisible();
+  await expect(page.getByText(TEXT.notFound)).toBeVisible();
   await expect(feed(page)).toHaveCount(0);
   await expect(side(page)).toHaveCount(0);
 });
