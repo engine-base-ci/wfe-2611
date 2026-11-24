@@ -289,6 +289,9 @@ export function useVersions(id: string, initial: Sel): Versions {
         return;
       }
       if (r.kind === "unauthenticated") return goLogin(id);
+      // 先に直された（409）：読み直しで口の既定の組に移らないよう、今見ている組を先に固定する。
+      //   choose は赤い箱を消すので、固定してから断りの文を出す
+      if (r.code === "E-SEC-004") choose({ of: "body", from: view.from, to: view.to });
       setRestoreError(restoreErrorText(r));
       if (r.code === "E-SEC-004") reload();
       if (r.code === "E-SEC-005") void readHead();
