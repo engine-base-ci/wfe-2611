@@ -366,6 +366,8 @@ test("K450-UI-016 開いた後に完了が確定した（can_edit は true の�
   await boxOf(page, T[2]!).check();
   await note(page, msg("E-SPEC-001"));
   await expect(boxOf(page, T[2]!)).not.toBeChecked();
+  // 次の操作の知らせを前の知らせと見分けるため、前の知らせ（5 秒で消える）が消えるのを待つ
+  await expect(toastOf(page, msg("E-SPEC-001")).first()).toBeHidden({ timeout: 9000 });
   m.force.update = [conflict("E-SPEC-001")];
   await textBtn(page, T[4]!).click();
   await editor(page).fill("直す");
@@ -376,6 +378,7 @@ test("K450-UI-016 開いた後に完了が確定した（can_edit は true の�
   await expect(editor(page)).toHaveCount(0);
   await expect(boxOf(page, T[4]!)).toHaveCount(1);
   expect(m.specs.find((s) => s.title === T[4])).toBeDefined();
+  await expect(toastOf(page, msg("E-SPEC-001")).first()).toBeHidden({ timeout: 9000 });
   m.force.remove = [conflict("E-SPEC-001")];
   await rmBtn(page, T[3]!).click();
   await expect.poll(() => m.deletes.length).toBe(1);
