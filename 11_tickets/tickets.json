@@ -3339,7 +3339,20 @@
     "getKnowledgeUsage",
     "verifyKnowledgePage",
     "listKnowledgeVersions",
-    "restoreKnowledgeVersion"
+    "restoreKnowledgeVersion",
+    "listKindTemplateUpdates",
+    "applyKindTemplateUpdate",
+    "createEscalationRule",
+    "updateEscalationRule",
+    "deleteEscalationRule",
+    "previewEscalationRule",
+    "getWorkspaceRules",
+    "createWorkspaceRule",
+    "updateWorkspaceRule",
+    "deleteWorkspaceRule",
+    "getTicketShape",
+    "saveTicketShape",
+    "previewTicketShapeChange"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",

@@ -475,8 +475,8 @@ API 372（作った 102・後のフェーズの行為だけ 20）・前の道す
 | `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 作った | K-60 |
 | `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
-| `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
+| `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） | K-69 |
+| `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） | K-69 |
 | `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `createWorkType` | POST /api/v1/work_types | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `getWorkType` | GET /api/v1/work_types/:id | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
@@ -486,17 +486,17 @@ API 372（作った 102・後のフェーズの行為だけ 20）・前の道す
 | `requestWorkTypeSpread` | POST /api/v1/work_types/:id/spread-requests | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `tryWorkType` | POST /api/v1/work_types/:id/try | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `listWorkTypeVersions` | GET /api/v1/work_types/:id/versions | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `createEscalationRule` | POST /api/v1/workspace/escalation-rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `updateEscalationRule` | PATCH /api/v1/workspace/escalation-rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `deleteEscalationRule` | DELETE /api/v1/workspace/escalation-rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `previewEscalationRule` | POST /api/v1/workspace/escalation-rules/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `getWorkspaceRules` | GET /api/v1/workspace/rules | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `createWorkspaceRule` | POST /api/v1/workspace/rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `updateWorkspaceRule` | PATCH /api/v1/workspace/rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `deleteWorkspaceRule` | DELETE /api/v1/workspace/rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
-| `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） |  |
+| `createEscalationRule` | POST /api/v1/workspace/escalation-rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `updateEscalationRule` | PATCH /api/v1/workspace/escalation-rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `deleteEscalationRule` | DELETE /api/v1/workspace/escalation-rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `previewEscalationRule` | POST /api/v1/workspace/escalation-rules/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `getWorkspaceRules` | GET /api/v1/workspace/rules | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `createWorkspaceRule` | POST /api/v1/workspace/rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `updateWorkspaceRule` | PATCH /api/v1/workspace/rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `deleteWorkspaceRule` | DELETE /api/v1/workspace/rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
 | `restoreArtifactVersion` | POST /api/v1/artifact_versions/:id/restore | 作成・実行（artifact_versions）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `updateArtifact` | PATCH /api/v1/artifacts/:id | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `putArtifactFromBridge` | POST /api/v1/bridge/jobs/:id/artifacts | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
