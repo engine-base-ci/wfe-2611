@@ -166,7 +166,10 @@
   font-weight: var(--k-fw-body);
   color: var(--k-on-surface-variant);
 }
-.k-req {
+/* 必須の印（K-1155）：項目名の字の外に出す。2 行目で読み上げの代わりの字を空にし、名前に ＊ を入れない（1 行目は古いブラウザ用） */
+.k-label[data-required]::after {
+  content: "*";
+  content: "*" / "";
   color: var(--k-error);
   margin-left: var(--k-s-xs);
 }

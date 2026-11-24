@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Button, Confirm, Dialog, Empty, Loading, TextField } from "@/components/k";
+import { Button, Confirm, Dialog, Empty, Loading, PasswordField, TextArea, TextField } from "@/components/k";
+import { DueField } from "@/features/F4/due/views";
 
 // 部品の大きさの見本（K-218・キャンバスの値）。tests/k/k218-design-parts.spec.ts の的。開発のページ（KANAME_DEV_PAGES のときだけ）
 export default function KDesignPage() {
@@ -84,6 +85,24 @@ export default function KDesignPage() {
         </Button>
         {loading ? <Loading /> : null}
       </div>
+      {/* 必須の欄（K-1155）：＊は項目名の字の外（::after）。tests/k/k1155-required-label.spec.ts の的 */}
+      <section aria-label="必須の欄" style={{ display: "grid", gap: "var(--k-s-md)", maxWidth: "480px" }}>
+        <div data-testid="req-md">
+          <TextField label="件名" name="subject" required />
+        </div>
+        <div data-testid="req-lg-hint">
+          <TextField label="会社名" name="company" size="lg" hint="あとで変えられる" required />
+        </div>
+        <div data-testid="req-area">
+          <TextArea label="理由" name="reason" rows={2} required />
+        </div>
+        <div data-testid="req-pw">
+          <PasswordField label="新しいパスワード" name="new_password" size="lg" required />
+        </div>
+        <div data-testid="req-due">
+          <DueField value={null} />
+        </div>
+      </section>
     </main>
   );
 }

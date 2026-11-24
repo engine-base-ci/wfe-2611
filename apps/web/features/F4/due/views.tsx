@@ -168,11 +168,8 @@ export function DueField({ value, error, onOpen }: { value: string | null; error
   return (
     <div className="k-create-assign-row">
       <div className="k-field">
-        <span className="k-label" id={`${id}-l`}>
+        <span className="k-label" id={`${id}-l`} data-required="">
           期限
-          <span className="k-req" aria-hidden="true">
-            *
-          </span>
         </span>
         <button
           type="button"

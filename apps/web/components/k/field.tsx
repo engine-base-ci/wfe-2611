@@ -30,13 +30,9 @@ function Frame({
   children,
 }: Common & { children: ReactNode }) {
   const head = (
-    <Field.Label className="k-label">
+    // 必須の印（＊）は .k-label[data-required]::after で出す（K-1155）。label の字にも読み上げの名前にも入れない
+    <Field.Label className="k-label" data-required={required ? "" : undefined}>
       {label}
-      {required ? (
-        <span className="k-req" aria-hidden="true">
-          *
-        </span>
-      ) : null}
     </Field.Label>
   );
   return (
