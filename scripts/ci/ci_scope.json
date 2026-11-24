@@ -1524,6 +1524,14 @@
   },
   {
    "paths": [
+    "apps/web/tests/k/f7-shell-mock.ts"
+   ],
+   "tests": [
+    "apps/web/tests/k/k471-search-panel.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F7/list-filters.test.ts"
    ],
    "tests": [
@@ -1864,6 +1872,8 @@
   "apps/web/tests/k/k460-stage8-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f7/（mocks.tsx・types.ts・states/*.tsx）・部品 apps/web/features/F7/（区画の .tsx・.css・overview/tones.css・gantt/gantt-inner.tsx・delete/undo-toast.tsx・delete.css）・お知らせ apps/web/components/k/notice.tsx と k.css・道の一覧 apps/web/lib/built-routes.ts・中間の試験の道具 apps/web/tests/_lib/f7-flow.ts と skeleton の中間の試験・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json・apps/web/package.json・02_tech_stack/selected-stack.json・07_functional/段8-F7/カレンダーの部品.md を読み、scripts/ci/design_gate.py を子プロセスで流す（K-460）",
   "apps/web/features/F7/gantt/gantt-chart.tsx": "next/dynamic の import() で同じ区画の gantt-inner.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-460）",
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
+  "apps/web/tests/k/k471-search-panel.spec.ts": "口の差し替えの道具 apps/web/tests/k/f7-shell-mock.ts（K-466 が運ぶ）と list-mock.ts を読む。stage2-match.ts を通してモックの頁 /dev/mock/f7 を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-471",
+  "apps/web/features/F7/search/search-slot.tsx": "import() で同じ区画の search-live.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-471）",
   "apps/api/test/features/F7/saved-views.harness.ts": "この段の hooks のファイル apps/api/src/hooks/saved-views.ts と saved-views-edit.ts（K-476）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-475）",
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
   "apps/api/test/features/contract/k144.d/K-477.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-477）",
