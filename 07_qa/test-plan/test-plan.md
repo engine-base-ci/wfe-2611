@@ -8,12 +8,12 @@
 |---|---|
 | tickets | 218 |
 | l1_rows | 5094 |
-| ears_endpoints | 371 |
-| ears_tests | 4093 |
-| entities | 145 |
-| policies | 418 |
-| access_cases | 1562 |
-| errors | 291 |
+| ears_endpoints | 388 |
+| ears_tests | 4331 |
+| entities | 146 |
+| policies | 421 |
+| access_cases | 1574 |
+| errors | 320 |
 | journey_rows | 88 |
 | critical_tasks | 88 |
 
@@ -174,20 +174,20 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 - そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）
 - 連続 3 回失敗で高本さんへ（foundation_gates.retry_protocol）
 
-## EARS → test（4093 本・ears-test-mapping.json）
+## EARS → test（4331 本・ears-test-mapping.json）
 
 | 形 | 本数 |
 |---|---|
-| EVENT-DRIVEN | 402 |
-| UNWANTED | 3339 |
-| UBIQUITOUS | 352 |
+| EVENT-DRIVEN | 419 |
+| UNWANTED | 3543 |
+| UBIQUITOUS | 369 |
 
-## RLS の場合表（1562 行・access-matrix.json）
+## RLS の場合表（1574 行・access-matrix.json）
 
 | 役 | policy 数 | 場合 数 |
 |---|---|---|
-| 会社の人（R1〜R4・権限で分かれる） | 245 | 964 |
-| 運営（R6） | 143 | 529 |
+| 会社の人（R1〜R4・権限で分かれる） | 247 | 972 |
+| 運営（R6） | 144 | 533 |
 | ログイン済み（本人のもの） | 19 | 36 |
 | 取引先の人（クライアントの場所） | 8 | 24 |
 
