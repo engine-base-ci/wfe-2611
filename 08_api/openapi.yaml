@@ -14681,6 +14681,90 @@ components:
       required:
       - body
       x-required-by: hooks
+    BillingContactInput:
+      type: object
+      properties:
+        company:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        attn:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        email:
+          type: string
+          format: email
+      additionalProperties: false
+      x-operation: updateBillingContact
+      required:
+      - company
+      - attn
+      - email
+      x-required-by: hooks
+    PlanChangeInput:
+      type: object
+      properties:
+        plan_key:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: changePlan
+      required:
+      - plan_key
+      x-required-by: hooks
+    OpsInvoiceIssueInput:
+      type: object
+      properties:
+        month:
+          type: string
+          pattern: ^[0-9]{4}-(0[1-9]|1[0-2])$
+        dry_run:
+          type: boolean
+      additionalProperties: false
+      x-operation: issueOpsInvoices
+      required:
+      - month
+      x-required-by: hooks
+    PaymentRecordInput:
+      type: object
+      properties:
+        amount:
+          type: integer
+          minimum: 1
+        paid_on:
+          type: string
+          format: date
+        payer_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        reverses_payment_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: recordPayment
+      required:
+      - amount
+      - paid_on
+      x-required-by: hooks
+    OpsPlanChangeInput:
+      type: object
+      properties:
+        plan_key:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        inquiry_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: changeOpsWorkspacePlan
+      required:
+      - plan_key
+      - inquiry_id
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -15733,7 +15817,7 @@ components:
     PlanChoice:
       type: object
       properties:
-        plan_id:
+        plan_key:
           type: string
         name:
           type: string
@@ -15741,8 +15825,8 @@ components:
         price_monthly:
           type: integer
           nullable: true
-        limits:
-          type: object
+        member_limit:
+          type: integer
           nullable: true
         current:
           type: boolean
@@ -15750,22 +15834,40 @@ components:
           type: boolean
         reason:
           type: string
+          nullable: true
         effective_from:
           type: string
+        summary:
+          type: string
+        recommended:
+          type: boolean
+        upgrade:
+          type: object
+          nullable: true
+        upcoming:
+          type: object
+          nullable: true
       x-operation: listWorkspacePlans
     Billing:
       type: object
       properties:
-        payee:
-          type: object
-        billing_contact:
-          type: object
         terms:
           type: string
+        payee:
+          type: object
+        contact:
+          type: object
         invoices:
           type: array
           items:
             type: object
+        overdue:
+          type: object
+          nullable: true
+        free:
+          type: boolean
+        can_edit_contact:
+          type: boolean
       x-operation: getBilling
     SignedUrl:
       type: object
@@ -16203,7 +16305,7 @@ components:
       properties:
         plan:
           type: object
-        usage:
+        members:
           type: object
         payment_terms:
           type: string
@@ -17302,6 +17404,71 @@ components:
         created_at:
           type: string
       x-operation: addOpsInquiryNote
+    BillingContact:
+      type: object
+      properties:
+        company:
+          type: string
+        attn:
+          type: string
+        email:
+          type: string
+      x-operation: updateBillingContact
+    PlanChange:
+      type: object
+      properties:
+        plan_key:
+          type: string
+        effective_from:
+          type: string
+        prorated_amount:
+          type: integer
+        next_invoice_on:
+          type: string
+      x-operation: changeOpsWorkspacePlan
+    OpsInvoiceRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace:
+          type: object
+        plan_name:
+          type: string
+        month:
+          type: string
+        amount_total:
+          type: integer
+        state:
+          type: string
+        paid_total:
+          type: integer
+        difference:
+          type: integer
+        due_on:
+          type: string
+        can_record_payment:
+          type: boolean
+        payments:
+          type: array
+          items:
+            type: object
+      x-operation: recordPayment
+    OpsInvoiceIssue:
+      type: object
+      properties:
+        month:
+          type: string
+        count:
+          type: integer
+        total:
+          type: integer
+        lines:
+          type: array
+          items:
+            type: object
+      x-operation: issueOpsInvoices
     Error:
       type: object
       properties:
@@ -38284,7 +38451,7 @@ paths:
   /api/v1/ops/invoices:
     get:
       operationId: listOpsInvoices
-      summary: 取得（ops）— 請求書を出し、入金を記録する
+      summary: 取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき）
       tags:
       - invoices
       x-acts:
@@ -38312,11 +38479,16 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          pattern: ^[0-9]{4}-(0[1-9]|1[0-2])$
       - name: state
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - unpaid
+          - paid
+          - overdue
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -38330,27 +38502,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - amount
-          - created_at
-          - created_by
-          - deleted_at
-          - due_on
-          - id
-          - issued_at
-          - pdf_ref
-          - period_end
-          - period_start
-          - status_id
-          - subscription_id
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -38362,12 +38513,9 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Invoices'
+                      $ref: '#/components/schemas/OpsInvoiceRow'
                   meta:
                     type: object
-                    properties:
-                      summary:
-                        type: object
         '401':
           description: UNAUTHENTICATED
           content:
@@ -38436,7 +38584,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PaymentsInput'
+              $ref: '#/components/schemas/PaymentRecordInput'
       responses:
         '201':
           description: 成功
@@ -38446,7 +38594,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Payments'
+                    $ref: '#/components/schemas/OpsInvoiceRow'
                   meta:
                     type: object
         '401':
@@ -38528,7 +38676,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvoicesInput'
+              $ref: '#/components/schemas/OpsInvoiceIssueInput'
       responses:
         '201':
           description: 成功
@@ -38538,7 +38686,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Invoices'
+                    $ref: '#/components/schemas/OpsInvoiceIssue'
                   meta:
                     type: object
         '401':
@@ -41887,7 +42035,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionsInput'
+              $ref: '#/components/schemas/OpsPlanChangeInput'
       responses:
         '201':
           description: 成功
@@ -41897,7 +42045,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscriptions'
+                    $ref: '#/components/schemas/PlanChange'
                   meta:
                     type: object
         '401':
@@ -50639,7 +50787,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionsInput'
+              $ref: '#/components/schemas/BillingContactInput'
       responses:
         '200':
           description: 成功
@@ -50649,7 +50797,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscriptions'
+                    $ref: '#/components/schemas/BillingContact'
                   meta:
                     type: object
         '401':
@@ -51095,7 +51243,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscriptionsInput'
+              $ref: '#/components/schemas/PlanChangeInput'
       responses:
         '201':
           description: 成功
@@ -51105,7 +51253,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Subscriptions'
+                    $ref: '#/components/schemas/PlanChange'
                   meta:
                     type: object
         '401':
@@ -51223,6 +51371,11 @@ paths:
                       $ref: '#/components/schemas/PlanChoice'
                   meta:
                     type: object
+                    properties:
+                      members:
+                        type: integer
+                      member_limit:
+                        type: integer
         '401':
           description: UNAUTHENTICATED
           content:

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:97a77d5f156d2ba0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:8abaae83676facb9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -11592,7 +11592,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Invoices",
+    "output": "OpsInvoiceRow",
     "outputList": true,
     "generic": false,
     "auth": "ops",
@@ -11637,9 +11637,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "recordPayment",
     "table": "payments",
     "kind": "create",
-    "input": "PaymentsInput",
+    "input": "PaymentRecordInput",
     "success": 201,
-    "output": "Payments",
+    "output": "OpsInvoiceRow",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -11691,9 +11691,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "issueOpsInvoices",
     "table": "invoices",
     "kind": "create",
-    "input": "InvoicesInput",
+    "input": "OpsInvoiceIssueInput",
     "success": 201,
-    "output": "Invoices",
+    "output": "OpsInvoiceIssue",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -13499,9 +13499,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "changeOpsWorkspacePlan",
     "table": "subscriptions",
     "kind": "create",
-    "input": "SubscriptionsInput",
+    "input": "OpsPlanChangeInput",
     "success": 201,
-    "output": "Subscriptions",
+    "output": "PlanChange",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -18531,9 +18531,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateBillingContact",
     "table": "subscriptions",
     "kind": "update",
-    "input": "SubscriptionsInput",
+    "input": "BillingContactInput",
     "success": 200,
-    "output": "Subscriptions",
+    "output": "BillingContact",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -18828,9 +18828,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "changePlan",
     "table": "subscriptions",
     "kind": "create",
-    "input": "SubscriptionsInput",
+    "input": "PlanChangeInput",
     "success": 201,
-    "output": "Subscriptions",
+    "output": "PlanChange",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -19069,4 +19069,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "97a77d5f156d2ba0";
+export const OPENAPI_HASH = "8abaae83676facb9";
