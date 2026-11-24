@@ -12,6 +12,7 @@
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Shell, type Crumb, type Group } from "@/components/k";
+import * as F7 from "@/features/F7/shell-slots";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
@@ -138,6 +139,10 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
   const ownCount = counts?.["approvals"] !== undefined;
   const ownBridge = bridgeConnected !== undefined;
   const { who, scopes, waiting, devices } = useShellData(screen, ownCount, ownBridge);
+  // 段 8 の差し込み口（K-599・今は何も出さない）。ログイン済みの判定は useShellData と同じ確かめ（K-466 が寄せる）
+  const signedIn = typeof window !== "undefined" && getToken() !== null;
+  const notice = F7.useNoticeSlot({ unread: undefined, enabled: signedIn });
+  const search = F7.useSearchSlot({ enabled: signedIn });
   const mine = who.isSuccess ? (who.data as Me) : null;
   // 役は口が答え、値が分かるときだけ（読み中・失敗・知らない値は役なし＝役の項目を出さない）
   const role = mine?.role_id ? ROLE_OF[mine.role_id] : undefined;
@@ -155,6 +160,9 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
   const canCreate = (scopes.data?.writable.length ?? 0) > 0;
   return (
     <Shell
+      {...notice.shellProps}
+      {...search.shellProps}
+      belowGroups={<F7.SavedViewSlot enabled={signedIn} />}
       {...(role ? { role } : {})}
       screen={screen}
       crumbs={crumbs}
@@ -171,6 +179,8 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
       }}
     >
       <div data-ticket-shell>{children}</div>
+      <F7.NoticeSlot slot={notice} />
+      <F7.SearchSlot slot={search} />
     </Shell>
   );
 }
