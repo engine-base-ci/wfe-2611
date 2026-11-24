@@ -58,6 +58,8 @@ export interface ListItem {
 }
 
 export const PAGE_SIZE = 50;
+/** 続きの鍵が今の状態では読めない（409・K-472）。表の下の失敗の行は「もっと見る」で続きを読み直せる */
+export const LIST_RESTART = "E-LST-001";
 
 export type ListState =
   | { state: "loading" }
@@ -163,9 +165,13 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
   const [moreError, setMoreError] = useState<string | null>(null);
   const seq = useRef(0);
   const busy = useRef(false);
+  /** 読み直しが済んだら表の下に出す失敗（続きの鍵が読めない 409 のとき・K-478） */
+  const afterReload = useRef<string | null>(null);
 
   const reload = useCallback(() => {
     const mine = ++seq.current;
+    const restartNote = afterReload.current;
+    afterReload.current = null;
     const place = `${view}|${scopeId ?? ""}`;
     const keep = shown.current === place && okNow.current;
     shown.current = place;
@@ -193,6 +199,7 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
       const first = rows.length === 0 && !filtered && (view === "all" || (await companyIsEmpty()));
       if (mine !== seq.current || first === null) return;
       setList({ state: "ok", rows, next, first });
+      if (restartNote) setMoreError(restartNote);
     })();
   }, [view, q, scopeId, extra, extraSig]);
 
@@ -229,9 +236,13 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
       if (r?.ok) {
         const more = listOf(r.data);
         setList((cur) => (cur.state === "ok" ? { ...cur, rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur));
+      } else if (r && !r.ok && r.code === LIST_RESTART) {
+        // 続きの鍵が今の状態では読めない（K-472）：続きを足さず、鍵なしで最初の分から読み直し、読み直した後に正本の文を出す
+        afterReload.current = codeOf(r);
+        reload();
       } else if (r?.kind !== "unauthenticated") setMoreError(codeOf(r));
     });
-  }, [list, reloading, view, q, scopeId, extra]);
+  }, [list, reloading, view, q, scopeId, extra, reload]);
 
   return { list, loadingMore, moreError, reloading, reload, loadMore, counts };
 }

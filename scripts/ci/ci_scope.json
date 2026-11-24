@@ -1656,6 +1656,19 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/saved/",
+    "apps/web/features/F7/overview/",
+    "apps/web/features/F7/due/",
+    "apps/web/features/F4/ticket-list/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k478-filter.spec.ts",
+    "apps/web/tests/k/k251-ticket-list-mine.spec.ts",
+    "apps/web/tests/k/k252-ticket-list-all.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/stopped.ts",
     "apps/api/src/features/F7/stopped/**"
    ],
