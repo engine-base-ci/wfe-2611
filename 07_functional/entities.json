@@ -12141,6 +12141,14 @@
      "note": null
     },
     {
+     "name": "member_id",
+     "note": null
+    },
+    {
+     "name": "bridge_job_id",
+     "note": null
+    },
+    {
      "name": "ref_type",
      "note": "ページ・記憶・添付・外の URL"
     },
@@ -12214,7 +12222,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ",
+   "note": "**★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ。AI がページを開いた記録（K-698）は会話の仕事ならチケットなし（`bridge_job_id` で結ぶ・どちらかは要る）。同じ仕事・同じページは 1 行",
    "status": "decided",
    "decided_at": "2026-11-24",
    "source": [

@@ -11396,6 +11396,30 @@
   },
   {
    "entity": "reference_logs",
+   "field": "member_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "clone-chat",
+    "tickets",
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "reference_logs",
+   "field": "bridge_job_id",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "clone-chat",
+    "tickets",
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "reference_logs",
    "field": "ref_type",
    "consumed_by_screens": [
     "bridge-setup",

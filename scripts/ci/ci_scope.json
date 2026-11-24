@@ -2015,6 +2015,16 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F9/knowledge/ai/open.ts",
+    "apps/api/src/features/F5/delegate/tools.ts",
+    "packages/db/migrations/20261125013800_knowledge_open.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-open-tool.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],

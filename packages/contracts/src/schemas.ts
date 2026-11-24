@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:dbcfc700e477d9d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:582911631eafb6f9
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2936,8 +2936,10 @@ export const TicketMessagesInput = z.strictObject({
   deleted_by: z.uuid().nullable().optional(),
 });
 export const ReferenceLogs = z.strictObject({
-  ticket_id: z.uuid().optional(),
+  ticket_id: z.uuid().nullable().optional(),
   action_run_id: z.uuid().nullable().optional(),
+  member_id: z.uuid().nullable().optional(),
+  bridge_job_id: z.uuid().nullable().optional(),
   ref_type: z.string().optional(),
   ref_id: z.uuid().nullable().optional(),
   url: z.string().nullable().optional(),
@@ -2952,8 +2954,10 @@ export const ReferenceLogs = z.strictObject({
   updated_by: z.uuid().nullable().optional(),
 });
 export const ReferenceLogsInput = z.strictObject({
-  ticket_id: z.uuid().optional(),
+  ticket_id: z.uuid().nullable().optional(),
   action_run_id: z.uuid().nullable().optional(),
+  member_id: z.uuid().nullable().optional(),
+  bridge_job_id: z.uuid().nullable().optional(),
   ref_type: z.string().optional(),
   ref_id: z.uuid().nullable().optional(),
   url: z.string().nullable().optional(),
