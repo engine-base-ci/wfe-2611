@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
+  "created_at": "2026-11-24",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -319,7 +319,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.135",
     "D-125.162",
@@ -532,7 +532,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-125.136",
@@ -931,7 +931,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.150",
     "D-125.121",
@@ -1665,7 +1665,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.137",
     "D-125.138",
@@ -1806,7 +1806,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-002",
     "D-081.2",
@@ -2273,7 +2273,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.137",
     "D-125.138",
@@ -2476,7 +2476,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-125.140",
@@ -2623,7 +2623,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.7",
     "D-010",
@@ -2857,7 +2857,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.7",
     "D-010",
@@ -5691,7 +5691,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.143",
     "D-055",
@@ -7155,7 +7155,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.55",
     "D-128.57",
@@ -7300,7 +7300,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-028",
     "D-040",
@@ -7432,7 +7432,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-028",
     "D-019",
@@ -7710,7 +7710,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-008",
     "D-024",
@@ -9502,7 +9502,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.19",
     "D-125.103",
@@ -9653,7 +9653,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-012",
     "D-012.7",
@@ -9804,7 +9804,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-008",
     "D-034",
@@ -12940,7 +12940,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.38",
     "D-128.40",
@@ -14251,7 +14251,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.39",
     "D-128.40",
@@ -14426,7 +14426,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-038",
     "D-039",
@@ -14604,7 +14604,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-038",
     "D-039",
@@ -14791,7 +14791,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-058",
     "D-032",
@@ -14959,7 +14959,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-058",
     "D-032",
@@ -15150,7 +15150,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-032",
     "D-034",
@@ -15341,7 +15341,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-058",
     "D-026",
@@ -15473,7 +15473,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-035",
     "D-006",
@@ -15608,7 +15608,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-035",
     "D-063",
@@ -15755,7 +15755,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-030",
     "D-022",
@@ -15897,7 +15897,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-038",
     "D-039",
@@ -16049,7 +16049,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-010",
     "D-024",
@@ -16183,7 +16183,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-018",
     "D-014",
@@ -17325,7 +17325,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.47",
     "D-128.74",
@@ -17477,7 +17477,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-040",
     "D-041",
@@ -18902,7 +18902,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.47",
     "D-128.48",
@@ -19054,7 +19054,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-037",
     "D-027",
@@ -19244,7 +19244,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-037",
     "D-026",
@@ -19379,7 +19379,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-015",
@@ -19521,7 +19521,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-081.5",
     "D-085.1",
@@ -19651,7 +19651,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-025",
     "D-050",
@@ -19783,7 +19783,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-074.1",
@@ -20976,7 +20976,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.67",
     "D-125.24",
@@ -22092,7 +22092,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.67",
     "D-125.129",
@@ -22302,7 +22302,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-027",
     "D-037",
@@ -23872,7 +23872,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.55",
     "D-128.58",
@@ -25288,7 +25288,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.47",
     "D-128.48",
@@ -25426,7 +25426,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-081.3",
     "D-083.1",
@@ -25563,7 +25563,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-081.4",
     "D-084.1",
@@ -25695,7 +25695,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-076.3",
     "D-029",
@@ -25840,7 +25840,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-076.4",
     "D-041",
@@ -25964,7 +25964,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-076.5",
     "D-041",
@@ -27943,7 +27943,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.67",
     "D-128.72",
@@ -29184,7 +29184,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.71",
     "D-125.24",
@@ -30278,7 +30278,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.71",
     "D-125.127",
@@ -31386,7 +31386,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.69",
     "D-128.72",
@@ -32621,7 +32621,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.67",
     "D-125.127",
@@ -33798,7 +33798,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.69",
     "D-127.5",
@@ -33924,7 +33924,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-083.5",
     "D-083.6"
@@ -34050,7 +34050,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-085.1",
     "D-085.2",
@@ -35732,7 +35732,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.67",
     "D-128.68",
@@ -35877,7 +35877,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-027",
     "D-073.7",
@@ -36047,7 +36047,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-073.7",
@@ -37530,7 +37530,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.74",
     "D-125.115",
@@ -38280,12 +38280,32 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/versions/:v/restore",
-     "table": "ticket_section_versions",
+     "table": "ticket_sections",
      "operation_id": "restoreTicketVersion",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-108",
-      "E-107"
+      "E-107",
+      "E-108"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.27",
+      "D-125.58",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes",
+     "table": "ticket_messages",
+     "operation_id": "listTicketItemChanges",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
      ],
      "choke_points": [
       "C2"
@@ -40431,12 +40451,32 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/versions/:v/restore",
-     "table": "ticket_section_versions",
+     "table": "ticket_sections",
      "operation_id": "restoreTicketVersion",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-108",
-      "E-107"
+      "E-107",
+      "E-108"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.27",
+      "D-125.58",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes",
+     "table": "ticket_messages",
+     "operation_id": "listTicketItemChanges",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
      ],
      "choke_points": [
       "C2"
@@ -41999,7 +42039,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.13",
     "D-125.27",
@@ -42445,6 +42485,118 @@
       "D-125.72",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds",
+     "table": "ticket_kinds",
+     "operation_id": "createTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_kinds/:id",
+     "table": "ticket_kinds",
+     "operation_id": "updateTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_kinds/:id",
+     "table": "ticket_kinds",
+     "operation_id": "deleteTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds/order",
+     "table": "ticket_kinds",
+     "operation_id": "reorderTicketKinds",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -42841,6 +42993,118 @@
       "D-125.72",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds",
+     "table": "ticket_kinds",
+     "operation_id": "createTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_kinds/:id",
+     "table": "ticket_kinds",
+     "operation_id": "updateTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_kinds/:id",
+     "table": "ticket_kinds",
+     "operation_id": "deleteTicketKind",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds/order",
+     "table": "ticket_kinds",
+     "operation_id": "reorderTicketKinds",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-109",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.66",
+      "D-125.67",
+      "D-125.70",
+      "D-125.81",
+      "D-152.18",
+      "D-152.30",
+      "D-152.31",
+      "D-152.32",
+      "D-152.36",
+      "D-125.167"
+     ]
     }
    ],
    "related_entities": [
@@ -42886,7 +43150,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-152.18",
     "D-152.36",
@@ -43184,7 +43448,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.47",
     "D-125.21",
@@ -43533,7 +43797,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-126.12",
     "D-127.11"
@@ -44068,7 +44332,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-126.4",
     "D-126.6",
@@ -45956,7 +46220,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-152.1",
     "D-152.3",
@@ -46731,7 +46995,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.121",
     "D-125.122"
@@ -47098,7 +47362,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.123",
     "D-125.46"
@@ -47340,7 +47604,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.70"
    ]
@@ -47409,7 +47673,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.162",
     "D-128.137",
@@ -47523,7 +47787,7 @@
    "has_shell": false,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-128.146"
    ]
@@ -48031,7 +48295,7 @@
    "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.46",
     "D-125.121",

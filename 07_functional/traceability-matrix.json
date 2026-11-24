@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-24",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -2936,6 +2936,7 @@
     "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
+    "GET /api/tickets/:id/item-changes",
     "POST /api/ticket_kinds/:id/template-from-ticket",
     "GET /api/tickets/:id/test-specs",
     "POST /api/tickets/:id/test-specs",
@@ -3047,7 +3048,11 @@
     "POST /api/workspace/ticket-shape/preview",
     "PATCH /api/workspace/ticket-shape",
     "GET /api/ticket_kinds/template-updates",
-    "POST /api/ticket_kinds/template-updates/:id/apply"
+    "POST /api/ticket_kinds/template-updates/:id/apply",
+    "POST /api/ticket_kinds",
+    "PATCH /api/ticket_kinds/:id",
+    "DELETE /api/ticket_kinds/:id",
+    "POST /api/ticket_kinds/order"
    ],
    "access_roles": [
     "R1",
@@ -10797,6 +10802,12 @@
     },
     {
      "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes"
+    },
+    {
+     "act": "A101",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/:id/template-from-ticket"
@@ -11244,6 +11255,30 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/template-updates/:id/apply"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_kinds/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_kinds/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_kinds/order"
     }
    ]
   },

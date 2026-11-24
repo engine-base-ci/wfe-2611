@@ -5654,40 +5654,6 @@
    "support_code": "VAL-013"
   },
   {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
-  },
-  {
    "id": "E-VAL-015",
    "class": "conflict",
    "where": {
@@ -7759,6 +7725,34 @@
    ]
   },
   {
+   "id": "E-SEC-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す先の版の中身が今の本文と同じ（版を無駄に増やさない）",
+   "false_when": "戻す先の版の中身が今の本文と違う",
+   "message": "もう同じ中身です",
+   "action": "別の版を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開く",
+    "steps": [
+     "今の版と同じ中身の版を選んで、本文をその版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.47"
+   ]
+  },
+  {
    "id": "E-SPEC-001",
    "class": "conflict",
    "where": {
@@ -9104,6 +9098,156 @@
     "D-150.45"
    ],
    "support_code": "CONF-020"
+  },
+  {
+   "id": "E-KND-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "消していない種別に同じ名前（前後の空白を落とした字）があるのに、種別を足すか名前を直した",
+   "false_when": "同じ名前の種別が無い／消した種別の名前／別の会社の種別の名前",
+   "message": "同じ名前の種別がすでにあります",
+   "action": "名前を変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 1 つ足しておき、同じ名前でもう 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-001"
+  },
+  {
+   "id": "E-KND-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "種別がもう 10 ある会社で、種別を足した",
+   "false_when": "種別が 9 以下／別の会社の種別の数",
+   "message": "種別は 10 までです",
+   "action": "使っていない種別を消してから足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 10 にしてから 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-002"
+  },
+  {
+   "id": "E-KND-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "使っているチケット（消したチケットも含む）が 1 枚でも在る種別を消した",
+   "false_when": "その種別のチケットが 1 枚も無い",
+   "message": "この種別を使っているチケットがあるので、消せません",
+   "action": "使っているチケットを別の種別に移してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を指したチケットを 1 枚作ってから、その種別を消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-003"
+  },
+  {
+   "id": "E-KND-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "並べるときに渡した種別の並びが、今の生きている種別の全部と過不足なく一致しない",
+   "false_when": "渡した並びが今の種別の全部とちょうど同じ",
+   "message": "並びが古くなっています。開き直してください",
+   "action": "画面を開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "別の画面で種別を足した後、古い画面で並べ替える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-004"
+  },
+  {
+   "id": "E-KND-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "生きている種別が 1 つだけのときに、その種別を消した",
+   "false_when": "生きている種別が 2 つ以上",
+   "message": "最後の 1 つの種別は消せません",
+   "action": "先に別の種別を足してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 1 つだけにしてから、それを消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-005"
   }
  ],
  "meta": {

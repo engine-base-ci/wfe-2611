@@ -1,0 +1,18 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-kinds-write.ts",
+    "apps/api/src/features/F9/settings/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F9/settings.harness.ts": "葉の hooks のファイルを leafHooks（F3/leaf-hooks.ts）の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-704",
+  "apps/api/test/features/contract/k144.d/K-704.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-704"
+ }
+}

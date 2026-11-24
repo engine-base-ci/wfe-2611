@@ -16,7 +16,6 @@ import {
   openTicket,
   openTicketSettled,
   openComplete,
-  confirmBox,
   dialog,
   bandOf,
   k62Band,
@@ -54,18 +53,15 @@ row(R["K63-UI-059"], async (page) => {
   const m = await mockApi(page, { stage: "doing", can_complete: true, can_delegate: true }); // 実行の記録なし
   await openTicketSettled(page);
   await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
-  await expect(k62Band(page).getByRole("button", { name: "AI に任せる" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "AI に任せる", exact: true })).toBeVisible(); // 題の行（K-573）
   await openComplete(page);
-  await page.getByRole("checkbox", { name: "請求書を作る" }).check();
-  await page.getByRole("checkbox", { name: "先方に送る" }).check();
-  await confirmBox(page).check();
   m.on.ticket = () => ({
     status: 200,
     body: { data: ticketOf({ stage: "done", completed: { at: new Date().toISOString(), by: "高本" } }) },
   });
-  await page.getByRole("button", { name: "確かめて完了にする" }).click();
+  await dialog(page).getByRole("button", { name: "このまま完了にする", exact: true }).click();
   await expect.poll(() => m.completes.length).toBe(1);
-  expect(m.completes[0]).toEqual({ todo_checked: [0, 1], todo_version: 4, conditions_confirmed: true });
+  expect(m.completes[0]).toEqual({ conditions_confirmed: true });
   await expect(bandOf(page).getByText(/完了しました/)).toBeVisible();
   await expect(completeButton(page)).toHaveCount(0);
 });
@@ -91,7 +87,7 @@ row(R["K63-UI-061"], async (page) => {
     const p = await page.context().newPage();
     await mockApi(p, { stage, can_complete: true, can_delegate: true });
     await openTicket(p);
-    await expect(k62Band(p).getByRole("button", { name: "AI に任せる" }), stage).toBeVisible();
+    await expect(p.getByRole("button", { name: "AI に任せる", exact: true }), stage).toBeVisible(); // 題の行（K-573）
     await expect(completeButton(p), stage).toHaveCount(0);
     await expect(p.getByText(MSG.completeHint), stage).toHaveCount(0);
     await p.close();
@@ -132,10 +128,7 @@ row(R["K63-UI-063"], async (page) => {
   });
   await openTicket(page);
   await openComplete(page);
-  await page.getByRole("checkbox", { name: "請求書を作る" }).check();
-  await page.getByRole("checkbox", { name: "先方に送る" }).check();
-  await confirmBox(page).check();
-  await page.getByRole("button", { name: "確かめて完了にする" }).click();
+  await dialog(page).getByRole("button", { name: "このまま完了にする", exact: true }).click();
   await expect(dialog(page).getByText(HIDDEN)).toBeVisible();
   await expect(dialog(page).getByRole("link", { name: /EG-134 宛名を確かめる/ })).toHaveAttribute(
     "href",

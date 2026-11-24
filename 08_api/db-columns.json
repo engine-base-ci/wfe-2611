@@ -7410,6 +7410,10 @@
     "type": "text",
     "nullable": true
    },
+   "color_key": {
+    "type": "text",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false

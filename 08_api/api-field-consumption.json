@@ -10450,6 +10450,17 @@
   },
   {
    "entity": "ticket_kinds",
+   "field": "color_key",
+   "consumed_by_screens": [
+    "tickets",
+    "masters",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_kinds",
    "field": "position",
    "consumed_by_screens": [
     "tickets",
@@ -10462,6 +10473,17 @@
   {
    "entity": "ticket_kinds",
    "field": "is_builtin",
+   "consumed_by_screens": [
+    "tickets",
+    "masters",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_kinds",
+   "field": "body_template",
    "consumed_by_screens": [
     "tickets",
     "masters",

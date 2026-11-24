@@ -3252,6 +3252,39 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/ticket_kinds",
+   "implementation_path": "apps/api/src/routes/ticket_kinds.ts::createTicketKind",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/ticket_kinds/:id",
+   "implementation_path": "apps/api/src/routes/ticket_kinds.ts::updateTicketKind",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/ticket_kinds/:id",
+   "implementation_path": "apps/api/src/routes/ticket_kinds.ts::deleteTicketKind",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/ticket_kinds/:id/template-from-ticket",
    "implementation_path": "apps/api/src/routes/kind_sections.ts::makeKindTemplateFromTicket",
    "screen_ids_referencing": [
@@ -3259,6 +3292,17 @@
    ],
    "acts": [
     "A101"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_kinds/order",
+   "implementation_path": "apps/api/src/routes/ticket_kinds.ts::reorderTicketKinds",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
    ]
   },
   {
@@ -3607,6 +3651,17 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/tickets/:id/item-changes",
+   "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketItemChanges",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A101"
+   ]
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/tickets/:id/kind-change-preview",
    "implementation_path": "apps/api/src/routes/tickets.ts::previewTicketKindChange",
    "screen_ids_referencing": [
@@ -3763,7 +3818,7 @@
   {
    "method": "POST",
    "path": "/api/v1/tickets/:id/versions/:v/restore",
-   "implementation_path": "apps/api/src/routes/ticket_section_versions.ts::restoreTicketVersion",
+   "implementation_path": "apps/api/src/routes/ticket_sections.ts::restoreTicketVersion",
    "screen_ids_referencing": [
     "tickets"
    ],
