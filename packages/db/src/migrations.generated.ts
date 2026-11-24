@@ -143,6 +143,7 @@ export const MIGRATIONS = [
   "20261121090100_handover_base.sql",
   "20261121090400_handover_switch.sql",
   "20261121090500_handover_queue.sql",
+  "20261121090700_handover_overdue.sql",
   "20261121091900_workspace_invitations.sql",
   "20261121092100_invitation_link.sql",
   "20261121092200_invitation_link_joins.sql",
