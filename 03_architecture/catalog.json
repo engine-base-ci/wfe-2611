@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 92,
+  "api_built": 103,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 258,
+  "errors": 269,
   "stack": 56,
   "env": 41
  },
@@ -3250,7 +3250,7 @@
    "op": "listNotifications",
    "method": "GET",
    "path": "/api/v1/notifications",
-   "what": "取得（notifications）— 知らせを見てチケットへ行く",
+   "what": "取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分）",
    "flows": [
     "F7"
    ],
@@ -3258,9 +3258,9 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-461"
    ]
   },
   {
@@ -3275,9 +3275,9 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-462"
    ]
   },
   {
@@ -3292,9 +3292,9 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-462"
    ]
   },
   {
@@ -4426,9 +4426,9 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-476"
    ]
   },
   {
@@ -4443,9 +4443,9 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-476"
    ]
   },
   {
@@ -4558,9 +4558,10 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-465"
    ]
   },
   {
@@ -4626,9 +4627,9 @@
    "tables": [
     "ticket_decisions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-391"
    ]
   },
   {
@@ -4793,9 +4794,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4810,9 +4811,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4827,9 +4828,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -5312,9 +5313,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-489"
    ]
   },
   {
