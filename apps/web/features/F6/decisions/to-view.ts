@@ -38,11 +38,13 @@ function view(r: DecisionRow, status: DecisionView["status"], byId: ReadonlyMap<
   const by = r.decided_note && name ? `${head}（${r.decided_note}）` : head;
   const next = r.superseded_by_id ? byId.get(r.superseded_by_id) : undefined;
   const prev = r.revises_id ? byId.get(r.revises_id) : undefined;
+  // 札「改めた」は注「MM/DD の決定を改めた」と組（K-397）。取り消した・改められたの注が勝つときは札も出さない（札が 2 つにならない・K-398）
+  const revises = status === "live" && prev !== undefined;
   const note = r.cancelled
     ? `取り消し ${day(r.cancelled.at)} ${callName(r.cancelled.by?.display_name)}：${r.cancelled.reason}`
     : status === "revised"
       ? `新しい決定：${next?.text ?? ""} ↑`
-      : prev
+      : revises
         ? `${day(prev.decided_at)} の決定を改めた`
         : undefined;
   return {
@@ -56,6 +58,6 @@ function view(r: DecisionRow, status: DecisionView["status"], byId: ReadonlyMap<
       : {}),
     ...(r.source?.deleted ? { sourceGone: true } : {}),
     ...(note ? { note } : {}),
-    ...(r.revises_id ? { revises: true } : {}),
+    ...(revises ? { revises: true } : {}),
   };
 }
