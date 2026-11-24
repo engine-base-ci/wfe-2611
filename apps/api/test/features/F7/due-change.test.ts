@@ -36,6 +36,7 @@ import {
   lines,
   mmdd,
   notices,
+  num,
   one,
   outsider,
   patch,
@@ -82,7 +83,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect(await notices(t.id)).toHaveLength(0);
   });
 
-  it("K483-API-002 担当者でない人が変える：担当者の受け箱にお知らせ 1 つ（inapp・種類 ticket.due_changed・dedupe_key は種類と変更の 1 行の id・payload の鍵は message_id・number・ticket_id・title ちょうど・理由と日付の字は無い）。変えた人には 0。担当者がいない・止められているときも 0（K-440 のお知らせと同じ形）", async () => {
+  it("K483-API-002 担当者でない人が変える：担当者の受け箱にお知らせ 1 つ（inapp・種類 ticket.due_changed・dedupe_key は種類と変更の 1 行の id・payload の鍵は fields・message_id・number・ticket_id・url ちょうど＝ほかの組と同じ形・題名と理由と日付の字は無い）。変えた人には 0。担当者がいない・止められているときも 0。期限と優先度を一緒に送ると担当者の受け箱は 1 行（前の組の行の fields に due_on を足す・1 回の要求は 1 人に 1 通 ⑮7）", async () => {
     const t = await ticket({ due: jst(5), title: "お知らせを見る" });
     const r = await patch(writer, t.id, due(jst(9), "社内の事情"));
     expect(r.status).toBe(200);
@@ -90,16 +91,30 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     const ns = await notices(t.id);
     expect(ns).toHaveLength(1);
     expect([ns[0]!.member_id, ns[0]!.channel_id, ns[0]!.dedupe_key]).toEqual([boss.id, "inapp", `${DUE_KIND}:${id}`]);
-    expect(Object.keys(ns[0]!.payload).sort()).toEqual(["message_id", "number", "ticket_id", "title"]);
-    expect(ns[0]!.payload).toMatchObject({
+    expect(Object.keys(ns[0]!.payload).sort()).toEqual(["fields", "message_id", "number", "ticket_id", "url"]);
+    expect(ns[0]!.payload).toEqual({
       ticket_id: t.id,
       number: t.number,
-      title: "お知らせを見る",
+      url: `/tickets/${t.id}`,
       message_id: id,
+      fields: ["due_on"],
     });
     const text = JSON.stringify(ns[0]!.payload);
     expect(text).not.toContain("社内の事情");
+    expect(text).not.toContain("お知らせを見る");
     expect(text).not.toContain(jst(9));
+    // 1 回の要求は 1 人に 1 通：優先度の組（表の前の組）が書いた担当者の行に due_on を足し、期限の種類の行は新しく書かない
+    const mixed = await ticket({ due: jst(5), title: "優先度と期限を一緒に" });
+    const m = await patch(writer, mixed.id, { ...due(jst(9)), priority: "high", priority_reason: "急ぎの先方" });
+    expect(m.status, await m.clone().text()).toBe(200);
+    const all = await f.admin.query<{ member_id: string; event_kind_id: string; payload: { fields?: string[] } }>(
+      "select member_id, event_kind_id, payload from notifications where payload->>'ticket_id' = $1::text",
+      [mixed.id],
+    );
+    expect(all.rows.map((n) => n.member_id)).toEqual([boss.id]);
+    expect(all.rows[0]!.event_kind_id).not.toBe(DUE_KIND);
+    expect(all.rows[0]!.payload.fields).toContain("priority");
+    expect(all.rows[0]!.payload.fields).toContain("due_on");
     // 担当者がいない・担当者が止められているときは、変えた人が別の人でも届かない
     const nobody = await ticket({ due: jst(5), assignee: null, title: "担当者がいない" });
     expect((await patch(writer, nobody.id, due(jst(9)))).status).toBe(200);
@@ -109,7 +124,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect(await notices(gone.id)).toHaveLength(0);
   });
 
-  it("K483-API-003 承認する人：決まっていない承認の人と担当者の両方に 1 つずつ（変えた人は除く）。承認する人が担当者なら 1 つ・変えた人が承認する人ならその人には 0・決まった承認・取り下げた承認の人には届かない", async () => {
+  it("K483-API-003 承認する人：決まっていない承認の人と担当者の両方に 1 つずつ（変えた人は除く）。承認する人が担当者なら 1 つ・変えた人が承認する人ならその人には 0・決まった承認・取り下げた承認・消した承認の人・止められた承認する人には届かない", async () => {
     const both = await ticket({ title: "承認と担当" });
     await pendingApproval(both, approver);
     expect((await patch(writer, both.id, due(jst(8)))).status).toBe(200);
@@ -127,6 +142,15 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     await pendingApproval(old, approver, { withdrawn: true });
     expect((await patch(writer, old.id, due(jst(8)))).status).toBe(200);
     expect((await notices(old.id)).map((n) => n.member_id)).toEqual([boss.id]);
+    const removed = await ticket({ title: "消した承認" });
+    await pendingApproval(removed, approver);
+    await f.admin.query("update approvals set deleted_at = now() where ticket_id = $1", [removed.id]);
+    expect((await patch(writer, removed.id, due(jst(8)))).status).toBe(200);
+    expect((await notices(removed.id)).map((n) => n.member_id)).toEqual([boss.id]);
+    const stoppedApprover = await ticket({ title: "止められた承認する人" });
+    await pendingApproval(stoppedApprover, stopped);
+    expect((await patch(writer, stoppedApprover.id, due(jst(8)))).status).toBe(200);
+    expect((await notices(stoppedApprover.id)).map((n) => n.member_id)).toEqual([boss.id]);
   });
 
   it("K483-API-004 承認待ちの間も期限は変えられる：段が承認待ちで決まっていない承認がある → 200・承認する人にお知らせが届く", async () => {
@@ -138,12 +162,13 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect((await notices(t.id)).map((n) => n.member_id)).toContain(approver.id);
   });
 
-  it("K483-API-005 理由が足りない・長い：due_on を送って due_reason が無い・空・空白だけ（全角も）・制御文字だけは 422 E-DUE-001（欄 due_reason）／201 文字は 422 E-DUE-002。200 文字は通る。足りないときは何も変わらない", async () => {
+  it("K483-API-005 理由が足りない・長い：due_on を送って due_reason が無い・null・空・空白だけ（全角も）・制御文字だけは 422 E-DUE-001（欄 due_reason）／201 文字は 422 E-DUE-002。200 文字は通る。足りないときは何も変わらない", async () => {
     const t = await ticket({ due: jst(5) });
     const before = await row(t.id);
     const cases: [Record<string, unknown>, string][] = [
       [{ due_on: jst(8) }, DUE_NO_REASON],
       [{ due_on: jst(8), due_reason: "" }, DUE_NO_REASON],
+      [{ due_on: jst(8), due_reason: null }, DUE_NO_REASON],
       [{ due_on: jst(8), due_reason: "　 " }, DUE_NO_REASON],
       [{ due_on: jst(8), due_reason: "\u0007\u0008" }, DUE_NO_REASON],
       [{ due_on: jst(8), due_reason: "あ".repeat(REASON_MAX + 1) }, DUE_REASON_LONG],
@@ -159,15 +184,23 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect((await patch(boss, t.id, due(jst(8), "あ".repeat(REASON_MAX)))).status).toBe(200);
   });
 
-  it("K483-API-006 理由だけ送る：due_on が無いまま due_reason を送る（start_on だけに添えるのも）は 422（欄 due_reason）。何も変わらない", async () => {
+  it("K483-API-006 対の欄なしで送る：due_on が無いまま due_reason を送る（start_on だけに添えるのも）は 422（欄 due_reason）。expected_due_on を due_on なしで・expected_start_on を start_on なしで送る（expected だけ・start_on に expected_due_on を添える）は 422（欄 expected_due_on／expected_start_on）。何も変わらない", async () => {
     const t = await ticket({ due: jst(5), start: jst(1) });
     const before = await row(t.id);
-    for (const body of [{ due_reason: "理由だけ" }, { start_on: jst(2), due_reason: "開始日の理由" }]) {
+    const cases: [Record<string, unknown>, string][] = [
+      [{ due_reason: "理由だけ" }, "due_reason"],
+      [{ start_on: jst(2), due_reason: "開始日の理由" }, "due_reason"],
+      [{ expected_due_on: jst(5) }, "expected_due_on"],
+      [{ expected_start_on: jst(1) }, "expected_start_on"],
+      [{ start_on: jst(2), expected_due_on: jst(5) }, "expected_due_on"],
+      [{ ...due(jst(8)), expected_start_on: jst(1) }, "expected_start_on"],
+    ];
+    for (const [body, field] of cases) {
       const r = await patch(boss, t.id, body);
       expect(r.status, JSON.stringify(body)).toBe(422);
       const j = await json(r);
       expect(j["code"]).toBe("VALIDATION_ERROR");
-      expect(fields(j)).toContain("due_reason");
+      expect(fields(j)).toContain(field);
     }
     await untouched(t.id, before);
   });
@@ -186,7 +219,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect((await row(t.id)).due_on).toBe(jst(0));
   });
 
-  it("K483-API-008 日付の形：暦に無い日（2 月 30 日）・斜線・文字・数・空の文字・時刻つきの字（時刻は持たない・D-150.4）は 422 VALIDATION_ERROR（欄 due_on／start_on）。何も変わらない", async () => {
+  it("K483-API-008 日付の形：暦に無い日（2 月 30 日）・斜線・文字・数・空の文字・時刻つきの字（時刻は持たない・D-150.4）は 422 VALIDATION_ERROR（欄 due_on／start_on／expected_due_on／expected_start_on）。何も変わらない", async () => {
     const t = await ticket({ due: jst(5) });
     const before = await row(t.id);
     for (const bad of ["2027-02-30", "2027/03/05", "来週", 20270305, "", "2027-03-05T18:00:00"]) {
@@ -196,6 +229,12 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
       const b = await patch(boss, t.id, { start_on: bad });
       expect(b.status, JSON.stringify(bad)).toBe(422);
       expect(fields(await json(b))).toContain("start_on");
+      const c = await patch(boss, t.id, { ...due(jst(8)), expected_due_on: bad });
+      expect(c.status, JSON.stringify(bad)).toBe(422);
+      expect(fields(await json(c))).toContain("expected_due_on");
+      const e = await patch(boss, t.id, { start_on: jst(1), expected_start_on: bad });
+      expect(e.status, JSON.stringify(bad)).toBe(422);
+      expect(fields(await json(e))).toContain("expected_start_on");
     }
     await untouched(t.id, before);
   });
@@ -292,7 +331,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     await untouched(t.id, before);
   });
 
-  it("K483-API-015 子は親より後にできない：子の期限が親の期限より後は 409 E-DUE-005（何も変わらない）。同じ日は通る。親に期限が無いなら何日でもよい", async () => {
+  it("K483-API-015 子は親より後にできない：子の期限が親の期限より後は 409 E-DUE-005（何も変わらない）。同じ日は通る。親に期限が無い・親を消したなら何日でもよい。親と期限を同じ要求で送ると、表の前の優先度と親の組が今の期限で比べる（新しい期限なら合っても 409 E-TKT-004・何も書かない）", async () => {
     const parent = await ticket({ due: jst(10), title: "親" });
     const child = await ticket({ due: jst(5), parent: parent.id, title: "子" });
     const before = await row(child.id);
@@ -305,6 +344,18 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     const free = await ticket({ due: null, title: "期限の無い親" });
     const kid = await ticket({ due: jst(5), parent: free.id, title: "期限の無い親の子" });
     expect((await patch(boss, kid.id, due(jst(40)))).status).toBe(200);
+    const gone = await ticket({ due: jst(10), title: "消した親" });
+    const orphan = await ticket({ due: jst(5), parent: gone.id, title: "消した親の子" });
+    await f.admin.query("update tickets set deleted_at = now() where id = $1", [gone.id]);
+    expect((await patch(boss, orphan.id, due(jst(30)))).status).toBe(200);
+    // 親と期限を一緒に：今の期限（jst(20)）は新しい親の期限（jst(10)）より後なので、優先度と親の組が先に断る
+    const newParent = await ticket({ due: jst(10), title: "新しい親" });
+    const moving = await ticket({ due: jst(20), title: "親を決める子" });
+    const movingBefore = await row(moving.id);
+    const both = await patch(boss, moving.id, { parent_ticket_id: newParent.id, ...due(jst(8)) });
+    expect(both.status).toBe(409);
+    expect(await code(both)).toBe("E-TKT-004");
+    await untouched(moving.id, movingBefore);
   });
 
   it("K483-API-016 親は子より前にできない：親の期限を、子の期限より前にすると 409 E-DUE-006。子と同じ日は通る・期限をなくすのも通る・消した子は数えない", async () => {
@@ -378,7 +429,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     await untouched(t.id, before);
   });
 
-  it("K483-API-021 期限と実績・段を一緒に送る：期限の欄に actual_minutes を添えると 200 で両方書く（期限の変更の 1 行は 1 つ）。段の組が断られる要求（存在しない段の id）を添えると期限も書かない（取引ごと戻る）", async () => {
+  it("K483-API-021 期限と実績・段を一緒に送る：期限の欄に actual_minutes を添えると 200 で両方書く（期限の変更の 1 行は 1 つ）。段の組が断られる要求（存在しない段の id）を添えると期限も書かない。実績の組が書いた後で期限の組が断る（昨日の期限・409 E-VAL-012）と、実績も戻る（取引ごと戻る・やり取りは 1 行も残らない）", async () => {
     const ok = await ticket({ due: jst(5) });
     const r = await patch(boss, ok.id, { ...due(jst(8)), actual_minutes: 30 });
     expect(r.status, await r.clone().text()).toBe(200);
@@ -394,6 +445,17 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect(refused.status).toBeGreaterThanOrEqual(400); // 段の組の断りの番号は K-387 の物（ここでは見ない）
     expect(refused.status).toBeLessThan(500);
     await untouched(bad.id, before);
+    const late = await ticket({ due: jst(5) });
+    const lateBefore = await row(late.id);
+    const back = await patch(boss, late.id, { ...due(jst(-1)), actual_minutes: 30 });
+    expect(back.status).toBe(409);
+    expect(await code(back)).toBe(DUE_PAST);
+    const kept = await one<{ actual_minutes: number | null }>("select actual_minutes from tickets where id = $1", [
+      late.id,
+    ]);
+    expect(kept.actual_minutes).toBeNull();
+    expect(await num("select count(*) as n from ticket_messages where ticket_id = $1", [late.id])).toBe(0);
+    await untouched(late.id, lateBefore);
   });
 
   it("K483-API-022 ほかの欄はまだ変えられない：題名・見込みなどは 422 E-VAL-018（欄ごと。優先度・親は K-440 の組）。担当者も同じ（担当を変えるのは渡す口・F8）。期限の欄を添えても何も書かない", async () => {
@@ -472,7 +534,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     const before = await row(t.id);
     await f.admin.query(`create or replace function public.k483_boom_note() returns trigger language plpgsql as $$
       begin
-        if new.event_kind_id = 'ticket.due_changed' and new.payload->>'title' like 'K483 壊れる通知%' then raise exception 'K483 の試験でお知らせを壊した'; end if;
+        if new.event_kind_id = 'ticket.due_changed' and new.payload->>'ticket_id' = '${t.id}' then raise exception 'K483 の試験でお知らせを壊した'; end if;
         return new;
       end $$`);
     await f.admin.query(
@@ -497,7 +559,7 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect(await notices(t.id)).toHaveLength(1);
   });
 
-  it("K483-API-027 失敗（守りの判定）：書けるかの判定（app.ticket_writable）で例外になったら、口は通さず 503・E-PAGE-003。何も書かない（止める側に倒す）", async () => {
+  it("K483-API-027 失敗（守りの判定）：書けるかの判定（app.ticket_writable）で例外になったら、口は通さず 503・E-PAGE-003（口の入口の行の守りが先に倒す）。関数 app.ticket_due_set を直に呼んでも guard_failed を返す（2 層目）。何も書かない（止める側に倒す）", async () => {
     const t = await ticket({ due: jst(5), title: "K483 守りが壊れる" });
     const before = await row(t.id);
     // 壊すのはこの試験の中だけ：ticket_writable を「この題名のチケットなら例外」に作り替え、finally で元の定義に戻す
@@ -521,6 +583,11 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
       const r = await patch(boss, t.id, due(jst(8)));
       expect(r.status).toBe(503);
       expect(await code(r)).toBe("E-PAGE-003");
+      const direct = await asMember<{ v: { error?: string } }>(boss, "select app.ticket_due_set($1, $2::jsonb) as v", [
+        t.id,
+        JSON.stringify(due(jst(8), "直に呼ぶ")),
+      ]);
+      expect(direct[0]!.v.error).toBe("guard_failed");
     } finally {
       await f.admin.query(orig);
     }
@@ -548,9 +615,12 @@ describe("K-483 期限を変える（updateTicket の期限の組・本物の DB
     expect(rs.map((r) => r.status)).toEqual([200, 200]);
     const ls = await lines(t.id);
     expect(ls).toHaveLength(2);
-    expect(ls[1]!.changes[0]!.from).toBe(ls[0]!.changes[0]!.to);
-    expect((await row(t.id)).due_on).toBe(ls[1]!.changes[0]!.to);
-    expect(ls[0]!.changes[0]!.from).toBe(jst(5));
+    // 並びは作った時刻（取引を始めた時刻）でなく、錠を取った順＝from の鎖でたどる（jst(5) から始まる行が 1 つ目）
+    const first = ls.find((l) => l.changes[0]!.from === jst(5));
+    const second = ls.find((l) => l !== first);
+    expect(first).toBeDefined();
+    expect(second!.changes[0]!.from).toBe(first!.changes[0]!.to);
+    expect((await row(t.id)).due_on).toBe(second!.changes[0]!.to);
   });
 
   it("K483-API-030 失敗（手順 S3：証跡を書く）：証跡を書く所で DB が落ちると 503・E-PAGE-003。期限・やり取り・お知らせ・証跡は 1 つも残らない（1 つの取引）。ログに理由の字は無い。戻れば同じ操作が通る", async () => {
