@@ -11,6 +11,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -262,6 +263,8 @@ async function openApprovals(page: Page, width: number) {
         status: 200,
         json: { data: [], meta: { limit: 20, counts: { total: 0 }, cursor: null } },
       });
+    if (u.pathname === "/api/v1/shell")
+      return route.fulfill({ status: 200, json: { data: shellData({ groups: [] }), meta: {} } }); // 外枠の口 getShell（K-466）
     if (u.pathname === "/api/v1/bridge/devices")
       return route.fulfill({ status: 200, json: { data: [], meta: { limit: 0 } } });
     return route.fulfill({ status: 404, json: { error: "not_found", code: "NOT_FOUND" } });
@@ -269,10 +272,10 @@ async function openApprovals(page: Page, width: number) {
   await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
   await page.goto("/approvals");
   await page.locator("header.k-page-head h1").waitFor({ state: "visible" });
-  // 読み終えた形（0 件・空の知らせ）で測る。読み込み中や失敗の形のまま測らない
+  // 読み終えた形（0 件・空のお知らせ）で測る。読み込み中や失敗の形のまま測らない
   await expect(page.locator("header.k-page-head .k63-count")).toHaveText("0 件");
   await expect(page.getByText("いま決めるものはありません")).toBeVisible();
-  // 本文の中に失敗の知らせが無い（Next の読み上げの部品 next-route-announcer も role=alert なので、本文の箱に絞る）
+  // 本文の中に失敗のお知らせが無い（Next の読み上げの部品 next-route-announcer も role=alert なので、本文の箱に絞る）
   await expect(page.locator(".k-root.k-page").getByRole("alert")).toHaveCount(0);
 }
 
@@ -354,6 +357,15 @@ async function openTickets(page: Page, width: number, path = "/tickets") {
       return ok({ data: { member_id: ME, tenant_id: WS, display_name: "高本", role_id: "staff" } });
     if (p === "/api/v1/scopes")
       return ok({ data: [{ id: "s1", name: "営業", tenant_id: WS }], meta: { limit: 200, writable: ["s1"] } });
+    if (p === "/api/v1/shell")
+      // 外枠の口 getShell（K-466）：グループは前の scopes の答えと同じ（営業・書ける）
+      return ok({
+        data: shellData({
+          roleId: "staff",
+          groups: [{ id: "s1", name: "営業", ticket_prefix: null, writable: true, open_count: 0 }],
+        }),
+        meta: {},
+      });
     if (p === "/api/v1/ticket_kinds")
       return ok({ data: [{ id: "k1", name: "タスク", sections: [] }], meta: { limit: 2 } });
     if (p === "/api/v1/members") return ok({ data: [{ id: ME, display_name: "高本" }], meta: { limit: 200 } });

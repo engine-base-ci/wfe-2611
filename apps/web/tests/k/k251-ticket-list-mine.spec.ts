@@ -413,14 +413,14 @@ for (const id of ["tickets-first", "tickets-main"] as const) {
   }
 }
 
-test("K251-UI-022 0 件の画面の「分身と話して作る」と 3 つの提案は押せない：押しても・Enter でも移らず口も呼ばない・aria-disabled・グレー（D-145.2）", async ({
+test("K251-UI-022 0 件の画面の「分身と話して作る」は押せない：押しても・Enter でも移らず口も呼ばない・aria-disabled・グレー（D-145.2）。3 つの提案は書ける人には押せる物になった（K-453・D-150.18：K453-UI の行が見る）", async ({
   page,
 }) => {
   const m = await mockList(page, { list: () => ok([], { next_cursor: null }) });
   await open(page);
   const empty = page.locator('[data-state="empty"]');
   const before = page.url();
-  for (const t of ["分身と話して作る", "今月の請求書を送る", "問い合わせに返す", "見積を作る"]) {
+  for (const t of ["分身と話して作る"]) {
     const it = empty.locator('[aria-disabled="true"]', { hasText: t });
     await expect(it, t).toHaveCount(1);
     await expect(empty.getByRole("link", { name: t }), t).toHaveCount(0);
