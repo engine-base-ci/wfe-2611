@@ -56,8 +56,9 @@ function byDayOf(rows: readonly ListItem[], m: MonthView): Record<number, CalIte
 export function CalendarView({ scopeId }: CalendarViewProps) {
   const today = jstToday(new Date());
   const [month, setMonth] = useState<MonthView>(() => monthOf(today));
-  // 月や担当者を替えた後は、空でも格子を出したまま（空の画面は最初に開いたときだけ）
-  const [moved, setMoved] = useState(false);
+  // 一度格子を出したら、空になっても格子を出したまま（空の画面は最初に開いたときだけ。
+  //   月・担当者を替えた後も、日を動かしてその月が 0 件になった後も、格子と月の移動を残す）
+  const [gridShown, setGridShown] = useState(false);
   const [assignee, setAssignee] = useState("");
   /** 開いている日の小窓（YYYY-MM-DD） */
   const [day, setDay] = useState<string | null>(null);
@@ -80,10 +81,7 @@ export function CalendarView({ scopeId }: CalendarViewProps) {
     onStale: data.reloadMonth,
   });
 
-  const go = (m: MonthView) => {
-    setMoved(true);
-    setMonth(m);
-  };
+  const go = (m: MonthView) => setMonth(m);
   const openDay = (ymd: string) => {
     setDropped(null);
     move.cancel();
@@ -123,16 +121,18 @@ export function CalendarView({ scopeId }: CalendarViewProps) {
       </div>
     );
   }
-  if (data.month.state === "loading" || (!moved && monthRows.length === 0 && data.none.state === "loading")) {
+  if (data.month.state === "loading" || (!gridShown && monthRows.length === 0 && data.none.state === "loading")) {
     return (
       <div className="k-list-body">
         <Loading />
       </div>
     );
   }
-  if (!moved && monthRows.length === 0 && data.none.state === "ok" && noneRows.length === 0) {
+  if (!gridShown && monthRows.length === 0 && data.none.state === "ok" && noneRows.length === 0) {
     return <ViewEmpty view="calendar" />;
   }
+  // 格子を出した印（前の描画の情報を持つ形・次の描画から空の画面に戻さない）
+  if (!gridShown) setGridShown(true);
 
   const cells = buildMonthCells({
     year: month.year,
@@ -160,10 +160,7 @@ export function CalendarView({ scopeId }: CalendarViewProps) {
         onDropOn={onDropOn}
         people={people}
         assigneeId={assignee}
-        onAssignee={(id) => {
-          setMoved(true);
-          setAssignee(id);
-        }}
+        onAssignee={setAssignee}
         tray={
           <NoDateTray
             variant="calendar"
