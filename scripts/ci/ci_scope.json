@@ -1593,6 +1593,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/stopped/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k486-stopped-band.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-delete-preview.ts",
     "apps/api/src/features/F7/ticket-delete/**",
     "packages/db/migrations/20261123082700_ticket_delete_preview.sql"
@@ -1868,6 +1876,7 @@
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
   "apps/api/test/features/contract/k144.d/K-477.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-477）",
   "apps/api/test/features/contract/k144.d/K-485.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/web/tests/k/k486-stopped-band.spec.ts": "正本 07_qa/test-specs/errors.json を読み（番号から文を引く）、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/stopped/（views.tsx・stop-copy.ts・stopped.css）を共通の道具 stage2-match.ts の matchMock で開いて比べる（K-486）",
   "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/ticket-delete.harness.ts": "土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487",
   "apps/api/test/features/contract/k144.d/K-488.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",

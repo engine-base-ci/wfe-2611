@@ -27,8 +27,16 @@ function SetupLink({ label, primary }: { label: string; primary: boolean }) {
 
 export interface StopHandProps {
   kind: StopKind;
-  /** 押せる人（担当者）か。false なら全部押せない形（title に訳） */
+  /** 押せる人（担当者）か。false なら全部押せない形（title に訳）。下の 2 つの旗があればそちらを使う */
   canAct: boolean;
+  /** 「AI に任せる」を押せるか（getTicket の can.delegate・K-486）。無ければ canAct */
+  canDelegate?: boolean | undefined;
+  /** 「自分で直す」を押せるか（担当者本人・K-486）。無ければ canAct */
+  canTakeover?: boolean | undefined;
+  /** 「AI に任せる」の答えを待っている間（前からの帯の busy） */
+  delegateBusy?: boolean | undefined;
+  /** 「AI に任せる」の押しすぎの待ち（前からの帯の disabled） */
+  delegateDisabled?: boolean | undefined;
   /** 担当者の名前（押せない訳に出す） */
   assignee?: string | undefined;
   /** 「AI に任せる」（前からの帯の口・もう一度） */
@@ -37,19 +45,37 @@ export interface StopHandProps {
   onTakeover?: (() => void) | undefined;
 }
 
-/** 一手のボタン列（帯の右）。理由ごとに主ボタンは 1 つ。理由が PC・AI の壊れなら主は「PC をつなぐ」 */
-export function StopHand({ kind, canAct, assignee, onDelegate, onTakeover }: StopHandProps) {
-  const off = canAct
+/** 押せない形（aria-disabled・Tab で止まらない・指を置くと訳） */
+const offOf = (on: boolean, assignee: string | undefined) =>
+  on
     ? {}
     : ({ "aria-disabled": true, tabIndex: -1, title: `押せるのは担当者の${assignee ?? ""}さんだけです` } as const);
-  const press = (f?: () => void) => (canAct ? { onClick: f } : {});
+
+/** 一手のボタン列（帯の右）。理由ごとに主ボタンは 1 つ。理由が PC・AI の壊れなら主は「PC をつなぐ」 */
+export function StopHand({
+  kind,
+  canAct,
+  canDelegate = canAct,
+  canTakeover = canAct,
+  delegateBusy = false,
+  delegateDisabled = false,
+  assignee,
+  onDelegate,
+  onTakeover,
+}: StopHandProps) {
   const delegate = (primary: boolean) => (
-    <Button variant={primary ? "primary" : "outlined"} {...off} {...press(onDelegate)}>
+    <Button
+      variant={primary ? "primary" : "outlined"}
+      loading={canDelegate && delegateBusy}
+      disabled={canDelegate && delegateDisabled}
+      {...offOf(canDelegate, assignee)}
+      {...(canDelegate ? { onClick: onDelegate } : {})}
+    >
       AI に任せる
     </Button>
   );
   const takeover = (
-    <Button variant="outlined" {...off} {...press(onTakeover)}>
+    <Button variant="outlined" {...offOf(canTakeover, assignee)} {...(canTakeover ? { onClick: onTakeover } : {})}>
       自分で直す
     </Button>
   );
