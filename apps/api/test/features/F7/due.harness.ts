@@ -225,7 +225,14 @@ export const row = (ticketId: string) =>
 export interface Line {
   id: string;
   body: string | null;
-  changes: { field: string; from: string | null; to: string | null; raw_from: string | null; raw_to: string | null; note?: string }[];
+  changes: {
+    field: string;
+    from: string | null;
+    to: string | null;
+    raw_from: string | null;
+    raw_to: string | null;
+    note?: string;
+  }[];
   author_member_id: string | null;
   created_by: string | null;
 }
