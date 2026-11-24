@@ -21900,9 +21900,7 @@
    "choke_none": "試験のチケット。触る関門は中の操作のチケット（K-401〜K-420）が持つ。試験が外へ出るのは staging の画面と口・Resend の記録を読む口だけ",
    "tests": [
     "apps/e2e/staging/k418-handover.spec.ts",
-    "scripts/ci/k418_staging_spec_test.py",
-    "apps/api/test/generated/post_tickets_id_handovers.test.ts",
-    "apps/api/test/generated/patch_ticket_handovers_id.test.ts"
+    "scripts/ci/k418_staging_spec_test.py"
    ],
    "carry": [
     "apps/e2e/staging/_lib/handover-steps.ts",
