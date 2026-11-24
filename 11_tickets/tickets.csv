@@ -3094,7 +3094,7 @@ K-744,差し戻しの「次は誰が直すか」（returnApproval に next_actor
 - **`clone`（既定・今までどおり）**：理由つきで AI に作り直させる仕事と実行（make・queued）を積み、チケットは実行中・旗は立つ。承認の行は `next_actor = 'clone'`
 - **`self`**：作り直しの仕事も実行も**積まず**、チケットを作業中に戻し、「AI に任せている」の旗を下ろす。承認の行は `next_actor = 'self'`・理由つき。やり取りに「〈名〉が差し戻しました（直すのは自分）：理由」を 1 行、証跡（payload に `next_actor`）。お知らせは出さない。答えの `run_id` は null（作り直しの実行が無い）
 
-差し戻しの理由が空・空白だけは今までどおり 422・E-VAL-020（`self` でも同じ）。`app.approval_decide`（0100）を 4 つ目の引数 `p_next` つきで作り直す（**段 6 でこの関数を作り直すのはこの葉だけ**。止める・取り下げ・自分で直すは別の関数）。承認する・差し戻す以外の口・画面は触らない。画面は K-745。","- [ ] 下の表の 11 行（K744-API-001〜011）が緑：`apps/api/test/features/F5/approval-return-next.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
+差し戻しの理由が空・空白だけは今までどおり 422・E-VAL-020（`self` でも同じ）。`app.approval_decide`（0100）を 4 つ目の引数 `p_next` つきで作り直す（**段 6 でこの関数を作り直すのはこの葉だけ**。止める・取り下げ・自分で直すは別の関数）。承認する・差し戻す以外の口・画面は触らない。画面は K-745。","- [ ] 下の表の 12 行（K744-API-001〜012）が緑：`apps/api/test/features/F5/approval-return-next.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
 - [ ] 前からの差し戻し・承認の試験（K-162・K-163・K-165 の approve-complete-approve・return・complete・execute・guard）が今のまま緑（`next_actor` を言わない既定の振る舞いは 1 文字も変えない）
 - [ ] 契約の入力に `next_actor`（`clone`・`self` だけ）が在り、答えの `run_id` が null を許す。生成の試験（`post_approvals_id_return`）が作り手で作り直され、it.todo が na（理由つき）を除いて 0
 - [ ] 手元の CI（このチケットの範囲）が緑"
