@@ -22515,10 +22515,11 @@
    "choke_points": [],
    "choke_none": "画面だけ。書くのは口の葉 K-434（足す）・K-435（付け外し・直す・外す）の関門 C2 で、画面は契約の口 listTestSpecs・createTestSpec・updateTestSpec・deleteTestSpec を呼ぶだけ（AI も PC も呼ばない）",
    "tests": [
-    "apps/web/tests/k/k450-test-spec.spec.ts",
+    "apps/web/tests/k/k450-test-spec.spec.ts"
+   ],
+   "carry": [
     "apps/web/tests/k/test-spec-mock.ts"
    ],
-   "carry": [],
    "depends_on": [
     "K-431",
     "K-569",
