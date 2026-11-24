@@ -1432,6 +1432,28 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/knowledge/shares",
+   "implementation_path": "apps/api/src/routes/knowledge_shares.ts::getKnowledgeShares",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
+   "method": "PUT",
+   "path": "/api/v1/knowledge/shares",
+   "implementation_path": "apps/api/src/routes/knowledge_shares.ts::setKnowledgeShares",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/knowledge/similar",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::findSimilarKnowledge",

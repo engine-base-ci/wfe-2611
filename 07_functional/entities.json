@@ -12327,6 +12327,10 @@
     {
      "to": "knowledge_requests",
      "label": "上げる・共有の頼み"
+    },
+    {
+     "to": "knowledge_shares",
+     "label": "共有"
     }
    ],
    "soft_delete": true,
@@ -12662,6 +12666,10 @@
     {
      "to": "knowledge_pages",
      "label": "フォルダ"
+    },
+    {
+     "to": "knowledge_shares",
+     "label": "フォルダの共有"
     }
    ],
    "soft_delete": true,
@@ -12792,6 +12800,10 @@
     {
      "from": "members",
      "label": "頼んだ人"
+    },
+    {
+     "to": "knowledge_shares",
+     "label": "共有の頼み"
     }
    ],
    "soft_delete": true,
@@ -12826,6 +12838,93 @@
     "D-128",
     "D-152.13",
     "D-152.2"
+   ]
+  },
+  {
+   "id": "E-150",
+   "name": "knowledge_shares",
+   "table_name": "knowledge_shares",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "page_id",
+     "note": null
+    },
+    {
+     "name": "folder_id",
+     "note": "どちらか 1 つ"
+    },
+    {
+     "name": "group_id",
+     "note": "見せる先のグループ"
+    },
+    {
+     "name": "request_id",
+     "note": "共有の頼み"
+    },
+    {
+     "name": "shared_by",
+     "note": null
+    },
+    {
+     "name": "ended_at",
+     "note": null
+    },
+    {
+     "name": "ended_by",
+     "note": "共有をやめた"
+    }
+   ],
+   "relations": [
+    {
+     "from": "knowledge_pages",
+     "label": "共有"
+    },
+    {
+     "from": "knowledge_folders",
+     "label": "フォルダの共有"
+    },
+    {
+     "from": "knowledge_requests",
+     "label": "共有の頼み"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "knowledge_shares_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.kpage_writable(page_id) OR app.kfolder_writable(folder_id) OR app.kn_group_manager(current_setting('app.user_id', true)::uuid, group_id))",
+     "rationale": "元を書ける人と共有を受けているグループのマネージャーだけ（共有先のメンバーには行は見えない）。書くのは app.kn_share_set・app.kn_apply_share（K-689）だけ",
+     "source": [
+      "D-152.6",
+      "D-152.27"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-689・D-152.6・D-152.27）。**グループの棚のページ・フォルダをほかのグループに見せる（元は 1 つ・共有先は読むだけ・フォルダの共有は中の物全部）。同じ物・同じグループの生きている共有は 1 つだけ。アプリの役は読むだけで、書くのは DB の関数（`app.kn_share_set`・`app.kn_apply_share`）だけ",
+   "status": "decided",
+   "decided_at": "2026-11-24",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-152.27",
+    "D-152.6"
    ]
   },
   {
