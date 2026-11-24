@@ -24896,6 +24896,84 @@
    "file": "11_tickets/K-584.md"
   },
   {
+   "id": "K-587",
+   "title": "画面の部品：本文の道具の書式（見出し 1・2・3・並び〔箇条書き・番号つき・チェック〕・引用・コードの囲み・区切りの線・左寄せ／中央／右寄せ／両端・上付き／下付き）と、画像のボタンは押せない形（K-59 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の葉 K-369（部品を値と動きにつなぐ・見込み 1）と、同じ部品の核 K-567（見込み 1）から引いた：出来合いの UI の hook の写し（use-heading・use-list・use-text-align・use-blockquote・use-code-block・上付き下付きは K-567 の use-mark-button）6 分・帯のメニューの部品（bar-menu.tsx：開く・閉じる・Enter／↓／↑／Esc・選んでいる項目・画面の外にはみ出さない）12 分・見出しと並びのメニューを動かす 8 分・引用・コードの囲み・区切りの線・寄せ 4 つ・上付き下付きを動かす 10 分・画像を押せない形に 2 分・css 5 分・開発用の頁の見出し 3 分・自分の確かめ（動かした道具を全部 1 回ずつ押す）6 分。見込みの根拠になる実測が無いので、最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.57",
+    "D-150.61"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の部品と開発用の頁の見出しだけ。口・DB・外・秘密に触らない（部品は口を呼ばず、文書の木を受けて返すだけ）",
+   "tests": [
+    "apps/web/tests/k/k587-doc-editor-format.spec.ts",
+    "apps/web/test/k587-bar-origin.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-567",
+    "K-577",
+    "K-584"
+   ],
+   "acts": [
+    "A99",
+    "A101"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f4v2-editor-image-off"
+   ],
+   "flow": "チケットの中身を書く・直す",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/doc/editor/doc-bar-live.tsx",
+    "apps/web/features/F4/doc/editor/bar-menu.tsx",
+    "apps/web/features/F4/doc/editor/bar/use-heading.ts",
+    "apps/web/features/F4/doc/editor/bar/use-list.ts",
+    "apps/web/features/F4/doc/editor/bar/use-text-align.ts",
+    "apps/web/features/F4/doc/editor/bar/use-block-button.ts",
+    "apps/web/features/F4/doc/editor/editor.css",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/live.tsx",
+    "scripts/ci/ci_scope.d/K-587.json"
+   ],
+   "sections": {
+    "目的": "K-567 の部品（本文を見たまま編集する核・23 個の道具の帯）に、書式の道具をつなぐ（D-150.48・D-150.61）：**見出し**（見出し 1・2・3・本文のメニュー）・**並び**（箇条書き・番号つき・チェックのメニュー）・**引用**・**コードの囲み**・**区切りの線**・**寄せ**（左寄せ・中央・右寄せ・両端）・**上付き**・**下付き**。**画像のボタンは押せない形のまま**（薄く・『まだ使えません』・D-150.57。ファイルを付ける仕組みが入るまで）。道具は出来合いの編集の部品（Tiptap の公式の UI の部品の hook を写す）が持つ物を絞らずに使う（代表 2026-11-22）。\n\nK-567 が、これらの節・印・属性を読み込みと書き出しのために組んである（番号つき・区切りの線・寄せ・見出し 4 を含む文書を渡すと見えて、触らなければそのまま返る）。この葉は帯の道具をつなぎ、メニューの部品を足す。K-568（色・表・Markdown）はこの葉のメニューの作りを使う。帯の全体の下絵 `f4v2-editor-image-off` はこの葉の正の絵。",
+    "完了の条件": "- [ ] 下の表の 12 行（K587-UN-001・K587-UI-001〜011）が緑：`apps/web/test/k587-bar-origin.test.ts`・`apps/web/tests/k/k587-doc-editor-format.spec.ts`\n- [ ] K-567 の試験（`k567-doc-editor.spec.ts`・`k567-doc-convert.test.ts`）が変えずに緑\n- [ ] `boundary.mjs`（B10）が緑（この葉の import も `editor/` の中だけ）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- **出来合いの UI の取り込み方は K-567 のとおり**（MIT のリポジトリ `ueberdosis/tiptap-ui-components` から hook を直に写す・見た目はこの案件の `components/k`・Base UI・`doc.css` の `k-f4d-*`・CLI と有料の部品は使わない）。この葉で写す hook は 5 つ：`heading-dropdown-menu`（`use-heading`）・`list-dropdown-menu`（`use-list`）・`text-align-button`（`use-text-align`）・`blockquote-button`・`code-block-button`（この 2 つは `use-block-button` にまとめる）。上付き・下付きは K-567 が写した `use-mark-button`（上付き・下付きもその中の道具）。区切りの線は公式に帯のボタンが無い（`horizontal-rule-node` は節の見た目だけ）ので、`setHorizontalRule` を呼ぶ自前の 1 行。**写したファイルの頭に、出どころ（リポジトリ・版＝コミット・元のファイルの道）と MIT の許諾の表示をコメントで残す**（K-567 と同じ・K587-UN-001）。写した hook が Tiptap 3.32.2・React 19 で動かないときは hook を自前で書く（機能は変えない・頭に「自前」と書く・PM 2026-11-22）。**画像**（`image-upload-button`）は写さない（押せない形にするだけ・ファイルを付ける仕組みは別の段）。写し元は Tiptap `^3.6.5` 向きなので、3.32.2 の命令名（`toggleHeading`・`toggleBulletList`・`toggleOrderedList`・`toggleTaskList`・`toggleBlockquote`・`toggleCodeBlock`・`setHorizontalRule`・`setTextAlign`・`toggleSuperscript`・`toggleSubscript`）で動くことを作る段の最初に確かめる（確かめられなかった物・K-567 の表）\n- **見出し**：帯の『見出し』（▾）を押すと名前『見出し』のメニュー（`role=\"menu\"`・`div.k-f4d-pop.k-f4d-menu`）が開く。項目は `menuitemradio`（`aria-checked`）で **見出し 1・見出し 2・見出し 3・本文** の順。選ぶと見出し 1＝level 2・見出し 2＝level 3・見出し 3＝level 4 の見出し・本文＝段落になる（頁の h1 は題名なので level 1 は使わない）。いま選んでいる項目は `aria-checked` が真。文は消えない。見出しの段は `doc.css` の `.k-f4d-doc h2`・`h3`・`h4`（文字の段はデザインの正本が決める）\n- **並び**：帯の『並び』（▾）を押すと名前『並び』のメニューが開く。項目は `menuitemcheckbox`（`aria-checked`）で **箇条書き・番号つき・チェック** の順。選ぶと並びになる（段落 → 並び）。いま選んでいる種類をもう一度選ぶと段落に戻り、別の種類を選ぶと並びの種類が替わる。箇条書き・番号つきは Enter で次の項目・空の項目で Enter を押すと抜ける。チェックの箱は押すと `checked` が真偽に変わる。番号つきは `orderedList`（始まりが 1 なら start を持たない）\n- **引用・コードの囲み・区切りの線**：『引用』は `blockquote`・『コードの囲み』は `codeBlock`（中は印の無い字・改行を持てる・言語名を持たない）・『区切りの線』は `horizontalRule`（字を出さない）。押された道具は `aria-pressed`（引用・コードの囲み）。もう一度押すと段落に戻る\n- **寄せ**：『左寄せ』『中央』『右寄せ』『両端』は、今の段落・見出しの `textAlign` を left・center・right・justify にする。選んでいる寄せは `aria-pressed` が真。見た目の `text-align` も同じ。『左寄せ』は left に戻す（`textAlign` は無いか left）\n- **上付き・下付き**：『上付き』＝superscript・『下付き』＝subscript。同時には付かず（片方を押すともう片方が外れる）、もう一度押すと外れる\n- **画像**：帯の『画像』は薄く、押せず（`aria-disabled`）、`title`『まだ使えません』（K-567 から変えない）。押してもファイルの選びは出ず、文書も変わらない。画像の節（置き場）を持つ文書は読み込める\n- **メニューの作り**（`bar-menu.tsx`・K-568 の表のメニューが使う）：道具の `aria-haspopup=\"menu\"`・開いている間だけ `aria-expanded` が真。Enter／Space／クリックで開き、↓／↑で項目を移り、Enter で選んで閉じ、Esc で閉じて道具に戻る。メニューの外を押しても閉じる。同時に開くメニューは 1 つ。画面の外にはみ出さない位置（右端なら左へ寄せる）。**帯は横に送られる**ので、メニューの位置は帯の送られた位置の押した道具の下に付く（帯の中に閉じ込めて切れない置き方・Base UI の Positioner）\n- **置ける場所は K-584 と同じ（精査 R-A 6 回目の決め・2026-11-22）。置けない場所では押せない形**：K-584（`validateDoc`）が断る木を作らないよう、カーソルの位置が置けない場所のときは、道具を押せない形（`aria-disabled=\"true\"`）にする。押しても文書は変わらない。K-567 の `extensions.ts` が節の中身を K-584 の置ける親と同じに絞っている（K-567 の「ファイルと関数」・K567-UI-017）ので、置けない場所では Tiptap の `editor.can()` が偽になる。この葉の hook（`bar/use-*.ts`）はそれを読み、足りない所（変換になって `can()` が真になる命令）だけ祖先の節で判定する。`extensions.ts` はこの葉では触らない（K-567 の `use-mark-button` と同じ考え方）。メニューの道具（見出し・並び）は開けて、置けない項目だけが `aria-disabled`（本文・置ける項目は押せる）。置ける親（K-584 の `CHILDREN`・`doc_extra.test.ts` の DOC-003・005・021 から読んだ）：\n\n| 節・属性 | 置ける親 | 置けない場所（この葉は押せない形にする） |\n|---|---|---|\n| 見出し（level 2・3・4） | doc の直下だけ | 引用・表のセル・箇条書き／番号つき／チェックの項目の中 |\n| 区切りの線 | doc の直下だけ（DOC-003） | 引用・表のセル・項目の中 |\n| 番号つき | doc の直下・箇条書き／番号つきの項目（listItem）の中の入れ子（DOC-021） | 引用・表のセルの中。チェックの項目（taskItem は段落だけ）の中には入れ子で置けないが、『番号つき』は**並びの種類の付け替え**（チェックの並び → 番号つきの並び・チェックの箱は無くなる）になるので押せる（箇条書きの項目の中と同じ・Tiptap の既定の動き・D-150.61。できる木は doc の直下の番号つきで `validateDoc` を通る） |\n| 寄せ（textAlign） | 段落と見出しの属性だけ（DOC-005）。引用・項目・セルの中の段落には付く | コードの囲みの中（段落でも見出しでもない） |\n\n  箇条書き・チェック・コードの囲み・引用も、K-584 の `CHILDREN` では doc の直下（箇条書き・チェックは項目の中の入れ子も）だけで、引用・表のセルの中には置けない。同じ判定の表に入れる（代表に聞くこと 2）\n- **帯の中の動き**：押せない・押された・開いている印は K-567 の帯と同じ（`aria-disabled`・`aria-pressed`・`aria-expanded`）。Tab の停止点は 1 つのまま、← → で隣の押せる道具へ移る。この葉の 15 個の道具はこの葉で押せる形になる（画像だけ押せない形のまま。置けない場所にカーソルがあるときだけ上の決めで押せない形）\n- **画面の文**（下絵に無く、この葉で決めた字。**勧め**・代表に聞くこと 1）：見出しのメニューの項目『見出し 1』『見出し 2』『見出し 3』『本文』・並びのメニューの項目『箇条書き』『番号つき』『チェック』。道具の名前（見出し・並び・引用・コードの囲み・区切りの線・左寄せ・中央・右寄せ・両端・上付き・下付き）は下絵の `DocBar`（`bar-tools.tsx`）が正\n- **見た目**：帯・メニューは下絵の `doc.css`（`k-f4d-bar`・`k-f4d-bar-group`）・`extra.css`（`k-f4d-pop`・`k-f4d-menu`）をそのまま使い、足りない物だけ `editor.css`（トークンだけ。生の色・サイズを書かない・D ゲート）に足す：見出し・番号つき・区切りの線・寄せ・上付き下付きの本文の中の見た目（`h4`・`ol`・`hr`・`sup`・`sub`・`[style*=\"text-align\"]` ではなく `data-text-align` を見る）。**文書の中身の色はこの葉では描かない**\n- **口は呼ばない**：部品は `fetch` も API も持たない",
+    "目録で探した結果": "- 使う：K-567 の `extensions.ts`（番号つき・区切りの線・寄せ・上付き下付き・見出し 4 を組んである）・`convert.ts`・`doc-bar-live.tsx`・`doc-editor-live.tsx`・`editor.css`・`bar/use-mark-button.ts`・開発用の頁／下絵の `bar-tools.tsx`・`doc.css`・`extra.css`（K-431）／`@kaname/contracts` の `validateDoc`・`docToText`（K-561・K-584）／`@base-ui/react`（前から在る・メニューの置き場）\n- 作る：`bar-menu.tsx`・`bar/use-heading.ts`・`bar/use-list.ts`・`bar/use-text-align.ts`・`bar/use-block-button.ts`・開発用の試験の頁の見出し `f4v2-editor-format`（正の絵ではない）。探したが、見出し・寄せ・区切りの線・番号つきの命令を呼ぶ所は 0 件（下の search）\n- 出来合いの UI の確かめは K-567 の表のとおり（見出し・並び・引用・コード・寄せ・マーク・戻す・画像は MIT の `light`・`open-source` の部品。有料は文字の色と表だけ）\n\n```search\ngit grep -n -i -E \"toggleHeading|setTextAlign|setHorizontalRule|toggleOrderedList|toggleBlockquote|toggleCodeBlock\" -- apps/web\n0\n```",
+    "実施事項": "### 足す依存\n\nなし（拡張は K-567 が足した `@tiptap/extension-text-align`・`-superscript`・`-subscript`・`@tiptap/starter-kit`）。新しい部品の記録の行も無い。\n\n### ファイルと関数（`apps/web/features/F4/doc/editor/`）\n\n| ファイル | 中身 |\n|---|---|\n| `bar-menu.tsx` | 帯のメニューの部品。props は `label`（道具の名前＝メニューの名前）・`items: { name; role: \"menuitemradio\" \\| \"menuitemcheckbox\" \\| \"menuitem\"; checked?; disabled?; onSelect }[]`・開く道具のボタン。Base UI の `Menu`（`components/k/menu.tsx` の作りと同じ置き場）で、帯の中に閉じ込めず、送られた帯の押した道具の下に開く。開く・閉じる・Enter／Space／↓／↑／Esc・閉じたら道具に戻す・外を押して閉じる |\n| `bar/use-heading.ts` | `heading-dropdown-menu` の hook を写したもの。levels は `[2, 3, 4]`・項目の名前は `見出し ${level - 1}`・本文。今の level と押せるか（`can()`＋置ける親の判定）を返す |\n| `bar/use-list.ts` | `list-dropdown-menu` の hook を写したもの。種類は bulletList・orderedList・taskList。今の種類と押せるか（置ける親の判定つき）を返す |\n| `bar/use-text-align.ts` | `text-align-button` の hook を写したもの。left・center・right・justify。コードの囲みの中は押せない形 |\n| `bar/use-block-button.ts` | `blockquote-button`・`code-block-button` の hook を写して 1 つにしたもの。引用・コードの囲み・区切りの線（自前の 1 行・doc の直下以外では押せない形）を返す |\n| `doc-bar-live.tsx`（K-567 の物を直す） | 見出し・並びを `bar-menu.tsx` につなぐ・引用・コードの囲み・区切りの線・寄せ 4 つ・上付き・下付きを動かす（K-567 の `use-mark-button`）。画像は押せない形のまま |\n| `editor.css`（直す） | 見出し 4・番号つき・区切りの線・寄せ・上付き下付きの本文の中の見た目・メニューの項目の選んでいる印。トークンだけ |\n\n### 開発用の試験の頁 `f4v2-editor-format`（正の絵ではない）\n\nK-567 の置き場 `apps/web/app/(dev)/dev/mock/f4v2-editor/` の `live.tsx` の `LIVE_PAGES` に `f4v2-editor-format` を足す（`MOCKS` は置かない・K-567 と同じ）。**この葉の正の絵**は下絵 v2 の置き場 `/dev/mock/f4v2` の状態 `f4v2-editor-image-off`（帯の全体：23 個の道具・グループの区切り・横に送る・薄い画像のボタン）で、頭の `mock:` に載せた（持ち主は 2026-11-22 に K-568 からこの葉へ移した）。`live.tsx` は id で見出しだけ変え、部品・出し物（`doc-json`・`doc-text`・`doc-verdict`）は K-567 と同じ。`?doc=empty|plain|full`・`?mode=edit|read` も同じ。口は呼ばない。",
+    "前からの試験を替えた所": "帯の見た目と道具の名前を見ている前からの試験を、名前で探した（K-567・K-568 の試験は新しい帯の名前に合わせて書いてある）：\n\n```search\ngit grep -n -E \"TOOL_NAMES|k-f4d-bar\" -- apps/web\n32\n```\n\n名前に当たる試験・道具が増えた分（全葉を書いた後の数え直し・2026-11-22）：\n\n- apps/web/features/F4/doc/bar-tools.tsx・apps/web/features/F4/doc/doc.css・apps/web/features/F4/doc/extra.css・apps/web/features/F4/doc/editor-views.tsx・apps/web/features/F4/doc/views.tsx: 替えない — 持ち主は K-431（下絵の `DocBar`・帯の見た目・道具の並び）。この葉は触らない。本物の帯は `editor/doc-bar-live.tsx` で、見た目の css は下絵と同じ class を使う\n- apps/web/tests/k/k567-doc-editor.spec.ts: 替えない — 持ち主は K-567。帯の名前の並び 23 個と帯の折り返し・送りを見る。この葉で書式の道具が動いても緑（K567-UI-001 は動かす 6 つが押せることだけを見る）\n- apps/web/tests/k/k442-create-body.spec.ts: 替えない — 帯の高さと背景の突き合わせ（`.k-f4d-bar`）だけで、道具の数は見ない。持ち主は K-442\n- apps/web/tests/k/k447-body-edit.spec.ts: 替える（持ち主は K-447・1 行だけ）— 帯の高さと背景の突き合わせは替えない。K447-UI-005 が押していた帯の「チェックリスト」ボタンは新しい帯に無いので、『並び』のメニューの『チェック』（この葉が動かす）を押す形に直した。K-447 の依存に K-587 を足した\n- apps/web/tests/k/k431-stage5-mock.spec.ts: 替えない — 持ち主は K-431。`f4v2-editor-image-off` の持ち主の行（K-568 → K-587）だけ、この葉を書くときに直した（`TOOL_NAMES|k-f4d-bar` には当たらない）\n- apps/web/tests/k/k587-doc-editor-format.spec.ts: この葉の試験（`.k-f4d-bar` の突き合わせ）",
+    "状態 × 入口 × 利用者の状態": "画面の部品なので、状態は「文書」と「カーソルの位置」。口・権限・会社は部品の外（K-442・K-447）。\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 段落・見出し | 帯の『見出し』のメニュー | マウス・キーボード | level 2・3・4 の見出し・本文に戻る | このチケット | K587-UI-001・007 |\n| 段落・並びの中 | 帯の『並び』のメニュー | マウス・キーボード | 箇条書き・番号つき・チェックに替わる・戻る | このチケット | K587-UI-002・007 |\n| 段落・見出し | 帯の引用・コードの囲み・区切りの線・寄せ・上付き下付き | マウス | 節・印・textAlign が付く・外れる | このチケット | K587-UI-003・004・005 |\n| 画像 | 帯の『画像』 | マウス | 押せない（何も起きない） | このチケット | K587-UI-006 |\n| 引用・表のセル・項目の中 | 帯の区切りの線・見出し・番号つき | マウス | 置けない物は押せない形・押しても文書は変わらない／段落に戻すと押せる | このチケット | K587-UI-010・011 |\n| 狭い幅 | 帯・メニュー | 携帯・小さい窓 | 幅 768 以上は帯が折り返して全部見え、幅 375 は帯の中で横に送られる。メニューは画面の外にはみ出さない | このチケット | K587-UI-008 |\n| 読むだけの人・書けない人 | — | — | この部品を出さない（読む形 K-577） | K-442・K-447・K-577 | — |",
+    "テスト仕様と確認の結果": "| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K587-UN-001 | 守り | 写した hook（use-heading・use-list・use-text-align・use-block-button）の頭 | 出どころ（リポジトリ・版＝コミット・元のファイルの道）と MIT の許諾の表示が在る（自前で書き直した物は、頭の注の行〔`//` か ` * ` で始まる行〕を「自前」で始める）。字で読む検査 |\n| K587-UI-001 | 入力 | 『見出し』のメニュー：見出し 1・2・3・本文を選ぶ | メニューは 4 項目が決めた順・選ぶと level 2・3・4 の見出し・本文で段落に戻る。選んでいる項目は aria-checked が真。文は消えない。`validateDoc` を通る |\n| K587-UI-002 | 入力 | 『並び』のメニュー：箇条書き・番号つき・チェックを選ぶ・種類を替える・同じ種類をもう一度 | 項目が決めた順・箇条書きは空の項目で Enter を押すと抜ける（素の文字は「- 」の行）・番号つきは orderedList・チェックは箱を押すと checked が変わる。種類が替わる・段落に戻る |\n| K587-UI-003 | 入力 | 『引用』『コードの囲み』『区切りの線』 | blockquote（素の文字は「> 」）・codeBlock（中は印の無い字・改行を持てる）・horizontalRule（字を出さない）。押した道具は aria-pressed が真・もう一度で外れる |\n| K587-UI-004 | 入力 | 『中央』『右寄せ』『両端』『左寄せ』（段落・見出し） | textAlign が center・right・justify・（無いか left）になり、見た目の text-align も同じ。選んでいる寄せは aria-pressed が真 |\n| K587-UI-005 | 入力 | 『上付き』『下付き』 | superscript・subscript が付く（同時には付かない）・もう一度で外れる。素の文字は変わらない |\n| K587-UI-006 | 守り | 帯の『画像』を押す（force）・画像の節を持つ文書 | 押せず・title『まだ使えません』・文書もファイルの選びも変わらない。画像の置き場は見える |\n| K587-UI-007 | 操作の揺れ | メニューのキーボード：Enter で開く・↓・Enter・Esc・外を押す | 開いている間だけ aria-expanded が真・↓ で移り Enter で選んで閉じ・Esc で閉じて道具に戻る・外を押しても閉じる |\n| K587-UI-008 | 入力 | 幅 375・768・1440 | 幅 768・1440 は帯が折り返して全部見え（`scrollWidth - clientWidth` が 0）・幅 375 は帯の中で横に送って『画像』まで届き、見出し・並びのメニューは画面の外にはみ出さない。頁の横のはみ出し 0 |\n| K587-UI-009 | 画面 | 下絵との突き合わせ（f4v2-editor-image-off） | 幅 375・768・1440 で、帯の高さと色・23 個のボタンの高さと字・グループの区切り・薄い画像のボタンが下絵と同じ値。1 本（幅 3 つを 1 本で流す） |\n| K587-UI-010 | 守り | 表のセル・引用・箇条書きの項目・チェックの項目の中にカーソルを置き、『区切りの線』を押す・『見出し』のメニュー・『並び』のメニューを開く／チェックの項目の中で『番号つき』を押す | 表のセル・引用の中は『区切りの線』が aria-disabled・見出し 1・2・3 と番号つきの項目が aria-disabled（本文は押せる）。箇条書きの項目・チェックの項目の中は『区切りの線』と見出し 1・2・3 が押せない形・番号つきは押せる。押せない物を押しても文書は変わらず validateDoc を通る。チェックの項目の中で『番号つき』を押すと、チェックの並びが番号つきの並びに替わり（taskItem が 0・字は番号つきの中に残る）validateDoc を通る（置ける場所は K-584 と同じ） |\n| K587-UI-011 | 守り | 引用を段落に戻す・コードの囲みの中と段落に戻した後の寄せ 4 つ | 戻すと『区切りの線』・見出し 1・2・3・番号つきが押せる形に戻り、押した文書は validateDoc を通る。コードの囲みの中は寄せ 4 つが押せない形・段落に戻すと押せる |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 直す・直した物を読み直す | K587-UI-001〜005（押した結果は部品の出す木で読み直す） |\n| TP-CRUD-01 2 人が同時に直す | 要らない: 部品は 1 人ぶんの編集。止め方は口の側（K-432）と画面（K-447） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | 要らない: 部品はチケットの有無を知らない（K-442・K-447） |\n| TP-CRUD-03 消す → 戻す・子のあるものを消す | 要らない: 文書の中身の戻しは K-567 の K567-UI-003・004。チケットの消し・戻しは部品の外 |\n| TP-CRUD-04 2 回押し | K587-UI-001〜005（同じ道具をもう一度押すと戻る） |\n| TP-CRUD-05 保存の途中で失敗 | 要らない: 部品は保存しない |\n| TP-CRUD-06 書きかけで戻る・再読み込み | 要らない: 書きかけの保存は K-447 |",
+    "外に影響する手順": "- なし — 画面の部品と開発用の頁の見出しだけ。口・DB・知らせ・外への送り出しをしない",
+    "依存の理由": "- K-567: 要る — 同じファイル（`doc-bar-live.tsx`・`editor.css`・開発用の頁）を直し、K-567 が組んだ節・印・属性・`use-mark-button`・帯の骨組み（roving tabindex・横に送る）を使う。K-431・K-561 は K-567 を通して要る\n- K-577: 要る — 同じファイル（`apps/web/app/(dev)/dev/mock/f4v2-editor/live.tsx`・`apps/web/features/F4/doc/editor/editor.css`）を直すので、K-577（読むだけの表示）が先に入ってからこの葉が重ねる（取り込みでぶつからないように）\n- K-584: 要る — 番号つき・区切りの線・見出し 4・寄せを `validateDoc`・`docToText` が通す形（K587-UI-001・002・003・004 の `validateDoc` が通る）。K-567 を通して要るが、この葉の試験が直に `validateDoc` の結果を見るので直の依存に書く",
+    "表の住所": "- DB の表・migration は触らない。文書の木の形・上限は K-561・K-584 の `packages/contracts/src/doc.ts`（部品は読むだけ）\n- 登録先：`scripts/ci/ci_scope.d/K-587.json`",
+    "速さ（今の値と目標の値）": "| 見る所 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数・直列の段 | この葉は口を呼ばない | 増えない（0 のまま） |\n| 編集に入るときに読む script | K-567 の部品 | 増える物は hook とメニューの部品だけ（gzip 数 kb の見積もり・実測なし・仮）。新しい依存は無い |\n| 新しい住所が増えるか | — | 増えない（K-567 の開発用の頁に見出しを 1 つ足すだけ） |",
+    "成果物": "- メニューの部品・書式の道具 5 つの hook・帯の 15 の道具の動き・開発用の頁の見出し・試験 2 本（12 行）",
+    "決定ログ": "- 2026-11-22 代表の決め（D-150.61）：本文の道具は出来合いの部品の機能を絞らずに使う。帯の並びは Simple Editor のひな形を土台に、戻す・やり直す｜見出し▾・並び▾・引用・コードの囲み｜太字・斜体・下線・取り消し線・行の中のコード｜文字の色▾・背景の色▾・リンク｜上付き・下付き｜左寄せ・中央・右寄せ・両端｜表▾・区切りの線・画像。この葉は書式の道具を持つ。画像のボタンと帯の全体の下絵 `f4v2-editor-image-off` は、K-568 からこの葉に移した（K-568 が 27 行に収まり、帯の全体の見た目と画像の押せない形が同じ葉で見られる）\n\n- 2026-11-22 精査 R-A（6 回目）の決め：K-584 の置き場（見出し・区切りの線は doc の直下だけ・番号つきは doc と項目の中・寄せは段落と見出しだけ）と帯の道具を合わせる。置けない場所にカーソルがあるときは、その道具（メニューの項目）を押せない形にする。K-567 の `extensions.ts` は触らず、この葉の hook が判定する。行 K587-UI-010・011 を足した",
+    "PM に確かめたいこと": "- **決まった（PM 2026-11-22）**：写し方は K-567 のとおり（MIT の hook を写す・有料と CLI は使わない・依存は足さない・頭に出どころと MIT の表示・動かなければ自前）",
+    "代表に聞くこと": "1. 見出しと並びのメニューの項目名（下絵に無い）：見出し 1・見出し 2・見出し 3・本文／箇条書き・番号つき・チェック。勧め：この字。訳：D-150.61 は道具の並びまでで、メニューの項目名は決まっていない。見出し 1 は文書の level 2（頁の h1 は題名のため）\n2. 引用・表のセル・チェックの項目の中で、置けない道具は押せない形にする（勧め：押せない形・押しても何も起きない）。箇条書き・チェック・コードの囲み・引用の道具にも同じ規則を当てる（勧め：当てる。K-584 が断る木になるため）。訳：押すと `validateDoc` が断り、部品の保存の呼び出しが黙って捨てるため"
+   },
+   "file": "11_tickets/K-587.md"
+  },
+  {
    "id": "K-601",
    "title": "段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）",
    "kind": "タスク",
