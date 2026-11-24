@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:265e2e1fa19a3fe9
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:364f93d139f0cbfe
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -115,7 +115,6 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
-      "clients",
       "me"
     ],
     "R2": [
@@ -124,7 +123,6 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
-      "clients",
       "me"
     ],
     "R3": [
@@ -152,15 +150,11 @@ export const NAV: NavData = {
       "work-types",
       "rules",
       "knowledge",
-      "members",
-      "member-detail",
       "layers",
       "masters",
       "audit",
       "company-settings",
       "billing",
-      "clients",
-      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -182,8 +176,6 @@ export const NAV: NavData = {
       "audit",
       "company-settings",
       "billing",
-      "clients",
-      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -376,7 +368,7 @@ export const NAV: NavData = {
         "desc": "値は見せない"
       },
       {
-        "label": "知らせ",
+        "label": "お知らせ",
         "desc": "ワークスペースごと"
       }
     ],
@@ -1005,7 +997,6 @@ export const NAV: NavData = {
       "needsLogin": true,
       "hasShell": true,
       "roles": [
-        "R1",
         "R2"
       ],
       "purpose": "グループごとに人を並べ、役割をその場で変える。招く・グループを作る。上に気づいてほしいこと（PC がつながっていない人・招待中）を 1 行。名前を押すとメンバーの 1 人",
@@ -1392,7 +1383,6 @@ export const NAV: NavData = {
       "needsLogin": true,
       "hasShell": true,
       "roles": [
-        "R1",
         "R2"
       ],
       "purpose": "グループと役割・できること（役割の束と個別に足した／外したもの）・担当しているもの・分身・ログイン・最近の記録。一時的に止める・外す（担当を引き継いでから）・2 段階認証を戻す",
