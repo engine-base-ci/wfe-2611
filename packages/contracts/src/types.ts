@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:97a77d5f156d2ba0
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:dfc6e0e32bd976de
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -375,6 +375,12 @@ export type InquiryAttachmentInput = { name: string; content_type: string; size:
 export type OpsInquiryUpdateInput = { take?: boolean; release?: boolean; state?: string; later_until?: string | null };
 export type OpsInquiryReplyInput = { body: string };
 export type OpsInquiryNoteInput = { body: string };
+export type NoticeReadInput = Record<string, never>;
+export type OpsNoticeCreateInput = { kind: string; title: string; body: string; audience_mode: string; audience_plans?: string[]; audience_workspace_ids?: string[]; placements: string[]; publish_at?: string | null; maintenance_from?: string | null; maintenance_to?: string | null; impact?: string | null };
+export type OpsNoticeUpdateInput = { kind?: string; title?: string; body?: string; audience_mode?: string; audience_plans?: string[]; audience_workspace_ids?: string[]; placements?: string[]; publish_at?: string | null; maintenance_from?: string | null; maintenance_to?: string | null; impact?: string | null };
+export type OpsNoticePublishInput = Record<string, never>;
+export type IncidentUpdateInput = { state: string; body: string };
+export type WorkspaceNoticeInput = { title: string; body: string; placements: string[]; admins_only?: boolean };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
@@ -470,11 +476,11 @@ export type OpsShell = { inquiries_unassigned?: number; inquiries_mine?: number;
 export type TicketShape = { kinds?: string[]; stages?: string[]; axes?: string[]; handover_rules?: string[]; limits?: Record<string, unknown>; template_updates?: number };
 export type TicketShapeChangePreview = { removed?: string[]; needs_move_to?: string[]; affected_tickets?: number; over_limits?: string[] };
 export type OpsInquiryDetail = { id?: string; title?: string; topic?: string; state?: string; workspace?: Record<string, unknown>; asker?: Record<string, unknown>; owner?: Record<string, unknown> | null; later_until?: string | null; created_at?: string; last_message_at?: string | null; messages?: string[]; context?: Record<string, unknown>; workspace_status?: Record<string, unknown> };
-export type OpsNoticeDetail = { notice?: Record<string, unknown>; updates?: string[]; affects?: Record<string, unknown>; placements?: string[] };
+export type OpsNoticeDetail = { id?: string; kind?: string; title?: string; audience?: Record<string, unknown>; state?: string; placements?: string[]; publish_at?: string | null; published_at?: string | null; author_name?: string | null; incident_state?: string | null; admins_only?: boolean; body?: string; maintenance?: Record<string, unknown> | null; impact?: string | null; updates?: string[]; reach?: Record<string, unknown> };
 export type PublicServiceStatus = { incidents?: string[]; maintenance?: Record<string, unknown> | null };
 export type InvitationPreview = { state?: string; workspace_name?: string; inviter_name?: string | null; group_name?: string | null; role?: string; message?: string | null; email?: string | null; expires_at?: string; account_exists?: boolean; signed_in?: Record<string, unknown> | null };
 export type InvitationAccepted = { token?: string; workspace_id?: string; next?: string; state?: string | null; email?: string | null };
-export type ServiceStatus = { components?: string[]; banner?: Record<string, unknown>; maintenance?: Record<string, unknown> };
+export type ServiceStatus = { components?: string[]; bands?: string[]; maintenance_now?: Record<string, unknown> | null };
 export type InvitationResendResult = { result?: string };
 export type Credential = { id?: string; name?: string; description?: string | null; layer?: string; kind?: string; two_factor?: string; destinations?: string[]; expires_on?: string | null; use_count?: number; last_used_at?: string | null; login_check?: Record<string, unknown>; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type CredentialDeleted = { id?: string };
@@ -527,6 +533,9 @@ export type MyInquiryMessage = { id?: string; from?: string; author_name?: strin
 export type InquiryAttachmentUpload = { id?: string; upload_url?: string; done_url?: string; expires_at?: string };
 export type OpsInquiryRow = { id?: string; title?: string; topic?: string; state?: string; workspace?: Record<string, unknown>; asker?: Record<string, unknown>; owner?: Record<string, unknown> | null; later_until?: string | null; created_at?: string; last_message_at?: string | null };
 export type OpsInquiryMessage = { id?: string; kind?: string; author_name?: string; body?: string; attachments?: string[]; created_at?: string };
+export type Notice = { id?: string; kind?: string; title?: string; body?: string; state?: string | null; published_at?: string; unread?: boolean; maintenance?: Record<string, unknown> | null; updates?: string[] };
+export type NoticeRead = { id?: string; read_at?: string };
+export type OpsNoticeRow = { id?: string; kind?: string; title?: string; audience?: Record<string, unknown>; state?: string; placements?: string[]; publish_at?: string | null; published_at?: string | null; author_name?: string | null; incident_state?: string | null; admins_only?: boolean };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:97a77d5f156d2ba0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:dfc6e0e32bd976de
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -11070,7 +11070,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Notices",
+    "output": "Notice",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -11115,9 +11115,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "markNoticeRead",
     "table": "notice_deliveries",
     "kind": "create",
-    "input": "NoticeDeliveriesInput",
+    "input": "NoticeReadInput",
     "success": 201,
-    "output": "NoticeDeliveries",
+    "output": "NoticeRead",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -11952,7 +11952,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Notices",
+    "output": "OpsNoticeRow",
     "outputList": true,
     "generic": false,
     "auth": "ops",
@@ -11997,9 +11997,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createOpsNotice",
     "table": "notices",
     "kind": "create",
-    "input": "NoticesInput",
+    "input": "OpsNoticeCreateInput",
     "success": 201,
-    "output": "Notices",
+    "output": "OpsNoticeDetail",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12099,9 +12099,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateOpsNotice",
     "table": "notices",
     "kind": "update",
-    "input": "NoticesInput",
+    "input": "OpsNoticeUpdateInput",
     "success": 200,
-    "output": "Notices",
+    "output": "OpsNoticeDetail",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12153,9 +12153,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "publishOpsNotice",
     "table": "notices",
     "kind": "create",
-    "input": "NoticesInput",
+    "input": "OpsNoticePublishInput",
     "success": 201,
-    "output": "Notices",
+    "output": "OpsNoticeDetail",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -12208,9 +12208,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "addIncidentUpdate",
     "table": "status_incidents",
     "kind": "create",
-    "input": "StatusIncidentsInput",
+    "input": "IncidentUpdateInput",
     "success": 201,
-    "output": "StatusIncidents",
+    "output": "OpsNoticeDetail",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -13391,9 +13391,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "sendWorkspaceNotice",
     "table": "notices",
     "kind": "create",
-    "input": "NoticesInput",
+    "input": "WorkspaceNoticeInput",
     "success": 201,
-    "output": "Notices",
+    "output": "OpsNoticeDetail",
     "outputList": false,
     "generic": false,
     "auth": "ops",
@@ -19069,4 +19069,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "97a77d5f156d2ba0";
+export const OPENAPI_HASH = "dfc6e0e32bd976de";
