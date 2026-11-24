@@ -2006,6 +2006,16 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-shares.ts",
+    "apps/api/src/features/F9/knowledge/shares-get.ts",
+    "apps/api/src/features/F9/knowledge/shares-set.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-shares.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F9/knowledge/ai/context.ts",
     "apps/api/src/features/F5/delegate/bridge.ts"
    ],

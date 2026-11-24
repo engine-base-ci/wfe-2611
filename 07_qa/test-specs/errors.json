@@ -8938,6 +8938,90 @@
    ]
   },
   {
+   "id": "E-KNW-120",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "共有の小窓で、元のグループを共有先に選んで送る",
+   "false_when": "元のグループ以外を選んだ",
+   "message": "元のグループには共有できません",
+   "action": "別のグループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "共有の小窓で、元のグループを共有先に選んで送る（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
+   "id": "E-KNW-121",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "会社の棚か自分の棚のページ・フォルダを共有する",
+   "false_when": "グループの棚の物",
+   "message": "共有できるのは、グループの棚のページとフォルダだけです",
+   "action": "上げるなど別の道を使う",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "会社の棚か自分の棚のページ・フォルダを共有する（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
+   "id": "E-KNW-122",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "マネージャーのいないグループへ共有を頼む",
+   "false_when": "共有先にマネージャーがいる",
+   "message": "共有先に承認できる人がいません。そのグループのマネージャーに知らせてください",
+   "action": "マネージャーを決めてもらう",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "マネージャーのいないグループへ共有を頼む（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
    "id": "E-STG-001",
    "class": "conflict",
    "where": {
