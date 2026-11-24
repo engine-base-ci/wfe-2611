@@ -9189,6 +9189,36 @@
    ]
   },
   {
+   "id": "E-APR-030",
+   "class": "conflict",
+   "where": {
+    "screen": "approvals",
+    "state": "queue"
+   },
+   "when": "「まとめて承認（全部）」で、自分が承認する承認待ちの成果物が 50 件を超えている",
+   "false_when": "自分が承認する承認待ちが 50 件以内のときに全部をまとめて確かめた・50 件以内を選んで確かめた",
+   "message": "承認待ちが 50 件を超えているので、まとめて承認できません。選んで承認してください",
+   "action": "50 件以内を選んで承認する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "自分が承認する承認待ちの成果物を 51 件ためる",
+    "steps": [
+     "承認待ちの画面で［まとめて承認（全部）］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.11"
+   ]
+  },
+  {
    "id": "E-TALK-060",
    "class": "conflict",
    "where": {

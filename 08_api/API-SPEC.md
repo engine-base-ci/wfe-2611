@@ -23,8 +23,8 @@
 | EP-008 | POST | `/api/v1/approvals/:id/return` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-009 | POST | `/api/v1/approvals/:id/stop` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 A89 | 1 | member | C2 C5 | 401 403 404 409 422 503 413 429 502 403 403 503 |
 | EP-010 | POST | `/api/v1/approvals/:id/withdraw` | 作成・実行（approvals）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 409 409 503 413 429 502 403 403 503 |
-| EP-011 | POST | `/api/v1/approvals/bulk` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-012 | POST | `/api/v1/approvals/bulk/preview` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-011 | POST | `/api/v1/approvals/bulk` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 503 413 429 403 403 503 |
+| EP-012 | POST | `/api/v1/approvals/bulk/preview` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 503 413 429 403 403 503 |
 | EP-013 | GET | `/api/v1/approvals/history` | 取得（approvals）— 自分が決めた AI の成果物の承認を、決め | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-014 | GET | `/api/v1/approvals/queue` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-015 | GET | `/api/v1/artifact_versions/:id` | 取得（artifact_versions）— チケットの中身（区画）を書 | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |

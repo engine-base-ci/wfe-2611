@@ -1015,8 +1015,6 @@ RESPONSES = {
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
     "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string", "handover_kind": "string?", "reply_due": "string?", "carry_children": "integer?", "to_scope_name": "string?", "ticket_scope_name": "string?"}),   # K-161：期限なし・聞き直しでない行は due_on・note が null。K-405：渡しの行は kind handover・AI の成果物の行は handover_kind・reply_due・carry_children・to_scope_name・ticket_scope_name が null
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
-    "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
-    "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
     "getCloneNow": ("CloneNow", {"pc": "object", "current": "object?", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
     "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
@@ -1283,7 +1281,7 @@ PERMS = {
     "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
     "withdrawApproval": ("approver", "承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す", False),
     "previewBulkApproval": ("approver", "自分が承認するものだけ", False),
-    "bulkApprove": ("approver", "自分が承認するもので、条件（D-128.86）に合うものだけ。サーバーがもう一度確かめる", False),
+    "bulkApprove": ("approver", "自分が承認する物だけ。1 件ずつ承認と同じ守りで確かめる。取り消せない物も対象（D-153.11）", False),
     "listApprovalHistory": ("self", "自分が決めたものだけ", False),
     # チケットの右のパネル（そのチケットでの自分の分身との話）
     "getTicketAgentSession": ("read", "そのチケットを見られる人。話は自分の分身とのものだけ（ほかの人の話は見えない）", False),

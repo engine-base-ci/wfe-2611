@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c9231107f45de8ac
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e3ee8a9d997fcdb4
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -632,7 +632,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "bulkApprove",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "BulkApproveInput",
     "success": 201,
     "output": "BulkResult",
     "outputList": false,
@@ -651,6 +651,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -683,7 +684,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "previewBulkApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "BulkApprovalPreviewInput",
     "success": 201,
     "output": "BulkApprovalPreview",
     "outputList": false,
@@ -702,6 +703,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -19854,4 +19856,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "c9231107f45de8ac";
+export const OPENAPI_HASH = "e3ee8a9d997fcdb4";

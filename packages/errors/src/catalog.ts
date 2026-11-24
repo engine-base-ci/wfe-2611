@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。300 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。301 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5306,6 +5306,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-APR-030": {
+    "id": "E-APR-030",
+    "cls": "conflict",
+    "message": "承認待ちが 50 件を超えているので、まとめて承認できません。選んで承認してください",
+    "action": "50 件以内を選んで承認する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-030",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "approvals",
+      "state": "queue"
     }
   },
   "E-TALK-060": {

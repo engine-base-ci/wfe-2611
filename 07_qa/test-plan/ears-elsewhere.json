@@ -2993,6 +2993,60 @@
     "test_post_tickets_id_agent_session_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書く／読むだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
    }
   },
+  "previewBulkApproval": {
+   "file": "apps/api/test/features/F5/approval-bulk.test.ts",
+   "reason": "まとめての確かめは、自分が承認する承認待ちの数・状態・確認項目で答えが変わる。生成の試験の種ではその組を作れない（K-768）",
+   "covers": {
+    "test_post_approvals_bulk_preview_ok": "K768-API-001",
+    "test_post_approvals_bulk_preview_shape": "K768-API-001",
+    "test_post_approvals_bulk_preview_rejected_401": "K768-API-008",
+    "test_post_approvals_bulk_preview_rejected_403": "K768-API-008",
+    "test_post_approvals_bulk_preview_conflict": "K768-API-004",
+    "test_post_approvals_bulk_preview_rejected_422": "K768-API-005",
+    "test_post_approvals_bulk_preview_rate_limited": "K768-API-004",
+    "test_post_approvals_bulk_preview_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_approvals_bulk_preview_session_unresolved": "K768-API-016",
+    "test_post_approvals_bulk_preview_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_approvals_bulk_preview_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "bulkApprove": {
+   "file": "apps/api/test/features/F5/approval-bulk.test.ts",
+   "reason": "まとめての承認は、1 件ずつの状態・担当者・PC の仕事で答えが変わる。生成の試験の種ではその組を作れない（K-768）",
+   "covers": {
+    "test_post_approvals_bulk_ok": "K768-API-009",
+    "test_post_approvals_bulk_shape": "K768-API-009",
+    "test_post_approvals_bulk_rejected_401": "K768-API-012",
+    "test_post_approvals_bulk_rejected_403": "K768-API-012",
+    "test_post_approvals_bulk_rejected_422": "K768-API-005",
+    "test_post_approvals_bulk_rate_limited": "K768-API-015",
+    "test_post_approvals_bulk_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_approvals_bulk_session_unresolved": "K768-API-016",
+    "test_post_approvals_bulk_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_approvals_bulk_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_approvals_bulk_rejected_422_2": "K768-API-005"
+   },
+   "na": {}
+  },
   "startDraftConversation": {
    "file": "apps/api/test/features/F5/talk-draft.test.ts",
    "reason": "作る画面の会話を始めるのは、人ごとの数（50）で一番古い会話を片付けるかが変わる。生成の試験の種では 50 個を作れない（K-774）",

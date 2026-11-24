@@ -12608,6 +12608,34 @@ components:
       required:
       - text
       x-required-by: hooks
+    BulkApprovalPreviewInput:
+      type: object
+      properties:
+        approval_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          minItems: 1
+          maxItems: 50
+      additionalProperties: false
+      x-operation: previewBulkApproval
+    BulkApproveInput:
+      type: object
+      properties:
+        approval_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 50
+      additionalProperties: false
+      x-operation: bulkApprove
+      required:
+      - approval_ids
+      x-required-by: hooks
     DraftConversationStartInput:
       type: object
       properties: {}
@@ -12888,18 +12916,6 @@ components:
           items:
             type: object
       x-operation: getApproval
-    BulkApprovalPreview:
-      type: object
-      properties:
-        eligible:
-          type: array
-          items:
-            type: object
-        excluded:
-          type: array
-          items:
-            type: object
-      x-operation: previewBulkApproval
     CloneNow:
       type: object
       properties:
@@ -15217,6 +15233,24 @@ components:
           type: string
           format: uuid
       x-operation: sendTicketAgentMessage
+    BulkApprovalPreview:
+      type: object
+      properties:
+        eligible:
+          type: array
+          items:
+            type: object
+        excluded:
+          type: array
+          items:
+            type: object
+        count:
+          type: integer
+        irreversible_count:
+          type: integer
+        unchecked_count:
+          type: integer
+      x-operation: previewBulkApproval
     DraftConversationStarted:
       type: object
       properties:
@@ -16427,7 +16461,7 @@ paths:
       - D-125.85
       - D-126.18
       x-permission: approver
-      x-permission-scope: 自分が承認するもので、条件（D-128.86）に合うものだけ。サーバーがもう一度確かめる
+      x-permission-scope: 自分が承認する物だけ。1 件ずつ承認と同じ守りで確かめる。取り消せない物も対象（D-153.11）
       x-step-up: false
       security:
       - session: []
@@ -16436,7 +16470,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/BulkApproveInput'
       responses:
         '201':
           description: 成功
@@ -16473,6 +16507,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -16481,12 +16521,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -16531,7 +16565,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/BulkApprovalPreviewInput'
       responses:
         '201':
           description: 成功
@@ -16557,13 +16591,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-APR-030
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -16576,12 +16616,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
