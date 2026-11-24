@@ -147,8 +147,9 @@ function Compare(p: VersionsViewProps & { view: View }): ReactNode {
   // 押せない訳（title）。完了は title を付けず、注の場所に正本の文を出す。項目の変更は差分が空なら title なしで押せない形（K-579）
   const empty = view.lines.length === 0;
   //   完了したチケットは版の一覧の can_restore も false なので、項目の変更では完了を先に見て title を付けない
-  const why = body && empty ? NOT_YET : !view.canRestore && (body || !completed) ? CANT_RESTORE : null;
-  const inert = why !== null || empty || completed || sending;
+  //   書けない訳は口が「書けない」（false）と答えたときだけ。答え待ち・読めなかった（null）は押せない形で title なし
+  const why = body && empty ? NOT_YET : view.canRestore === false && (body || !completed) ? CANT_RESTORE : null;
+  const inert = why !== null || view.canRestore !== true || empty || completed || sending;
   const copy = () => {
     const text = copyText(field, from, to, view.lines);
     const done = () => notify("差分をコピーしました");

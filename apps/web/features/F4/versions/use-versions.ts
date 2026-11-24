@@ -46,8 +46,8 @@ export interface View {
   readonly from: number | null;
   readonly to: number | null;
   readonly lines: readonly DiffLine[];
-  /** 見ている人が戻せるか（版の一覧の口の meta.can_restore。項目の変更も同じ値を使う・K-579） */
-  readonly canRestore: boolean;
+  /** 見ている人が戻せるか（版の一覧の口の meta.can_restore。項目の変更も同じ値を使う・K-579）。null は答え待ちか読めなかった */
+  readonly canRestore: boolean | null;
 }
 export type Loaded =
   | { readonly state: "loading" }
@@ -240,7 +240,8 @@ export function useVersions(id: string, initial: Sel): Versions {
       gcTime: 0,
     }).then(
       (v) => setCanEdit((prev) => prev ?? v.canRestore),
-      () => setCanEdit((prev) => prev ?? false),
+      // 読めなかったときは書けるかが分からないまま（null）。押せない形で title は付けない
+      () => undefined,
     );
   }, [qc, id, valid]);
 
@@ -297,8 +298,8 @@ export function useVersions(id: string, initial: Sel): Versions {
   const shown = useMemo<Loaded>(
     () =>
       loaded.state === "ok" && loaded.view.of === "items"
-        ? // 版の一覧の答えが来るまでは書けない訳（title）を出さない（押せるのは答えが true のときだけ）
-          { state: "ok", view: { ...loaded.view, canRestore: canEdit !== false } }
+        ? // 版の一覧の答えが来る前と読めなかったときは null（押せない形で title なし）。押せるのは答えが true のときだけ
+          { state: "ok", view: { ...loaded.view, canRestore: canEdit } }
         : loaded,
     [loaded, canEdit],
   );
