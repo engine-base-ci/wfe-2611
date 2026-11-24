@@ -3848,6 +3848,10 @@
      "note": "running／done／stopped／cancelled"
     },
     {
+     "name": "phase",
+     "note": "チケットの実行の段：make＝作る／execute＝承認の後の実行／dry_run＝試し打ち・宛先を自分に差し替えて 1 回だけ ← K-62・K-63・K-746"
+    },
+    {
      "name": "started_at",
      "note": null
     },

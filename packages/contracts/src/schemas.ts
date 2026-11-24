@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:09e26ca7fee70fa3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:02b7d379d348ea41
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -899,6 +899,7 @@ export const ActionRuns = z.strictObject({
   service_id: z.uuid().nullable().optional(),
   procedure_id: z.uuid().nullable().optional(),
   status_id: z.string().nullable().optional(),
+  phase: z.string().nullable().optional(),
   started_at: z.iso.datetime({ offset: true }).nullable().optional(),
   finished_at: z.iso.datetime({ offset: true }).nullable().optional(),
   tokens_in: z.number().int().nullable().optional(),
@@ -917,7 +918,6 @@ export const ActionRuns = z.strictObject({
   approval_id: z.uuid().nullable().optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  phase: z.string().nullable().optional(),
   scope_id: z.uuid().optional(),
   ticket_id: z.uuid().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
@@ -929,6 +929,7 @@ export const ActionRunsInput = z.strictObject({
   service_id: z.uuid().nullable().optional(),
   procedure_id: z.uuid().nullable().optional(),
   status_id: z.string().nullable().optional(),
+  phase: z.string().nullable().optional(),
   started_at: z.iso.datetime({ offset: true }).nullable().optional(),
   finished_at: z.iso.datetime({ offset: true }).nullable().optional(),
   tokens_in: z.number().int().nullable().optional(),
