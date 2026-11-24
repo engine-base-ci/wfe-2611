@@ -3185,7 +3185,6 @@
     "readAllNotifications",
     "readNotification",
     "restoreTicket",
-    "search",
     "takeoverActionRun",
     "updateSavedView"
    ],
@@ -23642,9 +23641,12 @@
     "getShell"
    ],
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/contracts"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/shell/read.ts",
