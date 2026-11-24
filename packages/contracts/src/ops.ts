@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:46315712f6173e18
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fbd80ccb3e1a1eff
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -328,6 +328,7 @@ export interface Ops {
   listTicketHandovers: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketHandover[] };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverCreateInput; data: T.TicketHandoverCreated };
   listTicketItemChanges: { params: { id: string }; query: { "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketItemChangesView[] };
+  restoreTicketItems: { params: { id: string }; query: never; body: T.ItemRestoreInput; data: T.ItemRestored };
   previewTicketKindChange: { params: { id: string }; query: never; body: never; data: T.TicketKindChangePreview };
   listTicketLinks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketLink[] };
   createTicketLink: { params: { id: string }; query: never; body: T.TicketLinkInput; data: T.TicketLink };

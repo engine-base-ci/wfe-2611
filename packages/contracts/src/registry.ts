@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:46315712f6173e18
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:fbd80ccb3e1a1eff
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -17324,6 +17324,67 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "POST",
+    "path": "/api/v1/tickets/:id/item-changes/restore",
+    "operationId": "restoreTicketItems",
+    "table": "ticket_messages",
+    "kind": "create",
+    "input": "ItemRestoreInput",
+    "success": 201,
+    "output": "ItemRestored",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      404,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A101"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "GET",
     "path": "/api/v1/tickets/:id/kind-change-preview",
     "operationId": "previewTicketKindChange",
@@ -19891,4 +19952,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "46315712f6173e18";
+export const OPENAPI_HASH = "fbd80ccb3e1a1eff";

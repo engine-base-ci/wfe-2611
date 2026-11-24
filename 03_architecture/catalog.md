@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 373（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
+API 374（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 301・部品 68・設定 41
 
 ## 共通の処理
 
@@ -132,7 +132,7 @@ API 373（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `ticket_imports` | skeleton | F4 |  |  |
 | `ticket_kinds` | skeleton | F9 | F4 | ○ |
 | `ticket_links` | skeleton | F4 |  |  |
-| `ticket_messages` | skeleton | F6 | F11,F4 | ○ |
+| `ticket_messages` | skeleton | F4,F6 | F11 | ○ |
 | `ticket_section_versions` | skeleton |  | F4 |  |
 | `ticket_sections` | skeleton | F4 |  |  |
 | `ticket_stages` | skeleton |  | F4 |  |
@@ -349,6 +349,7 @@ API 373（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `updateTicketBody` | PATCH /api/v1/tickets/:id/body | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-432 |
 | `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `listTicketItemChanges` | GET /api/v1/tickets/:id/item-changes | 取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る | F4 | 作った | K-433 |
+| `restoreTicketItems` | POST /api/v1/tickets/:id/item-changes/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-576 |
 | `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children | F4 | 作った | K-59,K-441 |
 | `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |

@@ -14126,6 +14126,21 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    ItemRestoreInput:
+      type: object
+      properties:
+        from:
+          type: integer
+          minimum: 1
+        to:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+      x-operation: restoreTicketItems
+      required:
+      - from
+      - to
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -16486,6 +16501,20 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    ItemRestored:
+      type: object
+      properties:
+        changed:
+          type: boolean
+        restored:
+          type: array
+          items:
+            type: object
+        skipped:
+          type: array
+          items:
+            type: object
+      x-operation: restoreTicketItems
     Error:
       type: object
       properties:
@@ -47543,6 +47572,100 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/item-changes/restore:
+    post:
+      operationId: restoreTicketItems
+      summary: 作成・実行（tickets）— チケットの中身（区画）を書く・直す
+      tags:
+      - ticket_messages
+      x-acts:
+      - A101
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.27
+      - D-125.58
+      x-permission: write
+      x-permission-scope: そのチケットを書ける人
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemRestoreInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ItemRestored'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND／E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-ITM-001／E-ITM-002／E-ITM-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:

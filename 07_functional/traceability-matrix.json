@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-24",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -2891,6 +2891,7 @@
     "E-094 attachments",
     "E-050 artifacts",
     "E-052 audit_events",
+    "E-146 ticket_field_values",
     "E-051 artifact_versions",
     "E-038 approvals",
     "E-049 messages",
@@ -2902,7 +2903,6 @@
     "E-075 notices",
     "E-144 custom_fields",
     "E-145 custom_field_kinds",
-    "E-146 ticket_field_values",
     "E-115 handover_rules"
    ],
    "related_apis": [
@@ -2937,6 +2937,7 @@
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
     "GET /api/tickets/:id/item-changes",
+    "POST /api/tickets/:id/item-changes/restore",
     "POST /api/ticket_kinds/:id/template-from-ticket",
     "GET /api/tickets/:id/test-specs",
     "POST /api/tickets/:id/test-specs",
@@ -10799,6 +10800,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets/:id/item-changes"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/item-changes/restore"
     },
     {
      "act": "A101",

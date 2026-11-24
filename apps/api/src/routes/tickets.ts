@@ -29,6 +29,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id/handovers", op(deps, "listTicketHandovers"));
   app.post("/api/v1/tickets/:id/handovers", op(deps, "createTicketHandover"));
   app.get("/api/v1/tickets/:id/item-changes", op(deps, "listTicketItemChanges"));
+  app.post("/api/v1/tickets/:id/item-changes/restore", op(deps, "restoreTicketItems"));
   app.get("/api/v1/tickets/:id/kind-change-preview", op(deps, "previewTicketKindChange"));
   app.get("/api/v1/tickets/:id/links", op(deps, "listTicketLinks"));
   app.post("/api/v1/tickets/:id/links", op(deps, "createTicketLink"));

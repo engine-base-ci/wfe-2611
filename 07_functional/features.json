@@ -165,7 +165,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",
@@ -965,7 +968,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",
@@ -2066,7 +2072,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C1",
@@ -2630,7 +2639,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C1",
@@ -4011,7 +4023,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",
@@ -5740,7 +5755,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",
@@ -8049,7 +8067,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",
@@ -8484,7 +8505,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2"
@@ -8852,7 +8876,10 @@
     "E-FLD-002",
     "E-FLD-003",
     "E-FLD-004",
-    "E-CONF-020"
+    "E-CONF-020",
+    "E-ITM-001",
+    "E-ITM-002",
+    "E-ITM-003"
    ],
    "policies": [
     "C2",

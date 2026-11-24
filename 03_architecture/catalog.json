@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 373,
+  "api": 374,
   "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 298,
+  "errors": 301,
   "stack": 68,
   "env": 41
  },
@@ -5283,6 +5283,23 @@
    ]
   },
   {
+   "op": "restoreTicketItems",
+   "method": "POST",
+   "path": "/api/v1/tickets/:id/item-changes/restore",
+   "what": "作成・実行（tickets）— チケットの中身（区画）を書く・直す",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_messages"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-576"
+   ]
+  },
+  {
    "op": "previewTicketKindChange",
    "method": "GET",
    "path": "/api/v1/tickets/:id/kind-change-preview",
@@ -7373,11 +7390,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F4",
     "F6"
    ],
    "reads": [
-    "F11",
-    "F4"
+    "F11"
    ],
    "boundary": true
   },

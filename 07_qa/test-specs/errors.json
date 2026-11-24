@@ -9317,6 +9317,96 @@
     "D-150.45"
    ],
    "support_code": "CONF-020"
+  },
+  {
+   "id": "E-ITM-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了したチケットの項目は戻せない",
+   "false_when": "チケットが完了していない",
+   "message": "完了したチケットの項目は、戻せません",
+   "action": "戻さずに閉じる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "完了したチケットで、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
+  },
+  {
+   "id": "E-ITM-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "見ている間に項目が変えられた",
+   "false_when": "今見ている点が今の最新の点",
+   "message": "先に項目が変えられました。読み直してから、もう一度戻してください",
+   "action": "読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "開いた後に別の画面で項目を変え、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
+  },
+  {
+   "id": "E-ITM-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す物が無い",
+   "false_when": "比べた 2 つの点の間に正味の変わりがある",
+   "message": "戻す項目がありません",
+   "action": "比べる点を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "変わりの無い 2 つの点を比べて、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
   }
  ],
  "meta": {

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。298 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。301 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5379,6 +5379,60 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-ITM-001": {
+    "id": "E-ITM-001",
+    "cls": "conflict",
+    "message": "完了したチケットの項目は、戻せません",
+    "action": "戻さずに閉じる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-ITM-002": {
+    "id": "E-ITM-002",
+    "cls": "conflict",
+    "message": "先に項目が変えられました。読み直してから、もう一度戻してください",
+    "action": "読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-ITM-003": {
+    "id": "E-ITM-003",
+    "cls": "conflict",
+    "message": "戻す項目がありません",
+    "action": "比べる点を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
