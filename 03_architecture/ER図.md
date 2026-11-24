@@ -607,7 +607,8 @@ erDiagram
 | 作業の段 | `ticket_stages` | |
 | 会社が足す項目 | `custom_fields` `ticket_field_values` | 項目の定義と、チケットごとの値（K-563・段 10 の K-706・K-717） |
 | 切り替えの決まり | `handover_rules` | |
-| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` `knowledge_folders` | フォルダはページの置き場（棚の中の入れ子・K-674） |
+| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` | |
+| ナレッジのフォルダ | `knowledge_folders` | フォルダはページの置き場（棚の中の入れ子・K-674） |
 | 取引先 | `clients` `client_groups` `client_contacts` | |
 | 依頼 | `client_requests` `conversations` | |
 | 検収 | `acceptances` | |
