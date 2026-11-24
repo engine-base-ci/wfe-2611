@@ -2265,6 +2265,14 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261125013900_knowledge_guard_specs.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-guard-specs.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "packages/db/migrations/20261125014000_knowledge_breaches.sql"
    ],
    "tests": [
