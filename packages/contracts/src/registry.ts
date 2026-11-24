@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6a5a97b8f2abc9c1
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:525e3c82d931a22a
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1084,7 +1084,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "invitations",
     "kind": "create",
     "input": "InvitationAcceptInput",
-    "success": 201,
+    "success": 202,
     "output": "InvitationAccepted",
     "outputList": false,
     "generic": false,
@@ -1099,13 +1099,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "errors": [
       422,
-      401,
       403,
       403,
       404,
       409,
       409,
       410,
+      422,
+      409,
       503,
       413,
       429,
@@ -1165,6 +1166,58 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "acts": [
       "A03"
+    ],
+    "screens": [
+      "invite-accept"
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/invitations/confirm",
+    "operationId": "confirmInvitationJoin",
+    "table": "invitations",
+    "kind": "create",
+    "input": "InvitationJoinConfirmInput",
+    "success": 201,
+    "output": "InvitationJoinConfirmed",
+    "outputList": false,
+    "generic": false,
+    "auth": "public",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "ip"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      422,
+      403,
+      404,
+      409,
+      410,
+      503,
+      413,
+      429,
+      503
+    ],
+    "acts": [
+      "A03",
+      "A96"
     ],
     "screens": [
       "invite-accept"
@@ -5654,7 +5707,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "HandoverRules",
+    "output": "HandoverRule",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -15178,9 +15231,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "answerTicketHandover",
     "table": "ticket_handovers",
     "kind": "update",
-    "input": "TicketHandoversInput",
+    "input": "TicketHandoverAnswerInput",
     "success": 200,
-    "output": "TicketHandovers",
+    "output": "TicketHandoverAnswered",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15200,6 +15253,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
       413,
       429,
       403,
@@ -15223,7 +15277,126 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "ticket_handovers",
-        "sql": "to_member_id = app.user_id()"
+        "sql": "app.handover_answerer(id, app.user_id(), false)"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_handovers/:id/remind",
+    "operationId": "remindTicketHandover",
+    "table": "ticket_handovers",
+    "kind": "create",
+    "input": "HandoverRemindInput",
+    "success": 201,
+    "output": "HandoverReminded",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A111",
+      "A51"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "ticket_handovers",
+        "sql": "from_member_id = app.user_id()"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_handovers/:id/withdraw",
+    "operationId": "withdrawTicketHandover",
+    "table": "ticket_handovers",
+    "kind": "create",
+    "input": "HandoverWithdrawInput",
+    "success": 201,
+    "output": "HandoverWithdrawn",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A111",
+      "A48",
+      "A51"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "ticket_handovers",
+        "sql": "from_member_id = app.user_id()"
       }
     },
     "termsOpen": false,
@@ -17021,14 +17194,123 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/tickets/:id/handover-preview",
+    "operationId": "previewTicketHandover",
+    "table": "tickets",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "output": "HandoverPreview",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A111",
+      "A48",
+      "A51"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tickets/:id/handovers",
+    "operationId": "listTicketHandovers",
+    "table": "ticket_handovers",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "output": "TicketHandover",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A110",
+      "A51"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "POST",
     "path": "/api/v1/tickets/:id/handovers",
     "operationId": "createTicketHandover",
     "table": "ticket_handovers",
     "kind": "create",
-    "input": "TicketHandoversInput",
+    "input": "TicketHandoverCreateInput",
     "success": 201,
-    "output": "TicketHandovers",
+    "output": "TicketHandoverCreated",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -19643,4 +19925,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "6a5a97b8f2abc9c1";
+export const OPENAPI_HASH = "525e3c82d931a22a";

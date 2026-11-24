@@ -10048,7 +10048,8 @@ components:
         email:
           type: string
           nullable: true
-          pattern: ^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^@ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+@[^@ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+\.[^@
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
       additionalProperties: false
       x-operation: acceptInvitation
     TicketCompleteInput:
@@ -10712,7 +10713,7 @@ components:
         reason:
           type: string
           nullable: false
-          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f\ufeff][^\u0000]*$
+          pattern: ^[^\u0000]*[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f\ufeff][^\u0000]*$
         ask:
           type: string
           nullable: true
@@ -10883,7 +10884,7 @@ components:
           properties:
             decline_reason:
               type: string
-              pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f\ufeff][^\u0000]*$
+              pattern: ^[^\u0000]*[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f\ufeff][^\u0000]*$
     HandoverWithdrawInput:
       type: object
       properties: {}
@@ -10953,7 +10954,7 @@ components:
       properties:
         token:
           type: string
-          pattern: \S
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
       additionalProperties: false
       x-operation: confirmInvitationJoin
       required:
