@@ -1,9 +1,8 @@
-/* チケットを作る画面の器（K-224・キャンバス Create）。帯の下に、白い箱を縦に並べた本文（.k-create-cards）と右の「作る前に」（.k-create-aside）、
-   画面の下に貼り付く足元の帯（.k-create-foot）。値は --k-* のトークンだけを読む（キャンバスの実測は正本 DESIGN-kaname.md の部品 create-* に置き、
-   04_design/gen_tokens.py --web で k-tokens.css に出す。ここに生の色・大きさ・影を書かない）。
-   箱の中の区画の見た目は K-225。外枠の右のパネル（.k-panel）は使わない（本文の部品が外枠の決まりを借りない・K-214） */
+/* チケットを作る画面の器（K-224 → K-442 で下絵 v2 の並びに）。帯（見出し・作り方・保存の状態・右に「下書きのまま閉じる」「作る」）の下に、
+   下絵 v2 の form.k-f4d-page（並びと見た目は features/F4/doc の doc.css・extra.css の k-f4d-*）。値は --k-* のトークンだけを読む
+   （ここに生の色・大きさ・影を書かない）。ここに残るのは帯・親の欄・ファイルを置く枠・知らせる人と、詳細と共有する小さな決まり */
 
-/* ---- 器（帯と本文と足元の帯をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
+/* ---- 器（帯と作る面をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
 .k-create-page {
   min-width: 0;
 }
@@ -70,7 +69,7 @@
   }
 }
 
-/* ---- 本文：左に白い箱の並び・右に「作る前に」。1023 以下は「作る前に」を下に ---- */
+/* ---- 読み込み中・読めなかったときの本文の場所 ---- */
 .k-create-body {
   display: flex;
   flex-wrap: wrap;
@@ -79,82 +78,7 @@
   padding: var(--k-c-create-body-pad);
   min-width: 0;
 }
-.k-create-cards {
-  flex: 999 1 var(--k-c-create-cards-basis-width);
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--k-c-create-cards-gap);
-}
-.k-create-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--k-c-create-card-gap);
-  padding: var(--k-c-create-card-pad);
-  background: var(--k-c-create-card-bg);
-  border: var(--k-c-create-card-border);
-  border-radius: var(--k-c-create-card-radius);
-  min-width: 0;
-}
-.k-create-card > h2 {
-  margin: 0;
-  font-size: var(--k-c-create-card-title-text);
-  font-weight: var(--k-c-create-card-title-fw);
-  color: var(--k-on-surface);
-}
 
-/* ---- 本文の箱（K-225・キャンバス Create の本文の箱）：上に道具の帯（部品 DocTools の CSS のまま）・下に文書。箱の余白は文書が持つ ---- */
-.k-create-card-doc {
-  gap: 0;
-  padding: 0;
-  overflow: hidden;
-}
-.k-create-doc {
-  padding: var(--k-c-create-doc-pad);
-  max-width: var(--k-c-create-doc-width);
-  min-width: 0;
-}
-/* 区画の見出し（正本 section-title-form。最初の見出しだけ上が section-title-form-first） */
-.k-create-doc h2,
-.k-create-spec > h3 {
-  margin: var(--k-c-section-title-form-margin);
-  padding: var(--k-c-section-title-form-pad);
-  border-bottom: var(--k-c-section-title-form-border-bottom);
-  font-size: var(--k-c-section-title-form-text);
-  font-weight: var(--k-c-section-title-form-fw);
-  line-height: var(--k-c-section-title-form-lh);
-  color: var(--k-on-surface);
-}
-.k-create-doc h2:first-of-type {
-  margin: var(--k-c-section-title-form-first-margin);
-}
-/* 必須の印（見出しの中・赤） */
-.k-create-doc h2 b {
-  font-size: var(--k-text-body-sm);
-  color: var(--k-error);
-}
-/* ひな形の補足（見出しの中・灰・細い字） */
-.k-create-doc h2 span:not([id]) {
-  font-size: var(--k-text-label-md);
-  font-weight: var(--k-fw-body);
-  color: var(--k-on-surface-variant);
-}
-.k-create-doc .k-err {
-  margin: var(--k-s-xs) 0 0;
-}
-/* テスト仕様（まだ AI の案が無いので、空の箱と押せない 2 つのボタン・D-145.9） */
-.k-create-spec-box {
-  border: var(--k-c-create-spec-border);
-  border-radius: var(--k-c-create-spec-radius);
-  overflow: hidden;
-}
-.k-create-spec-acts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--k-c-create-spec-acts-gap);
-  padding: var(--k-c-create-spec-acts-pad);
-  background: var(--k-c-create-spec-acts-bg);
-}
 .k-create-spec-act,
 .k-create-doc-add {
   border: 0;
@@ -170,58 +94,12 @@
   opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
 }
-/* 文書の下の「＋ 見出しを足す…」（点線の上の線・まだ使えない・D-145.8） */
-.k-create-doc-add {
-  display: block;
-  width: 100%;
-  margin: var(--k-c-create-doc-add-margin);
-  padding: var(--k-c-create-doc-add-pad);
-  border-top: var(--k-c-create-doc-add-border-top);
-  font-size: var(--k-text-body);
-  color: var(--k-neutral);
-}
 /* 幅 767 以下：道具の帯と文書の左右を 16px（キャンバスの決まり）。帯は作る画面の本文の箱の中だけ（詳細の画面の帯に効かせない） */
 @media (max-width: 767px) {
   section[aria-label="本文"] > .k-doc-tools,
   .k-create-doc {
     padding-left: var(--k-s-md);
     padding-right: var(--k-s-md);
-  }
-}
-
-/* 上の箱：グループと種別は幅 160 で横に並べ、題名は高さ 40・15px・500 */
-.k-create-pick {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--k-c-create-pick-gap);
-  min-width: 0;
-}
-.k-create-pick > .k-field {
-  flex: none;
-  width: var(--k-c-create-pick-width);
-}
-/* 上の箱の項目名の行の高さはキャンバスの 1.6（共通の label の 1.5 は変えない） */
-.k-create-pick .k-label {
-  line-height: var(--k-c-create-label-lh);
-}
-.k-create-title .k-label {
-  line-height: var(--k-c-create-label-lh);
-}
-.k-create-pick > .k-create-number {
-  margin: var(--k-c-create-number-margin);
-  font-size: var(--k-text-body-sm);
-  color: var(--k-on-surface-variant);
-}
-.k-create-title .k-input {
-  height: var(--k-c-create-title-height);
-  font-size: var(--k-c-create-title-text);
-  font-weight: var(--k-c-create-title-fw);
-}
-@media (max-width: 767px) {
-  /* 16px 未満だと iPhone が入力のたびに拡大する（D-144.7） */
-  .k-create-title .k-input {
-    font-size: var(--k-text-input);
   }
 }
 
@@ -259,18 +137,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* まだ使えない欄（正本の使えない状態の部品・input-disabled）：在るが押せない・値は空・▾ は飾り */
-.k-create-off {
-  opacity: var(--k-c-input-disabled-opacity);
-  cursor: not-allowed;
-}
-.k-create-off:hover {
-  border-color: var(--k-line-strong);
-}
-.k-create-off > span {
-  margin-left: auto;
 }
 
 /* 親のチケット：打って候補から選ぶ（候補の箱は影を置かず線だけ） */
@@ -382,84 +248,6 @@
   min-height: var(--k-c-create-target-height);
   font-size: var(--k-text-body);
   cursor: pointer;
-}
-
-/* ---- 右：作る前に・高本のAI から ---- */
-.k-create-aside {
-  flex: 1 1 var(--k-c-create-aside-width);
-  max-width: var(--k-c-create-aside-max-width);
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--k-c-create-aside-gap);
-}
-@media (max-width: 767px) {
-  .k-create-aside {
-    max-width: none;
-  }
-}
-.k-create-aside > section {
-  padding: var(--k-c-create-aside-box-pad);
-  background: var(--k-c-create-aside-box-bg);
-  border: var(--k-c-create-aside-box-border);
-  border-radius: var(--k-c-create-aside-box-radius);
-}
-.k-create-aside h2 {
-  margin: 0 0 var(--k-s-sm);
-  font-size: var(--k-text-body);
-  font-weight: var(--k-fw-h2);
-  color: var(--k-on-surface);
-}
-.k-create-checks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--k-c-create-checks-gap);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: var(--k-text-body-sm);
-  color: var(--k-on-surface-variant);
-}
-.k-create-checks > li[data-ok="true"] {
-  color: var(--k-st-success);
-}
-
-/* ---- 足元の帯（画面の下に貼り付く。767 以下は下のタブの上） ---- */
-.k-create-foot {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: var(--k-s-sm);
-  padding: var(--k-c-create-foot-pad);
-  background: var(--k-c-create-foot-bg);
-  border-top: var(--k-c-create-foot-border-top);
-}
-.k-create-foot > p {
-  margin: 0;
-  min-width: 0;
-  font-size: var(--k-text-body-sm);
-  color: var(--k-on-surface-variant);
-}
-.k-create-foot-acts {
-  flex: none;
-  display: flex;
-  gap: var(--k-s-sm);
-  margin-left: auto;
-}
-/* 足元の帯のボタンはキャンバスどおり高さ 34・主ボタンは左右 18 と紺の線 */
-.k-create-foot .k-btn {
-  min-height: var(--k-c-create-foot-button-height);
-}
-.k-create-foot .k-btn[data-variant="primary"] {
-  padding: var(--k-c-create-foot-primary-pad);
-  border: var(--k-c-create-foot-primary-border);
-}
-@media (max-width: 767px) {
-  .k-create-foot {
-    bottom: var(--k-c-shell-tabs-height); /* 下のタブ（外枠 K-138）の上 */
-  }
 }
 
 /* 選ぶ部品（Base UI Select）が値を持たせるための見えない入力（1px・読み上げにも出ない・押せない）は大きさを 0 にする。
