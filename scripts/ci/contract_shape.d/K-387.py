@@ -9,6 +9,7 @@ VALUE_RANGES = {
     "updateTicket": {"actual_minutes": {"minimum": 0, "maximum": 100000}, "stage_key": {"enum": ["todo", "doing", "hold"]},
                      "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK},
                      "priority": {"enum": ["mid", "high"]}, "priority_reason": {"pattern": _NOT_BLANK},   # priority・priority_reason は K-440
+                     "estimate_minutes": {"minimum": 0, "maximum": 100000},   # estimate_minutes は K-583
                      "fields": {"minProperties": 1, "propertyNames": {"format": "uuid"},
                   "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"}, {"type": "array", "items": {"type": "string"}}], "nullable": True}}},   # fields は K-564
 }

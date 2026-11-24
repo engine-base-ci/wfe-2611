@@ -2325,11 +2325,6 @@
     },
     {
      "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/work-type-candidates",
-     "act": "A130"
-    },
-    {
-     "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/delete-preview",
      "act": "A116"
     },
@@ -2396,6 +2391,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/versions/:v/restore",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/item-changes",
      "act": "A101"
     },
     {
