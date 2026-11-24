@@ -27,7 +27,8 @@ $$;
 
 -- ---------------------------------------------------------------- ② 見える範囲（同じ物を外す前の全部・K-698 の道具も使う）
 --   チケットあり＝会社の頂点＋チケットのグループ（頂点なら無し）＋自分の棚／チケットなし＝会社の頂点＋入っている全部のグループ＋自分の棚。
---   グループには、生きている共有でそのグループに見せている物（ページ自身か上のフォルダ・app.kn_folder_chain）も入る。公開済み・消していない物だけ
+--   グループには、生きている共有でそのグループに見せている物（ページ自身か上のフォルダ）も入る。公開済み・消していない物だけ
+--   （上のフォルダの鎖は app.kn_folder_chain と同じ決めを引数の会社で書く。kn_folder_chain は要求の文脈の会社で絞るので AI の実行者では空になる）
 create or replace function app.kn_ai_visible_pages(p_member uuid, p_ticket uuid) returns setof uuid
 language plpgsql stable security definer set search_path = public, app, pg_temp as $$
 declare v_tenant uuid; v_top uuid; v_groups uuid[];
@@ -57,7 +58,14 @@ begin
                    where ks.tenant_id = v_tenant and ks.ended_at is null and ks.deleted_at is null
                      and ks.group_id = any(v_groups)
                      and (ks.page_id = p.id
-                          or (p.folder_id is not null and ks.folder_id in (select app.kn_folder_chain(p.folder_id)))))));
+                          or (p.folder_id is not null and ks.folder_id in (
+                                with recursive up(id, parent, depth) as (
+                                  select f.id, f.parent_folder_id, 1 from knowledge_folders f
+                                   where f.id = p.folder_id and f.tenant_id = v_tenant and f.deleted_at is null
+                                  union all
+                                  select f.id, f.parent_folder_id, up.depth + 1 from knowledge_folders f join up on f.id = up.parent
+                                   where up.depth < 6 and f.tenant_id = v_tenant and f.deleted_at is null)
+                                select up.id from up))))));
 end $$;
 
 -- ---------------------------------------------------------------- ③ 渡す物
@@ -162,15 +170,23 @@ end $$;
 --   作った時刻は clock_timestamp()（既定の now() は取引の開始時刻で、同じ取引で 2 行足すと並びが id の乱数で決まる）
 create or replace function app.knowledge_ticket_line(p_ticket uuid, p_field text, p_changes jsonb, p_body text) returns uuid
 language plpgsql volatile security definer set search_path = public, app, pg_temp as $$
-declare v_tenant uuid; v_id uuid;
+declare v_tenant uuid; v_id uuid; v_changes jsonb;
 begin
   if p_field is null or p_field not in ('guard_list', 'knowledge_open', 'knowledge_breach') then
     raise exception 'knowledge_ticket_line: 知らない欄です' using errcode = '22023';
   end if;
   select t.tenant_id into v_tenant from tickets t where t.id = p_ticket and t.deleted_at is null;
   if v_tenant is null then return null; end if;
+  -- changes は 1 要素の並び [{ field, … }]。先頭の要素の field は常に p_field にする（渡された並びが空・物でも形を崩さない）
+  if jsonb_typeof(p_changes) = 'array' and jsonb_typeof(p_changes->0) = 'object' then
+    v_changes := jsonb_set(p_changes, '{0,field}', to_jsonb(p_field));
+  elsif jsonb_typeof(p_changes) = 'object' then
+    v_changes := jsonb_build_array(p_changes || jsonb_build_object('field', p_field));
+  else
+    v_changes := jsonb_build_array(jsonb_build_object('field', p_field));
+  end if;
   insert into ticket_messages (tenant_id, ticket_id, author_member_id, kind, body, changes, created_at, updated_at)
-  values (v_tenant, p_ticket, null, 'change', p_body, p_changes, clock_timestamp(), clock_timestamp())
+  values (v_tenant, p_ticket, null, 'change', p_body, v_changes, clock_timestamp(), clock_timestamp())
   returning id into v_id;
   return v_id;
 end $$;
