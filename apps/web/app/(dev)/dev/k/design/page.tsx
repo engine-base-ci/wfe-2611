@@ -86,7 +86,7 @@ export default function KDesignPage() {
         {loading ? <Loading /> : null}
       </div>
       {/* 必須の欄（K-1155）：＊は項目名の字の外（::after）。tests/k/k1155-required-label.spec.ts の的 */}
-      <section aria-label="必須の欄" style={{ display: "grid", gap: "var(--k-s-md)", maxWidth: "480px" }}>
+      <section aria-label="必須の欄" style={{ display: "grid", gap: "var(--k-s-md)" }}>
         <div data-testid="req-md">
           <TextField label="件名" name="subject" required />
         </div>
