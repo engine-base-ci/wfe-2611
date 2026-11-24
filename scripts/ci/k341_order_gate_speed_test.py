@@ -6,7 +6,8 @@
 速さは時間で見ない（台で揺れる）。git を呼ぶ回数を数える（K341-CI-001）。確かめの中身が変わらないことは、
   ・まとめて読んだ物（コミットごとの件名・変えたファイル・親）と「先祖か」の答えが、1 本ずつ git に聞いた答えと同じ（K341-CI-002）
   ・直す前の版（git の中の OLD_BLOB）と、出力（PASS／FAIL・違反の一覧・決まりの前に入ったとして通した依存）と終わりの番号が 1 字も違わない（K341-CI-003）。
-    ただし K-1154 で枝の先頭だけで裁く形にしたので、依存より先に作り後で依存が枝に入る写し（HEAD_ONLY_GREEN）は「前は FAIL・今は PASS」を見る
+    ただし K-1154 で枝の先頭だけで裁く形にしたので、依存より先に作り後で依存が枝に入る写し（HEAD_ONLY_GREEN）は「前は FAIL・今は PASS」を見る。
+    残りの赤の写しは、★ の行を字でなく（チケット, 依存）の組と件数で比べ、今の ★ の行が「<先頭の 10 字> 枝の先頭」で始まることを見る（★ でない行は 1 字も違わない）
 で見る。写しのリポジトリは一時フォルダに作る（DB なし）。
 """
 from __future__ import annotations
@@ -26,6 +27,7 @@ sys.path.insert(0, str(HERE))
 import ticket_order_gate as g  # noqa: E402
 
 NUM = re.compile(r"実装のコミット (\d+) 本")
+PAIR = re.compile(r"(K-\d+) は (K-\d+) に依存する")   # ★ の行の（チケット, 依存）
 # 直す前の scripts/ci/ticket_order_gate.py（本線 c93019c7 の版・最後に変えたのは 8ae2be25）。比べる相手として git の中から読む
 OLD_BLOB = "c27ded84719384af0950160bcb17ddc4b607a409"
 GATE = HERE / "ticket_order_gate.py"
@@ -307,7 +309,16 @@ class SameAnswerTest(unittest.TestCase):
                     # K-643：直す前の版は取り込みのコミット（親 2 つ）も実装に数える。違うのは「実装のコミット N 本」の数だけ（取り込みの数ぶん少ない）
                     merges = int(subprocess.run(["git", "rev-list", "--merges", "--count", f"{s}..HEAD"], cwd=repo, capture_output=True, text=True).stdout)
                     self.assertEqual(got[0], want[0])
-                    self.assertEqual(NUM.sub("実装のコミット N 本", got[1]), NUM.sub("実装のコミット N 本", want[1]))
+                    # K-1154：★ の行は、直す前は「<そのコミットの 10 字> …」、今は「<先頭の 10 字> 枝の先頭：…」。字でなく（チケット, 依存）の組と件数で比べる。
+                    # ★ でない行（決まりの前に通した依存・本数・PASS／FAIL）は今までどおり 1 字も違わない
+                    head10 = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, capture_output=True, text=True).stdout.strip()[:10]
+                    star_w = [x for x in want[1].splitlines() if "★" in x]
+                    star_g = [x for x in got[1].splitlines() if "★" in x]
+                    self.assertEqual(sorted(PAIR.findall("\n".join(star_g))), sorted(PAIR.findall("\n".join(star_w))))
+                    self.assertEqual(len(star_g), len(star_w))
+                    self.assertTrue(all(x.strip().startswith(f"★ {head10} 枝の先頭") for x in star_g), star_g)
+                    rest = lambda out: NUM.sub("実装のコミット N 本", "\n".join(x for x in out.splitlines() if "★" not in x))  # noqa: E731
+                    self.assertEqual(rest(got[1]), rest(want[1]))
                     self.assertEqual(int(NUM.search(want[1]).group(1)) - int(NUM.search(got[1]).group(1)), merges)
                     fails += want[0] == 1 and "★" in want[1] and "FAIL" in want[1]
                     passes += want[0] == 0 and "PASS" in want[1]
