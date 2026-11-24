@@ -6,9 +6,9 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { NoticeBox } from "@/components/k";
 import { bandYieldTo, type BandSlotProps, type SlotTicket } from "@/features/F4/create-ticket/detail-slots";
-import { CompleteDialog } from "@/features/F5/approve-complete/complete-dialog";
-import { catalogMessage, messageOf } from "@/features/F5/approve-complete/message";
-import { clearProgressState, setNotice } from "./notice";
+import { catalogMessage } from "@/features/F5/approve-complete/message";
+import { useComplete } from "@/features/F5/approve-complete/use-complete";
+import { clearProgressState } from "./notice";
 import { holdErrorsOf, type HoldErrors } from "./hold-fields";
 import { holdByLine, LOCKED_STAGES, progressOf } from "./progress-detail";
 import { TIME_ERROR_ID, toMinutes } from "./to-minutes";
@@ -21,6 +21,11 @@ interface Wrap {
 }
 
 const CUSTOM_STAGE = "custom";
+/** getTicket の答えの本文の木（K-560 の body.doc）。前の形の答えは undefined */
+const bodyDocOf = (detail: SlotTicket["detail"]): unknown => {
+  const body = detail["body"];
+  return typeof body === "object" && body !== null ? (body as { doc?: unknown }).doc : undefined;
+};
 const targetOf = (number: string | null, title: string | null): string | undefined =>
   [number, title].filter(Boolean).join(" ") || undefined;
 
@@ -30,7 +35,8 @@ export function StageSlot({ ticket, children }: Wrap): ReactNode {
   const { busy, send } = useProgress(ticket);
   const [holding, setHolding] = useState(false);
   const [holdErrors, setHoldErrors] = useState<HoldErrors | undefined>(undefined);
-  const [completing, setCompleting] = useState(false);
+  // 「完了」は F5 の完了の流れ（K-572・確認項目を読んで未チェックの注意の小窓か、そのまま完了）。小窓と知らせは F5 の帯が出す
+  const complete = useComplete({ ticketId: ticket.id, doc: bodyDocOf(ticket.detail), onChanged: ticket.reload });
   if (ticket.layout !== "page" || !v.hasStage) return children;
 
   const stage = { key: v.stageKey ?? CUSTOM_STAGE, name: v.stageName };
@@ -45,7 +51,7 @@ export function StageSlot({ ticket, children }: Wrap): ReactNode {
       return;
     }
     if (to === "complete") {
-      if (v.stageKey === "doing" && v.canComplete) setCompleting(true);
+      if (v.stageKey === "doing" && v.canComplete) void complete.start();
       return;
     }
     const next = to === "reopen" ? "doing" : to;
@@ -80,24 +86,6 @@ export function StageSlot({ ticket, children }: Wrap): ReactNode {
           {...(target ? { target } : {})}
           onCancel={() => setHolding(false)}
           onSubmit={(reason, resume) => void submitHold(reason, resume)}
-        />
-      ) : null}
-      {completing && v.canComplete ? (
-        <CompleteDialog
-          ticketId={ticket.id}
-          {...(target ? { target } : {})}
-          todo={v.todo}
-          conditions={v.conditions}
-          onClose={() => setCompleting(false)}
-          onDone={async () => {
-            setNotice(ticket.id, null);
-            await ticket.reload();
-          }}
-          onFailed={async (r) => {
-            if (r.status === 401) return; // 入り直しへ（共通の扱い）
-            setNotice(ticket.id, messageOf(r));
-            await ticket.reload();
-          }}
         />
       ) : null}
     </>
