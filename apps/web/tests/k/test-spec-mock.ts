@@ -149,7 +149,9 @@ export async function mockTestSpecs(
       const forced = m.force.add.shift();
       if (forced) r = forced;
       else {
-        const row = spec(String(b["title"]).replace(/^[\s　]+|[\s　]+$/g, ""), { position: m.specs.length + 1 });
+        const row = spec(String(b["title"]).replace(/^[\s\u3000]+|[\s\u3000]+$/g, ""), {
+          position: m.specs.length + 1,
+        });
         m.specs = [...m.specs, row];
         r = { status: 201, body: { data: row } };
       }
@@ -169,7 +171,7 @@ export async function mockTestSpecs(
         const next: SpecApi = {
           ...cur,
           ...("checked" in b ? { checked: b["checked"] === true } : {}),
-          ...("title" in b ? { title: String(b["title"]).replace(/^[\s　]+|[\s　]+$/g, "") } : {}),
+          ...("title" in b ? { title: String(b["title"]).replace(/^[\s\u3000]+|[\s\u3000]+$/g, "") } : {}),
           version: cur.version + 1,
         };
         m.specs = m.specs.map((s) => (s.id === id ? next : s));
