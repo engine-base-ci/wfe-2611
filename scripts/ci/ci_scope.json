@@ -1726,6 +1726,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/home/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k453-home-suggest.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F4/detail-more/more-menu.tsx"
    ],
    "tests": [
