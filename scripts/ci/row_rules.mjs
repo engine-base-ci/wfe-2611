@@ -19,6 +19,7 @@ export const ID_TABLE = {
   "/api/v1/knowledge/proposals": "knowledge_page_versions",
   "/api/v1/knowledge_imports": "imports",
   "/api/v1/exports": "export_jobs",
+  "/api/v1/ticket_draft_conversations": "conversations",
 };
 /** 入口で行を読まない口（理由が必須）。認証の側の表など、public の表に無いもの */
 export const ROW_EXEMPT = {
@@ -107,6 +108,10 @@ export const OP_RULES = {
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人＝今の担当者だけ（K-732・D-153.26）。DB の関数 app.approval_stop も同じ判定をする
   stopApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認する人＝今の担当者だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_self_edit と口が持つ（K-742・守りは 2 層）
+  editApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認した本人だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_withdraw と口が持つ（K-733・守りは 2 層）
+  withdrawApproval: `approver_member_id = ${ME}`,
   // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
   copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。

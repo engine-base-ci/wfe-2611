@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 96,
+  "api_built": 118,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 264,
+  "errors": 282,
   "stack": 56,
   "env": 41
  },
@@ -131,9 +131,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-742"
    ]
   },
   {
@@ -183,9 +184,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-733"
    ]
   },
   {
@@ -226,7 +228,7 @@
    "op": "listApprovalHistory",
    "method": "GET",
    "path": "/api/v1/approvals/history",
-   "what": "取得（approvals）— 承認する／自分で直す／差し戻す／止める",
+   "what": "取得（approvals）— 自分が決めた AI の成果物の承認を、決めた新しい順に読む（決めと期間で絞る・取り下げられるかの印）",
    "flows": [
     "F5"
    ],
@@ -234,9 +236,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-750"
    ]
   },
   {
@@ -757,9 +760,9 @@
    "tables": [
     "attachments"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-761"
    ]
   },
   {
@@ -806,9 +809,9 @@
    "tables": [
     "bridge_job_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-761"
    ]
   },
   {
@@ -840,9 +843,9 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -947,7 +950,7 @@
    "op": "listMirrorTargets",
    "method": "GET",
    "path": "/api/v1/bridge/mirror-targets",
-   "what": "取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）",
    "flows": [
     "F5"
    ],
@@ -955,9 +958,9 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -1024,23 +1027,6 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-73"
-   ]
-  },
-  {
-   "op": "markHumanCheck",
-   "method": "POST",
-   "path": "/api/v1/checks/:id/human",
-   "what": "作成・実行（checks）— 承認する／自分で直す／差し戻す／止める",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
    ]
   },
   {
@@ -1328,9 +1314,9 @@
    "tables": [
     "clones"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-753"
    ]
   },
   {
@@ -1359,23 +1345,6 @@
    "only_later_phase": false,
    "tables": [
     "action_runs"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
-   ]
-  },
-  {
-   "op": "exportCloneActivity",
-   "method": "POST",
-   "path": "/api/v1/clones/me/activity/export",
-   "what": "作成・実行（clones）— 分身がやったことを見る → チケットへ戻る",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "export_jobs"
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
@@ -1428,24 +1397,25 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-753"
    ]
   },
   {
    "op": "listConversations",
    "method": "GET",
    "path": "/api/v1/conversations",
-   "what": "取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話",
+   "what": "取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない）",
    "flows": [],
    "only_later_phase": true,
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-73"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -1475,9 +1445,10 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-73"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -1529,7 +1500,7 @@
    "op": "listConversationMessages",
    "method": "GET",
    "path": "/api/v1/conversations/:id/messages",
-   "what": "取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（messages）— 会話の行の続き（これより古い分・各回は古い順）",
    "flows": [
     "F5"
    ],
@@ -1537,9 +1508,10 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -1555,9 +1527,10 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-61",
+    "K-758"
    ]
   },
   {
@@ -1587,9 +1560,10 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-758"
    ]
   },
   {
@@ -1604,9 +1578,9 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-759"
    ]
   },
   {
@@ -4634,6 +4608,63 @@
    ]
   },
   {
+   "op": "startDraftConversation",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "conversations"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-61",
+    "K-774"
+   ]
+  },
+  {
+   "op": "adoptDraftConversation",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "conversations"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-61",
+    "K-776"
+   ]
+  },
+  {
+   "op": "sendDraftMessage",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/messages",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "messages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-61",
+    "K-774"
+   ]
+  },
+  {
    "op": "answerTicketHandover",
    "method": "PATCH",
    "path": "/api/v1/ticket_handovers/:id",
@@ -4795,9 +4826,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4812,9 +4843,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4829,9 +4860,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4970,9 +5001,10 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-763"
    ]
   },
   {
@@ -5004,9 +5036,10 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-763"
    ]
   },
   {
@@ -5059,23 +5092,6 @@
    "owner_tickets": [
     "K-59",
     "K-432"
-   ]
-  },
-  {
-   "op": "listChecks",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/checks",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
    ]
   },
   {
@@ -6184,15 +6200,11 @@
   },
   {
    "table": "checks",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F5"
-   ],
-   "reads": [
-    "F4"
-   ],
-   "boundary": true
+   "class": "frozen",
+   "why": "確認項目は文とチェックだけで、種類・判定の型・検査の結果の表は持たない（D-150.39・D-150.40）。口は無く、コードも書かない。表と行は消さない（K-741）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "class_axes",
@@ -6265,11 +6277,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F4"
-   ],
-   "reads": [
+    "F4",
     "F5"
    ],
+   "reads": [],
    "boundary": true
   },
   {
@@ -6380,8 +6391,7 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
     "F10",
-    "F12",
-    "F5"
+    "F12"
    ],
    "reads": [],
    "boundary": true

@@ -4008,6 +4008,40 @@
   },
   {
    "entity": "conversations",
+   "field": "talk_kind",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "bridge-setup",
+    "clone-chat",
+    "ops-support",
+    "inquiry",
+    "member-detail",
+    "tickets",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "bridge-setup",
+    "clone-chat",
+    "ops-support",
+    "inquiry",
+    "member-detail",
+    "tickets",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
    "field": "deleted_at",
    "consumed_by_screens": [],
    "internal": true,
@@ -4910,6 +4944,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -4944,6 +4979,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -4978,6 +5014,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5012,6 +5049,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5046,6 +5084,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5080,6 +5119,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5114,6 +5154,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5148,6 +5189,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5636,6 +5678,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5663,6 +5706,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5690,6 +5734,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5717,6 +5762,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5744,6 +5790,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5771,6 +5818,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5798,6 +5846,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5825,6 +5874,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5852,6 +5902,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5879,6 +5930,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5906,6 +5958,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5933,6 +5986,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -5960,6 +6014,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -8741,7 +8796,6 @@
    "entity": "export_jobs",
    "field": "requested_by",
    "consumed_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -8756,7 +8810,6 @@
    "entity": "export_jobs",
    "field": "kind_id",
    "consumed_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -8778,7 +8831,6 @@
    "entity": "export_jobs",
    "field": "status_id",
    "consumed_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -8793,7 +8845,6 @@
    "entity": "export_jobs",
    "field": "expires_at",
    "consumed_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -8808,7 +8859,6 @@
    "entity": "export_jobs",
    "field": "downloaded_at",
    "consumed_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -10855,6 +10905,7 @@
    "entity": "test_specs",
    "field": "ticket_id",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10864,6 +10915,7 @@
    "entity": "test_specs",
    "field": "check_kind",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10873,6 +10925,7 @@
    "entity": "test_specs",
    "field": "title",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10882,6 +10935,7 @@
    "entity": "test_specs",
    "field": "judge_type",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10891,6 +10945,7 @@
    "entity": "test_specs",
    "field": "params",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10907,6 +10962,7 @@
    "entity": "test_specs",
    "field": "off_reason",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10916,6 +10972,7 @@
    "entity": "test_specs",
    "field": "checked_at",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10925,6 +10982,7 @@
    "entity": "test_specs",
    "field": "checked_by_member_id",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10934,6 +10992,7 @@
    "entity": "test_specs",
    "field": "checked_by_ai",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10943,6 +11002,7 @@
    "entity": "test_specs",
    "field": "source",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10952,6 +11012,7 @@
    "entity": "test_specs",
    "field": "source_ref_id",
    "consumed_by_screens": [
+    "approvals",
     "tickets"
    ],
    "internal": false,
@@ -10968,10 +11029,8 @@
    "entity": "checks",
    "field": "ticket_id",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -10980,10 +11039,8 @@
    "entity": "checks",
    "field": "test_spec_id",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -10992,10 +11049,8 @@
    "entity": "checks",
    "field": "spec_version",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11004,10 +11059,8 @@
    "entity": "checks",
    "field": "artifact_version_id",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11016,10 +11069,8 @@
    "entity": "checks",
    "field": "attempt",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11028,10 +11079,8 @@
    "entity": "checks",
    "field": "result",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11040,10 +11089,8 @@
    "entity": "checks",
    "field": "evidence",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11052,10 +11099,8 @@
    "entity": "checks",
    "field": "runner",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11064,10 +11109,8 @@
    "entity": "checks",
    "field": "checked_by_member_id",
    "consumed_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11362,7 +11405,6 @@
    "field": "ticket_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11374,7 +11416,6 @@
    "field": "action_run_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11386,7 +11427,6 @@
    "field": "ref_type",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11398,7 +11438,6 @@
    "field": "ref_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11410,7 +11449,6 @@
    "field": "url",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11422,7 +11460,6 @@
    "field": "title",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11434,7 +11471,6 @@
    "field": "seen_at",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],

@@ -64,11 +64,19 @@ export function nulIssues(v: unknown, path: string): { field: string; message: s
 // 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・K-35）
 //   鍵の文字列（base64url の 1〜200 字）を受けると宣言した口（KEY_CURSOR_OPS）だけは、鍵の文字列も通す。中身（鍵の形）はその口が確かめる（D-131.9・K-161）。
 //   宣言の無い一覧の口は今までどおり位置の数だけ（契約の生成器 05_flow/build_api.py の KEY_CURSOR_OPS と同じ集まり）
-export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set(["listApprovalQueue", "listNotifications", "listTickets"]);
+export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set([
+  "listApprovalHistory",
+  "listApprovalQueue",
+  "listNotifications",
+  "listTickets",
+  "listConversations",
+  "listConversationMessages",
+]);
 const encodeCursor = (n: number) => String(n);
 const decodeCursor = (s: string | undefined, keyed = false): number | null => {
   if (!s) return 0;
-  if (keyed) return /^[A-Za-z0-9_-]{1,200}$/.test(s) ? 0 : null;
+  // 鍵の口でも、振る舞いの口（hooks）が無いときの素の一覧は位置の数で続きを渡す（encodeCursor）。その数は位置として読む（K-757）
+  if (keyed) return /^[0-9]{1,9}$/.test(s) ? Number(s) : /^[A-Za-z0-9_-]{1,200}$/.test(s) ? 0 : null;
   return /^[0-9]{1,9}$/.test(s) ? Number(s) : null;
 };
 const isRlsError = (e: unknown) => /row-level security|permission denied/.test(String(e));

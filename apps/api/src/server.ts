@@ -128,7 +128,20 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     throw e;
   }
   // 口の工場に渡す材料（apps/api/src/hooks/registry.ts の HookDeps）
-  const hookDeps = { auth, appPool, authPool, repo, actions, objects, secrets, config, ...(mailer ? { mailer } : {}) };
+  //   hub・freshSession は流す口 streamConversation が使う（前の道すじ ext.ts の fresh と同じ作り・K-759）
+  const hookDeps = {
+    auth,
+    appPool,
+    authPool,
+    repo,
+    actions,
+    objects,
+    secrets,
+    config,
+    hub,
+    freshSession: createSessionResolver(auth, appPool),
+    ...(mailer ? { mailer } : {}),
+  };
   const app = createApp({
     version: o.version ?? "0.1.0",
     repo,
