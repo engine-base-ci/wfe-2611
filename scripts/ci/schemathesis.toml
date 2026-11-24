@@ -10,6 +10,13 @@ allow-x00 = false
 [checks.negative_data_rejection]
 expected-statuses = ["400", "401", "403", "404", "405", "406", "409", "413", "415", "422", "428", "429", "5xx"]
 
+# K-424（決める人の決め answer=f0f290e785a9）：口が断る番号は役割で分ける。422＝形の誤り（契約に書ける物だけ）／404＝指した物が無い・見えない／
+#   409＝今の状態ではできない。そこで「形どおりの入力を断っていないか」（ST202）は、404・409 を受け付けとして数え、422（と 400・413 など形で断る番号）だけを赤にする。
+#   schemathesis 4.33 の既定と同じ並びだが、版で既定が変わっても決まりが変わらないよう、全体の並びをここ 1 か所で決める。
+#   下の口ごとの 422 の例外は、決まりに沿っていない口の印（直しの葉の候補・K-424 の申し送り）。決まりに沿うよう口を直したら外す
+[checks.positive_data_acceptance]
+expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "429", "5xx"]
+
 # K-250：はじめにやることの口の「飛ばす」は、体の key が任意の項目（credentials・表記ゆらぎを含む）のときだけ受け、
 #   ほかの字（passkey・pc・知らない字・空）は 422（欄 key）で断る。契約の形は key を string としか書けない（どの字が任意の項目かは口が決める）ので、
 #   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
@@ -39,4 +46,23 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 #   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない）
 [[operations]]
 include-operation-id = "createSavedView"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-1116：PC の確かめに答える口は、PC がコードを頼んだ（確かめを始めた）後だけ受け、頼まれていなければ 404 E-CRED-014（K-355 の決め・契約にもある）。
+#   設定を作った（POST /credentials）だけでは頼まれていないので、schemathesis が自分で引いた線で作った直後に叩くと必ず 404 になり、
+#   「作った物が引けない」（ST302・ensure_resource_availability）と数える。この口に限って外す（答えの 404 は credential-login-check.test.ts の K355-API-013 が見る）。
+#   schemathesis 4.33 の stateful は、答えの確かめをその口の設定で組む（engine/run/stateful/_executor.py の checks_config_for(operation=…)）
+[[operations]]
+include-operation-id = "answerCredentialLoginCheck"
+checks.ensure_resource_availability.enabled = false
+
+# K-424（G36 の回 45185794809 の ST202 2 件）：チケットを作る口の区画（sections）・会社の項目（fields）と、直す口の会社の項目（fields）の欄の名前の決まり
+#   （区画は英小文字で始まる 41 字まで・項目は uuid）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422・05_flow/screen_api.d/K-424.py）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない・K-475 と同じ）
+[[operations]]
+include-operation-id = "createTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "updateTicket"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]

@@ -61,9 +61,6 @@ async function make(
   o: { title?: string; by?: Person; assignee?: Person; scope?: string; parent?: string } = {},
 ): Promise<{ id: string; number: string }> {
   const by = o.by ?? w.me;
-  const sections = Object.fromEntries(
-    w.task.sections.filter((s) => s.mode === "required").map((s) => [s.key, "書いた"]),
-  );
   const r = await f.req("POST", "/tickets", {
     body: {
       scope_id: o.scope ?? w.root,
@@ -71,7 +68,7 @@ async function make(
       title: o.title ?? "請求書を送る",
       assignee_member_id: (o.assignee ?? w.me).id,
       due_on: jst(3),
-      sections,
+      body: { doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "書いた" }] }] } },
       ...(o.parent ? { parent_ticket_id: o.parent } : {}),
     },
     headers: by.auth,
