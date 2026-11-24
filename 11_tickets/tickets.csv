@@ -3256,6 +3256,18 @@ K-697,AI に渡す物を作る（必ず守るは毎回全部・ほかは目次�
 - [ ] 前からの試験（取る口・記憶の渡し）は「前からの試験を替えた所」のとおり、替えずに緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-698,AI がページを開く道具 knowledge_open（契約の口 callKanameTool に足す）：その仕事で見える物だけ開ける・開いた記録（reference_logs）・チケットのやり取りに 1 行（K-69 の葉）,タスク,K-69,未着手,実装,2026-12-03,F9・ナレッジ,"AI が目次から要るページを**道具 `knowledge_open` で開いて読める**ようにする（API と DB の側）。新しい口は作らず、K-62 の契約の口 `callKanameTool`（POST /api/v1/bridge/jobs/:id/tools/:name）に道具を 1 つ足す。AI に道具を見せる側（Bridge の定義）は K-718。
+
+- 道具の入力は `page_id`（ページの uuid）だけ。答えはページの題名・1 行の説明・場所・本文（全文・50,000 字まで）・版
+- **その仕事で見える物だけ開ける**：範囲は K-697 の `app.kn_ai_visible_pages(任せた人, チケット)`。見えない・無い・消えた・下書き・別の会社・範囲の外は、**どれも同じ答え**（404・`{error, code}` だけ）。在るかどうかを漏らさない
+- チケットの仕事にも会話の仕事にも出す。ログインの試しには出さない
+- **開いた記録**を残す：`reference_logs`（`ref_type = 'page'`・`ref_id`＝ページ）。チケットの仕事は `ticket_id`・実行の記録つき／会話の仕事は `ticket_id` なし（`bridge_job_id` で結ぶ）。同じ仕事で同じページを 2 回開いても記録は 1 行
+- **チケットの仕事だけ**、やり取りに 1 行（「AI が『請求書の送り方』（会社 › 経理）を開きました」）。同じ仕事で同じページを 2 回開いても行は 1 つ
+- AI が開いた数は、K-677 の足元（`app.kn_page_ai_opened_30d`）と K-695（使われていないページ）が `reference_logs` から数える。この葉は数える関数を変えない（列と条件が同じ）","- [ ] 下の表の 18 行（K698-API-001〜018）が緑：`apps/api/test/features/F9/knowledge-open-tool.test.ts`
+- [ ] 契約の口 `callKanameTool` の宣言（apis・入力・答え・断り）は前のまま。**道具の名前の一覧に `knowledge_open` を 1 語足す**（`05_flow/screen_api.py` の `PATH_PATTERNS[""callKanameTool""][""name""]` の正規表現・`scripts/ci/contract_shape_test.py` の期待・作り手 `python3 05_flow/build_api.py` で作り直す `08_api/openapi.yaml` ほか）。道具の名前に `knowledge_open` が通り、生成の試験の it.todo は増えない（`apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts` は作り直しで同じ形のまま）
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-705,状態（作業の段）を足す・直す（名前・色）・並べる・消す（書く口 4 本と DB の関数 4 本・色の列 color_key・listTicketStages の答えを決める・始めと終わりと仕組みの状態は消せない）（K-69 の葉）,タスク,K-69,未着手,実装,2026-11-26,F9・チケットの設定,"会社の管理者が「チケットの設定 › 状態」で、チケットの状態（作業の段）を足す・直す（名前・色）・並べる・消すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-stages）。**始めの状態（key が `todo`）と終わりの状態（key が `done`）と仕組みの状態（確認中・承認待ち・実行中）は消せない**。始めと終わりは名前と色を直せる（key は変えないので、作る・完了にする仕組みが探せる）。仕組みの状態は色だけ直せる。
 
 状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。

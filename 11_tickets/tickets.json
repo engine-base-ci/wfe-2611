@@ -25743,6 +25743,90 @@
    "file": "11_tickets/K-697.md"
   },
   {
+   "id": "K-698",
+   "title": "AI がページを開く道具 knowledge_open（契約の口 callKanameTool に足す）：その仕事で見える物だけ開ける・開いた記録（reference_logs）・チケットのやり取りに 1 行（K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "ナレッジ",
+   "assignee": "実装",
+   "due": "2026-12-03",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の K-62 の道具 ticket_read（DB の関数 1 本・鍵と PC の 2 層確認・証跡・試験 3 行）と段 10 の K-685（migration 1 本・試験 21 行）から引いた：migration（reference_logs の直し・引き金・一意・関数 1 本）25 分・道具の口の部品 ai/open.ts と tools.ts への足し 15 分・自分の確かめ 15 分・文書と登録先 5 分で合わせて 60 分。試験 18 行は切る段で書いた。Bridge の道具の定義（AI に見せる側）は別の葉 K-718（K-698 の分け）",
+   "decisions": [
+    "D-125.28",
+    "D-125.35",
+    "D-128.50",
+    "D-128.51",
+    "D-110.3",
+    "D-128.138",
+    "D-128.163",
+    "D-130.1",
+    "D-150.50",
+    "D-152.17"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-open-tool.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-697",
+    "K-677"
+   ],
+   "acts": [
+    "A114",
+    "A104"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えない口の葉。やり取りの「AI が開いたページ」の行の見た目は画面の葉 K-702（正は /dev/mock/f9 の tk-guard）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125013800_knowledge_open.sql",
+    "packages/db/src/migrations.generated.ts",
+    "03_architecture/ER図.md",
+    "08_api/db-columns.json",
+    "apps/api/src/features/F5/delegate/tools.ts",
+    "apps/api/src/features/F9/knowledge/ai/open.ts",
+    "08_api/phase1/09_ナレッジ.md",
+    "scripts/ci/ci_scope.d/K-698.json",
+    "05_flow/screen_api.py",
+    "scripts/ci/contract_shape_test.py",
+    "08_api/openapi.yaml"
+   ],
+   "flow": "AI がナレッジを読んで守る",
+   "sections": {
+    "目的": "AI が目次から要るページを**道具 `knowledge_open` で開いて読める**ようにする（API と DB の側）。新しい口は作らず、K-62 の契約の口 `callKanameTool`（POST /api/v1/bridge/jobs/:id/tools/:name）に道具を 1 つ足す。AI に道具を見せる側（Bridge の定義）は K-718。\n\n- 道具の入力は `page_id`（ページの uuid）だけ。答えはページの題名・1 行の説明・場所・本文（全文・50,000 字まで）・版\n- **その仕事で見える物だけ開ける**：範囲は K-697 の `app.kn_ai_visible_pages(任せた人, チケット)`。見えない・無い・消えた・下書き・別の会社・範囲の外は、**どれも同じ答え**（404・`{error, code}` だけ）。在るかどうかを漏らさない\n- チケットの仕事にも会話の仕事にも出す。ログインの試しには出さない\n- **開いた記録**を残す：`reference_logs`（`ref_type = 'page'`・`ref_id`＝ページ）。チケットの仕事は `ticket_id`・実行の記録つき／会話の仕事は `ticket_id` なし（`bridge_job_id` で結ぶ）。同じ仕事で同じページを 2 回開いても記録は 1 行\n- **チケットの仕事だけ**、やり取りに 1 行（「AI が『請求書の送り方』（会社 › 経理）を開きました」）。同じ仕事で同じページを 2 回開いても行は 1 つ\n- AI が開いた数は、K-677 の足元（`app.kn_page_ai_opened_30d`）と K-695（使われていないページ）が `reference_logs` から数える。この葉は数える関数を変えない（列と条件が同じ）",
+    "完了の条件": "- [ ] 下の表の 18 行（K698-API-001〜018）が緑：`apps/api/test/features/F9/knowledge-open-tool.test.ts`\n- [ ] 契約の口 `callKanameTool` の宣言（apis・入力・答え・断り）は前のまま。**道具の名前の一覧に `knowledge_open` を 1 語足す**（`05_flow/screen_api.py` の `PATH_PATTERNS[\"callKanameTool\"][\"name\"]` の正規表現・`scripts/ci/contract_shape_test.py` の期待・作り手 `python3 05_flow/build_api.py` で作り直す `08_api/openapi.yaml` ほか）。道具の名前に `knowledge_open` が通り、生成の試験の it.todo は増えない（`apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts` は作り直しで同じ形のまま）\n- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: AI, PERM\n\n- 名前の決めは `07_functional/段10-F9/土台-knowledge.md` 6 章（案）と K-697 の md。**この葉が決めた名前**：DB `app.knowledge_open(p_job uuid, p_token_hash text, p_session uuid, p_page uuid)`（土台の案 `(p_member, p_page, p_ticket)` から変えた：`ticket_tool_read` と同じく**鍵のハッシュと受け取った PC を DB でも見る 2 層目**にするため）。TS は `apps/api/src/features/F9/knowledge/ai/open.ts`（`parseOpenInput`・`runKnowledgeOpen`・`openAnswer`・定数 `KNOWLEDGE_OPEN_TEXT_MAX = 50000`）\n- **道具の口の足し方**（`apps/api/src/features/F5/delegate/tools.ts`）：`TICKET_TOOLS` に `knowledge_open` を足す（`[\"ticket_read\", \"knowledge_open\"]`）。会話の仕事は `Object.keys(TOOLS)` に加えて `knowledge_open` を返す。`ALL_TOOLS` にも入れる。前の決まり（チケットの仕事に会話の道具は 403・会話の仕事に `ticket_read` は 403）は変えない。口の本体は `ticket_read` の分岐の隣に `knowledge_open` の分岐を足し、`rawBody` から `input` を読んで `parseOpenInput` → `runKnowledgeOpen` を呼ぶ\n- **入力**（AI の出力なので緩く読む）：`input.page_id` が uuid（大文字も通し、小文字に直す・`auth/ids.ts` の `idOf`）。無い・文字でない・uuid でない → 422（`{error: \"validation_failed\", code: \"VALIDATION_ERROR\", details: [{field: \"page_id\", message}]}`）。知らない欄は捨てる\n- **`app.knowledge_open(p_job, p_token_hash, p_session, p_page) returns jsonb`**（`security definer`・`set search_path = public, app, pg_temp`・`kaname_app` に渡す）。**1 つの取引の中で次の順**：\n  1. 仕事を引く：`bridge_jobs` で `id = p_job`・`state_id in ('running','asking')`・`tool_token_hash = p_token_hash`・`taken_session_id = p_session`・仕事の持ち主が止められていない（`members.deleted_at`・`suspended_at` が空）。無ければ **null**（口は 404 の答えにする。鍵の確かめは口の前段〔`app.bridge_tool_job`〕が 403 で先に済ませているので、DB まで来て null になるのは「見つからない」と同じ扱い）\n  2. チケット：仕事の種類が `ticket` なら `action_runs.ticket_id`（最新の 1 つ）。会話の仕事は null\n  3. `p_page` が `app.kn_ai_visible_pages(仕事の持ち主, チケット)` に入っていなければ **null**\n  4. `reference_logs` に 1 行：`tenant_id`・`ticket_id`（無ければ null）・`bridge_job_id`・`member_id`（仕事の持ち主）・`action_run_id`（あれば）・`ref_type = 'page'`・`ref_id`・`title`（その時の題名）・`seen_at = now()`・`created_by`（持ち主）。部分一意 `reference_logs_page_job_uq on (bridge_job_id, ref_id) where ref_type = 'page' and bridge_job_id is not null and deleted_at is null` で `on conflict do nothing`。入ったか（`opened_now`）を覚える\n  5. 入ったとき、かつチケットの仕事のとき：`app.knowledge_ticket_line(チケット, 'knowledge_open', [{field: 'knowledge_open', from: null, to: <題名>, note: <場所>, page_id}], 'AI が『<題名>』（<場所>）を開きました')`\n  6. 証跡：`app.agent_tool_audit(持ち主, 会社, 'tool.knowledge_open', 'knowledge_page', ページ, {job_id})`（ページの題名・本文を入れない。開くたびに 1 行・`ticket_read` と同じ）\n  7. 答え：`{ ok: true, opened_now, page: { id, title, desc, place, body_text, truncated, version } }`（鍵ちょうど 7 つ。`body_text` は公開の最新の版の字。50,000 字（コードポイント）を超えたら切って `truncated: true`。`version` は `current_version`）\n- **口の答え**（`openAnswer`）：DB が null → 404 `{ error: \"not_found\", code: \"NOT_FOUND\" }`（欄・details・detail を付けない）／ok → 201 `{ data: { result: <ok の答え> } }`。**DB の例外は 503 `E-PAGE-003`**（`unavailable`・何も残らない・ログに例外の種類だけ・題名・本文・id を出さない）\n- **reference_logs の直し**（migration の中）：`ticket_id` の not null を外す・列 `member_id uuid references members(id)`・`bridge_job_id uuid references bridge_jobs(id)` を足す・check `reference_logs_owner_ck`（`ticket_id is not null or bridge_job_id is not null`）・上の部分一意と索引 `(tenant_id, ref_id)`・**引き金 `reference_logs_same_tenant` を新しい関数 `app.kn_open_same_tenant()` に付け替える**（`ticket_id` があればそのチケット、`member_id`・`bridge_job_id` があればそれぞれが同じ会社であること。前の `app.ticket_around_same_tenant` は触らない＝ほかの表が使う）。**前からの行・前からの入れ方（`ticket_id` だけ）は通る**。`revoke update, delete` は前のまま。行の守り（`reference_logs_ticket_read`・`_ticket_write`）は変えない（`ticket_id` が空の行は人の接続からは見えない。読むのは `security definer` の関数だけ）\n- 外へ出ない：メールもお知らせも出さない。AI の外のサービスも呼ばない。**開いた記録とやり取りの行を書くのは AI の仕事の鍵が合ったときだけ**\n- ログに題名・本文・道具の鍵・PC の印を出さない",
+    "依存の理由": "- K-697: 要る — `app.kn_ai_visible_pages`（見える範囲）と `app.knowledge_ticket_line`（やり取りの行）を使う\n- K-677: 要る — `app.kn_page_ai_opened_30d` が数える列の条件（`ref_type`・`ref_id`・`deleted_at`・`seen_at`）に、この葉の記録が当たる。K-677 の足元の試験を壊さないために先に入れる\n- K-62（本線）: 要る — 契約の口 `callKanameTool` と `tools.ts`・鍵の確かめ（`app.bridge_tool_job`）が本線に在る",
+    "目録で探した結果": "- 使う：`apps/api/src/features/F5/delegate/tools.ts`（`toolHooks`・`toolsFor`）・`app.bridge_tool_job`・`app.ticket_tool_read`（鍵と PC の 2 層目の形）・`app.agent_tool_audit`（0049）・`idOf`（`auth/ids.ts`）・`reference_logs`（0072・本線では行の守りの定義以外から読み書きされていない：`git grep` で確かめた）・K-697 の 2 つの関数・K-677 の `app.kn_page_ai_opened_30d`・口の書き方は K-685 の `must.ts`・`reply.ts` の `unavailable`\n- 作る：`app.knowledge_open`・`app.kn_open_same_tenant`・`apps/api/src/features/F9/knowledge/ai/open.ts`。探したが同じ形の物は無かった（`ticket_read` はチケット 1 枚の区画だけを返す物でナレッジの範囲を持たず、`reference_logs` は 0072 でチケットの子の表として作られ会話の仕事の記録を持てない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| migration（1 本・時刻の名前・K-327） | `packages/db/migrations/20261125013800_knowledge_open.sql`（K-698 → 98 分 → 01:38）。順に：① `reference_logs` の直し（上の節）② 関数 `app.kn_open_same_tenant`・`app.knowledge_open`。`python3 scripts/ci/gen_migrations.py` で `packages/db/src/migrations.generated.ts` を作り直す |\n| 道具の口の部品 | `apps/api/src/features/F9/knowledge/ai/open.ts`：`parseOpenInput(input)`（`{ok: true, page_id} \\| {ok: false, reply}`）・`runKnowledgeOpen(pool, {job, tokenHash, session, page})`（`select app.knowledge_open(...)` → `openAnswer`・例外は 503）・`openAnswer(v)` |\n| 道具の口 | `apps/api/src/features/F5/delegate/tools.ts`：`TICKET_TOOLS`・`toolsFor`・`ALL_TOOLS` に足し、`ticket_read` の分岐の隣に `knowledge_open` の分岐 |\n| 目録・文書 | `03_architecture/ER図.md`：`reference_logs` の行に `member_id`・`bridge_job_id`・「チケットなしの記録もある」を書き足す。`08_api/db-columns.json`（`pnpm db:columns`）。`08_api/phase1/09_ナレッジ.md`：「AI が開く道具」の節 |\n| 契約 | 口の宣言は前のまま（`apis` は空）。名前の一覧に 1 語だけ足す：`05_flow/screen_api.py` の `PATH_PATTERNS[\"callKanameTool\"][\"name\"]`（`^(?:ticket_read|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember|knowledge_open)$`）・`scripts/ci/contract_shape_test.py` の同じ期待・`python3 05_flow/build_api.py` で `08_api/openapi.yaml` などの生成物を作り直す（`05_flow/screen_api.py` は段 5 の K-565 などと同じく、足すのは 1 語の `overlap_ok`） |\n| 登録先（touch_rules） | `scripts/ci/ci_scope.d/K-698.json`（下）。契約の断片・hooks の登録・EARS の対応は作らない（前からの口。口 `callKanameTool` の持ち主は K-62 のままなので、頭の `apis:` は空にする＝段 5 の K-565・K-566 と同じ書き方） |\n| 試験 | `apps/api/test/features/F9/knowledge-open-tool.test.ts`（切る段が書いた・18 行） |\n\n### 画面が使う答えの形（K-702 の「AI が開いたページ」が使う）\n\n- やり取りの行：`ticket_messages.kind = 'change'`・author なし・`changes = [{ field: \"knowledge_open\", from: null, to: <題名>, note: <場所>, page_id }]`。画面は「AI が『題名』（場所）を開きました」と組む。ページを開く道は `page_id`\n\n### 範囲の地図（ci_scope.d/K-698.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/features/F9/knowledge/ai/open.ts\", \"apps/api/src/features/F5/delegate/tools.ts\"],\n   \"tests\": [\"apps/api/test/features/F9/knowledge-open-tool.test.ts\"]}\n ]\n}\n```",
+    "外に影響する手順": "1. DB に書く（開いた記録）：`reference_logs` に 1 行（関門 C2）。失敗の行：K698-API-010（記録を書く所で落ちる → 例外・何も残らない。口は 503 E-PAGE-003＝K698-API-018）\n2. DB に書く（チケットのやり取りの 1 行）：`ticket_messages` に 1 行（チケットの仕事だけ・同じ取引）。失敗の行：K698-API-011（落ちる → 全部戻る・次に開けば記録される）\n3. 証跡：`audit_events` に 1 行（開くたび・同じ取引）。失敗の行：K698-API-012（落ちる → 全部戻る）\n\nメール・お知らせ・AI・PC は呼ばない。**手順 1〜3 は同じ取引なので、失敗すれば全部戻る**（後に残る手順は無い＝後片付けの失敗の行は無い）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F9/knowledge-open-tool.test.ts`（本物の DB。管理の接続で種を入れ、DB の関数を直に呼ぶ。道具の口の部品は純粋に確かめる。人は管理者・営業メンバー・開発メンバー。仕事は「受け取った PC つき」で DB に直に置く）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 見えるページ（会社・自分のグループ・共有・外れた写し） | 道具 knowledge_open | 任せた人の AI（チケット・会話） | 全文が返り、記録 1 行・（チケットなら）やり取りの行 1 行 | このチケット | K698-API-001・002・006 |\n| 同じ仕事で同じページ | 2 回・同時 | 同上 | 記録も行も 1 つ・証跡は開くたび | このチケット | K698-API-003・004 |\n| 見えない・無い・消えた・下書き・他人の自分・別の会社 | 同上 | 同上 | どれも null（404 と同じ答え）・何も残らない | このチケット | K698-API-005 |\n| 鍵が違う・別の PC・終わった仕事・止められた人 | 同上 | 同上 | null・何も残らない | このチケット | K698-API-007 |\n| 長い本文 | 同上 | 同上 | 50,000 字で切る | このチケット | K698-API-008 |\n| 書く手順が落ちる | 同上 | 同上 | 全部戻る | このチケット | K698-API-010〜012・018 |\n| 口の部品 | 道具の分け方・入力・答えの形 | AI | 両方の仕事に出る・422・404 | このチケット | K698-API-015〜017 |\n| 記録の表 | 直に書く | — | 持ち主なしは入らない・一意 | このチケット | K698-API-013・014 |\n| AI に道具を見せる | Bridge | — | K-718 | K-718 | — |\n| 取る → 道具 → やり取り → 画面 | 通し | 人・PC | 中間の試験 | K-714 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K698-API-001 | 入力 | チケットの仕事で開く | 答えは ok・opened_now true・page の鍵ちょうど 7（id・title・desc・place・body_text・truncated・version）。記録は ticket_id・bridge_job_id・member_id・ref_type page・題名の 1 行。やり取りの行は kind change・author なし・本文「AI が『請求書の送り方』（会社 › 経理）を開きました」・changes は field knowledge_open・to 題名・note 場所・page_id |\n| K698-API-002 | 入力 | 会話の仕事で開く | 記録は ticket_id なし・bridge_job_id あり 1 行。やり取りの行は作られない。K-677 の `app.kn_page_ai_opened_30d` を、見える人（営業メンバー）の文脈で呼ぶと、開く前は 0・開いた後は 1（人の文脈で前後の値を比べる） |\n| K698-API-003 | 操作の揺れ | 同じ仕事で同じページ 2 回 | 2 回目も ok だが opened_now false。記録・やり取りの行は 1 つ・証跡は 2 行 |\n| K698-API-004 | 操作の揺れ | 同時 3 つ・別の仕事 | 同時でも記録 1・行 1。別の仕事（もう 1 度任せた）は別に 1 行残る |\n| K698-API-005 | 守り | 見えない物 | ほかのグループ・下書き・消した・他人の自分・別の会社・無い id はどれも null。記録・やり取りの行・証跡が増えない |\n| K698-API-006 | 入力 | 共有・写し | 共有されたページと、上と同じため目次から外れた写しも開ける |\n| K698-API-007 | 守り | 鍵・PC・仕事・人 | 鍵違い・別の PC・終わった仕事・止められた人は null・何も残らない |\n| K698-API-008 | 入力 | 本文の字数の境界 | 50,005 字は 50,000 字で切り truncated true・ちょうど 50,000 字は切らず false |\n| K698-API-009 | 守り | 証跡 | 操作した人・対象のページ・関門 C2・payload に仕事の id だけ（題名・本文なし） |\n| K698-API-010 | 失敗 | 手順 1 | 記録を書く所で落ちると例外。記録・行・証跡が残らない |\n| K698-API-011 | 失敗 | 手順 2 | やり取りの行を書く所で落ちると全部戻り、次に開けば記録される（opened_now true） |\n| K698-API-012 | 失敗 | 手順 3 | 証跡を書く所で落ちると記録も行も戻る |\n| K698-API-013 | 守り | 記録の表の check・引き金 | ticket_id も bridge_job_id も無い行は入らない。チケットだけの前からの行は入る。別の会社の人・仕事を指す行は入らない |\n| K698-API-014 | 守り | 一意 | 同じ仕事・同じページの生きている記録は 2 つ入らず、消した行は数えない |\n| K698-API-015 | 守り | 道具の分け方 | チケットの仕事に knowledge_open と ticket_read（draft_read は出ない）・会話の仕事に knowledge_open と draft_read（ticket_read は出ない）・ログインの試しは空 |\n| K698-API-016 | 入力 | 入力の形 | page_id の uuid（大文字は小文字に）だけ読む。無い・数・文字・null・本体なしは 422（欄 page_id） |\n| K698-API-017 | 入力 | 答えの形 | 開けたら 201 の data.result（page は 7 鍵）・null は 404 で error と code の 2 欄だけ |\n| K698-API-018 | 失敗 | DB が落ちる | 503・E-PAGE-003。題名・本文をログに出さない |\n\n### テストの型の受け（分類 AI・PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| 要らない: TP-AI-01 外に出す前 | この道具は読むだけで外に出さない |\n| 要らない: TP-AI-02 止める・取り下げ・PC が閉じている | 止め方は前から（K-62）。終わった仕事の鍵は K698-API-007 |\n| 要らない: TP-AI-03 利用量の上限 | 口の回数の上限は前からの契約（60 回／分・K-62） |\n| TP-AI-04 予期しない出力（とても長い・空・形が違う） | 長い本文 K698-API-008・入力の形 016 |\n| TP-PERM-01 役が合わない人 | K698-API-005・007（見えないページ・止められた人） |\n| TP-PERM-02 権限を外した直後 | K698-API-007（止められた人の鍵は次の呼びから null） |\n| TP-PERM-03 他の会社の ID を直接指定する | K698-API-005（別の会社のページは null） |\n| TP-PERM-04 一覧・数・検索 | 要らない: TP-PERM-04 道具は 1 ページずつ開くだけで一覧を返さない（目次は K-697） |\n| TP-PERM-05 権限を付けた直後 | K698-API-007（止めた人が戻った直後は次の呼びから開ける。毎回 DB が今の状態で決める） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | — | AI の道具の呼びは 1 ページ 1 回 |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | ticket_read は 2 文 | 前段の鍵の確かめ 1 文＋DB の関数 1 文（中で 6〜8 文）。取引は 1 つ |\n| 認証の要る答えの Cache-Control | 前のまま | `private, no-store`（入口の共通） |\n| 新しい住所 | — | 増えない（`/bridge/jobs/:id/tools/:name`） |\n| staging での答えの時間の前後 | — | 実測なし。staging で記録（300 ms 以内を目安） |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"TICKET_TOOLS\\|toolsFor\\|reference_logs\\|tool.ticket_read\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'packages/*/test/*.ts' ':!apps/api/test/generated/*' ':!apps/api/test/features/F9/knowledge-open-tool.test.ts' ':!apps/api/test/features/F9/flow-ai-*.test.ts' ':!apps/api/test/features/F9/knowledge-complete-guard.test.ts' ':!apps/api/test/features/F9/knowledge-guard-specs.test.ts' ':!apps/api/test/features/F9/knowledge-review.test.ts' ':!apps/api/test/features/F9/knowledge-spec-source-page.test.ts'\n3\n```\n\n- `apps/api/test/features/F5/delegate-bridge.test.ts`：替えない — 道具は仕事の種類で分ける（K62-API-051）はドラフトの道具（draft_read・goal_set・remember）と ticket_read だけを見る。`knowledge_open` を足しても 403 の組み合わせは変わらない\n- `packages/db/test/ticket_around.test.ts`：替えない — `reference_logs` に `ticket_id` つきで入れる前からの入れ方が通る（K698-API-013 が同じ入れ方を見る）。更新・削除を渡さないのも前のまま\n- `apps/api/test/features/F9/knowledge-page-read.test.ts`：替えない — K-677 の足元の数は `reference_logs` を直に入れて数える。この葉は表の列を足すだけで、数える条件は同じ\n- `apps/api/test/features/F9/flow-ai-*.test.ts`・`knowledge-complete-guard.test.ts`・`knowledge-guard-specs.test.ts`・`knowledge-review.test.ts`・`knowledge-spec-source-page.test.ts`：この葉の持ち物ではない（ほかの葉が `reference_logs` を読む自分の試験。命令のパスで外した）\n- `apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts`：生成物（検索の対象外）。道具の名前の一覧に 1 語足すので作り直すが、it.todo は増えない",
+    "成果物": "- migration 1 本（reference_logs の直し・関数 2 本）\n- `ai/open.ts`・`tools.ts`（足し）・`09_ナレッジ.md`（節）・ER 図・db-columns・`ci_scope.d/K-698.json`\n- 単体の試験 `knowledge-open-tool.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-22 切る段の決め：開いた記録は **1 つの表 `reference_logs`** に残す。会話の仕事（チケットなし）のために `ticket_id` の not null を外し、`member_id`・`bridge_job_id` を足す。別の表を作らない（K-677 の足元と K-695 の「使われていない」が 1 つの表を数えられる）\n- 2026-11-22 切る段の決め：引き金は付け替える（新しい `app.kn_open_same_tenant`）。ほかの表が使う `app.ticket_around_same_tenant` は触らない\n- 2026-11-22 切る段の決め：DB の関数は `ticket_tool_read` と同じく**鍵のハッシュと受け取った PC を引数に取る**（土台の案 `(p_member, p_page, p_ticket)` から変えた）。AI の道具は人の要求の文脈が無く、鍵だけが証明なので\n- 2026-11-22 切る段の決め：見えない・無い・消えた・範囲の外は同じ答え（404・`{error, code}` だけ）。範囲は K-697 の `kn_ai_visible_pages`（外れた写しも開ける）\n- 2026-11-22 切る段の決め：同じ仕事で同じページを開いた記録は部分一意で 1 つ・やり取りの行も 1 つ。証跡は開くたびに残す（`ticket_read` と同じ）\n- 2026-11-22 切る段の決め：開く本文は 50,000 字で切る（`truncated` で知らせる）。必ず守るの 2,000 字とは別（開くのは AI が選んだ 1 ページ）\n- 2026-11-22 切る段の決め：やり取りの行は**チケットの仕事だけ**。会話の仕事は記録だけ（会話に「AI が開いた」を出す場所が無い）\n- 2026-11-22 切る段の決め：Bridge の道具の定義（AI に見せる側）は K-718 に分けた（K-698 の分け）。エラー番号 E-KNW-210 台は使わない（見つからないは番号なしの 404）",
+    "リスクと懸念": "- **道具の入力は AI の出力**：uuid でない・無い id は 422 か null。落ちない\n- `reference_logs` は本線の表で、行の守りは「チケットが見える人だけ」。`ticket_id` が空の行は人の接続から見えない（AI が開いた数は `security definer` の関数が数える）。将来、人の画面が会話の記録を読みたくなったら、守りを足す別の葉が要る\n- 古い Bridge（K-718 より前）は道具を見せないので開かれない。目次の文は `canOpen` が false の仕事では「開ける」と言わない（K-697）\n- 引き金の付け替えは `reference_logs` の前の入れ方に影響しない（K698-API-013）。migration の再実行で引き金が二重にならないよう `drop trigger if exists` → `create trigger` の順\n- 同じ仕事で同時に開く 3 本は、一意の `on conflict do nothing` で 1 行に収まる（K698-API-004）。やり取りの行も「入ったときだけ」書くので 1 つ",
+    "申し送り": "- K-697：`app.kn_ai_visible_pages`・`app.knowledge_ticket_line` を使う（この葉が変えない）\n- K-718：Bridge の道具の定義・仕事の種類ごとの出し分け・進み具合の字。契約の口はこの葉が先に通す\n- K-677：`app.kn_page_ai_opened_30d` は変えない。この葉が入ると会話の仕事の記録も数に入る\n- K-695（見直すページ）：「使われていない」は `reference_logs` の `ref_type = 'page'` を数える（`ticket_id` の有無に関わらない）。この葉の記録の形に合わせる\n- K-702（画面）：やり取りの `knowledge_open` の行の形は「画面が使う答えの形」のとおり\n- K-714（中間）：任せる → 取る → 道具 → 記録とやり取りの行 → 画面の通し",
+    "代表に確認中・勧めで切る": "- なし（この葉は決まっていることだけで切った）。「その仕事で見える範囲」は K-697 の「代表に確認中」と同じ（勧めのまま）"
+   },
+   "file": "11_tickets/K-698.md"
+  },
+  {
    "id": "K-705",
    "title": "状態（作業の段）を足す・直す（名前・色）・並べる・消す（書く口 4 本と DB の関数 4 本・色の列 color_key・listTicketStages の答えを決める・始めと終わりと仕組みの状態は消せない）（K-69 の葉）",
    "kind": "タスク",
