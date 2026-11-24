@@ -1090,6 +1090,8 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/approve-complete/queue.ts": [("rows.slice(0, limit)", "DB から limit+1 件取った行を、続きの有無を見た後に limit 件に戻す（入力でない）")],
         # K-351：預けたログイン情報の一覧（DB から上限 +1 件取った行を、上限を超えたかを見た後に上限の件数に戻す）
         "apps/api/src/features/F3/credentials/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
+        # K-677：ページの版の一覧（DB から VERSIONS_MAX+1 件取った行を、超えたかを見た後に VERSIONS_MAX 件に戻す・入力でない）
+        "apps/api/src/features/F9/knowledge/versions.ts": [("rows.slice(0, VERSIONS_MAX)", "DB から VERSIONS_MAX+1 件取った版の行を、超えたかを見た後に 200 件に戻す（入力でない）")],
         # K-92：チケットの一覧も同じ形（DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す）
         "apps/api/src/features/F4/ticket-list/hooks.ts": [("const page = rows.slice(0, q.limit);", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
         # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
