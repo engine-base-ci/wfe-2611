@@ -12559,6 +12559,76 @@
    "reason": null
   },
   {
+   "entity": "guest_groups",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name_key",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "request_scope_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "member_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "ticket_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
    "entity": "ticket_handovers",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -12732,146 +12802,6 @@
    ],
    "internal": false,
    "reason": null
-  },
-  {
-   "entity": "ticket_handovers",
-   "field": "notify_managers",
-   "consumed_by_screens": [
-    "approvals",
-    "clone-chat",
-    "ai-activity",
-    "member-detail",
-    "tickets",
-    "requests"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "ticket_handovers",
-   "field": "reminded_at",
-   "consumed_by_screens": [
-    "approvals",
-    "clone-chat",
-    "ai-activity",
-    "member-detail",
-    "tickets",
-    "requests"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "ticket_handovers",
-   "field": "overdue_notified_at",
-   "consumed_by_screens": [
-    "approvals",
-    "clone-chat",
-    "ai-activity",
-    "member-detail",
-    "tickets",
-    "requests"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "ticket_handovers",
-   "field": "switch_applied",
-   "consumed_by_screens": [
-    "approvals",
-    "clone-chat",
-    "ai-activity",
-    "member-detail",
-    "tickets",
-    "requests"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "ticket_handovers",
-   "field": "answered_by",
-   "consumed_by_screens": [
-    "approvals",
-    "clone-chat",
-    "ai-activity",
-    "member-detail",
-    "tickets",
-    "requests"
-   ],
-   "internal": false,
-   "reason": null
-  },
-  {
-   "entity": "guest_groups",
-   "field": "<common>",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "guest_groups",
-   "field": "name",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "guest_groups",
-   "field": "name_key",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "guest_groups",
-   "field": "request_scope_id",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "guest_group_members",
-   "field": "<common>",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "guest_group_members",
-   "field": "guest_group_id",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "guest_group_members",
-   "field": "member_id",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "ticket_guest_shares",
-   "field": "<common>",
-   "consumed_by_screens": [],
-   "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
-  },
-  {
-   "entity": "ticket_guest_shares",
-   "field": "ticket_id",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
-  },
-  {
-   "entity": "ticket_guest_shares",
-   "field": "guest_group_id",
-   "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
   },
   {
    "entity": "saved_views",

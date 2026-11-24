@@ -151,10 +151,10 @@
 | E-132 | `passkeys` | 16. 第1フェーズの表 | none | 1 | D-125 D-125.137 D-128 D-128.119 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
-| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 D-155.37 |
 | E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
 | E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
+| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |

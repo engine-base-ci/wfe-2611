@@ -394,7 +394,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1080 ／ 内部専用 280 ／ どの画面にも出ない 7
+- 検査したフィールド 1075 ／ 内部専用 280 ／ どの画面にも出ない 7
   - ★ guest_groups.name
   - ★ guest_groups.name_key
   - ★ guest_groups.request_scope_id
