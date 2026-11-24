@@ -397,12 +397,19 @@ test("K471-UI-018 広い幅で箱を開く：後ろに薄い幕（箱の 1 つ�
   expect(sz, "幕は箱の 1 つ下の層").toBe(pz - 1);
   const vp = page.viewportSize()!;
   const sb = (await scrim.boundingBox())!;
-  expect([Math.round(sb.x), Math.round(sb.y), Math.round(sb.width), Math.round(sb.height)]).toEqual([0, 0, vp.width, vp.height]);
+  expect([Math.round(sb.x), Math.round(sb.y), Math.round(sb.width), Math.round(sb.height)]).toEqual([
+    0,
+    0,
+    vp.width,
+    vp.height,
+  ]);
   const box = (await panel(page).boundingBox())!;
   expect(Math.abs(box.x - (vp.width - box.x - box.width)), "左右の余りが等しい").toBeLessThan(2);
   await expect(panel(page).locator("input")).toHaveCount(1);
   expect(await panelInput(page).evaluate((e) => getComputedStyle(e).outlineStyle), "入力の縁は変えない").toBe("none");
-  expect(await barInput(page).evaluate((e) => getComputedStyle(e).outlineStyle), "帯の欄の縁は焦点の前と同じ").toBe(before);
+  expect(await barInput(page).evaluate((e) => getComputedStyle(e).outlineStyle), "帯の欄の縁は焦点の前と同じ").toBe(
+    before,
+  );
   await page.keyboard.type("見積");
   await expect(panelInput(page)).toHaveValue("見積");
   await expect(barInput(page)).toHaveValue("");
