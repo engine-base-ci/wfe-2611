@@ -3179,7 +3179,6 @@
     "deleteSavedView",
     "deleteTicket",
     "getScopeOverview",
-    "getShell",
     "listSavedViews",
     "previewTicketDelete",
     "readAllNotifications",
