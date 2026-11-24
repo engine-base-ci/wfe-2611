@@ -1,6 +1,6 @@
 // 作る口が断ったときに、どの欄の下・赤い箱に出すかを決める（K-442・決めは前の K-431 と控え帳の引き継ぎ）。
 //   409 E-VAL-012・028（期限・開始）→ 期限の欄の下／409 E-VAL-015（親の深さ）・404（選べない選び先）→ 赤い箱／
-//   409 E-FLD-002〜004（会社の項目）→ 口は欄を付けないので、今の項目のマスタと送った値から当たる項目を決めて、その欄の下（当たらなければ赤い箱）／
+//   409 E-FLD-002〜004（会社の項目）→ 口は欄を付けないので、今の項目のマスタと送った値から当たる項目を決めて、その欄の下（002 は手元で選択肢に在れば値の入った選ぶ項目。当たらなければ赤い箱）／
 //   E-FLD-001（その種別に出ない）→ 赤い箱／422 → 欄つきはその欄の下・置けない鍵（本文の木・確認項目・項目の値）が 1 つでもあれば赤い箱にも番号。
 //   文は正本（errors.json → @kaname/errors/catalog）から引く。読み直さない
 import { CATALOG } from "@kaname/errors/catalog";
@@ -63,10 +63,22 @@ const FIELD_RULES: Record<string, (f: MasterLike, v: unknown) => boolean> = {
   "E-FLD-003": wrongType,
 };
 
+/** 値の入った選ぶ項目（手元のマスタでは選択肢に在るが、サーバーの側で使えなくなった値の当たり先） */
+function chosenChoice(f: MasterLike, v: unknown): boolean {
+  if (f.field_type !== "select" && f.field_type !== "multi_select") return false;
+  return Array.isArray(v) ? v.length > 0 : typeof v === "string" && v !== "";
+}
+
+function hitsOf(rule: (f: MasterLike, v: unknown) => boolean, ctx: PlaceContext): MasterLike[] {
+  return ctx.master.filter((f) => rule(f, ctx.values[f.id]));
+}
+
 function placeFieldCode(code: string, ctx: PlaceContext): PlacedError {
   const rule = FIELD_RULES[code];
   if (!rule) return { fields: {}, box: code };
-  const hit = ctx.master.filter((f) => rule(f, ctx.values[f.id]));
+  // 002：手元で選択肢に無い値が無ければ、値の入った選ぶ項目に置く（代表の決め answer=a2c6993d3b1f）。当てられないときだけ赤い箱
+  const direct = hitsOf(rule, ctx);
+  const hit = direct.length === 0 && code === "E-FLD-002" ? hitsOf(chosenChoice, ctx) : direct;
   if (hit.length === 0) return { fields: {}, box: code };
   return { fields: Object.fromEntries(hit.map((f) => [f.id, textOf(code)])), box: null };
 }
