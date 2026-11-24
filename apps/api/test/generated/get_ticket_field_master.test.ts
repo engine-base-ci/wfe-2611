@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("GET /api/v1/ticket-field-master", () => {
   it("test_get_ticket_field_master_ok", () => {
-    // EVENT-DRIVEN: WHEN GET /api/v1/ticket-field-master が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す
+    // EVENT-DRIVEN: WHEN GET /api/v1/ticket-field-master が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す
     // 本物の試験：apps/api/test/features/F9/ticket-fields-write.test.ts の「K706-API-001」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F9/ticket-fields-write.test.ts", "utf8")).toContain("K706-API-001");
   });

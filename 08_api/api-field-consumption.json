@@ -2134,8 +2134,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2154,8 +2153,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2174,8 +2172,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2194,8 +2191,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2214,8 +2210,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2234,8 +2229,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2254,8 +2248,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2274,8 +2267,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2294,8 +2286,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2314,8 +2305,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2334,8 +2324,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -11895,6 +11884,153 @@
    ],
    "internal": false,
    "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "kind",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "page_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "folder_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "from_scope_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "from_is_personal",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "to_scope_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "to_folder_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "requested_by",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "message",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "state",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "decided_by",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "decided_at",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "decline_reason",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_requests",
+   "field": "dismissed_at",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_limits",
+   "field": "shelf",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
+  },
+  {
+   "entity": "knowledge_limits",
+   "field": "must_max",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "マスタ。label は各画面の札・選択肢として出る"
   },
   {
    "entity": "clients",
