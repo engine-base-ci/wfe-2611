@@ -290,7 +290,7 @@ test("K450-UI-013 先に変えられた（409 E-SPEC-020・チェック／文を
   await editor(page).fill("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.reads).toBe(3);
-  await expect(lineOf(page, "別の人の文")).toHaveCount(1);
+  // 入力を開いたままの行は字の代わりに入力が出る。読み直した最新（版 2）は、次に送る体の version で確かめる
   await expect(editor(page)).toHaveValue("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.updates.length).toBe(3);
@@ -560,6 +560,13 @@ const DIALOG_PAIRS: FidelityPair[] = [
   pair("input", ".k-dialog .k-input", ["width", "font-size", "border-top-color"]),
   pair("actions", ".k-dialog-actions button", CTRL),
 ];
+/** 下絵 f4v2-create-specs の行（features/F4/doc/views.tsx の SPEC_LINES と同じ字） */
+const CREATE_LINES = [
+  "請求書が宛先に届いている",
+  "支払期日が 12/15 になっている",
+  "請求額が明細の合計と合っている",
+  "送る前に文面を目で見る",
+];
 type MockState = { id: string; what: string; pairs: FidelityPair[]; setup: (page: Page, w: number) => Promise<void> };
 const detailOpen = async (page: Page, w: number): Promise<void> => {
   await mockTestSpecs(page, { specs: fiveSpecs() });
@@ -587,7 +594,7 @@ const STATES: MockState[] = [
     ],
     setup: async (page, w) => {
       await detailOpen(page, w);
-      await lines(page).first().getByRole("button", { name: T[0], exact: true }).click();
+      await textBtn(page, T[4]!).click();
       await expect(editor(page)).toBeVisible();
     },
   },
@@ -607,9 +614,15 @@ const STATES: MockState[] = [
     what: "作る面の確認項目（チェックの箱は押せない形）の行の字・箱",
     pairs: SPEC_PAIRS,
     setup: async (page, w) => {
+      // 下絵 f4v2-create-specs と同じ 4 行（同じ字・同じ並び）を画面の中に足す
       await mockTestSpecs(page);
-      await openHost(page, { mode: "create", width: w, n: 2 });
-      await expect(lines(page)).toHaveCount(2);
+      await openHost(page, { mode: "create", width: w });
+      for (const t of CREATE_LINES) {
+        await typeInto(page, t);
+        await press(page).click();
+        await expect(dialogOf(page)).toHaveCount(0);
+      }
+      await expect(lines(page)).toHaveCount(CREATE_LINES.length);
     },
   },
 ];
@@ -679,7 +692,8 @@ test("K450-UI-028 外から開ける：SpecsItem に addOpen を渡すと（親�
   const m2 = await mockTestSpecs(p2, { specs: fiveSpecs() });
   await openHost(p2, { mode: "detail", count: 5, ext: "only" });
   await extBtn(p2).click();
-  await typeInto(p2, "請求書の宛先が合っている");
+  await expect(dialogOf(p2)).toBeVisible();
+  await dialogOf(p2).getByRole("textbox", { name: "確かめること", exact: true }).fill("請求書の宛先が合っている");
   await press(p2).click();
   await expect.poll(() => m2.adds.length).toBe(1);
   await expect(dialogOf(p2)).toHaveCount(0);
