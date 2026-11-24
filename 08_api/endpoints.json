@@ -50482,8 +50482,7 @@
     "tickets"
    ],
    "related_entities": [
-    "E-109",
-    "E-110"
+    "E-109"
    ],
    "choke_points": [],
    "source": [
@@ -50503,9 +50502,7 @@
    "rate_limit": "120/min/user",
    "access_control_policies": [
     "ticket_kinds_tenant_read",
-    "ticket_kinds_ops_read_with_grant",
-    "kind_sections_tenant_read",
-    "kind_sections_ops_read_with_grant"
+    "ticket_kinds_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -53118,17 +53115,13 @@
     },
     {
      "status": 422,
-     "code": "E-VAL-013",
+     "code": "VALIDATION_ERROR",
      "body": {
       "error": "validation_failed",
-      "code": "E-VAL-013",
       "details": []
      },
-     "errors": [
-      "E-VAL-013"
-     ],
-     "trigger": "本文 body を送らず区画 sections だけで作り、種別の必須の区画が空（前の道・K-578 が外すまで）",
-     "ears_form": "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない"
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
      "status": 404,
@@ -53305,7 +53298,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF そのグループにチケットを書けないなら、Kaname は 403 と FORBIDDEN を返し、チケットを作らない",
     "UNWANTED: IF 親子が 3 段を超えるなら、Kaname は 409 と E-VAL-015 を返し、チケットを作らない",
-    "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 選んだ種別・担当者・知らせる人・親・会社の項目が無いか選べないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない",
     "UNWANTED: IF 期限が今日より前なら、Kaname は 409 と E-VAL-012 を返し、チケットを作らない",
     "UNWANTED: IF 開始日が期限より後なら、Kaname は 409 と E-VAL-028 を返し、チケットを作らない",
@@ -55926,7 +55919,7 @@
      "errors": [
       "E-VAL-023"
      ],
-     "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・実施事項の番号や版が整数でない・本文に知らない欄",
+     "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・本文に知らない欄（todo_checked・todo_version を含む）",
      "ears_form": "UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない"
     },
     {

@@ -164,6 +164,7 @@ export const MIGRATIONS = [
   "20261122101100_ticket_create_links.sql",
   "20261122101300_ticket_estimate_set.sql",
   "20261122101500_ticket_body_move.sql",
+  "20261122101600_ticket_sections_retire.sql",
   "20261123080100_notifications_read_at.sql",
   "20261123081500_saved_views_name.sql",
   "20261123082700_ticket_delete_preview.sql",
