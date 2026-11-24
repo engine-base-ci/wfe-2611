@@ -10962,6 +10962,15 @@
   },
   {
    "entity": "test_specs",
+   "field": "checked_basis",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
    "field": "source",
    "consumed_by_screens": [
     "tickets"

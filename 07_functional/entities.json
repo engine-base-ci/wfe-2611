@@ -11662,6 +11662,10 @@
      "note": "チェックの印と付けた人。時刻なしで人・AI は不可・人と AI の両方は不可 ← 守り test_specs_checked_pair・test_specs_checked_one_who"
     },
     {
+     "name": "checked_basis",
+     "note": "AI がチェックを付けた根拠の 1 行・1〜200 字・任意 ← 守り test_specs_checked_basis_check・K-736・D-153.4"
+    },
+    {
      "name": "source",
      "note": "manual・knowledge・ai・既定 manual。守り test_specs_source_check"
     },
@@ -11727,7 +11731,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.17・D-125.79）。確認項目の形は K-434（D-150.39）で直した。付ける・外す・直す・外すは関数 `app.test_spec_update`・`app.test_spec_delete`、機械・AI が付ける道は `app.test_spec_check_by_ai`（K-435）**",
+   "note": "**★新設（D-125.17・D-125.79）。確認項目の形は K-434（D-150.39）で直した。付ける・外す・直す・外すは関数 `app.test_spec_update`・`app.test_spec_delete`、機械・AI が付ける道は `app.test_spec_check_by_ai`（K-435）。AI が仕事の中で付ける道具 spec_check の入口は `app.ticket_tool_spec_check`（K-736）**",
    "status": "decided",
    "decided_at": "2026-11-24",
    "source": [

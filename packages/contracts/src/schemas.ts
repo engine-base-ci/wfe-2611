@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0e240922d0a1d655
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:b4ce65acb6beb2b3
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2810,6 +2810,7 @@ export const TestSpecs = z.strictObject({
   checked_at: z.iso.datetime({ offset: true }).nullable().optional(),
   checked_by_member_id: z.uuid().nullable().optional(),
   checked_by_ai: z.boolean().optional(),
+  checked_basis: z.string().nullable().optional(),
   source: z.string().optional(),
   source_ref_id: z.uuid().nullable().optional(),
   id: z.uuid(),
@@ -2830,6 +2831,7 @@ export const TestSpecsInput = z.strictObject({
   checked_at: z.iso.datetime({ offset: true }).nullable().optional(),
   checked_by_member_id: z.uuid().nullable().optional(),
   checked_by_ai: z.boolean().optional(),
+  checked_basis: z.string().nullable().optional(),
   source: z.string().optional(),
   source_ref_id: z.uuid().nullable().optional(),
 });
