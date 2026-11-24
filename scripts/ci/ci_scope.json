@@ -1160,6 +1160,20 @@
   },
   {
    "paths": [
+    "07_qa/test-specs/bridge.md",
+    "07_qa/test-specs/screens/clone-chat.md",
+    "apps/web/tests/screens/qa-b-login-check.spec.ts",
+    "apps/web/tests/screens/qa-b-two-factor.spec.ts",
+    "apps/web/tests/screens/credential-e2e.ts",
+    "apps/web/tests/screens/qa-b-credential-vault.spec.ts",
+    "apps/web/tests/screens/qa-b-infisical.spec.ts"
+   ],
+   "tests": [
+    "apps/web/tests/k/k370-credential-e2e-docs.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/contract/k144.d/**",
     "apps/api/test/features/contract/k144-leaves.ts"
    ],
@@ -1877,7 +1891,6 @@
   "apps/web/tests/screens/clone-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/clone-progress.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-a1-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
-  "apps/web/tests/screens/qa-b-infisical.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-b-login-check.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-c-onboard.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/setup-gate.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
@@ -1910,6 +1923,7 @@
   "apps/api/test/features/contract/k144.d/K-365.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts（K-364 が運ぶ）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/k368-pc-browser.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-368",
   "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）",
+  "apps/web/tests/k/k370-credential-e2e-docs.spec.ts": "正本 07_qa/test-specs/bridge.md・screens/clone-chat.md の行と、通しの試験 apps/web/tests/screens/qa-b-login-check.spec.ts・qa-b-two-factor.spec.ts・共通の道具 credential-e2e.ts の中身（止め・固定の待ち・前の道すじが無いか）と、消した 2 本が無いことを読む。どれも data_links で結ぶ（実ブラウザは開かない・web の組の e2e:k が流す）・K-370",
   "apps/web/tests/k/k375-bridge-reinstall.spec.ts": "文言の正本 07_qa/test-specs/errors.json と、会話の帯の行き先を見るために apps/web/components/ai/agent-chat.tsx を読む。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-375",
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
@@ -2001,7 +2015,9 @@
    },
    "73": {
     "tests": [
-     "apps/web/tests/bridge/k379-bridge-chrome.spec.ts"
+     "apps/web/tests/bridge/k379-bridge-chrome.spec.ts",
+     "apps/web/tests/screens/qa-b-login-check.spec.ts",
+     "apps/web/tests/screens/qa-b-two-factor.spec.ts"
     ],
     "on": [
      "apps/bridge/src/**",

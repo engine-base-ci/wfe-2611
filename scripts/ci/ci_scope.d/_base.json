@@ -674,7 +674,6 @@
   "apps/web/tests/screens/clone-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/clone-progress.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-a1-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
-  "apps/web/tests/screens/qa-b-infisical.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-b-login-check.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/qa-c-onboard.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/setup-gate.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
@@ -704,7 +703,7 @@
     "always_when_enrolled": true
    },
    "73": {
-    "tests": ["apps/web/tests/bridge/k379-bridge-chrome.spec.ts"],
+    "tests": ["apps/web/tests/bridge/k379-bridge-chrome.spec.ts", "apps/web/tests/screens/qa-b-login-check.spec.ts", "apps/web/tests/screens/qa-b-two-factor.spec.ts"],
     "on": [
      "apps/bridge/src/**", "apps/bridge/scripts/**", "apps/bridge/package.json", "apps/bridge/tsconfig.json",
      "apps/api/src/features/F3/credentials/**", "apps/api/src/hooks/credentials-*.ts",
