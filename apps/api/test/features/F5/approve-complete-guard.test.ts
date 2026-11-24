@@ -36,6 +36,7 @@ import {
   stageKeyOf,
   team,
   ticket,
+  NO_SPEC,
   delegated,
   approvalRow,
   runsOf,
@@ -322,7 +323,10 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
     expect((await complete(boss, t.id, await completeBody(t))).status).toBe(201);
     // 開き直す口（後の F5／F7）はまだ無いので、段だけを作業中に戻す（completed_at は残す）
     await f.admin.query("update tickets set stage_id = $2 where id = $1", [t.id, await stageOf(T.tenantId, "doing")]);
-    const r = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(a.by) });
+    const r = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(a.by),
+    });
     expect(r.status, await r.clone().text()).toBe(201);
     const runId = String(((await json(r)).data as Record<string, unknown>)["run_id"]);
     const job = await one<{ agent_session_id: string | null }>(

@@ -4,7 +4,6 @@
 //   土台は delegate-kit.ts の makeKit（本物の Postgres・本物の口・本物の PC の印）。チケットは DB に直に置く。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { withTenant } from "@kaname/db/context";
 import type { Person } from "../fixture.js";
 import { approveHooks } from "../../../src/features/F5/approve-complete/index.js";
 import { data, delegateOk, json, makeKit, type Kit } from "./delegate-kit.js";
@@ -102,13 +101,9 @@ describe("K-578 AI に任せる：前の区画を読まない", () => {
     const t = await raw(p);
     await putLegacy(t);
     await addSpec(t, "確かめること");
-    const ctx = { tenantId: k.T.tenantId, userId: p.id, role: "member" as const, stepUpAt: null };
+    // 管理の接続（k.q）で呼ぶ：内側の関数は kaname_app に渡さない（D-128.171・K62-API-046）。K565-API-023 と同じ形
     const prompt = async () =>
-      withTenant(k.f.pool, ctx, async (c) =>
-        String(
-          (await c.query<{ v: { prompt: string } }>("select app.ticket_job_context($1) as v", [t])).rows[0]!.v.prompt,
-        ),
-      );
+      String((await k.q<{ v: { prompt: string } }>("select app.ticket_job_context($1) as v", [t]))[0]!.v.prompt);
     const before = await prompt();
     for (const legacy of LEGACY) expect(before, legacy).not.toContain(legacy);
     for (const old of ["## 目的", "## 完了の条件", "## 実施事項"]) expect(before).not.toContain(old);

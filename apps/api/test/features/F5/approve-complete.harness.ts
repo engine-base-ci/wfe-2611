@@ -167,6 +167,8 @@ export async function team(name = "山田", co: { tenantId: string; rootScope: s
   return { by, pc };
 }
 export const TODO = "- 請求書を作る\n- 先方に送る";
+/** 任せる口に送る「確認項目を使わない理由」。ticket() は確認項目を置かないので、口で任せる試験はこれを送る（0 件で理由が無いと 409・E-CONF-020・K-578・D-150.45） */
+export const NO_SPEC = "試験のチケットで確かめる物を置いていない";
 export async function ticket(
   o: {
     tenant?: string;
