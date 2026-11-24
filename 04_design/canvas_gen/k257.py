@@ -321,8 +321,9 @@ def approvals():
 
 # ---------- PC をつなぐ（画面に在って絵に無かった操作を描き足す） ----------
 LINK = "color: #22345C; text-decoration: underline"
-LEGACY = ('<p style="margin: 0; font-size: 12px; color: #4A5563">Claude Code を入れてログインする・AI が使うブラウザを選ぶ・PC を外すは、'
-          '<a data-act="legacy" href="/setup/bridge/legacy" style="%s">前の設定の画面</a>で行えます。</p>' % LINK)
+# 前の設定の画面への案内の段落（K-367 で前の画面 T-U-09 と一緒に消した・D-128.164）。元の絵に入っている段落も外す
+LEGACY_RE = re.compile(r'<p style="[^"]*">Claude Code を入れてログインする・AI が使うブラウザを選ぶ・PC を外すは、'
+                       r'<a data-act="legacy"[^>]*>前の設定の画面</a>で行えます。</p>')
 BACK = '<a data-act="back" href="#" style="%s">戻る</a>' % LINK
 NEW_CODE = ('<button type="button" data-act="new-code" style="margin-left: auto; padding: 0; font-size: 12px; background: none; border: none; border-radius: 0; '
             'color: #22345C; font-family: inherit; font-weight: 400; cursor: pointer">新しいコード</button>')
@@ -340,13 +341,9 @@ def conn_message():
     return re.search(r'"E-CONN-001":\s*\{.*?"message":\s*"([^"]+)"', src, re.S).group(1)
 
 
-def with_legacy(s):
-    """本文（section）の最後に「ほかの設定」の文を置く（画面はいつも出す）"""
-    if 'data-act="legacy"' in s:
-        return s
-    i = s.index(MAIN_SEC)
-    end = block_end(s, i, "section") - len("</section>")
-    return s[:end] + LEGACY + s[end:]
+def without_legacy(s):
+    """本文の「前の設定の画面」の案内を外す（K-367・前の画面を消した）。もう無ければ何もしない（何度流しても同じ）"""
+    return LEGACY_RE.sub("", s)
 
 
 # PC をつなぐの小窓を小窓の型（K-229・正本の dialog）にそろえる（K-230・代表の答え answer=cc774c8b31d7）：
@@ -404,17 +401,17 @@ def pc_boards():
         box = me.rindex("<span", 0, me.index("background: #FFF8EE", row))
         end = block_end(me, box, "span") - len("</span>")
         me = me[:end] + '<span style="display: block; margin-top: 6px">%s</span>' % conn_message() + WAKE + me[end:]
-    save("MePC", "自分の設定 PC と使った量", with_legacy(me))
+    save("MePC", "自分の設定 PC と使った量", without_legacy(me))
     ed = load("EdPC.dc.html")
     if 'data-act="new-code"' not in ed:
         ed = ed.replace("<br>" + CODE_LINE + "</div>",
                         '<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px"><span>%s</span>%s</span></div>' % (CODE_LINE, NEW_CODE), 1)
-    save("EdPC", "PC をつなぐ", with_legacy(wait_in_code_step(connect_typed(ed))))
+    save("EdPC", "PC をつなぐ", without_legacy(wait_in_code_step(connect_typed(ed))))
     ins = load("MePCInstalled.dc.html")
     if 'data-act="switch-account"' not in ins:
         btn = ins.index(">この PC の Bridge につなぐ</button>") + len(">この PC の Bridge につなぐ</button>")
         ins = ins[:btn] + SWITCH + ins[btn:]
-    save("MePCInstalled", "自分の設定 この PC に Bridge が入っている", with_legacy(ins))
+    save("MePCInstalled", "自分の設定 この PC に Bridge が入っている", without_legacy(ins))
 
 
 # ---------- 置き場の表（この作り手が持つ絵） ----------
@@ -513,11 +510,10 @@ REVIEW = [
      "「どこを直すか」「次は誰が直すか」「覚えさせる候補」はまだ使えないので薄くしています。"),
     ("StCompleteModal", "完了にする（小窓）", "閉じる × を頭に付けました（取り消せる操作なので、ふつうの小窓の形にしました）。置き場は前と同じ真ん中です。"),
     ("Approvals", "承認待ち", "期限の区切りを今の画面と同じ「期限切れ・今日・7 日以内・それより後・期限なし」にしました。今日が期限のものは「11/02（今日）」と出します。"),
-    ("EdPC", "PC をつなぐ（コード）", "今の画面に在る「新しいコード」を、コードの説明の行の右に足しました。本文の最後に「前の設定の画面」への案内を足しました。小窓は小窓の型にそろえました（上から 60px・正本の影・本文の余白と段の間・頭と足の線・K-230）。"),
+    ("EdPC", "PC をつなぐ（コード）", "今の画面に在る「新しいコード」を、コードの説明の行の右に足しました。小窓は小窓の型にそろえました（上から 60px・正本の影・本文の余白と段の間・頭と足の線・K-230）。"),
     ("MePC", "PC と使った量（つないでいる PC）", "切れている PC の直し方の箱に、今の画面と同じ案内の文と「Bridge を起こす」を足しました。"
-     "題の左に「戻る」、本文の最後に「前の設定の画面」への案内を足しました。"),
-    ("MePCInstalled", "この PC に Bridge が入っている", "「この PC の Bridge につなぐ」の隣に「このアカウントに切り替える」（赤い線のボタン）を足しました。"
-     "本文の最後に「前の設定の画面」への案内を足しました。"),
+     "題の左に「戻る」を足しました。"),
+    ("MePCInstalled", "この PC に Bridge が入っている", "「この PC の Bridge につなぐ」の隣に「このアカウントに切り替える」（赤い線のボタン）を足しました。"),
 ]
 ONLY = {"MePC": "戻るは、ほかの画面から開いたときだけ出る",
         "MePCInstalled": "このアカウントに切り替えるは、この PC の Bridge が別のアカウントでつながっているときだけ出る"}

@@ -2,7 +2,7 @@
  "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
  "at": "2026-11-09",
- "count": 2220,
+ "count": 2165,
  "rows": [
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -46,19 +46,7 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-019"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-023"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-03-024"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-026"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -94,23 +82,7 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-01-001"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-01-002"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-01-003"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-02-001"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-02-002"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -146,10 +118,6 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-04-002"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-04-003"
   },
   {
@@ -166,23 +134,7 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-06-013"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-06-014"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-06-004"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-06-006"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-06-011"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -257,10 +209,6 @@
    "id": "BRG-03-012"
   },
   {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-06-008"
-  },
-  {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-AUTH-001-A"
   },
@@ -326,18 +274,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-001-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-001-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-001-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-CONN-002-A"
   },
   {
@@ -359,18 +295,6 @@
   {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-SIG-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-TO-003-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-TO-003-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-TO-003-C"
   },
   {
    "file": "07_qa/test-specs/errors.md",
@@ -3886,63 +3810,11 @@
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-059"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-060"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-061"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-072"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-002"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-107"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-108"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-109"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-062"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-003"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "SCR-BRIDGE-SETUP-005"
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "SCR-BRIDGE-SETUP-006"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-007"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-016"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-017"
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
@@ -3966,95 +3838,11 @@
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-089"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-090"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-091"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-092"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-093"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-094"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "SCR-BRIDGE-SETUP-057"
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-096"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "SCR-BRIDGE-SETUP-058"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-080"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-081"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-070"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-043"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-097"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-098"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-099"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-100"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-101"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-102"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-103"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-104"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-105"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-106"
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
