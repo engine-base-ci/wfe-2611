@@ -331,22 +331,3 @@ async function install(onStep: OnStep, d: InstallDeps): Promise<InstallResult> {
   onStep({ text: "入れられませんでした", state: "failed" });
   return { ok: false, message: `入れられませんでした（${tail}）` };
 }
-
-/** ログインの窓を開く（D-091.3）。承認するのは本人。Bridge は窓を開くだけで、資格情報は見ない */
-export async function openClaudeLogin(): Promise<{ ok: boolean; message: string }> {
-  const bin = await findClaude();
-  if (!bin) return { ok: false, message: "先に「Claude Code を入れる」を押してください" };
-  try {
-    if (process.platform === "darwin") {
-      // ターミナルで開く。ログインはブラウザが開いて、本人が 1 回承認する
-      spawn("open", ["-a", "Terminal", bin], { detached: true, stdio: "ignore" }).unref();
-    } else if (process.platform === "win32") {
-      spawn("cmd", ["/c", "start", "", bin], { detached: true, stdio: "ignore", env: childEnv(shellPath()) }).unref();
-    } else {
-      spawn(bin, [], { detached: true, stdio: "ignore", env: childEnv(shellPath()) }).unref();
-    }
-    return { ok: true, message: "窓が開きます。出てきた案内どおりに 1 回だけ承認してください" };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "窓を開けませんでした" };
-  }
-}

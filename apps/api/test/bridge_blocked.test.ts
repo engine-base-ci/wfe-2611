@@ -219,53 +219,5 @@ describe("Bridge からの知らせ（D-119.4）", () => {
   });
 });
 
-describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
-  it("CHT-37-009 既定は自分の Chrome。PC の画面で選んだ値が次の仕事に渡り、Bridge の窓でも同じ値を変えられ、心拍の返事で窓に写る。会話の無い仕事には渡らない", async () => {
-    const { H, B, sid } = await ready();
-    const s1 = await json<{ job_id: string }>(post("/agent/say", { text: "開いて" }, H));
-    const j1 = await json<{ job_id: string; browser: string }>(post("/bridge/take", { protocol: 5 }, B));
-    expect(j1).toMatchObject({ job_id: s1.job_id, browser: "chrome" });
-    await post("/bridge/finish", { job_id: s1.job_id, state: "done", result: "はい" }, B);
-    expect(await json(post("/agent/browser", { browser: "off" }, H))).toEqual({ browser: "off" });
-    expect((await post("/agent/browser", { browser: "firefox" }, H)).status).toBe(422);
-    const st = await json<{ browser: string }>(req("GET", "/bridge/state", undefined, H));
-    expect(st.browser).toBe("off");
-    expect(await json(heartbeat({ health: [], protocol: 5 }, B))).toEqual({
-      ok: true,
-      browser: "off",
-      outdated: false,
-      device_id: sid, // その PC の番号（sessions.id・K-360）。PC の印ではない
-    });
-    const s2 = await json<{ job_id: string }>(post("/agent/say", { text: "もう一度" }, H));
-    expect(await json(post("/bridge/take", { protocol: 5 }, B))).toMatchObject({ job_id: s2.job_id, browser: "off" });
-    await post("/bridge/finish", { job_id: s2.job_id, state: "done", result: "はい" }, B);
-    // Bridge の窓から変える
-    expect(await json(post("/bridge/browser", { browser: "dedicated" }, B))).toEqual({ browser: "dedicated" });
-    expect((await json<{ browser: string }>(req("GET", "/bridge/state", undefined, H))).browser).toBe("dedicated");
-    expect((await post("/bridge/browser", { browser: "x" }, B)).status).toBe(422);
-  });
-  it("CHT-37-011 もう一度確かめるは会話に属さない Chrome の仕事になり、押し重ねても 1 件。PC が閉じていれば断る", async () => {
-    const { H, B, member } = await ready();
-    await heartbeat({ health: [], protocol: 5 }, B);
-    const a = await post("/agent/browser-check", {}, H);
-    expect(a.status).toBe(201);
-    const { job_id } = ((await a.json()) as { data: { job_id: string } }).data;
-    expect(await json(post("/agent/browser-check", {}, H))).toEqual({ job_id });
-    const job = await json<{ job_id: string; browser: string; conversation_id: string | null; prompt: string }>(
-      post("/bridge/take", { protocol: 5 }, B),
-    );
-    expect(job).toMatchObject({ job_id, browser: "chrome", conversation_id: null });
-    expect(job.prompt).toContain("tabs_context_mcp");
-    await post("/bridge/finish", { job_id, state: "done", result: "つながっています" }, B);
-    const msgs = await admin.query("select count(*)::int as n from messages where job_id = $1", [job_id]);
-    expect(msgs.rows[0].n, "会話には出さない").toBe(0);
-    // PC が閉じている（知らせが 75 秒より前）
-    await admin.query(
-      "update sessions set last_seen_at = now() - interval '5 minutes', issued_at = now() - interval '5 minutes' where member_id = $1 and kind_id = 'bridge'",
-      [member],
-    );
-    const off = await post("/agent/browser-check", {}, H);
-    expect(off.status).toBe(409);
-    expect(((await off.json()) as { message: string }).message).toContain("Bridge が動いていない");
-  });
-});
+// K-367：「AI が使うブラウザを Kaname で選ぶ（D-120）」の 2 本（CHT-37-009・CHT-37-011）は、前の道すじ（/agent/browser・/agent/browser-check・/bridge/browser）を消したので外した。
+//   選ぶのは契約の口 updateMyDevice（K-364）・確かめは checkMyDeviceBrowser（K-365）・Bridge の窓は setBridgeBrowser（K-366）の試験が持つ
