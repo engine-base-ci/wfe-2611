@@ -23865,7 +23865,7 @@
     "ログインと安全",
     "PC と使った量",
     "預けたログイン情報",
-    "知らせ"
+    "お知らせ"
    ],
    "checklist": [],
    "release": "v1",
@@ -39509,8 +39509,7 @@
      "operation_id": "listTicketKinds",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-109",
-      "E-110"
+      "E-109"
      ],
      "choke_points": [
       "C2"
@@ -41680,8 +41679,7 @@
      "operation_id": "listTicketKinds",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-109",
-      "E-110"
+      "E-109"
      ],
      "choke_points": [
       "C2"

@@ -12,7 +12,7 @@
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 296,
+  "errors": 293,
   "stack": 70,
   "env": 41
  },
@@ -6734,8 +6734,8 @@
   },
   {
    "table": "kind_sections",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "本文が 1 枚になり、区画の形（見出し・必須・並び）を使わない（K-578・D-150.35）。口は読まない・書かない・消さない。DB の関数 2 つ（app.ticket_tool_read・app.bridge_finish_job）がまだ引く。表と行の扱いは段 10 が決める",
    "writes": [
     "F4",
     "F9"

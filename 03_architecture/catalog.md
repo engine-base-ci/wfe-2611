@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 377（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 296・部品 70・設定 41
+API 377（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 293・部品 70・設定 41
 
 ## 共通の処理
 
@@ -81,7 +81,6 @@ API 377（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `invitations` | skeleton | F1,F10,F11,F2 |  | ○ |
 | `invoices` | skeleton | F12 |  |  |
 | `kaname_auth` | internal |  |  |  |
-| `kind_sections` | skeleton | F4,F9 |  | ○ |
 | `knowledge_links` | skeleton | F9 |  |  |
 | `knowledge_page_versions` | skeleton | F9 |  |  |
 | `knowledge_pages` | skeleton | F9 |  |  |
@@ -139,7 +138,7 @@ API 377（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `ticket_thread_seen` | internal |  |  |  |
 | `tickets` | skeleton | F11,F3,F4,F5,F6,F7 | F8 | ○ |
 
-凍結の表（60）：`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`class_axes`・`class_values`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`integrations`・`learned_procedures`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
+凍結の表（61）：`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`class_axes`・`class_values`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`integrations`・`kind_sections`・`learned_procedures`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
 
 ## API の口
 
