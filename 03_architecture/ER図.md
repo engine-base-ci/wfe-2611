@@ -310,7 +310,7 @@ erDiagram
 | **`notice_deliveries`** | `<common>` / `notice_id` / `member_id` / `delivered_at` / `read_at` | 会社側「お知らせ」の既読 |
 | **`status_incidents`** | `<common>`（tenant_id＝運営）/ `component_id`（kaname / bridge / server_route / external_service）/ `service_id` / `state_id` / `started_at` / `resolved_at` / `note` | **★新設（D-075.2・D-076.9）。**稼働状況。会社側は自分の Bridge・経路の状態を `sessions` と `action_runs` から足して表示 |
 | **`notification_preferences`** | `<common>` / `member_id` / `event_kind_id`（approval_waiting / ai_stopped / sole_approver / notice_incident / notice_release / inquiry_answered）/ `channel_id`（in_app / email / push）/ `enabled` | **★新設（D-075.3・D-043）。**通知の届け先。関門 C6 が宛先解決に読む |
-| **`notifications`** | `<common>` / `member_id` / `channel_id` / `event_kind_id` / `payload jsonb` / `dedupe_key` / `sent_at` / `failed_at` / `retry_count` | **★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務 |
+| **`notifications`** | `<common>` / `member_id` / `channel_id` / `event_kind_id` / `payload jsonb` / `dedupe_key` / `sent_at` / `failed_at` / **`read_at`**（読んだ時刻・空＝未読 ← D-151.2。鈴が読むのはこの列だけで、`sent_at`・`failed_at` は段 9 のメールの印のまま）/ `retry_count` | **★新設（D-043・C6）。**送出の outbox。重複抑止・再送・証跡は関門 C6 の責務。鈴の一覧は契約の口 `listNotifications`（自分宛て・未読は全部・読んだものは読んだ時刻から 30 日・K-461）。**守り：読むのも書くのも自分宛てだけ**（`notifications_self_read`・`notifications_self_only_write`・D-151.3。権限のある人も他人宛ての行に触れない。書き手は security definer の関数で守りの外）。索引：未読だけ（`notifications_inbox_unread_idx`）と新しい順（`notifications_inbox_idx`） |
 | **`plans`** | `<common>`（tenant_id＝運営）/ `key`（entry / standard / pro）/ `name` / `price_monthly` / `limits jsonb`（AI社員・担当業務・自律実行／日・人・層）/ `current_version` | **★新設（D-076.6・D-077.5）。マスタ。**「配るもの」の画面で版管理。段階 2 の注記（注 7）から段階 1 に繰り上げ |
 | **`plan_versions`** | `plan_id` / `version` / `snapshot jsonb` / `released_at` | 価格・上限の版 |
 | **`subscriptions`** | `<common>` / `plan_id` / `status_id`（active / suspended / closing / closed）/ `started_at` / `suspended_at` / `ended_at` / `billing_contact jsonb` / `payment_method_id`（段階 2・D-082.1）/ `stripe_customer_ref` / `stripe_subscription_ref`（Stripe の写し・D-082.3）| **★新設（D-075.4）。**会社の契約。休止（D-076.13）は `status=suspended`。請求先は会社の設定（D-076.2） |
@@ -454,6 +454,9 @@ erDiagram
 | **`passkeys`** | `auth_user_id` / `credential_id` / `public_key` / `name`（この PC・iPhone など）/ `transports` / `last_used_at` / `revoked_at` | **★新設（D-125.137・D-128.59〜.61）。**Better Auth の passkey の表を使う。置き場はログインの部品の側（kaname_auth）で、業務の表からは読めない（D-128.119） |
 | **`operations`** | `<common>`（tenant_id＝運営）/ `key`（browser）/ `name` / `kind`（ブラウザ・MCP・API）/ `current_version` | **★新設（D-126.2・D-126.19）。**第1フェーズは汎用のブラウザ操作 1 つ |
 | **`ticket_links`** | `<common>` / `from_ticket_id` / `to_ticket_id` / `kind`（関連・派生元） | **★新設（D-125.50・D-128.80）。**前後（依存）と重複は持たない |
+| **`guest_groups`** | `<common>` / `name`（1〜80 字・前後の空白なし）/ `name_key`（生成列・表記ゆらぎを畳んだ名前・会社の中で一意）/ `request_scope_id`（届け先の社内のグループ） | **★新設（D-155.35・D-155.37・K-876）。**ゲストのグループ（先方の人のまとまり）。1 人は 1 つのグループに入る |
+| **`guest_group_members`** | `<common>` / `guest_group_id` / `member_id`（役割 requester の人だけ・1 人 1 つ） | **★新設（D-155.35・K-876）。**ゲストのグループに入っている人 |
+| **`ticket_guest_shares`** | `<common>` / `ticket_id` / `guest_group_id`（チケットとグループは同じ会社） | **★新設（D-155.41・K-881）。**チケットを見せる相手（ゲストのグループ・1 チケットに 20 まで） |
 | **`ticket_handovers`** | `<common>` / `ticket_id` / `kind`（渡す・引き取りの申し出・配る・上へ上げる）/ `from_member_id` / `to_member_id` / `to_scope_id` / `reason` / `ask` / `reply_due` / `switch jsonb`（一緒に切り替えるもの）/ `state`（返事待ち・受けた・断った・取り下げた）/ `decline_reason` / `decided_at` | **★新設（D-125.70）。**`task_handovers` を置き換える |
 | **`saved_views`** | `<common>` / `member_id` / `name` / `share`（自分だけ・グループの全員）/ `scope_id` / `filters jsonb` / `columns jsonb` / `density` | **★新設（D-128.83）。**検索条件と列の表示設定。同じ名前は 1 人 1 つ（消していない物の中・大文字小文字を区別しない・一意の索引 `saved_views_name_uq`）・1 人 50 件まで（口で守る・K-475） |
 | **`ticket_imports`** | `<common>` / `uploaded_by` / `scope_id`（入れるグループ）/ `source`（Backlog の CSV・汎用）/ `mapping jsonb` / `rows int` / `errors jsonb` / `state`（確かめ中・確定・やめた）/ `committed_at` | **★新設（D-128.83・D-128.85）。**取り込んだものは下書き（`tickets.draft_import_id`）で入り、確定するまで取り込んだ人だけが見て直せる（D-128.119） |
@@ -605,6 +608,7 @@ erDiagram
 | 切り替えの決まり | `handover_rules` | |
 | ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` | |
 | 取引先 | `clients` `client_groups` `client_contacts` | |
+| ゲストのグループ | `guest_groups` `guest_group_members` `ticket_guest_shares` | |
 | 依頼 | `client_requests` `conversations` | |
 | 検収 | `acceptances` | |
 | テナントへの所属 | `tenant_memberships` | |
