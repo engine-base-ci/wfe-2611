@@ -23,6 +23,10 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "05_flow"))
+sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117）
+from portable_regex import walk as _portable  # noqa: E402  作り手が契約に書くときの直し（\s \S \d \w を JS と同じ字に・K-1117）。表の字はそのまま、比べる前に当てる
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 
 
 def _load_screen_api():
@@ -48,7 +52,7 @@ VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "u
 #   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。
 #   ここに無い口の入力の形は required を持たない（条件つきで要る欄＝stepUp の code・種別ごとの必須の区画は required にしない）
 REQUIRED_INPUTS: dict[str, set[str]] = {
-    "completeTicket": {"todo_checked", "todo_version", "conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（3 つとも必須・K-165）
+    "completeTicket": {"conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（conditions_confirmed だけ必須・todo_* は任意で中身は見ない・K-566）
     "returnApproval": {"note"},                       # apps/api/src/features/F5/approve-complete/decide.ts（無い・空は 422 E-VAL-020・K-163）
     "createSignup": {"email", "name", "password"},     # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005。無いと空と同じ）。company_name は空でよい（D-125.135）
     "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
@@ -78,7 +82,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
     "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
-    "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
+    "delegateTicket": "使わない理由 no_spec_reason は無くてよい（K-565）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
@@ -99,15 +103,21 @@ CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
 VALUE_RANGES: dict[str, dict[str, dict]] = {
     "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
-        "title": {"pattern": "\\S", "maxLength": 200},                                  # :28〜30（前後の空白を落として空は 422・200 字まで）
-        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},                           # :37〜41（日付の形。今日より前・暦に無い日は書けない）
-        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},                    # :42〜46（空は「無し」）
+        "title": {"pattern": "\\S", "maxLength": 200},                                  # TITLE_MAX（前後の空白を落として空は 422・生の字で 200 字まで・NFKC で整えない・K-437）
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "format": "date"},         # 日付の形・暦に在る日（K-437）。今日より前は 409 E-VAL-012（時刻で決まる）
+        "start_on": {"anyOf": [{"maxLength": 0}, {"format": "date"}]},                    # 空は「無し」・暦に在る日（K-437・0000-00-00 を口が断るので format: date）
         "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
         "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
                      "additionalProperties": {"type": "string"}},     # :63〜74（区画の中身の上限 20,000 字は外した・D-130.3。守りは送る量 1MB だけ）
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
+        # K-437：payload.ts の checkFields・checkSpecs・checkBody（本文の木は doc_shape・K-432 と同じ定義）
+        "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
+                   "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
+                                                      {"type": "array", "items": {"type": "string"}}], "nullable": True}},
+        "specs": {"maxItems": 50},
+        "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{CODE_SEP}]*(?:[{CODE_CHAR}][{CODE_SEP}]*){{6}}$"},
@@ -116,7 +126,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
     "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
-        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品の z.email() の形を前後の空白で挟んだ物（K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},
         "company_name": {"maxLength": 100},
         "password": {"minLength": 12},
@@ -126,14 +136,12 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
+    "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # apps/api/src/features/F5/delegate/people.ts・app.ticket_delegate（使わない理由・1〜500 字・K-565）
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422: dict[str, list[str]] = {
-    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
-                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
-                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
     "claimPairingCode": ["NFKC で英数字になる字（① など）"],
     "updateConversation": ["名前が null（空と同じ）"],
     "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],   # K-312
@@ -720,7 +728,7 @@ class ContractShapeTest(unittest.TestCase):
         for base in bases:
             for f in sorted(base.rglob("*.ts*")):
                 rel = f.relative_to(ROOT).as_posix()
-                if "node_modules" in rel or "/.next/" in rel or "/dist/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel):
+                if "node_modules" in rel or "/.next/" in rel or "/.next-prod/" in rel or "/dist/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel):
                     continue
                 for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
                     if loose.search(line) or no_version.search(line):
@@ -814,7 +822,7 @@ class ContractShapeTest(unittest.TestCase):
         for (op_id, pname), pat in PATH_PATTERNS.items():
             ps = {x["name"]: x for x in operation(op_id)[2].get("parameters", []) if x["in"] == "path"}
             self.assertIn(pname, ps, f"{op_id} に道の値 {pname} が無い")
-            self.assertEqual(ps[pname]["schema"].get("pattern"), pat, f"{op_id} の {pname} の値域が違う")
+            self.assertEqual(ps[pname]["schema"].get("pattern"), _portable({"pattern": pat})["pattern"], f"{op_id} の {pname} の値域が違う")
         pat = re.compile(PATH_PATTERNS[("downloadBridgeRelease", "name")])
         src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
         block = re.search(r"RELEASE_NAMES = \[(.*?)\] as const;", src, re.S)
@@ -844,12 +852,25 @@ class ContractShapeTest(unittest.TestCase):
 
     # ---- 体の値の値域（類 G・回 9 の続き・PM の判断 2026-11-09）
     @staticmethod
+    def _is_date(v: str) -> bool:
+        """JSON Schema の format: date（RFC 3339 の full-date）。暦に在る日だけ"""
+        import datetime
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", v):
+            return False
+        try:
+            datetime.date.fromisoformat(v)
+        except ValueError:
+            return False
+        return True
+
+    @staticmethod
     def _fits(v: object, sc: dict) -> bool:
         """契約の欄の形（このチケットで使う言葉だけ）に値が合うか。pattern は JSON Schema と同じく「どこかに合う」（re.search）"""
         if v is None:
             return bool(sc.get("nullable"))
-        if "anyOf" in sc:
-            return any(ContractShapeTest._fits(v, x) for x in sc["anyOf"])
+        if "anyOf" in sc:   # 枝は外側の言葉（type など）を引き継ぐ（K-437：start_on の枝 {maxLength: 0}・{format: date} は type を持たない）
+            base = {k: x for k, x in sc.items() if k != "anyOf"}
+            return any(ContractShapeTest._fits(v, {**base, **x}) for x in sc["anyOf"])
         if "enum" in sc and v not in sc["enum"]:
             return False
         t = sc.get("type")
@@ -859,6 +880,8 @@ class ContractShapeTest(unittest.TestCase):
             if "pattern" in sc and not re.search(sc["pattern"], v):
                 return False
             if len(v) > sc.get("maxLength", 10**9) or len(v) < sc.get("minLength", 0):
+                return False
+            if sc.get("format") == "date" and not ContractShapeTest._is_date(v):   # 暦に在る日（K-437）
                 return False
         elif t == "integer":
             if isinstance(v, bool) or not (isinstance(v, int) or (isinstance(v, float) and v.is_integer())):
@@ -917,7 +940,7 @@ class ContractShapeTest(unittest.TestCase):
             props = SCHEMAS[name]["properties"]
             for k, want in fields.items():
                 got = props.get(k, {})
-                for key, val in want.items():
+                for key, val in _portable(want).items():
                     if got.get(key) != val:
                         bad.append(f"{op_id}（{name}）.{k}.{key}: 契約 {got.get(key)!r} ／ 口 {val!r}")
             m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
@@ -985,7 +1008,7 @@ class ContractShapeTest(unittest.TestCase):
                     if name not in params:
                         bad.append(f"{o}: 問い合わせに {name} が無い")
                         continue
-                    for key, val in ws.items():
+                    for key, val in _portable(ws).items():
                         if params[name].get(key) != val:
                             bad.append(f"{o}.{name}.{key}: 契約 {params[name].get(key)!r} ／ 表 {val!r}")
                 for name, sc in params.items():
@@ -1073,6 +1096,8 @@ class ContractShapeTest(unittest.TestCase):
     # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
     #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
     SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
+        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
         "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
         "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
         "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],
@@ -1090,6 +1115,9 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
                                                           ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
+        # K-461：知らせの一覧（DB から limit+1 件取った行を次の分の有無を見た後に limit 件に戻す）と、payload の写しを短くする clip（文字の単位）
+        "apps/api/src/features/F7/notifications/list.ts": [("rows.slice(0, q.limit)", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
+        "apps/api/src/features/F7/notifications/shape.ts": [("Array.from(s).slice(0, CLIP_MAX)", "payload の写しを短くする（人が書く入力でない・文字（コードポイント）の単位で切る）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:
