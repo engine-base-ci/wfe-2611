@@ -3382,3 +3382,17 @@ PM の決め（作り方）：
 - [ ] 前からの試験 `scripts/ci/k1112_body_append_test.py`・`scripts/ci/k1120_body_append_tree_test.py` が替えずに緑（G74・G65 の段で流れる）
 - [ ] 作り手で作り直して、08_api の生成物の差が 0（生成物が最新かの検査が緑）
 - [ ] チケットの範囲の CI が緑"
+K-1122,直し：op_gate の --rows-in（チケットの範囲の回で照らす行）を、流した試験のファイルの「試験の題」に出る行 ID だけにする（コメント・題でない字は数えない）・PM の直し,タスク,K-324,未着手,実装,2026-11-24,共通・CI,"チケットの範囲の回の web の組（G48・`scripts/ci/web_run.py g48`）は、`op_gate.py --rows-in <流した試験>` で、流した試験のファイルに書かれた行 ID の行だけを照らす（K-177）。今の読み方は、ファイルの字の全部から `\b<ID>\b` を探すので、**コメント**に書いた別の画面の行 ID まで照らす。
+
+実例（K-1151・回 45194457230・先頭 e63348fac）：`apps/web/tests/k/k363-remove-pc.spec.ts` の 217 行目のコメント「…K57-UI-016 が見ている」に当たり、K57-UI-016（結果 PASS・試験は connect-pc の spec）を照らした。その回では connect-pc の spec は流れていないので「PASS だが行 ID を名前に持つ実ブラウザのテストが無い」で赤。K-1151 の外の字が原因で葉が止まる。見立ては `.ticket-flow/out/K-1151/ci-red-PMへ.md`。
+
+PM の決め（作り方・2026-11-24 06:30 案 A）：
+1. 照らす行は「流した試験のファイルの**試験の題**に出る行 ID」だけ。題は次の 2 つの和
+   - **字で書いた題**：`test`・`it`・`describe`（前に `.` が無い呼び名）と、その後の `.describe`・`.only`・`.skip`・`.fixme`・`.fail`・`.serial`・`.parallel`・`.concurrent`・`.todo` の続きを呼ぶ式の、最初の引数が字（'…'・""…""・`…`）のときのその字。テンプレートの `${…}` の中は題の字に数えない。型の部品 `row(R[""<ID>""], …)`（`apps/web/tests/_lib/row.ts`・題は `${r.id} …`）は、`row(` 名前 `[` 字 `]` の字
+   - **報告の題**：今の回の報告（`--report`、無ければ op-gate.json の reports。G48 は Playwright の k.json だけ）のうち、ファイルの名前（Playwright の suites[].file・specs[].file。testDir からの道）が流した試験のファイルの道の末尾に当たる試験の題（上の段の題をつないで読む・load_report と同じ）。vitest の報告は G48 で使わないので見ない。`${id}` を配列から作る題（shell-ops.spec.ts・showcase.spec.ts の `row(R[id])` など）はここで拾う
+2. コメント（`//`・`/* */`）・題でない字（体の中の字・`re.test(""…"")` の `.test`・`test.step(""…"")`・正規表現の字）は数えない。字・正規表現の中の `//`・`/*` はコメントの始まりにしない
+3. 字で書いた題は報告に無くても照らす（題に在るのに流れていない行は今までどおり赤）
+4. 読めない字（閉じないコメント・字・テンプレート）でも落ちない（Traceback を出さない）。閉じない所から後は数えない
+5. 全部の回（`--all`）・`--task`・`--wave` の照らし方は変えない。行 ID の形 ID_RE も変えない","- [ ] 下の表の行（K1122-OG-001〜008）が緑
+- [ ] 前からの試験 `scripts/ci/k177_web_scope_test.py`（K177-WS-016 など）・`scripts/ci/ci_results_test.py`・`scripts/ci/ci_scope_test.py` が替えずに緑
+- [ ] チケットの範囲の CI が緑。K-1151 の枝の web の組の op_gate が K57-UI-016 で赤にならない（PM が確かめる）"
