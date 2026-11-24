@@ -4,13 +4,15 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 372,
+  "total_apis": 371,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
    "legal"
   ],
-  "acts_without_endpoint": []
+  "acts_without_endpoint": [
+   "A130"
+  ]
  },
  "screens": [
   {
@@ -2322,11 +2324,6 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/kind-change-preview",
      "act": "A103"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/work-type-candidates",
-     "act": "A130"
     },
     {
      "role": "data_fetch",

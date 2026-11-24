@@ -1,0 +1,5 @@
+{
+  "reads_ok": {
+    "apps/api/test/features/F4/work-type-retire.test.ts": "08_api/openapi.yaml・endpoints.json・types.ts・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/tickets.ts・05_flow/screen_api.py・03_architecture/catalog.json・catalog.md・ER図.md・08_api/phase1/01_チケット.md・11_tickets/K-59.md・packages/db/src/migrations.generated.ts を readFileSync で読み、apps/api/src・apps/web・apps/bridge・packages/db/src を歩いて字を探す（K582-API-007〜009）。口 updateTicket の hooks ファイルを動的 import で読む（K582-API-003・005）・K-582"
+  }
+}

@@ -43,5 +43,4 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/tickets/:id/timeline/seen", op(deps, "markTicketTimelineSeen"));
   app.get("/api/v1/tickets/:id/versions", op(deps, "listTicketVersions"));
   app.post("/api/v1/tickets/:id/versions/:v/restore", op(deps, "restoreTicketVersion"));
-  app.get("/api/v1/tickets/:id/work-type-candidates", op(deps, "listWorkTypeCandidates"));
 }
