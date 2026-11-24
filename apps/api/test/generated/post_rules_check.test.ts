@@ -3,7 +3,7 @@
 import { describe, it } from "vitest";
 
 describe("POST /api/v1/rules/check", () => {
-  // EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す
+  // EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す
   it.todo("test_post_rules_check_ok");
   // EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「効く範囲を選んでルールを書く」として呼ばれたとき THEN Kaname は「範囲ごとに保存。取引先のルールはその取引先のチケットだけに効く」を行い 2xx を返す
   it.todo("test_post_rules_check_ok_2");

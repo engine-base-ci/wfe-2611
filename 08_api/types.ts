@@ -1848,7 +1848,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge/proposals",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1859,7 +1859,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/accept",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1870,7 +1870,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/decline",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -2101,7 +2101,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge_pages/:id/usage",
   "acts": [
-   "A114"
+   "A137"
   ],
   "screens": [
    "knowledge"

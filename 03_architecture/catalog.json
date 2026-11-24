@@ -1955,7 +1955,7 @@
    "op": "askKnowledge",
    "method": "POST",
    "path": "/api/v1/knowledge/ask",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -1972,7 +1972,7 @@
    "op": "sendKnowledgeAnswerFeedback",
    "method": "POST",
    "path": "/api/v1/knowledge/ask/feedback",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -1989,7 +1989,7 @@
    "op": "getKnowledgeHome",
    "method": "GET",
    "path": "/api/v1/knowledge/home",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2006,7 +2006,7 @@
    "op": "searchKnowledgeLinkTargets",
    "method": "GET",
    "path": "/api/v1/knowledge/link-targets",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2023,7 +2023,7 @@
    "op": "listKnowledgeProposals",
    "method": "GET",
    "path": "/api/v1/knowledge/proposals",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2040,7 +2040,7 @@
    "op": "acceptKnowledgeProposal",
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/accept",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2057,7 +2057,7 @@
    "op": "declineKnowledgeProposal",
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/decline",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2074,7 +2074,7 @@
    "op": "getKnowledgeTree",
    "method": "GET",
    "path": "/api/v1/knowledge/tree",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2091,7 +2091,7 @@
    "op": "listKnowledgeVerifications",
    "method": "GET",
    "path": "/api/v1/knowledge/verifications",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2108,7 +2108,7 @@
    "op": "createKnowledgeImport",
    "method": "POST",
    "path": "/api/v1/knowledge_imports",
-   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2125,7 +2125,7 @@
    "op": "getKnowledgeImport",
    "method": "GET",
    "path": "/api/v1/knowledge_imports/:id",
-   "what": "取得（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2142,7 +2142,7 @@
    "op": "commitKnowledgeImport",
    "method": "POST",
    "path": "/api/v1/knowledge_imports/:id/commit",
-   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2159,7 +2159,7 @@
    "op": "listKnowledgePages",
    "method": "GET",
    "path": "/api/v1/knowledge_pages",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2176,7 +2176,7 @@
    "op": "createKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2193,7 +2193,7 @@
    "op": "getKnowledgePage",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2210,7 +2210,7 @@
    "op": "updateKnowledgePage",
    "method": "PATCH",
    "path": "/api/v1/knowledge_pages/:id",
-   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2227,7 +2227,7 @@
    "op": "archiveKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/archive",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2244,7 +2244,7 @@
    "op": "uploadKnowledgeAttachment",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/attachments",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2261,7 +2261,7 @@
    "op": "saveKnowledgeDraft",
    "method": "PATCH",
    "path": "/api/v1/knowledge_pages/:id/draft",
-   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2278,7 +2278,7 @@
    "op": "discardKnowledgeDraft",
    "method": "DELETE",
    "path": "/api/v1/knowledge_pages/:id/draft",
-   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2295,7 +2295,7 @@
    "op": "getKnowledgeLinks",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/links",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2312,7 +2312,7 @@
    "op": "linkKnowledgeMention",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/links",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2329,7 +2329,7 @@
    "op": "exportKnowledgeMarkdown",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/markdown",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2346,7 +2346,7 @@
    "op": "listKnowledgeMessages",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/messages",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2363,7 +2363,7 @@
    "op": "postKnowledgeMessage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/messages",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2380,7 +2380,7 @@
    "op": "publishKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/publish",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2397,7 +2397,7 @@
    "op": "unarchiveKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/unarchive",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2414,7 +2414,7 @@
    "op": "getKnowledgeUsage",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/usage",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項",
    "flows": [
     "F9"
    ],
@@ -2431,7 +2431,7 @@
    "op": "verifyKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/verify",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2448,7 +2448,7 @@
    "op": "listKnowledgeVersions",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/versions",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2465,7 +2465,7 @@
    "op": "restoreKnowledgeVersion",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/versions/:v/restore",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2484,7 +2484,7 @@
    "path": "/api/v1/layers",
    "what": "作成・実行（layers）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -2499,7 +2499,7 @@
    "path": "/api/v1/layers/:id",
    "what": "更新（layers）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -2512,7 +2512,7 @@
    "op": "listLearningCandidates",
    "method": "GET",
    "path": "/api/v1/learning_candidates",
-   "what": "取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -2529,7 +2529,7 @@
    "op": "acceptLearningCandidate",
    "method": "POST",
    "path": "/api/v1/learning_candidates/:id/accept",
-   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -2546,7 +2546,7 @@
    "op": "dismissLearningCandidate",
    "method": "POST",
    "path": "/api/v1/learning_candidates/:id/dismiss",
-   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -4445,7 +4445,7 @@
    "op": "checkRule",
    "method": "POST",
    "path": "/api/v1/rules/check",
-   "what": "作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）",
+   "what": "作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）",
    "flows": [
     "F9"
    ],
@@ -4534,7 +4534,7 @@
    "path": "/api/v1/scopes",
    "what": "取得（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -4551,7 +4551,7 @@
    "path": "/api/v1/scopes",
    "what": "作成・実行（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -4566,7 +4566,7 @@
    "path": "/api/v1/scopes/:id",
    "what": "更新（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -5850,7 +5850,7 @@
    "op": "createEscalationRule",
    "method": "POST",
    "path": "/api/v1/workspace/escalation-rules",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5865,7 +5865,7 @@
    "op": "updateEscalationRule",
    "method": "PATCH",
    "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5880,7 +5880,7 @@
    "op": "deleteEscalationRule",
    "method": "DELETE",
    "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5895,7 +5895,7 @@
    "op": "previewEscalationRule",
    "method": "POST",
    "path": "/api/v1/workspace/escalation-rules/preview",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5988,7 +5988,7 @@
    "op": "getWorkspaceRules",
    "method": "GET",
    "path": "/api/v1/workspace/rules",
-   "what": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6003,7 +6003,7 @@
    "op": "createWorkspaceRule",
    "method": "POST",
    "path": "/api/v1/workspace/rules",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6018,7 +6018,7 @@
    "op": "updateWorkspaceRule",
    "method": "PATCH",
    "path": "/api/v1/workspace/rules/:id",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6033,7 +6033,7 @@
    "op": "deleteWorkspaceRule",
    "method": "DELETE",
    "path": "/api/v1/workspace/rules/:id",
-   "what": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6048,7 +6048,7 @@
    "op": "getTicketShape",
    "method": "GET",
    "path": "/api/v1/workspace/ticket-shape",
-   "what": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6063,7 +6063,7 @@
    "op": "saveTicketShape",
    "method": "PATCH",
    "path": "/api/v1/workspace/ticket-shape",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6078,7 +6078,7 @@
    "op": "previewTicketShapeChange",
    "method": "POST",
    "path": "/api/v1/workspace/ticket-shape/preview",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6661,7 +6661,7 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F9"
+    "F10"
    ],
    "reads": [],
    "boundary": false
@@ -7089,7 +7089,7 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F9"
+    "F10"
    ],
    "reads": [],
    "boundary": false

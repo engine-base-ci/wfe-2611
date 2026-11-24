@@ -28048,7 +28048,7 @@ paths:
   /api/v1/knowledge/ask:
     post:
       operationId: askKnowledge
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28061,6 +28061,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）
       x-step-up: false
@@ -28129,7 +28137,7 @@ paths:
   /api/v1/knowledge/ask/feedback:
     post:
       operationId: sendKnowledgeAnswerFeedback
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -28142,6 +28150,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 答えを見た本人。「いいえ」は持ち主への直す案になる
       x-step-up: false
@@ -28210,7 +28226,7 @@ paths:
   /api/v1/knowledge/home:
     get:
       operationId: getKnowledgeHome
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28222,6 +28238,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（置き場の権限・自分のページは本人）
       x-step-up: false
@@ -28272,7 +28296,7 @@ paths:
   /api/v1/knowledge/link-targets:
     get:
       operationId: searchKnowledgeLinkTargets
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28284,6 +28308,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページ・決まり・取引先だけ
       x-step-up: false
@@ -28382,18 +28414,22 @@ paths:
   /api/v1/knowledge/proposals:
     get:
       operationId: listKnowledgeProposals
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: read
       x-permission-scope: 見られるページへの案だけ
       x-step-up: false
@@ -28492,19 +28528,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/accept:
     post:
       operationId: acceptKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る
       x-step-up: false
@@ -28586,19 +28627,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/decline:
     post:
       operationId: declineKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 同上（理由を残す）
       x-step-up: false
@@ -28680,7 +28726,7 @@ paths:
   /api/v1/knowledge/tree:
     get:
       operationId: getKnowledgeTree
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28692,6 +28738,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上
       x-step-up: false
@@ -28742,7 +28796,7 @@ paths:
   /api/v1/knowledge/verifications:
     get:
       operationId: listKnowledgeVerifications
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28754,6 +28808,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ。分身の点検は持ち主の PC がつながっているときに作る
       x-step-up: false
@@ -28857,7 +28919,7 @@ paths:
   /api/v1/knowledge_imports:
     post:
       operationId: createKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -28870,6 +28932,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（取り込む先の置き場に書ける人）。ファイルは検査してから読む（関門 C4）
       x-step-up: false
@@ -28938,7 +29008,7 @@ paths:
   /api/v1/knowledge_imports/{id}:
     get:
       operationId: getKnowledgeImport
-      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -28950,6 +29020,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人
       x-step-up: false
@@ -29013,7 +29091,7 @@ paths:
   /api/v1/knowledge_imports/{id}/commit:
     post:
       operationId: commitKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -29026,6 +29104,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）
       x-step-up: false
@@ -29107,7 +29193,7 @@ paths:
   /api/v1/knowledge_pages:
     get:
       operationId: listKnowledgePages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29119,6 +29205,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。しまったページは書ける人だけ
       x-step-up: false
@@ -29239,7 +29333,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29252,6 +29346,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
       x-step-up: false
@@ -29320,7 +29422,7 @@ paths:
   /api/v1/knowledge_pages/{id}:
     get:
       operationId: getKnowledgePage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29332,6 +29434,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ。下書きは書いている本人と書ける人
       x-step-up: false
@@ -29394,7 +29504,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       operationId: updateKnowledgePage
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29407,6 +29517,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上（置き場・親・持ち主・確かめの間隔・話題）
       x-step-up: false
@@ -29482,7 +29600,7 @@ paths:
   /api/v1/knowledge_pages/{id}/archive:
     post:
       operationId: archiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29495,6 +29613,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。しまうと探しても出ず分身も読まない。版と記録は残り戻せる
       x-step-up: false
@@ -29576,7 +29702,7 @@ paths:
   /api/v1/knowledge_pages/{id}/attachments:
     post:
       operationId: uploadKnowledgeAttachment
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - attachments
       x-acts:
@@ -29589,6 +29715,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。ファイルは検査してから置く（関門 C4）
       x-step-up: false
@@ -29670,7 +29804,7 @@ paths:
   /api/v1/knowledge_pages/{id}/draft:
     patch:
       operationId: saveKnowledgeDraft
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -29683,6 +29817,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。下書きは公開するまで知らせない・分身も読まない
       x-step-up: false
@@ -29757,7 +29899,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: discardKnowledgeDraft
-      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -29770,6 +29912,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 下書きを書いた本人
       x-step-up: false
@@ -29833,7 +29983,7 @@ paths:
   /api/v1/knowledge_pages/{id}/links:
     get:
       operationId: getKnowledgeLinks
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -29845,6 +29995,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。つながりの先も見られるものだけ
       x-step-up: false
@@ -29907,7 +30065,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: linkKnowledgeMention
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -29920,6 +30078,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
       x-step-up: false
@@ -30001,7 +30167,7 @@ paths:
   /api/v1/knowledge_pages/{id}/markdown:
     get:
       operationId: exportKnowledgeMarkdown
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30013,6 +30179,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（期限つきの署名 URL）
       x-step-up: false
@@ -30076,7 +30250,7 @@ paths:
   /api/v1/knowledge_pages/{id}/messages:
     get:
       operationId: listKnowledgeMessages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -30088,6 +30262,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ
       x-step-up: false
@@ -30195,7 +30377,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: postKnowledgeMessage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -30208,6 +30390,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる人なら書ける（閲覧のみも質問できる）
       x-step-up: false
@@ -30289,7 +30479,7 @@ paths:
   /api/v1/knowledge_pages/{id}/publish:
     post:
       operationId: publishKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30302,6 +30492,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる
       x-step-up: false
@@ -30383,7 +30581,7 @@ paths:
   /api/v1/knowledge_pages/{id}/unarchive:
     post:
       operationId: unarchiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30396,6 +30594,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上
       x-step-up: false
@@ -30477,18 +30683,23 @@ paths:
   /api/v1/knowledge_pages/{id}/usage:
     get:
       operationId: getKnowledgeUsage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項
       tags:
       - reference_logs
       x-acts:
-      - A114
+      - A137
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.12
+      - D-152.17
+      - D-152.23
+      - D-152.24
+      - D-152.29
+      - D-152.4
+      - D-152.5
       x-permission: read
       x-permission-scope: 見られるページだけ。読んだチケットは見られるものだけ出す
       x-step-up: false
@@ -30543,6 +30754,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:
@@ -30552,7 +30769,7 @@ paths:
   /api/v1/knowledge_pages/{id}/verify:
     post:
       operationId: verifyKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30565,6 +30782,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者
       x-step-up: false
@@ -30646,7 +30871,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions:
     get:
       operationId: listKnowledgeVersions
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30658,6 +30883,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ
       x-step-up: false
@@ -30763,7 +30996,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions/{v}/restore:
     post:
       operationId: restoreKnowledgeVersion
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30776,6 +31009,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）
       x-step-up: false
@@ -31031,7 +31272,7 @@ paths:
   /api/v1/learning_candidates:
     get:
       operationId: listLearningCandidates
-      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31059,6 +31300,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分の分身の覚えたいこと。層に上がってきたものはその層のマネージャー
       x-step-up: false
@@ -31159,7 +31403,7 @@ paths:
   /api/v1/learning_candidates/{id}/accept:
     post:
       operationId: acceptLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31188,6 +31432,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分のものは本人。層・ワークスペースに入れるのはマネージャー・管理者（D-125.110）
       x-step-up: false
@@ -31269,7 +31516,7 @@ paths:
   /api/v1/learning_candidates/{id}/dismiss:
     post:
       operationId: dismissLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31298,6 +31545,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 同上
       x-step-up: false
@@ -42275,7 +42525,7 @@ paths:
   /api/v1/rules/check:
     post:
       operationId: checkRule
-      summary: 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）
+      summary: 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）
       tags:
       - policies
       x-acts:
@@ -42295,6 +42545,11 @@ paths:
       - D-125.81
       - D-126.12
       - D-127.11
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: self
       x-permission-scope: 書いている本人（点検だけで何も変えない）
       x-step-up: false
@@ -50453,7 +50708,7 @@ paths:
   /api/v1/workspace/escalation-rules:
     post:
       operationId: createEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50468,6 +50723,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（D-128.87）
       x-step-up: false
@@ -50536,7 +50796,7 @@ paths:
   /api/v1/workspace/escalation-rules/{id}:
     patch:
       operationId: updateEscalationRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50551,6 +50811,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50625,7 +50890,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteEscalationRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50640,6 +50905,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50703,7 +50973,7 @@ paths:
   /api/v1/workspace/escalation-rules/preview:
     post:
       operationId: previewEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50718,6 +50988,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（当てはまる件数を数えるだけ）
       x-step-up: false
@@ -51208,7 +51483,7 @@ paths:
   /api/v1/workspace/rules:
     get:
       operationId: getWorkspaceRules
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51222,6 +51497,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバーなら読める。直せるのは決まりを直せる人
       x-step-up: false
@@ -51271,7 +51551,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createWorkspaceRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51286,6 +51566,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。層の決まりはその層のマネージャーも（D-127.11）
       x-step-up: false
@@ -51354,7 +51639,7 @@ paths:
   /api/v1/workspace/rules/{id}:
     patch:
       operationId: updateWorkspaceRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51369,6 +51654,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51443,7 +51733,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteWorkspaceRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51458,6 +51748,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51521,7 +51816,7 @@ paths:
   /api/v1/workspace/ticket-shape:
     get:
       operationId: getTicketShape
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51535,6 +51830,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）
       x-step-up: false
@@ -51584,7 +51884,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       operationId: saveTicketShape
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51599,6 +51899,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）
       x-step-up: false
@@ -51661,7 +51966,7 @@ paths:
   /api/v1/workspace/ticket-shape/preview:
     post:
       operationId: previewTicketShapeChange
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51676,6 +51981,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）
       x-step-up: false
