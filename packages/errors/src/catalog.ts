@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。290 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。326 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5195,6 +5195,618 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-KNW-010": {
+    "id": "E-KNW-010",
+    "cls": "conflict",
+    "message": "このページはまだ書き終えていません。書き終えてから使ってください",
+    "action": "書き終える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-011": {
+    "id": "E-KNW-011",
+    "cls": "conflict",
+    "message": "このページを上の棚へ上げる（共有する）頼みが承認待ちです。決まるまでは変えられません",
+    "action": "頼みを取り下げる／決まるのを待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-012": {
+    "id": "E-KNW-012",
+    "cls": "conflict",
+    "message": "ほかの人がこのページを書いています。書き終えるまで待ってください",
+    "action": "少し待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-020": {
+    "id": "E-KNW-020",
+    "cls": "conflict",
+    "message": "同じ場所に同じ名前のフォルダがあります",
+    "action": "名前を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-021": {
+    "id": "E-KNW-021",
+    "cls": "conflict",
+    "message": "フォルダは 6 つ入れ子までです",
+    "action": "浅い所に置く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-021",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-022": {
+    "id": "E-KNW-022",
+    "cls": "conflict",
+    "message": "フォルダを自分の中には動かせません",
+    "action": "別の場所を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-022",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-023": {
+    "id": "E-KNW-023",
+    "cls": "conflict",
+    "message": "フォルダは別の棚には動かせません",
+    "action": "同じ棚の中で動かす",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-023",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-024": {
+    "id": "E-KNW-024",
+    "cls": "conflict",
+    "message": "中にページかフォルダがあるので消せません",
+    "action": "先に動かすか消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-024",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-030": {
+    "id": "E-KNW-030",
+    "cls": "conflict",
+    "message": "捨てる下書きがありません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-030",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-040": {
+    "id": "E-KNW-040",
+    "cls": "conflict",
+    "message": "書き終える下書きがありません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-040",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-041": {
+    "id": "E-KNW-041",
+    "cls": "conflict",
+    "message": "「必ず守る」のページは本文を 2,000 字までにしてください",
+    "action": "本文を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-050": {
+    "id": "E-KNW-050",
+    "cls": "conflict",
+    "message": "「必ず守る」が付いているので消せません",
+    "action": "先に外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-050",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-051": {
+    "id": "E-KNW-051",
+    "cls": "conflict",
+    "message": "ほかのグループに共有しているので消せません",
+    "action": "先に共有をやめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-051",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-052": {
+    "id": "E-KNW-052",
+    "cls": "conflict",
+    "message": "ページは別の棚には動かせません。上の棚へは「上げる」を使ってください",
+    "action": "「上げる」を使う",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-052",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-060": {
+    "id": "E-KNW-060",
+    "cls": "conflict",
+    "message": "「必ず守る」の上限に届きました",
+    "action": "今付いているページから外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-060",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-061": {
+    "id": "E-KNW-061",
+    "cls": "conflict",
+    "message": "本文が 2,000 字を超えているので、「必ず守る」は付けられません",
+    "action": "本文を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-061",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-080": {
+    "id": "E-KNW-080",
+    "cls": "conflict",
+    "message": "自分の棚のページは写せません",
+    "action": "上の棚のページを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-080",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-100": {
+    "id": "E-KNW-100",
+    "cls": "conflict",
+    "message": "このページは会社の棚にあるので、これより上へは上げられません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-100",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-101": {
+    "id": "E-KNW-101",
+    "cls": "conflict",
+    "message": "上げる先のグループを選んでください",
+    "action": "グループを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-101",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-102": {
+    "id": "E-KNW-102",
+    "cls": "conflict",
+    "message": "上げる先に承認できる人がいません。管理者に知らせてください",
+    "action": "管理者に知らせる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-102",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-103": {
+    "id": "E-KNW-103",
+    "cls": "conflict",
+    "message": "入れるフォルダは、上げる先の棚から選んでください",
+    "action": "フォルダを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-103",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-104": {
+    "id": "E-KNW-104",
+    "cls": "conflict",
+    "message": "この頼みはもう決まっているので、取り下げられません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-104",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-105": {
+    "id": "E-KNW-105",
+    "cls": "conflict",
+    "message": "消せるのは、断られた頼みの帯だけです",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-105",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-106": {
+    "id": "E-KNW-106",
+    "cls": "conflict",
+    "message": "共有しているページは上げられません。先に共有をやめてください",
+    "action": "共有をやめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-106",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-STG-001": {
+    "id": "E-STG-001",
+    "cls": "conflict",
+    "message": "同じ名前の状態がすでにあります",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-002": {
+    "id": "E-STG-002",
+    "cls": "conflict",
+    "message": "状態は 8 つまで足せます",
+    "action": "使っていない状態を消してから足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-003": {
+    "id": "E-STG-003",
+    "cls": "conflict",
+    "message": "この状態は仕組みが使うので、消せません",
+    "action": "消さずに名前や色を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-004": {
+    "id": "E-STG-004",
+    "cls": "conflict",
+    "message": "この状態の名前は変えられません",
+    "action": "色だけを直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-005": {
+    "id": "E-STG-005",
+    "cls": "conflict",
+    "message": "この状態のチケットがあるので、消せません",
+    "action": "チケットを別の状態に移してから消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-006": {
+    "id": "E-STG-006",
+    "cls": "conflict",
+    "message": "並びが古くなっています。開き直してください",
+    "action": "開き直してから並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-006",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-007": {
+    "id": "E-STG-007",
+    "cls": "conflict",
+    "message": "始めの状態は先頭に、終わりの状態は最後に置きます",
+    "action": "始めを先頭・終わりを最後にして並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-001": {
+    "id": "E-FMS-001",
+    "cls": "conflict",
+    "message": "同じ名前の項目がすでにあります",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-004": {
+    "id": "E-FMS-004",
+    "cls": "conflict",
+    "message": "同じ名前の選ぶ物があります",
+    "action": "選ぶ物の名前を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-002": {
+    "id": "E-FMS-002",
+    "cls": "conflict",
+    "message": "値が入っている項目は、型を変えられません",
+    "action": "型はそのままにするか、新しい項目を足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-003": {
+    "id": "E-FMS-003",
+    "cls": "conflict",
+    "message": "並びが今の項目と合いません",
+    "action": "画面を開き直してから並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-005": {
+    "id": "E-FMS-005",
+    "cls": "conflict",
+    "message": "選ぶ型でない項目には、選ぶ物を付けられません",
+    "action": "型を選ぶ型に変えてから選ぶ物を足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
     }
   },
   "E-RUN-001": {

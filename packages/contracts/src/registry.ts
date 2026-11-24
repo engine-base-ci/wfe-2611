@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:67d0134f4dc27227
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c75e2dc63cc28a22
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6435,6 +6435,173 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "POST",
+    "path": "/api/v1/knowledge/folders",
+    "operationId": "createKnowledgeFolder",
+    "table": "knowledge_folders",
+    "kind": "create",
+    "input": "KnowledgeFolderCreateInput",
+    "success": 201,
+    "output": "KnowledgeFolder",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      404,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/knowledge/folders/:id",
+    "operationId": "updateKnowledgeFolder",
+    "table": "knowledge_folders",
+    "kind": "update",
+    "input": "KnowledgeFolderUpdateInput",
+    "success": 200,
+    "output": "KnowledgeFolder",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/knowledge/folders/:id",
+    "operationId": "deleteKnowledgeFolder",
+    "table": "knowledge_folders",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeFolderDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "GET",
     "path": "/api/v1/knowledge/home",
     "operationId": "getKnowledgeHome",
@@ -6556,7 +6723,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       503
     ],
     "acts": [
-      "A114"
+      "A136"
     ],
     "screens": [
       "knowledge"
@@ -6595,7 +6762,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "id"
     ],
     "chokePoints": [
-      "C2"
+      "C2",
+      "C6"
     ],
     "errors": [
       401,
@@ -6610,7 +6778,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       503
     ],
     "acts": [
-      "A114"
+      "A136"
     ],
     "screens": [
       "knowledge"
@@ -6625,7 +6793,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
     },
     "termsOpen": false,
@@ -6652,7 +6820,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "id"
     ],
     "chokePoints": [
-      "C2"
+      "C2",
+      "C6"
     ],
     "errors": [
       401,
@@ -6667,7 +6836,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       503
     ],
     "acts": [
-      "A114"
+      "A136"
     ],
     "screens": [
       "knowledge"
@@ -6682,8 +6851,170 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/knowledge/requests/:id",
+    "operationId": "withdrawKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeRequestEnded",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge/requests/:id/dismiss",
+    "operationId": "dismissKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeDismissInput",
+    "success": 200,
+    "output": "KnowledgeRequestEnded",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge/similar",
+    "operationId": "findSimilarKnowledge",
+    "table": "knowledge_pages",
+    "kind": "create",
+    "input": "KnowledgeSimilarInput",
+    "success": 200,
+    "output": "KnowledgeSimilar",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -6723,7 +7054,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "knowledge"
     ],
     "perm": {
-      "word": "read",
+      "word": "self",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -7001,9 +7332,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createKnowledgePage",
     "table": "knowledge_pages",
     "kind": "create",
-    "input": "KnowledgePagesInput",
+    "input": "KnowledgePageCreateInput",
     "success": 201,
-    "output": "KnowledgePages",
+    "output": "KnowledgePageStub",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -7020,6 +7351,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      404,
+      503,
       413,
       429,
       403,
@@ -7071,6 +7404,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -7105,9 +7439,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateKnowledgePage",
     "table": "knowledge_pages",
     "kind": "update",
-    "input": "KnowledgePagesInput",
+    "input": "KnowledgePageMoveInput",
     "success": 200,
-    "output": "KnowledgePages",
+    "output": "KnowledgePageStub",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -7126,6 +7460,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -7148,7 +7485,66 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/knowledge_pages/:id",
+    "operationId": "deleteKnowledgePage",
+    "table": "knowledge_pages",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgePageDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7205,7 +7601,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7262,7 +7658,66 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge_pages/:id/copy",
+    "operationId": "copyKnowledgePage",
+    "table": "knowledge_pages",
+    "kind": "create",
+    "input": "KnowledgeCopyInput",
+    "success": 201,
+    "output": "KnowledgePageStub",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -7275,14 +7730,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "saveKnowledgeDraft",
     "table": "knowledge_page_versions",
     "kind": "update",
-    "input": "KnowledgePageVersionsInput",
+    "input": "KnowledgeDraftInput",
     "success": 200,
-    "output": "KnowledgePageVersions",
+    "output": "KnowledgeDraftSaved",
     "outputList": false,
     "generic": false,
     "auth": "member",
     "rateLimit": {
-      "perMinute": 60,
+      "perMinute": 120,
       "key": "user"
     },
     "uuidParams": [
@@ -7296,6 +7751,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
+      503,
       413,
       429,
       403,
@@ -7318,7 +7775,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7333,7 +7790,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "KnowledgePageVersions",
+    "output": "KnowledgeDraftDiscarded",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -7352,6 +7809,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
+      503,
       429,
       403,
       403,
@@ -7373,7 +7832,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7483,7 +7942,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7654,14 +8113,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "POST",
-    "path": "/api/v1/knowledge_pages/:id/publish",
-    "operationId": "publishKnowledgePage",
-    "table": "knowledge_page_versions",
-    "kind": "create",
-    "input": "KnowledgePageVersionsInput",
-    "success": 201,
-    "output": "KnowledgePageVersions",
+    "method": "PUT",
+    "path": "/api/v1/knowledge_pages/:id/must",
+    "operationId": "setKnowledgeMust",
+    "table": "knowledge_pages",
+    "kind": "update",
+    "input": "KnowledgeMustInput",
+    "success": 200,
+    "output": "KnowledgeMustSet",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -7679,8 +8138,12 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
-      409,
       422,
+      409,
+      409,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -7703,7 +8166,131 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge_pages/:id/publish",
+    "operationId": "publishKnowledgePage",
+    "table": "knowledge_page_versions",
+    "kind": "create",
+    "input": "KnowledgePublishInput",
+    "success": 200,
+    "output": "KnowledgePublished",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge_pages/:id/raise",
+    "operationId": "requestKnowledgeRaise",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeRaiseInput",
+    "success": 201,
+    "output": "KnowledgeRequest",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7760,7 +8347,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7793,12 +8380,13 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       429,
+      502,
       403,
       403,
       503
     ],
     "acts": [
-      "A114"
+      "A137"
     ],
     "screens": [
       "knowledge"
@@ -7870,7 +8458,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -7885,7 +8473,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "KnowledgePageVersions",
+    "output": "KnowledgeVersionItem",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -7902,6 +8490,61 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/knowledge_pages/:id/versions/:v",
+    "operationId": "getKnowledgePageVersion",
+    "table": "knowledge_page_versions",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeVersion",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      503,
       429,
       403,
       403,
@@ -7980,7 +8623,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_pages",
-        "sql": "app.kpage_writable(id)"
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
       }
     },
     "termsOpen": false,
@@ -15121,6 +15764,54 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "GET",
+    "path": "/api/v1/ticket-field-master",
+    "operationId": "listTicketFieldMaster",
+    "table": "custom_fields",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketFieldSetting",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
     "path": "/api/v1/ticket-fields",
     "operationId": "listTicketFields",
     "table": "custom_fields",
@@ -15159,6 +15850,223 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "word": "read",
       "target": null,
       "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket-fields",
+    "operationId": "createTicketField",
+    "table": "custom_fields",
+    "kind": "create",
+    "input": "TicketFieldCreateInput",
+    "success": 201,
+    "output": "TicketFieldSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      404,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ticket-fields/:id",
+    "operationId": "updateTicketField",
+    "table": "custom_fields",
+    "kind": "update",
+    "input": "TicketFieldUpdateInput",
+    "success": 200,
+    "output": "TicketFieldSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/ticket-fields/:id",
+    "operationId": "deleteTicketField",
+    "table": "custom_fields",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "TicketFieldDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket-fields/order",
+    "operationId": "reorderTicketFields",
+    "table": "custom_fields",
+    "kind": "create",
+    "input": "TicketFieldOrderInput",
+    "success": 200,
+    "output": "TicketFieldSetting",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
@@ -15889,7 +16797,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "TicketStages",
+    "output": "TicketStageSetting",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -15918,6 +16826,223 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "word": "read",
       "target": null,
       "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_stages",
+    "operationId": "createTicketStage",
+    "table": "ticket_stages",
+    "kind": "create",
+    "input": "TicketStageCreateInput",
+    "success": 201,
+    "output": "TicketStageSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ticket_stages/:id",
+    "operationId": "updateTicketStage",
+    "table": "ticket_stages",
+    "kind": "update",
+    "input": "TicketStageUpdateInput",
+    "success": 200,
+    "output": "TicketStageSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/ticket_stages/:id",
+    "operationId": "deleteTicketStage",
+    "table": "ticket_stages",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "TicketStageDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_stages/order",
+    "operationId": "reorderTicketStages",
+    "table": "ticket_stages",
+    "kind": "create",
+    "input": "TicketStageOrderInput",
+    "success": 200,
+    "output": "TicketStageSetting",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
@@ -19885,4 +21010,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "67d0134f4dc27227";
+export const OPENAPI_HASH = "c75e2dc63cc28a22";

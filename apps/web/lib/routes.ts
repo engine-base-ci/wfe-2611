@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:5be5104bde7d4d13
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:022c3bdf872a75ac
 export interface RouteDef {
   id: string;
   route: string;
@@ -446,7 +446,7 @@ export const ROUTES: readonly RouteDef[] = [
   },
   {
     "id": "masters",
-    "route": "/workspace/rules",
+    "route": "/workspace/ticket-settings",
     "needsLogin": true,
     "release": "v1"
   }
