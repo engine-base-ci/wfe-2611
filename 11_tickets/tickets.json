@@ -24189,11 +24189,12 @@
     "C2"
    ],
    "tests": [
-    "apps/api/test/features/F5/approval-return-next.test.ts",
+    "apps/api/test/features/F5/approval-return-next.test.ts"
+   ],
+   "carry": [
     "apps/api/test/features/F5/approve-complete-guard.test.ts",
     "apps/api/test/features/F5/approve-complete-approve.test.ts"
    ],
-   "carry": [],
    "depends_on": [
     "K-732"
    ],
