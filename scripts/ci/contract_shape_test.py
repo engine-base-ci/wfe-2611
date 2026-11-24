@@ -1094,6 +1094,9 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F9/knowledge/versions.ts": [("rows.slice(0, VERSIONS_MAX)", "DB から VERSIONS_MAX+1 件取った版の行を、超えたかを見た後に 200 件に戻す（入力でない）")],
         # K-92：チケットの一覧も同じ形（DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す）
         "apps/api/src/features/F4/ticket-list/hooks.ts": [("const page = rows.slice(0, q.limit);", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
+        # K-686：似たページを探す口（読むだけ・書かない）。本文は比べるための頭 500 字だけを関数に渡す（保存しない）。答えは上位 3 件
+        "apps/api/src/features/F9/knowledge/similar.ts": [("slice(0, BODY_HEAD)", "似ているかを比べるためだけに本文の頭 500 字を渡す（チケットの決め・どこにも書かない・入力を黙って切って残すのではない）"),
+                                                         ("rows.slice(0, SIMILAR_LIMIT)", "DB の関数が返した似ている順の行を、上位 3 件に戻す（入力でない）")],
         # K-676：ナレッジの木（DB から TREE_MAX+1 件取ったフォルダとページを、超えたかを見た後に TREE_MAX 件に戻す・入力でない）
         "apps/api/src/features/F9/knowledge/tree.ts": [("allFolders.slice(0, TREE_MAX)", "DB から TREE_MAX+1 件取ったフォルダの行を、超えたかを見た後に TREE_MAX 件に戻す（入力でない）"),
                                                         ("allPages.slice(0, TREE_MAX - folders.length)", "DB から取ったページの行を、フォルダと合わせて TREE_MAX 件に戻す（入力でない）")],
