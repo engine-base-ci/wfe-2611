@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。326 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。329 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5845,6 +5845,63 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "running"
+    }
+  },
+  "E-RUN-003": {
+    "id": "E-RUN-003",
+    "cls": "conflict",
+    "message": "承認待ちの成果物が無いので、試し打ちできません",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-RUN-003",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-RUN-004": {
+    "id": "E-RUN-004",
+    "cls": "conflict",
+    "message": "試し打ちを動かす AI が使えません",
+    "action": "理由（detail.reason）を読んで、担当者・PC を直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-RUN-004",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-RUN-005": {
+    "id": "E-RUN-005",
+    "cls": "conflict",
+    "message": "あなたのメールアドレスが分からないので、試し打ちできません",
+    "action": "運営に連絡する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-RUN-005",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
     }
   }
 };

@@ -2655,8 +2655,7 @@
     "apps/api/test/generated/post_checks_id_human.test.ts",
     "apps/api/test/generated/post_clones_me_activity_export.test.ts",
     "apps/api/test/generated/post_conversations_id_stop.test.ts",
-    "apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts",
-    "apps/api/test/generated/post_tickets_id_dry_run.test.ts"
+    "apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -28918,7 +28917,8 @@
     "C5"
    ],
    "tests": [
-    "apps/api/test/features/F5/dry-run.test.ts"
+    "apps/api/test/features/F5/dry-run.test.ts",
+    "apps/api/test/generated/post_tickets_id_dry_run.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-746.ts"

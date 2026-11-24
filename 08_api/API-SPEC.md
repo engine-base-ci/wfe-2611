@@ -353,7 +353,7 @@
 | EP-338 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-339 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 409 413 429 502 403 403 503 |
 | EP-340 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 503 429 403 403 503 |
-| EP-341 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-341 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 409 409 409 503 413 429 502 403 403 503 |
 | EP-342 | GET | `/api/v1/tickets/:id/handover-preview` | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人 | A111 A48 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-343 | GET | `/api/v1/tickets/:id/handovers` | 取得（ticket_handovers）— チケットの渡しの今と前の渡し | A110 A51 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-344 | POST | `/api/v1/tickets/:id/handovers` | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる | A111 A112 A48 A51 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
