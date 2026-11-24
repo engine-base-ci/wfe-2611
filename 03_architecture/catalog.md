@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 262・部品 56・設定 41
+API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 20・表 148・画面の部品 19・共通の処理 13・エラー 262・部品 56・設定 41
 
 ## 共通の処理
 
@@ -528,9 +528,6 @@ API 369（作った 97・後のフェーズの行為だけ 20）・前の道す�
 - `/bridge/answer`
 - `/bridge/ask`
 - `/bridge/browser`
-- `/bridge/code`
-- `/bridge/credentials/check-result`
-- `/bridge/credentials/resolve`
 - `/bridge/state`
 - `/me`
 - `/onboard/draft`
@@ -540,9 +537,6 @@ API 369（作った 97・後のフェーズの行為だけ 20）・前の道す�
 - `/onboard/testrun/cancel`
 - `/setup-state`
 - `/setup-step`
-- `/vault/credentials`
-- `/vault/credentials/:id/answer`
-- `/vault/credentials/:id/login-check`
 
 ## 設定の項目（値は載せない）
 

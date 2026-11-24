@@ -2,7 +2,7 @@
  "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
  "at": "2026-11-09",
- "count": 2220,
+ "count": 2216,
  "rows": [
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -443,14 +443,6 @@
   {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-GATE-011-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-001-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-003-A"
   },
   {
    "file": "07_qa/test-specs/errors.md",

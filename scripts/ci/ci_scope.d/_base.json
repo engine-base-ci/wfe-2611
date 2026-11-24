@@ -233,14 +233,6 @@
   },
   {
    "paths": [
-    "apps/api/src/auth/agent-tools.ts"
-   ],
-   "tests": [
-    "apps/api/test/bridge_credentials.test.ts"
-   ]
-  },
-  {
-   "paths": [
     "apps/bridge/src/**",
     "apps/bridge/scripts/**"
    ],

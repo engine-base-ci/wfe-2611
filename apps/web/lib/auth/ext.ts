@@ -77,7 +77,7 @@ export const verifySignup = async (token: string) => {
 };
 // ログイン（パスワード・確認のコード）は契約の口（signInWithPassword・verifySignInCode）を features/F1/login が直に呼ぶ。前の道すじの呼び手は K-316 で消した
 // 招待の下見と参加は契約の口を features/F2/invite が直に呼ぶ。前の道すじ（/invitations/*）の呼び手は K-335 で消した
-// 預けたログイン情報の一覧は契約の口（listCredentials）を features/F3/credentials が直に呼ぶ。前の道すじ（/vault/credentials）の画面の呼び手は K-356 で消した
+// 預けたログイン情報は契約の口（listCredentials など）を features/F3/credentials が直に呼ぶ。前の道すじの画面の呼び手は K-356・K-357 で消し、口そのものは K-358 で消した
 /** 自分のこと（役割）。一覧では自分の行が返らないことがあるので専用の口から（D-086） */
 export const me = () =>
   ext<{ member_id: string; tenant_id: string; display_name: string | null; role_id: string | null }>(
