@@ -394,7 +394,7 @@ API 373（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | K-61 |
 | `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする | F5 | 作った | K-165 |
 | `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 作った | K-62 |
-| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61 |
+| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61,K-746 |
 | `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 作った | K-62 |
 | `updateTicketDecision` | PATCH /api/v1/ticket_decisions/:id | 更新（ticket_decisions）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-391 |
 | `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
