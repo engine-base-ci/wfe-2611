@@ -3308,7 +3308,38 @@
     "postponeLearningCandidate",
     "promoteMemoryToRule",
     "requestRuleException",
-    "updateMemory"
+    "updateMemory",
+    "askKnowledge",
+    "sendKnowledgeAnswerFeedback",
+    "getKnowledgeHome",
+    "searchKnowledgeLinkTargets",
+    "listKnowledgeProposals",
+    "acceptKnowledgeProposal",
+    "declineKnowledgeProposal",
+    "getKnowledgeTree",
+    "listKnowledgeVerifications",
+    "createKnowledgeImport",
+    "getKnowledgeImport",
+    "commitKnowledgeImport",
+    "listKnowledgePages",
+    "createKnowledgePage",
+    "getKnowledgePage",
+    "updateKnowledgePage",
+    "archiveKnowledgePage",
+    "uploadKnowledgeAttachment",
+    "saveKnowledgeDraft",
+    "discardKnowledgeDraft",
+    "getKnowledgeLinks",
+    "linkKnowledgeMention",
+    "exportKnowledgeMarkdown",
+    "listKnowledgeMessages",
+    "postKnowledgeMessage",
+    "publishKnowledgePage",
+    "unarchiveKnowledgePage",
+    "getKnowledgeUsage",
+    "verifyKnowledgePage",
+    "listKnowledgeVersions",
+    "restoreKnowledgeVersion"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
@@ -24278,6 +24309,81 @@
    "file": "11_tickets/K-569.md"
   },
   {
+   "id": "K-577",
+   "title": "画面の部品：本文の読む形の描き（文書の木 doc → 画面。編集の部品を読み込まない・チェックの箱の取り扱い・リンクの守り）と、編集の部品の遅い読み込みの確かめ（K-59 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（2026-11-22 に本文の道具の決めで足した物：足した節と印の描き・色の値の守り・開発用の頁の文書 2 つの 15 分を足し、全体は 1 時間以内）。形の近い本線の葉 K-369（部品に値を渡して描く・見込み 1）と、同じ部品の核 K-567 から引いた：読む形の描き（doc-view.tsx：節ごとの描きと印・リンク）25 分・開発用の頁に読む形と切り替えのボタンを足す 10 分・遅い読み込みの確かめ（script の中身を見る試験の通し）10 分・自分の確かめ 10 分。K-567 の見込みが 1 時間を超えると見えたため、読む形の描きと遅い読み込みの確かめをここへ分けた（切り分けの番号は K-577）。見込みの根拠になる実測が無いので、最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.57",
+    "D-150.61"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の部品と開発用の頁だけ。口・DB・外・秘密に触らない（読む形は文書を受けて描くだけ）",
+   "tests": [
+    "apps/web/tests/k/k577-doc-view.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-567",
+    "K-584"
+   ],
+   "acts": [
+    "A99",
+    "A101"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f4v2-body-read"
+   ],
+   "flow": "チケットの中身を書く・直す",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/doc/editor/doc-view.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-marks.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-color.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-live.tsx",
+    "apps/web/features/F4/doc/editor/index.ts",
+    "apps/web/features/F4/doc/editor/editor.css",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/live.tsx",
+    "scripts/ci/ci_scope.d/K-577.json"
+   ],
+   "sections": {
+    "目的": "詳細（K-571）が本文を**読む形**で出すとき、編集の部品（Tiptap・ProseMirror）を読み込まずに、文書の木 `doc`（K-561）を画面に描く部品 `DocView` を作る。読む画面は一番よく開くので、編集のための 100kb 超を読み込ませない（`performance.md`）。編集に入ったときだけ K-567 の `DocEditor` が遅く読み込まれることも、この葉の試験で確かめる。\n\n詳細で本文のチェックの箱を読む形のまま付けられるか（K-571・K-447 の決め）は、`DocView` の `onToggleTask` を渡すかどうかで使う側が決める。この葉は取り扱いを渡された／渡されないときの動きだけを持つ。",
+    "完了の条件": "- [ ] 下の表の 12 行（K577-UI-001〜012）が緑：`apps/web/tests/k/k577-doc-view.spec.ts`\n- [ ] K-567 の試験（`k567-doc-editor.spec.ts`・`k567-doc-convert.test.ts`）が変えずに緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- **本文の道具の決め（代表 2026-11-22・D-150.61）への当たり方**：読む形は、K-584 が広げた文書の木の節と印を全部描く（絞らない）。リンクの守り（http・https・mailto だけ）・画像は押せない形（D-150.57）は変えない。編集の道具の数や並びは持たない（K-567・K-587・K-568 の物）\n\n- **この葉の正の絵（下絵に足す状態）**：読む形の本文は下絵 v2 の詳細の状態（f4v2-detail-new・detail-worked・detail-empty）の中に描かれているが、その持ち主は K-571。この葉だけが持つ状態は無い。canvas_field_gate は mock: を空にできないので、本文の読む形（チェックの箱・リンク・表・画像）だけを並べた状態 `f4v2-body-read`（ticket K-577）を下絵 v2 の `mocks.tsx` に足してもらう（PM への頼み・T2 の報告の残り）。足すまで頭の `mock:` は赤。足すときは、下絵の `FreeDoc`・`Checks`・`BillTable`・`Img` を 1 枚に並べるだけで、新しい見た目は作らない\n- **`DocView`（`doc-view.tsx`）は編集の部品を import しない**（`@tiptap/*`・`prosemirror-*` を読まない。境界 B10 の外から読んではいけない物を、この葉は触らない）。`@kaname/contracts` の `Doc` の型と定数だけを使う。サーバーでも描ける（`\"use client\"` を付けない）\n- **利用者が選んだ `#rrggbb` の色の当て方（PM の決め 2026-11-23・案 2）**：JSX の `style={…}` でも `<style>` の要素でも当てない（class_gate・D8・K261-RL-017 を緩めない・例外も足さない）。文書に、形を確かめた `#rrggbb` の色（文字の色か背景）が **1 つでも在るときだけ**、読むだけの編集の部品（Tiptap・`editable: false`・K-567 の `buildExtensions()`）で描く。読み込みは遅い読み込み（`doc-view-color.tsx` が `doc-view-live.tsx` を動的に import する）で、読み込みの間は色を付けない読む形（`DocView` の描き）を先に出す。色の印（inline の style）は Tiptap が自分で付ける。**色の無い文書（大半）は編集の部品を読まないまま**（K577-UI-001）\n- **色のある文書でも同じ結果にする物**：チェックの箱（取り扱いが無ければ disabled・在れば `onToggleTask(位置, 押した後の真偽)` を呼び、表示は渡された `doc` のまま＝Tiptap の `onReadOnlyChecked` で偽を返して戻す）／値の守り（Tiptap に渡す前に、K-567 の `fromEditorJson` で形に合わない色・寄せ・`colspan`・`rowspan`・`start`・許されない href を落とす）／前の 3 つの名前の色は `span[data-c]`（正本のトークン）／箱の名前（読み上げ）は箱の文／画像の置き場は `DocView` と同じ形（`figure.k-f4d-img`・枠は `role=\"img\"`・名前＝caption・K577-UI-011）／表のセルの `colwidth` は読むだけの形でも使わない（渡す前に外す）。書き換えはできない（`contenteditable=\"false\"`・入力欄の役を付けない）。見た目は `editor.css` のトークンでそろえる（K-567 の `k-f4d-pm` の決まりを読む形にも当てる）\n- **描き**：K-561 の節ごとに、下絵 `features/F4/doc/views.tsx` の `FreeDoc`・`Checks`・`BillTable`・`Img` と同じ見た目（`doc.css` の `k-f4d-*`）。見出し（2・3）は `h2`・`h3`・段落は `p`・箇条書きは `ul>li`・チェックの箱は `ul.k-f4d-checks>li>input[type=checkbox]＋span`（済みは `data-done`）・表は `div.k-f4d-tablewrap>table`（1 行目が `th`）・引用は `blockquote.k-f4d-quote`・コードは `pre>code`・画像の置き場は `figure.k-f4d-img`（枠は `role=\"img\"`・名前＝caption・押せない・D-150.57）・hardBreak は `br`。印は bold＝`b`・italic＝`i`・highlight＝`mark`・color＝`span[data-c]`（red・teal・amber）・link＝`a`。薄い字（`ghost`）は `k-f4d-ghost`／`k-f4d-ghost-h` の薄い見た目\n- **リンクの守り**：許された href（`isAllowedHref`・K-567 の `link-policy.ts`）のときだけ `a`（`target=\"_blank\"`・`rel=\"noopener noreferrer\"`）。**許されない href は `a` にせず字だけ出す**（文書がサーバーに前から入っていた物でも守る）。`dangerouslySetInnerHTML` を使わない\n- **チェックの箱**：`onToggleTask` を渡されないときは `disabled`（読むだけ）。渡されたときは押せて、`onToggleTask(index, checked)`（`index` は文書の中の taskItem の出てくる順の位置・0 から・入れ子も数える／`checked` は押した後の真偽）を呼ぶ。**部品の中で文書を書き換えない**（表示は渡された `doc` のまま。使う側が口で書いて新しい `doc` を渡す）。名前（読み上げ）は箱の文\n- **遅い読み込みの確かめ**：開発用の頁を読む形で開いたとき、どの script にも編集の部品が入っていない。編集に切り替えると編集の部品が読まれる（K-567 の `DocEditor` が動的に読む）。確かめは試験の中の script の中身（`prosemirror-state`・`prosemirror-view`・`prosemirror-model`・`@tiptap/core`）で見る\n- **画面の文**：読む形に字を足さない（下絵の字だけ）。開発用の頁のボタンの字『編集に切り替える』『読む形に切り替える』『箱を押せる読む形にする』『危ない href の文書にする』『広い表と長い字の文書にする』は開発用で、本番には出ない\n- **足した節と印の描き**（代表の決め 2026-11-22・D-150.61「出来合いの編集の部品が持つ機能を絞らずに使う」。文書の木は K-584 が広げた形）：番号つきの並び＝`ol>li`（`start` が在れば `ol` の `start` 属性）・区切りの線＝`hr`・見出し level 2・3・4＝`h2`・`h3`・`h4`・文字の寄せ（段落と見出しの `textAlign`）＝4 つの値だけ（`DocView` の自前の描きは `data-align` と `editor.css`・読むだけの編集の部品は Tiptap が付ける inline の text-align。どちらも計算された text-align で確かめる）・表のセル＝`td`／`th` に `colSpan`・`rowSpan`（`colwidth` は読む形では使わない：結合したセルの幅を固定すると狭い幅で溢れるため。表は `k-f4d-tablewrap` の中で横に流れる）・見出しのセル `tableHeader` は行・列・セルのどこでも `th`・印は 下線＝`u`・取り消し線＝`s`・行の中のコード＝`code`・上付き＝`sup`・下付き＝`sub`・文字の色＝前の 3 つの名前は `span[data-c]`（正本のトークン）、`#rrggbb` は読むだけの編集の部品が付ける色（上の決め。`DocView` の自前の描きでは色を付けずに字だけ）・背景の色＝`mark`（属性の無い物は前のまま正本の黄、`#rrggbb` は同じく読むだけの編集の部品が付ける）。`ol`・`h4`・`hr`・行の中の `code` の見た目は `editor.css` に足す（既存の `--k-*` のトークンだけ・生の長さや色を書かない。無い物は K-431 の台帳に足してもらうと報告に書く）。下絵（mock）は触らない＝正の絵の組は `f4v2-body-read` のまま、足した分は開発用の頁の確かめ（行の役・字・計算された style）で見る\n- **色の値の守り**：`color`・`highlight` の色は K-584 の形（前の 3 つの名前〔文字の色だけ〕か `^#[0-9a-f]{6}$`）に完全一致したときだけ色にする（名前は `data-c`・`#rrggbb` は読むだけの編集の部品へ渡す）。**形に合わない値は、サーバーに前から入っていた物でも、色を付けずに字だけ出す**（`rgb()`・名前・`url()`・大文字・3 桁・空・文字以外）。値を連結して style の文字列を作らない（決まった形の値だけを入れる）。`dangerouslySetInnerHTML` を使わない\n- **口は呼ばない**",
+    "目録で探した結果": "- 使う：`@kaname/contracts` の `Doc`・`docToText`（K-561）／`features/F4/doc/doc.css` の `k-f4d-*`（K-431）／K-567 の `link-policy.ts`（`isAllowedHref`）・`DocEditor`（動的）・開発用の頁\n- 作る：`editor/doc-view.tsx`・開発用の頁の読む形。探したが「文書の木を画面に描く」所は 0 件（`git grep -n -E \"docToText|DocView\" -- apps/web` は 0 件。下絵の `FreeDoc` は固定の見本で、文書の木を読まない）\n\n```search\ngit grep -n -E \"docToText|DocView\" -- apps/web\n21\n```\n\n名前に当たる試験が増えた分（全葉を書いた後の数え直し・2026-11-22）：\n- apps/web/test/k568-markdown.test.ts: 替えない — 持ち主は K-568。K-568 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない\n- apps/web/tests/k/complete-mock.ts: 替えない — 持ち主は K-572。K-572 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない",
+    "実施事項": "| ファイル | 中身 |\n|---|---|\n| `editor/doc-view.tsx` | `DocView({ doc, onToggleTask?, ariaLabel? })`。節の描きと印の描きを小さな関数に分ける（足した節と印の描きは `doc-view-marks.tsx` に分けて 200 行以内ずつ・色の値は `DOC_HEX_COLOR` で確かめてから使う）。`taskIndex` は描く前に 1 回の走査で振る（描きの途中で数えない）。`data-testid` は持たない（試験は役割で探す） |\n| `editor/doc-view-color.tsx`（新しく・`\"use client\"`） | 色のある文書の入口。`doc-view-live.tsx` を動的に import し、読み込めるまでは渡された子（色を付けない `DocView` の描き）を出す。編集の部品を静的に import しない |\n| `editor/doc-view-live.tsx`（新しく・`\"use client\"`） | 読むだけの編集の部品（`useEditor`・`editable: false`・`immediatelyRender: false`・`buildExtensions()` に、名前の色を `span[data-c]` で描く印と、箱の名前・`onReadOnlyChecked` を足した物）。渡す中身は `fromEditorJson` → `toEditorContent` を通した物。`doc` が変わったら中身を入れ替える。取り扱いの有無で箱の `disabled` を付け外しする |\n| `editor/index.ts`（K-567 の物に足す） | `DocView` を出す |\n| `editor/editor.css`（K-567 の物に足す） | 読む形だけの見た目（`pre` の横の流れ・`figure` の枠・`ol`・`h4`・`hr`・行の中の `code`）。トークンだけ |\n| `f4v2-editor/live.tsx`（K-567 の物に足す） | 文書 5 つ。`?doc=rich`（K577-UI-006〜008 の文書）：見出し 4『小さい見出し』（center）・番号つき 2 つ（start 3 に『三つ目』『四つ目』／start なしに 1 項目）・区切りの線 1 つ・段落『右寄せの段落』（right）『両端そろえの段落』（justify）・字『下線』（underline）『取り消し線』（strike）『x = 1』（code）『2』（superscript）『i』（subscript）『青緑』（color teal）『赤い字』（color #dc2626）『黄の背景』（highlight #fde68a）『前の黄』（highlight 属性なし）・表（1 行目に colspan 2 の見出し『項目』、2 行目に見出し『運用』と rowspan 2 のセル『保守』）・薄い段落 1 つ。`?doc=badcolor`（K577-UI-009）：段落に『rgb の色』（color `rgb(255,0,0)`）『大文字の色』（`#FF0000`）『三桁の色』（`#f00`）『名前の色』（`pink`）『url の背景』（highlight `url(javascript:alert(1))`）『不正な寄せ』（`textAlign` が `left;background:url(x)`）。番号つき 1 つ（`start` が 2.5 の文字『不正な始まり』）。表 1 つ（1 行に、`colspan` が 1.5 の見出しセル『不正な横結合』と `rowspan` が `\"2\"`（文字）のセル『不正な縦結合』）。`?doc=calm`（K577-UI-001・003〜006）：`full` と同じ節と印で、`#rrggbb` の色の印（文字の色・背景）だけを外した文書（`full` から作る・編集の部品を読まない道）。`?doc=colortask`（K577-UI-011）：段落『色つきの字』（color `#dc2626`）とチェックの箱 2 つ（『送った』済み・『控える』未）と画像の置き場 1 つ（caption『色のある文書の画像.png』）。`?doc=colorbad`（K577-UI-012）：段落を 1 つずつ『正しい赤』（color `#dc2626`）『rgb の色』（color `rgb(255,0,0)`）『大文字の色』（`#FF0000`）『三桁の色』（`#f00`）『名前の色』（`pink`）『url の背景』（highlight `url(javascript:alert(1))`）『不正な寄せ』（`textAlign` が `left;background:url(x)`）『悪いリンク』（link の href が `javascript:alert(1)`）、番号つき 1 つ（`start` 2.5『不正な始まり』）、表 1 つ（`colspan` 1.5 の見出しセル『不正な横結合』と `rowspan` `\"2\"` のセル『不正な縦結合』）。`?mode=read\\|edit`（既定 edit）・『編集に切り替える』『読む形に切り替える』・読む形の出し物 `data-testid=\"doc-read\"`（`DocView` を包む）・『箱を押せる読む形にする』（`onToggleTask` を渡し、押した記録を `data-testid=\"task-log\"` に `[[位置, 付いたか], …]` の JSON で出す）・『危ない href の文書にする』（link の href が `javascript:alert(1)` の文書に差し替える）・『広い表と長い字の文書にする』（列 8 の表と 400 字の段落の文書に差し替える） |",
+    "前からの試験を替えた所": "```search\ngit grep -n -E \"docToText|DocView\" -- apps/web\n21\n```\n\n- 替える前からの試験は無い（読む形の描きは新しい）。K-567 の試験は開発用の頁の編集の動き（`?mode` 無し＝edit）だけを見るので、この葉が頁に読む形を足しても変わらない",
+    "状態 × 入口 × 利用者の状態": "| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 読む形 | 開く | 読める人 | 編集の部品を読み込まず、文書の木どおりに描く | このチケット | K577-UI-001・003 |\n| 読む形 → 編集 | 切り替え | 書ける人 | 編集に入るときだけ編集の部品を読む | このチケット | K577-UI-002 |\n| 読む形のチェックの箱 | 押す | 読める人・書ける人 | 取り扱いが無ければ押せない・あれば位置と真偽が渡る | このチケット | K577-UI-004 |\n| 危ない href を持つ文書 | 開く | 読める人 | リンクにならず字だけ | このチケット | K577-UI-005 |\n| 狭い幅・広い表 | 開く | 携帯・小さい窓 | 頁の横のはみ出し 0 | このチケット | K577-UI-006 |\n| `#rrggbb` の色を持つ文書の読む形 | 開く | 読める人 | 読むだけの編集の部品で描く（書き換えられない・色は計算された色） | このチケット | K577-UI-007・008・010 |\n| 同・チェックの箱 | 押す | 読める人・書ける人 | 色の無い文書と同じ（無ければ押せない・あれば位置と真偽が渡る・表示は変わらない） | このチケット | K577-UI-011 |\n| 同・形に合わない値／危ない href | 開く | 読める人 | 色の無い文書と同じ（外れた値は付かない・リンクにならない） | このチケット | K577-UI-012 |\n| 足した節と印を持つ文書・形に合わない色の値を持つ文書 | 開く | 読める人 | 足した節と印は文書どおりに描かれ、形に合わない色の値は色を付けずに字だけ出る | このチケット | K577-UI-007・008・009 |",
+    "テスト仕様と確認の結果": "| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K577-UI-001 | 入力 | 色の無い文書（`?doc=calm`）の読む形の頁を開いて待つ | どの script にも編集の部品が入っていない。本文の入力欄は無い |\n| K577-UI-002 | 入力 | 『編集に切り替える』→『読む形に切り替える』 | 編集に入ったときだけ編集の部品の script が読まれ、本文の入力欄が出る。戻ると読む形（入力欄は無い） |\n| K577-UI-003 | 入力 | 全部の節を持つ色の無い文書（`?doc=calm`）を読む形で開く | 見出し・箇条書き・チェックの箱 2 つ（済み・未）・表（th が 2 つ）・引用・コード・画像の置き場（名前つき）・色（data-c）・太字・薄い字が文書どおりに出る |\n| K577-UI-004 | 操作の揺れ | 取り扱いを渡さない・渡して箱を押す | 渡さないと箱は押せない。渡すと押せて `[[1, true]]` が記録され、箱の表示は変わらない（文書は部品の中で書き換わらない） |\n| K577-UI-005 | 守り | 許されたリンク・href が javascript: の文書 | 許されたリンクは rel（noopener・noreferrer）・target（_blank）つき。危ないものは `a` にならず字だけ出る |\n| K577-UI-006 | 入力 | 幅 375・768・1440・広い表と長い字の文書・`?doc=rich`（結合したセルの表を含む） | 頁の横のはみ出し 0（どちらの文書でも） |\n| K577-UI-007 | 入力 | `?doc=rich` を読む形で開く（足した節） | 見出し 4 は `h4` で中央寄せ・番号つきは `ol`（start 3）と `ol`（start なし）・区切りの線は `hr`・段落の右寄せと両端そろえは計算された text-align・結合した表は `th[colspan=2]`・`td[rowspan=2]`・列頭の `th` があり、薄い字は薄い見た目 |\n| K577-UI-008 | 入力 | `?doc=rich`（足した印） | 下線 `u`・取り消し線 `s`・行の中のコード `code`・上付き `sup`・下付き `sub`・前の 3 色の名前は `data-c`・`#dc2626` の文字の色は計算された色 rgb(220, 38, 38)・`#fde68a` の背景は rgb(253, 230, 138)・属性の無い背景は `mark`。リンクは前のまま |\n| K577-UI-009 | 守り | `?doc=badcolor`（`rgb()`・大文字・3 桁・名前・`url()` の色の値・4 つの値以外の `textAlign`・整数でない `colspan`・`rowspan`・`start`） | どれも字は出て、`style`・`data-c` が付かず、`colspan`・`rowspan`・`start` の属性も付かず、`javascript`・`url(` を含む style が頁に 1 つも無い（色の値と数・寄せの値の守り） |\n| K577-UI-010 | 入力 | `#rrggbb` の色を持つ文書（`?doc=rich`）を読む形で開く | 編集の部品の script が読まれ、読むだけの形で描かれる（本文の入力欄は無い・`contenteditable=\"true\"` が無い）。`#dc2626` の字は計算された色 rgb(220, 38, 38)・`#fde68a` の背景は rgb(253, 230, 138)。読む形の中に `style` の要素も `data-k-ink`・`data-k-bg` も無い |\n| K577-UI-011 | 操作の揺れ | `#rrggbb` の色とチェックの箱 2 つを持つ文書（`?doc=colortask`）で、取り扱いを渡さない・渡して箱を押す | 渡さないと箱は押せない（disabled）。渡すと押せて `[[1, true]]` が記録され、箱の表示は変わらない（K577-UI-004 と同じ結果）。画像の置き場は名前つきの `role=\"img\"` で出る |\n| K577-UI-012 | 守り | 正しい `#rrggbb` の色 1 つと、形に合わない値（`rgb()`・大文字・3 桁・名前・`url()` の色、4 つの値以外の `textAlign`、整数でない `colspan`・`rowspan`・`start`、`javascript:` の href）を持つ文書（`?doc=colorbad`） | 正しい色だけが計算された色で出る。外れた値の字は出て、`style`・`data-c`・`mark` が付かず、`start` は付かず、`colspan`・`rowspan` は外れた値にならず（無いか 1）、危ないリンクは `a` にならず、`javascript`・`url(` を含む style が頁に 1 つも無い（K577-UI-005・009 と同じ結果） |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 直す・直した物を読み直す | 要らない: 読む形は書かない（書くのは K-567・K-568・K-447）。渡された文書がそのまま出ることは K577-UI-003 |\n| TP-CRUD-01〜06 | 要らない: 読む形は書き込み・消し・保存をしない（K-571 が口の答えで出し分け、K-447 が書く） |",
+    "外に影響する手順": "- なし — 画面の部品と開発用の頁だけ。口・DB・知らせ・外への送り出しをしない",
+    "依存の理由": "- K-584: 要る — `DocView` が描く足した節と印（番号つき・区切りの線・見出し 4・寄せ・結合・5 つの印・`#rrggbb` の色と背景）と、色の値の守り `DOC_HEX_COLOR`・名前の定数が K-584 の物。K-584 の前に始めると、型に無い節と印を描く行が書けず、色の守りの元の形も無い\n- K-567: 要る — 同じ開発用の頁（`live.tsx`・`editor/index.ts`・`editor.css`）を直し、`isAllowedHref`・動的な `DocEditor` を使う。K-431・K-561 は K-567 を通して要る",
+    "表の住所": "- DB の表・migration は触らない。文書の木の形は K-561 の `packages/contracts/src/doc.ts`（読むだけ）。登録先：`scripts/ci/ci_scope.d/K-577.json`",
+    "速さ（今の値と目標の値）": "| 見る所 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数・直列の段 | この葉は口を呼ばない | 増えない（0 のまま） |\n| 読む形の画面に増える script | 無い | 色の無い文書は 0 kb（編集の部品を読み込まない。K577-UI-001 が script の中身で見る）。`#rrggbb` の色を持つ文書だけ、編集の部品を遅く読む（K577-UI-010・100kb 超・実測なし・仮）。`DocView` 自体は数 kb（実測なし・仮） |\n| 新しい住所が増えるか | — | 増えない |",
+    "成果物": "- `DocView`・色のある文書の読むだけの形・開発用の頁の読む形・試験 1 本（12 行）",
+    "決定ログ": "- 2026-11-23 CI の赤 G72（K261-RL-017）と PM の決め（案 2）：`<style>` と `data-k-ink`・`data-k-bg` をやめ、`#rrggbb` の色を持つ文書だけ読むだけの編集の部品（Tiptap）で描く。色の無い全部の節の文書 `?doc=calm`・`?doc=colortask`・`?doc=colorbad` を開発用の頁に足し、行 K577-UI-010〜012 を足した（K577-UI-001・003〜006 は `full` を `calm` に替えた：`full` は `#rrggbb` を持つ）\n- 2026-11-21 切る段（H）：K-567 の見込みが 1 時間を超えるため、読む形の描きと遅い読み込みの確かめを K-577 に分けた。分け方は、編集の核（K-567）／読む形（K-577）／道具の残り（K-568）",
+    "PM に確かめたいこと": "- **色を当てる `style` 属性と検査** → 決まった（PM 2026-11-23・案 2）：利用者の `#rrggbb` の色は `style={…}` でも `<style>` でも当てず、色のある文書だけ読むだけの編集の部品で描く（前提と制約）。見本（K-431・K-568）は SVG の fill・正本のトークン",
+    "代表に聞くこと": "- なし（読む形の字は下絵のまま。詳細で本文のチェックの箱を読む形のまま付けられるかは K-571・K-447 の決め）"
+   },
+   "file": "11_tickets/K-577.md"
+  },
+  {
    "id": "K-581",
    "title": "作る口 createTicket に links（作るときにつなぐ相手・0〜20 件）を足す：作る関数が K-441 の app.ticket_link_add を新しいチケットに 1 件ずつ呼び、見える・書けるの確かめと証跡を 1 か所に保つ（相手が選べないは 404・書けないは 403）（K-59 の葉・K-437 から分けた）",
    "kind": "タスク",
@@ -25462,6 +25568,106 @@
     "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 2 行"
    },
    "file": "11_tickets/K-644.md"
+  },
+  {
+   "id": "K-670",
+   "title": "段 10 の部品 1：ナレッジの木とページの部品と、下絵の置き場 /dev/mock/f9（状態の一覧・描き手の分け方・外枠・木とページの 8 状態）を本線に入れ、「部署」を「グループ」に直し、本文を段 5 の DocEditor／DocView に替える（K-69 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 5 の K-431（切る段の枝で作り終えた部品とモックを carry で運ぶ・試験 20 行・見込み 1）から引いた：運ぶ 5 分・本文を DocEditor／DocView に替える（page-views・samples の本文を Doc の値にする）25 分・D8 の生の値をトークンに直す 15 分（doc-temp.css の 12 件を含む）・道の一覧の作り直し 2 分・CI の範囲の地図 3 分・試験を流して直す 15 分。口・DB・正本の値の足しは無い",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.61",
+    "D-125.108",
+    "D-152.11",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.35"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・試験の道具・文書だけ。口・DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k670-f9-parts-1.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F9/knowledge/tree.tsx",
+    "apps/web/features/F9/knowledge/page-views.tsx",
+    "apps/web/features/F9/knowledge/types.ts",
+    "apps/web/features/F9/knowledge/samples.tsx",
+    "apps/web/features/F9/knowledge/knowledge.css",
+    "apps/web/features/F9/knowledge/doc-temp.tsx",
+    "apps/web/features/F9/knowledge/doc-temp.css",
+    "apps/web/app/(dev)/dev/mock/f9/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/render.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/render-knowledge.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/frame.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/[id]/page.tsx",
+    "apps/web/tests/k/f9-mock-kit.ts"
+   ],
+   "depends_on": [
+    "K-567",
+    "K-577",
+    "K-673"
+   ],
+   "acts": [
+    "A114"
+   ],
+   "screens": [
+    "knowledge"
+   ],
+   "apis": [],
+   "mock": [
+    "kn-tree",
+    "kn-write",
+    "kn-must",
+    "kn-empty",
+    "kn-loading",
+    "kn-failed",
+    "kn-noaccess",
+    "kn-drawer"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F9/knowledge/",
+    "apps/web/app/(dev)/dev/mock/f9/",
+    "apps/web/tests/k/f9-mock-kit.ts",
+    "scripts/ci/ci_scope.d/K-670.json"
+   ],
+   "sections": {
+    "目的": "段 10（K-69・F9 ナレッジ）の切る段の枝 `c/段10` で作り終えた下絵 v2 の部品とモックの置き場を本線に入れ、後ろの画面の葉（K-682・K-683・K-684・K-691〜K-696）が「正の絵」として読める状態にする。三つの部品の葉（K-670・K-671・K-672）の先頭で、**状態の一覧・描き手の分け方・外枠・試験の道具を持つ**。\n\n1. **木とページの部品**：`features/F9/knowledge/{tree,page-views,types,samples}.tsx`・`knowledge.css`（下絵 1・2・3-1・10-1〜10-4・11 の 8 状態：木とページ・書いている・必ず守るを付けた所・まだ 1 枚も無い・読み込み中・読めなかった・見られない・狭い幅の引き出し）\n2. **置き場 `/dev/mock/f9`**：`mocks.tsx`（状態 **32** の**一覧だけ**＝下絵 v2 の 25 ＋ K-684 の 5 ＋ K-720 の 2。持ち主は画面の葉。切る段の枝の最終の形をそのまま運ぶ。描き手がまだ入っていない状態は頁が「まだありません」を出す）・`render.tsx`（描き手に順に聞く）・`render-knowledge.tsx`（この葉の 8 状態と、ほかの葉が使う外枠付きの描き方）・`frame.tsx`（外枠）・索引と 1 状態の頁。**描き手を持ち主ごとに分けた**のは、K-671（帯・小窓・管理の 10 状態）と K-672（チケットの側・設定・メンバーの 7 状態）が別の葉で、どの葉も取り込んだ時点でそのまま組み立つようにするため（一覧に在って描き手がまだ無い状態は、頁が「この状態はまだありません」を 200 で出す）\n3. **直した所（切る段で済み）**：下絵の字と識別子の「部署」を「グループ」に（`ShelfKind` の `\"group\"`・`TreeGroup`・`GroupBlock`・CSS の `k-f9-group`・状態 id `mem-groups`）／状態の持ち主を画面の葉に付け替え／「必ず守る」の上限の字を「会社の『必ず守る』は 30 個まで」に\n4. **本文を段 5 の部品に替える（実装の仕事・境界 B10）**：`page-views.tsx` の `DocEditor`・`DocRead` と `samples.tsx` の本文（今は JSX の見本）を、`@/features/F4/doc/editor` の `DocEditor`（`doc` を受けて `onChange(doc)`）・`DocView`（`doc` を描く）に替える。見本の本文は `Doc` の値（`@kaname/contracts`）にする。**`doc-temp.tsx`・`doc-temp.css` は残す**（設定と詳細の下絵の部品が読むので、K-672 が替えて消す）",
+    "完了の条件": "- [ ] 下の表の 29 行（K670-MK-001〜005・RT-001・CG-001・DS-001・002・UI-001〜020）が緑：`apps/web/tests/k/k670-f9-parts-1.spec.ts`\n- [ ] `npx tsc --noEmit -p apps/web` が通る（名前の付け替え漏れ・本文の差し替えの型）\n- [ ] 手元の CI（このチケットの範囲）が緑。デザインの検査 G37・G72 が緑（D8：knowledge.css の 10 件・tree.tsx の 3 件・doc-temp.css の 12 件の生の値をトークンにした）",
+    "前提と制約": "分類: TOOL\n\n- **代表に確認中・勧めで切る**：画面の文のうち下絵に無い字（「ほか N 個」の 1 行）は仮。見た目を変えない（字と並びは下絵が正）\n- 部品は見た目だけ（値と関数を props で受けて描く・口を呼ばない）。口とのつなぎは後ろの葉（K-682 ほか）が自分のファイルの中で書く。画面の葉は部品を書き換えず、入れ物と hooks を足す\n- **K-567・K-577 に依存**：本文の部品（`DocEditor`・`DocView`）は段 5 の葉が作る。この葉は **名前と引数だけ**（`DocEditor`＝`{ doc, onChange, ariaLabel? }`・`DocView`＝`{ doc, onToggleTask?, ariaLabel? }`・`index.ts` から読む）を使い、Tiptap・ProseMirror を `features/F9` から直に読まない（K670-MK-004）\n- **描き手の一覧は一覧と別のファイル**：`mocks.tsx` に部品の import を書かない（機械の検査 `canvas_field_gate.py` は `export const MOCKS` だけを読む）。`render.tsx` は 5 つの描き手を全部呼ぶ最終の形をこの葉が運び、まだ入っていない葉の描き手は **空の描き手**（`null` を返すだけのファイル）をこの葉が置く。K-671・K-672・K-684 は `render.tsx` を触らず、自分の描き手のファイル（空の描き手）を carry で差し替えるだけ（同じ行を何本もの葉が書き換えない）\n- 道の一覧 `built-routes.ts` は機械生成。手で直さず作り手 `scripts/ci/gen_built_routes.py` で作り直す（`/dev/mock/f9`・`/dev/mock/f9/:id` が足される）\n- 下絵の写し（`.ticket-flow/out/段10-下絵-v2/`）は「部署」→「グループ」で字が変わるので撮り直しが要る（まとめ役）。K-670 の試験は写しを読まない",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- K-567: 要る — `DocEditor`（本文を見たまま編集する部品）の名前と引数・`index.ts` の出口が K-567 の物。始める前に K-670 の本文の差し替えが書けない\n- K-577: 要る — `DocView`（読む形の描き）が K-577 の物",
+    "目録で探した結果": "- 使う：`components/k`（Shell・Dialog・Band・Menu・Empty・ErrorState・Loading・NoAccess）・`features/F10/invite/views.tsx` の `WsHead`・`WsSub`（K-672 が読む）・`features/F4/doc/editor` の `DocEditor`・`DocView`（K-567・K-577）・`lib/built-routes.ts`\n- 探したが無かった：棚（会社・グループ・自分）の木を出す部品は本線に無い（段 5 の文書の木は 1 つの棚で、フォルダと「必ず守る」の印を持たない）。似たものとの違いは、棚が 3 つ・フォルダ・ページの印（必ず守る・承認待ち・断られた・写し）・書ける棚にだけ足すボタンを持つ点",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）。`render.tsx` も最終の形（`renderKnowledge`・`renderTreeOps`・`renderAdmin`・`renderTicket`・`renderWorkspace` に順に聞き、誰も持たない id は「この状態はまだありません：{id}」）のまま運ぶ |\n| 空の描き手を置く | `render-admin.tsx`（`renderAdmin`）・`render-tree-ops.tsx`（`renderTreeOps`）・`ticket-mocks.tsx`（`renderTicket`）・`ws-mocks.tsx`（`renderWorkspace`）を、`(id: string, theme: Theme) => ReactNode` の形で `null` を返すだけのファイルとして書く（1 行の注に「K-671／K-684／K-672 が差し替える」）。持ち主の葉が carry で中身を差し替える。K670-MK-003 は `renderKnowledge(id, theme)` の在るかだけ見る |\n| 外枠の分け方 | 切る段で `frame.tsx` から `WsFrame`（段 9 の K-420 の `WsHead`・`WsSub` を読む）を **`ws-frame.tsx`（K-672 が運ぶ）** に分けた。`frame.tsx` は `features/F10` を読まないので、この葉は K-420 に依存せずに組み立つ。`samples.tsx` が読む管理の一覧の行の型（`ApprovalItem`・`UnusedRow`・`ConflictRow`・`BrokenRow`）は `types.ts` に移し、`admin-views.tsx`（K-671）は `types.ts` から読んで同じ名前を再 export する（`samples.tsx` が後の葉のファイルを読まない） |\n| 本文を段 5 の部品に | `page-views.tsx`：`PageView` の本文を `<DocView doc={doc} />`、`PageEdit` の本文を `<DocEditor doc={doc} onChange={noop} />`（見た目だけなので onChange は何もしない・口は呼ばない）。props の `children` を `doc: Doc` に。`samples.tsx`：`InvoiceDoc`・`ExpenseDoc`・`QuoteDoc`・`MyDiscountDoc` を `Doc` の値（`INVOICE_DOC` ほか）にし、`Caret` の使い所は書いている印を `DocEditor` に任せるので外す。`render-knowledge.tsx`・`render-admin.tsx`（K-671）・`ticket-mocks.tsx`（K-672）の本文の渡し方は同じ形（`doc`） |\n| D8 の生の値をトークンに | `knowledge.css` の 10 件（`.k-f9-mustline` の枠・`.k-f9-node`／`.k-f9-group` の字下げの計算・`.k-f9-switch button` の枠・`.k-f9-tree` と `.k-f9-wrap` の高さ・`.k-f9-tree-skel` の幅・引き出しの幅と高さ）と `tree.tsx` の 3 件（`depthStyle`・74 行に 2 つ）と `doc-temp.css` の 12 件（枠 1px・outline 2px・margin 2px・カーソルの幅・左の線 3px ほか。K-672 が消すまでの間も G72 を緑にするため・まとめ役の数え 2026-11-22）を、正本のトークン（`--k-c-card-border`・`--k-s-*`・`--k-c-shell-bar-height` など）か、字下げの深さを `data-depth` の属性＋ CSS の段（0〜3）に替えて、台帳に足さずに 0 件にする。**台帳は減らすだけ**（足すと G72 が赤） |\n| 道の一覧 | `python3 scripts/ci/gen_built_routes.py` で `built-routes.ts` を作り直す |\n| 試験の道具 | `apps/web/tests/k/f9-mock-kit.ts`（carry・切る段で書いた物。K-671・K-672 の試験も読む）。実装中に変えない |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-670.json`：`data_links` に `{\"paths\": [\"scripts/ci/design_gate.py\", \"scripts/ci/canvas_field_gate.py\", \"scripts/ci/gen_built_routes.py\", \"04_design/DESIGN-kaname.md\", \"apps/web/styles/k-tokens.css\"], \"tests\": [\"apps/web/tests/k/k670-f9-parts-1.spec.ts\"]}`、`reads_ok` に試験が読む物（モックの置き場・F9 の部品・道の一覧・検査の台本・11_tickets） |\n| 画面の試験は手元のブラウザで | 3 幅（375・768・1440）で 8 状態を目で 1 回見る（人が確かめる・数えない） |\n\n### K-684 に要る状態（下絵に無い。足すかは代表に見せてから）\n\n「…」メニューを開いた形は `PageActs` の `moreOpen` で足りる。ほかに要るのは、動かす小窓・消す確かめの小窓・木の ＋ のあとの入力（フォルダを足す／ページを足す）。**この葉は足さない**（代表の見ていない絵を増やさない）。\n\n```search\ngit grep -n -E \"部署|(^|[^a-z])[Dd]epts?([^a-z]|$)|Dept[A-Z]|DEPTS\" -- apps/web/features/F9 'apps/web/app/(dev)/dev/mock/f9'\n0\n```",
+    "外に影響する手順": "- なし — 見た目の部品と開発用のモックと試験の道具だけ（口・DB・知らせ・外への送り出しを持たない）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k670-f9-parts-1.spec.ts`（実 Chrome と、ファイル・検査を読む試験）。口は網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。\n\n| 行 ID | 期待結果 | 確かめ方 | 段 |\n|---|---|---|---|\n| K670-MK-001 | 状態の一覧が 32 件（下絵 v2 の 25 ＋ K-684 の 5 ＋ K-720 の 2）で、持ち主は切り方 1 章の画面の葉（ticket と leaf は同じ K-番号・K-69 は 0 件・重なり 0） | ファイルを読む | 単体 |\n| K670-MK-002 | 画面の字にも識別子にも「部署」「dept」が 0 件（features/F9 と mock/f9） | ファイルを読む | 単体 |\n| K670-MK-003 | 描き手が分かれている：mocks.tsx は一覧だけ（部品を読まない）・render.tsx が描き手に順に聞く・render-knowledge.tsx が K-670 の 8 状態を描く | ファイルを読む | 単体 |\n| K670-MK-004 | 本文は段 5 の部品から読む（境界 B10）：Tiptap・ProseMirror を features/F9 が直に読まず、ナレッジの葉が doc-temp の DocEditor・DocRead を読まない | ファイルを読む | 単体 |\n| K670-MK-005 | 部品は口を呼ばない（features/F9/knowledge の .tsx に fetch・/api/v1 が 0） | ファイルを読む | 単体 |\n| K670-RT-001 | 道の一覧に /dev/mock/f9 と /dev/mock/f9/:id が在る（機械生成 scripts/ci/gen_built_routes.py） | ファイルを読む | 単体 |\n| K670-CG-001 | 画面の持ち主の検査（canvas_field_gate.py）が置き場の状態を読める形で読む（読めない・重複の語が出ない） | 検査を流す | 単体 |\n| K670-DS-001 | デザインの検査 G37（D1〜D7）が緑：features の色・書体・角丸・文字・部品の値が正本に在る | 検査を流す | 単体 |\n| K670-DS-002 | デザインの検査 G72（D8 生の長さ）で、knowledge の部品と mock/f9 に台帳に無い生の値が 0 件（トークンを通す） | 検査を流す | 単体 |\n| K670-UI-001 | 索引 /dev/mock/f9 に 32 件が並び、K-670 の 8 状態は押すと頁が開く | 実ブラウザ | 単体 |\n| K670-UI-002 | 8 状態が幅 375 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-003 | 8 状態が幅 768 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-004 | 8 状態が幅 1440 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-005 | kn-tree：棚が 3 つ（会社・グループ・自分）で、画面に「部署」の字が無い・題名と 1 行の説明が出る | 実ブラウザ | 単体 |\n| K670-UI-006 | kn-tree：足すボタン「＋」は書ける棚にだけ（管理者は会社と自分の棚・営業のグループには無い） | 実ブラウザ | 単体 |\n| K670-UI-007 | kn-tree：いま開いているページの行が現在の印を持ち、「必ず守る」の行に印が付く | 実ブラウザ | 単体 |\n| K670-UI-008 | kn-tree：ページの上の帯は主ボタンが「直す」の 1 つで、「…」の中に前の版・リンクのコピー・動かす・消すが並ぶ | 実ブラウザ | 単体 |\n| K670-UI-009 | kn-must：「必ず守る」が付いたページに、見出しの下の 1 行（AI に毎回全部渡す・確認項目にも入る）と木の行の印が出る | 実ブラウザ | 単体 |\n| K670-UI-010 | kn-write：題名・1 行の説明・本文の欄と、自動で保存した字・「やめる」「書き終える」が出る（主ボタンは「書き終える」） | 実ブラウザ | 単体 |\n| K670-UI-011 | kn-write：本文は段 5 の DocEditor（道具の帯『本文の道具』が在り、本文の欄に打てる） | 実ブラウザ | 単体 |\n| K670-UI-012 | kn-tree：読む形の本文は DocView（aria-label『本文』の領域に、見出しと文が出る） | 実ブラウザ | 単体 |\n| K670-UI-013 | kn-empty：1 枚も無いとき『まだページがありません』と「最初のページを書く」が出て、木の棚は『まだありません』 | 実ブラウザ | 単体 |\n| K670-UI-014 | kn-loading：木と本文が読み込み中の形（status が出る）で、ページの題名はまだ出ない | 実ブラウザ | 単体 |\n| K670-UI-015 | kn-failed と kn-noaccess：読めなかった（E-PAGE-007）と見られない（E-PAGE-002）が別の番号で出て、見られないは一手（戻る）が出る | 実ブラウザ | 単体 |\n| K670-UI-016 | kn-drawer：幅 375 では木が引き出しで開き（背景の幕と『木を閉じる』）、幅 1440 では横に並んで幕が出ない | 実ブラウザ | 単体 |\n| K670-UI-017 | 幅 767 以下では木が引き出しで隠れ、本文の上に「木を開く」の帯が出る（kn-tree） | 実ブラウザ | 単体 |\n| K670-UI-018 | 暗いテーマでも 8 状態が開き、横にはみ出さない | 実ブラウザ | 単体 |\n| K670-UI-019 | 8 状態のどれを開いても、口（/api/）を 1 回も呼ばず、本人の Bridge にも届かない | 実ブラウザ | 単体 |\n| K670-UI-020 | 描き手がまだ無い状態（K-671・K-672 が足す）は 200 で「この状態はまだありません」を出し、外枠を出さない | 実ブラウザ | 単体 |",
+    "状態 × 入口 × 利用者の状態の表": "状態を持つ物（期限・使い終わった時刻・状態の列を持つ表）を扱わない（見た目の下絵だけ）。入口は開発用の頁 `/dev/mock/f9/<id>` だけで、本番の道は増えない（道の一覧に開発用の 2 本を足すだけ）。ログインの状態は見ない（口を呼ばない・網の手前で口を 599・Bridge を 404 にして確かめる）。\n\n| 状態 | 入口：開発用の頁 | 見ている人 | 結果 | 受け持ち・テスト |\n|---|---|---|---|---|\n| 木とページ（kn-tree・kn-must） | 頁を開く | 管理者（高本） | 3 つの棚・書ける棚に ＋・必ず守るの印 | K670-UI-005〜009 |\n| 書いている（kn-write） | 頁を開く | メンバー（鈴木） | 欄 3 つ・自動保存の字・主ボタンは書き終える | K670-UI-010・011 |\n| 空・読み込み中・読めなかった・見られない | 頁を開く | 管理者／メンバー | 4 つの形が別々に出る | K670-UI-013〜015 |\n| 狭い幅（kn-drawer） | 幅 375・1440 | 管理者 | 引き出し／横に並ぶ | K670-UI-016・017 |\n| 一覧に在り描き手の無い状態 | 頁を開く | — | 「まだありません」（200・外枠なし） | K670-UI-020 |",
+    "分類の型の受け": "| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K670-MK-002（features/F9 の日本語の名前のファイルまで読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 要らない: 自己試験でわざと壊して赤を見る確かめは入れない（決める人 2026-11-10）。何も見ていないのに緑は、K670-MK-001（一覧の件数と持ち主を数える）・K670-UI-001（索引の 32 件）が数えを見る |\n| TP-TOOL-03 容れ物の中と手元で違う | K670-DS-001・002（容れ物の中と手元で同じ検査の台本を流す） |\n| G-11〜G-16 | G-11：N/A（外の資源を使わない）。G-12：N/A（時間の切り替わりを扱わない）。G-13：N/A（機能の組み合わせを持たない見た目だけの葉）。G-14：N/A（口座・権限を扱わない）。G-15：N/A（外のプロセスを呼ばない）。G-16：口を呼ばない（行 UI の「口を 1 回も呼ばない」）。消費する有限の資源は無い |",
+    "前からの試験を替えた所": "名前の決まった物（部品の置き場・状態 id・名前を付け替えた識別子）で探した前からの試験（2026-11-22）。\n\n```search\ngit grep -l -E \"mem-depts|k-f9-dept|DeptMembersBody|TreeDept\" -- apps/web/tests apps/web/test apps/e2e\n0\n```\n\n- 当たる前からの試験は無い（段 10 の前の形の試験は c/段10 から消えている）。下絵の頁の作り手 `07_functional/段10-F9/下絵の頁の作り手.py` の状態 id `mem-depts` は、まとめ役が `mem-groups` に直す（この葉の試験は読まない）",
+    "表の住所": "- 画面の状態の置き場：`apps/web/app/(dev)/dev/mock/f9/`。表（DB）は触らない",
+    "速さの今の値と目標の値": "| 画面 | 今の値 | 目標の値 |\n|---|---|---|\n| 開発用の頁（/dev/mock/f9/<id>） | 口の数 0・直列の段 0・二重 0 | 同じ（口を呼ばない。K670-UI-019 が見る） |",
+    "決定ログ（足す行）": "- なし（決めは K-673 が決定ログの新しい節に運ぶ。この葉は代表の決め 1・3・8・11・12 に従う）",
+    "リスク": "- 本文の見本を `Doc` の値にすると、段 5 の `validateDoc` に通らない形（節の名前・属性）で書いてしまう → 見本は段 5 の `validateDoc` が通す形だけにする（始める前に K-567・K-577 の最新の版を読む。本文の道具は出来合いの部品の機能を絞らずに使う決まり〔2026-11-22〕なので、色・表・下線なども通るなら使ってよく、使える形を見出し・段落・箇条書き・チェックだけに決め打ちしない）\n- 「部署」→「グループ」の付け替えは字の置換で `depth` が `group` に化けた（切る段で直した）。取り込み後に `git grep -n \"grouph\"` が 0 件のこと",
+    "申し送り": "- K-671・K-672・K-684：`render.tsx` は触らない。この葉が置いた空の描き手（`render-admin.tsx`・`ticket-mocks.tsx`・`ws-mocks.tsx`・`render-tree-ops.tsx`）を carry で差し替える。K-684・K-720 は `mocks.tsx` と K-670 の試験を運ばない（この葉が最終の 32 件を運ぶ）\n- 木とページの部品への足し（`TreeGroup` に uuid の `id` と札の字 `code`・`PageMark` に `\"draft\"`・`PageView` が口の `acts`・`request`・`copied_from`・`shared_from`・`raise_to`・`foot` を読める形）は **K-682 が任意の props で足す**。この葉は見た目の部品を今の形のまま運ぶ\n- K-682：木の ＋ から開く形・「…」の動かす・消す・フォルダを足すは下絵に無い。足すなら K-684 の持ち主の状態（まとめ役が代表に見せる）",
+    "代表に聞くこと": "- なし（下絵 v2 は代表の OK 済み・字は下絵が正）",
+    "見込み": "1 時間（実測なし・仮）。試験の行は 29 行（上限 30）。"
+   },
+   "file": "11_tickets/K-670.md"
   },
   {
    "id": "K-673",
