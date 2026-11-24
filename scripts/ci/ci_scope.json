@@ -1751,6 +1751,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/saved/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k479-save-view.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/stopped.ts",
     "apps/api/src/features/F7/stopped/**"
    ],
