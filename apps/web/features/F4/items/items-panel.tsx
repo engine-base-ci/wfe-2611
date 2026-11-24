@@ -4,7 +4,7 @@
 //   用意してある項目と会社が足した項目を同じ並びに入れる（見出しを分けない・D-150.36・D-150.37）：
 //   日付の型の会社の項目は「日付と時間」の終わり、ほかは「関連」の終わりに、並びの順で入れる。
 //   出すのは .k-detail-panel-body の中の区だけ（aside・タブは使う側＝K-571 の DetailPanel が持つ）。
-//   用意してある項目の中身は差し込み口（slots）で受ける。無ければ dd は空・グループは行ごと出さない
+//   用意してある項目の中身は差し込み口（slots）で受ける。無ければ dd は空・グループと実績時間（actual）は渡したときだけ行を出す
 import type { ReactNode } from "react";
 import "@/features/F4/doc/doc.css";
 import "@/features/F4/doc/extra.css";
@@ -12,7 +12,17 @@ import { PanelValue, type PanelField } from "./panel-value";
 import { useFieldSave } from "./use-field-save";
 
 export type PanelSlot =
-  "assignee" | "approver" | "priority" | "start" | "due" | "estimate" | "group" | "milestone" | "parent" | "specs";
+  | "assignee"
+  | "approver"
+  | "priority"
+  | "start"
+  | "due"
+  | "estimate"
+  | "actual"
+  | "group"
+  | "milestone"
+  | "parent"
+  | "specs";
 
 export interface ItemsPanelProps {
   ticketId: string;
@@ -61,6 +71,7 @@ export function ItemsPanel({ ticketId, fields, slots = {}, onReload }: ItemsPane
           <Item k="開始日" v={slots.start} />
           <Item k="期限" v={slots.due} />
           <Item k="予定時間" v={slots.estimate} />
+          {slots.actual !== undefined ? <Item k="実績時間" v={slots.actual} /> : null}
           {sorted.filter((f) => f.field_type === "date").map(row)}
         </dl>
       </Section>
