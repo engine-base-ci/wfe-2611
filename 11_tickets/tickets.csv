@@ -3270,6 +3270,16 @@ K-744,差し戻しの「次は誰が直すか」（returnApproval に next_actor
 - [ ] 前からの差し戻し・承認の試験（K-162・K-163・K-165 の approve-complete-approve・return・complete・execute・guard）が今のまま緑（`next_actor` を言わない既定の振る舞いは 1 文字も変えない）
 - [ ] 契約の入力に `next_actor`（`clone`・`self` だけ）が在り、答えの `run_id` が null を許す。生成の試験（`post_approvals_id_return`）が作り手で作り直され、it.todo が na（理由つき）を除いて 0
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-748,承認待ちを種類で絞る・並べ替える口（listApprovalQueue の kind・sort と、札の横の種類ごとの数）。段 9 の app.approval_queue は触らず、新しい DB の関数で読む（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-03,F5・承認待ち,"承認待ちを、種類で絞り、並べ替えられるようにする（D-153.10・D-153.30。今は札が押せない形で、口は期限の近い順だけ）。`listApprovalQueue`（GET /api/v1/approvals/queue・K-161）に次を足す。
+
+- **`kind`**（絞り込み）：`artifact`（AI の成果物）・`handover`（渡された）。付けなければ全部
+- **`sort`**（並べ替え）：`due`（期限の近い順・今の並び）・`waiting`（承認待ちになった順＝新しく承認待ちになった物が先・D-153.30）・`title`（題名の順）。付けなければ `due`
+- **札の横の数** `meta.counts`：`{ total, artifact, handover }`（今は `{ total }`）。**絞っても全体の数のまま**（札の数が絞り込みで変わらない）
+
+段 9 の K-405 が作り直す `app.approval_queue`・`app.approval_queue_count`（承認待ちの条件はこの 2 つが持つ）は**触らない**。`kind`・`sort` が付いたときだけ、新しい DB の関数 `app.approval_queue_page` が `app.approval_queue` を呼んで束ね、絞る・並べる・頁に切る。付けないときは今の道のまま（続きの鍵も今の形）で、数だけ `app.approval_queue_counts` で 3 つ出す。続きの鍵は、`kind`・`sort` を付けた要求では「何件目から」の鍵（`o|<件数>` を base64url にした字）にする。まとめて承認・続けて裁く・決めた履歴（K-750）は別の葉。画面は K-749。","- [ ] 下の表の 14 行（K748-API-001〜014）が緑：`apps/api/test/features/F5/approval-queue-more.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`〔queueMore〕・変えない）
+- [ ] 契約の問い合わせ `kind`・`sort` が決まった値だけ（`QUERY_RANGES`・K-468 の仕組み）で、それ以外は 422。生成の試験 `get_approvals_queue.test.ts` が作り手で作り直され、it.todo が na（理由つき）を除いて 0
+- [ ] 前からの承認待ちの試験（K-161 の approve-complete-queue・guard）と、文の数・取引の数の試験（K-234・K-236・k237 の台帳）が今のまま緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-750,決めた履歴を読む口（listApprovalHistory：自分が決めた AI の成果物の承認を決めた新しい順に・決めと期間で絞る・取り下げられるかの印）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・承認待ち,"自分が決めた承認を、あとから見返せるようにする（今は［決めた履歴］が押せない形・口は契約だけで 501）。`listApprovalHistory`（GET /api/v1/approvals/history）：
 
 - **読む物**：呼んだ人が**決めた**（承認した・差し戻した・止めた）AI の成果物の承認。決めた新しい順（決めた時刻・id の降順）。まだ決まっていない承認待ち・ほかの人が決めた物・別の会社の物・消したチケットの物は出ない。「渡された」を答えた記録（渡しの行）は出ない（渡しの記録は `listTicketHandovers`）
