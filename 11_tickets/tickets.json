@@ -20045,6 +20045,164 @@
    "file": "11_tickets/K-392.md"
   },
   {
+   "id": "K-393",
+   "title": "やり取りに書き込む（書く欄・@ の候補はそのチケットを見られる人だけ・知らせる人（今の部品 NotifyPicker）・引用・送れなかった・二度押し・書きかけを端末に残す・担当 ▾ と 📎 はグレー）（K-66 の葉・S7-W2）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-372（預ける小窓：書く口・二度押し・失敗の文・字を残す・29 行・見込み 1 時間）と段 1 の K-224（作る画面の知らせる人 NotifyPicker）から引いた：書く欄の入れ物 composer.tsx と書く器 use-post.ts 20 分・@ の候補（字の拾い方・表記ゆらぎ・入れ方）15 分・知らせる人の小窓と NotifyPicker の字の口 10 分・引用と書きかけ 10 分・見た目の突き合わせ 5 分。部品 views.tsx の口は K-392 が先に足す（この葉は views.tsx を変えない）。試験 19 行は切る段で書いた",
+   "decisions": [
+    "D-128.45",
+    "D-125.131",
+    "D-128.81",
+    "D-125.130",
+    "D-130.1",
+    "D-144.7",
+    "D-145.9",
+    "D-127.8",
+    "D-128.58",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書き込みと受け箱の行（@ された人・知らせる人）を書くのは口の葉 K-385（createTicketMessage・関門 C2 と C6）。画面は契約の口を呼ぶだけで、外には何も出さない（メールも出さない・D-125.130）",
+   "tests": [
+    "apps/web/tests/k/k393-thread-post.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-392",
+    "K-385"
+   ],
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "talk-compose",
+    "talk-send",
+    "talk-cannot"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/create-ticket/notify-picker.tsx",
+    "apps/web/features/F6/thread/composer.tsx",
+    "apps/web/features/F6/thread/composer-stage.tsx",
+    "apps/web/features/F6/thread/use-post.ts",
+    "apps/web/features/F6/thread/use-mention.ts",
+    "apps/web/features/F6/thread/mention.ts",
+    "apps/web/features/F6/thread/notify-dialog.tsx",
+    "apps/web/features/F6/thread/draft.ts",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りのタブの下の書く欄から書き込めるようにする（行為 A107・D-128.45）。**読める人は書ける**（閲覧のみも・代表の答え ⑧）・**完了したチケットにも書ける**（⑭）。\n書く欄では、`@` で人を呼べ（候補は **そのチケットを見られる人だけ**・⑨）、**知らせる人** を選べる（最初から担当者と承認する人・自分は除く・外せる・⑨）。書き込みの「引用」で頭の 1〜2 行を付けられる（⑮3）。\n送っている間は二度押しで 2 通にしない。送れなかったときも書いた字は消さない。書きかけの字は送るまでその端末に残す（⑮5）。担当 ▾ と 📎 は押せない形で出す（⑮6・D-145.9）。\n\n状態 ▾ で段も一緒に変えるのは K-396（この葉では K-382 の「まだ」の形＝押せない形のまま）。直す・消す・☆ は K-394。",
+    "完了の条件": "- [ ] 下の表の行（K393-UI-001〜019）が緑：`apps/web/tests/k/k393-thread-post.spec.ts`（共通の道具 `apps/web/tests/k/thread-mock.ts`・K-392 が持つ）\n- [ ] 見た目の突き合わせ（モックの画面と本番の画面の写しを同じ幅で比べる・K393-UI-001）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD\n\n- 正の絵はモック `/dev/mock/f6/talk-compose`（@ の候補・知らせる人）・`talk-send`（送れなかった）・`talk-cannot`（完了したチケットの書く欄・状態 ▾ は押せない形）。部品は `features/F6/thread/views.tsx` の Composer（K-382 が本線に入れる・値と押す関数の口は K-392 が足す）。見た目の突き合わせは共通の道具 `stage2-match.ts` の matchMock（base /dev/mock/f6）で、パネルの中の書く欄の役（`thread-mock.ts` の COMPOSE_PAIRS）を比べる。talk-cannot の知らせる人は、K-382 がモックを答え ⑨ のとおり（担当者と承認する人が最初から入る）に直した後の形を正とする（段7-切る段-途中.md の「小さな直し残し」）\n- 書く欄の字（代表の直し 1・answer=fabd031f9b37・D-144.7）：1 行の高さから始まる。打った字は本文の書き込みと同じ 13px・幅 767 以下は 16px。薄い案内の字はどの幅も 13px（thread.css にもう在る・K-382 が運ぶ）。改行すると伸びる\n- 送る値は **本文・@ の人・知らせる人・引用元の 4 つだけ**（K-385 が入力を作り直す：書いた人・種類・☆ は入れさせない）。@ の人は、送る時点で本文に「@〈呼ばれ方〉」の字が残っている人だけ（候補で選んだ後に字を消した人は送らない）\n- @ の候補と知らせる人の候補は、読む口の最初の答えの meta.people（そのチケットを見られる人・K-383）だけ。**自分は出さない**（⑮7 自分に知らせない）。見られない人は口も断る（K-385・404 E-PAGE-001・欄と明細なし）。同じ人が @ と知らせる人の両方に入っていても知らせは 1 通（口の側・⑮7）\n- 知らせる人：最初は meta.people の担当者と承認する人（自分を除く）。× で外す。＋ で小窓「知らせる人を選ぶ」を開き、今の部品 `features/F4/create-ticket/notify-picker.tsx`（NotifyPicker・名前で絞り込む・NFKC と大小をそろえて比べる）で選ぶ（同じ物を 2 つ作らない）。今の NotifyPicker は見出し「作ったことを知らせる人」と案内「名前で絞り込む（担当者と承認する人には自動で届く）」を固く持ち、やり取りの小窓では字が違う（後ろの案内は、担当者と承認する人を外せる答え ⑨ と食い違う）。**この葉が NotifyPicker に `label?`・`placeholder?` を足す**（無ければ今の字＝作る画面は変えない・まとめ役の決め）。やり取りの小窓は見出し「知らせる人」・案内「名前で絞り込む」を渡す（**仮**・下の「代表に聞くこと」）。小窓は × で閉じる（選んだ時点で書く欄の並びに入る）\n- 書いた後：答えの行（K-385 の data・読む口と同じ 1 件の形）を一覧のいちばん下に足し（K-392 の appendItem）、見える所まで動かす。読み直さない。打つ所・引用は空に、知らせる人は最初の 2 人に戻す。書きかけは消す\n- 送れなかったとき：網の切れ・5xx（コードが正本に無い）は部品の字「送れませんでした。もう一度お試しください（書いた字は残っています）」（番号は無い・部品 views.tsx の Composer に直に在る）。正本の番号が返れば、その文（403 E-PAGE-002・404 E-PAGE-001・409 の番号 など）。422 は項目の理由の字。どれも書いた字・知らせる人・引用は残す。**409 のときは useComposerStage の afterPost を呼ぶ**（詳細を読み直すだけ・reset はしない：段を一緒に変えようとして断られたとき、K-396 の状態 ▾ を押せない形に替えるため・まとめ役の決め）。押し直しは同じ冪等キー（字・知らせる人・引用を変えたら新しいキー）。401 は前からの共通の扱い（入り直し・戻る先にこのチケット・書きかけは端末に残っている）\n- 空白だけ・何も書いていないときは「書き込む」を押せない（**仮**・下の「代表に聞くこと」）\n- かな漢字の変換中の Enter では候補を選ばない（isComposing）。全角の「＠」でも候補を出す（表記ゆらぎ）\n- 書きかけ：localStorage の鍵 `kaname.thread.draft.<チケットの id>` に字だけを置く（読めない・書けないときは置かない・try/catch で包む）。開いたら戻す。送れたら消す\n- 状態 ▾（K-396 まで押せない形）・担当 ▾・📎 は押せない形で、押しても何も起きない（D-145.9）\n- PC をつないでいなくても書ける（D-127.8・AI を使わない）\n- 区画のファイル composer.tsx・composer-stage.tsx には fetch・lib/api・useQuery・useMutation の字を書かない（K-382 の K382-SL-001）。口は use-post.ts に置く\n- 書いた後の一覧への足し方は K-392 の appendItem（react-query の同じ鍵の答えを書き替える・区画をまたぐのは問い合わせの鍵だけ）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/thread/views.tsx` の Composer（value・onText・notify・onRemoveNotify・onAddNotify・onSend・sendDisabled・error・quote・mentions・activeMention・onPickMention・textareaRef・onKeyDown・stageSlot・holdSlot は K-392 が足す） | 値と押す関数を渡す |\n| 書く欄の入れ物 | `features/F6/thread/composer.tsx`（K-382 が「まだ」の形で置く・panel.tsx から使われる） | この葉が中身を作る（書き出す名前は K-382 のまま） |\n| 一覧に足す | `features/F6/thread/use-timeline.ts` の appendItem・meta.people（K-392） | 書いた行を足す・候補と既定の知らせる人 |\n| 知らせる人を選ぶ部品 | `features/F4/create-ticket/notify-picker.tsx`（NotifyPicker・K-224） | 小窓の中で使う（作り直さない）。見出しと案内の字の口 `label?`・`placeholder?` はこの葉が足す |\n| 小窓 | `components/k` の Dialog | 「知らせる人を選ぶ」 |\n| 口を呼ぶ | `lib/api/call.ts` の call（idempotencyKey を渡せる） | createTicketMessage |\n| 文 | `components/k/error-of.ts`（errorCodeOf・errorText）・部品 views.tsx の失敗の字（番号は無い） | 失敗の知らせ |\n| 状態 ▾ の置き場 | `features/F6/thread/composer-stage.tsx`（K-382 の「まだ」の形） | この葉が器の口 useComposerStage を「まだ」の形で足し、slot・holdSlot を部品の stageSlot・holdSlot に置く。送る前に fields()、422 の項目は setErrors、届いたら afterPost と reset、409 なら afterPost だけ（中身は K-396） |\n| 探したが無かった物 | @ の字の拾い方・入れ方・送る人の集め方・書きかけの置き場 | `mention.ts`（純粋な関数）・`use-mention.ts`（K-394 の直す欄も使う）・`draft.ts`・`use-post.ts`・`notify-dialog.tsx` を作る |\n| 検索の型 | components/k に検索の欄の型は無い | NotifyPicker の絞り込む欄は今の TextField のまま（下の「## 受け持ちをまたぐ名前」） |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| @ の字の扱い（純粋な関数） | `features/F6/thread/mention.ts`：`mentionQuery(text, caret)`：打つ所の左にある最後の「@」か「＠」から打つ所までに空白が無ければ、その間の字（無ければ空）を返す。`filterPeople(people, q, me)`：自分を除き、NFKC・大小をそろえて呼ばれ方か正式な名前に q を含む人（q が空なら全員）・並びは people の順。`insertMention(text, caret, who)`：「@〈q〉」を「@〈呼ばれ方か正式な名前〉 」に置き換え、新しい字と打つ所を返す。`mentionIds(text, picked)`：選んだ人のうち、字に「@〈名前〉」が残っている人の id（重ねない・選んだ順）。「@〈名前〉」の後ろは空白・字の終わり・句読点（、。，．！？!?）のどれかであること（部分一致にしない：呼ばれ方「鈴木」が「@鈴木 健」の中に当たって、字を消した鈴木 一郎を送らないため）。`excerpt(body)`：頭の 2 行（3 行目からは「…」を付ける）|\n| @ の候補の器 | `features/F6/thread/use-mention.ts`：打つ所の字と打つ所の位置から候補（mention.ts）と選んでいる位置を持ち、↑↓ で移り Enter（変換中は除く）か押して選ぶと入れる。Esc で閉じる。選んだ人を持つ。K-394 の直す欄も使う |\n| 知らせる人の小窓 | `features/F6/thread/notify-dialog.tsx`：Dialog（題「知らせる人を選ぶ」）の中に NotifyPicker（people＝meta.people から自分を除いた人・chosen＝今の知らせる人・`label=\"知らせる人\"`・`placeholder=\"名前で絞り込む\"`） |\n| NotifyPicker の字の口 | `features/F4/create-ticket/notify-picker.tsx`：props に `label?: string`（絞る欄の見出し・無ければ「作ったことを知らせる人」）と `placeholder?: string`（無ければ「名前で絞り込む（担当者と承認する人には自動で届く）」）を足し、今の TextField の label・placeholder に渡す。ほか（候補・札・絞り方・読み上げ）は変えない。作る画面（tickets-page.tsx ほか）は渡さないので今の字のまま |\n| 書きかけ | `features/F6/thread/draft.ts`：鍵 `kaname.thread.draft.<id>` の字を読む・書く・消す（try/catch） |\n| 書く器 | `features/F6/thread/use-post.ts`：`call(\"createTicketMessage\", { params: { id }, body: { body, mention_member_ids, notify_member_ids, quote_of_id, ...stage.body }, idempotencyKey })`。送っている間は 2 本目を送らない（押せない形・Enter も捨てる）。冪等キーは送る中身が同じ間は同じ物を使う。送る前に useComposerStage の fields()（ok でなければ送らない・この葉では body は空）。成功で appendItem・afterPost・reset。**409 は afterPost だけ呼ぶ**（読み直すだけ・reset しない・字と知らせる人と引用は残る）。422 の項目のうち hold_reason・resume_condition・stage_key は setErrors に渡す。失敗の文の選び方は上の「前提と制約」 |\n| 書く欄の入れ物 | `features/F6/thread/composer.tsx`（K-382 の名前のまま中身を作る）：打つ所の字（開いたら書きかけを戻す・打つたびに書きかけに置く）・引用（panel.tsx から渡る「引用」の口で頭の 2 行を出し、「引用を外す」で消す・引用を付けたら打つ所に焦点）・知らせる人（最初は担当者と承認する人）・@ の候補・送る。担当 ▾・📎 は部品のまま押せない形 |\n| 親 | 11_tickets/K-66.md から apis の createTicketMessage・この葉の試験の行を外す（overlap_ok） |",
+    "書く口の入力と答え（正は口の葉 K-385）": "`POST /api/v1/tickets/:id/messages`（頭 idempotency-key）・体 `{ body: string, mention_member_ids: uuid[], notify_member_ids: uuid[], quote_of_id: uuid | null }`（段の欄は K-389・K-396）。答え 201 `{ data: <読む口と同じ 1 件の形・K-383> }`。名前は K-385 の md に合わせる。",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-385）。呼んだ口が失敗したときの画面：\n\n- S1: 書く口を呼ぶ。失敗（503・網の切れ）したら部品の失敗の文・書いた字は残る（K393-UI-005）。403・404 NOT_FOUND は正本の文（K393-UI-006）・404 E-PAGE-001（選べない人・引用元）は部品の字「選べない人がいます。選び直してください（書いた字は残っています）」を出して読む口を 1 回読み直し、候補と知らせる人の札から meta.people に居ない人を外す（K393-UI-006・K-385 の申し送り）・422 は項目の理由（K393-UI-006）・401 はログインへ（K393-UI-007）。二度押しは 1 回（K393-UI-004）\n\n（書きかけを端末の localStorage に置くのは外に影響しない。置けないときは何もしない・書くことは困らない）",
+    "依存の理由": "- K-392: 要る — 部品 views.tsx の Composer の値と押す関数の口・一覧に足す appendItem・meta.people（候補と既定の知らせる人）・共通の試験の道具 thread-mock.ts を作る葉。panel.tsx が composer.tsx を使う形もこの葉の前提\n- K-385: 要る — 契約の口 createTicketMessage の入力と答え（上の表）を作り直す葉。画面は call(\"createTicketMessage\") の型で口に合わせる\n- （K-382 は K-392 を通して入っている：composer.tsx・composer-stage.tsx の「まだ」の形）\n- NotifyPicker（`features/F4/create-ticket/notify-picker.tsx`）はこの葉が字の口を足す。この作業場所のほかの葉は触らない（下の検索。段 9 はまとめ役が照らす）\n- （後に入る葉）K-394：この葉の use-mention.ts・mention.ts を直す欄で使う（K-394 がこの葉に依存する）。K-396：この葉の composer.tsx が置く composer-stage.tsx の中身を作る（K-396 がこの葉に依存する）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k393-thread-post.spec.ts`（実 Chrome・詳細は前からの土台で開き、やり取りの口は共通の道具 thread-mock.ts で差し替える。書く口の答えは hold() で止めて二度押しを確かめる。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（チケットの段） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作業中・未着手・保留 | やり取りのタブの書く欄 | 書ける人 | 書ける | このチケット | K393-UI-003 |\n| 完了 | 同じ | 書ける人 | 書ける・状態 ▾ は押せない形 | このチケット | K393-UI-015 |\n| 作業中 | 同じ | 閲覧のみ（段は変えられない） | 書ける | このチケット | K393-UI-016 |\n| 確認中・承認待ち・実行中 | 同じ | 書ける人 | 書ける・状態 ▾ は押せない形 | K-396 | K396-UI-007 |\n| どれでも | 同じ | ログインが切れた | ログインへ・書きかけは残る | このチケット | K393-UI-007 |\n| 消したチケット・見えなくなった | 同じ | どれでも | 正本の文（404 NOT_FOUND → E-PAGE-001 の文） | このチケット | K393-UI-006 |\n| 書いている間に @ の人・知らせる人が抜けた・見られなくなった・引用元が消された | 同じ | どれでも | 「選べない人がいます。選び直してください（書いた字は残っています）」・読み直して候補と札から外す・字は残る・送り直さない（404 E-PAGE-001） | このチケット | K393-UI-006 |\n| どれでも | 一覧へ移って戻る・開き直す | どれでも | 書きかけが戻る | このチケット | K393-UI-014 |\n| どれでも | 同じ | 先方の人（ゲスト） | 社内のやり取りを書けない（口の行の守り） | K-385 | K385 の行 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K393-UI-001 | 入口 | 幅 375・768・1440 × talk-compose・talk-send・talk-cannot | モックと本番で、書く欄の箱・打つ所・道具の字・@ の候補の箱と字・知らせる人の札・書き込む・失敗の知らせ・補足の字の値が同じ（px ±2・上下はパネルの上端から） |\n| K393-UI-002 | 入力 | 幅 375・768・1440 | 薄い案内「書き込む（@ で人を呼べます）」・打った字は 375 で 16px・768／1440 で 13px・薄い案内の字はどれも 13px（ページに効いている CSS の規則のうち、打つ所に当たる `::placeholder` の font-size を読んで値に直す。getComputedStyle の ::placeholder は使わない）・高さは 2 行分より低い・知らせる人は「鈴木」「佐藤」（高本は無い）・担当 ▾ と 📎 は押せない形（aria-disabled・薄さ 0.55・押しても Enter でも何も起きない）・補足「状態を変えると、この書き込みと一緒に残る ・ @ で呼ぶ」 |\n| K393-UI-003 | 入力 | 手順 S1：佐藤を外して書く | 体はちょうど {body, mention_member_ids: [], notify_member_ids: [鈴木], quote_of_id: null}・冪等キーあり。答えの行（高本 聖斗 11:02・「知らせた：鈴木・佐藤」）がいちばん下に出る・打つ所は空・知らせる人は鈴木と佐藤に戻る・読む口は 1 回のまま |\n| K393-UI-004 | 操作の揺れ | 答えを止めて書き込むを 2 回押す・Enter | 「送っています…」で押せない・口は 1 回。答えの後も 1 回 |\n| K393-UI-005 | 失敗 | 手順 S1 の失敗：503・網の切れ → 押し直す | 「送れませんでした。もう一度お試しください（書いた字は残っています）」・字と知らせる人 2 人は残る。押し直して届くと知らせは消え、冪等キーは 1 回目と同じ |\n| K393-UI-006 | 失敗 | 手順 S1 の失敗：403・404・409・422 | 403 は E-PAGE-002 の文・404 NOT_FOUND（チケットが無い・見えない）は E-PAGE-001 の文・404 E-PAGE-001（選べない人・引用元）は「選べない人がいます。選び直してください（書いた字は残っています）」を出し（E-PAGE-001 の正本の文は出さない）、読む口を 1 回読み直して知らせる人の札から居なくなった人を外す（送り直さない）・409 はその番号の正本の文（この葉の時点の正本に在る番号で形を見る・afterPost を呼ぶのは K396-UI-008 が見る）・422（E-VAL-027・欄 body）は項目の理由「書き込む文を書いてください」。選べない人・引用元の断りは 404 E-PAGE-001 と同じ形（K-385）。どれも字は残る |\n| K393-UI-007 | 利用者の状態 | 手順 S1 の失敗：401 | /login?next=… へ。localStorage の書きかけに字が在り、開き直すと打つ所に戻る |\n| K393-UI-008 | 入力 | 空・空白と改行と全角の空白だけ | 書き込むは押せない・口は 0 回 |\n| K393-UI-009 | 入力 | 「@鈴」→ ↓ ↑ Enter・「と@」→ 押す・「@」→ Esc | 候補は「鈴木 一郎 担当者」「鈴木 健 経理グループ」（見られない人・自分は無い）・↓ で 2 つ目が選ばれた形・Enter で「了解です。@鈴木 」。「@」だけなら 鈴木 一郎・佐藤 花子・鈴木 健（高本は無い）・押すと「@鈴木 健 」。Esc で閉じる。送った mention_member_ids は [鈴木 一郎, 鈴木 健]・見られない人の id は体に無い |\n| K393-UI-010 | 入力 | 全角の「＠佐」・変換中の Enter | 候補「佐藤 花子」・変換中の Enter では選ばず字はそのまま・候補は開いたまま |\n| K393-UI-011 | 入力 | 選んだ後に「@鈴木」の字を消して送る | mention_member_ids は [] |\n| K393-UI-012 | 入力 | × で佐藤を外す・＋ で小窓・「ｹﾝ」「健」で絞る・選ぶ・× で閉じる | 小窓「知らせる人を選ぶ」の絞る欄の見出しは「知らせる人」（作る画面の「作ったことを知らせる人」ではない）・候補は 3 人（鈴木 一郎・佐藤 花子・鈴木 健。高本と見られない人は無い）・「ｹﾝ」は「合う人がいません」・「健」で鈴木 健を選ぶと並びに足される。送った notify_member_ids は [鈴木 一郎, 鈴木 健]（自分は無い） |\n| K393-UI-013 | 入力 | 3 行の書き込みの「引用」→ 書く → もう一度引用 → 外す → 書く | 書く欄の上に「1 行目の字 2 行目の字…」・打つ所に焦点・送ると quote_of_id＝その書き込みの id・送った後は引用が消える。「引用を外す」で消え、次は quote_of_id: null |\n| K393-UI-014 | 時間の流れ | 書きかけ → 一覧へ移って戻る → 開き直す → 送れない → 送れる | どれでも字が戻る・書きかけの鍵はこのチケットの 1 つだけ・送れないときは残る・送れたら消える |\n| K393-UI-015 | 対象の状態 | 完了したチケット | 状態 ▾ は押せない形（aria-disabled）・書ける・体に段の欄は無い |\n| K393-UI-016 | 利用者の状態 | can.progress が false（閲覧のみ） | 書き込むは押せる・書ける |\n| K393-UI-017 | 対象の状態 | 20 件の一覧で書く | 足した行がパネルの見える所に入る |\n| K393-UI-018 | 入力 | 幅 320・375・768・1024・1440 × 知らせる人 3 人・長い字 | 横溢れ 0 |\n| K393-UI-019 | 入口 | キーボード | 打つ所の次は、押せない物を飛ばして「鈴木 を外す」「佐藤 を外す」「知らせる人を足す」「書き込む」の順・書き込むは Enter で送る |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: TP-CRUD-01 書き込みは足すだけで、同じ行を 2 人が直すことは無い（直すのは書いた本人だけ・K-394） |\n| TP-CRUD-02 消したものを古いリンクで | K393-UI-006（チケットが消された・見えなくなった → 404 の正本の文） |\n| TP-CRUD-03 消す・戻す・子 | 要らない: TP-CRUD-03 この葉は消さない（消すのは K-394・戻せない・⑪） |\n| TP-CRUD-04 2 回押し | K393-UI-004（冪等キー・口は 1 回） |\n| TP-CRUD-05 保存の途中で失敗 | K393-UI-005（届かなければ一覧に足さない・字は残る。書き込みと受け箱の行を 1 つの取引で書くのは口の葉 K-385） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | K393-UI-007・014 |\n\n知らせ（受け箱の行の宛先・重ねない・自分に送らない）は口の葉 K-385 の行。画面は候補から自分を除く（K393-UI-009・012）。",
+    "前からの試験を替えた所": "この葉の changes: は新しいファイルと K-382 が置くファイル（composer.tsx）だけで、切る段の検査（cut_check.py prior）が出す前からの試験は無い（composer.tsx はまだ無い）。書く欄の字・部品を見る前からの試験を検索で出した（段 7 の切る段の新しい試験を除く）。\n\n```search\ngit grep -ln 'k-talk-composer\\|書き込む（@ で人を呼べます）\\|kaname.thread.draft' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n```search\ngit grep -ln 'notify-picker\\|作ったことを知らせる人' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k393*'\n1\n```\n\n- apps/web/tests/k/k224-create-frame.spec.ts: 替えない — 既定の字は今のまま。この葉は NotifyPicker に `label?`・`placeholder?` を足すが、作る画面は渡さないので見出し「作ったことを知らせる人」と案内の字・候補・札は変わらない\n\nNotifyPicker を changes: に持つ葉を、この作業場所のチケットから出した（この葉と、部品を作った段 1 の K-224（部品は本線に在る）の 2 つ。段 7 の葉ではこの葉だけ。段 9 の葉は c/段9 に在るので、まとめ役が照らす）：\n\n```search\ngit grep -ln '^changes:.*notify-picker' -- '11_tickets/*.md'\n2\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K-382 の試験。この葉が直す composer.tsx・composer-stage.tsx の字を K382-SL-001 が読む（書き出す名前 TalkComposer・ComposerStage が在り、fetch・lib/api・useQuery・useMutation が無い）。名前を残し口は use-post.ts に置くので、行の期待は変わらない（K-382 が入った後は切る段の検査がこのファイルを出す）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 書いたときの口 | — | 書く口 1 本（読み直さない・答えの行を一覧に足す） |\n| 直列の段 | — | 1 |\n| 同じ口の二重 | — | 無い（二度押しも 1 回・K393-UI-004） |\n| @ の候補・知らせる人の候補 | — | 口を呼ばない（読む口の最初の答えの meta.people） |\n| 新しい住所 | — | 増えない（同じ /tickets/[id]） |\n| 認証の要る答えの Cache-Control | — | 口の葉が持つ（private, no-store・K-385） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 書く口の体の名前（body・mention_member_ids・notify_member_ids・quote_of_id）と答えの形（201・読む口と同じ 1 件）は K-385 の md と合わせた（K-385 は @ と知らせる人に見られない人・引用元の違いを 404 E-PAGE-001（欄・明細なし）で断る。控え帳 11-21 01:15 K-385）\n- 候補の元 meta.people（そのチケットを見られる人・担当者／承認する人の印・呼ばれ方）は K-383 に頼んだ物（K-392 の md の「画面が読む値」）\n- NotifyPicker の見出しと案内の字を差し替える口（`label?`・`placeholder?`）はこの葉が足す（まとめ役の決め・K-382 は触らない）。この葉は「知らせる人」「名前で絞り込む」を渡す\n- 書く欄の入れ物 `thread/composer.tsx` の `TalkComposer`（名前は K-382・受ける物 `{ ticket, people, quote, onClearQuote, onPosted }` は K-392 が広げる）\n- composer-stage.tsx（K-382 は `ComposerStage(props: { ticket }): null` で置く）に、この葉が器の口だけを足す（中身は「まだ」）：`useComposerStage(ticket: SlotTicket): { slot: ReactNode; holdSlot: ReactNode | null; fields(): { ok: true; body: Record<string, unknown> } | { ok: false }; setErrors(fields: Record<string, string>): void; afterPost(): Promise<void>; reset(): void }`。この葉の形は slot＝押せない形の「状態 変えない ▾」（読み上げ「状態 変えない（変えられません）」）・holdSlot＝null・fields は `{ ok: true, body: {} }`・ほかは何もしない。K-396 が中身を作る（K-396 はこの葉に依存するので同じファイルを取り合わない）。ComposerStage の名前は残す（K382-SL-001）\n- **検索の欄の型**：NotifyPicker の「名前で絞り込む」欄は検索の欄だが、components/k に検索の型（段 9 と同じ「焦点の輪を枠全体（虫眼鏡ごと）に付ける」形）が無い。この葉では作らず今の TextField のまま。**段 9 の切る段が作る検索の型と重なる**（型ができたら NotifyPicker を直すのは作る画面と同じ葉で 1 回に。この葉では変えない）\n- 書いた行を足す口 appendItem は K-392 の use-timeline.ts",
+    "代表に聞くこと（仮で書いた物）": "- 空白だけのときの「書き込む」：押せない形にする（勧め）か、押すと「書き込みを書いてください」と出すか（勧め：押せない形。文を足さずに済み、ブラウザの必須の確かめに奪われない）\n- 小窓「知らせる人を選ぶ」の見出しの字（勧め：題「知らせる人を選ぶ」・絞る欄の見出し「知らせる人」・案内「名前で絞り込む」。作る画面の案内「（担当者と承認する人には自動で届く）」は、やり取りでは外せるので付けない）",
+    "成果物": "- 書く欄の入れ物 composer.tsx の中身・書く器 use-post.ts・@ の候補 use-mention.ts と mention.ts・知らせる人の小窓 notify-dialog.tsx・書きかけ draft.ts\n- 画面の試験 `apps/web/tests/k/k393-thread-post.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=eaa451436670・f5cd1647389f）：⑧ 読める人は書ける／⑨ 知らせる人の欄を残す（選んだ人と @ した人に知らせる・最初から担当者と承認する人・自分は除く・外せる・候補はそのチケットを見られる人だけ）／⑭ 完了したチケットにも書ける／⑮3 引用は頭の 1〜2 行・元を消しても字は残る／⑮4 補足は「状態を変えると、この書き込みと一緒に残る ・ @ で呼ぶ」（「# でチケット」は書かない）／⑮5 書きかけは送るまで端末に残す・送れなくても消えない／⑮6 担当 ▾ と 📎 はグレー／⑮7 自分に知らせない・同じ人に知らせは 1 通／㉒ 仮の文はそのまま\n- 2026-11-20 下絵の直し（answer=fabd031f9b37）：① 書く欄の字と高さ（1 行の高さから・13px・767 以下の打った字は 16px）\n- 2026-11-20 切る段の決め：知らせる人は書く欄の札の並び（モックのまま）に、＋ で今の部品 NotifyPicker の小窓を開く形（同じ物を 2 つ作らない・見出しと案内の字の口はこの葉が足す）\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す",
+    "リスクと懸念": "- 体と答えの名前が K-385 と食い違うと、作る段の型の検査で止まる（作る段の始めに K-385 の md を読み直す）\n- meta.people が K-383 の答えに入らない形になったら、候補の元を変える（listMembers の scope_id では「担当者・関わった人」まで含まないので、そのチケットを見られる人と合わない）",
+    "申し送り": "- K-394：use-mention.ts と mention.ts（mentionQuery・filterPeople・insertMention・mentionIds）を直す欄で使う\n- K-396：composer-stage.tsx の中身（useComposerStage の slot・holdSlot・fields・setErrors・afterPost・reset）を作る。use-post.ts は fields() の body を体に足し、ok でなければ送らない。422 の hold_reason・resume_condition・stage_key は setErrors へ。409 のときは afterPost だけ呼ぶ（reset しない）"
+   },
+   "file": "11_tickets/K-393.md"
+  },
+  {
+   "id": "K-394",
+   "title": "やり取りの書き込みを直す（その場で直す・直した印・新しく @ した人）・消す（確かめの小窓・消した跡の 1 行・マネージャーが人の物を消す）・☆（見ました・大事・数）。「…」はメニューの型（K-66 の葉・S7-W3）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-357（行の「…」から上書き・消す・確かめ：29 行・見込み 1 時間）と K-369 のメニューの型から引いた：行の操作の入れ物 message-menu.tsx（「…」の出し分け・直す・消す・☆）20 分・直す器と消す器と ☆ の器 use-message.ts 20 分・直す欄の @（K-393 の use-mention.ts を使う）5 分・失敗と二度押し 10 分・見た目の突き合わせ 5 分。部品 views.tsx の口は K-392 が先に足す（この葉は views.tsx を変えない）。試験 16 行は切る段で書いた",
+   "decisions": [
+    "D-128.45",
+    "D-125.131",
+    "D-128.81",
+    "D-128.96",
+    "D-130.1",
+    "D-145.9",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。直す・消す・☆ を書くのは口の葉 K-386（updateTicketMessage・deleteTicketMessage・starTicketMessage・関門 C2 と、新しく @ した人への受け箱の行 C6）。画面は契約の口を呼ぶだけで、外には何も出さない",
+   "tests": [
+    "apps/web/tests/k/k394-thread-edit.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-393",
+    "K-386"
+   ],
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "talk-edit",
+    "talk-delete"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/thread/message-menu.tsx",
+    "apps/web/features/F6/thread/use-message.ts",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りの書き込みを、書いた本人が **直す**・**消す**、マネージャーが人の書き込みを **消す**、だれでも **☆** を付け外しできるようにする（行為 A107）。\n\n- 直す（⑩）：いつでも直せる。直した書き込みに「直した 11/01 10:25」。前の文は残さない。直して新しく @ した人には知らせる（知らせは口の側）\n- 消す（⑪）：確かめの小窓を通す。消すと「高本 が書き込みを消しました」の 1 行だけが残り、本文は誰にも見えない・戻せない。マネージャーが人の物を消すと「マネージャーの 佐藤 が 鈴木 の書き込みを消しました」。決定の元が消えても決定は残る（決定の側・K-397・K-398）\n- ☆（⑫）：「見ました・大事」。押した人の数（☆ 2）。誰にも知らせない。☆ の絞り込みは作らない",
+    "完了の条件": "- [ ] 下の表の行（K394-UI-001〜016）が緑：`apps/web/tests/k/k394-thread-edit.spec.ts`（共通の道具 `apps/web/tests/k/thread-mock.ts`・K-392 が持つ）\n- [ ] 見た目の突き合わせ（モックの画面と本番の画面の写しを同じ幅で比べる・K394-UI-001）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD\n\n- 正の絵はモック `/dev/mock/f6/talk-edit`（自分の書き込みの「…」を開いた形・直した印・その場で直す）・`talk-delete`（消す確かめの小窓と消した跡の 1 行）。部品は `features/F6/thread/views.tsx` の Post（menuSlot・onStar・starBusy・starred）・EditingPost・DeleteMessageConfirm・Line（値と押す関数の口は K-392 が足す）。見た目の突き合わせは共通の道具 `stage2-match.ts` の matchMock（base /dev/mock/f6）で、メニューの箱・直す欄のボタン・小窓の役（`thread-mock.ts` の EDIT_PAIRS）を比べる\n- 「…」はメニューの型 `components/k/menu.tsx`（K-369）。箱が詳細の上に貼り付く帯やパネルの下に潜らないのは、置き場に重なりの順を持たせる K-381（K-382 の前・この葉は K-382 を通して入っている）\n- 「…」の出し分けは答えの can_edit・can_delete（K-383 が見ている人ごとに返す）：両方 → 直す・消す…（自分の書き込み）／消すだけ → 消す…（マネージャーが人の書き込み）／どちらも無い → 「…」を出さない。仕組みの行・変更の 1 行・AI の実行・消した跡には出さない\n- 直すのはその場（書き込みの箱が直す欄に替わる）。欄には今の本文。やめる・Esc は口を呼ばずに元の形へ（**Esc は仮**）。空白だけなら「直す」を押せない（**仮**・K-393 と同じ）。直す欄でも @ の候補（K-393 の use-mention.ts・そのチケットを見られる人だけ・自分は出さない）。候補の元は MessageMenu が受ける `people`（K-392 が panel.tsx から meta.people を渡す・この葉は panel.tsx を変えない）。送るのは本文と @ の人だけ（字に残っている人・前から @ していた人も字が残っていれば入れる）\n- 直した後：答えの 1 件（K-386 の data・読む口と同じ形）で一覧のその行を替える（K-392 の replaceItem）。読み直さない\n- 消す：確かめの小窓（㉒：題「この書き込みを消しますか？」・本文「消すと元に戻せません。「〈名前〉 が書き込みを消しました」の 1 行が残ります」・本文の引用・ボタン「やめる」「消す」）。マネージャーが人の物を消すときの本文は「消すと元に戻せません。「マネージャーの 〈自分〉 が 〈書いた人〉 の書き込みを消しました」の 1 行が残ります」（**仮**・㉒ の形に合わせた）。〈名前〉は呼ばれ方（口が消した跡に書く字と同じ）：自分の書き込みを消すときは書き込みの actor の `call_name ?? display_name`、マネージャーが消すときの〈自分〉は meta.people の自分の行（`member_id` が自分）の `call_name ?? display_name`、〈書いた人〉は書き込みの actor の `call_name ?? display_name`。`ticket.me`（/me の表示名＝本物では正式な名前「高本 聖斗」）は使わない（試験の土台の /me は「高本」なので試験は緑のまま、本番だけ小窓と跡の字が食い違うため）。やめるは口を呼ばず「…」に焦点を戻す。消すと答えの 1 件（消した跡）で一覧のその行を替える\n- ☆：押すと答えを待たずに押した形と数を替え（楽観の更新）、答えの数で直す。答えを待つ間は押せない（続けて押しても口は 1 回）。失敗したら元に戻し、パネルに知らせ（正本の文）\n- 失敗の文：直す・消すの網の切れ・5xx（コードが正本に無い）は直すでは部品の書く欄と同じ字「送れませんでした。もう一度お試しください（書いた字は残っています）」・消すと ☆ は errorText(errorCodeOf(…))（503 は E-PAGE-004 など）。正本の番号が返ればその文（404 E-PAGE-001・403 E-PAGE-002）。どれも直した字・書き込みは残る。401 は前からの共通の扱い\n- 新しく @ した人への知らせ・☆ で知らせない・消した本文を誰にも返さない・マネージャーの判定は口の側（K-386）。画面は答えの can_* と答えの形を出すだけ\n- 区画のファイル message-menu.tsx には fetch・lib/api・useQuery・useMutation の字を書かない（K-382 の K382-SL-001）。口は use-message.ts に置く",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/thread/views.tsx` の Post・EditingPost・DeleteMessageConfirm（口は K-392 が足す） | 値と押す関数を渡す |\n| 自分の member_id | 詳細と同じ /me の問い合わせ（react-query の同じ鍵）から読む。口は増やさない（SlotTicket.me は表示名だけのため） |\n| 行の操作の入れ物 | `features/F6/thread/message-menu.tsx` の `MessageMenu`（K-382 が置き K-392 が「1 つの書き込みを描く入れ物」に広げる・panel.tsx が書き込みごとに使う） | この葉が中身を作る（名前は K-382 のまま） |\n| メニューの型 | `components/k/menu.tsx`（Menu・MenuTrigger・MenuPopup・MenuItem・K-369／置き場の順 K-381） | 「…」 |\n| 一覧の行を替える | `features/F6/thread/use-timeline.ts` の replaceItem・setStar（K-392） | 直した・消した・☆ の答えで替える |\n| @ の候補 | `features/F6/thread/use-mention.ts`・`mention.ts`（K-393） | 直す欄 |\n| 口を呼ぶ | `lib/api/call.ts` の call | updateTicketMessage・deleteTicketMessage・starTicketMessage |\n| 文 | `components/k/error-of.ts`・`components/k` の useNotify | 失敗の知らせ |\n| 探したが無かった物 | 直す・消す・☆ の器 | `use-message.ts` を作る |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 直す・消す・☆ の器 | `features/F6/thread/use-message.ts`：`edit(id, body, mentionIds)` → `call(\"updateTicketMessage\", { params: { id }, body: { body, mention_member_ids } })`・`remove(id)` → `call(\"deleteTicketMessage\", { params: { id } })`・`star(id)` → `call(\"starTicketMessage\", { params: { id } })`。どれも送っている間は同じ行の 2 本目を送らない。成功で replaceItem／setStar、失敗で文を返す（☆ は楽観の更新を元に戻す） |\n| 行の操作の入れ物 | `features/F6/thread/message-menu.tsx` の `MessageMenu({ ticket, item, post, people, onQuote, decideSlot })`（名前は K-382・1 つの書き込みを描く入れ物の形は K-392 が広げ、K-392 では Post をそのまま返す。受ける物の名前は K-392 の md のまま：決定にするは置き場 decideSlot で受けて Post にそのまま渡す・people は meta.people）：行ごとに「…」（menuSlot）・☆（onStar・starBusy・starred）を作り、直している行を持つ（直している行は EditingPost で出す・直す欄に焦点）・消す確かめ（DeleteMessageConfirm・残る 1 行の字は呼ばれ方で組む：自分の物は書き込みの actor の呼ばれ方、マネージャーが消すときの自分の名前は people の自分の行の呼ばれ方・上の「前提と制約」）。直す欄の @ の候補は people（自分を除く）。自分の書き込みかは答えの can_edit で決まる（ticket.me は名前に使わない）。一覧の行は K-392 の replaceItem・setStar（react-query の同じ鍵）で替える |\n| 親 | 11_tickets/K-66.md から apis の 3 本・この葉の試験の行を外す（overlap_ok） |",
+    "口の入力と答え（正は口の葉 K-386）": "| 口 | 入力 | 答え |\n|---|---|---|\n| updateTicketMessage `PATCH /api/v1/ticket_messages/:id` | `{ body, mention_member_ids }` | 200 `{ data: <読む口と同じ 1 件・edited_at つき> }` |\n| deleteTicketMessage `DELETE /api/v1/ticket_messages/:id` | なし | 200 `{ data: <消した跡の 1 件（kind deleted・deleted: {by, author, by_manager}）> }` |\n| starTicketMessage `POST /api/v1/ticket_messages/:id/star` | なし（押すたびに付く・外れる） | 200 `{ data: { id, stars, starred } }`（数だけ・1 件の形でない） |\n\n名前と形は K-386 の md と合わせた（切る段で読み合わせ済み）。",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-386）。呼んだ口が失敗したときの画面：\n\n- S1: 直す口を呼ぶ。失敗したら直す欄の上に知らせ・直した字は残り欄は開いたまま（K394-UI-006）。二度押しは 1 回（K394-UI-008）\n- S2: 消す口を呼ぶ。失敗したら小窓の中に知らせ・書き込みは残る（K394-UI-011）。二度押しは 1 回（K394-UI-012）\n- S3: ☆ の口を呼ぶ。失敗したら押した形と数を元に戻し、パネルに知らせ（K394-UI-015）",
+    "依存の理由": "- K-393: 要る — 直す欄の @ の候補に K-393 の use-mention.ts・mention.ts を使う（同じ物を 2 つ作らない）。K-392（部品の口・replaceItem・setStar・試験の道具）と K-382（message-menu.tsx の「まだ」の形・メニューの型の置き場の順 K-381）も K-393 を通して入っている。**元の案（K-392 と K-386 に依存）から替えた**：K-392 に依存するだけだと直す欄の @ を作るために K-393 の部品を待つか作り直すことになる（鎖の長さは K-396 と同じ段なので延びない）\n- K-386: 要る — 契約の口 3 本の入力と答え（上の表）を作る葉。画面は call の型で口に合わせる\n- （依存にしない）K-396：この葉は composer.tsx・composer-stage.tsx を触らず、K-396 は message-menu.tsx・use-message.ts を触らない。部品 views.tsx はどちらも変えない（K-392 が口を先に足す）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k394-thread-edit.spec.ts`（実 Chrome・詳細は前からの土台で開き、やり取りの口は共通の道具 thread-mock.ts で差し替える。準備はまだ無い口を使わず、書き込みは読む口の答えに置く。書く口の答えは hold() で止めて二度押しを確かめる。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（書き込み） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 自分の書き込み | 「…」 | 書いた本人 | 直す・消す… | このチケット | K394-UI-002・004・009 |\n| 人の書き込み | 「…」 | マネージャー（can_delete） | 消す…だけ | このチケット | K394-UI-002・010 |\n| 人の書き込み | — | 担当者・メンバー・閲覧のみ | 「…」を出さない | このチケット | K394-UI-002 |\n| どの書き込みでも | ☆ | 読める人 | 付け外し・数 | このチケット | K394-UI-013・014 |\n| もう消されていた | 直す・消す | 書いた本人 | 正本の文（404）・書き込みは残る | このチケット | K394-UI-006・011 |\n| 直せなくなった（権限） | 直す | 外されたメンバーなど | 正本の文（403） | このチケット | K394-UI-006 |\n| 仕組みの行・変更の 1 行・AI の実行・消した跡 | — | どれでも | 「…」も ☆ も出さない | K-392 | K392-UI-013・023 |\n| 決定の元の書き込みを消す | 消す | 書いた本人 | 決定は残り「元の書き込みは消されました」 | K-397・K-398 | K397・K398 の行 |\n| どれでも | どれでも | ログインが切れた | /login?next=… に移る（前からの共通の入り直し） | 前からの試験 | k226（RequireSession） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K394-UI-001 | 入口 | 幅 375・768・1440 × talk-edit・talk-delete | モックと本番で、「…」のメニューの箱と項目・直す欄のボタン・消す確かめの小窓（箱・題・引用・ボタン）の値が同じ（px ±2） |\n| K394-UI-002 | 守り | 自分の書き込み・マネージャーが見る人の書き込み・どちらでもない | 「直す」「消す…」／「消す…」だけ／「…」が無い |\n| K394-UI-003 | 入口 | キーボードと重なり | Enter で開く・項目の真ん中の一番上の要素は項目・↓ で移る・Esc で閉じて「…」に焦点が戻る |\n| K394-UI-004 | 入力 | 手順 S1：直す → やめる → 直す → 直す | 欄に今の本文・欄に焦点・やめるは口 0 回で元に戻る。直すで PATCH 1 回・体 {body: 新しい本文, mention_member_ids: []}・本文が替わり「直した 11/01 11:05」・読む口は 1 回のまま |\n| K394-UI-005 | 入力 | 直す欄で「@佐」→ Enter → 直す | 候補「佐藤 花子」・「確認してください @佐藤 」・mention_member_ids は [佐藤] |\n| K394-UI-006 | 失敗 | 手順 S1 の失敗：503・404・403 | 503 は「送れませんでした。もう一度お試しください（書いた字は残っています）」・404 は E-PAGE-001 の文・403 は E-PAGE-002 の文。直した字は残り欄は開いたまま |\n| K394-UI-007 | 入力 | 空白だけ・Esc | 「直す」は押せない・Esc で欄は閉じ本文は元のまま・口は 0 回 |\n| K394-UI-008 | 操作の揺れ | 手順 S1 の答えを止めて「直す」を 2 回 | 押せない形・口は 1 回・答えの後に本文が替わる |\n| K394-UI-009 | 入力 | 手順 S2：消す… → やめる → 消す… → 消す | 小窓「この書き込みを消しますか？」・本文「消すと元に戻せません。「高本 が書き込みを消しました」の 1 行が残ります」・本文の引用。やめるは口 0 回で「…」に焦点。消すで DELETE 1 回・「高本 が書き込みを消しました 11:09」の 1 行・書き込みの箱は 0・消した本文はパネルのどこにも無い |\n| K394-UI-010 | 守り | マネージャーが人の書き込みを消す | 小窓の本文に「「マネージャーの 高本 が 鈴木 の書き込みを消しました」の 1 行が残ります」・消した後の 1 行も同じ字（11:20） |\n| K394-UI-011 | 失敗 | 手順 S2 の失敗：503・404 | 小窓の中に知らせ（E-PAGE-004 の文・E-PAGE-001 の文）・書き込みは残る |\n| K394-UI-012 | 操作の揺れ | 手順 S2 の答えを止めて「消す」を 2 回 | 口は 1 回・答えの後に消した跡の 1 行 |\n| K394-UI-013 | 入力 | 手順 S3：☆ 1 → 押す → 答え（画面に着いて押せる形に戻るのを待つ）→ もう一度 | 答えを待たずに「☆ 2」押した形・POST 1 回。答えの後は押せる形（aria-disabled が無い）で「☆ 2」。もう一度押すと答え {stars 1, starred false} で「☆ 1」押していない形・口は 2 回（同じ id） |\n| K394-UI-014 | 操作の揺れ | 手順 S3 の答えを止めて続けて押す | ☆ は押せない形（aria-disabled）・口は 1 回・答えの後に押せる |\n| K394-UI-015 | 失敗 | 手順 S3 の失敗：503・網の切れ | 「☆ 1」押していない形に戻る・パネルに知らせ |\n| K394-UI-016 | 入力 | 幅 320・375・768・1024・1440 × 直す欄に長い字・消す確かめの小窓 | 横溢れ 0 |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: TP-CRUD-01 直せるのは書いた本人だけ（2 人で同じ書き込みを直さない）。同じ人が 2 つのタブで直したら後の方が残る（版を持たない・⑩「前の文は残さない」）・口の葉 K-386 |\n| TP-CRUD-02 消したものを古いリンクで | K394-UI-006・011（もう消されていた → 404 の正本の文） |\n| TP-CRUD-03 消す・戻す・子 | 戻せない（⑪）。消した跡の 1 行が残る（K394-UI-009）。決定の元の書き込みを消しても決定は残る（子の扱い・K-397・K-398 の行） |\n| TP-CRUD-04 2 回押し | K394-UI-008・012・014 |\n| TP-CRUD-05 保存の途中で失敗 | K394-UI-006・011・015（一覧は替えない・☆ は元に戻す） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: TP-CRUD-06 直す欄の字は端末に残さない（直すのは短い直し。書く欄の書きかけ K-393 とは別・**仮**）。セッション切れは前からの共通の扱い |",
+    "前からの試験を替えた所": "この葉の changes: は K-382 が置く message-menu.tsx（まだ無い）と新しいファイルだけで、切る段の検査（cut_check.py prior）が出す前からの試験は無い。書き込みの操作の字を見る前からの試験を検索で出した（段 7 の切る段の新しい試験を除く）。\n\n```search\ngit grep -ln 'この書き込みの操作\\|この書き込みを消しますか\\|書き込みを消しました' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K-382 の試験。この葉が直す message-menu.tsx の字を K382-SL-001 が読む（MessageMenu が在り、fetch・lib/api・useQuery・useMutation が無い）。名前を残し口は use-message.ts に置くので、行の期待は変わらない（K-382 が入った後は切る段の検査がこのファイルを出す）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 直す・消す・☆ の口 | — | 押したときに 1 本ずつ（読み直さない・答えで一覧の行を替える） |\n| 直列の段 | — | 1 |\n| 同じ口の二重 | — | 無い（K394-UI-008・012・014） |\n| 新しい住所 | — | 増えない |\n| 認証の要る答えの Cache-Control | — | 口の葉が持つ（private, no-store・K-386） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 口の入力と答え（上の表）は K-386 の md に合わせる（切る段の仮。違えば試験 k394 と thread-mock.ts の差し替えの答えをその名前に直す）\n- 「…」の出し分けに使う can_edit・can_delete は K-383 の答えに頼んだ物（K-392 の md の「画面が読む値」）\n- 行の操作の入れ物 `thread/message-menu.tsx` の `MessageMenu`（名前は K-382・受ける物 `{ ticket, item, post, people, onQuote, decideSlot }` は K-392 が広げる・K-392 の md と同じ名前）\n- 部品 views.tsx の口（Post の menuSlot・onStar・starBusy・starred・EditingPost・DeleteMessageConfirm）は K-392 が足す。この葉は views.tsx を変えない",
+    "代表に聞くこと（仮で書いた物）": "- マネージャーが人の書き込みを消すときの確かめの本文：「消すと元に戻せません。「マネージャーの 〈自分〉 が 〈書いた人〉 の書き込みを消しました」の 1 行が残ります」でよいか（㉒ の本人の形に合わせた）\n- 直す欄の Esc は「やめる」と同じ（勧め）・直す欄の字は端末に残さない（勧め：短い直しなので残さない）",
+    "成果物": "- 行の操作の入れ物 message-menu.tsx の中身・直す・消す・☆ の器 use-message.ts\n- 画面の試験 `apps/web/tests/k/k394-thread-edit.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=f5cd1647389f）：⑩ いつでも直せる・「直した 11/01 10:25」の印・前の文は残さない・直して新しく @ した人には知らせる／⑪ 消すと 1 行だけ残る・本文は誰にも見えない・戻せない・マネージャーの形・決定は残る／⑫ ☆ は「見ました・大事」・数を出す・知らせない・絞り込みは作らない／㉒ 消す確かめと直した印の文はそのまま\n- 2026-11-20 切る段の決め：依存を K-392 から K-393 に替えた（直す欄の @ の候補に K-393 の部品を使う）\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す",
+    "リスクと懸念": "- 口の入力と答えが K-386 と食い違うと、作る段の型の検査で止まる（作る段の始めに K-386 の md を読み直す）\n- 「…」の箱の重なりの順は K-381 に頼る（K-381 が入っていないと K394-UI-003 が赤）",
+    "申し送り": "- K-397・K-398：決定の元の書き込みが消えたときの「元の書き込みは消されました」は決定の区画の行"
+   },
+   "file": "11_tickets/K-394.md"
+  },
+  {
    "id": "K-395",
    "title": "チケットの詳細で、頭の段の札から段を変える（未着手・作業中・保留・完了の小窓へ・開き直す）・保留の小窓と題名の下の保留の帯・右の属性の実績（人が使った時間）を入れる。閲覧のみと仕組みの段の間は変えられない形（K-66 の葉・S7-W4）",
    "kind": "タスク",
@@ -20129,6 +20287,81 @@
     "申し送り": "- K-396：書く欄の「状態 ▾」は、この葉の段の選び方（4 つの段・鍵の段は押せない）を使う。保留を選んだときの欄は書く欄の中（正の絵 talk-compose-stage・代表 OK 済み）に出し、確かめと文はこの葉の `hold-fields.ts`（`checkHold`・`holdErrorsOf`）をそのまま使う（小窓は開かない）\n- K-399：段を変えたときのやり取りの 1 行（「高本 が状態を 未着手 → 作業中 に変えた」）と、担当者への知らせ（⑦）は通しで見る\n- 止まった実行（stopped）の帯と保留の帯を並べて出すことは K-620 が受け持つ（K-620 の試験）。この葉は、保留の帯が譲る動いている間（running）だけを確かめる（UI-001 の prog-hold-reason・UI-011）"
    },
    "file": "11_tickets/K-395.md"
+  },
+  {
+   "id": "K-396",
+   "title": "書く欄の「状態 ▾」で、書き込みと一緒に段を変える（選ぶ物は頭の段の札と同じ色つきの札・保留は理由と再開の条件・変えられない間は押せない形）（K-66 の葉・S7-W5）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-28",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-372 の段の帯の分（書く口に 1 欄足す・詳細を読み直す）と、この段の K-395（段のメニュー・保留の確かめ）から引いた：書く欄の状態の器 composer-stage.tsx（メニュー・保留の 2 つの欄・送る値・項目の断り・読み直し）20 分・見た目の突き合わせ 5 分・自分の確かめ 5 分。部品 views.tsx の口は K-392、書く欄の器の口 useComposerStage は K-393 が先に足す（この葉はその中身だけ）。試験 12 行は切る段で書いた",
+   "decisions": [
+    "D-128.45",
+    "D-125.33",
+    "D-125.38",
+    "D-125.68",
+    "D-128.95",
+    "D-128.81",
+    "D-145.9",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書き込みと段の変更を 1 つの取引で書き、担当者でない人が変えたら担当者に知らせるのは口の葉 K-389（createTicketMessage の段の欄・関門 C2 と C6）。画面は契約の口を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k396-thread-post-stage.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-393",
+    "K-395",
+    "K-389"
+   ],
+   "acts": [
+    "A107",
+    "A17"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "talk-compose-stage"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/thread/composer-stage.tsx",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りの書く欄の「状態 ▾」で段を選び、**書き込みと一緒に段を変えられる**ようにする（D-128.45「書く欄で状態と担当も変えられる」の状態の分・代表の答え ①「頭の札＋書く欄の状態 ▾ の両方」）。\n選ぶ物は頭の段の札と同じ **色つきの札**（部品 StageTag・STAGES・代表の直し 3 answer=fabd031f9b37）。保留を選ぶと **保留の理由と再開の条件**（どちらも必須・D-125.33）を書く。\n仕組みの段（確認中・承認待ち・実行中）・完了・段を変えられない人（閲覧のみ）のときは、状態 ▾ は押せない形（書き込むことはできる・⑧・⑭）。\n\n頭の札のメニューで段を変えるのは K-395。担当 ▾ は段 5／段 9（押せない形のまま）。",
+    "完了の条件": "- [ ] 下の表の行（K396-UI-001〜012）が緑：`apps/web/tests/k/k396-thread-post-stage.spec.ts`（共通の道具 `apps/web/tests/k/thread-mock.ts`・K-392 が持つ）\n- [ ] 見た目の突き合わせ（モックの画面と本番の画面の写しを同じ幅で比べる・K396-UI-001）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD\n\n- 正の絵はモック `/dev/mock/f6/talk-compose-stage`（書く欄：状態 ▾ で保留を選んだ・理由と再開の条件の欄）。部品は `features/F6/thread/views.tsx` の `StageSelect` と `HoldFields`（K-392 が値と押す関数を受ける形で書き出す：StageSelect は `onPick`・`disabledChoices`・`busy`、HoldFields は `reason`・`resume`・`onReason`・`onResume`・`errors`）と、Composer の `stageSlot`・`holdSlot`（K-392）。この葉は composer-stage.tsx の中で同じクラスの箱や欄を書き直さず、書き出された部品に値と押す関数を渡すだけ（見た目の突き合わせ K396-UI-001 が部品とずれない・まとめ役の決め）。見た目の突き合わせは共通の道具 `stage2-match.ts` の matchMock（base /dev/mock/f6）で、書く欄の役（`thread-mock.ts` の COMPOSE_PAIRS・保留の欄の見出し talk-hold を含む）を比べる\n- **保留の欄は書く欄の中に出す（正の絵 talk-compose-stage のとおり・代表 OK 済み answer=fabd031f9b37）**。K-395 の保留の小窓（HoldDialog）は開かない。必須の確かめと文は 1 つの部品 `features/F6/progress/hold-fields.ts`（K-395 が作る）の `checkHold`・`holdErrorsOf` をそのまま使う（空の判定は NFKC と前後の空白を除いてから・文は欄ごとに E-VAL-041「保留の理由を書いてください」・E-VAL-047「再開の条件を書いてください」。K-387 が正本に足し、K-395 の小窓の欄の下と同じ文）\n- 選ぶ物：「変えない」（既定・✓）・未着手・作業中・保留…（「理由を書く」の小さな字）。完了は出さない（完了は小窓を通す決まり・answer=db67f3cde899。頭の札のメニュー K-395 から）。会社が足した段（鍵が空）は出さない（K-395 と同じ・段の名前を変える・足すのは F9）。**今の段の項目は押せない形**（選んでも何も変わらない・**仮**）。今の段が保留なら「保留」は押せない形で、「理由を書く」の小さな字は出さない（K-395 の頭の札と同じ・**仮**・K396-UI-012）\n- 押せない形にする条件は詳細の答えの `can.progress`（K-387：書ける人で、仕組みの段でも、走っている実行・決まっていない承認待ちでもない）が false のとき、または段が完了のとき（完了のチケットの can.progress は開き直すため true なので、段が完了かを別に見る・K387-API-026・K396-UI-007 の完了の組は can.progress true で作る）。字は「状態 変えない ▾」・読み上げ「状態 変えない（変えられません）」（K-382 の部品のまま）。押せない訳の字（LOCKED_TEXT）は頭の札（K-395）が出すので、書く欄では出さない\n- 送る値：段を選んだときだけ `stage_key`（未着手 todo・作業中 doing・保留 hold）を足し、保留なら `hold_reason`・`resume_condition` も足す（K-389 が stage_key と stage_id のどちらでも受ける形にした・この葉は stage_key を送る）。「変えない」なら段の欄を 1 つも入れない（K-393 の 4 つの欄だけ）\n- 届いた後：答えの書き込み（「状態：作業中 → 保留」の一緒に残った変更つき）を一覧に足すのは K-393。この葉は afterPost で詳細を 1 回読み直し（ticket.reload・頭の札と保留の帯が替わる）、reset で状態 ▾ を「変えない」に戻し保留の欄を閉じて空にする\n- 失敗：409（E-CONF-030・その間に AI が動き出した／承認待ちになった）は正本の文を書く欄の上に（K-393 が出す）。K-393 の use-post.ts は 409 のとき afterPost を呼ぶ（reset はしない・K-393 の md の「書く器」）ので、この葉の afterPost が詳細を読み直して押せない形にする。422 の hold_reason・resume_condition・stage_key は欄の下に（setErrors）。どれも書いた字・選んだ段・保留の欄の字は残る（読み直して押せなくなったときは段は「変えない」に戻る）\n- 担当者でない人が段を変えたら担当者に知らせる（⑦）のは口の側（K-389）。知らせる人に担当者が入っていても知らせは 1 通（⑮7・口の側）\n- 区画のファイル composer-stage.tsx には fetch・lib/api・useQuery・useMutation の字を書かない（K-382 の K382-SL-001）。口は K-393 の use-post.ts が呼ぶ",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 押せない選ぶ物 | 今の段 → disabledChoices：未着手 → [未着手]・作業中 → [作業中]・保留 → [保留]（K396-UI-012）・完了 → [未着手・保留]（開き直すは K-395 の札の側）。会社が足した段（鍵が空）が今の段のときは何も押せなくしない（4 つの段は全部選べる） |\n| 見た目の部品 | `features/F6/thread/views.tsx` の `StageSelect`（選ぶ物は StageTag・onPick・disabledChoices・busy）・`HoldFields`（保留の 2 つの欄・値と押す関数と errors）・Composer の stageSlot・holdSlot（どれも K-392 が書き出す・足す） | 値と押す関数を渡す（同じクラスを書き直さない） |\n| 段の札と並び | `features/F6/progress/views.tsx` の STAGES・StageTag（K-382） | 選ぶ物の札 |\n| 保留の確かめ | `features/F6/progress/hold-fields.ts` の `checkHold`・`holdErrorsOf`（K-395 が作る・純粋な関数） | 空の判定と欄ごとの文・422 の明細を欄の下の文に（同じ物を 2 つ作らない） |\n| 書く欄の器の口 | `features/F6/thread/composer-stage.tsx` の useComposerStage（K-393 が「まだ」の形で足す） | この葉が中身を作る |\n| メニューの型 | `components/k/menu.tsx`（K-369・置き場の順 K-381） | 状態 ▾ |\n| 詳細の読み直し | SlotTicket の reload（K-380） | 届いた後と 409 の後 |\n| 入力の欄 | `components/k` の TextField（部品の中） | 保留の理由・再開の条件 |\n| 探したが無かった物 | — | 新しいファイルは作らない |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 書く欄の状態の器 | `features/F6/thread/composer-stage.tsx` の `useComposerStage(ticket)`（K-393 が置いた口の中身を作る）：詳細の答え（ticket.detail の stage.key・can.progress）から押せるかを決める。押せるなら slot は `<StageSelect stage={選んだ物} onPick={…} disabledChoices={[今の段の選ぶ物]} />`（K-392 の書き出し・選ぶ物は上の「前提と制約」）、押せないなら `<StageSelect stage=\"変えない\" locked />`（部品の押せない形）。保留…を選んだら holdSlot に `<HoldFields reason resume onReason onResume errors />`（K-392 の書き出し・欄の下に断りの字）。`fields()`：変えないなら `{ ok: true, body: {} }`・段を選んだら `{ ok: true, body: { stage_key } }`・保留なら K-395 の `checkHold` を通し、足りなければ欄を断りの形（aria-invalid と欄の下の字）にして `{ ok: false }`・通れば `{ ok: true, body: { stage_key: \"hold\", hold_reason, resume_condition } }`（字は前後の空白を除いて送る）。`setErrors(fields)`：422 の項目を欄の下に（保留の 2 つの欄は `holdErrorsOf`）。`afterPost()`：段を送っていたら ticket.reload()（読み直して押せなくなったら、選んだ段を「変えない」に戻す）。`reset()`：変えないに戻し欄を空にする。409 のときは K-393 が afterPost だけを呼ぶ（読み直して押せない形に・reset は呼ばない） |\n| 親 | 11_tickets/K-66.md から acts A17 の書く欄の分・この葉の試験の行を外す（overlap_ok） |",
+    "書く口の段の欄（正は口の葉 K-389）": "`POST /api/v1/tickets/:id/messages` の体に、K-393 の 4 つの欄と一緒に `stage_key?: \"todo\" | \"doing\" | \"hold\"`・`hold_reason?: string`・`resume_condition?: string`。答えは書き込みの 1 件（changes に `{field: \"stage\", from, to}`）。断り：409 E-CONF-030（仕組みの段・走っている実行・承認待ち）・E-CONF-032（完了）・422 E-VAL-041（保留の理由が空）・E-VAL-047（再開の条件だけが空）。E-VAL-040 は無くなった（K-387 の新しい分け方）：段の id で選ぶ口の断り（404 E-PAGE-001・409 E-CONF-034・E-CONF-035・E-CONF-036）は、この葉が段の id を送らないので画面には出ない。段の鍵（stage_key）の知らない言葉・stage_id との両方は 422 VALIDATION_ERROR（欄 stage_key）だが、画面は 3 つの鍵しか送らないので出ない。名前は K-389 の md と合わせた（K-389 は 403 も返す：段を変えられない人が段の欄を送ったとき。この葉は押せない形にするので送らない）。",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-389。呼ぶのは K-393 の use-post.ts）。呼んだ口が失敗したときの画面：\n\n- S1: 段の欄つきで書く口を呼ぶ。失敗（409）したら正本の文・詳細を読み直して押せない形に・書いた字は残る（K396-UI-008）。503 は送れなかった文で字・段・保留の欄は残る・422 は欄の下に（K396-UI-009）",
+    "依存の理由": "- K-393: 要る — 書く欄の入れ物 composer.tsx と書く器 use-post.ts（409 のときに afterPost を呼ぶ）、器の口 useComposerStage（composer-stage.tsx の「まだ」の形）を作る葉。同じファイル composer-stage.tsx を変える。部品 views.tsx の口と書き出した StageSelect・HoldFields（K-392）・試験の道具 thread-mock.ts も K-393 を通して入っている\n- K-395: 要る — 保留の確かめ（`progress/hold-fields.ts` の `checkHold`・`holdErrorsOf`：空の判定と欄ごとの文）を作る葉。同じ物を 2 つ作らない\n- K-389: 要る — 契約の口 createTicketMessage の段の欄（上の表）を作る葉。画面は call の型で口に合わせる\n- （依存にしない）K-394：この葉は message-menu.tsx・use-message.ts を触らない。部品 views.tsx はどちらも変えない",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k396-thread-post-stage.spec.ts`（実 Chrome・詳細は前からの土台で開き、やり取りの口は共通の道具 thread-mock.ts で差し替える。詳細の読み直しは土台の詳細の答えを差し替えて確かめる。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（段） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 未着手・作業中・保留 | 書く欄の状態 ▾ | 書ける人（can.progress） | 選べる・書き込みと一緒に変わる（今の段の項目は押せない） | このチケット | K396-UI-002〜006・012 |\n| 確認中・承認待ち・実行中 | 同じ | 書ける人 | 押せない形・書ける | このチケット | K396-UI-007 |\n| 完了 | 同じ | 書ける人 | 押せない形・書ける（段は変わらない） | このチケット | K396-UI-007 |\n| 作業中 | 同じ | 閲覧のみ（can.progress false） | 押せない形・書ける | このチケット | K396-UI-007 |\n| 作業中 → 送る間に AI が動き出した | 同じ | 書ける人 | 409 の文・読み直して押せない形 | このチケット | K396-UI-008 |\n| どれでも | 頭の段の札 | 書ける人 | 札のメニューで変える | K-395 | K395 の行 |\n| どれでも | 同じ | 担当者でない人が変えた | 担当者に知らせ（1 通） | K-389 | K389 の行 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K396-UI-001 | 入口 | 幅 375・768・1440 × talk-compose-stage | モックと本番で、書く欄の箱・状態の札・保留の理由と再開の条件の欄の見出し・知らせる人・書き込むの値が同じ（px ±2・上下はパネルの上端から） |\n| K396-UI-002 | 入力 | 作業中のチケットで状態 ▾ を押す | 「状態 変えない ▾」・項目は「変えない ✓」「未着手」「作業中」「保留 理由を書く」の順・未着手・作業中・保留は札（data-stage が todo・doing・hold）・今の段（作業中）は押せない形で、押しても「変えない」のまま |\n| K396-UI-003 | 入力 | 手順 S1：未着手で「作業中」→ 書く | 状態 ▾ が作業中の札・体は 4 つの欄＋stage_key: doing・答えの書き込みに「状態：未着手 → 作業中」・詳細を読み直して頭の段の札が作業中・状態 ▾ は「変えない」に戻る |\n| K396-UI-004 | 入力 | 保留…を選び空のまま書く | 保留の理由・再開の条件の欄が出る・どちらも aria-invalid・欄の下に「保留の理由を書いてください」「再開の条件を書いてください」（正本 E-VAL-041・E-VAL-047 と同じ字・K-395 の小窓と同じ）・口は 0 回 |\n| K396-UI-005 | 入力 | 手順 S1：保留…・理由と条件を入れて書く | 体に stage_key: hold・hold_reason・resume_condition・答えの書き込みに「状態：作業中 → 保留」・詳細の読み直しは 1 回・欄は閉じて「変えない」に戻る |\n| K396-UI-006 | 入力 | 保留…から変えないに戻して書く | 欄は閉じる・体の鍵は body・mention_member_ids・notify_member_ids・quote_of_id の 4 つだけ |\n| K396-UI-007 | 対象の状態 | 確認中・承認待ち・実行中（can.progress false）・完了（can.progress true・段が完了）・閲覧のみ（作業中・can.progress false） | 「状態 変えない（変えられません）」が aria-disabled・押してもメニューは出ない・書くと体に stage_key が無い |\n| K396-UI-008 | 失敗 | 手順 S1 の失敗：409 E-CONF-030 | 書く欄の上に「AI が動いている間と承認待ちの間は、状態を変えられません」・書いた字は残る・詳細を読み直して状態 ▾ は押せない形（選んでいた段は「変えない」に戻る） |\n| K396-UI-009 | 失敗 | 手順 S1 の失敗：503 → 422（hold_reason） | 503 は「送れませんでした。もう一度お試しください（書いた字は残っています）」・保留の理由の字と保留の札は残る。422 は保留の欄の下に「保留の理由が長すぎます」 |\n| K396-UI-010 | 入口 | キーボード | 状態 ▾ に焦点 → Enter で開く → ↓ で「作業中」→ Enter で選ぶ |\n| K396-UI-011 | 入力 | 幅 320・375・768・1024・1440 × 保留の欄に長い字 | 横溢れ 0 |\n| K396-UI-012 | 対象の状態 | 保留中のチケット（can.progress true）で状態 ▾ を押す | 項目は「変えない ✓」「未着手」「作業中」「保留」（「理由を書く」の小さな字は無い）・「保留」は押せない形（aria-disabled）・未着手と作業中は押せる |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | K396-UI-008（送る間にほかの人・AI が段を動かした → 409 で止め、字を失わない） |\n| TP-CRUD-02 消したものを古いリンクで | 要らない: TP-CRUD-02 消したチケットへの書き込みは K-393 の K393-UI-006（404） |\n| TP-CRUD-03 消す・戻す・子 | 要らない: TP-CRUD-03 段を変えるだけで消さない（保留から作業中に戻すのも同じ選び方） |\n| TP-CRUD-04 2 回押し | 要らない: TP-CRUD-04 二度押しは K-393 の K393-UI-004（段の欄を足しても同じ器・同じ冪等キー） |\n| TP-CRUD-05 保存の途中で失敗 | K396-UI-009（届かなければ段は変わらない・書き込みと段は口の 1 つの取引・K-389） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: TP-CRUD-06 選んだ段と保留の欄は端末に残さない（書きかけの本文は K-393 の K393-UI-014・**仮**） |",
+    "前からの試験を替えた所": "この葉の changes: は composer-stage.tsx（K-382 が置く・まだ無い）だけで、切る段の検査（cut_check.py prior）が出す前からの試験は無い。状態 ▾ の字を見る前からの試験を検索で出した（段 7 の切る段の新しい試験を除く）。\n\n```search\ngit grep -ln '状態 変えない\\|k-talk-stage\\|k-talk-hold' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K-382 の試験。この葉が直す composer-stage.tsx の字を K382-SL-001 が読む（ComposerStage が在り、fetch・lib/api・useQuery・useMutation が無い）。名前を残し口は K-393 の use-post.ts が呼ぶので、行の期待は変わらない（K-382 が入った後は切る段の検査がこのファイルを出す）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 段を変えて書いたときの口 | — | 書く口 1 本（段の欄つき）＋詳細の読み直し 1 回（段を変えたときだけ・直列 2 段：読み直しは書いた結果が要る） |\n| 同じ口の二重 | — | 無い（二度押しは K-393 と同じ器） |\n| 新しい住所 | — | 増えない |\n| 認証の要る答えの Cache-Control | — | 口の葉が持つ（private, no-store・K-389） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 書く欄の器の口 `useComposerStage(ticket): { slot, holdSlot, fields(), setErrors(), afterPost(), reset() }` は K-393 が composer-stage.tsx に「まだ」の形で置いた物（この葉は名前と形を変えず中身を作る・ComposerStage の名前も残す＝K382-SL-001）\n- 書く口の段の欄の名前（stage_key・hold_reason・resume_condition）は K-389 の md と合わせた（K-389 は stage_key と stage_id のどちらでも受ける・この葉は stage_key）\n- 保留の確かめの関数：K-395 の `features/F6/progress/hold-fields.ts` の `checkHold(reason, resume)`・`holdErrorsOf(details)`（まとめ役が切る段で名前を決めた）\n- 押せるかは getTicket の `can.progress`（K-387）と段が完了か\n- 部品：K-392 が views.tsx で書き出す `StageSelect`（onPick・disabledChoices・busy）・`HoldFields`（reason・resume・onReason・onResume・errors）",
+    "代表に聞くこと（仮で書いた物）": "- 今の段の項目は押せない形にする（勧め）か、出さないか（保留中のチケットの「保留」も同じ。押せない形なら「理由を書く」の小さな字は出さない）\n- 選んだ段と保留の欄の字は端末に残さない（勧め：本文の書きかけだけを残す）",
+    "成果物": "- 書く欄の状態の器 composer-stage.tsx の中身\n- 画面の試験 `apps/web/tests/k/k396-thread-post-stage.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=eaa451436670・f5cd1647389f・56812da22008）：① 頭の行の段の札を押すと選べる＋書く欄の「状態 ▾」の両方／② 段を変えられるのは書ける人（閲覧のみは変えられない）／⑦ 担当者でない人が段を変えたときだけ担当者に知らせる（口の側）／⑭ 完了したチケットにも書ける（段は変わらない）／㉒ 段を変えられないときの文はそのまま\n- 2026-11-20 下絵の直し（answer=fabd031f9b37）：③ 段のメニューの選ぶ物は頭の段の札と同じ色つきの札\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す",
+    "リスクと懸念": "- 段の欄の名前が K-389 と食い違うと、作る段の型の検査で止まる（作る段の始めに K-389 の md を読み直す）",
+    "申し送り": "- K-399（通し）：書く欄で作業中にする → 保留にする → やり取りに一緒に残った変更が出る、を通しで見る"
+   },
+   "file": "11_tickets/K-396.md"
   },
   {
    "id": "K-397",
