@@ -7531,6 +7531,35 @@
   },
   {
    "entity": "notifications",
+   "field": "read_at",
+   "consumed_by_screens": [
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "bridge-setup",
+    "clone-chat",
+    "members",
+    "ops-support",
+    "company-settings",
+    "app-setup",
+    "ops-skills",
+    "inquiry",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant",
+    "member-detail",
+    "tickets",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "notifications",
    "field": "retry_count",
    "consumed_by_screens": [
     "invite-accept",
@@ -12509,6 +12538,76 @@
    "reason": null
   },
   {
+   "entity": "guest_groups",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name_key",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "request_scope_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "member_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "ticket_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
    "entity": "ticket_handovers",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -13595,5 +13694,13 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
- "unconsumed": []
+ "unconsumed": [
+  "guest_groups.name",
+  "guest_groups.name_key",
+  "guest_groups.request_scope_id",
+  "guest_group_members.guest_group_id",
+  "guest_group_members.member_id",
+  "ticket_guest_shares.ticket_id",
+  "ticket_guest_shares.guest_group_id"
+ ]
 }

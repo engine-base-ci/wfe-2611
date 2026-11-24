@@ -10,9 +10,9 @@
 | l1_rows | 5094 |
 | ears_endpoints | 369 |
 | ears_tests | 4033 |
-| entities | 145 |
-| policies | 419 |
-| access_cases | 1566 |
+| entities | 148 |
+| policies | 429 |
+| access_cases | 1606 |
 | errors | 258 |
 | journey_rows | 88 |
 | critical_tasks | 88 |
@@ -181,12 +181,12 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | UNWANTED | 3287 |
 | UBIQUITOUS | 350 |
 
-## RLS の場合表（1566 行・access-matrix.json）
+## RLS の場合表（1606 行・access-matrix.json）
 
 | 役 | policy 数 | 場合 数 |
 |---|---|---|
-| 会社の人（R1〜R4・権限で分かれる） | 246 | 968 |
-| 運営（R6） | 143 | 529 |
+| 会社の人（R1〜R4・権限で分かれる） | 253 | 996 |
+| 運営（R6） | 146 | 541 |
 | ログイン済み（本人のもの） | 19 | 36 |
 | 取引先の人（クライアントの場所） | 8 | 24 |
 
