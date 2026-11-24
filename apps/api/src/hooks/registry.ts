@@ -8,7 +8,9 @@ import type { Repository } from "@kaname/db/repository";
 import type { ActionGateway } from "@kaname/actions";
 import type { ObjectStore } from "@kaname/storage";
 import type { SecretsGateway } from "@kaname/secrets";
+import type { MemberHub } from "@kaname/db/listen";
 import type { Hook } from "../contract/deps.js";
+import type { FreshSession, StreamTiming } from "../features/F5/talk/stream.js";
 
 /** メールの送出（関門 C6 の 1 か所・server.ts が署名と返信先を付けて作る） */
 export type HookMailer = (m: { to: string; subject: string; text: string }) => Promise<void>;
@@ -25,6 +27,12 @@ export interface HookDeps {
   /** 預かり先の関門（C8）。預けたログイン情報の口が使う（K-351 が足した） */
   secrets: SecretsGateway;
   config: Config;
+  /** 知らせの接続（API 1 台に 1 本）。流す口 streamConversation が使う。無ければ流す口は 503 E-TALK-020（K-759） */
+  hub?: MemberHub | null;
+  /** 流しっぱなしの間のログインの解き直し（毎回新しく解く・G-14）。無ければ流す口は 503 E-TALK-020（K-759） */
+  freshSession?: FreshSession;
+  /** 流す口の間隔（試験だけ。既定は 25 秒・50 秒・60ms・K-759） */
+  talkStream?: StreamTiming;
 }
 
 /** fuzz の的での差し方："same"＝本物と同じ make／{ skip: 理由 }＝的から外す／関数＝的だけ違う引数で作る */

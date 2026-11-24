@@ -3,6 +3,24 @@
  "retired": [
   {
    "method": "GET",
+   "path": "/api/v1/tickets/{id}/checks",
+   "decision": "D-150.39",
+   "reason": "確認項目は文とチェックだけにした。検査の結果の表を読む口は無くした。確認項目と付けた人は listTestSpecs と承認の詳細で読む（代表の決め）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/checks/{id}/human",
+   "decision": "D-150.40",
+   "reason": "人が確かめた印の口は無くした。人がチェックを付けるのは updateTestSpec（確認項目の口）。だれが付けたかはやり取りに載る（代表の決め）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/clones/me/activity/export",
+   "decision": "D-153.33",
+   "reason": "書き出し（持ち出し）は作らない（代表の決め 2026-11-22）"
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/action_runs",
    "decision": "D-128.112",
    "reason": "後のフェーズの画面（onboard-testrun）の推測の API。第1フェーズの契約には入れない（作るときに画面から出し直す）"
