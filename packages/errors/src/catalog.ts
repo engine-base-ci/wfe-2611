@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。291 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。296 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5252,6 +5252,96 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-KND-001": {
+    "id": "E-KND-001",
+    "cls": "conflict",
+    "message": "同じ名前の種別がすでにあります",
+    "action": "名前を変える",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "KND-001",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters",
+      "state": "set-kinds"
+    }
+  },
+  "E-KND-002": {
+    "id": "E-KND-002",
+    "cls": "conflict",
+    "message": "種別は 10 までです",
+    "action": "使っていない種別を消してから足す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "KND-002",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters",
+      "state": "set-kinds"
+    }
+  },
+  "E-KND-003": {
+    "id": "E-KND-003",
+    "cls": "conflict",
+    "message": "この種別を使っているチケットがあるので、消せません",
+    "action": "使っているチケットを別の種別に移してから消す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "KND-003",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters",
+      "state": "set-kinds"
+    }
+  },
+  "E-KND-004": {
+    "id": "E-KND-004",
+    "cls": "conflict",
+    "message": "並びが古くなっています。開き直してください",
+    "action": "画面を開き直してから並べる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "KND-004",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters",
+      "state": "set-kinds"
+    }
+  },
+  "E-KND-005": {
+    "id": "E-KND-005",
+    "cls": "conflict",
+    "message": "最後の 1 つの種別は消せません",
+    "action": "先に別の種別を足してから消す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "KND-005",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters",
+      "state": "set-kinds"
     }
   }
 };

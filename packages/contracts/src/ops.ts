@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d9c2c25c206ffc7c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:1ae7d3813ab41d87
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -296,7 +296,11 @@ export interface Ops {
   getTicketImport: { params: { id: string }; query: never; body: never; data: T.TicketImports };
   commitTicketImport: { params: { id: string }; query: never; body: T.TicketImportsInput; data: T.TicketImports };
   listTicketKinds: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketKindChoice[] };
+  createTicketKind: { params: never; query: never; body: T.TicketKindCreateInput; data: T.TicketKindSetting };
+  updateTicketKind: { params: { id: string }; query: never; body: T.TicketKindUpdateInput; data: T.TicketKindSetting };
+  deleteTicketKind: { params: { id: string }; query: never; body: never; data: T.TicketKindDeleted };
   makeKindTemplateFromTicket: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
+  reorderTicketKinds: { params: never; query: never; body: T.TicketKindOrderInput; data: T.TicketKindSetting };
   listKindTemplateUpdates: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TenantDistributions[] };
   applyKindTemplateUpdate: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
   deleteTicketLink: { params: { id: string }; query: never; body: never; data: T.TicketLinkDeleted };

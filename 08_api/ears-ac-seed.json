@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 373,
+ "endpoints_count": 377,
  "ac_seeds": [
   {
    "endpoint": "POST /api/v1/acceptances/:id/remind",
@@ -9569,6 +9569,102 @@
    ]
   },
   {
+   "endpoint": "POST /api/v1/ticket_kinds",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_kinds が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 消していない種別に同じ名前があるのなら、Kaname は 409 と E-KND-001 を返し、種別を何も変えない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 種別がもう 10 あるなら、Kaname は 409 と E-KND-002 を返し、種別を何も変えない",
+    "UNWANTED: IF 種別の行か証跡を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、種別も証跡も残さない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 30/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/ticket_kinds の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-125.66",
+    "D-125.67",
+    "D-125.70",
+    "D-125.81"
+   ]
+  },
+  {
+   "endpoint": "PATCH /api/v1/ticket_kinds/:id",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN PATCH /api/v1/ticket_kinds/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 直す種別が無い・消した・別の会社なら、Kaname は 404 と E-PAGE-001 を返し（欄・details なし）、種別を何も変えない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 消していない種別に同じ名前があるのなら、Kaname は 409 と E-KND-001 を返し、種別を何も変えない",
+    "UNWANTED: IF 種別の行か証跡を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、種別も証跡も残さない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 30/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: PATCH /api/v1/ticket_kinds/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-125.66",
+    "D-125.67",
+    "D-125.70",
+    "D-125.81"
+   ]
+  },
+  {
+   "endpoint": "DELETE /api/v1/ticket_kinds/:id",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket_kinds/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 消す種別が無い・消した・別の会社なら、Kaname は 404 と E-PAGE-001 を返し（欄・details なし）、種別を何も変えない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 使っているチケットが在る種別を消そうとしたなら、Kaname は 409 と E-KND-003 を返し、種別を何も変えない",
+    "UNWANTED: IF 最後の 1 つの種別を消そうとしたなら、Kaname は 409 と E-KND-005 を返し、種別を何も変えない",
+    "UNWANTED: IF 種別の行か証跡を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、種別も証跡も残さない",
+    "UNWANTED: IF 30/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: DELETE /api/v1/ticket_kinds/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-125.66",
+    "D-125.67",
+    "D-125.70",
+    "D-125.81"
+   ]
+  },
+  {
    "endpoint": "POST /api/v1/ticket_kinds/:id/template-from-ticket",
    "feature_id": "F-004",
    "screen_ids": [
@@ -9595,6 +9691,37 @@
     "D-125.167",
     "D-125.27",
     "D-125.58"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/ticket_kinds/order",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_kinds/order が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 並びが今の種別と合わないなら、Kaname は 409 と E-KND-004 を返し、種別を何も変えない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 種別の行か証跡を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、種別も証跡も残さない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 30/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/ticket_kinds/order の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-125.66",
+    "D-125.67",
+    "D-125.70",
+    "D-125.81"
    ]
   },
   {

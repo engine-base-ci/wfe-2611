@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d9c2c25c206ffc7c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:1ae7d3813ab41d87
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15495,6 +15495,175 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "POST",
+    "path": "/api/v1/ticket_kinds",
+    "operationId": "createTicketKind",
+    "table": "ticket_kinds",
+    "kind": "create",
+    "input": "TicketKindCreateInput",
+    "success": 201,
+    "output": "TicketKindSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ticket_kinds/:id",
+    "operationId": "updateTicketKind",
+    "table": "ticket_kinds",
+    "kind": "update",
+    "input": "TicketKindUpdateInput",
+    "success": 200,
+    "output": "TicketKindSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "ticket_kinds",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_kinds', NULL, 'edit')"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/ticket_kinds/:id",
+    "operationId": "deleteTicketKind",
+    "table": "ticket_kinds",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "TicketKindDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "ticket_kinds",
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'ticket_kinds', NULL, 'edit')"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
     "path": "/api/v1/ticket_kinds/:id/template-from-ticket",
     "operationId": "makeKindTemplateFromTicket",
     "table": "kind_sections",
@@ -15537,6 +15706,58 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "word": "admin",
       "target": "kind_sections",
       "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_kinds/order",
+    "operationId": "reorderTicketKinds",
+    "table": "ticket_kinds",
+    "kind": "create",
+    "input": "TicketKindOrderInput",
+    "success": 201,
+    "output": "TicketKindSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
@@ -19883,4 +20104,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "d9c2c25c206ffc7c";
+export const OPENAPI_HASH = "1ae7d3813ab41d87";

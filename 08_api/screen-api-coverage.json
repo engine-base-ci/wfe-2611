@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 373,
+  "total_apis": 377,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2782,6 +2782,26 @@
      "role": "action",
      "endpoint": "POST /api/v1/ticket_kinds/template-updates/:id/apply",
      "act": "A120"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_kinds",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_kinds/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_kinds/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_kinds/order",
+     "act": "A118"
     }
    ],
    "transitions": [],
