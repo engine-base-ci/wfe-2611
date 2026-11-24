@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fbd80ccb3e1a1eff
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:5a7a43b9f6cbd470
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
