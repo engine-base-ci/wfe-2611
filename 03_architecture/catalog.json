@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 372,
-  "api_built": 102,
+  "api": 373,
+  "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 291,
+  "errors": 292,
   "stack": 68,
   "env": 41
  },
@@ -5266,6 +5266,23 @@
    ]
   },
   {
+   "op": "listTicketItemChanges",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/item-changes",
+   "what": "取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_messages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-433"
+   ]
+  },
+  {
    "op": "previewTicketKindChange",
    "method": "GET",
    "path": "/api/v1/tickets/:id/kind-change-preview",
@@ -5494,7 +5511,7 @@
    "op": "listTicketVersions",
    "method": "GET",
    "path": "/api/v1/tickets/:id/versions",
-   "what": "取得（tickets）— チケットの中身（区画）を書く・直す",
+   "what": "取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない）",
    "flows": [
     "F4"
    ],
@@ -5502,9 +5519,10 @@
    "tables": [
     "ticket_section_versions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {
@@ -5517,11 +5535,12 @@
    ],
    "only_later_phase": false,
    "tables": [
-    "ticket_section_versions"
+    "ticket_sections"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {
@@ -7357,7 +7376,8 @@
     "F6"
    ],
    "reads": [
-    "F11"
+    "F11",
+    "F4"
    ],
    "boundary": true
   },
@@ -7365,10 +7385,10 @@
    "table": "ticket_section_versions",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
+   "writes": [],
+   "reads": [
     "F4"
    ],
-   "reads": [],
    "boundary": false
   },
   {
