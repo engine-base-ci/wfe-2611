@@ -167,6 +167,7 @@ test("K682-UI-004 木：棚は 3 つ（会社・グループ・自分）・フ�
   await expect(tree.getByRole("button", { name: "営業の棚にページかフォルダを足す", exact: true })).toHaveCount(0);
   await expect(tree.getByRole("button", { name: "自分の棚にページかフォルダを足す", exact: true })).toBeVisible();
   await expect(tree.getByRole("button", { name: "ページ", exact: true })).toBeVisible(); // 面の切り替え（管理の数は管理者・マネージャーにだけ）
+  await expect(tree.getByRole("button", { name: /^管理/ })).toHaveCount(1); // admin_counts がある人には「管理」が 1 つ（UI-021 の 0 件と同じ的）
 });
 
 test("K682-UI-005 フォルダを押すと開き閉じる（口は呼ばない）・いま開いているページの親は初めから開いている・押したフォルダは選ばれた形のまま", async ({
@@ -438,7 +439,7 @@ test("K682-UI-021 見えない物は木にも数にも出ない：木に載っ�
   tree.company_nodes = tree.company_nodes.filter((n) => n.id !== P_MAIL);
   await mockKnowledge(page, { tree });
   await openInvoice(page);
-  await expect(page.locator(TREE).getByRole("tab", { name: /^管理/ })).toHaveCount(0);
+  await expect(page.locator(TREE).getByRole("button", { name: /^管理/ })).toHaveCount(0);
   await expect(page.locator(NODE).filter({ hasText: "メールの書き方" })).toHaveCount(0);
 });
 
