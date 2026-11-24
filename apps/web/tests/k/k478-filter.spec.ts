@@ -425,10 +425,7 @@ test("K478-UI-017 一覧のかんたん：分類・節目の選びは押せな�
     const it = box(page).locator('[aria-disabled="true"]', { hasText: t }).first();
     await expectInert(page, it, t, writes);
   }
-  // 「検索条件を保存」は K-479 が動かすまで押せない形のボタン
-  const save = box(page).getByRole("button", { name: "検索条件を保存", exact: true });
-  await expectInert(page, save, "検索条件を保存", writes);
-  await expect(save).toHaveAttribute("tabindex", "-1");
+  // 「検索条件を保存」（scope の無い一覧で押せない形）は K-479 の SaveViewButton の物で、K479-UI-024 が見る（持ち主を 1 つに）
   await box(page)
     .getByRole("group", { name: "状態", exact: true })
     .getByRole("button", { name: "完了以外", exact: true })
