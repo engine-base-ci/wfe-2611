@@ -1869,7 +1869,6 @@
    ],
    "tests": [
     "apps/api/test/features/F4/ticket-read-adds.test.ts",
-    "apps/api/test/features/F4/ticket-read-adds-legacy-sections.test.ts",
     "apps/api/test/features/F4/ticket-list.test.ts",
     "apps/api/test/features/F7/list-filters.test.ts",
     "apps/api/test/features/F7/list-ranges.test.ts"
@@ -2232,7 +2231,6 @@
   "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/contract/k144.d/K-435.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-435",
   "apps/api/test/features/F4/create-ticket-defaults.test.ts": "08_api/endpoints.json・08_api/openapi.yaml・07_qa/test-specs/errors.json を readFileSync で読む（K437-API-020）",
-  "apps/api/test/features/F4/create-ticket-legacy-sections.test.ts": "08_api/endpoints.json・08_api/openapi.yaml・07_qa/test-specs/errors.json を readFileSync で読む（K437-API-029）",
   "apps/api/test/features/F4/ticket-duplicate.test.ts": "08_api/endpoints.json を readFileSync で読む（契約の createTicket の 4xx に 404 E-DUP-001・409 E-DUP-002 があること・K438-API-020）",
   "apps/api/test/features/F4/ticket-sort.test.ts": "この葉が足す組の口 apps/api/src/hooks/ticket-update.ts（K-387 の hooks のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。また契約 08_api/openapi.yaml の updateTicket の入力の oneOf を readFileSync で読む（K440-API-002）。読む物と使う試験はどれも data_links で結ぶ・K-440",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
