@@ -10,7 +10,6 @@ import { register as artifacts } from "./artifacts.js";
 import { register as audit_events } from "./audit_events.js";
 import { register as auth } from "./auth.js";
 import { register as bridge } from "./bridge.js";
-import { register as checks } from "./checks.js";
 import { register as client_contacts } from "./client_contacts.js";
 import { register as client_requests } from "./client_requests.js";
 import { register as clients } from "./clients.js";
@@ -64,7 +63,6 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   audit_events(app, deps);
   auth(app, deps);
   bridge(app, deps);
-  checks(app, deps);
   client_contacts(app, deps);
   client_requests(app, deps);
   clients(app, deps);

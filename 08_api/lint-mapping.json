@@ -668,17 +668,6 @@
    ]
   },
   {
-   "method": "POST",
-   "path": "/api/v1/checks/:id/human",
-   "implementation_path": "apps/api/src/routes/checks.ts::markHumanCheck",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A15"
-   ]
-  },
-  {
    "method": "PATCH",
    "path": "/api/v1/client_contacts/:id",
    "implementation_path": "apps/api/src/routes/client_contacts.ts::updateClientContact",
@@ -904,17 +893,6 @@
    "method": "GET",
    "path": "/api/v1/clones/me/activity",
    "implementation_path": "apps/api/src/routes/action_runs.ts::listCloneActivity",
-   "screen_ids_referencing": [
-    "ai-activity"
-   ],
-   "acts": [
-    "A53"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/clones/me/activity/export",
-   "implementation_path": "apps/api/src/routes/export_jobs.ts::exportCloneActivity",
    "screen_ids_referencing": [
     "ai-activity"
    ],
@@ -3500,17 +3478,6 @@
    ],
    "acts": [
     "A101"
-   ]
-  },
-  {
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/checks",
-   "implementation_path": "apps/api/src/routes/checks.ts::listChecks",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A102"
    ]
   },
   {
