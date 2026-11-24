@@ -86,9 +86,24 @@ const mkRun = async (w: World, who: Person, scope: string, kind: "ticket" | "cha
     );
   return { job, token, session, ticket };
 };
+interface OpenedPage {
+  id: string;
+  title: string;
+  desc: string;
+  place: string;
+  body_text: string;
+  truncated: boolean;
+  [key: string]: unknown;
+}
+interface OpenedRow {
+  ok: boolean;
+  opened_now: boolean;
+  page: OpenedPage;
+  [key: string]: unknown;
+}
 const open = async (r: Run, page: string, o: { token?: string; session?: string } = {}) =>
   (
-    await q<{ v: Record<string, any> | null }>("select app.knowledge_open($1, $2, $3, $4) as v", [
+    await q<{ v: OpenedRow | null }>("select app.knowledge_open($1, $2, $3, $4) as v", [
       r.job,
       sha(o.token ?? r.token),
       o.session ?? r.session,

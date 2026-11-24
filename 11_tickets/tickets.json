@@ -25788,10 +25788,12 @@
    "canvas_none": "見た目を変えない口の葉。やり取りの「AI が開いたページ」の行の見た目は画面の葉 K-702（正は /dev/mock/f9 の tk-guard）",
    "affects": [
     "@kaname/api",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/contracts"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261125013800_knowledge_open.sql",
@@ -25804,7 +25806,17 @@
     "scripts/ci/ci_scope.d/K-698.json",
     "05_flow/screen_api.py",
     "scripts/ci/contract_shape_test.py",
-    "08_api/openapi.yaml"
+    "08_api/openapi.yaml",
+    "07_functional/entities.json",
+    "08_api/types.ts",
+    "packages/contracts/src/types.ts",
+    "packages/contracts/src/schemas.ts",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "08_api/api-field-consumption.json",
+    "08_api/API-SPEC.md",
+    "08_api/api-spec.html",
+    "scripts/ci/ci_scope.json"
    ],
    "flow": "AI がナレッジを読んで守る",
    "sections": {
