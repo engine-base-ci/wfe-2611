@@ -1,17 +1,17 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:c2191a70308a80fb
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:ccd7a6e7f5541a29
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
   remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
-  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunStopInput; data: T.ActionRunStopped };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunTakeoverInput; data: T.ActionRunView };
   getApproval: { params: { id: string }; query: never; body: never; data: T.ApprovalDetail };
   approveApproval: { params: { id: string }; query: never; body: T.ApprovalApproveInput; data: T.ApprovalDecided };
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
-  stopApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  stopApproval: { params: { id: string }; query: never; body: T.ApprovalStopInput; data: T.ApprovalStopped };
   withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };
@@ -123,34 +123,45 @@ export interface Ops {
   downloadInvoicePdf: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   askKnowledge: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgeAnswer };
   sendKnowledgeAnswerFeedback: { params: never; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  createKnowledgeFolder: { params: never; query: never; body: T.KnowledgeFolderCreateInput; data: T.KnowledgeFolder };
+  updateKnowledgeFolder: { params: { id: string }; query: never; body: T.KnowledgeFolderUpdateInput; data: T.KnowledgeFolder };
+  deleteKnowledgeFolder: { params: { id: string }; query: never; body: never; data: T.KnowledgeFolderDeleted };
   getKnowledgeHome: { params: never; query: never; body: never; data: T.KnowledgeHome };
   searchKnowledgeLinkTargets: { params: never; query: { "q"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeLinkTarget[] };
   listKnowledgeProposals: { params: never; query: { "mine"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgePageVersions[] };
   acceptKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   declineKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  withdrawKnowledgeRequest: { params: { id: string }; query: never; body: never; data: T.KnowledgeRequestEnded };
+  dismissKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDismissInput; data: T.KnowledgeRequestEnded };
+  findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };
   listKnowledgeVerifications: { params: never; query: { "mine"?: string | number; "soon"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeVerification[] };
   createKnowledgeImport: { params: never; query: never; body: T.ImportsInput; data: T.Imports };
   getKnowledgeImport: { params: { id: string }; query: never; body: never; data: T.KnowledgeImportPreview };
   commitKnowledgeImport: { params: { id: string }; query: never; body: T.ImportsInput; data: T.Imports };
   listKnowledgePages: { params: never; query: { "scope_id"?: string | number; "parent_id"?: string | number; "topic"?: string | number; "owner_id"?: string | number; "state"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.KnowledgePages[] };
-  createKnowledgePage: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
+  createKnowledgePage: { params: never; query: never; body: T.KnowledgePageCreateInput; data: T.KnowledgePageStub };
   getKnowledgePage: { params: { id: string }; query: never; body: never; data: T.KnowledgePageDetail };
-  updateKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
+  updateKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePageMoveInput; data: T.KnowledgePageStub };
+  deleteKnowledgePage: { params: { id: string }; query: never; body: never; data: T.KnowledgePageDeleted };
   archiveKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
   uploadKnowledgeAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
-  saveKnowledgeDraft: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
-  discardKnowledgeDraft: { params: { id: string }; query: never; body: never; data: T.KnowledgePageVersions };
+  copyKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgeCopyInput; data: T.KnowledgePageStub };
+  saveKnowledgeDraft: { params: { id: string }; query: never; body: T.KnowledgeDraftInput; data: T.KnowledgeDraftSaved };
+  discardKnowledgeDraft: { params: { id: string }; query: never; body: never; data: T.KnowledgeDraftDiscarded };
   getKnowledgeLinks: { params: { id: string }; query: never; body: never; data: T.KnowledgeLinks };
   linkKnowledgeMention: { params: { id: string }; query: never; body: T.KnowledgeLinksInput; data: T.KnowledgeLinks };
   exportKnowledgeMarkdown: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   listKnowledgeMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Messages[] };
   postKnowledgeMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  publishKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  setKnowledgeMust: { params: { id: string }; query: never; body: T.KnowledgeMustInput; data: T.KnowledgeMustSet };
+  publishKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePublishInput; data: T.KnowledgePublished };
+  requestKnowledgeRaise: { params: { id: string }; query: never; body: T.KnowledgeRaiseInput; data: T.KnowledgeRequest };
   unarchiveKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
   getKnowledgeUsage: { params: { id: string }; query: never; body: never; data: T.KnowledgeUsage };
   verifyKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
-  listKnowledgeVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgePageVersions[] };
+  listKnowledgeVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.KnowledgeVersionItem[] };
+  getKnowledgePageVersion: { params: { id: string; v: string }; query: never; body: never; data: T.KnowledgeVersion };
   restoreKnowledgeVersion: { params: { id: string; v: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   createLayer: { params: never; query: never; body: T.LayersInput; data: T.Layers };
   updateLayer: { params: { id: string }; query: never; body: T.LayersInput; data: T.Layers };
@@ -289,7 +300,12 @@ export interface Ops {
   getShell: { params: never; query: never; body: never; data: T.Shell };
   updateTestSpec: { params: { id: string }; query: never; body: T.TestSpecUpdateInput; data: T.TestSpecItem };
   deleteTestSpec: { params: { id: string }; query: never; body: never; data: T.TestSpecItem };
+  listTicketFieldMaster: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketFieldSetting[] };
   listTicketFields: { params: never; query: { "kind_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketField[] };
+  createTicketField: { params: never; query: never; body: T.TicketFieldCreateInput; data: T.TicketFieldSetting };
+  updateTicketField: { params: { id: string }; query: never; body: T.TicketFieldUpdateInput; data: T.TicketFieldSetting };
+  deleteTicketField: { params: { id: string }; query: never; body: never; data: T.TicketFieldDeleted };
+  reorderTicketFields: { params: never; query: never; body: T.TicketFieldOrderInput; data: T.TicketFieldSetting[] };
   updateTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionUpdateInput; data: T.TicketDecisionChange };
   startDraftConversation: { params: never; query: never; body: T.DraftConversationStartInput; data: T.DraftConversationStarted };
   sendDraftMessage: { params: { id: string }; query: never; body: T.DraftMessageInput; data: T.DraftMessageSent };
@@ -305,7 +321,11 @@ export interface Ops {
   updateTicketMessage: { params: { id: string }; query: never; body: T.TicketMessageEditInput; data: T.TimelineItem };
   deleteTicketMessage: { params: { id: string }; query: never; body: never; data: T.TimelineItem };
   starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessageStarInput; data: T.TicketMessageStar };
-  listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStages[] };
+  listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStageSetting[] };
+  createTicketStage: { params: never; query: never; body: T.TicketStageCreateInput; data: T.TicketStageSetting };
+  updateTicketStage: { params: { id: string }; query: never; body: T.TicketStageUpdateInput; data: T.TicketStageSetting };
+  deleteTicketStage: { params: { id: string }; query: never; body: never; data: T.TicketStageDeleted };
+  reorderTicketStages: { params: never; query: never; body: T.TicketStageOrderInput; data: T.TicketStageSetting[] };
   listTickets: { params: never; query: { "view"?: string | number; "q"?: string | number; "scope_id"?: string | number; "kind_id"?: string | number; "stage_id"?: string | number; "assignee_id"?: string | number; "done"?: string | number; "due"?: string | number; "delegated"?: string | number; "approving"?: string | number; "due_from"?: string | number; "due_to"?: string | number; "start_from"?: string | number; "start_to"?: string | number; "overdue"?: string | number; "fire"?: string | number; "parent"?: string | number; "fields"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Tickets[] };
   createTicket: { params: never; query: never; body: T.TicketCreateInput; data: T.Tickets };
   getTicket: { params: { id: string }; query: never; body: never; data: T.TicketDetail };
@@ -325,7 +345,7 @@ export interface Ops {
   createTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionInput; data: T.TicketDecisionCreated };
   delegateTicket: { params: { id: string }; query: never; body: T.TicketDelegateInput; data: T.TicketDelegation };
   previewTicketDelete: { params: { id: string }; query: never; body: never; data: T.TicketDeletePreview };
-  dryRunTicket: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  dryRunTicket: { params: { id: string }; query: never; body: T.DryRunInput; data: T.DryRunStarted };
   previewTicketHandover: { params: { id: string }; query: never; body: never; data: T.HandoverPreview };
   listTicketHandovers: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketHandover[] };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverCreateInput; data: T.TicketHandoverCreated };

@@ -46,7 +46,7 @@ type TakenJob = {
   kind: "chat" | "login_check" | "ticket";
   credential_id: string | null;
   ticket_id: string | null;
-  phase: "make" | "execute" | null;
+  phase: "make" | "execute" | "dry_run" | null;
 };
 
 export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {

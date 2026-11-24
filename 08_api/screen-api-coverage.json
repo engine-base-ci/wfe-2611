@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 375,
+  "total_apis": 395,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2730,7 +2730,7 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "mock_path": null,
    "required_apis": [
     {
@@ -2802,6 +2802,51 @@
      "role": "action",
      "endpoint": "POST /api/v1/ticket_kinds/template-updates/:id/apply",
      "act": "A120"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_stages",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_stages/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_stages/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_stages/order",
+     "act": "A118"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket-field-master",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket-fields",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket-fields/order",
+     "act": "A118"
     }
    ],
    "transitions": [],
@@ -3021,7 +3066,7 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/knowledge_pages/:id/usage",
-     "act": "A114"
+     "act": "A137"
     },
     {
      "role": "data_fetch",
@@ -3071,17 +3116,17 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/knowledge/proposals",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge/proposals/:id/accept",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge/proposals/:id/decline",
-     "act": "A114"
+     "act": "A136"
     },
     {
      "role": "action",
@@ -3097,6 +3142,61 @@
      "role": "action",
      "endpoint": "POST /api/v1/knowledge_imports/:id/commit",
      "act": "A114"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge_pages/:id/versions/:v",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/folders",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge_pages/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PUT /api/v1/knowledge_pages/:id/must",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/similar",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/copy",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/raise",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/requests/:id",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/dismiss",
+     "act": "A136"
     }
    ],
    "transitions": [],

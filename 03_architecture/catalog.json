@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 375,
-  "api_built": 112,
+  "api": 395,
+  "api_built": 139,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 148,
+  "db": 151,
   "ui": 19,
   "packages": 13,
-  "errors": 293,
+  "errors": 334,
   "stack": 70,
   "env": 41
  },
@@ -61,9 +61,10 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-731"
    ]
   },
   {
@@ -164,9 +165,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-732"
    ]
   },
   {
@@ -1960,7 +1962,7 @@
    "op": "askKnowledge",
    "method": "POST",
    "path": "/api/v1/knowledge/ask",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -1969,13 +1971,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "sendKnowledgeAnswerFeedback",
    "method": "POST",
    "path": "/api/v1/knowledge/ask/feedback",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -1984,13 +1988,66 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "createKnowledgeFolder",
+   "method": "POST",
+   "path": "/api/v1/knowledge/folders",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "updateKnowledgeFolder",
+   "method": "PATCH",
+   "path": "/api/v1/knowledge/folders/:id",
+   "what": "更新（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "deleteKnowledgeFolder",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge/folders/:id",
+   "what": "削除（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeHome",
    "method": "GET",
    "path": "/api/v1/knowledge/home",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -1999,13 +2056,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "searchKnowledgeLinkTargets",
    "method": "GET",
    "path": "/api/v1/knowledge/link-targets",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2014,13 +2073,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeProposals",
    "method": "GET",
    "path": "/api/v1/knowledge/proposals",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2029,13 +2090,15 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "acceptKnowledgeProposal",
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/accept",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2044,13 +2107,15 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "declineKnowledgeProposal",
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/decline",
-   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "flows": [
     "F9"
    ],
@@ -2059,13 +2124,67 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "withdrawKnowledgeRequest",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge/requests/:id",
+   "what": "削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-687"
+   ]
+  },
+  {
+   "op": "dismissKnowledgeRequest",
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/dismiss",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-687"
+   ]
+  },
+  {
+   "op": "findSimilarKnowledge",
+   "method": "POST",
+   "path": "/api/v1/knowledge/similar",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-686"
+   ]
   },
   {
    "op": "getKnowledgeTree",
    "method": "GET",
    "path": "/api/v1/knowledge/tree",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2073,14 +2192,17 @@
    "tables": [
     "knowledge_pages"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-676"
+   ]
   },
   {
    "op": "listKnowledgeVerifications",
    "method": "GET",
    "path": "/api/v1/knowledge/verifications",
-   "what": "取得（knowledge）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2089,13 +2211,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createKnowledgeImport",
    "method": "POST",
    "path": "/api/v1/knowledge_imports",
-   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2104,13 +2228,15 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeImport",
    "method": "GET",
    "path": "/api/v1/knowledge_imports/:id",
-   "what": "取得（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2119,13 +2245,15 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "commitKnowledgeImport",
    "method": "POST",
    "path": "/api/v1/knowledge_imports/:id/commit",
-   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2134,13 +2262,15 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgePages",
    "method": "GET",
    "path": "/api/v1/knowledge_pages",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2149,13 +2279,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2163,14 +2295,17 @@
    "tables": [
     "knowledge_pages"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-679"
+   ]
   },
   {
    "op": "getKnowledgePage",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2178,14 +2313,17 @@
    "tables": [
     "knowledge_pages"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-677"
+   ]
   },
   {
    "op": "updateKnowledgePage",
    "method": "PATCH",
    "path": "/api/v1/knowledge_pages/:id",
-   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2193,14 +2331,35 @@
    "tables": [
     "knowledge_pages"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-681"
+   ]
+  },
+  {
+   "op": "deleteKnowledgePage",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge_pages/:id",
+   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-681"
+   ]
   },
   {
    "op": "archiveKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/archive",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2209,13 +2368,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "uploadKnowledgeAttachment",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/attachments",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2224,13 +2385,32 @@
     "attachments"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "copyKnowledgePage",
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/:id/copy",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "saveKnowledgeDraft",
    "method": "PATCH",
    "path": "/api/v1/knowledge_pages/:id/draft",
-   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2238,14 +2418,17 @@
    "tables": [
     "knowledge_page_versions"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-679"
+   ]
   },
   {
    "op": "discardKnowledgeDraft",
    "method": "DELETE",
    "path": "/api/v1/knowledge_pages/:id/draft",
-   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2253,14 +2436,17 @@
    "tables": [
     "knowledge_page_versions"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-679"
+   ]
   },
   {
    "op": "getKnowledgeLinks",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/links",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2269,13 +2455,15 @@
     "knowledge_links"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "linkKnowledgeMention",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/links",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2284,13 +2472,15 @@
     "knowledge_links"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "exportKnowledgeMarkdown",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/markdown",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2299,13 +2489,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeMessages",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/messages",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2314,13 +2506,15 @@
     "messages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "postKnowledgeMessage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/messages",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2329,13 +2523,33 @@
     "messages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "setKnowledgeMust",
+   "method": "PUT",
+   "path": "/api/v1/knowledge_pages/:id/must",
+   "what": "置き換え（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-685"
+   ]
   },
   {
    "op": "publishKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/publish",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2344,13 +2558,32 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
+  },
+  {
+   "op": "requestKnowledgeRaise",
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/:id/raise",
+   "what": "作成・実行（knowledge_pages）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-687"
+   ]
   },
   {
    "op": "unarchiveKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/unarchive",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2359,13 +2592,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeUsage",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/usage",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項",
    "flows": [
     "F9"
    ],
@@ -2374,13 +2609,15 @@
     "reference_logs"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "verifyKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/verify",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2389,13 +2626,15 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeVersions",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/versions",
-   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "取得（knowledge_page_versions）— ページの公開した版を新しい順に見る",
    "flows": [
     "F9"
    ],
@@ -2403,14 +2642,35 @@
    "tables": [
     "knowledge_page_versions"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-677"
+   ]
+  },
+  {
+   "op": "getKnowledgePageVersion",
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/:id/versions/:v",
+   "what": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_page_versions"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-69",
+    "K-677"
+   ]
   },
   {
    "op": "restoreKnowledgeVersion",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/versions/:v/restore",
-   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
    "flows": [
     "F9"
    ],
@@ -2419,7 +2679,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createLayer",
@@ -2427,7 +2689,7 @@
    "path": "/api/v1/layers",
    "what": "作成・実行（layers）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -2442,7 +2704,7 @@
    "path": "/api/v1/layers/:id",
    "what": "更新（layers）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -2455,7 +2717,7 @@
    "op": "listLearningCandidates",
    "method": "GET",
    "path": "/api/v1/learning_candidates",
-   "what": "取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -2472,7 +2734,7 @@
    "op": "acceptLearningCandidate",
    "method": "POST",
    "path": "/api/v1/learning_candidates/:id/accept",
-   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -2489,7 +2751,7 @@
    "op": "dismissLearningCandidate",
    "method": "POST",
    "path": "/api/v1/learning_candidates/:id/dismiss",
-   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる",
+   "what": "作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違",
    "flows": [
     "F9"
    ],
@@ -4388,7 +4650,7 @@
    "op": "checkRule",
    "method": "POST",
    "path": "/api/v1/rules/check",
-   "what": "作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）",
+   "what": "作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）",
    "flows": [
     "F9"
    ],
@@ -4477,7 +4739,7 @@
    "path": "/api/v1/scopes",
    "what": "取得（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -4494,7 +4756,7 @@
    "path": "/api/v1/scopes",
    "what": "作成・実行（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -4509,7 +4771,7 @@
    "path": "/api/v1/scopes/:id",
    "what": "更新（scopes）— グループを作る・直す（メンバーの中）",
    "flows": [
-    "F9"
+    "F10"
    ],
    "only_later_phase": false,
    "tables": [
@@ -4621,6 +4883,23 @@
    ]
   },
   {
+   "op": "listTicketFieldMaster",
+   "method": "GET",
+   "path": "/api/v1/ticket-field-master",
+   "what": "取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-706"
+   ]
+  },
+  {
    "op": "listTicketFields",
    "method": "GET",
    "path": "/api/v1/ticket-fields",
@@ -4635,6 +4914,74 @@
    "status": "作った",
    "owner_tickets": [
     "K-563"
+   ]
+  },
+  {
+   "op": "createTicketField",
+   "method": "POST",
+   "path": "/api/v1/ticket-fields",
+   "what": "作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-706"
+   ]
+  },
+  {
+   "op": "updateTicketField",
+   "method": "PATCH",
+   "path": "/api/v1/ticket-fields/:id",
+   "what": "更新（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-717"
+   ]
+  },
+  {
+   "op": "deleteTicketField",
+   "method": "DELETE",
+   "path": "/api/v1/ticket-fields/:id",
+   "what": "削除（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-717"
+   ]
+  },
+  {
+   "op": "reorderTicketFields",
+   "method": "POST",
+   "path": "/api/v1/ticket-fields/order",
+   "what": "作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-717"
    ]
   },
   {
@@ -4807,7 +5154,9 @@
     "tenant_distributions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "applyKindTemplateUpdate",
@@ -4822,7 +5171,9 @@
     "kind_sections"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteTicketLink",
@@ -4905,9 +5256,77 @@
    "tables": [
     "ticket_stages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-705"
+   ]
+  },
+  {
+   "op": "createTicketStage",
+   "method": "POST",
+   "path": "/api/v1/ticket_stages",
+   "what": "作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_stages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-705"
+   ]
+  },
+  {
+   "op": "updateTicketStage",
+   "method": "PATCH",
+   "path": "/api/v1/ticket_stages/:id",
+   "what": "更新（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_stages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-705"
+   ]
+  },
+  {
+   "op": "deleteTicketStage",
+   "method": "DELETE",
+   "path": "/api/v1/ticket_stages/:id",
+   "what": "削除（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_stages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-705"
+   ]
+  },
+  {
+   "op": "reorderTicketStages",
+   "method": "POST",
+   "path": "/api/v1/ticket_stages/order",
+   "what": "作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_stages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-705"
    ]
   },
   {
@@ -5158,7 +5577,7 @@
    "op": "completeTicket",
    "method": "POST",
    "path": "/api/v1/tickets/:id/complete",
-   "what": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
+   "what": "作成・実行（tickets）— 完了にする",
    "flows": [
     "F5"
    ],
@@ -5252,9 +5671,10 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-746"
    ]
   },
   {
@@ -5850,7 +6270,7 @@
    "op": "createEscalationRule",
    "method": "POST",
    "path": "/api/v1/workspace/escalation-rules",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5859,13 +6279,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateEscalationRule",
    "method": "PATCH",
    "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5874,13 +6296,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteEscalationRule",
    "method": "DELETE",
    "path": "/api/v1/workspace/escalation-rules/:id",
-   "what": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5889,13 +6313,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "previewEscalationRule",
    "method": "POST",
    "path": "/api/v1/workspace/escalation-rules/preview",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5904,7 +6330,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "uploadWorkspaceLogo",
@@ -5988,7 +6416,7 @@
    "op": "getWorkspaceRules",
    "method": "GET",
    "path": "/api/v1/workspace/rules",
-   "what": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -5997,13 +6425,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createWorkspaceRule",
    "method": "POST",
    "path": "/api/v1/workspace/rules",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6012,13 +6442,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateWorkspaceRule",
    "method": "PATCH",
    "path": "/api/v1/workspace/rules/:id",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6027,13 +6459,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteWorkspaceRule",
    "method": "DELETE",
    "path": "/api/v1/workspace/rules/:id",
-   "what": "削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "削除（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6042,13 +6476,15 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getTicketShape",
    "method": "GET",
    "path": "/api/v1/workspace/ticket-shape",
-   "what": "取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "取得（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6057,13 +6493,15 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "saveTicketShape",
    "method": "PATCH",
    "path": "/api/v1/workspace/ticket-shape",
-   "what": "更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "更新（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6072,13 +6510,15 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "previewTicketShapeChange",
    "method": "POST",
    "path": "/api/v1/workspace/ticket-shape/preview",
-   "what": "作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "what": "作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）",
    "flows": [
     "F9"
    ],
@@ -6087,7 +6527,9 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   }
  ],
  "legacy_routes": [
@@ -6413,11 +6855,13 @@
    "table": "custom_fields",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（K-563）",
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "daily_plans",
@@ -6626,6 +7070,32 @@
    "boundary": true
   },
   {
+   "table": "knowledge_breaches",
+   "class": "skeleton",
+   "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "knowledge_folders",
+   "class": "skeleton",
+   "why": "ナレッジの口が使う（K-674）",
+   "writes": [
+    "F9"
+   ],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "knowledge_limits",
+   "class": "skeleton",
+   "why": "必ず守るの付け外しの口が上限を読む（K-685）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
    "table": "knowledge_links",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
@@ -6660,7 +7130,7 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F9"
+    "F10"
    ],
    "reads": [],
    "boundary": false
@@ -7088,7 +7558,7 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F9"
+    "F10"
    ],
    "reads": [],
    "boundary": false
@@ -7447,11 +7917,13 @@
    "table": "ticket_stages",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "ticket_thread_seen",

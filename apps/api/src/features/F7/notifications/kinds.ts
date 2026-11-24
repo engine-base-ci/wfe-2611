@@ -32,6 +32,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 段 8（K-464・K-463）
   "ticket.stopped": ticketKind("stopped"),
   "approval.requested": ticketKind("approval"),
+  // 段 6（K-733）：承認待ちを取り下げた知らせ（表に足すのは K-731・D-153.7）
+  "approval.withdrawn": ticketKind("approval"),
   // 段 9（K-402・K-408・K-409・K-410・K-406）：受ける？の札
   "handover.requested": ticketKind("handover"),
   "handover.offered": ticketKind("handover"),
@@ -55,6 +57,14 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   invitation_resend_requested: settingKind(null), // 開く画面がまだ無い
   // 秘密の置き場（K-354・20261119120700）：使える場所の外で渡そうとして止まったことを持ち主に知らせる。開く画面がまだ無い（K-357 が決めるまで押せない行）
   "credential.wrong_destination": settingKind(null),
+  // 段 10 ナレッジの上げる・共有（K-687・D-152.2・D-152.13）。チケットに結ばない。頼まれた 2 つは管理の承認待ち（K-694 の道）を直接開き、ほかはナレッジの画面
+  "knowledge.raise_requested": { tag: "approval", ticket: false, href: "/knowledge?view=admin&list=approvals" },
+  "knowledge.share_requested": { tag: "approval", ticket: false, href: "/knowledge?view=admin&list=approvals" },
+  "knowledge.raise_approved": { tag: "write", ticket: false, href: "/knowledge" },
+  "knowledge.raise_declined": { tag: "write", ticket: false, href: "/knowledge" },
+  "knowledge.share_approved": { tag: "write", ticket: false, href: "/knowledge" },
+  "knowledge.share_declined": { tag: "write", ticket: false, href: "/knowledge" },
+  "knowledge.share_ended": { tag: "write", ticket: false, href: "/knowledge" },
 };
 
 /** 鈴に出してよい種類（表の鍵） */

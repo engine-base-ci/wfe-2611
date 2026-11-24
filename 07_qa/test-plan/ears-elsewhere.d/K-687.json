@@ -1,0 +1,97 @@
+{
+ "ops": {
+  "requestKnowledgeRaise": {
+   "file": "apps/api/test/features/F9/knowledge-raise.test.ts",
+   "reason": "上げる頼みが出せるかは棚（会社・グループ・自分）と役・先の承認する人・フォルダで変わる。生成の試験の偽のセッションでは棚も所属も作れない（K-687）",
+   "covers": {
+    "test_post_knowledge_pages_id_raise_ok": "K687-API-001",
+    "test_post_knowledge_pages_id_raise_shape": "K687-API-001",
+    "test_post_knowledge_pages_id_raise_rejected_401": "K687-API-024",
+    "test_post_knowledge_pages_id_raise_rejected_403": "K687-API-008",
+    "test_post_knowledge_pages_id_raise_not_found": "K687-API-008",
+    "test_post_knowledge_pages_id_raise_rejected_422": "K687-API-009",
+    "test_post_knowledge_pages_id_raise_conflict": "K687-API-006",
+    "test_post_knowledge_pages_id_raise_rate_limited": "K687-API-025",
+    "test_post_knowledge_pages_id_raise_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_pages_id_raise_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_pages_id_raise_conflict_2": "K687-API-006",
+    "test_post_knowledge_pages_id_raise_conflict_3": "K687-API-005",
+    "test_post_knowledge_pages_id_raise_conflict_4": "K687-API-005",
+    "test_post_knowledge_pages_id_raise_conflict_5": "K687-API-007",
+    "test_post_knowledge_pages_id_raise_conflict_6": "K687-API-004",
+    "test_post_knowledge_pages_id_raise_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_knowledge_pages_id_raise_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 3 欄）",
+    "test_post_knowledge_pages_id_raise_conflict_7": "共有しているページ（E-KNW-106）は共有の置き場（K-689）と確かめ（K-719 が page-guards/shared.ts を差し替える）が入ってから。K-719 が自分の試験に行を足す"
+   }
+  },
+  "withdrawKnowledgeRequest": {
+   "file": "apps/api/test/features/F9/knowledge-raise.test.ts",
+   "reason": "取り下げられるかは頼んだ人・承認する人・頼みの状態で変わる。生成の試験の偽のセッションでは頼みを作れない（K-687）",
+   "covers": {
+    "test_delete_knowledge_requests_id_ok": "K687-API-010",
+    "test_delete_knowledge_requests_id_shape": "K687-API-010",
+    "test_delete_knowledge_requests_id_rejected_401": "K687-API-024",
+    "test_delete_knowledge_requests_id_rejected_403": "K687-API-011",
+    "test_delete_knowledge_requests_id_not_found": "K687-API-011",
+    "test_delete_knowledge_requests_id_conflict": "K687-API-011",
+    "test_delete_knowledge_requests_id_rate_limited": "K687-API-025",
+    "test_delete_knowledge_requests_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-121"
+    },
+    "test_delete_knowledge_requests_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_knowledge_requests_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_knowledge_requests_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "dismissKnowledgeRequest": {
+   "file": "apps/api/test/features/F9/knowledge-raise.test.ts",
+   "reason": "断りの帯を消せるかは頼んだ人と頼みの状態で変わる。生成の試験の偽のセッションでは頼みを作れない（K-687）",
+   "covers": {
+    "test_post_knowledge_requests_id_dismiss_ok": "K687-API-012",
+    "test_post_knowledge_requests_id_dismiss_shape": "K687-API-012",
+    "test_post_knowledge_requests_id_dismiss_rejected_401": "K687-API-024",
+    "test_post_knowledge_requests_id_dismiss_rejected_403": "K687-API-012",
+    "test_post_knowledge_requests_id_dismiss_not_found": "K687-API-012",
+    "test_post_knowledge_requests_id_dismiss_conflict": "K687-API-012",
+    "test_post_knowledge_requests_id_dismiss_rejected_422": "K687-API-009",
+    "test_post_knowledge_requests_id_dismiss_rate_limited": "K687-API-025",
+    "test_post_knowledge_requests_id_dismiss_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_requests_id_dismiss_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_requests_id_dismiss_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_knowledge_requests_id_dismiss_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は空）"
+   }
+  }
+ }
+}

@@ -158,7 +158,7 @@ erDiagram
 | `triggers` | `<scoped>` / `kind_id` / `cron_expr` / `timezone` / `on_missed_id` / `ttl_minutes` / `enabled` | `on_missed` = catch_up / latest_only / skip ← **E6** |
 | `policies` | `<scoped>` / `subject_kind_id` / `action_kind_id` / `mode_id` / `params jsonb` / `is_locked` | `mode` = auto / approve / off。`is_locked` ＝ **運営の安全ルール（上書き不可）** ← **E8** |
 | `approvals` | `<scoped>` / `action_run_id` / `requested_by` / `approver_member_id` / `status_id` / `resolved_at` / `note` | **すべての提案の入口** |
-| `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id`（running／done／stopped／cancelled） / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary`（止まった理由） / **`ai_employee_id`** / **`duty_id`**（どのAI社員がどの担当業務を ← D-116.4） / **`mode_id`**（test＝外に出ない／live ← D-028.2） / **`bridge_job_id`**（本人の PC で動いた仕事。成果物は artifacts.source_job_id で結ぶ ← D-121.2） / **`taken_over_at`**（止まった・動いている実行を担当者が自分で進めることにした時刻。止まった帯を引っ込める印。止まった理由の文は書き換えない ← D-151.17・K-485） | **`choke_point_id` を記録**（どの関門を通ったか） |
+| `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id`（running／done／stopped／cancelled） / **`phase`**（チケットの実行の段：make＝作る／execute＝承認の後の実行／dry_run＝試し打ち・宛先を自分に差し替えて 1 回だけ ← K-62・K-63・K-746） / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary`（止まった理由） / **`ai_employee_id`** / **`duty_id`**（どのAI社員がどの担当業務を ← D-116.4） / **`mode_id`**（test＝外に出ない／live ← D-028.2） / **`bridge_job_id`**（本人の PC で動いた仕事。成果物は artifacts.source_job_id で結ぶ ← D-121.2） / **`taken_over_at`**（止まった・動いている実行を担当者が自分で進めることにした時刻。止まった帯を引っ込める印。止まった理由の文は書き換えない ← D-151.17・K-485） | **`choke_point_id` を記録**（どの関門を通ったか） |
 | `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank**。forbidden と bank の `domain` は、仕事を渡すたびに Bridge が本人の Claude Code に「使わない道具」とフックの一覧として渡す（D-107.1〜D-107.3）。見抜けない形は `notes` に書く（D-107.6） |
 | `credential_kinds` | `key` / `label` | **マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15** |
 | `credentials` | `<scoped>` / **`name`**（名前で管理 ← D-125.148。英大文字で始まり英大文字・数字・_ で 64 文字まで）/ **`description`** / **`layer`**（workspace ／ personal ← D-125.149）/ `service_id` / **`service_name`**（本人が入れたサービス名 ← D-108.4）/ **`service_domain`**（宛先 ← D-108.4）/ `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ**。一覧は契約の口 `listCredentials`（名前と使い方だけ・K-351）。前の一覧 `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3）は前の道すじを消すまで残る。名前の一意：ワークスペースは会社の中で 1 つ・個人は持ち主の中で 1 つ（消した物・失効した物は数えない）。守り：個人の物は持ち主だけが読む・書く／ワークスペースの物は同じ会社の人が読み、書くのは `credentials` のワークスペース全体の edit を持つ人だけ（D-128.57 ①） |
@@ -411,6 +411,12 @@ erDiagram
   scopes ||--o{ knowledge_pages : "置き場"
   knowledge_pages ||--o{ knowledge_page_versions : "版"
   knowledge_pages ||--o{ knowledge_links : "つながり"
+  scopes ||--o{ knowledge_folders : "棚"
+  knowledge_folders ||--o{ knowledge_pages : "フォルダ"
+  knowledge_pages ||--o{ knowledge_requests : "上げる・共有の頼み"
+  members ||--o{ knowledge_requests : "頼んだ人"
+  tickets ||--o{ knowledge_breaches : "破られた決まり"
+  knowledge_pages ||--o{ knowledge_breaches : "破られた数"
   class_axes ||--o{ class_values : "値"
   scopes ||--o{ scope_memberships : "入っている人（兼ねる）"
   tickets ||--o{ ticket_class_values : "分類"
@@ -426,7 +432,7 @@ erDiagram
 | **`ticket_section_versions`** | `<common>` / `ticket_id` / `section_id` / `version` / `body jsonb` / `edited_by` / `edited_at` / `edited_by_clone` | 版と差分（TdVersions）・戻す。追記だけ（直さない・消さない）。読めるのは元のチケットを読める人（D-128.115） |
 | **`ticket_kinds`** | `<common>` / `name` / `color` / `position` / `is_builtin` | **★新設（D-125.30）。**タスク・QA・課題・会議。会社が足す（上限 10） |
 | **`kind_sections`** | `<common>` / `kind_id` / `section_key` / `label` / `mode`（必須・出す・外す）/ `position` / `default_test_specs jsonb` | **★新設（D-125.52・D-128.48）。**ワークスペースの管理 › 決まり › チケットの形。**凍結（K-578）**：本文が 1 枚になり口は読まない・書かない・消さない（表と行は残す・段 10 が決める） |
-| **`ticket_stages`** | `<common>` / `name` / `position` / `is_fixed`（確認中・承認待ち・実行中は製品が固定） | **★新設（D-125.38）。**会社が直せる段は上限 8 |
+| **`ticket_stages`** | `<common>` / `key`（todo＝始め・done＝終わり・仕組みの段）/ `name`（同じ会社の消していない段で重ならない）/ `color_key`（見分けの色 8 つの鍵・key から初めの色）/ `position` / `is_fixed`（確認中・承認待ち・実行中は製品が固定） | **★新設（D-125.38）。**会社が直せる段は上限 8。足す・直す・並べる・消すは K-705（始め・終わり・仕組みの段は消せない） |
 | **`class_axes`** | `<common>` / `key` / `name` / `is_builtin` / `position` | **★新設（D-125.67）。**会社が足す軸は上限 5。**凍結（K-563・会社の項目へ移した）** |
 | **`class_values`** | `<common>` / `axis_id` / `label` / `color` / `position` | 値の並び・色。**凍結（K-563・会社の項目へ移した）** |
 | **`ticket_class_values`** | `<common>` / `ticket_id` / `value_id` | チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）。**凍結（K-563・会社の項目へ移した）** |
@@ -440,9 +446,13 @@ erDiagram
 | **`ticket_messages`** | `<common>` / `ticket_id` / `author_member_id` / `kind`（書き込み・変更・仕組み）/ `body` / `mentions uuid[]` / `changes jsonb`（期限 11/01 → 11/02 など）/ `quote_of_id` / `reactions jsonb` / `notify_member_ids uuid[]`（知らせる人に選ばれた人）/ `quote_text`（引用した元の頭の 2 行の写し）/ `edited_at`（本文を直した時刻・☆ では変えない）/ `deleted_by`（消した人） | **★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド。足した 4 列は K-383 |
 | **`app.ticket_thread_seen`** | `tenant_id` / `ticket_id` / `member_id` / `seen_at`（最後にやり取りを開いた時刻）/ `created_at` / `updated_at`（主キーは tenant_id・ticket_id・member_id） | **★新設（K-383）。**アプリの役が触れない表（app.ticket_drafts と同じ。読み書きは security definer の関数だけ）。「新しい」の印と数に使う |
 | **`reference_logs`** | `<common>` / `ticket_id` / `action_run_id` / `ref_type`（ページ・記憶・添付・外の URL）/ `ref_id` / `url` / `title` / `seen_at` | **★新設（D-125.28・D-125.35）。**外は URL・題名・時刻だけ |
-| **`knowledge_pages`** | `<scoped>`（scope＝置き場：ワークスペース全体・層・グループ・自分）/ `is_personal`（自分の置き場：持ち主だけ）/ `parent_page_id` / `title` / `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]` / `current_version` / `form`（手順・決まり・まとめ・白紙）/ `archived_at` / `archived_to_page_id`（しまって新しいページへつなぐ） | **★新設（D-125.108・D-128.50〜.52）** |
+| **`knowledge_pages`** | `<scoped>`（scope＝棚：会社＝いちばん上のグループ・グループ・自分＝持ち主の主の所属）/ `is_personal`（自分の棚：持ち主だけ）/ `parent_page_id`（使わない）/ `title` / `summary`（1 行の説明・200 字まで）/ `is_must`（必ず守る・公開済みだけ）/ `copied_from_page_id`（写しの元）/ `folder_id`（フォルダ・空＝棚の直下）/ `position`（並び）/ `owner_member_id` / `state`（下書き・公開・しまった）/ `verify_interval_days` / `verified_at` / `verify_due_on` / `topics text[]`（使わない）/ `current_version` / `form`（使わない）/ `archived_at` / `archived_to_page_id`（使わない） | **★新設（D-125.108・D-128.50〜.52）。K-674 で棚の決めに作り直した（D-152.1・D-152.3）：書ける人＝会社は管理者・グループはそのグループのマネージャー・自分は本人／読める人＝会社は全員・グループはそのグループの人と共有先・自分は本人。権限の束は使わない** |
 | **`knowledge_page_versions`** | `<common>` / `page_id` / `version` / `kind`（下書き・直す案・公開）/ `body jsonb` / `note` / `author_member_id` / `proposed_from_ticket_id` / `proposed_by_clone`（チケットの完了で分身が出した直す案）/ `decision`（入れた・直して入れた・入れない）/ `decline_reason` / `decided_by` / `decided_at` / `published_by` / `published_at` | 公開するたびに増える |
 | **`knowledge_links`** | `<common>` / `from_page_id` / `to_type`（ページ・チケット・決まり・取引先）/ `to_id` / `anchor` | つながり・被リンク（D-128.52） |
+| **`knowledge_folders`** | `<scoped>`（scope＝棚）/ `is_personal`（自分の棚）/ `owner_member_id` / `parent_folder_id`（空＝棚の直下・深さ 6 まで）/ `name`（1〜100 字・同じ棚の同じ親で重ならない）/ `position` | **★新設（K-674・D-152.1）。**ナレッジのフォルダ。読める・書けるは棚の決めと同じ |
+| **`knowledge_requests`** | `<common>` / `kind`（上げる・共有）/ `page_id`（上げるは要る）/ `folder_id`（共有でフォルダのとき・page_id とどちらか 1 つ）/ `from_scope_id` / `from_is_personal`（元の棚）/ `to_scope_id`（先：グループか会社のいちばん上）/ `to_folder_id`（入れるフォルダ）/ `requested_by` / `message`（1,000 字まで）/ `state`（承認待ち・承認済み・断り・取り下げ）/ `decided_by` / `decided_at` / `decline_reason` / `dismissed_at`（断りの帯を消した） | **★新設（K-687・D-152.2・D-152.13）。**上の棚に上げる・共有するの頼み（K-688 の承認・断る、K-689 の共有も同じ表）。同じ物・種類・先の承認待ちは 1 つだけ。アプリの役は読むだけで、書くのは DB の関数（`app.kn_raise_request`・`app.kn_request_end`）だけ |
+| **`knowledge_limits`** | `shelf`（主キー：会社・グループ・自分）/ `must_max`（0 以上） | **★新設（K-685・D-152.16）。マスタ（製品共通の設定・会社の列を持たない）。**必ず守るの上限（会社 30・グループ 20〔グループごと〕・自分 10〔本人ごと〕）。アプリの役は読むだけで、運営が行を直して変える |
+| **`knowledge_breaches`** | `<common>` / `ticket_id` / `page_id`（破られた必ず守るのページ）/ `test_spec_id`（その確認項目の行）/ `kind`（AI が終わりを知らせたのにチェックが無い・AI が付けたチェックを人が外した・AI が自分で直したと知らせた） | **★新設（K-700・D-152.24）。**破られた数。同じチケット・ページ・出来事は 1 行だけ。追記だけで、アプリの役は読むだけ（書くのは DB の関数 `app.knowledge_record_breach`・`app.knowledge_breach_scan` と引き金だけ）。読めるのはそのページを書ける人 |
 | **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける）/ `email_domain`（招待はドメインが合う人だけ） | **★新設（D-125.121・D-128.53・D-128.54）** |
 | **`client_groups`** | `<common>` / `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
 | **`client_contacts`** | `<common>` / `client_id` / `name` / `email` / `role`（依頼できる・見るだけ）/ `member_id`（クライアントの場所に入るとき）/ `cc_role`（請求の宛先・CC・使わない） | 先方の人 |
@@ -602,8 +612,9 @@ erDiagram
 | 分類の軸と値 | `class_axes` `class_values` | |
 | 種別 | `ticket_kinds` `kind_sections` | |
 | 作業の段 | `ticket_stages` | |
+| 会社が足す項目 | `custom_fields` `ticket_field_values` | 項目の定義と、チケットごとの値（K-563・段 10 の K-706・K-717） |
 | 切り替えの決まり | `handover_rules` | |
-| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` | |
+| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` `knowledge_folders` `knowledge_requests` `knowledge_breaches` | フォルダはページの置き場（棚の中の入れ子・K-674） |
 | 取引先 | `clients` `client_groups` `client_contacts` | |
 | 依頼 | `client_requests` `conversations` | |
 | 検収 | `acceptances` | |

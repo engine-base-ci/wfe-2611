@@ -222,6 +222,10 @@
      "label": "置き場"
     },
     {
+     "to": "knowledge_folders",
+     "label": "棚"
+    },
+    {
      "to": "scope_memberships",
      "label": "入っている人（兼ねる）"
     }
@@ -437,6 +441,10 @@
     {
      "from": "push_devices",
      "label": "通知の端末"
+    },
+    {
+     "to": "knowledge_requests",
+     "label": "頼んだ人"
     }
    ],
    "soft_delete": true,
@@ -3846,6 +3854,10 @@
     {
      "name": "status_id",
      "note": "running／done／stopped／cancelled"
+    },
+    {
+     "name": "phase",
+     "note": "チケットの実行の段：make＝作る／execute＝承認の後の実行／dry_run＝試し打ち・宛先を自分に差し替えて 1 回だけ ← K-62・K-63・K-746"
     },
     {
      "name": "started_at",
@@ -10466,6 +10478,10 @@
      "label": "検収"
     },
     {
+     "to": "knowledge_breaches",
+     "label": "破られた決まり"
+    },
+    {
      "to": "ticket_class_values",
      "label": "分類"
     },
@@ -10954,8 +10970,16 @@
      "note": null
     },
     {
+     "name": "key",
+     "note": "todo＝始め・done＝終わり・仕組みの段"
+    },
+    {
      "name": "name",
-     "note": null
+     "note": "同じ会社の消していない段で重ならない"
+    },
+    {
+     "name": "color_key",
+     "note": "見分けの色 8 つの鍵・key から初めの色"
     },
     {
      "name": "position",
@@ -11016,7 +11040,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.38）。**会社が直せる段は上限 8",
+   "note": "**★新設（D-125.38）。**会社が直せる段は上限 8。足す・直す・並べる・消すは K-705（始め・終わり・仕組みの段は消せない）",
    "status": "decided",
    "decided_at": "2026-11-24",
    "source": [
@@ -12228,19 +12252,39 @@
    "fields": [
     {
      "name": "<scoped>",
-     "note": "scope＝置き場：ワークスペース全体・層・グループ・自分"
+     "note": "scope＝棚：会社＝いちばん上のグループ・グループ・自分＝持ち主の主の所属"
     },
     {
      "name": "is_personal",
-     "note": "自分の置き場：持ち主だけ"
+     "note": "自分の棚：持ち主だけ"
     },
     {
      "name": "parent_page_id",
-     "note": null
+     "note": "使わない"
     },
     {
      "name": "title",
      "note": null
+    },
+    {
+     "name": "summary",
+     "note": "1 行の説明・200 字まで"
+    },
+    {
+     "name": "is_must",
+     "note": "必ず守る・公開済みだけ"
+    },
+    {
+     "name": "copied_from_page_id",
+     "note": "写しの元"
+    },
+    {
+     "name": "folder_id",
+     "note": "フォルダ・空＝棚の直下"
+    },
+    {
+     "name": "position",
+     "note": "並び"
     },
     {
      "name": "owner_member_id",
@@ -12264,7 +12308,7 @@
     },
     {
      "name": "topics",
-     "note": "text[]"
+     "note": "text[]（使わない"
     },
     {
      "name": "current_version",
@@ -12272,7 +12316,7 @@
     },
     {
      "name": "form",
-     "note": "手順・決まり・まとめ・白紙"
+     "note": "使わない"
     },
     {
      "name": "archived_at",
@@ -12280,7 +12324,7 @@
     },
     {
      "name": "archived_to_page_id",
-     "note": "しまって新しいページへつなぐ"
+     "note": "使わない"
     }
    ],
    "relations": [
@@ -12295,6 +12339,18 @@
     {
      "to": "knowledge_links",
      "label": "つながり"
+    },
+    {
+     "from": "knowledge_folders",
+     "label": "フォルダ"
+    },
+    {
+     "to": "knowledge_requests",
+     "label": "上げる・共有の頼み"
+    },
+    {
+     "to": "knowledge_breaches",
+     "label": "破られた数"
     }
    ],
    "soft_delete": true,
@@ -12312,31 +12368,36 @@
      "name": "knowledge_pages_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (owner_member_id = current_setting('app.user_id', true)::uuid OR (NOT is_personal AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) AND (state <> 'draft' OR has_permission(current_setting('app.user_id', true)::uuid, 'knowledge_pages', scope_id, 'edit'))))",
-     "rationale": "置き場が見える人（自分の置き場は持ち主だけ）。下書きは持ち主とその置き場で書ける人だけ（下書きは知らせない）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND deleted_at IS NULL AND (CASE WHEN state = 'draft' THEN owner_member_id = current_setting('app.user_id', true)::uuid ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
+     "rationale": "消したページは誰にも見せない（K-681・消すのは DB の関数 app.kn_page_soft_delete）。まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない",
      "source": [
       "D-128.50",
-      "D-128.51"
+      "D-128.51",
+      "D-152.1",
+      "D-152.3",
+      "D-152.14"
      ]
     },
     {
      "name": "knowledge_pages_create",
      "operation": "insert",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid AND (is_personal OR has_permission(current_setting('app.user_id', true)::uuid, 'knowledge_pages', scope_id, 'edit'))",
-     "rationale": "自分を持ち主にして作る。自分の置き場か、その置き場で書ける人",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid AND state = 'draft' AND app.kn_shelf_writable(scope_id, is_personal, owner_member_id)",
+     "rationale": "自分を持ち主にして下書きで作る。その棚に書ける人（会社＝管理者・グループ＝そのグループのマネージャー・自分＝本人）",
      "source": [
-      "D-128.51"
+      "D-128.51",
+      "D-152.3"
      ]
     },
     {
      "name": "knowledge_pages_update",
      "operation": "update",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (owner_member_id = current_setting('app.user_id', true)::uuid OR (NOT is_personal AND has_permission(current_setting('app.user_id', true)::uuid, 'knowledge_pages', scope_id, 'edit')))",
-     "rationale": "持ち主か、その置き場で書ける人（しまう・戻すも同じ。行は消さない）",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (CASE WHEN state = 'draft' THEN owner_member_id = current_setting('app.user_id', true)::uuid ELSE app.kn_shelf_writable(scope_id, is_personal, owner_member_id) END)",
+     "rationale": "下書きは持ち主だけ・公開済みはその棚に書ける人（変えた後の行も同じ棚に書けること。行は消さない）",
      "source": [
-      "D-128.51"
+      "D-128.51",
+      "D-152.3"
      ]
     },
     {
@@ -12351,14 +12412,16 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.108・D-128.50〜.52）**",
+   "note": "**★新設（D-125.108・D-128.50〜.52）。K-674 で棚の決めに作り直した（D-152.1・D-152.3）：書ける人＝会社は管理者・グループはそのグループのマネージャー・自分は本人／読める人＝会社は全員・グループはそのグループの人と共有先・自分は本人。権限の束は使わない**",
    "status": "decided",
    "decided_at": "2026-11-24",
    "source": [
     "D-125",
     "D-125.108",
     "D-128",
-    "D-128.50"
+    "D-128.50",
+    "D-152.1",
+    "D-152.3"
    ]
   },
   {
@@ -12449,31 +12512,34 @@
      "name": "knowledge_page_versions_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND ((kind = 'published' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
-     "rationale": "公開した版はページを読める人。下書きと直す案は書ける人だけ",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND ((kind = 'published' AND app.kpage_visible(page_id)) OR (kind = 'draft' AND author_member_id = current_setting('app.user_id', true)::uuid))",
+     "rationale": "公開した版はページを読める人。直している下書きの版は書いた人だけ",
      "source": [
       "D-128.50",
-      "D-128.51"
+      "D-128.51",
+      "D-152.3"
      ]
     },
     {
      "name": "knowledge_page_versions_add",
      "operation": "insert",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND ((kind = 'proposal' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
-     "rationale": "直す案はページを読める人が出せる（チケットの完了から）。下書き・公開は書ける人",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND kind = 'draft' AND author_member_id = current_setting('app.user_id', true)::uuid AND app.kpage_writable(page_id)",
+     "rationale": "下書きの版をページに書ける人が自分として足す（公開は下書きの行を更新する）",
      "source": [
-      "D-128.50"
+      "D-128.50",
+      "D-152.3"
      ]
     },
     {
      "name": "knowledge_page_versions_decide",
      "operation": "update",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)",
-     "rationale": "直す案を 入れる／直して入れる／入れない（理由）は書ける人",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)",
+     "rationale": "下書きの版を直す・公開に更新するのは書いた人で、ページに書ける人（変えた後の公開の版も同じ式で通る）",
      "source": [
-      "D-128.50"
+      "D-128.50",
+      "D-152.3"
      ]
     },
     {
@@ -12579,6 +12645,328 @@
     "D-125",
     "D-128",
     "D-128.52"
+   ]
+  },
+  {
+   "id": "E-147",
+   "name": "knowledge_folders",
+   "table_name": "knowledge_folders",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<scoped>",
+     "note": "scope＝棚"
+    },
+    {
+     "name": "is_personal",
+     "note": "自分の棚"
+    },
+    {
+     "name": "owner_member_id",
+     "note": null
+    },
+    {
+     "name": "parent_folder_id",
+     "note": "空＝棚の直下・深さ 6 まで"
+    },
+    {
+     "name": "name",
+     "note": "1〜100 字・同じ棚の同じ親で重ならない"
+    },
+    {
+     "name": "position",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "scopes",
+     "label": "棚"
+    },
+    {
+     "to": "knowledge_pages",
+     "label": "フォルダ"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "scope_layered",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "knowledge_folders_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_folder_visible(id))",
+     "rationale": "棚が読める人と共有先（K-689）",
+     "source": [
+      "D-152.1",
+      "D-152.3"
+     ]
+    },
+    {
+     "name": "knowledge_folders_write",
+     "operation": "insert,update",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kn_shelf_writable(scope_id, is_personal, owner_member_id)",
+     "rationale": "その棚に書ける人（グループの棚は誰が作っても同じ・自分の棚は本人）。行は消さない（deleted_at）",
+     "source": [
+      "D-152.3"
+     ]
+    },
+    {
+     "name": "knowledge_folders_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = knowledge_folders.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-674・D-152.1）。**ナレッジのフォルダ。読める・書けるは棚の決めと同じ",
+   "status": "decided",
+   "decided_at": "2026-11-24",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-152.1"
+   ]
+  },
+  {
+   "id": "E-149",
+   "name": "knowledge_requests",
+   "table_name": "knowledge_requests",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": "上げる・共有"
+    },
+    {
+     "name": "page_id",
+     "note": "上げるは要る"
+    },
+    {
+     "name": "folder_id",
+     "note": "共有でフォルダのとき・page_id とどちらか 1 つ"
+    },
+    {
+     "name": "from_scope_id",
+     "note": null
+    },
+    {
+     "name": "from_is_personal",
+     "note": "元の棚"
+    },
+    {
+     "name": "to_scope_id",
+     "note": "先：グループか会社のいちばん上"
+    },
+    {
+     "name": "to_folder_id",
+     "note": "入れるフォルダ"
+    },
+    {
+     "name": "requested_by",
+     "note": null
+    },
+    {
+     "name": "message",
+     "note": "1,000 字まで"
+    },
+    {
+     "name": "state",
+     "note": "承認待ち・承認済み・断り・取り下げ"
+    },
+    {
+     "name": "decided_by",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    },
+    {
+     "name": "decline_reason",
+     "note": null
+    },
+    {
+     "name": "dismissed_at",
+     "note": "断りの帯を消した"
+    }
+   ],
+   "relations": [
+    {
+     "from": "knowledge_pages",
+     "label": "上げる・共有の頼み"
+    },
+    {
+     "from": "members",
+     "label": "頼んだ人"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "knowledge_requests_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kn_request_visible(id)",
+     "rationale": "頼んだ人・承認する人（どの状態でも）・承認待ちの頼みは物（ページかフォルダ）が見える人。書くのは app.kn_raise_request・app.kn_request_end（と K-688・K-689 の関数）だけ",
+     "source": [
+      "D-152.2",
+      "D-152.13"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-687・D-152.2・D-152.13）。**上の棚に上げる・共有するの頼み（K-688 の承認・断る、K-689 の共有も同じ表）。同じ物・種類・先の承認待ちは 1 つだけ。アプリの役は読むだけで、書くのは DB の関数（`app.kn_raise_request`・`app.kn_request_end`）だけ",
+   "status": "decided",
+   "decided_at": "2026-11-24",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-152.13",
+    "D-152.2"
+   ]
+  },
+  {
+   "id": "E-148",
+   "name": "knowledge_limits",
+   "table_name": "knowledge_limits",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "shelf",
+     "note": "主キー：会社・グループ・自分"
+    },
+    {
+     "name": "must_max",
+     "note": "0 以上"
+    }
+   ],
+   "relations": [],
+   "soft_delete": false,
+   "timestamps": true,
+   "tenant_field": null,
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "none",
+    "column": null,
+    "fk_table": null
+   },
+   "access_control_policies": [
+    {
+     "name": "knowledge_limits_all_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "true",
+     "rationale": "製品共通の必ず守るの上限（会社 30・グループ 20・自分 10）。どの会社の人にも同じものを見せる。書くのは運営の migration だけ",
+     "source": [
+      "D-152.16"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-685・D-152.16）。マスタ（製品共通の設定・会社の列を持たない）。**必ず守るの上限（会社 30・グループ 20〔グループごと〕・自分 10〔本人ごと〕）。アプリの役は読むだけで、運営が行を直して変える",
+   "status": "decided",
+   "decided_at": "2026-11-24",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-152.16"
+   ]
+  },
+  {
+   "id": "E-150",
+   "name": "knowledge_breaches",
+   "table_name": "knowledge_breaches",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "ticket_id",
+     "note": null
+    },
+    {
+     "name": "page_id",
+     "note": "破られた必ず守るのページ"
+    },
+    {
+     "name": "test_spec_id",
+     "note": "その確認項目の行"
+    },
+    {
+     "name": "kind",
+     "note": "AI が終わりを知らせたのにチェックが無い・AI が付けたチェックを人が外した・AI が自分で直したと知らせた"
+    }
+   ],
+   "relations": [
+    {
+     "from": "tickets",
+     "label": "破られた決まり"
+    },
+    {
+     "from": "knowledge_pages",
+     "label": "破られた数"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "knowledge_breaches_read",
+     "operation": "select",
+     "role": "authenticated",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)",
+     "rationale": "そのページを書ける人だけ（管理者は会社の棚・マネージャーは自分のグループ・本人は自分の棚）。書くのは app.knowledge_record_breach・app.knowledge_breach_scan と引き金だけ",
+     "source": [
+      "D-152.24"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-700・D-152.24）。**破られた数。同じチケット・ページ・出来事は 1 行だけ。追記だけで、アプリの役は読むだけ（書くのは DB の関数 `app.knowledge_record_breach`・`app.knowledge_breach_scan` と引き金だけ）。読めるのはそのページを書ける人",
+   "status": "decided",
+   "decided_at": "2026-11-24",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-152.24"
    ]
   },
   {
