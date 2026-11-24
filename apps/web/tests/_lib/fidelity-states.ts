@@ -6,6 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
+import { shellData } from "../k/shell-answer";
 import { TICKET, executedBand, jst, mockApi, qrow, type Band } from "../features/F5/approve-complete.harness";
 import { mockCreate } from "../k/create-mock";
 
@@ -51,7 +52,39 @@ async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promi
         scope_id: null,
         workspace_name: "ENGINE BASE",
       });
-    else if (p === "/api/v1/scopes")
+    else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）：キャンバス Main と同じ人・会社・承認待ち・グループの件数 18／42／9（営業だけ書ける）・PC は一覧の live から
+      const devs = (o.devices ?? [{ state: "live" }]) as { state?: string }[];
+      r = ok(
+        shellData({
+          approvals,
+          pcConnected: devs.some((d) => d.state === "live"),
+          groups: [
+            {
+              id: "22222222-0000-4000-8000-000000000001",
+              name: "営業",
+              ticket_prefix: "EG",
+              writable: true,
+              open_count: 18,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000002",
+              name: "受託開発",
+              ticket_prefix: "JD",
+              writable: false,
+              open_count: 42,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000003",
+              name: "経理",
+              ticket_prefix: "KR",
+              writable: false,
+              open_count: 9,
+            },
+          ],
+        }),
+      );
+    } else if (p === "/api/v1/scopes")
       r = ok(
         [
           { id: "22222222-0000-4000-8000-000000000001", name: "営業", ticket_prefix: "EG", tenant_id: WS },

@@ -1558,6 +1558,14 @@
   },
   {
    "paths": [
+    "scripts/ci/perf_budget.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k466-shell-badges.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/search.ts",
     "apps/api/src/features/F7/search/**"
    ],
@@ -1944,6 +1952,7 @@
   "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/notify.harness.ts": "入っている葉の hooks のファイル（notifications-*.ts・shell.ts）を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-461",
   "apps/api/test/features/F7/notifications-list.test.ts": "本線の migration（packages/db/migrations/*.sql）と画面の道（apps/web/app の page.tsx）を読んで、種類の表と行き先を照らす（K461-API-015・016）。読む物は apps/web/app と packages/db/migrations の変更で、試験の対象は同じ試験",
+  "apps/web/tests/k/k466-shell-badges.spec.ts": "外枠の読み方 apps/web/features/F4/create-ticket/ticket-shell.tsx・ベルの数 apps/web/components/k/shell.tsx・お知らせの置き場の包み apps/web/features/F1/security/security-screen.tsx・速さの台帳 scripts/ci/perf_budget.json を読む（K-466）",
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
   "apps/api/test/features/F7/saved-views.harness.ts": "この段の hooks のファイル apps/api/src/hooks/saved-views.ts と saved-views-edit.ts（K-476）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-475）",
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",

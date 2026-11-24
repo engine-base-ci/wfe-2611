@@ -525,7 +525,7 @@ test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：
   expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
 });
 
-test("K251-UI-027 自分に関わるもの（キャンバス Main）の右の列：「自分の承認を待っているもの」は承認待ちの口の行（題名・番号）・「高本のAI のいま」と「最近の知らせ」は箱と見出しだけで中身は空・「すべて」「分身の部屋へ」はグレー", async ({
+test("K251-UI-027 自分に関わるもの（キャンバス Main）の右の列：「自分の承認を待っているもの」は承認待ちの口の行（題名・番号）・「高本のAI のいま」と「最近のお知らせ」は箱と見出しだけで中身は空・「すべて」「分身の部屋へ」はグレー", async ({
   page,
 }) => {
   await mockList(page, {
@@ -544,7 +544,7 @@ test("K251-UI-027 自分に関わるもの（キャンバス Main）の右の列
   const ap = side.getByRole("region", { name: "自分の承認を待っているもの" });
   await expect(ap).toContainText("EG-128");
   await expect(ap).toContainText("セイコー様へ請求書を送る");
-  for (const name of ["高本のAI のいま", "最近の知らせ"]) {
+  for (const name of ["高本のAI のいま", "最近のお知らせ"]) {
     const box = side.getByRole("region", { name });
     await expect(box.getByRole("heading", { name: new RegExp(name) })).toBeVisible();
     const rest = (await box.innerText()).replace(name, "").replace("分身の部屋へ", "").trim();
@@ -849,7 +849,7 @@ test("K251-UI-040 一覧（?view=all）の表示設定の箱：名前は「一�
     await expect(box.getByRole("group", { name: title }), title).toHaveCount(0);
 });
 
-test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ぶのは 1 回だけ（自分に関わるものも 1 回：外枠の数と右の列が同じ問い合わせを分け合う・K-235）", async ({
+test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ばない（0 回）。自分に関わるものは右の列の 1 回だけ（外枠は getShell の数を使い、承認待ちの口を読まない・K-466）", async ({
   page,
 }) => {
   const count = async (path: string) => {
@@ -871,8 +871,8 @@ test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ち�
   };
   const mine = await count("/tickets");
   const all = await count("/tickets?view=all");
-  expect(all).toBe(1);
-  expect(mine).toBe(all);
+  expect(all).toBe(0);
+  expect(mine).toBe(1);
 });
 
 test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べ、どれもグレーで押せない・口を呼ばない・箱に影がある（D-145.9）", async ({
@@ -892,7 +892,7 @@ test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバ�
     ["上の数字", ["期限切れ", "今日まで", "自分が承認", "AI が動いている", "今週まで"]],
     [
       "右に出すもの",
-      ["自分の承認を待っているもの", "高本のAI のいま", "最近の知らせ", "自分が担当・承認するものの動き"],
+      ["自分の承認を待っているもの", "高本のAI のいま", "最近のお知らせ", "自分が担当・承認するものの動き"],
     ],
     ["表の分け方", ["期限", "グループ", "状態"]],
     ["入れるもの", ["担当しているもの", "承認するもの・渡されたもの", "自分が担当・承認するもの"]],
