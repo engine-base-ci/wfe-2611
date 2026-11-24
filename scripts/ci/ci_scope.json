@@ -2098,6 +2098,16 @@
   },
   {
    "paths": [
+    "apps/web/features/F9/settings/**",
+    "apps/web/app/(work)/workspace/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k707-settings-kinds.spec.ts",
+    "apps/web/test/k707-settings-kinds-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -2301,6 +2311,8 @@
   "apps/web/tests/k/k672-f9-parts-3.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f9/（ticket-mocks.tsx・ws-mocks.tsx・render.tsx）・F9 の部品 apps/web/features/F9/**（.ts・.tsx・.css）と apps/web/app・apps/web/components を字で読み、scripts/ci/design_gate.py（正本 04_design/DESIGN-kaname.md・apps/web/styles/k-tokens.css・design-gate.json）を子プロセスで流す。検査の台本と正本は data_links で結ぶ（apps/web/** は jobs.web.paths に在る）・K-672",
   "apps/api/test/features/F9/settings.harness.ts": "葉の hooks のファイルを leafHooks（F3/leaf-hooks.ts）の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-704",
   "apps/api/test/features/contract/k144.d/K-704.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-704",
+  "apps/web/tests/k/settings-mock.ts": "文言の正本 07_qa/test-specs/errors.json を読む（期待の字を実装からでなく正本から引く）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-707",
+  "apps/web/tests/k/f9-ws-match.ts": "比べ方の部品 scripts/ci/fidelity_compare.mjs を読み、モックの頁（/dev/mock/f9/set-*）を開く。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-707",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {
