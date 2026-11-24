@@ -80,7 +80,7 @@ counters:
     type: json_array_length
     file: 05_flow/flow.json
     json_path: $.walking_skeleton
-  expected_value: 14
+  expected_value: 13
   mirrors:
   - file: 05_flow/使ってもらい方.md
     regex: 最初の一周 (\d+) 手

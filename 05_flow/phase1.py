@@ -240,7 +240,13 @@ PRODUCT_STATES = [
  ("PS3", "PC が閉じている ── データは見られる。AI の仕事は実行待ち（承認から 24 時間を過ぎたら実行の前に聞き直す）", "A57", ["data", "stopped", "app"], ["D-127.7", "D-127.9"]),
 ]
 
-SKELETON = ["A01", "A02", "A96", "A97", "A09", "A10", "A99", "A101", "A102", "A130", "A104", "A15", "A53", "A106"]
+SKELETON = ["A01", "A02", "A96", "A97", "A09", "A10", "A99", "A101", "A102", "A104", "A15", "A53", "A106"]
+
+# 第1フェーズの行為の表（ACTS）に書いたが、後の決めで後のフェーズへ送った行為（行為と裏側の表は残す・release だけ v2）。
+#   A130 業務の型を選ぶ：業務の型は物として無くした（D-150.60）。口 listWorkTypeCandidates を外したので第1フェーズの口は無い（K-582）。扱いは段 10
+SENT_LATER = {
+ "A130": ("D-150.60", "D-150.60 業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。業務の型を選ぶ口は外した（K-582）。扱いは段 10 が決める。後のフェーズ"),
+}
 
 # ------------------------------------------------------------ 導線（D-127.10・D-127.11）
 # 絵の名前はキャンバス（Main・MobileList）の絵に合わせる（K-138・レビューの指摘 4）。外枠はキャンバスの線をそのまま描く
@@ -342,17 +348,23 @@ def apply(G):
     # 行為
     old = {a[0]: a for _, rows in G["BACKBONE"] for a in rows}
     new_ids = set()
-    backbone, milestone = [], {}
+    backbone, milestone, sent = [], {}, []
     for ph, rows in ACTS:
         out = []
         for (i, act, roles, jobs, freq, src, scr, human, auto, back, chk, ms) in rows:
             prev = old[i][6] if i in old else []            # 今の行為の根拠は残す
             prev_bp = G["BLUEPRINT"][i][5] if i in G["BLUEPRINT"] else []
-            out.append((i, act, roles, jobs, freq, "v1", src + [P1] + [x for x in prev if x not in src]))
             G["BLUEPRINT"][i] = (human, scr, auto, back, chk, src + [x for x in prev_bp if x not in src])
-            milestone[i] = ms; new_ids.add(i)
+            new_ids.add(i)
+            if i in SENT_LATER:   # 後のフェーズへ送った行為（K-582）。後のフェーズの見出しに並べ、理由を DEFERRED に残す（G17）
+                why_id, why = SENT_LATER[i]
+                sent.append((i, act, roles, jobs, freq, "v2", src + [why_id] + [x for x in prev if x not in src]))
+                G["DEFERRED"][i] = why
+                continue
+            out.append((i, act, roles, jobs, freq, "v1", src + [P1] + [x for x in prev if x not in src]))
+            milestone[i] = ms
         backbone.append((ph, out))
-    later = []
+    later = list(sent)
     for i, a in old.items():
         if i in new_ids: continue
         later.append((i, a[1], a[2], a[3], a[4], "v2", a[6]))
