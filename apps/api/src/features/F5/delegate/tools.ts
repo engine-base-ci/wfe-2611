@@ -1,15 +1,18 @@
 // AI に任せる（K-62）の道具の口 callKanameTool（POST /api/v1/bridge/jobs/:id/tools/:name）。前の道すじ /api/auth-ext/bridge/tool（agent-tools.ts）を移した。
 //   道具の鍵（take で渡す・DB にはハッシュだけ）と PC の印の両方が要る。その仕事を受け取った PC から・その仕事の間だけ・押した人の会社と権限の中だけ（D-110）。
 //   道具は仕事の種類で分ける：チケットの仕事は ticket_read と spec_check（K-736）だけ・会話の仕事は会話の道具（agent-tools.ts の TOOLS）だけ（K62-API-051）。
+//   会話の仕事はさらに会話の種類で分ける：作る画面の会話（talk_kind draft）の仕事は draft_propose（K-775）だけ。
 //   書く・読むのは関門 C2 の関数（app.bridge_tool_job・app.ticket_tool_read・TOOLS の関数）。証跡は関数の中で残す
 import type pg from "pg";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { TOOLS, hashToolToken } from "../../../auth/agent-tools.js";
 import { rawBody } from "./bridge.js";
 import { parseSpecCheckInput, runSpecCheck } from "./spec-check.js";
+import { parseDraftProposeInput, runDraftPropose } from "../talk/draft-propose.js";
 
 export const TICKET_TOOLS = ["ticket_read", "spec_check"] as const;
-const ALL_TOOLS = new Set<string>([...TICKET_TOOLS, ...Object.keys(TOOLS)]);
+export const DRAFT_TOOLS = ["draft_propose"] as const;
+const ALL_TOOLS = new Set<string>([...TICKET_TOOLS, ...DRAFT_TOOLS, ...Object.keys(TOOLS)]);
 const TOKEN_HEADER = "x-kaname-tool-token";
 
 const forbidden = (message: string): HookReply => ({
@@ -25,12 +28,15 @@ interface ToolJob {
   ticket_id: string | null;
   kind: string;
   taken_session_id: string | null;
+  /** 会話の種類（clone・ticket・draft）。会話の無い仕事は null */
+  talk_kind?: string | null;
 }
 
 /** その仕事の種類で呼べる道具 */
-export function toolsFor(job: Pick<ToolJob, "kind" | "conversation_id">): readonly string[] {
+export function toolsFor(job: Pick<ToolJob, "kind" | "conversation_id" | "talk_kind">): readonly string[] {
   if (job.kind === "ticket") return TICKET_TOOLS;
-  return job.conversation_id ? Object.keys(TOOLS) : [];
+  if (!job.conversation_id) return [];
+  return job.talk_kind === "draft" ? DRAFT_TOOLS : Object.keys(TOOLS);
 }
 
 export function toolHooks(pool: pg.Pool): Record<string, Hook> {
@@ -53,7 +59,7 @@ export function toolHooks(pool: pg.Pool): Record<string, Hook> {
         if (token.length < 20) return forbidden("この道具の鍵は使えません");
         const job = (
           await pool.query<ToolJob>(
-            "select job_id, member_id, tenant_id, conversation_id, ticket_id, kind, taken_session_id from app.bridge_tool_job($1)",
+            "select job_id, member_id, tenant_id, conversation_id, ticket_id, kind, taken_session_id, talk_kind from app.bridge_tool_job($1)",
             [hashToolToken(token)],
           )
         ).rows[0];
@@ -79,6 +85,12 @@ export function toolHooks(pool: pg.Pool): Record<string, Hook> {
           const parsed = parseSpecCheckInput(input);
           if ("status" in parsed) return parsed;
           return runSpecCheck(pool, job.job_id, hashToolToken(token), sid, parsed);
+        }
+        if (name === "draft_propose") {
+          // AI が作る画面の会話に案を付ける（2 層目は DB の入口が鍵・PC・会話の種類をもう一度見る・K-775）
+          const parsed = parseDraftProposeInput(input);
+          if ("status" in parsed) return parsed;
+          return runDraftPropose(pool, job.job_id, hashToolToken(token), sid, parsed);
         }
         const v = (await TOOLS[name]!(pool, job.member_id, job.job_id, input)) as { error?: string } | null;
         if (v && typeof v === "object" && "error" in v && v.error)

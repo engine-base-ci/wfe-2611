@@ -94,7 +94,7 @@ PATH_PATTERNS: dict[tuple[str, str], str] = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（それ以外の英小文字だけの名前は 422）・202〜204（ほかは目録の名前か 404）
     ("downloadBridgeRelease", "name"): r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$",
     # apps/api/src/features/F5/delegate/tools.ts:40（ticket_read と会話の道具 8 つ以外は 422・K-62）
-    ("callKanameTool", "name"): r"^(?:ticket_read|spec_check|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$",
+    ("callKanameTool", "name"): r"^(?:ticket_read|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$",
 }
 
 # 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。

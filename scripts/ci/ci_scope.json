@@ -2336,6 +2336,7 @@
   "apps/api/test/features/contract/k144.d/K-757.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-758.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-774.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/draft-propose.test.ts": "tools.ts（apps/api/src/features/F5/delegate/）を動的 import で読み toolsFor を見る（K775-API-021）。会話を読む口の hooks のファイル talk-read.ts を動的 import で足す（K775-API-018）・K-775",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {

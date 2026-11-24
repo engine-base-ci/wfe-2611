@@ -157,7 +157,8 @@
     "E-FLD-004",
     "E-CONF-020",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
@@ -952,7 +953,8 @@
     "E-TALK-011",
     "E-TALK-012",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
@@ -2047,7 +2049,8 @@
     "E-FLD-004",
     "E-CONF-020",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C1",
@@ -2606,7 +2609,8 @@
     "E-TALK-011",
     "E-TALK-012",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C1",
@@ -3981,7 +3985,8 @@
     "E-FLD-004",
     "E-CONF-020",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
@@ -5705,7 +5710,8 @@
     "E-TALK-011",
     "E-TALK-012",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
@@ -8007,7 +8013,8 @@
     "E-FLD-004",
     "E-CONF-020",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
@@ -8434,7 +8441,8 @@
     "E-FLD-004",
     "E-CONF-020",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2"
@@ -8797,7 +8805,8 @@
     "E-TALK-011",
     "E-TALK-012",
     "E-TALK-060",
-    "E-TALK-061"
+    "E-TALK-061",
+    "E-TALK-070"
    ],
    "policies": [
     "C2",
