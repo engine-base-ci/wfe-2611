@@ -20129,6 +20129,80 @@
    "file": "11_tickets/K-393.md"
   },
   {
+   "id": "K-394",
+   "title": "やり取りの書き込みを直す（その場で直す・直した印・新しく @ した人）・消す（確かめの小窓・消した跡の 1 行・マネージャーが人の物を消す）・☆（見ました・大事・数）。「…」はメニューの型（K-66 の葉・S7-W3）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-357（行の「…」から上書き・消す・確かめ：29 行・見込み 1 時間）と K-369 のメニューの型から引いた：行の操作の入れ物 message-menu.tsx（「…」の出し分け・直す・消す・☆）20 分・直す器と消す器と ☆ の器 use-message.ts 20 分・直す欄の @（K-393 の use-mention.ts を使う）5 分・失敗と二度押し 10 分・見た目の突き合わせ 5 分。部品 views.tsx の口は K-392 が先に足す（この葉は views.tsx を変えない）。試験 16 行は切る段で書いた",
+   "decisions": [
+    "D-128.45",
+    "D-125.131",
+    "D-128.81",
+    "D-128.96",
+    "D-130.1",
+    "D-145.9",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。直す・消す・☆ を書くのは口の葉 K-386（updateTicketMessage・deleteTicketMessage・starTicketMessage・関門 C2 と、新しく @ した人への受け箱の行 C6）。画面は契約の口を呼ぶだけで、外には何も出さない",
+   "tests": [
+    "apps/web/tests/k/k394-thread-edit.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-393",
+    "K-386"
+   ],
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "talk-edit",
+    "talk-delete"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/thread/message-menu.tsx",
+    "apps/web/features/F6/thread/use-message.ts",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りの書き込みを、書いた本人が **直す**・**消す**、マネージャーが人の書き込みを **消す**、だれでも **☆** を付け外しできるようにする（行為 A107）。\n\n- 直す（⑩）：いつでも直せる。直した書き込みに「直した 11/01 10:25」。前の文は残さない。直して新しく @ した人には知らせる（知らせは口の側）\n- 消す（⑪）：確かめの小窓を通す。消すと「高本 が書き込みを消しました」の 1 行だけが残り、本文は誰にも見えない・戻せない。マネージャーが人の物を消すと「マネージャーの 佐藤 が 鈴木 の書き込みを消しました」。決定の元が消えても決定は残る（決定の側・K-397・K-398）\n- ☆（⑫）：「見ました・大事」。押した人の数（☆ 2）。誰にも知らせない。☆ の絞り込みは作らない",
+    "完了の条件": "- [ ] 下の表の行（K394-UI-001〜016）が緑：`apps/web/tests/k/k394-thread-edit.spec.ts`（共通の道具 `apps/web/tests/k/thread-mock.ts`・K-392 が持つ）\n- [ ] 見た目の突き合わせ（モックの画面と本番の画面の写しを同じ幅で比べる・K394-UI-001）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD\n\n- 正の絵はモック `/dev/mock/f6/talk-edit`（自分の書き込みの「…」を開いた形・直した印・その場で直す）・`talk-delete`（消す確かめの小窓と消した跡の 1 行）。部品は `features/F6/thread/views.tsx` の Post（menuSlot・onStar・starBusy・starred）・EditingPost・DeleteMessageConfirm・Line（値と押す関数の口は K-392 が足す）。見た目の突き合わせは共通の道具 `stage2-match.ts` の matchMock（base /dev/mock/f6）で、メニューの箱・直す欄のボタン・小窓の役（`thread-mock.ts` の EDIT_PAIRS）を比べる\n- 「…」はメニューの型 `components/k/menu.tsx`（K-369）。箱が詳細の上に貼り付く帯やパネルの下に潜らないのは、置き場に重なりの順を持たせる K-381（K-382 の前・この葉は K-382 を通して入っている）\n- 「…」の出し分けは答えの can_edit・can_delete（K-383 が見ている人ごとに返す）：両方 → 直す・消す…（自分の書き込み）／消すだけ → 消す…（マネージャーが人の書き込み）／どちらも無い → 「…」を出さない。仕組みの行・変更の 1 行・AI の実行・消した跡には出さない\n- 直すのはその場（書き込みの箱が直す欄に替わる）。欄には今の本文。やめる・Esc は口を呼ばずに元の形へ（**Esc は仮**）。空白だけなら「直す」を押せない（**仮**・K-393 と同じ）。直す欄でも @ の候補（K-393 の use-mention.ts・そのチケットを見られる人だけ・自分は出さない）。候補の元は MessageMenu が受ける `people`（K-392 が panel.tsx から meta.people を渡す・この葉は panel.tsx を変えない）。送るのは本文と @ の人だけ（字に残っている人・前から @ していた人も字が残っていれば入れる）\n- 直した後：答えの 1 件（K-386 の data・読む口と同じ形）で一覧のその行を替える（K-392 の replaceItem）。読み直さない\n- 消す：確かめの小窓（㉒：題「この書き込みを消しますか？」・本文「消すと元に戻せません。「〈名前〉 が書き込みを消しました」の 1 行が残ります」・本文の引用・ボタン「やめる」「消す」）。マネージャーが人の物を消すときの本文は「消すと元に戻せません。「マネージャーの 〈自分〉 が 〈書いた人〉 の書き込みを消しました」の 1 行が残ります」（**仮**・㉒ の形に合わせた）。〈名前〉は呼ばれ方（口が消した跡に書く字と同じ）：自分の書き込みを消すときは書き込みの actor の `call_name ?? display_name`、マネージャーが消すときの〈自分〉は meta.people の自分の行（`member_id` が自分）の `call_name ?? display_name`、〈書いた人〉は書き込みの actor の `call_name ?? display_name`。`ticket.me`（/me の表示名＝本物では正式な名前「高本 聖斗」）は使わない（試験の土台の /me は「高本」なので試験は緑のまま、本番だけ小窓と跡の字が食い違うため）。やめるは口を呼ばず「…」に焦点を戻す。消すと答えの 1 件（消した跡）で一覧のその行を替える\n- ☆：押すと答えを待たずに押した形と数を替え（楽観の更新）、答えの数で直す。答えを待つ間は押せない（続けて押しても口は 1 回）。失敗したら元に戻し、パネルに知らせ（正本の文）\n- 失敗の文：直す・消すの網の切れ・5xx（コードが正本に無い）は直すでは部品の書く欄と同じ字「送れませんでした。もう一度お試しください（書いた字は残っています）」・消すと ☆ は errorText(errorCodeOf(…))（503 は E-PAGE-004 など）。正本の番号が返ればその文（404 E-PAGE-001・403 E-PAGE-002）。どれも直した字・書き込みは残る。401 は前からの共通の扱い\n- 新しく @ した人への知らせ・☆ で知らせない・消した本文を誰にも返さない・マネージャーの判定は口の側（K-386）。画面は答えの can_* と答えの形を出すだけ\n- 区画のファイル message-menu.tsx には fetch・lib/api・useQuery・useMutation の字を書かない（K-382 の K382-SL-001）。口は use-message.ts に置く",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/thread/views.tsx` の Post・EditingPost・DeleteMessageConfirm（口は K-392 が足す） | 値と押す関数を渡す |\n| 自分の member_id | 詳細と同じ /me の問い合わせ（react-query の同じ鍵）から読む。口は増やさない（SlotTicket.me は表示名だけのため） |\n| 行の操作の入れ物 | `features/F6/thread/message-menu.tsx` の `MessageMenu`（K-382 が置き K-392 が「1 つの書き込みを描く入れ物」に広げる・panel.tsx が書き込みごとに使う） | この葉が中身を作る（名前は K-382 のまま） |\n| メニューの型 | `components/k/menu.tsx`（Menu・MenuTrigger・MenuPopup・MenuItem・K-369／置き場の順 K-381） | 「…」 |\n| 一覧の行を替える | `features/F6/thread/use-timeline.ts` の replaceItem・setStar（K-392） | 直した・消した・☆ の答えで替える |\n| @ の候補 | `features/F6/thread/use-mention.ts`・`mention.ts`（K-393） | 直す欄 |\n| 口を呼ぶ | `lib/api/call.ts` の call | updateTicketMessage・deleteTicketMessage・starTicketMessage |\n| 文 | `components/k/error-of.ts`・`components/k` の useNotify | 失敗の知らせ |\n| 探したが無かった物 | 直す・消す・☆ の器 | `use-message.ts` を作る |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 直す・消す・☆ の器 | `features/F6/thread/use-message.ts`：`edit(id, body, mentionIds)` → `call(\"updateTicketMessage\", { params: { id }, body: { body, mention_member_ids } })`・`remove(id)` → `call(\"deleteTicketMessage\", { params: { id } })`・`star(id)` → `call(\"starTicketMessage\", { params: { id } })`。どれも送っている間は同じ行の 2 本目を送らない。成功で replaceItem／setStar、失敗で文を返す（☆ は楽観の更新を元に戻す） |\n| 行の操作の入れ物 | `features/F6/thread/message-menu.tsx` の `MessageMenu({ ticket, item, post, people, onQuote, decideSlot })`（名前は K-382・1 つの書き込みを描く入れ物の形は K-392 が広げ、K-392 では Post をそのまま返す。受ける物の名前は K-392 の md のまま：決定にするは置き場 decideSlot で受けて Post にそのまま渡す・people は meta.people）：行ごとに「…」（menuSlot）・☆（onStar・starBusy・starred）を作り、直している行を持つ（直している行は EditingPost で出す・直す欄に焦点）・消す確かめ（DeleteMessageConfirm・残る 1 行の字は呼ばれ方で組む：自分の物は書き込みの actor の呼ばれ方、マネージャーが消すときの自分の名前は people の自分の行の呼ばれ方・上の「前提と制約」）。直す欄の @ の候補は people（自分を除く）。自分の書き込みかは答えの can_edit で決まる（ticket.me は名前に使わない）。一覧の行は K-392 の replaceItem・setStar（react-query の同じ鍵）で替える |\n| 親 | 11_tickets/K-66.md から apis の 3 本・この葉の試験の行を外す（overlap_ok） |",
+    "口の入力と答え（正は口の葉 K-386）": "| 口 | 入力 | 答え |\n|---|---|---|\n| updateTicketMessage `PATCH /api/v1/ticket_messages/:id` | `{ body, mention_member_ids }` | 200 `{ data: <読む口と同じ 1 件・edited_at つき> }` |\n| deleteTicketMessage `DELETE /api/v1/ticket_messages/:id` | なし | 200 `{ data: <消した跡の 1 件（kind deleted・deleted: {by, author, by_manager}）> }` |\n| starTicketMessage `POST /api/v1/ticket_messages/:id/star` | なし（押すたびに付く・外れる） | 200 `{ data: { id, stars, starred } }`（数だけ・1 件の形でない） |\n\n名前と形は K-386 の md と合わせた（切る段で読み合わせ済み）。",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-386）。呼んだ口が失敗したときの画面：\n\n- S1: 直す口を呼ぶ。失敗したら直す欄の上に知らせ・直した字は残り欄は開いたまま（K394-UI-006）。二度押しは 1 回（K394-UI-008）\n- S2: 消す口を呼ぶ。失敗したら小窓の中に知らせ・書き込みは残る（K394-UI-011）。二度押しは 1 回（K394-UI-012）\n- S3: ☆ の口を呼ぶ。失敗したら押した形と数を元に戻し、パネルに知らせ（K394-UI-015）",
+    "依存の理由": "- K-393: 要る — 直す欄の @ の候補に K-393 の use-mention.ts・mention.ts を使う（同じ物を 2 つ作らない）。K-392（部品の口・replaceItem・setStar・試験の道具）と K-382（message-menu.tsx の「まだ」の形・メニューの型の置き場の順 K-381）も K-393 を通して入っている。**元の案（K-392 と K-386 に依存）から替えた**：K-392 に依存するだけだと直す欄の @ を作るために K-393 の部品を待つか作り直すことになる（鎖の長さは K-396 と同じ段なので延びない）\n- K-386: 要る — 契約の口 3 本の入力と答え（上の表）を作る葉。画面は call の型で口に合わせる\n- （依存にしない）K-396：この葉は composer.tsx・composer-stage.tsx を触らず、K-396 は message-menu.tsx・use-message.ts を触らない。部品 views.tsx はどちらも変えない（K-392 が口を先に足す）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k394-thread-edit.spec.ts`（実 Chrome・詳細は前からの土台で開き、やり取りの口は共通の道具 thread-mock.ts で差し替える。準備はまだ無い口を使わず、書き込みは読む口の答えに置く。書く口の答えは hold() で止めて二度押しを確かめる。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（書き込み） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 自分の書き込み | 「…」 | 書いた本人 | 直す・消す… | このチケット | K394-UI-002・004・009 |\n| 人の書き込み | 「…」 | マネージャー（can_delete） | 消す…だけ | このチケット | K394-UI-002・010 |\n| 人の書き込み | — | 担当者・メンバー・閲覧のみ | 「…」を出さない | このチケット | K394-UI-002 |\n| どの書き込みでも | ☆ | 読める人 | 付け外し・数 | このチケット | K394-UI-013・014 |\n| もう消されていた | 直す・消す | 書いた本人 | 正本の文（404）・書き込みは残る | このチケット | K394-UI-006・011 |\n| 直せなくなった（権限） | 直す | 外されたメンバーなど | 正本の文（403） | このチケット | K394-UI-006 |\n| 仕組みの行・変更の 1 行・AI の実行・消した跡 | — | どれでも | 「…」も ☆ も出さない | K-392 | K392-UI-013・023 |\n| 決定の元の書き込みを消す | 消す | 書いた本人 | 決定は残り「元の書き込みは消されました」 | K-397・K-398 | K397・K398 の行 |\n| どれでも | どれでも | ログインが切れた | /login?next=… に移る（前からの共通の入り直し） | 前からの試験 | k226（RequireSession） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K394-UI-001 | 入口 | 幅 375・768・1440 × talk-edit・talk-delete | モックと本番で、「…」のメニューの箱と項目・直す欄のボタン・消す確かめの小窓（箱・題・引用・ボタン）の値が同じ（px ±2） |\n| K394-UI-002 | 守り | 自分の書き込み・マネージャーが見る人の書き込み・どちらでもない | 「直す」「消す…」／「消す…」だけ／「…」が無い |\n| K394-UI-003 | 入口 | キーボードと重なり | Enter で開く・項目の真ん中の一番上の要素は項目・↓ で移る・Esc で閉じて「…」に焦点が戻る |\n| K394-UI-004 | 入力 | 手順 S1：直す → やめる → 直す → 直す | 欄に今の本文・欄に焦点・やめるは口 0 回で元に戻る。直すで PATCH 1 回・体 {body: 新しい本文, mention_member_ids: []}・本文が替わり「直した 11/01 11:05」・読む口は 1 回のまま |\n| K394-UI-005 | 入力 | 直す欄で「@佐」→ Enter → 直す | 候補「佐藤 花子」・「確認してください @佐藤 」・mention_member_ids は [佐藤] |\n| K394-UI-006 | 失敗 | 手順 S1 の失敗：503・404・403 | 503 は「送れませんでした。もう一度お試しください（書いた字は残っています）」・404 は E-PAGE-001 の文・403 は E-PAGE-002 の文。直した字は残り欄は開いたまま |\n| K394-UI-007 | 入力 | 空白だけ・Esc | 「直す」は押せない・Esc で欄は閉じ本文は元のまま・口は 0 回 |\n| K394-UI-008 | 操作の揺れ | 手順 S1 の答えを止めて「直す」を 2 回 | 押せない形・口は 1 回・答えの後に本文が替わる |\n| K394-UI-009 | 入力 | 手順 S2：消す… → やめる → 消す… → 消す | 小窓「この書き込みを消しますか？」・本文「消すと元に戻せません。「高本 が書き込みを消しました」の 1 行が残ります」・本文の引用。やめるは口 0 回で「…」に焦点。消すで DELETE 1 回・「高本 が書き込みを消しました 11:09」の 1 行・書き込みの箱は 0・消した本文はパネルのどこにも無い |\n| K394-UI-010 | 守り | マネージャーが人の書き込みを消す | 小窓の本文に「「マネージャーの 高本 が 鈴木 の書き込みを消しました」の 1 行が残ります」・消した後の 1 行も同じ字（11:20） |\n| K394-UI-011 | 失敗 | 手順 S2 の失敗：503・404 | 小窓の中に知らせ（E-PAGE-004 の文・E-PAGE-001 の文）・書き込みは残る |\n| K394-UI-012 | 操作の揺れ | 手順 S2 の答えを止めて「消す」を 2 回 | 口は 1 回・答えの後に消した跡の 1 行 |\n| K394-UI-013 | 入力 | 手順 S3：☆ 1 → 押す → 答え（画面に着いて押せる形に戻るのを待つ）→ もう一度 | 答えを待たずに「☆ 2」押した形・POST 1 回。答えの後は押せる形（aria-disabled が無い）で「☆ 2」。もう一度押すと答え {stars 1, starred false} で「☆ 1」押していない形・口は 2 回（同じ id） |\n| K394-UI-014 | 操作の揺れ | 手順 S3 の答えを止めて続けて押す | ☆ は押せない形（aria-disabled）・口は 1 回・答えの後に押せる |\n| K394-UI-015 | 失敗 | 手順 S3 の失敗：503・網の切れ | 「☆ 1」押していない形に戻る・パネルに知らせ |\n| K394-UI-016 | 入力 | 幅 320・375・768・1024・1440 × 直す欄に長い字・消す確かめの小窓 | 横溢れ 0 |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: TP-CRUD-01 直せるのは書いた本人だけ（2 人で同じ書き込みを直さない）。同じ人が 2 つのタブで直したら後の方が残る（版を持たない・⑩「前の文は残さない」）・口の葉 K-386 |\n| TP-CRUD-02 消したものを古いリンクで | K394-UI-006・011（もう消されていた → 404 の正本の文） |\n| TP-CRUD-03 消す・戻す・子 | 戻せない（⑪）。消した跡の 1 行が残る（K394-UI-009）。決定の元の書き込みを消しても決定は残る（子の扱い・K-397・K-398 の行） |\n| TP-CRUD-04 2 回押し | K394-UI-008・012・014 |\n| TP-CRUD-05 保存の途中で失敗 | K394-UI-006・011・015（一覧は替えない・☆ は元に戻す） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: TP-CRUD-06 直す欄の字は端末に残さない（直すのは短い直し。書く欄の書きかけ K-393 とは別・**仮**）。セッション切れは前からの共通の扱い |",
+    "前からの試験を替えた所": "この葉の changes: は K-382 が置く message-menu.tsx（まだ無い）と新しいファイルだけで、切る段の検査（cut_check.py prior）が出す前からの試験は無い。書き込みの操作の字を見る前からの試験を検索で出した（段 7 の切る段の新しい試験を除く）。\n\n```search\ngit grep -ln 'この書き込みの操作\\|この書き込みを消しますか\\|書き込みを消しました' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K-382 の試験。この葉が直す message-menu.tsx の字を K382-SL-001 が読む（MessageMenu が在り、fetch・lib/api・useQuery・useMutation が無い）。名前を残し口は use-message.ts に置くので、行の期待は変わらない（K-382 が入った後は切る段の検査がこのファイルを出す）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 直す・消す・☆ の口 | — | 押したときに 1 本ずつ（読み直さない・答えで一覧の行を替える） |\n| 直列の段 | — | 1 |\n| 同じ口の二重 | — | 無い（K394-UI-008・012・014） |\n| 新しい住所 | — | 増えない |\n| 認証の要る答えの Cache-Control | — | 口の葉が持つ（private, no-store・K-386） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 口の入力と答え（上の表）は K-386 の md に合わせる（切る段の仮。違えば試験 k394 と thread-mock.ts の差し替えの答えをその名前に直す）\n- 「…」の出し分けに使う can_edit・can_delete は K-383 の答えに頼んだ物（K-392 の md の「画面が読む値」）\n- 行の操作の入れ物 `thread/message-menu.tsx` の `MessageMenu`（名前は K-382・受ける物 `{ ticket, item, post, people, onQuote, decideSlot }` は K-392 が広げる・K-392 の md と同じ名前）\n- 部品 views.tsx の口（Post の menuSlot・onStar・starBusy・starred・EditingPost・DeleteMessageConfirm）は K-392 が足す。この葉は views.tsx を変えない",
+    "代表に聞くこと（仮で書いた物）": "- マネージャーが人の書き込みを消すときの確かめの本文：「消すと元に戻せません。「マネージャーの 〈自分〉 が 〈書いた人〉 の書き込みを消しました」の 1 行が残ります」でよいか（㉒ の本人の形に合わせた）\n- 直す欄の Esc は「やめる」と同じ（勧め）・直す欄の字は端末に残さない（勧め：短い直しなので残さない）",
+    "成果物": "- 行の操作の入れ物 message-menu.tsx の中身・直す・消す・☆ の器 use-message.ts\n- 画面の試験 `apps/web/tests/k/k394-thread-edit.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=f5cd1647389f）：⑩ いつでも直せる・「直した 11/01 10:25」の印・前の文は残さない・直して新しく @ した人には知らせる／⑪ 消すと 1 行だけ残る・本文は誰にも見えない・戻せない・マネージャーの形・決定は残る／⑫ ☆ は「見ました・大事」・数を出す・知らせない・絞り込みは作らない／㉒ 消す確かめと直した印の文はそのまま\n- 2026-11-20 切る段の決め：依存を K-392 から K-393 に替えた（直す欄の @ の候補に K-393 の部品を使う）\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す",
+    "リスクと懸念": "- 口の入力と答えが K-386 と食い違うと、作る段の型の検査で止まる（作る段の始めに K-386 の md を読み直す）\n- 「…」の箱の重なりの順は K-381 に頼る（K-381 が入っていないと K394-UI-003 が赤）",
+    "申し送り": "- K-397・K-398：決定の元の書き込みが消えたときの「元の書き込みは消されました」は決定の区画の行"
+   },
+   "file": "11_tickets/K-394.md"
+  },
+  {
    "id": "K-395",
    "title": "チケットの詳細で、頭の段の札から段を変える（未着手・作業中・保留・完了の小窓へ・開き直す）・保留の小窓と題名の下の保留の帯・右の属性の実績（人が使った時間）を入れる。閲覧のみと仕組みの段の間は変えられない形（K-66 の葉・S7-W4）",
    "kind": "タスク",
@@ -20288,6 +20362,92 @@
     "申し送り": "- K-399（通し）：書く欄で作業中にする → 保留にする → やり取りに一緒に残った変更が出る、を通しで見る"
    },
    "file": "11_tickets/K-396.md"
+  },
+  {
+   "id": "K-397",
+   "title": "チケットの詳細の本文の「決定ログ」の区画に決定の一覧を出す（作るときの字は上に残す・空・読めない）と、「決定を足す」小窓（決めた人・ひとこと・理由・AI の案の欄はグレー）を口につなぐ（K-66 の葉・S7-W6）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-356（部品に値と押す関数を渡す口を足して読む口につなぐ・29 行・見込み 1 時間）と K-372（小窓を書く口につなぐ・1 時間）から引いた：部品に押す関数と小窓の欄の値を受ける口を足す 10 分（views.tsx は形を変えない）・区画の入れ物（decisions/slot.tsx）と先読み（decisions/prefetch.ts）で読む口と並べ方・注の作り方 20 分・台帳 perf_budget.json の 1 行 3 分・足す小窓を書く口につなぎ、決めた人の候補を読む 15 分・見た目の突き合わせと幅 10 分・確かめ 5 分。行は 22",
+   "decisions": [
+    "D-125.40",
+    "D-125.63",
+    "D-128.30",
+    "D-128.28",
+    "D-130.1",
+    "D-130.4",
+    "D-145.9",
+    "D-128.58",
+    "D-128.96",
+    "D-136.2",
+    "D-128.125",
+    "D-127.8"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。決定を読む・足すのは口の葉 K-390（listTicketDecisions・createTicketDecision・関門 C2 と担当者・承認する人への知らせの受け箱 C6）、決めた人の候補は前からの listMembers。画面は契約の口を呼ぶだけで、外には何も出さない",
+   "tests": [
+    "apps/web/tests/k/k397-decisions.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/k/decisions-mock.ts"
+   ],
+   "depends_on": [
+    "K-382",
+    "K-390",
+    "K-392"
+   ],
+   "acts": [
+    "A108"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "dec-log",
+    "dec-empty",
+    "dec-add"
+   ],
+   "affects": [
+    "@kaname/web",
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/decisions/",
+    "apps/web/app/(dev)/dev/mock/f6/mocks.tsx",
+    "scripts/ci/perf_budget.json",
+    "11_tickets/K-66.md",
+    "apps/api/src/contract/op.ts",
+    "apps/web/components/k/select.tsx",
+    "apps/web/components/k/k.css"
+   ],
+   "flow": "決めたことと理由を、チケットの本文の決定ログに残す",
+   "sections": {
+    "目的": "チケットの詳細（`/tickets/[id]`・画面 tickets）の本文の「決定ログ」の区画を、決定を 1 件ずつ残せる部品にする（行為 A108・用事 J20「何をなぜ決めたかを遡りたい」）。今は作るときに書いた字が出るだけで、決定を足せない。\n\n- 区画の見出しは区画の名前（既定「決定ログ」）。生きている決定があれば「決定ログ（2）」\n- 作るときに書いた字は上に「作るときに書いた字：〈字〉」で残し、その下に決定の一覧（日付・決めた人・ひとこと・理由・元の書き込み）（代表の答え ⑳ a）\n- 一覧の並びは、生きている決定を新しい順 → 改められた決定 → 取り消した決定（取り消しは線を引いて下に・⑰ a）\n- 空「まだ決定はありません。決めたことと理由を残すと、あとから根拠として引けます」・読めない「決定を読み込めませんでした」と「もう一度読む」\n- 「＋ 決定を足す」小窓：決めたこと（必須・字数の上限なし・D-130.1）・決めた人（既定は本人・ほかのメンバーを選べる）・ひとこと・理由（⑱ a）。「どこまで効かせる」の欄は持たない（取引先を持たず選び肢が「このチケットだけ」1 つになったため外した・answer=4961f0280e9a・PM の決め 2026-11-23）。AI の案の欄はグレーで「AI の案は、自分の AI と話す画面ができてから使えます」（⑯ a・D-145.9）\n- 閲覧のみの人は一覧を読めるが、足せない（⑧ a「段や決定は変えられない」）\n\n正の絵はモック `/dev/mock/f6/<状態>`（本番と同じ部品 `features/F6/decisions/views.tsx`・K-382 が本線に入れる）の dec-log・dec-empty・dec-add。見た目はモックの画面と本番の画面の写しを同じ幅（375・768・1440）で比べる（共通の道具 `apps/web/tests/k/stage2-match.ts` の matchMock・base は /dev/mock/f6）。\n書き込みから決定にする・改める・取り消すは K-398、通しは K-399。",
+    "完了の条件": "- [ ] 下の表の行（K397-UI-001〜022）が緑：`apps/web/tests/k/k397-decisions.spec.ts`（口の差し替えと手順は共通の道具 `apps/web/tests/k/decisions-mock.ts`・この葉が持ち、K-398 も使う）\n- [ ] 前からの試験（下の「## 前からの試験を替えた所」・替えない）が替えずに緑\n- [ ] 見た目の検査（design_gate の D1〜D8・`--raw-lengths`）が緑。新しい生の値を画面に書かない\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD, LIST, XSS\n\n- 部品（views.tsx の DecisionLog・DecisionDialog・DecisionView）は K-382 が下絵のまま本線に入れる。この葉が部品に足すのは「押したときの関数・送っている間・小窓の欄の値と決めた人の候補を受ける口・もう一度読む」だけで、形・クラス・字は変えない（新しい口は全部あってもなくてもよい形にし、モックは変えずに今のまま描ける）。部品の中の見本の人（PEOPLE）は既定から外し、mocks.tsx が渡す形にする（モックの見た目は変えない。mocks.tsx は K-382 が運ぶ物で、この葉は K-382 に依存しているので取り合わない・changes: に入れた。dec-add・dec-from-message（by=\"suzuki\"）に見本の 3 人を渡す）\n- 値と口を結ぶのは区画の入れ物 `features/F6/decisions/slot.tsx` の `SectionSlot({ ticket, section, children })`（K-382 が「まだ」の形で置き、K-380 が本文の区画の 1 つずつに差し込んである。children は今の字の区画）。区画の鍵が decisions のときだけ決定ログの部品を描き、ほかの区画は children のまま。ticket は K-380 の `SlotTicket`（id・layout・detail）。この葉は slot.tsx の中身だけを作る。detail-slots.tsx・F4 の詳細のファイル・見た目の台帳は触らない（切り方.md 3 章）\n- 決定を足せるかは、決定の一覧の口の答えの meta.can_write（口の葉 K-390）で決める（getTicket を直す葉は K-387 の 1 本だけ・切り方.md 1 章の 4）\n- 一覧の右に開く詳細（ticket.layout が \"side\"）では SectionSlot は children（今の字の区画）のまま\n- 決めた人の候補は前からの口 listMembers を **scope_id を付けずに limit 200** で読む（同じ会社の今のメンバー・K-390 の決め「同じ会社の今のメンバーを選べる」・前からの作る画面 `features/F4/create-ticket/tickets-page.tsx` の `call(\"listMembers\", { query: { limit: 200 } })` と同じ読み方）。scope_id は所属のグループの一致で絞るので、上のグループのマネージャーなど、チケットのグループと所属が違う人が落ちる（まとめ役の決め）。小窓を初めて開いたときに 1 回だけ読み、閉じても残す。読めなければ本人だけを選べる（本人の名前は /me の表示名）。書く欄の @ の候補（K-393）は読む口の meta.people（そのチケットを見られる人）で、決めた人の候補とは元が違う（決めた人はチケットを見られない人でも選べる・K-390）\n- 一覧の右に開く詳細（layout=\"side\"・K-252）は変えない：本文の区画は今のまま字で出す（決定の一覧は出さない・口も呼ばない）\n- 種別に「決定ログ」の区画（鍵 decisions）が無いチケットでは、区画を足さない（今の詳細のまま）。仮（代表に聞くことに書いた）。**決定の一覧は、頁の形の詳細なら区画の有無に関わらず詳細と同時に先読みで 1 回読む**（区画の有無は詳細の答えで決まるので、答えを待ってから読むと直列の 2 段目になる・まとめ役の決め）。区画の無い種別では読んだ答えを描かない\n- **先読み**：K-380 が詳細の本体で呼ぶ `F6.usePrefetchDetail(id, enabled)`（enabled＝ログイン中・id が uuid・頁の形）の先の F6 の `prefetch.ts`（K-382 が持つ）が、`decisions/prefetch.ts` の `usePrefetchDecisions(id, enabled)` を呼ぶ。この葉はその中身だけを作る（F4 のファイル・detail-slots.tsx・F6 の prefetch.ts・thread/prefetch.ts は触らない）\n- 字は書いたとおり送る（前後の空白だけで空かを決め、削らない・切り捨てない・D-130.4）。画面では HTML を動かさず字のまま出す（TP-XSS-L01）\n- 知らせ（担当者と承認する人・⑲）とやり取りの 1 行は口の葉 K-390 がする。画面は足した後に決定の一覧を読み直すだけ（やり取りの読み直しは K-398 の書き込みから決定にする所）",
+    "画面が読む値・送る値（正は口の葉 K-390。2026-11-20 切る段で K-390 の md に合わせた）": "決定の一覧 `GET /api/v1/tickets/{id}/decisions` → `{ data: Decision[], meta: { can_write: boolean } }`（並びは口も同じ順で返す・K390-API-002）。Decision の 1 件（K-390 の 12 の鍵。状態の欄は無く、cancelled と superseded_by_id で決まる）：\n\n| 欄 | 形 | 画面の使い方 |\n|---|---|---|\n| id | uuid | 行の鍵・改める／取り消すの的（K-398） |\n| text・reason | string・string \\| null | 決めたこと・「理由：…」 |\n| decided_by | { id, display_name } \\| null | 決めた人（外したメンバーでも名前が出る・D-128.96） |\n| decided_note | string \\| null | 決めた人の横の「（先方と合意）」 |\n| decided_at | 時刻 | 日付「MM/DD」（日本時間）・並び |\n| source | { id, at, deleted } \\| null | 「元：やり取り MM/DD HH:MM →」（リンク #msg-<id>・at は元の書き込みの時刻を日本時間で）／deleted なら「元の書き込みは消されました」。at は K-390 が答えに足した（まとめ役が切る段でそろえた・K390-API-006） |\n| （状態） | cancelled があれば取り消した・superseded_by_id があれば改められた・どちらも無ければ生きている | 札「改められた」「取り消した」・並び |\n| superseded_by_id・revises_id | uuid \\| null | 「新しい決定：〈字〉 ↑」・「MM/DD の決定を改めた」と札「改めた」（同じ一覧の中で引く） |\n| cancelled | { at, by: { id, display_name }, reason } \\| null | 「取り消し MM/DD 〈呼ばれ方〉：〈理由〉」（呼ばれ方は表示名の最初の語・D-128.58） |\n\n決定を足す `POST /api/v1/tickets/{id}/decisions`：体 `{ text, reason, decided_by_member_id, decided_note }`（reason・decided_note は空なら null。promoted_to は送らない）。201 `{ decision, message_id }` → 決定の一覧を 1 回読み直す。断り（K-390）：422 E-VAL-042「決めたことを書いてください」（欄 text）／404 E-PAGE-001「決めた人は、この会社のメンバーから選んでください」（欄 decided_by_member_id・同じ会社の今のメンバーでない・drift 2026-11-20 16:51）（元の書き込みの 404 は K-398 の口の話）／403（書けない）／404（チケットが消された）／401。",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/decisions/views.tsx`（K-382） | 値と押す関数を渡す |\n| 小窓の型 | `components/k` の Dialog・Select・TextField・TextArea（K-350 の頭と足の固定の形） | 部品のまま |\n| 口を呼ぶ | `lib/api/call.ts` の call（\"listTicketDecisions\"・\"createTicketDecision\"・\"listMembers\"） | 読む・足す・候補 |\n| 口の断りの文 | `features/F5/approve-complete/message.ts` の messageOf | 知らせの文 |\n| 日付の書き方 | `features/F4/create-ticket/detail-head.tsx` の mmddTime・mmdd | 「MM/DD」「MM/DD HH:MM」 |\n| 問い合わせの器 | react-query（詳細と同じ QueryClient） | 決定の一覧の鍵 [\"f6\", \"decisions\", ticketId]。読み方の器 `decisionsQuery(id)`（鍵・queryFn・`staleTime: Infinity`・`retry: false`・`retryOnMount: false`）を use-decisions.ts に置き、prefetch.ts と区画の入れ物が同じ物を使う（先読みの答えを区画が付いたときに読み直さない・失敗の後に既定の読み直しをしない＝K397-UI-006・021 の口の数がぶれない。K-392 の timelineQuery と同じ決め） |\n| 先読みの入れ物 | `features/F6/prefetch.ts`（K-382）→ `features/F6/decisions/prefetch.ts`（K-382 が何もしない形で置く） | この葉が decisions/prefetch.ts の中身を作る |\n| 探したが無かった物 | 決定の一覧を並べて注を作る関数・区画の入れ物の中身 | `features/F6/decisions/to-view.ts`（純粋な関数：Decision[] → DecisionView[]）・`use-decisions.ts`（読む・足す）・slot.tsx の中身を作る |",
+    "依存の理由": "- K-382: 要る — 部品 views.tsx・モック（見た目の突き合わせの正）と、区画の入れ物 decisions/slot.tsx を本線に入れる葉。同じフォルダ features/F6/decisions/ を変える\n- K-390: 要る — 契約の口 listTicketDecisions・createTicketDecision の入力と答え（meta.can_write を含む）を決める葉。画面は call の型で口に合わせる。台帳 perf_budget.json の api に足す決定の一覧の行は、前からの試験 apps/api/test/k237_perf_budget.test.ts が本物の口で文の数を測る（口が要る）\n- K-392: 要る — 同じ台帳 `scripts/ci/perf_budget.json` の /tickets/:id を変える（K-392 がやり取りで 6 → 7、この葉が決定の一覧で 7 → 8）。前からの試験 k235-first-load.spec.ts・k237_perf_ledger_test.py の上限は K-392 がこの葉の分も含めて 8 にして運ぶ（同じ試験を 2 つの葉の版で持たない）ので、この葉は前からの試験を替えない。やり取りのファイルは触らない。元の書き込みへのリンクは `#msg-<id>` の住所を書くだけで、押した先（やり取りのタブを開いてその書き込みへ動く）は K-398 が確かめる\n- （依存にしない）K-387：getTicket を読まない（足せるかは決定の一覧の口の meta.can_write で決める）\n- （後に入る葉）K-398：同じフォルダ features/F6/decisions/ と共通の道具 decisions-mock.ts を使う（K-398 がこの葉に依存する）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 部品に押す口を足す | `features/F6/decisions/views.tsx`：DecisionLog に `label?`（区画の名前・既定「決定ログ」）・`onAdd?`・`onRetry?`。DecisionDialog に `people?: { value, label }[]`（既定は空・mocks.tsx が見本の 3 人を渡すように直す）・`peopleFailed?`・`onCancel?`・`onSubmit?(values)`・`busy?`・`errors`（全部の欄）。DecisionView の source に `href?`（あれば「元：〈字〉 →」をリンクに）・`sourceGone?`（「元の書き込みは消されました」）。形・クラス・字は変えない。取り消した決定の字の線は decisions.css の `.k-dec-item[data-status=\"cancelled\"] .k-dec-text`（正本のトークンで・在れば使う） |\n| 並べ方と注 | `features/F6/decisions/to-view.ts`（純粋な関数・時刻は日本時間）：status で 生きている → 改められた → 取り消した の順、その中は decided_at の新しい順。by は「MM/DD 〈表示名〉（〈ひとこと〉）」（ひとことが無ければ括弧なし・名前が無ければ日付だけ）。改められた決定の注は「新しい決定：〈改めた決定の字〉 ↑」、改めた決定の注は「MM/DD の決定を改めた」と札「改めた」、取り消した決定の注は「取り消し MM/DD 〈呼ばれ方〉：〈理由〉」 |\n| 先読み | `features/F6/decisions/prefetch.ts`（K-382 が何もしない形で置いた・この葉が中身）：`export function usePrefetchDecisions(id: string, enabled: boolean): void`。`useQueryClient()` と `useEffect(() => { if (enabled) void qc.prefetchQuery(decisionsQuery(id)); }, [qc, id, enabled])`。名前と引数は K-382 の置いた形のまま（K382-SL-001）。口を呼ぶのは use-decisions.ts の queryFn（call）だけ |\n| 区画の入れ物 | `features/F6/decisions/slot.tsx`（K-382 が置いた名前のまま中身を作る）：区画の字（sections の decisions の本文）と区画の名前を受け、決定の一覧を use-decisions.ts の器（`decisionsQuery(id)`）を呼んで読む（slot.tsx には useQuery・useMutation・`lib/api` の字を書かない。型も use-decisions.ts から読む。K382-SL-001 が見続けるため）（先読みと同じ鍵なので 2 回目を呼ばない）。読めなければ赤の箱と「もう一度読む」（refetch）。meta.can_write が true のときだけ「＋ 決定を足す」。区画の鍵が decisions でない区画・横の詳細は children のまま |\n| 台帳（速さ） | `scripts/ci/perf_budget.json` の screens の `/tickets/:id`：calls と marks に `GET /api/v1/tickets/:id/decisions` を足し、max_calls を 7 → 8（K-392 の後）。api に `{\"name\": \"決定の一覧\", \"method\": \"GET\", \"path\": \"/api/v1/tickets/:id/decisions\", \"max_statements\": 7, \"max_begins\": 1}` を足す（K-390 の速さの表：1 取引・関数 1 回。K-392 のやり取りの行と同じく、同じ形の実行の一覧 /runs と同じ上限・天井 15 と 2 の内・画面が呼ぶ口には api の上限が要る・K237-LG-003）。前からの試験 k237 の目標 8 と K235-UI-003 の 8 本以下は K-392 が運ぶ |\n| 1 要求 1 取引（作る段で足した・CI の赤 K237-API-001） | `apps/api/src/contract/op.ts` の ONE_TX_HOOKS に listTicketDecisions を足す（行の守りと本体の 2 取引・文 10 を、K-392 の listTicketTimeline と同じく 1 取引・文 7 以下に）。読む口は DB だけを読む（withTenant の 1 回） |\n| 選ぶ欄の印（作る段で足した・PM の画面の確かめ） | `components/k/select.tsx`・`k.css`：選んだ印 ✓ を選択肢の字に入れず、`.k-select-check::before`（代わりの字は空）で描く。モック dec-add の一覧は 4 件全部にした（2 件だと「10/20 の決定を改めた」の元が一覧に無く、口の答えから作れない形だった）。試験の dec-add の口の答えも同じ 4 件 |\n| 足す小窓 | `features/F6/decisions/use-decisions.ts`：小窓を初めて開いたときに listMembers（scope_id なし・limit 200）を 1 回。決めたことが空（前後の空白だけ）なら口を呼ばずに欄の下に「決めたことを書いてください」（口の葉 K-390 が足す正本の文）。送っている間は 2 本目を送らない。201 なら小窓を閉じ、一覧を 1 回読み直し、焦点を「＋ 決定を足す」に戻す。422 と欄つきの 404（決めた人・E-PAGE-001）は小窓の中（欄の下・欄が無い断りは小窓の上の知らせ）。403・404 は小窓を閉じて区画の中の頭の知らせ（role=alert）・一覧を読み直す。503・網の切れは小窓を開いたまま字を残し、小窓の上の知らせ。401 は前からの共通の扱い |\n| 親 | 11_tickets/K-66.md から screens の分とこの葉の分の行を外す（overlap_ok） |",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-390）。呼んだ口が失敗したときの画面：\n\n- S1: 決定の一覧を読む口を呼ぶ。失敗したら赤の箱「決定を読み込めませんでした」と「もう一度読む」（K397-UI-006）\n- S2: 決定を足す口を呼ぶ。失敗したら 422 と欄つきの 404（決めた人）は小窓の中・403/404 は閉じて知らせ・503 と網の切れは小窓を開いたまま字を残す（K397-UI-017・018）\n- S3: 決めた人の候補を読む口を呼ぶ。失敗したら本人だけを選べる（K397-UI-019）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k397-decisions.spec.ts`（実 Chrome・前からの土台 `tests/features/F5/approve-complete.harness.ts` の mockApi で詳細の口を網の手前で差し替え、決定の口と人の一覧の口を共通の道具 `apps/web/tests/k/decisions-mock.ts` で受ける。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 決定が 1 件以上（生きている・改められた・取り消した） | 詳細を開く | 書ける人 | 見出しの数・字・一覧・「＋ 決定を足す」 | このチケット | K397-UI-002〜004 |\n| 0 件 | 詳細を開く | 書ける人 | 空の文・「＋ 決定を足す」 | このチケット | K397-UI-005 |\n| 読めない | 詳細を開く | どれでも | 赤の箱・もう一度読む | このチケット | K397-UI-006 |\n| どれでも | 詳細を開く | 閲覧のみ | 一覧は読める・足せない | このチケット | K397-UI-008 |\n| どれでも | 「＋ 決定を足す」 | 書ける人 | 小窓 → 足す | このチケット | K397-UI-009〜019 |\n| 種別に決定ログの区画が無い | 詳細を開く | どれでも | 区画を足さない（決定の一覧は先読みで 1 回読むが描かない） | このチケット | K397-UI-022 |\n| どれでも | 一覧の右に開く詳細 | どれでも | 区画は字のまま・口を呼ばない | このチケット | K397-UI-022 |\n| 生きている決定 | 「改める」「取り消す」 | 書ける人 | 改める・取り消す | K-398 | K398-UI-007〜012 |\n| どれでも | 書き込みの「決定にする」 | 書ける人 | 書き込みから決定にする | K-398 | K398-UI-002〜004 |\n| チケットが消された | 道を直に | どれでも | 詳細ごと見つからない（404） | 前からの試験 | K-60 の詳細の試験（features/F4/create-ticket.spec.ts） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K397-UI-001 | 入口 | 幅 375・768・1440 × dec-log・dec-empty・dec-add | モックと本番で、区画の見出し・作るときの字・一覧の行（字・札・小さな字・取り消しの線）・空の文・「＋ 決定を足す」・小窓（題・欄・AI の案のグレーの箱・ボタン・欄の下の文）の値が同じ（px ±2。区画は流れの中なので y を比べない） |\n| K397-UI-002 | 対象の状態 | 生きている 2・改められた 1・取り消した 1、作るときの字「支払いは銀行振込」 | 見出し「決定ログ（2）」。見出しの下に「作るときに書いた字：支払いは銀行振込」、その下に一覧。並びは 生きている（11/01 → 10/28）→ 改められた（10/20）→ 取り消した（10/21）。開いたとき決定の一覧の口はちょうど 1 回 |\n| K397-UI-003 | 対象の状態 | 4 件の中身 | 1 件目「10/19 の追加対応は無償。11 月分の請求から外す」・「11/01 鈴木 一郎（先方と合意） ・ 理由：先方の都合による作業のため ・ 元：やり取り 11/01 10:20 →」。2 件目は札「改めた」と「10/20 の決定を改めた」。3 件目は札「改められた」と「新しい決定：支払期日は月末締め翌月末 ↑」・「改める」「取り消す」が無い。4 件目は札「取り消した」・字に線（text-decoration に line-through）・「取り消し 10/22 佐藤：先方がメールだけでよいと言ったため」・「改める」「取り消す」が無い |\n| K397-UI-004 | 入口 | 元の書き込みがある・元の書き込みが消された | 「元：やり取り 11/01 10:20 →」はリンク（href が #msg-<書き込みの id>）。消された元は「元の書き込みは消されました」（リンクではない）・決定の字は残る |\n| K397-UI-005 | 対象の状態 | 0 件・作るときの字あり | 見出し「決定ログ」（数なし）・作るときの字・「まだ決定はありません。決めたことと理由を残すと、あとから根拠として引けます」・「＋ 決定を足す」 |\n| K397-UI-006 | 失敗 | 手順 S1 の失敗：503 → 「もう一度読む」 | 赤の箱「決定を読み込めませんでした」と「もう一度読む」・「＋ 決定を足す」は出ない・作るときの字は出る。押すと口をもう 1 回呼び、読めれば一覧と「＋ 決定を足す」 |\n| K397-UI-007 | 対象の状態 | 区画の字が空（null・空の字） | 「作るときに書いた字：」の行は出ない |\n| K397-UI-008 | 守り | 閲覧のみ（meta.can_write false） | 一覧と作るときの字は出る。「＋ 決定を足す」「改める」「取り消す」は 0 個 |\n| K397-UI-009 | 入口 | 「＋ 決定を足す」を押す | 小窓「決定を足す」（説明の小さな字なし）。欄：決めたこと（必須）・グレーの箱「AI が一文にまとめた案 ── AI の案は、自分の AI と話す画面ができてから使えます」（aria-disabled・Tab で止まらない）・決めた人（既定は「高本 聖斗」・候補は人の一覧の口の 3 人）・ひとこと・理由。「どこまで効かせる」の欄（選び肢）は無い。「本文と食い違う所…」の箱は無い。ボタン「やめる」「決定を足す」。焦点は決めたことの欄 |\n| K397-UI-010 | 対象の状態 | 決めたこと「見積は税込で出す」・理由「先方の指定」→「決定を足す」 | createTicketDecision が { text: \"見積は税込で出す\", reason: \"先方の指定\", decided_by_member_id: <本人>, decided_note: null } で 1 回。小窓が閉じ、決定の一覧の読み直しが 1 回、一覧の 1 件目に「見積は税込で出す」、見出しの数が 1 増える。焦点は「＋ 決定を足す」 |\n| K397-UI-011 | 対象の状態 | 決めた人を「鈴木 一郎」・ひとこと「先方と合意」 | 体の decided_by_member_id が鈴木の id・decided_note「先方と合意」。一覧の小さな字が「MM/DD 鈴木 一郎（先方と合意）」で始まる |\n| K397-UI-012 | 入力 | 決めたことが空・空白だけ（全角も） | 口は 0 回。欄の下に「決めたことを書いてください」。小窓は開いたまま。書くと文が消え、送れる |\n| K397-UI-013 | 入力 | 決めたことに 3000 字・改行つき | 削らずに 3000 字と改行のまま送る（上限を置かない・D-130.1）。一覧に全部の字が出る（切り捨てない・D-130.4） |\n| K397-UI-014 | 守り | 決めたこと・理由に `<img src=x onerror=alert(1)>` | 送る体は書いたとおり。一覧に字のまま出て img は 0 個 |\n| K397-UI-015 | 操作の揺れ | 書いてから「やめる」・Esc・× ／ 開き直す | 小窓が閉じ、口は 0 回。開き直すと欄は空で、決めた人は本人に戻る。人の一覧の口は 2 回目は呼ばない |\n| K397-UI-016 | 操作の揺れ | 口の答えを止めたまま「決定を足す」を 2 回押す | 口はちょうど 1 回。送っている間はボタンが押せない（disabled）。答えが来たら閉じる |\n| K397-UI-017 | 失敗 | 手順 S2 の失敗：404 E-PAGE-001（欄 decided_by_member_id）・403（書く権限が外れた） | 404（欄 decided_by_member_id つき）：小窓は開いたまま、決めた人の欄（combobox を含む欄）の下の断りの字（.k-err）に「決めた人は、この会社のメンバーから選んでください」。403：小窓は閉じ、区画の中の頭の知らせ（role=alert）に正本の文、一覧を読み直す（meta.can_write が false になれば「＋ 決定を足す」が消える） |\n| K397-UI-018 | 失敗 | 手順 S2 の失敗：503・網の切れ・401 | 503 と網の切れ：小窓は開いたまま書いた字は残り、小窓の上の知らせに正本の文（503 は E-PAGE-004・網の切れは E-PAGE-007）。もう一度押すと送れる。401：/login?next=%2Ftickets%2F<id> |\n| K397-UI-019 | 失敗 | 手順 S3 の失敗：人の一覧の口が 503 | 決めた人の候補は本人だけで、名前は /me の表示名（土台では「高本」）。欄の下に「ほかのメンバーを読み込めませんでした（自分を選べます）」（仮）。本人で送れる |\n| K397-UI-020 | 入口 | 幅 320・375・768・1024・1440 で区画（4 件）と小窓 | 横溢れ 0（scrollWidth − clientWidth）。小窓のボタンは見える所にある（頭と足の固定・K-350） |\n| K397-UI-021 | 入口 | 開いたとき・小窓を 2 回開いたときの口の数 | 開いたとき：決定の一覧の口 1 回（先読みと区画が同じ鍵）・人の一覧の口 0 回。小窓を開くと人の一覧の口が 1 回（問い合わせに scope_id が無く limit は 200）、閉じて開き直しても増えない |\n| K397-UI-022 | 対象の状態 | 種別に決定ログの区画が無い・一覧の右に開く詳細（幅 1440・K-252） | 区画が無い：決定の一覧の口は先読みで 1 回（描かない）・区画は足さず「＋ 決定を足す」は 0 個。右に開く詳細：決定の一覧の口は 0 回・「＋ 決定を足す」は 0 個・区画の字がそのまま出る |\n\n### テストの型の受け（分類 CRUD・LIST・XSS）\n\n| 型 | どこで受けるか |\n|---|---|\n| 2 人が同時に直す | 要らない: TP-CRUD-01 この葉は足すだけで、同じ物を 2 人が直す形が無い（改めるの同時は K-398 の K398-UI-011） |\n| TP-CRUD-02 消したもの | K397-UI-017（403・404 は小窓を閉じて知らせ・読み直し）・消されたチケットは前からの K-60 の詳細の試験 |\n| 子の扱い | 要らない: TP-CRUD-03 決定は消さない（改める・取り消すは K-398・DB も決定を消せない） |\n| TP-CRUD-04 2 回押し | K397-UI-016 |\n| TP-CRUD-05 途中で失敗 | K397-UI-018（書くのは 1 つの口 1 回・失敗しても一覧は前のまま） |\n| TP-CRUD-06 書きかけ | K397-UI-018（失敗しても字は残る）・K397-UI-015（やめたら空に戻す：書きかけを残さない形を決めた・仮） |\n| TP-LIST-01 0 件・1 件・境目 | 0 件＝K397-UI-005・4 件＝K397-UI-002。ページの境目は無い（口は全部を 1 回で返す・1 枚のチケットの決定は数十件まで） |\n| TP-LIST-02 並びが揺れない | K397-UI-002（状態の順 → 決めた日の新しい順。同じ日なら口の順＝作った順。ページをまたがない） |\n| 絞り込みの URL | 要らない: TP-LIST-03 絞り込みが無い |\n| 探す | 要らない: TP-LIST-04 探す欄が無い（決定を探すのは F7・段 8） |\n| TP-XSS-L01 HTML やスクリプト | K397-UI-014 |",
+    "前からの試験を替えた所": "この葉の changes:（features/F6/decisions/）を import する前からの試験は無い（画面の試験は道で開く）。本文の区画「決定ログ」・区画の鍵 decisions を見る前からの試験を検索で出した（段 7 のほかの葉の試験は除く）。\n\n```search\ngit grep -ln 'sec-decisions\\|\"decisions\"\\|決定ログ（[0-9]\\|決定を足す' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k3[89]*' ':!apps/web/tests/k/decisions-mock.ts' ':!apps/web/tests/skeleton/k399*'\n0\n```\n\n- 0 件。前からの詳細の試験（k226-ticket-detail.spec.ts・F5 の土台）の詳細の答えには区画 decisions が無いので、この葉の後も区画は今のまま描かれる（区画の名前を見る本文の目次の試験 K226-UI-017 も、区画が無いので変わらない）\n- 先読みで決定の一覧の口を詳細と同時に呼ぶので、前からの詳細の試験の土台（mockApi・list-mock）にも決定の一覧の口が 1 本出る。土台は知らない口に空の答え（か 404）を返し、区画が無いので何も描かない（読めなくても詳細は今のまま）。口の数を数える前からの試験は下の台帳の試験だけ\n\n台帳 perf_budget.json を読む前からの試験（K-392 と同じ検索）：\n\n```search\ngit grep -ln 'perf_budget.json' -- 'apps/**' 'scripts/**' ':!scripts/ci/perf_budget.json'\n8\n```\n\n- scripts/ci/k237_perf_ledger_test.py: 替えない — 目標の表の \"/tickets/:id\" は K-392 がこの葉の分も含めて 8 にして運ぶ（この葉の台帳 8 は目標以下）。足す api の行（文 7・取引 1）は天井 15・2 の内\n- apps/web/tests/k/k235-first-load.spec.ts（台帳の名前を注に持ち、詳細の口の数を見る）: 替えない — K-392 が上限を 8 本以下にして運ぶ。決定の一覧は詳細と同時に出す（答えの後に出た口 0 のまま）\n- apps/web/tests/k/k237-screen-budget.spec.ts: 替えない — 台帳を読んで数えるだけ（この葉が台帳の /tickets/:id の calls と marks に決定の一覧を足し、max_calls を 8 にするので、呼んだ口が台帳に在り数も上限以内）\n- apps/api/test/k237_perf_budget.test.ts: 替えない — 台帳の api の行ごとに文の数・Server-Timing・Cache-Control を本物の口で測る（行ごとに同じ形で回る）。足す行も K-390 の口（1 取引・関数 1 回・private, no-store）で通る\n- scripts/ci/k237_staging_perf_test.py・scripts/ci/staging_perf.py: 替えない — staging の行だけを見る（この葉は staging の行を足さない）\n- scripts/ci/ci_scope.d/_base.json・scripts/ci/ci_scope.json: 替えない — 範囲の地図（試験でない）。台帳を変えたら k237 の試験が流れる行は前から在る\n\nモックの一覧 mocks.tsx を読む前からの試験：\n\n```search\ngit grep -ln 'f6/mocks' -- 'apps/web/tests/**' '07_functional/**' 'scripts/**'\n3\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — 状態の数・持ち主・ps・leaf の欄と、`k-prog-meta-side` が無いことを見る。この葉は dec-add・dec-from-message に見本の 3 人（people）を渡すだけで、状態も持ち主も変えない。dec-add の決定の一覧は 4 件全部にした（2 件では改めた元の決定が一覧に無く、口の答えから作れない形だった・作る段の画面の確かめ）が、この試験は状態の名前・持ち主しか見ないので替えない。人の見本は部品の既定から外した人を mocks.tsx が渡すので描く物は同じ\n- 07_functional/段7-F6/mock-shots.mjs・下絵の頁の作り手.py: 替えない — 写しの台本と下絵の頁の作り手（試験でない・mocks.tsx の状態の名前を読むだけ）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 開いたときの口の数（この区画の分） | 0 | 決定の一覧 1 回（詳細の口と同時に先読みで出す・区画が無い種別でも読む・直列の段は 1 のまま） |\n| 詳細を開いたときの口の数（画面全体） | 7（K-392 の後） | 8（台帳 perf_budget.json の /tickets/:id・前からの K235-UI-003 と k237 の目標は K-392 が 8 にしてある） |\n| 小窓を開いたとき | — | 人の一覧 1 回（初めて開いたときだけ） |\n| 足したとき | — | createTicketDecision 1 回 ＋ 決定の一覧の読み直し 1 回（直列 2 段） |\n| 同じ口の二重 | — | 無い（2 回押しも 1 回・K397-UI-016・小窓の開き直しで人の一覧を読み直さない・K397-UI-021） |\n| 新しい住所 | — | 増えない（同じ /tickets/[id]） |\n| 認証の要る答えの Cache-Control | 口の葉が持つ（private, no-store） | 同じ（K-390 が確かめる） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 区画の入れ物の書き出す名前は K-382 が `features/F6/decisions/slot.tsx` に置いた名前のまま（この葉は名前を変えない・detail-slots.tsx を触らない）\n- 口の答えの欄の名前（meta.can_write・decided_by・decided_note・source・superseded_by_id・revises_id・cancelled）と送る体（text・reason・decided_by_member_id・decided_note）・断りの番号（E-VAL-042 と、欄つきの 404 E-PAGE-001）は K-390 の md に合わせた。source は `{id, at, deleted}`（at は K-390 が足した・K390-API-006）\n- 区画の入れ物 `SectionSlot`（K-382）・`SlotTicket`（K-380）の名前と受ける物は変えない\n- 元の書き込みの住所 `#msg-<書き込みの id>` は、やり取りの一覧の書き込みの id（K-392 が付ける）と同じ形にそろえる\n- 共通の道具 `apps/web/tests/k/decisions-mock.ts` はこの葉が持つ（carry）。K-398 は読むだけで替えない",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=eaa451436670・f5cd1647389f）：⑧ 閲覧のみは決定を変えられない／⑯ AI の決定の案は段 7 では作らない（欄はグレー「AI の案は、自分の AI と話す画面ができてから使えます」）／⑰ 取り消しは印と理由を付けて残す（一覧では線を引いて下に）／⑱ 決めた人の既定は本人・ほかのメンバーとひとこと／⑲ 足したら担当者と承認する人に知らせ・やり取りにも 1 行（口の葉）／⑳ 作るときの字は上に残し、下に一覧／㉒ 仮の文はそのまま\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す\n- 切る段の仮（代表に聞くことに書いた）：種別に決定ログの区画が無いときは区画を足さない／決めた人の候補が読めないときの文「ほかのメンバーを読み込めませんでした（自分を選べます）」／小窓を「やめる」と書いた字は消える",
+    "リスクと懸念": "- 口の答えの欄の名前が K-390 と違うと、作る段の型の検査で止まる（作る段の始めに K-390 の md を読み直す）\n- 決めた人の候補（listMembers・scope_id なし・limit 200）は同じ会社の今のメンバーを返す（K-390 の決め）。200 人を超える会社では候補が切れる（作る画面の担当者の候補と同じ限り。超えたら絞り込みの欄を足す別の葉）",
+    "申し送り": "- K-398：改める・取り消すの小窓は、この葉の use-decisions.ts（読み直し）と to-view.ts（並べ方と注）を使う。元の書き込みへのリンクを押した先は K-398 が確かめる"
+   },
+   "file": "11_tickets/K-397.md"
   },
   {
    "id": "K-400",
@@ -24490,6 +24650,119 @@
    "file": "11_tickets/K-1112.md"
   },
   {
+   "id": "K-1114",
+   "title": "直し：画面の試験を全部流す回（G48）で本線のまま赤になる 3 種を直す（登録の口の回数の上限に当たる準備・組み立てた画面の置き場を読む D8・文書の高さの丸めで 0.39px 被ると数える）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1100（0.5 時間）より大きい：G48 の log の赤 39 本を 3 種に分ける 10 分・手元で本番の形の画面と口を立てて流す 20 分・準備の道具 2 ファイル 10 分・検査 3 本の置き場 5 分・試験 2 本 15 分",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の試験の準備の道具（apps/web/tests/_lib）と前からの試験の測り方・CI の見た目と式の検査の台本（scripts/ci）の読む置き場だけ。製品のコード・口・DB・外には触らない（届く元の頭は試験の準備の要求にだけ付ける）",
+   "tests": [
+    "scripts/ci/k1114_build_dir_skip_test.py",
+    "apps/web/tests/k/k1114-signup-ip.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/_lib/api.ts",
+    "apps/web/tests/_lib/prep.ts",
+    "apps/web/tests/k/k138-shell.spec.ts",
+    "apps/web/tests/k/k220-bridge-shell.spec.ts",
+    "apps/web/tests/skeleton/k342-terms-then-enter.spec.ts",
+    "scripts/ci/contract_shape_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（試験の準備と CI の検査の置き場だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/design_raw_lengths.py",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/class_gate.py",
+    "scripts/ci/chat_one.mjs"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-1105 の CI（run 45106396961）で G48 が画面の試験を全部流し、K-1105 が触っていない画面の試験 39 本が赤だった。種類は 3 つで、どれも本線（claude/modest-lamport-77ue02 の先頭 eb836a1ac）のままで赤になる。段を本線に入れる全部の CI（画面の試験を全部流す回）で必ず赤になるので、ここで直す。\n\n| 種類 | 赤の本数 | 原因 | 分け |\n|---|---|---|---|\n| k357（K357-UI-001〜024） | 37 | 準備の `signupViaApi` が、別々の人を 1 つの届く元（IP）から続けて登録する。登録と確認の口は契約で IP ごと 1 分 10 回（`createSignup`・`verifySignup` の rateLimit）。全部を流す回では前の試験（k356 など）の登録と合わせて 1 分 10 回を超え、`sign-up 429 RATE_LIMITED` で準備が落ちる | 試験の誤り（準備が上限に当たる）。上限は本番の正しい守り |\n| K400-DS-002 | 1 | D8（生の長さ）は `apps/web` の下を全部読む。CI の web の組は画面を組み立ててから（`NEXT_DIST_DIR=.next-prod`）試験を流すので、組み立てた JS と CSS（`.next-prod`）の生の値を 4155 個数えて赤。読まない置き場（SKIP_DIRS）に `.next` はあるが `.next-prod` が無い | 検査の道具の不具合（本番の画面の不具合ではない） |\n| K138-SH-019 | 1 | チケットの詳細の幅 375 で、本文の最後の物（右の面の下の余白）の下端 840.39 ＞ 下のタブの上端 840。文書の高さ（scrollHeight）は整数に丸められ、本文の高さが端数（.39px）だと最後の 1px 未満までは送れない。字は 16px 上で終わっていて、見た目の被りは無い | 試験の誤り（測り方が 1px 未満の丸めを被りと数える） |\n\nPM の決め（作り方）：\n1. 登録の上限は変えない。試験の準備の道具が 1 人ごとに別の届く元（`x-forwarded-for`・10.x.x.x）で登録・確認・招待の受諾の口を呼ぶ（前からの道具 newcomer.ts・test-pc.ts・k336 と同じ形）。上限が残っていることはこの葉の試験 K1114-UI-002 が見る\n2. D8・D6（使われない段）・class_gate・chat_one（画面の試験から流れる会話の口の検査）・contract_shape_test の読まない置き場に `.next-prod` を足す\n3. 被りの測り方は 1px からを数える（同じ測り方の k220 も同じ類なので直す）",
+    "完了の条件": "- [ ] 下の表の行（K1114-CI-001〜003・K1114-UI-001〜002）が緑\n- [ ] G48 で赤だった K357-UI-001〜024・K400-DS-002・K138-SH-019 が緑（替えた前からの試験と、替えない k357・k400）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 契約の rateLimit（`packages/contracts/src/registry.ts`）と口の上限の作り（`apps/api/src/contract/op.ts`）は変えない\n- 届く元の頭は試験の準備の要求にだけ付ける。口の上限を見る前からの試験（screens/login.spec.ts の sign-in の 429 など）は `api()` を頭なしで呼ぶので今のまま\n- `.next-prod` は `apps/web/package.json` の `build:test`・`start:test`（NEXT_DIST_DIR）が作る置き場。.gitignore の外だが、git に入らない組み立ての出力\n- ci_scope.py の置き場の読みは点で始まる置き場を全部飛ばすので直さない",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 届く元を変える前からの形 | `tests/_lib/newcomer.ts`・`tests/_lib/test-pc.ts`・`tests/k/k336-invite-signed.spec.ts` | 同じく `x-forwarded-for` に 10.x の IP |\n| 準備の道具 | `tests/_lib/api.ts` の `api`・`signupPending`・`signupViaApi`・閲覧のみの人の招待の受諾、`tests/_lib/prep.ts` の招待の受諾 | `api()` に任意の 5 つ目 `ip` を足し、IP ごとの口を呼ぶ所だけが `testIp()` を渡す |\n| 読まない置き場 | `design_raw_lengths.py`・`design_gate.py`・`class_gate.py` の SKIP_DIRS | `.next-prod` を足す |\n| 探したが無かった物 | 1 人ごとの届く元を作る共通の道具 | `api.ts` に `testIp` を足す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 準備の届く元 | `apps/web/tests/_lib/api.ts`：`testIp()` を足し、`api()` に `ip`（頭 `x-forwarded-for`）。登録・確認・招待の受諾で `testIp()`。`apps/web/tests/_lib/prep.ts`：招待の受諾で `testIp()` |\n| 読まない置き場 | `scripts/ci/design_raw_lengths.py`・`scripts/ci/design_gate.py`・`scripts/ci/class_gate.py` の SKIP_DIRS、`scripts/ci/chat_one.mjs` の walk、`scripts/ci/contract_shape_test.py` の外す道に `.next-prod` |\n| 準備の届く元（骨組み） | `apps/web/tests/skeleton/k342-terms-then-enter.spec.ts` の確認の口に `testIp()` |\n| 被りの測り方 | `apps/web/tests/k/k138-shell.spec.ts` の K138-SH-019・`apps/web/tests/k/k220-bridge-shell.spec.ts` の K220-UI-013 を `toBeLessThan(上端 + 1)` |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1114_build_dir_skip_test.py`（作りものの木を tempfile に）と `apps/web/tests/k/k1114-signup-ip.spec.ts`（本物の口と DB・網の手前で差し替えない）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1114-CI-001 | 入力 | D8 の置き場の読み：`web/.next-prod` の下に生の値の .css と .js、`web/features` に .css と .tsx | 読むのは `web/features/a.css` と `web/features/a.tsx` だけ（.next-prod の 2 つは一覧に無い） |\n| K1114-CI-002 | 入力 | D6：段 display を `.next-prod` の .css だけが使う | `unused_scales` が `[\"display\"]` を返す（組み立てた出力で使ったことにしない） |\n| K1114-CI-003 | 入力 | class_gate のファイル集め：`.next-prod/server/b.tsx` と `features/a.tsx` | 返すのは `features/a.tsx` だけ |\n| K1114-UI-001 | 操作の揺れ | 準備の道具 signupViaApi で 12 人（上限 10 ＋ 2）を続けて作る | 12 人とも 201 で token と会社を持ち、会社は 12 個とも別 |\n| K1114-UI-002 | 守り | 同じ届く元から登録の口を 11 回（体は空。上限は中身の確かめより前に数えるので、時間に頼らず 60 秒の窓に収まる） | 10 回は 422、11 回目は 429・code RATE_LIMITED（上限は本番のまま残る） |\n\n前からの試験（同じ CI で流れる）：K357-UI-001〜024（替えない・準備の道具の直しで緑）・K400-DS-002（替えない）・K138-SH-019 と K220-UI-013（測り方を替えた）。\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 日本語の名前のファイル | 要らない: TP-TOOL-01 はこの葉に当たらない（置き場の名前の飛ばし方だけを変え、ファイルの名前の読み方は変えない） |\n| 検査が何も見ていないのに緑 | K1114-CI-001・003 が、飛ばさない側（features の .css・.tsx）を読むことも同じ行で見る（全部飛ばしても緑にならない）。K1114-CI-002 は使われない段が出ることを見る |\n| 容れ物の中と手元の違い | K1114-CI-001〜003（CI の容れ物の中で組み立てた置き場 .next-prod を作りものの木で再現）。手元の実 Chrome と組み立てた画面で K400-DS-002 が赤→緑 |",
+    "前からの試験を替えた所": "準備の道具（IP ごとの口を呼ぶ所）・読まない置き場・下のタブの被りの測り方を検索で全部出した。\n\n```search\ngit grep -n -e '\"/api/v1/auth/sign-up\",$' -e '\"/api/v1/auth/sign-up/verify\",$' -e 'api(\"/api/v1/auth/sign-up' -e 'api<[^>]*>(\"/api/v1/auth/sign-up' -e '`/api/v1/auth/invitations/${token}/accept`,$' -- apps/web/tests\n6\n```\n\n```search\ngit grep -n '\"\\.next\"\\|/\\.next/' -- 'scripts/ci/*.py' 'scripts/ci/*.mjs'\n8\n```\n\n```search\ngit grep -n 'scrollTo(0, document.documentElement.scrollHeight)' -- apps/web/tests\n3\n```\n\n- apps/web/tests/_lib/api.ts: 替える — 登録・確認・閲覧のみの人の招待の受諾で 1 人ごとの届く元\n- apps/web/tests/_lib/prep.ts: 替える — 招待の受諾で 1 人ごとの届く元\n- apps/web/tests/skeleton/k342-terms-then-enter.spec.ts: 替える — 確認の口を本物で呼ぶ（骨組みの G59。1 回だが同じ類）\n- apps/web/tests/k/k1114-signup-ip.spec.ts: 替える — この葉の試験（新しい・同じ届く元で上限を見る行）\n- 画面から登録・確認・受諾を押す前からの試験（features/F1/*・k256・k335 など）: 替えない — 網の手前の差し替え（本物の口を呼ばない）か 1 回だけ\n- scripts/ci/chat_one.mjs・scripts/ci/contract_shape_test.py: 替える — 読まない置き場に `.next-prod`（今は赤でないが同じ類）\n- scripts/ci/claude-terms.mjs: 替えない — もう `.next-prod` を飛ばす\n- scripts/ci/k214_class_gate_test.py: 替えない — `.next` の作りものの木を作るだけ（K1114-CI-003 が `.next-prod` を受ける）\n- scripts/ci/ci_scope.py: 替えない — 置き場の読みは点で始まる置き場を全部飛ばす（`.next-prod` も飛ぶ）\n- apps/web/tests/k/k138-shell.spec.ts: 替える — K138-SH-019 の被りを 1px からに（期待は弱めない：1px 以上の被りは赤のまま）\n- apps/web/tests/k/k220-bridge-shell.spec.ts: 替える — K220-UI-013 も同じ測り方（今は緑だが、本文の高さが端数になると同じく赤になる）\n- apps/web/tests/k/k251-ticket-list-mine.spec.ts: 替えない — K251-UI-030 は下端の数ではなく、物の真ん中の点に何があるか（elementFromPoint）で見る\n- apps/web/tests/k/k357-credentials-edit-check.spec.ts・k400-stage9-mock.spec.ts: 替えない — 準備の道具と検査の置き場の直しで緑（手元の実 Chrome と本番の形で組み立てた画面で確かめた）",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：登録の口の上限は変えず、試験の準備が 1 人ごとに別の届く元を使う・組み立てた画面の置き場は検査が読まない・下のタブの被りは 1px からを数える",
+    "リスクと懸念": "- 組み立ての置き場の名前を NEXT_DIST_DIR で別の名前にしたら、検査の SKIP_DIRS にも足す（今は .next と .next-prod の 2 つ）\n- 画面の試験を全部流す回では、ほかの IP ごとの口（sign-in など）を多くの試験が続けて呼ぶと同じ上限に当たりうる。今の G48 の赤には無い",
+    "申し送り": "- K-1105 の CI の spec の組の赤「生成物が古い」は K-1105 の枝の物（この葉の範囲の外）"
+   },
+   "file": "11_tickets/K-1114.md"
+  },
+  {
+   "id": "K-1115",
+   "title": "直し：切る段から 1 本を持ち込む台本（cut_take）が、重ねた元の行のすぐ下に足すだけの自分の行を「ぶつかる」と止める（K-581 の start --cut）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1100（0.5 時間）と同じくらい：直しと試験は PM が作って確かめ済み（パッチ）。チケットを書く 10 分・試験の止まる側を 1 本足す 10 分・写して流す 5 分",
+   "decisions": [
+    "D-133"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "切る段の持ち込みの台本（scripts/tickets/cut_take.py）が共有の試験を 3 方で合わせる所だけ。製品のコード・口・DB・外には触らない",
+   "tests": [
+    "scripts/ci/k1115_cut_take_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（切る段の台本だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/tickets/cut_take.py",
+    "scripts/ci/g65.d/K-1115.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "段 5 の K-581（鎖の手前）を `flow.py start K-581 --cut c/段5` で始めると、持ち込みの台本 `scripts/tickets/cut_take.py` が共有の試験 `apps/api/test/features/contract/k144-contract.test.ts` で「本線の後からの変更とぶつかる」と止まる（followups.md の K-581 の行）。\n\n原因：台本は共有の試験を 3 方で合わせるとき、元の版を「切る段の枝と本線の分かれ目」にしている。K-581 の重ねた元 K-437 は分かれ目の後に本線へ入り、切る段の版では K-437 の行のすぐ下に K-581 の行がある。分かれ目から見ると、本線は「K-437 の行を足した」、切る段は「K-437 の行と K-581 の行を足した」になり、同じ所を別々に変えたとして git merge-file がぶつかる。中身は「本線の版に自分の行を足すだけ」で、本当のぶつかりではない。\n\nPM の決め（作り方）：\n1. 分かれ目を元にして合わせ、ぶつからなければ今のまま\n2. ぶつかったときだけ、元の版を「切る段の版から自分の印（行の末尾の `// K-xxx` と範囲）を外した物」にして合わせ直す。これで差は自分の行だけになり、本線の版にそれを足す\n3. 合わせ直すと、切る段で足した印の無い行（どのチケットの物でもない行）を本線が消したように見えて落ちることがある。そういう行があれば落とさずに止める。判定は、まだのチケットの印と範囲を外した後の切る段の版で見る（外した範囲の中身は数えない）。同じ字面の行（`});` など）を見落とさないよう、行ごとの数で比べる：切る段の版での数が、分かれ目の数と合わせた結果の数の大きい方を超える行を「落ちた」とする（空行は数えない）\n4. 2 回目の合わせもぶつかれば、今までどおり止める",
+    "完了の条件": "- [ ] 下の表の行（K1115-CT-001〜005）が緑\n- [ ] 前からの K187-CT-001〜011 が緑のまま（`python3 scripts/ci/k187_cut_take_test.py` で 11 本。このファイルは替えない）\n- [ ] チケットの範囲の CI が緑\n- [ ] 取り込んだ後、K-581 の `flow.py start K-581 --cut c/段5` が止まらない（PM が確かめる）",
+    "前提と制約": "分類: TOOL\n\n- 分かれ目を元にして合わせられるときの振る舞い（K187-CT-008・010 の本線に後から入った行を残す）は変えない\n- 合わせ直しは共有の試験（SHARED）だけ。carry: のファイル・tests: の試験の 3 方の合わせ（K187-CT-010）は今のまま\n- ticket-flow のスキル（flow.py）は変えない（台本は設定 cut.take から呼ばれる）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 3 方の合わせ | `cut_take.py` の `merge3` | そのまま使い、ぶつかったら元の版を替えて 2 回目を呼ぶ |\n| 印を外す | `cut_take.py` の `filter_marks`・`MARK` | 自分の番号を keep から外して、元の版を作る。落ちた行の判定で印のある行を除く |\n| 探したが無かった物 | 自分の印の行だけを本線の版に足す道具 | `merge_own_only` を足す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 合わせ直し | `scripts/tickets/cut_take.py`：`merge_own_only(path, fork_body, ours, theirs, own_free)` を足す。`take` の共有の試験の合わせで、`merge3` が止めたら `merge_own_only` を呼ぶ（本線の版が無いときは merge3 がぶつからないので呼ばれない）。2 回目の `merge3` がぶつかればそのまま止まる。印を外した後の切る段の版（theirs）の印の無い行ごとに数を数え（collections.Counter）、分かれ目の数と結果の数の大きい方を超える行があれば、その行を出して止める |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1115_cut_take_test.py`（作りものの git の木を tempfile に。土台の setUp・tearDown・take と部品は K-187 の試験 `scripts/ci/k187_cut_take_test.py` から借りる。K-187 の試験のファイルは持ち主が K-187 なので替えない・G53）。CI には `scripts/ci/g65.d/K-1115.txt` の 1 行で載せる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1115-CT-001 | 対象の状態 | 切る段の版で重ねた元 K-6 の行のすぐ下に自分 K-5 の行がある。K-6 は分かれ目の後に本線へ入った（K-581 の形） | 止まらず、共有の試験は「A・K-6 の行・K-5 の行・後ろの行」とそのとおりの中身になる（K-6 の行は 1 つだけ・本線の行は消えない） |\n| K1115-CT-002 | 失敗 | 同じ形で、切る段の版の離れた所に印の無い行 `const x = 9;` がある。本線にはその行が無い | 止める（SystemExit）。文に「印の無い行が本線に無い：const x = 9;」。共有の試験は本線の版のまま・チケットの md も置かない |\n| K1115-CT-003 | 対象の状態 | CT-001 と同じぶつかる並びに、まだ本線に入っていないチケット K-7 の範囲（`// K-7 ここから`／`const block7 = 7;`／`// K-7 ここまで`）が離れた所にある | 止まらない。共有の試験は「A・K-6 の行・K-5 の行・後ろの行」だけで、K-7 の範囲は 3 行とも無い（全部の文字で比べる） |\n| K1115-CT-004 | 失敗 | 同じぶつかる並びで、切る段の版に印の無い `});` が 2 つ（K-5 の行の下と後ろの端）、本線の版には 1 つ（K-6 の行の下）だけある | 止める（SystemExit）。文に「印の無い行が本線に無い：});」。共有の試験は本線の版のまま・チケットの md も置かない（同じ字面が結果のほかの所にあっても見落とさない） |\n| K1115-CT-005 | 失敗 | 切る段は `const s6 = 6; // K-6` のすぐ下に K-5 の行、本線は重ねた元の行を `const s6 = 66; // K-6` に直して入れた | 止める（SystemExit）。文に「ぶつかる」とファイルの名前。共有の試験は本線の版のまま・チケットの md も置かない |\n\n前からの試験（K-187 のファイル `scripts/ci/k187_cut_take_test.py`）：K187-CT-001〜011（替えない・緑のまま）。\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 日本語の名前のファイル | 要らない: TP-TOOL-01 はこの葉に当たらない（ファイルの名前の読み方は変えない。日本語と空白の名前は K187-CT-005 のまま） |\n| 検査が何も見ていないのに緑 | K1115-CT-002・004 は落ちた行の判定だけで止まる形（2 回目の合わせはぶつからずに通る並び）。判定を消すと、行が落ちたまま止まらずに赤になる。CT-004 は在る無しだけで見る判定（同じ字面が結果にある）でも赤になる。K1115-CT-001・003 は中身を全部の文字で比べる |\n| 容れ物の中と手元の違い | 要らない: git merge-file と Python だけで、CI の容れ物でも手元でも同じに動く（作りものの木は tempfile） |",
+    "前からの試験を替えた所": "台本を使う試験を検索で全部出した。\n\n```search\ngit grep -l 'cut_take' -- scripts apps\n6\n```\n\n- scripts/ci/k187_cut_take_test.py: 替えない — K-187 の試験（持ち主は K-187）。この葉の行 K1115-CT-001〜005 は自分の試験 scripts/ci/k1115_cut_take_test.py に置き、土台だけを import で借りる\n- scripts/ci/k1115_cut_take_test.py: 足す — この葉の試験（tests:）\n- scripts/ci/g65.d/K-1115.txt: 足す — この葉の自己試験を CI の G65 に載せる 1 行（changes:）\n- scripts/tickets/cut_take.py: 替えない — 台本そのもの（changes:）\n- scripts/ci/g65.d/_base.txt: 替えない — 自分の自己試験は scripts/ci/g65.d/K-1115.txt に 1 行足す（作り手 05_flow/build_testplan.py が CI の定義と試験計画に書く）\n- scripts/ci/k376_gate_lists_test.py: 替えない — 試験のファイルの名前を並べるだけ（名前は変えない）",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：分かれ目を元にしてぶつかったときだけ、元の版を「切る段の版から自分の印を外した物」にして自分の行だけを足す。切る段で足した印の無い行が本線に無ければ落とさずに止める",
+    "リスクと懸念": "- 合わせ直しは、ぶつかりの中身が「自分の行」だけのときに効く。重ねた元とは別の、まだ本線に入っていないほかのチケットの行とぶつかる形は、今までどおり止まる（切る段の枝に本線を取り込んでからやり直す）\n- 重ねた元を本線に入れるときに、その行の字面を直していると（CT-005 の形）、2 回目の合わせもぶつかって止まる。K-581 の start が通るかはこれで決まる（止まれば切る段の枝に本線を取り込んで切り直す）\n- c/段10 の K-712 の混ざり（followups.md）は同じ台本の類だが、形が違えばこの直しでは止まりが残る。始めるときに PM が確かめる",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-1115.md"
+  },
+  {
    "id": "K-1116",
    "title": "直し：契約 fuzz（G36）で出た前からの口の赤を直す（記憶を直す口に作る口の値域が漏れる・ログインのメールの形が部品の確かめより広い・PC の確かめに答える口の作った直後の確かめ）・PM の直し",
    "kind": "タスク",
@@ -24548,6 +24821,236 @@
     "申し送り": "- 開始の日 start_on は K-437 の後も形（`^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$`）だけで、口は暦に無い日（\"0000-00-00\"）を 422「開始は日付で入れてください」で断る。fuzz が当てれば同じ ST202 になる。K-437 の createTicket の値域で直すのがよい（空を許すので `anyOf: [{maxLength: 0}, {format: date}]` の形）\n- 登録・再設定の口（createSignup・requestPasswordReset）の契約のメールの形 `^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$` も口の受け方（normalizeEmail → EMAIL_RE）の部分集合でない（精査 R の指摘・同じ ST202 の類・今回の回では当たらなかった）。見本：\"a﹫b@example.com\"・\"a＠b@example.com\"（NFKC で @ になり @ が 2 つ・Python では \\s でも @ でもない）・\"\\ufeff@example.com\"（JS の \\s は BOM を除いてローカル部が空・Python の \\s は BOM を含まない）。前からある別の場所の問題（c）として切る\n- 契約の `\\S` の値域（空・空白だけを断る欄）は、Python（schemathesis）と JS（口の trim・\\s）で空白の字の集まりが違う。updateMemory の body なら \"\\x1c\" は Python で形の外なのに口は 200（ST201 の種）、\"\\ufeff\" は Python で形どおりなのに口は 422（ST202 の種）。同じ形の欄は次のとおり。前からある別の場所の問題（c）として、`[^ \\t\\n\\r\\f\\v]` などの両方で同じ字の集まりに直す葉を切る\n\n```search\ngit grep -n '\"pattern\": \"\\\\\\\\S\"' -- 05_flow/screen_api.py '05_flow/screen_api.d/*.py'\n19\n```\n\n- 登録の口（createSignup）は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る。部品が断るメール（日本語の名前など）で登録すると、確かめで落ちる。前からある別の場所の問題（c）"
    },
    "file": "11_tickets/K-1116.md"
+  },
+  {
+   "id": "K-1117",
+   "title": "直し：契約の形を口の受け方と同じ字の集まりにする（登録のメールを部品の z.email() に合わせる・\\s \\S \\d \\w を Python と JS で同じ字にする）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1116（1 時間）と同じくらい：変換の作り手と自己試験 25 分・登録の口に部品の確かめを足す 10 分・前からの試験 2 本の比べ方を変換の後にする 10 分・作り直して差分を見る 15 分",
+   "decisions": [
+    "D-128.123",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "契約の作り手（05_flow/build_api.py）・契約の形の元（05_flow/screen_api.py・screen_api.d/K-638.py・scripts/ci の pattern の置き場）と、登録の口の入力の確かめ（DB に書く前・メールを送る前に断るだけ）。DB の関数・外には触らない",
+   "tests": [
+    "scripts/ci/k1117_portable_contract_test.py",
+    "apps/api/test/features/F1/k1117-email-shape.test.ts",
+    "scripts/ci/contract_shape_test.py"
+   ],
+   "depends_on": [
+    "K-1116"
+   ],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（契約の作り手と口の入力の確かめだけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "ci",
+    "shared"
+   ],
+   "changes": [
+    "packages/auth/src/signup.ts",
+    "apps/api/src/features/F1/sign-up/input.ts",
+    "apps/api/src/features/F3/credentials/patterns.ts",
+    "scripts/ci/credential_patterns.py",
+    "scripts/ci/portable_regex.py",
+    "scripts/ci/email_patterns.py",
+    "05_flow/build_api.py",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-638.py",
+    "scripts/ci/g65.d/K-1117.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-1116 の申し送り（前からある別の場所の問題 c）の 3 つを直す。本線の先頭 14896746c（K-1116 の枝 t/K-1116 の土台と同じ口）で 3 つとも起きることを確かめた。\n\n| 種類 | 起きること（本線で確かめた） | どちらが正か | 直し |\n|---|---|---|---|\n| 1 | 登録（createSignup）・再設定（requestPasswordReset）の契約のメールの形 `^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$` に、\"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\" が合う（Python の re で True）。口は normalizeEmail（NFKC・空白を全部除く・小文字）の後の EMAIL_RE で 3 つとも断る（﹫・＠ は NFKC で @ になり @ が 2 つ・BOM は JS の \\s なので除かれてローカル部が空）。契約 fuzz の ST202 の種 | 口の正規化が正。契約が広すぎる | 登録の契約のメールの形を、ログインの口（K-1116）と同じ「部品の z.email() の形を前後の空白 `[ \\t\\n\\r]*` で挟んだ物」にする（1 つの置き場 scripts/ci/email_patterns.py からログインと登録が引く）。再設定はこのチケットでは口を変えられない（下の「再設定を外した訳」）。BOM の分だけは種類 2 の直しで契約の外になる |\n| 2 | 契約の `\\s` `\\S`（と `\\d`）は、schemathesis（Python）と口（JS の trim・正規表現）で字の集まりが違う。updateMemory の body `\\S` に \"\\x1c\"・\"\\x85\" は Python では形の外なのに口の trim は残して 200（ST201 の種）、\"﻿\" は Python では形どおりなのに口の trim が除いて 422（ST202 の種）。`\\d` は Python では全部の国の数字（\"٣\"）に当たり、JS は 0〜9 だけ。契約の pattern のうち 38 か所がこの字を使う | 口（JS）が正 | 作り手 05_flow/build_api.py が契約（08_api/openapi.yaml）を書く前に、pattern の `\\s` `\\S` `\\d` `\\D` `\\w` `\\W` を JS と同じ字を並べた形に直す（scripts/ci/portable_regex.py の portable）。元の表（screen_api.py・screen_api.d・contract_shape.d の写し）は今の字のまま。JS が同じ pattern の字を使う預けたログインの login（patterns.ts の LOGIN_PATTERN）だけは元の字を変換の後の字にそろえる（JS での意味は同じ） |\n| 3 | 登録の口は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る（better-auth 1.7.15 の sign-up.mjs:151）。\"日本@例.jp\" は EMAIL_RE を通り z.email() で落ちる（tsx で確かめた）：登録の申し込みとメールはできるのに、リンクを押すと確定できない | 部品の z.email() が正 | 登録の口は、正規化の後に EMAIL_RE と部品の z.email() の両方で見て、外なら 422 E-VAL-004（欄 email）。今の断り方（番号・文言・申し込みを作らない・メールを送らない）のまま |\n\nPM の決め（作り方・頼まれた向き：部品の z.email() と口の正規化（NFKC・trim）を正にする）：\n1. 種類 1・3 は、登録の口に部品の確かめ（isLoginEmail）を足し、契約は部品の形を前後の空白で挟んだ物（口より狭く書く）\n2. 種類 2 は、作り手の出口で 1 回だけ直す（元の表を 20 か所以上書き換えない・これから足す pattern も同じに直る）。`[\\s\\S]`（どの字でも）は両方で同じなのでそのまま。直せない形（字の組の中の `\\S` など）は作り手が止める\n3. `$`（Python は末の改行の前でも当たる）と `.` の違いは、このチケットでは変えない（K-1116 の口が末の改行 1 つを受ける形で合わせている・申し送り）\n\n### 再設定を外した訳\n\n再設定の口（apps/api/src/features/F1/password-reset/index.ts）は、いま作っている K-1106（実装済み・DB の失敗を 503 にする）が同じファイルを変える。同時に作れない（start が止めた）うえ、K-1106 と K-1116 の枝は合わせるとぶつかる（08_api/phase1/01_チケット.md・start が止めた）ので重ねても始められない。\n再設定の契約だけを狭めると、口が受ける形の外の入力を 201 で受ける（fuzz の ST201 の種）ので、口と契約は同じ葉で変える。K-1106 が本線に入った後の葉に回す（申し送り）。",
+    "完了の条件": "- [ ] 下の表の行（K1117-CT-001〜007・K1117-API-001〜002）が緑\n- [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている\n- [ ] チケットの範囲の CI が緑（前からの試験 contract_shape_test.py・k1116・k638・k639・credentials-create の K352-API-026 も）",
+    "前提と制約": "分類: TOOL, REG\n\n- 口の振る舞いは、登録で部品が断るメールを先に 422 E-VAL-004 で断ることだけを足す。ログインの口・再設定の口・招く口・DB・入口（op.ts）は変えない\n- 元の表の字（VALUE_RANGES・INPUT_RULES・QUERY_RANGES・PATH_PATTERNS とその写し）は、登録とログインのメールのほか変えない。契約に書く時だけ直す\n- 部品の zod は packages/auth の依存の zod（better-auth が引く物と同じ 4.6.7・同じ置き場を tsx で確かめた）\n- EMAIL_RE そのものは変えない（招く口の K419-API-027 が「前の口の判定」として全 BMP の字で使う）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| JS の trim が落とす字の並び | `scripts/ci/invite_patterns.py` の WS（K-419） | 同じ字を portable_regex.py に置く（招く口の置き場は K-419 の物なので触らない） |\n| 部品の z.email() の形を前後の空白で挟んだ物 | K-1116 の `05_flow/screen_api.d/K-638.py` の `_SIGNIN_EMAIL` | `scripts/ci/email_patterns.py` の LOGIN_EMAIL に移し、ログインと登録が引く |\n| 契約を書く所 | `05_flow/build_api.py` の `yaml.safe_dump(openapi, …)` の前 | 書く前に openapi の全部の pattern を portable で直す |\n| 部品のメールの形 | zod 4.6.7 の `z.regexes.email`（`z.email()` の既定の形と同じ字・tsx で確かめた） | isLoginEmail が z.email() の safeParse で見る |\n| 探したが無かった物 | 契約の pattern が Python と JS で同じ字の集まりかを見る検査 | この葉の試験 K1117-CT-003・004 が見る |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 変換の作り手 | `scripts/ci/portable_regex.py`：`portable(p)`。字の組の外の `\\s`→`[WS]`・`\\S`→`[^WS]`・`\\d`→`[0-9]`・`\\D`→`[^0-9]`・`\\w`→`[A-Za-z0-9_]`・`\\W`→`[^A-Za-z0-9_]`。字の組の中の `\\s`→WS の字・`\\d`→`0-9`・`\\w`→`A-Za-z0-9_`。`\\\\` などほかの escape はそのまま。`\\s` と `\\S` を両方持つ字の組（どの字でも）はそのまま。字の組の中の `\\S` `\\D` `\\W`・組の外の `\\b` `\\B` は ValueError（どの pattern かを出す）。2 回当てても同じ。`walk(obj)` は dict と list をたどり、鍵 pattern の文字を直した新しい物を返す（example・examples の下はたどらない） |\n| 契約を書く所 | `05_flow/build_api.py`：`yaml.safe_dump` の前に `openapi = portable_regex.walk(openapi)` |\n| メールの形の置き場 | `scripts/ci/email_patterns.py`：`LOGIN_EMAIL`（K-1116 の `_SIGNIN_EMAIL` と同じ字） |\n| 契約の元 | `05_flow/screen_api.py`：VALUE_RANGES の前で scripts/ci を読めるようにして `import email_patterns as _EP`。createSignup の email を `_EP.LOGIN_EMAIL`。d の手助けに `_EP` を渡す。`05_flow/screen_api.d/K-638.py`：`_SIGNIN_EMAIL` を消し、signInWithPassword を `_EP.LOGIN_EMAIL`（再設定の `_EMAIL` は今のまま） |\n| 部品の確かめ | `packages/auth/src/signup.ts`：`isLoginEmail(normalized)` = `EMAIL_RE.test(e) && z.email().safeParse(e).success`（packages/auth の依存の zod から） |\n| 登録の口 | `apps/api/src/features/F1/sign-up/input.ts` の parseSignup：EMAIL_RE の所を `isLoginEmail(email)` にする（外は今と同じ fail(\"E-VAL-004\", \"email\")） |\n| 預けたログインの login | `scripts/ci/credential_patterns.py` の LOGIN と `apps/api/src/features/F3/credentials/patterns.ts` の LOGIN_PATTERN を `portable(\"\\\\S\")` と同じ字にする（JS での意味は同じ。K352-API-026 が契約と字まで同じかを見る） |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-1117.txt`：`python3 scripts/ci/k1117_portable_contract_test.py` |\n| 作り直し | 作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成物を作り直す |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1117_portable_contract_test.py`（CT 行・作り直した 08_api/openapi.yaml と 05_flow/screen_api.py の表を読む。JS の判定と口の受け方は node・tsx で本物の関数を流す）と `apps/api/test/features/F1/k1117-email-shape.test.ts`（API 行・本物の DB と login.harness.ts・pm-fuzz-auth.test.ts と同じ形）。\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1117-CT-001 | 入力 | portable に `\\S`・`\\s`・`^\\s*[^@\\s]+$`・`\\d{3}`・`[12\\d]`・`\\w`・`\\W`・`\\D`・`a\\\\s`（字の \\ と s）・`[\\s\\S]*`・`\\.` と、直した後の字をもう 1 回 | `[^WS]`・`[WS]`・`^[WS]*[^@WS]+$`・`[0-9]{3}`・`[120-9]`・`[A-Za-z0-9_]`・`[^A-Za-z0-9_]`・`[^0-9]`・`a\\\\s`（変えない）・`[\\s\\S]*`（変えない）・`\\.`（変えない）。2 回目も同じ字 |\n| K1117-CT-002 | 失敗 | portable に `[^\\S]`・`[a\\D]`・`[\\W]`・`\\bx`・`\\B` | どれも ValueError で、文にその pattern の字が入る |\n| K1117-CT-003 | 入力 | 作り直した 08_api/openapi.yaml の全部の pattern（components と道・問い合わせの欄） | `\\s` `\\S` `\\d` `\\D` `\\w` `\\W` を使う pattern が 0 件（`[\\s\\S]` の字の組だけは除く）。pattern は 1 つ以上ある |\n| K1117-CT-004 | 入力 | 05_flow/screen_api.py（d を合わせた後）の VALUE_RANGES・INPUT_RULES・QUERY_RANGES・PATH_PATTERNS の中の `\\s` `\\S` `\\d` を使う pattern と、試しの字（\"\\x1c\"・\"\\x1f\"・\"\\x85\"・\"﻿\"・\"　\"・\" \"・\" \"・\"\\t\"・\"a\"・\"٣\"・\"０\"・\"5\"・\"_\"）を 1 字・前後に \"a\" を付けた 3 通り | どの元の pattern も、portable で直した字が openapi.yaml の pattern に在る。直した字の Python の re.search と、元の字の JS の `new RegExp(元).test` が、全部の試しの字で同じ（違う組が 0 件） |\n| K1117-CT-005 | 入力 | 登録（createSignup）・ログイン（signInWithPassword）のメールの契約の pattern と、部品 better-auth が引く zod の `z.email()` の正規表現の字 | 2 つとも email_patterns.LOGIN_EMAIL を持ち、それは「`^[ \\t\\n\\r]*` ＋ 部品の字（頭の ^ と末の $ を除く）＋ `[ \\t\\n\\r]*$`」と字まで同じ。2 つの口に前の形（`[^@` で始まるローカル部）は無い |\n| K1117-CT-006 | 入力 | 登録の口の入力の確かめ（本物の parseSignup）に、見本 14（\"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\"・\"日本@例.jp\"・\"a@example.com\"・\" Foo.Bar+x@sub.example.co \\n\"・\"ａ@example.com\"・\"Ａ@Example.COM　\"・\"\\x1ca@example.com\"・\"a b@example.com\"・\"a..b@example.com\"・\"a@b.c\"・\"a'@example.com\"・\"x.y+z@example.com\"） | \"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\" の 3 つは契約の形の外。\"日本@例.jp\" は口が 422・code E-VAL-004・欄 email で断る。\"ａ@example.com\"・\"Ａ@Example.COM　\" は口が受ける（今までどおり全角を直して受ける）。契約の形どおりなのに口が断る見本が 0 件 |\n| K1117-CT-007 | 入力 | 預けたログインの login の pattern（scripts/ci/credential_patterns.py の LOGIN・apps/api/src/features/F3/credentials/patterns.ts の LOGIN_PATTERN・openapi.yaml の CredentialCreateInput の login） | 3 つが同じ字で、portable(\"\\\\S\") と同じ（`\\S` の字は残っていない） |\n| K1117-API-001 | 入力 | 登録の口に、部品が断るメール \"日本@例.jp\"・\"k1117-ｶﾅ@example.com\"（EMAIL_RE は通る）と正しい名前・パスワード | どちらも 422・code E-VAL-004・欄 email。申し込み（kaname_auth.pending_signup）はそのメールで 0 行・メールは 1 通も増えない |\n| K1117-API-002 | 失敗 | 登録の口に \"a﹫b@example.com\"・\"﻿@example.com\"（契約の外になった形） | どちらも 422・code E-VAL-004・欄 email（今までどおり断る。fuzz の「形の外」で 2xx にならない）。メールは 1 通も増えない |\n\n### テストの型の受け（分類 TOOL・REG）\n\n登録の口は、断る形（部品が断るメール）を 1 つ足すだけ。申し込みを作る前・パスワードを見る前に返るので、確定・リンク・パスワード・同意・上限の型は前のまま（K-51・K-52 の試験が受ける）。\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: ファイルの名前を読まない（決まった道だけ） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K1117-CT-003（本線の版で 38 件を出して赤・pattern が 0 件なら赤）・K1117-CT-004（元の字のまま契約に書くと \"\\x1c\"・\"\\ufeff\"・\"٣\" で違いが出て赤・直した字が openapi に無くても赤） |\n| TP-TOOL-03 容れ物の中と手元の違い | 要らない: Python と node・tsx（node_modules の部品）だけで、CI の容れ物でも手元でも同じに動く |\n| TP-REG-01 登録が確定する時点 | 要らない: 確定の流れ（verifySignup）は変えない。部品が断るメールは申し込みを作らないので確定まで行かない（K1117-API-001 が 0 行を見る） |\n| TP-REG-02 リンクの期限切れ | 要らない: リンクの扱いは変えない |\n| TP-REG-03 確定の後に同じリンク | 要らない: リンクの扱いは変えない |\n| TP-REG-04 送り直しの後の前のリンク | 要らない: 送り直しは変えない |\n| TP-REG-05 別の端末でリンク | 要らない: リンクの扱いは変えない |\n| TP-REG-06 ログイン中に登録の画面 | 要らない: 画面とセッションの扱いは変えない |\n| TP-REG-07 登録済みのメール | 要らない: 登録済みの確かめ（409 E-CONF-001）は形の確かめの後で変えない。部品が断るメールで登録済みの人はいない（部品が作らない） |\n| TP-REG-08 大文字小文字・前後の空白・全角 | K1117-CT-006（全角・大文字・前後の全角の空白は今までどおり受ける・形の外の全角の @ は断る） |\n| TP-REG-09 漏れたパスワード | 要らない: パスワードの照合は形の確かめの後で変えない |\n| TP-REG-10 パスワードの長さの境目 | 要らない: パスワードの確かめは変えない |\n| TP-REG-11 短い時間に何度も | 要らない: 回数の上限は入口の前で変えない |\n| TP-REG-12 同時に 2 回・2 回押し | 要らない: 断る形を足すだけで、申し込みを作る前に返る |\n| TP-REG-13 同意した規約の版 | 要らない: 同意の記録は形の確かめの後で変えない |\n| TP-REG-14 平文で残らない | 要らない: 断るときは何も書かない（K1117-API-001・002 が申し込み 0 行・メール 0 通を見る）。ログの書き方は変えない |",
+    "依存の理由": "- K-1116: 要る — 同じファイル（05_flow/screen_api.d/K-638.py のログインのメールの形・scripts/ci/k1116_fuzz_contract_test.py）を、K-1116 の版の上で変える",
+    "外に影響する手順": "なし（口は DB に書く前・メールを送る前に断るだけ。作り手は生成物を書くだけ）",
+    "前からの試験を替えた所": "契約の pattern の字を比べる前からの試験と、登録・再設定のメールの形を見る前からの試験を検索で出した。\n\n```search\ngit grep -l -e '\"pattern\"' -e \"\\['pattern'\\]\" -e 'createSignup' -e 'requestPasswordReset' -e 'LOGIN_PATTERN' -- 'scripts/ci/*_test.py' 'scripts/ci/contract_shape.d/K-638.py' 'apps/api/test/features/**/*.ts' | grep -v k1117\n11\n```\n\n- scripts/ci/contract_shape_test.py: 替える — K144-SHAPE-022・023・028 が元の表の字と契約の字を「==」で比べる。比べる前に元の字に portable を当てる（表の写しの字は変えない）。createSignup の email の写しを `_EP.LOGIN_EMAIL` にし、`email_patterns` を読む\n- scripts/ci/k1116_fuzz_contract_test.py: 替える — K1116-CT-001 の body の `\\S` を portable(\"\\\\S\") と比べる。K1116-CT-002（`_leaks`）は元の表の値域と決まりに walk を当ててから契約と比べる（当てないと `\\S` の値域の漏れが等しくならず見えない・精査の指摘）。K1116-CT-005（登録・再設定は前の形のまま）は、登録はこのチケットが LOGIN_EMAIL にし、再設定は前の形に portable を当てた字になったので、その 2 つを見る\n- scripts/ci/contract_shape.d/K-638.py: 替えない — 再設定の写しは元の字のまま（比べる側が portable を当てる）\n- scripts/ci/k638_contract_test.py: 替えない — 形の判定（fits）で見る。見本（a@b.co・\" A@B.CO \"・x.y+z@example.com と形の外の 7 つ）は新しい形でも同じに分かれる\n- scripts/ci/k172_ci_shape_test.py: 替えない — CI の記録の置き場の名前の pattern（junit-*）で、契約の pattern ではない\n- apps/api/test/features/F3/credentials-create.test.ts: 替えない — K352-API-026 は契約の login と LOGIN_PATTERN の字を比べる。両方をそろえる（実施事項）ので同じに通る\n- apps/api/test/features/F10/invite-create.test.ts: 替えない — 招く口の pattern は `\\s` を使わない（WS を並べた字）。portable で変わらない。K419-API-027 は EMAIL_RE を使い、EMAIL_RE は変えない\n- apps/api/test/features/F1/sign-up.test.ts: 替えない — K51-API-011 の断る見本・K51-API-012 の全角と空白の見本はどれも同じ答え（ASCII の正しいメールは z.email() を通る）\n- apps/api/test/features/F1/password-forgot.test.ts: 替えない — 再設定の口は変えない\n- apps/api/test/features/F1/password-reset.test.ts: 替えない — 再設定の口は変えない\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — RANGE_CASES に登録のメールは無い。ほかの値は直した形でも同じに分かれる（ASCII と全角の空白・改行）\n- 検索に出ない物も読んだ：scripts/ci/k639_contract_test.py（形の判定・ASCII の見本で同じに分かれる）・apps/api/test/features/F1/pm-fuzz-auth.test.ts（ログインと再設定の見本は z.email() を通る）・apps/api/test/generated/*（作り手の生成物・changes_ignore・作り直しでそろう）。どれも替えない",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：直す向きは部品の z.email() と口の正規化（NFKC・trim）を正にする。種類 1・3 は登録の口に部品の確かめを足して契約を部品の形にする。種類 2 は作り手の出口で 1 回だけ直す。再設定は K-1106 の後の葉",
+    "リスクと懸念": "- 契約のメールの形は口より狭い（全角の字・制御の字は口が直して受けるが契約の外）。fuzz の「形の外」の見本が正しいメールに直る字の並びになるのはまれ。なれば登録が受けて ST201 になる（K-1116 のログインと同じ書き方）\n- 変換は字の組を数えて直す。直せない形は作り手が止まるので、黙って違う形を書かない\n- 画面の登録・再設定の形（apps/web の EMAIL_RE）は前のまま広い。部品が断るメールは口が 422 E-VAL-004 で返し、画面はその文を出す",
+    "申し送り": "- 再設定の口（requestPasswordReset）：口に isLoginEmail を足し、契約のメールの形を `_EP.LOGIN_EMAIL` にする（K-638.py の `_EMAIL` と contract_shape.d/K-638.py の写し・k1116 の CT-005）。\"a﹫b@example.com\"・\"a＠b@example.com\" はそれまで契約どおりで口が断る（ST202 の種）。K-1106 が本線に入った後の PM の直しの葉（前からある別の場所の問題 c）\n- `$` は Python（schemathesis）では末の改行 1 つの前でも当たり、JS では当たらない。`.` は JS が \\r・ ・  にも当たらない。どちらもこのチケットでは変えない（K-1116 は記憶を直す口が末の改行 1 つを受けて合わせた）。前からある別の場所の問題（c）\n- 招く口（createInvitations）も、部品が断るメール（\"日本@例.jp\" など）を招けてしまう。受ける時に部品で落ちるかは確かめていない。前からある別の場所の問題（c）"
+   },
+   "file": "11_tickets/K-1117.md"
+  },
+  {
+   "id": "K-1120",
+   "title": "直し：G74（本体への直の足し）を、分かれ目と今の先頭の木の差で判定する（途中で足して後で戻した履歴は数えない）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-324",
+   "milestone": "共通",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1116（1 時間）の半分：検査の台本 1 つの判定の 1 か所と試験 1 本だけ（生成物・契約・口は変えない）。チケットと試験 15 分・実装 5 分・確かめ 10 分",
+   "decisions": [
+    "D-128.123",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の台本（scripts/ci/body_append_gate.py）だけ。DB・外の口・秘密に触らない",
+   "tests": [
+    "scripts/ci/k1120_body_append_tree_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（CI の検査の台本だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/body_append_gate.py",
+    "scripts/ci/g65.d/K-1120.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "G74（K-1112 が入れた「共通の台帳の本体に葉が直に行を足さない」の検査 `scripts/ci/body_append_gate.py`）は、比べる元から先頭までのコミットを 1 つずつ見る。そのため、K-1112 が本線に入る前に本体に行を足したコミット（K-401 の 725225cd7：`05_flow/screen_api.py` の書く表 3 行）が枝の履歴に在るだけで、後のコミットで本体を戻して断片（.d）に移しても赤のまま変わらない。葉の履歴は書き直せない（重ねた子が全部持っている）。K-401 は段 9 の根なので、段 9 の全部が止まっている。\n\nこの検査が守りたいのは「取り込みでぶつからないよう、取り込む木の本体に葉の行が増えていない」ことで、それは分かれ目（比べる元）と今の先頭の木を比べれば分かる。途中のコミットで足して後で戻した物は、取り込む木に無いのでぶつからない。\n\nPM の決め（作り方）：\n1. 判定は「比べる元の木に無く、今の先頭の木に在る鍵・行」だけ。途中のコミットは数えない\n2. 赤の文の頭のコミットは、直す人が場所を探せるように今までどおり出す（比べる元から先頭までで、その鍵・行を最後に足したコミット）。判定には使わない\n3. 猶予の台帳（`scripts/ci/body_append_grandfather.json`）の扱いは変えない：台帳の鍵は数えない・台帳が分かれ目より増えたら赤・台帳の作り手（--ledger-now）は枝のコミットを 1 つずつ見るまま",
+    "完了の条件": "- [ ] 下の表の行（K1120-CT-001〜011）が緑\n- [ ] 前からの試験 `scripts/ci/k1112_body_append_test.py` が替えずに緑（G74 の段で流れる）\n- [ ] チケットの範囲の CI が緑。K-401 の枝（本体を戻して断片に移した後）の G74 が緑（PM が確かめる）",
+    "前提と制約": "分類: TOOL\n\n- 変えるのは `scripts/ci/body_append_gate.py` の check（判定）と頭の説明だけ。何を「足した」と数えるか（表の鍵・足す書き方の文・文書の表の行・表の頭の行は数えない・値の直しは見ない）は変えない\n- G74 の段の命令（.github/workflows/v3-gate.yml・作り手 05_flow/build_testplan.py の id 74）は変えない。比べる元は今までどおり CI の範囲の段が出す base（葉の CI では、本線との分かれ目か、重ねた依存を合わせた木）\n- 比べる元が古い分かれ目のまま本線を取り込んだ枝で、その間に本線に入った足しが葉の物に数えられるのは今までも同じ（base..HEAD に本線のコミットが入る）。葉の CI は取り込んだ後の分かれ目を渡すので起きない。ここでは変えない",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| あるコミットが親に無い鍵・行を出す関数 | `scripts/ci/body_append_gate.py` の `added(root, rev, parents)` | 親に比べる元 1 つを渡せば、比べる元の木と今の先頭の木の差になる（同じ関数・数え方は 1 つのまま） |\n| コミットを 1 つずつ見る関数 | 同じファイルの `scan` | 赤の文に出すコミットを探すのと、台帳の作り手（ledger_now）に今のまま使う |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-<番号>.txt` | この葉の試験を 1 行で置く（作り手が CI の定義に書く） |\n| 探したが無かった物 | 木の差で本体への足しを見る検査 | この葉で check を直す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 判定 | `scripts/ci/body_append_gate.py` の check：`scan(root, base)` の結果を全部赤にするのをやめ、`added(root, \"HEAD\", [base])`（比べる元の木に無く今の先頭の木に在る物）のうち台帳に無い鍵を赤にする |\n| 赤の文のコミット | 赤が 1 件でも在るときだけ `scan(root, base)`（新しい順）を流し、鍵ごとに最初に当たったコミット（＝最後に足したコミット）の「短い番号 件名」を文の頭に出す。当たらなければ「（足したコミットは分からない）」 |\n| 頭の説明 | 「見るのは、比べる元から先頭までのコミット 1 つずつ」を「比べる元の木と今の先頭の木の差」に直す。取り込みのコミットの数え方の文は、台帳の作り手と赤の文のコミット探しの説明として残す |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-1120.txt`：`python3 scripts/ci/k1120_body_append_tree_test.py` |\n| 作り直し | 作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成物（CI の定義・試験計画・チケットの一覧）を作り直す |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1120_body_append_tree_test.py`。行ごとに使い捨ての git の置き場を作り（本体 `05_flow/screen_api.py`・文書 `08_api/phase1/01_x.md`・台帳に鍵 2 つ）、本物の `body_append_gate.check` と台本（--base-ref・--ledger-now）を流す。\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1120-CT-001 | 時間の流れ | 途中のコミットで本体の表（PERMS・LIST_OPS・SCREEN_API）に鍵を足し、後のコミットで本体を元に戻して断片（screen_api.d/K-401.py）に移した枝 | 赤 0 件。台本は終わりの番号 0 で「本体への直の足し：無い（緑）」と出す |\n| K1120-CT-002 | 時間の流れ | 途中のコミットで本体の文書の表に行を足し・今ある行の字を直し、後のコミットで本体を元の字に戻して断片（01_x.d/K-401.md）に移した枝 | 赤 0 件・台本は終わりの番号 0 |\n| K1120-CT-003 | 守り | 途中のコミットで足した鍵 3 つ（PERMS・LIST_OPS・SCREEN_API の getB）と文書の行 1 つ（`GET /b`）が今の先頭に残る（後のコミットは別のファイルだけを変えた） | 赤 4 件（鍵・行ごとに 1 件）。どの文にも足したコミットの件名「K-7 feat: 足す」、鍵（`PERMS 'getB'` など）、置き場（`screen_api.d/<番号>.py`・`01_x.d/<番号>.md`）。台本は終わりの番号 1 で「赤 4 件」 |\n| K1120-CT-004 | 対象の状態 | 途中で鍵を 2 つ（p・q）足し、後のコミットで p だけ戻した枝 | 赤 1 件で `LIST_OPS 'q'` だけ（p は文に出ない） |\n| K1120-CT-005 | 操作の揺れ | 同じ鍵 w を足す → 戻す → もう一度足した枝 | 赤 1 件（コミットの数だけ数えない）。文のコミットは最後に足したコミット「2 回目」 |\n| K1120-CT-006 | 守り | 猶予の台帳：台帳の鍵（LIST_OPS 'x'・文書の行 `GET /g`）を本体に足した枝／台帳に鍵を 1 つ足した先頭／台帳を元に戻した先頭／台帳から `GET /g` を消した先頭 | 順に：赤 0 件／赤 1 件「減らすだけ」と足した鍵 `LIST_OPS 'w'`／赤 0 件（途中で増やして戻した台帳は数えない＝今までも先頭と分かれ目の比べ）／赤 1 件で `GET /g`（文に足したコミットの件名「前から作っていた葉」） |\n| K1120-CT-007 | 対象の状態 | 台帳の作り手（--ledger-now）を、途中で鍵 v を足して後で戻した葉の枝 t/K-50 に流す | 今のまま枝のコミットを 1 つずつ見る：終わりの番号 0・entries は `05_flow/screen_api.py\\|LIST_OPS 'v'` の 1 つ・tickets は変わらない |\n| K1120-CT-008 | 操作の揺れ | 本線を取り込んだ枝（比べる元＝取り込んだ本線の先頭・本線は鍵 m を足した）／取り込みを解くときに鍵 z を足した先頭／後のコミットで z を戻した先頭 | 順に：赤 0 件（本線の m は数えない）／赤 1 件で `LIST_OPS 'z'`・文に取り込みのコミットの件名「K-3 merge」／赤 0 件 |\n| K1120-CT-009 | 失敗 | 比べる元が空・無いコミット（0 が 40 桁）／比べる元が今の先頭と同じ | 空・無いコミットは赤 1 件「読めない」（今のまま・黙って緑にしない）／同じなら赤 0 件 |\n| K1120-CT-010 | 入口 | CI へのつなぎ | `scripts/ci/g65.d/K-1120.txt` がこの試験の命令 1 行。CI の定義にこの試験の命令が在り、G74 の段は今のまま base を env で渡して `body_append_gate.py --base-ref \"$CI_BASE\"` を流す |\n| K1120-CT-011 | 対象の状態 | 鍵 w が本体に在った時点から分かれた枝が、本体から w を消した元（比べる元）を取り込むときに w を残して解いた（取り込みのコミットは枝側の親と同じ字で、足したコミットは比べる元より前） | 赤 1 件。文に `LIST_OPS 'w'` と「足したコミットは分からない」。台本は終わりの番号 1 で「赤 1 件」 |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: 読む道は決まった 2 つ（05_flow/screen_api.py・08_api/phase1）で、道の読み方（git diff -z）は変えない。日本語の名前の本物の文書は前からの K1112-BA-006 が見る |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 003・004・005・006・008・011（今の先頭に足しが在れば赤になる・件数と鍵まで見る）・009（比べる元が読めなければ赤） |\n| TP-TOOL-03 容れ物の中と手元で違う | 要らない: 部品は Python の標準と git だけで、読むのは使い捨ての置き場とリポジトリの中だけ |\n\n### 8 つの観点\n\n| 観点 | 判定 |\n|---|---|\n| 入力 | N/A：何を足しと数えるかは変えない（前からの K1112-BA-008・010・015 が見る） |\n| 対象の状態 | 004・007・011 |\n| 時間の流れ | 001・002（途中で足して後で戻す） |\n| 入口 | 010 |\n| 利用者の状態 | N/A：人の状態を扱わない |\n| 失敗 | 009 |\n| 操作の揺れ | 005・008 |\n| 守り | 003・006 |",
+    "外に影響する手順": "なし（読むだけの検査。試験が書くのは使い捨ての置き場だけ）",
+    "前からの試験を替えた所": "検査の台本（body_append_gate）と G74 を読む前からの試験を検索で出した。\n\n```search\ngit grep -l -e 'body_append_gate' -e 'G74' -- 'scripts/ci/*_test.py' 'apps/**/test/**' | grep -v k1120\n1\n```\n\n- scripts/ci/k1112_body_append_test.py: 替えない — Gate の 8 本（BA-008〜013・015・016）は、どれも「足した物が今の先頭に残る＝赤」「残らない＝緑」の形で、木の差でも同じ件数・同じ文（コミットの件名・鍵・置き場）になる。BA-016 の「左のコミットの同上 L だけ 1 件・取り込みのコミットは数えない」は、同上 L を最後に足したのが左のコミットなので同じ。BA-012 は比べる元が取り込んだ本線の先頭なので同じ\n\n検査の台本を呼ぶ所（試験のほか）：\n\n```search\ngit grep -l 'body_append_gate' -- . ':!11_tickets' ':!07_qa' ':!scripts/ci/k1112_body_append_test.py' ':!scripts/ci/k1120_body_append_tree_test.py' ':!scripts/ci/body_append_gate.py'\n3\n```\n\n- .github/workflows/v3-gate.yml・05_flow/build_testplan.py: G74 の段の命令。変えない（引数は同じ）\n- scripts/ci/body_append_grandfather.json: 台帳の説明の字。変えない（台帳の扱いは同じ）",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：G74 は分かれ目と今の先頭の木の差で判定する（途中のコミットは数えない）。猶予の台帳の扱い・台帳が増えたら赤は今のまま",
+    "リスクと懸念": "- 途中のコミットで本体に足して戻した葉は緑になる。取り込む木に足しが無いので、取り込みのぶつかり（この検査が守りたい物）は起きない。ただし、その葉に重ねた子が、足してあった時点の木から分かれていると、子の木には足しが残る：子の CI の比べる元は重ねた元を合わせた今の木なので、子の先頭に残っていれば子の G74 で赤になる（子が元の枝を取り込めば消える）\n- 赤の文のコミットは「最後に足したコミット」を出す。足す → 戻す → 足すの枝では 1 回目のコミットは文に出ない（直す場所は今の先頭の本体なので困らない）",
+    "申し送り": "- PM：K-401 の枝は、本体（05_flow/screen_api.py の書く表 3 行）を比べる元の字に戻し、断片 05_flow/screen_api.d/K-401.py に移してあれば、この葉が本線に入った後の CI で G74 が緑になる。段 9 の子は K-401 の今の先頭を取り込む"
+   },
+   "file": "11_tickets/K-1120.md"
+  },
+  {
+   "id": "K-1121",
+   "title": "直し：契約の作り手 05_flow/build_api.py の表（INTERNAL_TABLES・INTERNAL・KEY_CURSOR_OPS）に葉が足す分を、葉ごとの断片 05_flow/build_api.d/K-<番号>.py に書く形にし、本体への直の足しを G74 で止める・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-324",
+   "milestone": "共通",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測 K-1112（同じ形の .d と G74 の段・1 本 約 1 時間）・K-1120（G74 の判定の直し 0.5 時間）から引いた。作り手に断片を読む 2 か所 10 分・G74 に本体を 1 つ足す 15 分・猶予の台帳 10 分・試験 1 本 20 分・作り直しと確かめ 5 分",
+   "decisions": [
+    "D-128.123",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の作り手（05_flow/build_api.py）・検査の台本（scripts/ci/body_append_gate.py）・CI の範囲の地図だけ。DB・外の口・秘密に触らない",
+   "tests": [
+    "scripts/ci/k1121_build_api_d_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（作り手と CI の検査の台本だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "05_flow/build_api.py",
+    "05_flow/build_api.d/README.md",
+    "05_flow/screen_api.d/README.md",
+    "scripts/ci/body_append_gate.py",
+    "scripts/ci/body_append_grandfather_build_api.json",
+    "scripts/ci/ci_scope.d/_base.json",
+    "scripts/ci/g65.d/K-1121.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "契約の作り手 `05_flow/build_api.py` の本体の表に、葉が手で鍵を書き足している（今日の枝で見えた物：`KEY_CURSOR_OPS` に listConversations・listConversationMessages・listCloneActivity。段 6 の枝 i/段6 と K-754・K-757〜K-776）。同時に作る葉が同じ行を書き換えるので、取り込みのたびに本線や段の枝とぶつかる（2026-11-23 に K-705・K-675・K-717・K-681・K-676・K-677・K-679 の 7 本が build_api.py で止まった）。\n\n`05_flow/screen_api.py` には葉ごとの断片の置き場（`05_flow/screen_api.d/K-<番号>.py`・部品 `scripts/ci/registry_d.py` の merge_py）と、本体への直の足しを止める検査 G74（`scripts/ci/body_append_gate.py`・K-1112・K-1120）がある。build_api.py にも同じ形を作る。\n\nPM の決め（作り方）：\n1. 置き場は `05_flow/build_api.d/`。足せる表は build_api.py の本体の表 `INTERNAL_TABLES`（dict）・`INTERNAL`（set）・`KEY_CURSOR_OPS`（set）の 3 つだけ。合わせ方は screen_api.d と同じ部品 `registry_d.merge_py`（dict は鍵ごと・同じ鍵は止める／set は和／知らない表の名前・置けない名前は止める）。3 つの名前は作り手と検査で同じ 1 つの一覧（検査の `BUILD_TABLES`）\n2. 断片が足した値の書き間違いを黙って捨てない：KEY_CURSOR_OPS は契約の一覧の口の operationId、INTERNAL_TABLES の鍵は ER の表の名前、INTERNAL は ER のどれかの表の列の名前でなければ、作り手が止まる（生成物を書かない）。本体の今の値は見ない（今の値は変えない）\n3. 今の本体にある値は本体に残す（移さない）。新しい葉から断片に書く\n4. G74 の対象に build_api.py を足す。数えるのは、3 つの表の頭の段の定義（dict・set の字）の新しい鍵と、3 つの表の名前を書き換える文（`X[k] = …`・`X |= …`・`X = …`（定義の字の外）・`X.add(…)`・`X.update(…)` など）。書き換える文はモジュールのどこにあっても（for・if・関数の中でも）数える。今の build_api.py には 3 つの表を定義の外で書き換える所は無い（精査 R が AST で確かめた）。作り手が断片を受ける入れ物 `_D` も見る名前に入れ、`_D` やその添え字を書き換える文（`_D[\"INTERNAL\"].add(…)`・`_D[k][j] = …`・代入し直し）もどこにあっても数える。書き換えはメソッドの名前（add・update・setdefault・pop・remove・discard・clear・append・extend・insert・*_update など、中身を変える物）で見る（items・get などの読むだけは数えない）。除くのは、この葉が入れる 2 つの文の 1 つ目だけ：入れ物の定義 `_D = {'INTERNAL_TABLES': INTERNAL_TABLES, 'INTERNAL': INTERNAL, 'KEY_CURSOR_OPS': set()}` と合わせの文 `KEY_CURSOR_OPS = KEY_CURSOR_OPS | _D['KEY_CURSOR_OPS']`（同じ字の 2 つ目からは数える。部品の呼び出し `merge_py(_D, …)` は _D のメソッドでも代入でもないので数えない）。3 つの外の表・作り方の手順・読み込み・書き出しは数えない（作り手の作り方の直しは本体でしてよい）。`_D` 以外の別の名前に写してから足す形（`y = INTERNAL; y.add(…)`）は見ない（リスク）\n5. 今作っている葉（この決まりの前に始めた葉）と段の枝が既に build_api.py の本体に足していた鍵は、新しい猶予の台帳 `scripts/ci/body_append_grandfather_build_api.json` に書く。今の台帳 `body_append_grandfather.json` は 1 バイトも変えない（増やせない決まりなので、build_api.py の分は別の台帳にする）。台帳は受ける鍵の頭が決まっている：新しい台帳は `05_flow/build_api.py|` の鍵だけ・今の台帳はそれ以外だけ。違う頭の鍵が台帳に在れば赤。どちらの台帳も分かれ目より増えたら赤（減らすだけ）。分かれ目に台帳が無い（台帳を作る回）は増えたかを見ない（K-1112 と同じ）\n6. 新しい台帳は `body_append_gate.py --ledger-now --ledger scripts/ci/body_append_grandfather_build_api.json` で作る。`--ledger` を付けると書くのはその台帳だけ（無ければ今までどおり今の台帳だけ）。tickets の名前は葉の番号（枝 t/<番号>）か枝の名前そのもの（`i/段6` のように / を含む）。段の枝 i/段6 を tickets に入れるので、葉の枝が消えても段の枝の鍵は台帳に入る。比べる元：葉の CI は本線との分かれ目か重ねた依存を合わせた木、段の枝の全部の CI は本線との分かれ目。どちらでも鍵の字は同じなので台帳の 1 つの鍵で数えない\n7. 断片が無いときに作り手の生成物（08_api の契約）が 1 バイトも変わらないこと",
+    "完了の条件": "- [ ] 下の表の行（K1121-BD-001〜014）が緑\n- [ ] 前からの試験 `scripts/ci/k1112_body_append_test.py`・`scripts/ci/k1120_body_append_tree_test.py` が替えずに緑（G74・G65 の段で流れる）\n- [ ] 作り手で作り直して、08_api の生成物の差が 0（生成物が最新かの検査が緑）\n- [ ] チケットの範囲の CI が緑",
+    "前提と制約": "分類: TOOL\n\n- build_api.py で変えるのは、断片を読む 2 か所（INTERNAL の定義の直後に断片を合わせる・KEY_CURSOR_OPS は qtype の定義の後で断片の分を和にする）と頭の説明だけ。表の今の値・作り方の手順は変えない\n- `KEY_CURSOR_OPS = {…}` の行（199 行目）とその前後の行は変えない（段 6 の枝 i/段6 が同じ行を書き換えているので、触ると取り込みでぶつかる）。断片の分は、その行から離れた qtype の後で和にする\n- 断片に書けない物：build_api.py の作り方の手順の直し（PUT を受ける・LIST_RESULT_OPS を読むなど）。それは本体を直す（表ではないので断片にできない）。screen_api.py の表（SUCCESS_STATUS・LIST_RESULT_OPS・ALSO_2XX など、作り手が `_sa` から読む表）は今までどおり screen_api.d に書く\n- G74 の段の命令（.github/workflows/v3-gate.yml・作り手 05_flow/build_testplan.py の id 74）は変えない。この葉の試験は g65.d で G65 の段に載せる",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 断片を合わせる部品 | `scripts/ci/registry_d.py` の `merge_py`・`fragments` | screen_api.py の最後（`_merge_py(globals(), …screen_api.d…)`）と同じ部品を、build_api.py の表を入れた dict に向けて呼ぶ |\n| 本体への直の足しの検査 | `scripts/ci/body_append_gate.py`（`py_keys`・`added`・`check`・`ledger_now`） | 見る本体に build_api.py を足す。表の鍵の数え方は同じ関数を使い、「文」は表に足す文だけにする |\n| 猶予の台帳の作り方 | `body_append_gate.py --ledger-now`（K-1112） | 台帳ごとに、見る本体の鍵だけを書くようにする |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/_base.json` の `spec.paths` | `05_flow/build_api.d/**` を足す（今は地図に無い＝unmapped） |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-<番号>.txt` | この葉の試験を 1 行で置く |\n| 探したが無かった物 | build_api.py の表の断片の置き場 | この葉で作る |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作り手が断片を読む | `05_flow/build_api.py`：`INTERNAL = {…}` の直後に `_D = {\"INTERNAL_TABLES\": INTERNAL_TABLES, \"INTERNAL\": INTERNAL, \"KEY_CURSOR_OPS\": set()}` を作り、`registry_d.merge_py` で `05_flow/build_api.d` を合わせる（INTERNAL_TABLES・INTERNAL はその場で足される）。合わせる前の写しと比べて断片が足した値だけを決め 2 で照らし、誤りは SystemExit（どの表のどの値か・置き場の名前）。`def qtype` の後に `KEY_CURSOR_OPS = KEY_CURSOR_OPS \\| _D['KEY_CURSOR_OPS']` |\n| 置き場の説明 | `05_flow/build_api.d/README.md`（足せる表 3 つ・書き方・本体に書かない・KEY_CURSOR_OPS に足すときは入口 `apps/api/src/contract/op.ts` の KEY_CURSOR_OPS にも足す）。`05_flow/screen_api.d/README.md` に「build_api.py の表は build_api.d」を 1 行 |\n| G74 | `scripts/ci/body_append_gate.py`：見る本体に `05_flow/build_api.py` を足す（決め 4・赤の文は `05_flow/build_api.d/<番号>.py の同じ名前の表に書く`）。台帳を 2 つ（決め 5：受ける頭・増えたら赤）。`--ledger-now` に `--ledger <台帳>`（決め 6）。頭の説明を直す |\n| 猶予の台帳 | `scripts/ci/body_append_grandfather_build_api.json`：tickets は i/段6 と、今の段 write〜merge の葉で build_api.py の本体に鍵を足していた葉（K-754・K-757・K-758・K-759・K-760・K-763・K-774・K-776）、entries は決め 6 の命令で作る。今の台帳は変えない |\n| CI の範囲 | `scripts/ci/ci_scope.d/_base.json` の `spec.paths` に `05_flow/build_api.d/**` |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-1121.txt`：`python3 scripts/ci/k1121_build_api_d_test.py` |\n| 案内 | PM の TS の共通の指示（`.ticket-flow/TS-brief.md`・本線の作業場所・版に入らない）の K-1112 の行の隣に「build_api.py の表は build_api.d に書く」を 1 行（PM の頼み） |\n| 作り直し | 作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`・`python3 05_flow/build_api.py`）で生成物を作り直す。08_api の差は 0 |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1121_build_api_d_test.py`。作り手の行（001〜007）は、使い捨ての置き場に作り手と入力（05_flow の作り手と flow.json・screen_api.py と screen_api.d・07_functional の JSON・03_architecture の choke-points.json と colrules.json・07_qa/test-specs/errors.json・08_api/db-columns.json・scripts/ci の部品）を写し、本物の `05_flow/build_api.py` を流して 08_api の生成物を読む。G74 の行（008〜012）は使い捨ての git の置き場で本物の `body_append_gate.check` と台本を流す。\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1121-BD-001 | 対象の状態 | 断片の置き場が無い／README.md だけ／中身の無い断片 K-9.py（コメントだけ） | どれも終わりの番号 0。08_api の生成物 10 個（openapi.yaml・endpoints.json・types.ts ほか）が 3 つとも 1 バイトも違わない |\n| K1121-BD-002 | 入力 | 断片 K-9.py に `KEY_CURSOR_OPS = {\"<鍵の印でない一覧の口>\"}`（今の契約から、cursor を受けて鍵の形でない一覧の口を名前の順で 1 つ選ぶ） | その口の cursor の形が `^[A-Za-z0-9_-]{1,200}$`（断片が無いときは `^[0-9]{1,9}$`）。鍵の形になった口はその 1 つだけ増え、本体の 3 つの口（listApprovalQueue・listNotifications・listTickets）は鍵の形のまま |\n| K1121-BD-003 | 入力 | 断片に `INTERNAL = {\"<内部でない列の名前>\"}`（api-field-consumption で internal が偽の列で、表の入力の形 <表>Input（x-operation の無い形）に在り、screen_api の REQUIRED_INPUTS・VALUE_RANGES・INPUT_RULES・QUERIES のどこにも出ない名前を、名前の順で 1 つ選ぶ） | api-field-consumption のその名前の行が全部 internal 真。openapi のその入力の形からその欄が消える |\n| K1121-BD-004 | 入力 | 断片に `INTERNAL_TABLES = {\"<表の名前>\": \"訳の字\"}`（内部でない表を名前の順で 1 つ選ぶ） | api-field-consumption のその表の行が全部 internal 真で、マスタでない行の reason が「訳の字」 |\n| K1121-BD-005 | 守り | 断片が本体の鍵 `INTERNAL_TABLES[\"search_embeddings\"]` を持つ／2 つの断片 K-8.py・K-9.py が同じ鍵 `INTERNAL_TABLES[\"<表の名前>\"]` を持つ | どちらも終わりの番号が 0 でなく、文に「元の表 と K-9.py が search_embeddings を両方持つ」／「K-8.py と K-9.py が <表の名前> を両方持つ」。生成物は書かれない（前のまま） |\n| K1121-BD-006 | 入力 | 断片に足せない表の名前（`SUCCESS_STATUS`＝screen_api.d の表・`KEY_CURSOR_OP`＝書き間違い）／dict の表を set で書いた（`INTERNAL_TABLES = {\"a\"}`） | どれも終わりの番号が 0 でなく、文に「足せる表の名前ではない」／「dict で書く」とファイル名 K-9.py。生成物は前のまま |\n| K1121-BD-007 | 入力 | 置き場に置けない名前のファイル（`notes.py`）／読めない断片（字の誤り `KEY_CURSOR_OPS = {`） | どれも終わりの番号が 0 でなく、文に「置けない名前」／「読めない」とファイル名。生成物は前のまま |\n| K1121-BD-008 | 守り | 葉の枝が build_api.py の本体の表に鍵を足した：KEY_CURSOR_OPS に 'listX'・INTERNAL_TABLES に \"x_tbl\"・INTERNAL に \"x_col\" | 赤 3 件。どの文にも足したコミットの件名「K-7 feat: 足す」・鍵（`KEY_CURSOR_OPS 'listX'` など）・置き場 `05_flow/build_api.d/<番号>.py`。台本は終わりの番号 1 で「赤 3 件」 |\n| K1121-BD-009 | 守り | 葉の枝が 3 つの表を書き換える文を書いた：頭の段の `KEY_CURSOR_OPS.add(\"listY\")`・`INTERNAL \\|= {\"y\"}`・`INTERNAL_TABLES[\"y_tbl\"] = \"y\"`／for の中の `INTERNAL.add(k)`／関数の中の `KEY_CURSOR_OPS.update(…)`／合わせの文 `KEY_CURSOR_OPS = KEY_CURSOR_OPS \\| _D['KEY_CURSOR_OPS']` を 2 回／入れ物の定義を 2 回／`_D[\"INTERNAL\"].add(\"y\")`／`_D[\"KEY_CURSOR_OPS\"].add(\"listY\")`／`_D[\"INTERNAL_TABLES\"][\"y_tbl\"] = \"y\"` | 順に：赤 3 件（「文 …」の鍵・置き場 `05_flow/build_api.d/<番号>.py`）／あとはどれも赤 1 件（2 回書いた文は 2 つ目だけ） |\n| K1121-BD-010 | 対象の状態 | 葉の枝が：作り方の手順を直した（頭の段の for の中身・関数の中・小文字の名前の代入と `.add`・3 つの外の大文字の名前 `BASE = …` の直し・3 つの外の大文字の表 `OTHER = {…}` を足して鍵を足す）／今ある鍵の値を直した（INTERNAL_TABLES[\"search_embeddings\"] の訳の字）／入れ物の定義と合わせの文を 1 回ずつ書き、`_D.items()` を読んだ／断片 build_api.d/K-5.py を足した | どれも赤 0 件・台本は終わりの番号 0 で「無い（緑）」 |\n| K1121-BD-011 | 守り | 猶予の台帳 2 つ：新しい台帳の鍵（`05_flow/build_api.py\\|KEY_CURSOR_OPS 'listZ'`）と今の台帳の鍵（screen_api.py の `LIST_OPS 'x'`）を本体に足した枝／新しい台帳に鍵を 1 つ足した先頭／新しい台帳に screen_api.py の鍵を書いた先頭（分かれ目に無い台帳を作る回でも）／今の台帳に build_api.py の鍵を書いた先頭／分かれ目に新しい台帳が無く先頭で作った枝 | 順に：赤 0 件／赤 1 件で「body_append_grandfather_build_api.json」と「減らすだけ」／赤 1 件で「body_append_grandfather_build_api.json」と「受けない鍵」と鍵／赤 1 件で「body_append_grandfather.json」と「受けない鍵」／赤 0 件（台帳を作る回） |\n| K1121-BD-012 | 対象の状態 | 台帳の作り手：screen_api.py と build_api.py の両方に鍵を足した葉の枝 t/K-50 と、build_api.py に鍵を足した段の枝 i/段6（新しい台帳の tickets に K-50 と i/段6）に、`--ledger-now --ledger <新しい台帳>`／`--ledger-now`（--ledger 無し）／新しい台帳が無い置き場で `--ledger-now` | 順に：終わりの番号 0・新しい台帳の entries は両方の枝の build_api.py の鍵だけ（`KEY_CURSOR_OPS 'listV'`・`KEY_CURSOR_OPS 'listS'`）・今の台帳は 1 バイトも変わらない／今の台帳の entries は screen_api.py の鍵だけ（`LIST_OPS 'v'`）で新しい台帳は変わらない／今の台帳だけを書き、新しい台帳を作らない |\n| K1121-BD-013 | 入口 | CI へのつなぎ | `scripts/ci/g65.d/K-1121.txt` がこの試験の命令 1 行で、CI の定義にこの命令が在る。CI の範囲の地図で `05_flow/build_api.d/K-9.py`・`README.md` が spec（unmapped でない）。G74 の段は今のまま `body_append_gate.py --base-ref \"$CI_BASE\"` |\n| K1121-BD-014 | 入力 | 断片の値の書き間違い：KEY_CURSOR_OPS に契約に無い口 `listNoSuchOp`／一覧でない口（契約の GET で一覧でない口を名前の順で 1 つ）、INTERNAL_TABLES に無い表 `no_such_table`、INTERNAL に無い列 `no_such_col` | どれも終わりの番号が 0 でなく、文に表の名前・その値・「05_flow/build_api.d」。生成物は前のまま |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: 読む道は決まった英字の道（05_flow/build_api.py・05_flow/build_api.d）だけ。文書の日本語の名前は前からの K1112-BA-006 が見る |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 002・003・004（断片の値が生成物に出る）・005〜007・014（誤りは止まる）・008・009・011（本体への足しは赤になり件数と鍵まで見る） |\n| TP-TOOL-03 容れ物の中と手元で違う | 要らない: 部品は Python の標準と PyYAML（作り手が前から使う）と git だけで、読むのは使い捨ての置き場とリポジトリの中だけ |\n\n### 8 つの観点\n\n| 観点 | 判定 |\n|---|---|\n| 入力 | 002・003・004・006・007・014 |\n| 対象の状態 | 001・010・012 |\n| 時間の流れ | N/A：途中で足して戻す履歴の数え方は K-1120 のまま（前からの K1120-CT-001・002 が見る） |\n| 入口 | 013 |\n| 利用者の状態 | N/A：人の状態を扱わない |\n| 失敗 | 005・006・007・014（作り手が止まり生成物を書かない） |\n| 操作の揺れ | N/A：作り手と検査は 1 回ずつ流れるだけ（同じ鍵を 2 つの断片が持つのは 005） |\n| 守り | 005・008・009・011 |",
+    "外に影響する手順": "なし（作り手は 08_api の生成物を書くだけ・検査は読むだけ。試験が書くのは使い捨ての置き場だけ）",
+    "前からの試験を替えた所": "検査の台本（body_append_gate）と作り手 build_api.py を読む前からの試験を検索で出した。\n\n```search\ngit grep -l -e 'body_append_gate' -e 'build_api' -- 'scripts/ci/*_test.py' | grep -v k1121\n6\n```\n\n- scripts/ci/k1112_body_append_test.py: 替えない — 置き場に build_api.py も新しい台帳も無いので、見る本体と台帳の扱いは今までと同じ（新しい台帳が無ければ読まない・書かない。--ledger-now は --ledger 無しで今の台帳だけを、screen_api.py と文書の鍵で書く＝今までと同じ）\n- scripts/ci/k1120_body_append_tree_test.py: 替えない — 同じ（screen_api.py と文書の木の差の判定は変えない）\n- scripts/ci/ci_lean_test.py: 替えない — build_api.py は使い捨ての置き場の偽の作り手（`print('api')`）で、本物を読まない\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手の outputs の目録を見るだけ（outputs は変えない）\n- scripts/ci/contract_shape_test.py・scripts/ci/k1116_fuzz_contract_test.py: 替えない — 作り手の型の名前と入力の形の名前の決まり（_ftype・_in_name）を写しているだけで、この葉は変えない",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：build_api.py の表（INTERNAL_TABLES・INTERNAL・KEY_CURSOR_OPS）に足す分は build_api.d/K-<番号>.py。G74 は build_api.py の表の鍵と表に足す文だけを数える（作り方の手順の直しは本体）。この決まりの前の葉の分は別の猶予の台帳（減らすだけ）",
+    "リスクと懸念": "- build_api.py の作り方の手順の直し（PUT を受ける・LIST_RESULT_OPS を読む・ALSO_2XX を読む）は表ではないので、この葉では断片にできない。同じ直しを持つ葉（K-675・K-676・K-677・K-679・K-681 の PUT、K-705・K-717 の LIST_RESULT_OPS）は、最初の 1 本が本線に入ったら後の葉が本線を取り込んで本体の字をそろえる（PM が順を決める）\n- 本体の KEY_CURSOR_OPS を直に書き換えている段の枝（i/段6）と葉（K-754・K-757〜K-776）は猶予の台帳で数えない。その葉が本線に入って台帳の鍵が要らなくなったら、台帳は減らしてよい\n- `_D` 以外の別の名前に写してから足す形（`y = INTERNAL; y.add(…)`）は G74 が見ない。今の作り手には無い形で、レビューで見る\n- 断片で KEY_CURSOR_OPS に足しても、入口 op.ts の KEY_CURSOR_OPS は別に足す要る（契約と入口を照らす検査は無い）。README に書く。照らす検査を足すかは PM が決める",
+    "申し送り": "- PM：`.ticket-flow/TS-brief.md` に 1 行足した（版に入らない・本線の作業場所）"
+   },
+   "file": "11_tickets/K-1121.md"
+  },
+  {
+   "id": "K-1122",
+   "title": "直し：op_gate の --rows-in（チケットの範囲の回で照らす行）を、流した試験のファイルの「試験の題」に出る行 ID だけにする（コメント・題でない字は数えない）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-324",
+   "milestone": "共通",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測 K-1120（検査の台本 1 つの判定の直し 0.5 時間）・K-1121（1 時間）から引いた。字の読み（コメント・字・正規表現・テンプレート）を分ける小さな読み手 20 分・報告の題をファイルで引く 10 分・試験 1 本 15 分・作り直しと確かめ 5 分",
+   "decisions": [
+    "D-128.123",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の台本（scripts/ci/op_gate.py）だけ。DB・外の口・秘密に触らない",
+   "tests": [
+    "scripts/ci/k1122_op_gate_titles_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（CI の検査の台本だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/op_gate.py",
+    "scripts/ci/g65.d/K-1122.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "チケットの範囲の回の web の組（G48・`scripts/ci/web_run.py g48`）は、`op_gate.py --rows-in <流した試験>` で、流した試験のファイルに書かれた行 ID の行だけを照らす（K-177）。今の読み方は、ファイルの字の全部から `\\b<ID>\\b` を探すので、**コメント**に書いた別の画面の行 ID まで照らす。\n\n実例（K-1151・回 45194457230・先頭 e63348fac）：`apps/web/tests/k/k363-remove-pc.spec.ts` の 217 行目のコメント「…K57-UI-016 が見ている」に当たり、K57-UI-016（結果 PASS・試験は connect-pc の spec）を照らした。その回では connect-pc の spec は流れていないので「PASS だが行 ID を名前に持つ実ブラウザのテストが無い」で赤。K-1151 の外の字が原因で葉が止まる。見立ては `.ticket-flow/out/K-1151/ci-red-PMへ.md`。\n\nPM の決め（作り方・2026-11-24 06:30 案 A）：\n1. 照らす行は「流した試験のファイルの**試験の題**に出る行 ID」だけ。題は次の 2 つの和\n   - **字で書いた題**：`test`・`it`・`describe`（前に `.` が無い呼び名）と、その後の `.describe`・`.only`・`.skip`・`.fixme`・`.fail`・`.serial`・`.parallel`・`.concurrent`・`.todo` の続きを呼ぶ式の、最初の引数が字（'…'・\"…\"・`…`）のときのその字。テンプレートの `${…}` の中は題の字に数えない。型の部品 `row(R[\"<ID>\"], …)`（`apps/web/tests/_lib/row.ts`・題は `${r.id} …`）は、`row(` 名前 `[` 字 `]` の字\n   - **報告の題**：今の回の報告（`--report`、無ければ op-gate.json の reports。G48 は Playwright の k.json だけ）のうち、ファイルの名前（Playwright の suites[].file・specs[].file。testDir からの道）が流した試験のファイルの道の末尾に当たる試験の題（上の段の題をつないで読む・load_report と同じ）。vitest の報告は G48 で使わないので見ない。`${id}` を配列から作る題（shell-ops.spec.ts・showcase.spec.ts の `row(R[id])` など）はここで拾う\n2. コメント（`//`・`/* */`）・題でない字（体の中の字・`re.test(\"…\")` の `.test`・`test.step(\"…\")`・正規表現の字）は数えない。字・正規表現の中の `//`・`/*` はコメントの始まりにしない\n3. 字で書いた題は報告に無くても照らす（題に在るのに流れていない行は今までどおり赤）\n4. 読めない字（閉じないコメント・字・テンプレート）でも落ちない（Traceback を出さない）。閉じない所から後は数えない\n5. 全部の回（`--all`）・`--task`・`--wave` の照らし方は変えない。行 ID の形 ID_RE も変えない",
+    "完了の条件": "- [ ] 下の表の行（K1122-OG-001〜008）が緑\n- [ ] 前からの試験 `scripts/ci/k177_web_scope_test.py`（K177-WS-016 など）・`scripts/ci/ci_results_test.py`・`scripts/ci/ci_scope_test.py` が替えずに緑\n- [ ] チケットの範囲の CI が緑。K-1151 の枝の web の組の op_gate が K57-UI-016 で赤にならない（PM が確かめる）",
+    "前提と制約": "分類: TOOL\n\n- 変えるのは `scripts/ci/op_gate.py` の `--rows-in` の照らす行の決め方（`only` を作る所）と、そのための読み手の関数（`title_ids(src)`・報告の題をファイルで引く関数）と頭の説明だけ\n- G48 の段の命令（`scripts/ci/web_run.py`・`.github/workflows/v3-gate.yml`）は変えない\n- 試験のファイル（k363-remove-pc.spec.ts などのコメント）は変えない（持ち主の葉の物・コメントに行 ID を書くのは正しい書き方）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 報告の読み方 | `scripts/ci/op_gate.py` の `load_report`（Playwright の suites・vitest の testResults） | 同じ木の歩き方で、ファイルの名前が当たる試験の題を集める（新しい関数・load_report は変えない） |\n| 行 ID の形 | 同じファイルの `ID_RE` | 題の字から ID を拾うのに使う（変えない） |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-<番号>.txt` | この葉の試験を 1 行で置く（作り手が CI の定義に書く） |\n| 探したが無かった物 | TS の字からコメントを除いて題を拾う読み手 | この葉で op_gate.py に作る（外の部品は使わない・標準の Python だけ） |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 題の読み手 | `scripts/ci/op_gate.py` に `title_ids(src: str) -> set[str]`：字を前から 1 つずつ読み、コメント・字（'・\"・テンプレート。`${…}` は中を同じ読み方で読み飛ばす）・正規表現（`/` の前が字・名前・`)`・`]` でないとき。`return` などの語の後も）・名前・記号の並びにして、決め 1 の形の呼び出しの最初の字から ID_RE で ID を拾う |\n| 報告の題 | `report_title_ids(paths, files) -> set[str]`：報告の一覧を決めた後（`--report` か op-gate.json の reports）に呼ぶ。Playwright の報告の試験のうち、ファイルの名前が流した試験のファイルの道の末尾（`/` の区切りで）に当たる物の題から ID を拾う |\n| 照らす行 | `--rows-in` のとき `only` を「仕様の行のうち、題の ID（両方の和）に在る行」にする（今の `re.search` の全文の検索をやめる） |\n| 頭の説明 | 規則の説明に「--rows-in は流した試験の題の行だけ（コメントは数えない）」を 1 行 |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-1122.txt`：`python3 scripts/ci/k1122_op_gate_titles_test.py` |\n| 作り直し | 作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成物（CI の定義・試験計画・チケットの一覧）を作り直す |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1122_op_gate_titles_test.py`。行ごとに使い捨ての置き場（仕様の表 `spec/k.md`・チケットの一覧・`apps/web/tests/k/a.spec.ts`・報告 `r.json`）を作り、本物の `op_gate.py --rows-in … --pending-from-report` を流す。008 は本物の `op_gate.title_ids` に本物の試験のファイルを読ませる。\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1122-OG-001 | 入力 | 行 ID がコメントにだけ在る：頭の `//`・ブロックの `/* */`（2 行にまたがる）・行の後ろの `//`（どの行も結果 PASS で報告に無い） | 終わりの番号 0。出力にその 3 つの ID が出ない。「検査 1 行」（題の K1-UI-001 だけ） |\n| K1122-OG-002 | 入力 | 題の ID：今の回で落ちた行／結果 PASS で報告に無い行／両方通った | 順に：終わりの番号 1 で「K1-UI-001 [操作]: 結果が空で、今の回の報告ではテストは failed」と「K1-UI-002 [操作]: PASS だが行 ID を名前に持つ実ブラウザのテストが無い」（題に在るのに流れていない行は赤のまま）／終わりの番号 0 |\n| K1122-OG-003 | 入力 | 題の書き方 10 通り：`test.describe(\"…\")`・`test.describe.serial('…')`・`test.skip(\"…\")`・`it(\"…\")`・`describe(\"…\")`・テンプレートの題（`${w}` を含む）・`row(R[\"…\"]`・次の行に題・題の字の中の `//`・字の中の `/*` の後の題（どの行も結果が空・報告は 1 つだけ通った） | 報告に無い 9 つが全部「未実施（結果が空）」で赤・終わりの番号 1・「検査 10 行」 |\n| K1122-OG-004 | 入力 | 題でない字の ID：正規表現の字（中に `\"` を持つ）の後の字・体の中の字・`return /…/.test(s)`・割り算 `(a - b) / 2`・`n / 3` `toBe(\"…\")`・正規表現 `/…/.test(s)`・`re.test(\"…\")`・`test.step(\"…\")`・テンプレートの `${\"…\"}` の中・呼び名が違う `mytest(\"…\")`（どれも結果 PASS で報告に無い）。正規表現の直ぐ後と割り算の直ぐ後に、報告に無い題 K1-UI-003・004（結果 BLOCKED（理由））を置く | 終わりの番号 0。出力にその 9 つの ID が出ない。「検査 3 行」（K1-UI-001・003・004：正規表現・割り算を読み違えると後ろの題を飲み込んで数が減る） |\n| K1122-OG-005 | 入口 | 配列から作る題（`${id}`）：流したファイルの報告で落ちた／別のファイル（`k/other.spec.ts`）の報告で落ちた／ファイルの名前の無い報告で落ちた／流したファイルの報告で通った／`--report` を渡さず spec の置き場の op-gate.json の reports に、流したファイルで落ちた報告（本物の G48 と同じ道） | 順に：終わりの番号 1 で「K1-UI-007 [操作]: 結果が空で、今の回の報告ではテストは failed」。K1-UI-008・K1-UI-009 は出力に出ない・「検査 1 行」／終わりの番号 0／終わりの番号 1 で同じ K1-UI-007 の文 |\n| K1122-OG-006 | 入口 | CI へのつなぎ | `scripts/ci/g65.d/K-1122.txt` がこの試験の命令 1 行で、CI の定義にこの命令が在る。G48 の範囲の回の命令は今のまま `op_gate.py … --rows-in <流した試験>` |\n| K1122-OG-007 | 失敗 | 読めない字：閉じないコメント・閉じない字・閉じないテンプレートの後に行 ID | どれも Traceback を出さず終わりの番号 0。閉じない所の後の ID は出力に出ない |\n| K1122-OG-008 | 対象の状態 | 本物の `apps/web/tests/k/k363-remove-pc.spec.ts`（K-1151 の赤の元） | 字に K57-UI-016 が在るが、`title_ids` は K57-UI-016・K60-UI-033（どちらもコメント）を返さず、K363-UI-004（題）を返す |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: 読む道は CI が渡す英字の道（apps/web/tests/**.spec.ts）と報告だけ。題の日本語の字は 001〜005 が読む |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 002・003・005（題に在る行は落ちた・流れていないで赤になり、件数「検査 N 行」まで見る） |\n| TP-TOOL-03 容れ物の中と手元で違う | 要らない: 部品は Python の標準だけで、読むのは使い捨ての置き場とリポジトリの中だけ |\n\n### 8 つの観点\n\n| 観点 | 判定 |\n|---|---|\n| 入力 | 001・002・003・004 |\n| 対象の状態 | 008 |\n| 時間の流れ | N/A：1 回の照らしで、時間で変わる物を持たない（報告の古さの O4 は変えない） |\n| 入口 | 005・006 |\n| 利用者の状態 | N/A：人の状態を扱わない |\n| 失敗 | 007 |\n| 操作の揺れ | N/A：検査は 1 回ずつ流れるだけ |\n| 守り | 002・003（題に在る行は照らす＝弱めない） |",
+    "外に影響する手順": "なし（読むだけの検査。試験が書くのは使い捨ての置き場だけ）",
+    "前からの試験を替えた所": "op_gate を読む前からの試験を検索で出した。\n\n```search\ngit grep -l -e 'op_gate' -- 'scripts/ci/*_test.py' | grep -v k1122\n3\n```\n\n- scripts/ci/k177_web_scope_test.py: 替えない — K177-WS-016 の試験のファイルは `test('K36-UI-001 出る', ...); test('K40-UI-001 出る', ...);` で、どちらも字で書いた題なので照らす行は同じ（K36-UI-002 は題に無いので照らさない）。WS-013 は web_run の命令だけを見る\n- scripts/ci/ci_results_test.py: 替えない — op_gate の ID_RE の形の説明を見るだけ（ID_RE は変えない）\n- scripts/ci/ci_scope_test.py: 替えない — op_gate の道を範囲の地図で引くだけ（照らし方を見ない）",
+    "決定ログ": "- 2026-11-24 06:30 PM の決め（案 A）：op_gate の --rows-in は試験の題の行 ID だけを読む。字で書いた題と、報告の中の流したファイルの試験の題の和。コメント・題でない字は数えない",
+    "リスクと懸念": "- 字で書いた題でなく、報告にも出ない題（`${id}` で作る題で、その試験が 1 本も流れなかった）は照らさない。前は配列の字（`[\"USH-01-010\", …]`）で照らしていた。ファイルが読めず 1 本も流れない回は、試験の道具が先に赤で止まる（web_run は試験が落ちたら op_gate まで行かない）ので、黙って緑にはならない\n- `test`・`it`・`describe` を別の名前で import して使う形（`import { test as base }` の `base(\"…\")`）は字で書いた題に数えない。流れれば報告の題で拾う"
+   },
+   "file": "11_tickets/K-1122.md"
   }
  ]
 }
