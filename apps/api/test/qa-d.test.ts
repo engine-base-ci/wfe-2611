@@ -1511,7 +1511,9 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
           title: `G-14 ${task} ${++probeSeq}`,
           assignee_member_id: m,
           due_on: new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10),
-          sections: { purpose: "権限の確かめ", done: "作れる", todo: "- 作る" },
+          body: {
+            doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "権限の確かめ" }] }] },
+          },
         });
         const hit = async (e: EndpointDef, token: string) => {
           if (e.operationId === "createTicket")
