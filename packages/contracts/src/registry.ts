@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c8823b211a82436b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:eea974ec06c6d751
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -10646,7 +10646,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Notifications",
+    "output": "Notification",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -10662,6 +10662,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      409,
       429,
       403,
       403,
@@ -10693,9 +10694,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readNotification",
     "table": "notifications",
     "kind": "update",
-    "input": "NotificationsInput",
+    "input": "NotificationReadInput",
     "success": 200,
-    "output": "Notifications",
+    "output": "Notification",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -10734,10 +10735,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "notifications",
-        "sql": "member_id = app.user_id()"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -10749,9 +10747,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readAllNotifications",
     "table": "notifications",
     "kind": "create",
-    "input": "NotificationsInput",
+    "input": "NotificationReadAllInput",
     "success": 201,
-    "output": "Notifications",
+    "output": "NotificationsRead",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -14488,9 +14486,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateSavedView",
     "table": "saved_views",
     "kind": "update",
-    "input": "SavedViewsInput",
+    "input": "SavedViewUpdateInput",
     "success": 200,
-    "output": "SavedViews",
+    "output": "SavedView",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -14508,6 +14506,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
+      409,
+      409,
       422,
       413,
       429,
@@ -14546,7 +14547,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "SavedViews",
+    "output": "SavedViewDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15119,9 +15120,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateTicketDecision",
     "table": "ticket_decisions",
     "kind": "update",
-    "input": "TicketDecisionsInput",
+    "input": "TicketDecisionUpdateInput",
     "success": 200,
-    "output": "TicketDecisions",
+    "output": "TicketDecisionChange",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15140,6 +15141,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
+      503,
       413,
       429,
       403,
@@ -15650,9 +15653,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateTicketMessage",
     "table": "ticket_messages",
     "kind": "update",
-    "input": "TicketMessagesInput",
+    "input": "TicketMessageEditInput",
     "success": 200,
-    "output": "TicketMessages",
+    "output": "TimelineItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15672,6 +15675,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      404,
+      503,
+      503,
       413,
       429,
       403,
@@ -15709,7 +15715,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "TicketMessages",
+    "output": "TimelineItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15729,6 +15735,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
+      503,
       429,
       403,
       403,
@@ -15741,7 +15749,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "self",
+      "word": "read",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -15750,7 +15758,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "ticket_messages",
-        "sql": "author_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -15763,9 +15771,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "starTicketMessage",
     "table": "ticket_messages",
     "kind": "create",
-    "input": "TicketMessagesInput",
-    "success": 201,
-    "output": "TicketMessages",
+    "input": "TicketMessageStarInput",
+    "success": 200,
+    "output": "TicketMessageStar",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15786,6 +15794,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
+      503,
       413,
       429,
       403,
@@ -17268,6 +17278,12 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       404,
+      409,
+      409,
+      409,
+      409,
+      422,
+      404,
       503,
       503,
       413,
@@ -17358,9 +17374,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "restoreTicket",
     "table": "tickets",
     "kind": "create",
-    "input": "TicketsInput",
+    "input": "TicketRestoreInput",
     "success": 201,
-    "output": "Tickets",
+    "output": "TicketRestored",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17380,6 +17396,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -17401,10 +17418,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -19627,4 +19641,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "c8823b211a82436b";
+export const OPENAPI_HASH = "eea974ec06c6d751";

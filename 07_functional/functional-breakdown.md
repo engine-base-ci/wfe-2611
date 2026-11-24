@@ -53,7 +53,7 @@
 | E-036 | `triggers` | 5. 実行・統制 | scope_layered | 3 | D-010 |
 | E-037 | `policies` | 5. 実行・統制 | scope_layered | 3 | D-060 |
 | E-038 | `approvals` | 5. 実行・統制 | scope_layered | 4 | D-010 |
-| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
+| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 D-151.6 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
@@ -93,7 +93,7 @@
 | E-076 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
 | E-077 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-079 | `notification_preferences` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-075.3 |
-| E-080 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-076 |
+| E-080 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-043 D-069 D-075 D-076 |
 | E-081 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
 | E-082 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 |
 | E-083 | `subscriptions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.4 D-076 |
