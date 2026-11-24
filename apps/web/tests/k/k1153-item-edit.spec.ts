@@ -86,14 +86,16 @@ test("K1153-UI-001 パネルの並び：区「担当」（担当者・承認す�
   await expect(panel(page).locator("dt", { hasText: /^(状態|実績時間)$/ })).toHaveCount(0);
 });
 
-test("K1153-UI-002 値の見せ方：日付「12/15（火）」・数は 3 桁区切り（「95,000」・小数と負の数は「-1,234.5」）・選ぶ型は選択肢の名前・複数選ぶは選択肢の並びで「請求書、明細」・今の選択肢に無い id は出さない・チェックは箱が付き・値の無い項目は空白", async ({
+test("K1153-UI-002 値の見せ方：日付「12/15（火）」（1 桁の日は 0 で埋めて「12/01（火）」）・数は 3 桁区切り（「95,000」・小数と負の数は「-1,234.5」）・選ぶ型は選択肢の名前・複数選ぶは選択肢の並びで「請求書、明細」・今の選択肢に無い id は出さない・チェックは箱が付き・値の無い項目は空白", async ({
   page,
 }) => {
   const diff = field(10, "差額", "number");
+  const day = field(9, "納品日", "date");
   const cls = byName(MASTER_ALL, "分類");
   await mockFields(page, {
-    detail: [...MASTER_ALL, diff],
+    detail: [...MASTER_ALL, diff, day],
     values: {
+      [day.id]: "2026-12-01",
       [ids.due]: "2026-12-15",
       [ids.pj]: optId(pjF, "SK-2026-11 セイコー商事 保守"),
       [ids.amt]: 95000,
@@ -105,6 +107,7 @@ test("K1153-UI-002 値の見せ方：日付「12/15（火）」・数は 3 桁�
   });
   await detail(page);
   await expect(valBtn(page, "支払期日")).toHaveText("12/15（火）");
+  await expect(valBtn(page, "納品日")).toHaveText("12/01（火）");
   await expect(valBtn(page, "PJコード")).toHaveText("SK-2026-11 セイコー商事 保守");
   await expect(valBtn(page, "請求額")).toHaveText("95,000");
   await expect(valBtn(page, "差額")).toHaveText("-1,234.5");
@@ -290,7 +293,7 @@ test("K1153-UI-009 値を変えずに決める：口を呼ばずに入力が閉�
   expect(m.patches).toEqual([]);
 });
 
-test("K1153-UI-010 口が 409（E-FLD-001・002・003・004）：どれもその行の欄の下に正本の文（答えの体は { error, code } だけ）がそのまま出て、入力は開いたまま入れた値が残り、もう一度決めて通ると赤い字が消える", async ({
+test("K1153-UI-010 口が 409（E-FLD-001・002・003・004）：どれもその行の欄の下に正本の文（答えの体は { error, code } だけ）がそのまま出て、入力は開いたまま入れた値が残り、もう一度決めて通ると赤い字が消える・チェックの箱は元に戻り箱の下に文", async ({
   page,
 }) => {
   const m = await mockFields(page);
@@ -309,6 +312,13 @@ test("K1153-UI-010 口が 409（E-FLD-001・002・003・004）：どれもその
     await expect(rowOf(page, "先方の担当者名").locator(".k-err")).toHaveCount(0);
     await expect(valBtn(page, "先方の担当者名")).toHaveText(`x${n}`);
   }
+  // チェックの箱：押した時点で付き、409 なら元に戻って箱の下に正本の文（check() は付いたままを求めるので click で押す）
+  m.next = [conflict("E-FLD-003")];
+  await check(page, "原本を郵送する").click();
+  await expect.poll(() => m.patches.length).toBe(9);
+  expect(m.patches[8]).toEqual({ fields: { [fid("原本の郵送")]: true } });
+  await expect(rowOf(page, "原本の郵送").locator(".k-err")).toHaveText(msg("E-FLD-003"));
+  await expect(check(page, "原本を郵送する")).not.toBeChecked();
   await page.reload();
   await expect(valBtn(page, "先方の担当者名")).toHaveText("x4");
 });
@@ -324,20 +334,22 @@ test("K1153-UI-011 口が 404（E-PAGE-001）：その行の欄の下に正本�
   await expect.poll(() => m.ticketReads).toBe(2);
   await expect(rowOf(page, "請求額").locator(".k-err")).toHaveText(msg("E-PAGE-001"));
   await expect(box(page, "請求額")).toHaveValue("9");
-  // 読み直し自体が失敗（getTicket が 503）しても、その行・文・入力の値は今のまま
-  await page.route(/\/api\/v1\/tickets\/[^/]+$/, (r) =>
-    r.request().method() === "GET"
-      ? r.fulfill({
-          status: 503,
-          contentType: "application/json",
-          body: JSON.stringify({ error: "server_error", code: "E-PAGE-003" }),
-        })
-      : r.fallback(),
-  );
+  // 読み直し自体が失敗（getTicket が 503）しても、その行・文・入力の値は今のまま（失敗した読み直しが 1 回走ったことも数える）
+  let failedReads = 0;
+  await page.route(/\/api\/v1\/tickets\/[^/]+$/, (r) => {
+    if (r.request().method() !== "GET") return r.fallback();
+    failedReads++;
+    return r.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "server_error", code: "E-PAGE-003" }),
+    });
+  });
   m.next = [notFound()];
   await box(page, "請求額").fill("10");
   await box(page, "請求額").press("Enter");
   await expect.poll(() => m.patches.length).toBe(2);
+  await expect.poll(() => failedReads).toBe(1);
   await expect(rowOf(page, "請求額").locator(".k-err")).toHaveText(msg("E-PAGE-001"));
   await expect(box(page, "請求額")).toHaveValue("10");
   await page.unroute(/\/api\/v1\/tickets\/[^/]+$/);
