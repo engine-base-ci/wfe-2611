@@ -14552,89 +14552,134 @@ components:
       required:
       - field_ids
       x-required-by: hooks
-    BillingContactInput:
+    InquiryCreateInput:
       type: object
       properties:
-        company:
+        topic:
+          type: string
+          enum:
+          - usage
+          - trouble
+          - billing
+          - other
+        title:
           type: string
           minLength: 1
           maxLength: 100
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        attn:
+        body:
           type: string
           minLength: 1
-          maxLength: 100
+          maxLength: 4000
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        email:
-          type: string
-          format: email
+        attachment_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 5
+        context:
+          type: object
       additionalProperties: false
-      x-operation: updateBillingContact
+      x-operation: createInquiry
       required:
-      - company
-      - attn
-      - email
+      - topic
+      - title
+      - body
       x-required-by: hooks
-    PlanChangeInput:
+    InquiryMessageInput:
       type: object
       properties:
-        plan_key:
+        body:
           type: string
+          minLength: 1
+          maxLength: 4000
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        attachment_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 5
       additionalProperties: false
-      x-operation: changePlan
+      x-operation: postInquiryMessage
       required:
-      - plan_key
+      - body
       x-required-by: hooks
-    OpsInvoiceIssueInput:
+    InquiryResolveInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: resolveMyInquiry
+    InquiryAttachmentInput:
       type: object
       properties:
-        month:
+        name:
           type: string
-          pattern: ^[0-9]{4}-(0[1-9]|1[0-2])$
-        dry_run:
-          type: boolean
-      additionalProperties: false
-      x-operation: issueOpsInvoices
-      required:
-      - month
-      x-required-by: hooks
-    PaymentRecordInput:
-      type: object
-      properties:
-        amount:
+          minLength: 1
+          maxLength: 200
+        content_type:
+          type: string
+          enum:
+          - image/png
+          - image/jpeg
+          - image/gif
+          - image/webp
+          - application/pdf
+          - application/zip
+        size:
           type: integer
           minimum: 1
-        paid_on:
-          type: string
-          format: date
-        payer_name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        reverses_payment_id:
-          type: string
-          format: uuid
+          maximum: 10485760
       additionalProperties: false
-      x-operation: recordPayment
+      x-operation: uploadInquiryAttachment
       required:
-      - amount
-      - paid_on
+      - name
+      - content_type
+      - size
       x-required-by: hooks
-    OpsPlanChangeInput:
+    OpsInquiryUpdateInput:
       type: object
       properties:
-        plan_key:
+        take:
+          type: boolean
+        release:
+          type: boolean
+        state:
           type: string
-          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
-        inquiry_id:
+          enum:
+          - open
+          - done
+        later_until:
           type: string
-          format: uuid
+          nullable: true
       additionalProperties: false
-      x-operation: changeOpsWorkspacePlan
+      x-operation: updateOpsInquiry
+    OpsInquiryReplyInput:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: replyOpsInquiry
       required:
-      - plan_key
-      - inquiry_id
+      - body
+      x-required-by: hooks
+    OpsInquiryNoteInput:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: addOpsInquiryNote
+      required:
+      - body
       x-required-by: hooks
     ScopeOverview:
       type: object
@@ -15688,7 +15733,7 @@ components:
     PlanChoice:
       type: object
       properties:
-        plan_key:
+        plan_id:
           type: string
         name:
           type: string
@@ -15696,8 +15741,8 @@ components:
         price_monthly:
           type: integer
           nullable: true
-        member_limit:
-          type: integer
+        limits:
+          type: object
           nullable: true
         current:
           type: boolean
@@ -15705,40 +15750,22 @@ components:
           type: boolean
         reason:
           type: string
-          nullable: true
         effective_from:
           type: string
-        summary:
-          type: string
-        recommended:
-          type: boolean
-        upgrade:
-          type: object
-          nullable: true
-        upcoming:
-          type: object
-          nullable: true
       x-operation: listWorkspacePlans
     Billing:
       type: object
       properties:
-        terms:
-          type: string
         payee:
           type: object
-        contact:
+        billing_contact:
           type: object
+        terms:
+          type: string
         invoices:
           type: array
           items:
             type: object
-        overdue:
-          type: object
-          nullable: true
-        free:
-          type: boolean
-        can_edit_contact:
-          type: boolean
       x-operation: getBilling
     SignedUrl:
       type: object
@@ -16176,7 +16203,7 @@ components:
       properties:
         plan:
           type: object
-        members:
+        usage:
           type: object
         payment_terms:
           type: string
@@ -16262,15 +16289,37 @@ components:
     OpsInquiryDetail:
       type: object
       properties:
-        inquiry:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        workspace:
           type: object
+        asker:
+          type: object
+        owner:
+          type: object
+          nullable: true
+        later_until:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        last_message_at:
+          type: string
+          nullable: true
         messages:
           type: array
           items:
             type: object
         context:
           type: object
-        workspace:
+        workspace_status:
           type: object
       x-operation: getOpsInquiry
     OpsNoticeDetail:
@@ -17127,71 +17176,132 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketField
-    BillingContact:
-      type: object
-      properties:
-        company:
-          type: string
-        attn:
-          type: string
-        email:
-          type: string
-      x-operation: updateBillingContact
-    PlanChange:
-      type: object
-      properties:
-        plan_key:
-          type: string
-        effective_from:
-          type: string
-        prorated_amount:
-          type: integer
-        next_invoice_on:
-          type: string
-      x-operation: changeOpsWorkspacePlan
-    OpsInvoiceRow:
+    MyInquiry:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        workspace:
-          type: object
-        plan_name:
+        title:
           type: string
-        month:
+        topic:
           type: string
-        amount_total:
-          type: integer
         state:
           type: string
-        paid_total:
-          type: integer
-        difference:
-          type: integer
-        due_on:
+        created_at:
           type: string
-        can_record_payment:
+        last_reply_at:
+          type: string
+          nullable: true
+        has_unread_reply:
           type: boolean
-        payments:
-          type: array
-          items:
-            type: object
-      x-operation: recordPayment
-    OpsInvoiceIssue:
+      x-operation: resolveMyInquiry
+    MyInquiryDetail:
       type: object
       properties:
-        month:
+        id:
           type: string
-        count:
-          type: integer
-        total:
-          type: integer
-        lines:
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        created_at:
+          type: string
+        last_reply_at:
+          type: string
+          nullable: true
+        has_unread_reply:
+          type: boolean
+        messages:
           type: array
           items:
             type: object
-      x-operation: issueOpsInvoices
+        context:
+          type: object
+          nullable: true
+      x-operation: getMyInquiry
+    MyInquiryMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        from:
+          type: string
+        author_name:
+          type: string
+        body:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+      x-operation: postInquiryMessage
+    InquiryAttachmentUpload:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        upload_url:
+          type: string
+        done_url:
+          type: string
+        expires_at:
+          type: string
+      x-operation: uploadInquiryAttachment
+    OpsInquiryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        topic:
+          type: string
+        state:
+          type: string
+        workspace:
+          type: object
+        asker:
+          type: object
+        owner:
+          type: object
+          nullable: true
+        later_until:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        last_message_at:
+          type: string
+          nullable: true
+      x-operation: updateOpsInquiry
+    OpsInquiryMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        author_name:
+          type: string
+        body:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+      x-operation: addOpsInquiryNote
     Error:
       type: object
       properties:
@@ -27879,14 +27989,15 @@ paths:
   /api/v1/inquiries:
     get:
       operationId: listMyInquiries
-      summary: 取得（inquiries）— 運営に問い合わせる
+      summary: 取得（inquiries）— 自分の問い合わせ（新しい順・返事ありの印つき）
       tags:
       - inquiries
       x-acts:
       - A67
       x-screens:
       - inquiry
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-042
       - D-075.1
@@ -27911,27 +28022,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - ai_first_answered_at
-          - assignee_ops_member_id
-          - context
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind_id
-          - later_until
-          - opened_by_member_id
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -27943,7 +28033,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Inquiries'
+                      $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -27987,6 +28077,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28003,7 +28094,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/InquiryCreateInput'
       responses:
         '201':
           description: 成功
@@ -28013,7 +28104,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -28068,7 +28159,8 @@ paths:
       - A67
       x-screens:
       - inquiry
-      x-choke-points: []
+      x-choke-points:
+      - C4
       x-source:
       - D-042
       - D-075.1
@@ -28095,7 +28187,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiryDetail'
                   meta:
                     type: object
         '401':
@@ -28146,6 +28238,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28169,7 +28262,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/InquiryMessageInput'
       responses:
         '201':
           description: 成功
@@ -28179,7 +28272,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/MyInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -28242,6 +28335,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28265,7 +28359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/InquiryResolveInput'
       responses:
         '201':
           description: 成功
@@ -28275,7 +28369,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/MyInquiry'
                   meta:
                     type: object
         '401':
@@ -28338,6 +28432,7 @@ paths:
       - inquiry
       x-choke-points:
       - C2
+      - C4
       - C6
       x-source:
       - D-042
@@ -28354,7 +28449,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttachmentsInput'
+              $ref: '#/components/schemas/InquiryAttachmentInput'
       responses:
         '201':
           description: 成功
@@ -28364,7 +28459,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Attachments'
+                    $ref: '#/components/schemas/InquiryAttachmentUpload'
                   meta:
                     type: object
         '401':
@@ -37727,7 +37822,7 @@ paths:
   /api/v1/ops/inquiries:
     get:
       operationId: listOpsInquiries
-      summary: 取得（ops）— 問い合わせに答える
+      summary: 取得（inquiries）— 運営の受信箱（箱と何について で絞る・数は getOpsShell）
       tags:
       - inquiries
       x-acts:
@@ -37752,32 +37847,22 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-      - name: kind
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: sort
+          enum:
+          - unassigned
+          - mine
+          - waiting
+          - later
+          - done
+      - name: topic
         in: query
         allowEmptyValue: true
         schema:
           type: string
           enum:
-          - ai_first_answered_at
-          - assignee_ops_member_id
-          - context
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind_id
-          - later_until
-          - opened_by_member_id
-          - status_id
-          - tenant_id
-          - updated_at
-          - updated_by
+          - usage
+          - trouble
+          - billing
+          - other
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -37802,12 +37887,9 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Inquiries'
+                      $ref: '#/components/schemas/OpsInquiryRow'
                   meta:
                     type: object
-                    properties:
-                      counts:
-                        type: object
         '401':
           description: UNAUTHENTICATED
           content:
@@ -37950,7 +38032,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InquiriesInput'
+              $ref: '#/components/schemas/OpsInquiryUpdateInput'
       responses:
         '200':
           description: 成功
@@ -37960,7 +38042,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Inquiries'
+                    $ref: '#/components/schemas/OpsInquiryRow'
                   meta:
                     type: object
         '401':
@@ -38041,7 +38123,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/OpsInquiryNoteInput'
       responses:
         '201':
           description: 成功
@@ -38051,7 +38133,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/OpsInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -38138,7 +38220,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/OpsInquiryReplyInput'
       responses:
         '201':
           description: 成功
@@ -38148,7 +38230,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/OpsInquiryMessage'
                   meta:
                     type: object
         '401':
@@ -38202,7 +38284,7 @@ paths:
   /api/v1/ops/invoices:
     get:
       operationId: listOpsInvoices
-      summary: 取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき）
+      summary: 取得（ops）— 請求書を出し、入金を記録する
       tags:
       - invoices
       x-acts:
@@ -38230,16 +38312,11 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[0-9]{4}-(0[1-9]|1[0-2])$
       - name: state
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          enum:
-          - unpaid
-          - paid
-          - overdue
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -38253,6 +38330,27 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - amount
+          - created_at
+          - created_by
+          - deleted_at
+          - due_on
+          - id
+          - issued_at
+          - pdf_ref
+          - period_end
+          - period_start
+          - status_id
+          - subscription_id
+          - tenant_id
+          - updated_at
+          - updated_by
       responses:
         '200':
           description: 成功
@@ -38264,9 +38362,12 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/OpsInvoiceRow'
+                      $ref: '#/components/schemas/Invoices'
                   meta:
                     type: object
+                    properties:
+                      summary:
+                        type: object
         '401':
           description: UNAUTHENTICATED
           content:
@@ -38335,7 +38436,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PaymentRecordInput'
+              $ref: '#/components/schemas/PaymentsInput'
       responses:
         '201':
           description: 成功
@@ -38345,7 +38446,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsInvoiceRow'
+                    $ref: '#/components/schemas/Payments'
                   meta:
                     type: object
         '401':
@@ -38362,92 +38463,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/ops/invoices/export:
-    post:
-      operationId: exportOpsInvoices
-      summary: 作成・実行（ops）— 請求書を出し、入金を記録する
-      tags:
-      - export_jobs
-      x-acts:
-      - A72
-      x-screens:
-      - ops-billing
-      x-choke-points:
-      - C2
-      x-source:
-      - D-002
-      - D-002.2
-      - D-075.4
-      - D-075.5
-      - D-077.3
-      - D-125.125
-      - D-125.167
-      - D-127.5
-      x-permission: ops:money
-      x-permission-scope: 同上
-      x-step-up: false
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportJobsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ExportJobs'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38513,7 +38528,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpsInvoiceIssueInput'
+              $ref: '#/components/schemas/InvoicesInput'
       responses:
         '201':
           description: 成功
@@ -38523,7 +38538,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OpsInvoiceIssue'
+                    $ref: '#/components/schemas/Invoices'
                   meta:
                     type: object
         '401':
@@ -41872,7 +41887,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OpsPlanChangeInput'
+              $ref: '#/components/schemas/SubscriptionsInput'
       responses:
         '201':
           description: 成功
@@ -41882,7 +41897,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PlanChange'
+                    $ref: '#/components/schemas/Subscriptions'
                   meta:
                     type: object
         '401':
@@ -42085,91 +42100,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/ops/workspaces/export:
-    post:
-      operationId: exportOpsWorkspaces
-      summary: 作成・実行（ops）— 各ワークスペースの様子を見る（気にかける）
-      tags:
-      - export_jobs
-      x-acts:
-      - A60
-      x-screens:
-      - ops-home
-      x-choke-points:
-      - C2
-      x-source:
-      - D-030
-      - D-037
-      - D-073.7
-      - D-125.129
-      - D-125.152
-      - D-125.167
-      - D-126.18
-      x-permission: ops:any
-      x-permission-scope: 同上（名前・プラン・数だけ。管理者のメールは入れない）。書き出したことは運営の記録に残る
-      x-step-up: false
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportJobsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ExportJobs'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -50709,7 +50639,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BillingContactInput'
+              $ref: '#/components/schemas/SubscriptionsInput'
       responses:
         '200':
           description: 成功
@@ -50719,7 +50649,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/BillingContact'
+                    $ref: '#/components/schemas/Subscriptions'
                   meta:
                     type: object
         '401':
@@ -51165,7 +51095,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlanChangeInput'
+              $ref: '#/components/schemas/SubscriptionsInput'
       responses:
         '201':
           description: 成功
@@ -51175,7 +51105,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PlanChange'
+                    $ref: '#/components/schemas/Subscriptions'
                   meta:
                     type: object
         '401':
@@ -51293,11 +51223,6 @@ paths:
                       $ref: '#/components/schemas/PlanChoice'
                   meta:
                     type: object
-                    properties:
-                      members:
-                        type: integer
-                      member_limit:
-                        type: integer
         '401':
           description: UNAUTHENTICATED
           content:
