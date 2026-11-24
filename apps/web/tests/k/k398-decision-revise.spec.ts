@@ -224,8 +224,13 @@ for (const [id, go] of Object.entries(DRIVE)) {
         id,
         w,
         async (page) => {
-          await page.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
+          const vp = { width: w, height: w === 375 ? 812 : 900 };
+          await page.setViewportSize(vp);
           await go(page);
+          // 比べる前にモックと同じ形にそろえる：openDetail は窓の高さを 1000 にする（小窓の高さの上限が窓の高さで変わる）。
+          //   やり取りの書き込みを押すと頁が下に動く（幅 375 で 537px）。小窓は固定の置き場なのに、比べる道具の y は頁の上端から読むので頁を上に戻す
+          await page.setViewportSize(vp);
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         { pairs: DLG_PAIRS, base: "/dev/mock/f6" },
       );
