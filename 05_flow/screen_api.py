@@ -45,8 +45,6 @@ SCREEN_API = {
         ("DELETE", "/test_specs/:id", "A102", "test_specs", "deleteTestSpec", []),
         ("POST", "/tickets/:id/test-specs/suggest", "A102", "test_specs", "suggestTestSpecs", ["action_runs"]),
         ("POST", "/tickets/:id/test-specs/lint", "A102", "test_specs", "lintTestSpecs", []),
-        ("GET", "/tickets/:id/checks", "A102", "checks", "listChecks", ["test_specs", "artifact_versions"]),
-        ("POST", "/checks/:id/human", "A15", "checks", "markHumanCheck", []),
         # 分身に任せる・実行
         ("POST", "/tickets/:id/delegate", "A104", "action_runs", "delegateTicket", ["approvals"]),
         ("POST", "/tickets/:id/dry-run", "A105", "action_runs", "dryRunTicket", []),
@@ -56,7 +54,7 @@ SCREEN_API = {
         ("GET", "/tickets/:id/references", "A101", "reference_logs", "listTicketReferences", []),
         ("GET", "/tickets/:id/agent-session", "A20", "conversations", "getTicketAgentSession", ["messages"]),
         ("POST", "/tickets/:id/agent-session/messages", "A20|A91", "messages", "sendTicketAgentMessage", ["conversations", "action_runs"]),
-        ("POST", "/tickets/:id/agent-session/apply", "A101", "ticket_sections", "applyTicketAgentProposal", ["ticket_section_versions", "checks"]),
+        ("POST", "/tickets/:id/agent-session/apply", "A101", "ticket_sections", "applyTicketAgentProposal", ["ticket_section_versions"]),
         # やり取り・決定・渡す
         ("GET", "/tickets/:id/timeline", "A107", "ticket_messages", "listTicketTimeline", ["action_runs"]),
         ("POST", "/tickets/:id/messages", "A107", "ticket_messages", "createTicketMessage", [T, "notifications"]),
@@ -95,21 +93,21 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
     "approvals": [
-        ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "checks"]),
-        ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "checks", "ticket_messages", "policies"]),
+        ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "test_specs"]),
+        ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "test_specs", "ticket_messages", "policies"]),
         ("POST", "/approvals/:id/approve", "A15", "approvals", "approveApproval", ["action_runs", "audit_events"]),
         ("POST", "/approvals/:id/edit", "A15", "approvals", "editApproval", ["tickets"]),
         ("POST", "/approvals/:id/return", "A15", "approvals", "returnApproval", ["ticket_messages", "memory_proposals"]),
         ("POST", "/approvals/:id/stop", "A15|A89", "approvals", "stopApproval", ["action_runs"]),
         ("POST", "/approvals/:id/withdraw", "A89", "approvals", "withdrawApproval", ["action_runs"]),
-        ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", ["checks"]),
+        ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", []),
         ("POST", "/approvals/bulk", "A15", "approvals", "bulkApprove", ["action_runs", "audit_events"]),
         ("GET", "/approvals/history", "A15", "approvals", "listApprovalHistory", ["tickets"]),
         ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
     ],
     # ---------------------------------------------------------------- 分身の部屋（08_api/phase1/03_分身の部屋.md）
     "clone-chat": [
-        ("GET", "/clones/me", "A20", "clones", "getMyClone", ["members", "sessions"]),
+        ("GET", "/clones/me", "A20", "clones", "getMyClone", ["members", "sessions", "clones"]),
         ("PATCH", "/clones/me", "A91", "clones", "updateMyClone", ["members"]),
         ("GET", "/conversations", "A88", "conversations", "listConversations", []),
         ("POST", "/conversations", "A88|A100", "conversations", "createConversation", []),
@@ -118,8 +116,10 @@ SCREEN_API = {
         ("DELETE", "/conversations/:id", "A88", "conversations", "deleteConversation", []),
         ("GET", "/conversations/:id/messages", "A20", "messages", "listConversationMessages", []),
         ("GET", "/conversations/:id/stream", "A20", "messages", "streamConversation", []),   # 書きながらの返事の流れ（D-104.8・D-128.122）
-        ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["action_runs", "reference_logs"]),
-        ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["action_runs"]),
+        ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["conversations", "messages", "bridge_jobs", "audit_events"]),
+        ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["bridge_jobs", "bridge_job_events", "audit_events"]),
+        ("POST", "/ticket_draft_conversations", "A99|A20", "conversations", "startDraftConversation", []),
+        ("POST", "/ticket_draft_conversations/:id/messages", "A99|A20", "messages", "sendDraftMessage", ["conversations", "action_runs"]),
         ("POST", "/conversations/:id/attachments", "A90", "attachments", "createConversationAttachment", []),
         ("POST", "/conversations/:id/permissions/:pid", "A91", "messages", "answerAgentPermission", []),
         ("POST", "/messages/:id/artifacts", "A95", "artifacts", "createArtifactFromMessage", ["artifact_versions"]),
@@ -152,15 +152,14 @@ SCREEN_API = {
         ("POST", "/work_types/:id/copy", "A119", "skills", "copyWorkType", ["skill_versions"]),
         ("PATCH", "/work_types/:id/draft", "A119", "skill_versions", "updateWorkTypeDraft", []),
         ("GET", "/work_types/:id/versions", "A119", "skill_versions", "listWorkTypeVersions", []),
-        ("POST", "/work_types/:id/try", "A119", "skill_test_runs", "tryWorkType", ["tickets", "checks"]),
+        ("POST", "/work_types/:id/try", "A119", "skill_test_runs", "tryWorkType", ["tickets"]),
         ("POST", "/work_types/:id/release", "A119", "skill_versions", "releaseWorkType", ["skills"]),
         ("POST", "/work_types/:id/spread-requests", "A119", "approvals", "requestWorkTypeSpread", ["notifications"]),
     ],
     "ai-activity": [
-        ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals"]),
+        ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals", "action_runs", "sessions"]),
         ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),
         ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["memories", "learning_candidates"]),
-        ("POST", "/clones/me/activity/export", "A53", "export_jobs", "exportCloneActivity", []),
         ("POST", "/action_runs/:id/takeover", "A57", "action_runs", "takeoverActionRun", ["tickets"]),
     ],
     # ---------------------------------------------------------------- ログイン・登録・2 段階・パスキー（08_api/phase1/04_ログイン.md）
@@ -245,11 +244,11 @@ SCREEN_API = {
         ("POST", "/bridge/usage", "A94", "agent_usage_snapshots", "reportUsage", []),
         ("POST", "/bridge/jobs/take", "A104", "bridge_jobs", "takeBridgeJob", ["action_runs"]),
         ("POST", "/bridge/jobs/:id/progress", "A104", "bridge_job_events", "reportJobProgress", ["action_runs", "messages"]),
-        ("POST", "/bridge/jobs/:id/finish", "A104", "bridge_jobs", "finishBridgeJob", ["action_runs", "messages", "checks"]),
+        ("POST", "/bridge/jobs/:id/finish", "A104", "bridge_jobs", "finishBridgeJob", ["action_runs", "messages"]),
         ("POST", "/bridge/jobs/:id/questions", "A91", "messages", "askFromBridge", ["notifications"]),
         ("GET", "/bridge/jobs/:id/questions/:qid", "A91", "messages", "getBridgeQuestionAnswer", []),
         ("GET", "/bridge/jobs/:id/control", "A104", "bridge_jobs", "getJobControl", []),
-        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", ["attachments"]),
+        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", []),   # 写真・画面の写しは送らない（K-761）
         ("POST", "/bridge/jobs/:id/conversation-entries", "A20", "messages", "mirrorConversationEntries", ["conversations"]),
         ("GET", "/bridge/mirror-targets", "A20", "conversations", "listMirrorTargets", ["messages"]),   # 写しを取り戻す先（D-112・D-128.122）
         ("POST", "/bridge/jobs/:id/artifacts", "A95", "artifacts", "putArtifactFromBridge", ["artifact_versions"]),
@@ -549,7 +548,7 @@ INPUTS = {
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
     # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
     "approveApproval": ("ApprovalApproveInput", {}),
-    "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
+    "returnApproval": ("ApprovalReturnInput", {"note": "string", "next_actor": "string?"}),   # next_actor：clone（既定・AI が直す）か self（自分で直す・K-744）
     # K-332：招待で参加する。ログインしていない人は名前とパスワード（ログイン中の人は空・K-333）。宛てのメールは招待のもの（体の email は口の前処理が落とす）
     "acceptInvitation": ("InvitationAcceptInput", {"name": "string?", "password": "string?", "email": "string?"}),   # K-422：email はリンクの招待で新しく入るときだけ読む（メールで招いた招待は体の email を読まない）
     # K-165：完了にする。todo_checked は済ませた実施事項の番号（0 から）の並び・todo_version は画面が読んだ todo の区画の版（無ければ 0）・conditions_confirmed は完了の条件を確かめた印
@@ -678,7 +677,7 @@ ERRORS_4XX = {
          "trigger": "もう決まった（承認・差し戻し）か取り下げた承認を差し戻す",
          "ears_form": "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-020"],
-         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・次に直す人 next_actor が clone・self でない（欄 next_actor・K-744）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
          "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
@@ -878,6 +877,11 @@ NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
+    "streamConversation": {"type": "string"},   # 合図の流れ（text/event-stream・ready／change／down／end と ": alive"・K-759）
+}
+# RAW_200 の内容の種類（operationId → Content-Type）。ここに無い口は application/octet-stream（K-759）
+RAW_200_TYPES = {
+    "streamConversation": "text/event-stream",
 }
 # 答えの欄が、その口の表の null を許す列と同じ名前でも null を返さないもの（"op.欄" → 理由）。ここに無い欄は表のとおり null 可にする（K-144）
 NOT_NULL_ANSWERS = {
@@ -924,6 +928,11 @@ PATH_PATTERNS = {
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
+import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117・口は packages/auth/src/signup.ts の isLoginEmail）
 _CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 _CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
 VALUE_RANGES = {
@@ -946,7 +955,7 @@ VALUE_RANGES = {
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
     "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
-        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品 better-auth の z.email() の形を前後の空白で挟んだ物（口も z.email() で見る・K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},
         "company_name": {"maxLength": 100},
         "password": {"minLength": 12},
@@ -1008,7 +1017,7 @@ RESPONSES = {
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
     "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
     "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "getCloneNow": ("CloneNow", {"current": "object", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
+    "getCloneNow": ("CloneNow", {"pc": "object", "current": "object?", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
     "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
     "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string?", "used": "array", "result": "string"}),   # action_runs.ticket_id は null 可（K-62 が足した列）
@@ -1073,8 +1082,8 @@ RESPONSES = {
     "getJobControl": ("JobControl", {"stop": "boolean", "reason": "string?", "steers": "array"}),   # 止める理由が無ければ null（K-62・Q2 回 2）
     "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
     # K-162：承認した答え（pc は任せた人の PC が 75 秒以内に知らせていれば live・K-62 と同じ式）。差し戻し（K-163）も同じ形
-    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
-    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
+    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
+    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
     "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
     "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
     # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。
@@ -1169,7 +1178,7 @@ QUERIES = {
     "listSavedViews": ["share"],
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
-    "listConversations": ["q", "starred"],
+    "listConversations": [],   # 探す（q）・星（starred）は作らない（D-153.16・K-757）。cursor と limit はいつも付く
     "listMemories": ["kind", "since"],
     "listLearningCandidates": ["trigger", "target"],
     "listRules": ["scope", "client_id"],
@@ -1230,13 +1239,11 @@ PERMS = {
     "deleteTestSpec": ("write", "そのグループの人", False),
     "suggestTestSpecs": ("write", "そのグループの人（分身は呼んだ人の権限の中で動く）", False),
     "lintTestSpecs": ("write", "そのグループの人", False),
-    "listChecks": ("read", "そのチケットを見られる人", False),
-    "markHumanCheck": ("approver", "③ 人の確認を割り当てられた人（承認する人）", False),
     "delegateTicket": ("write", "そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）", False),
     "dryRunTicket": ("assignee", "担当者（宛先は自分に差し替える）", False),
     "listTicketRuns": ("read", "そのチケットを見られる人", False),
     "getActionRun": ("read", "そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ", False),
-    "stopActionRun": ("assignee", "担当者・承認する人・マネージャー", False),
+    "stopActionRun": ("assignee", "そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる", False),
     "listTicketReferences": ("read", "そのチケットを見られる人。見られないページは題名も出さない", False),
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
     "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
@@ -1271,10 +1278,10 @@ PERMS = {
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
     "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
-    "editApproval": ("approver", "承認する人", False),
-    "returnApproval": ("approver", "承認する人（理由が必須）", False),
-    "stopApproval": ("approver", "承認する人・担当者・マネージャー", False),
-    "withdrawApproval": ("approver", "承認した本人だけ・実行中になる前だけ（D-125.105）", False),
+    "editApproval": ("approver", "承認する人（今の担当者）だけ。成果物の字を直して新しい版を作る（承認待ちのまま）", False),
+    "returnApproval": ("approver", "承認する人（理由が必須）。次は誰が直すかを選べる（AI／自分・K-744）", False),
+    "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
+    "withdrawApproval": ("approver", "承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す", False),
     "previewBulkApproval": ("approver", "自分が承認するものだけ", False),
     "bulkApprove": ("approver", "自分が承認するもので、条件（D-128.86）に合うものだけ。サーバーがもう一度確かめる", False),
     "listApprovalHistory": ("self", "自分が決めたものだけ", False),
@@ -1287,13 +1294,15 @@ PERMS = {
     "updateMyClone": ("self", "自分の分身だけ（許可のモード・自動で覚える）。全部許可にするのは本人が選んだときだけ", False),
     "listConversations": ("self", "自分の会話だけ（管理者も運営も中身は見ない。運営が中を見る 1 時間の許可のときだけ）", False),
     "createConversation": ("self", "自分の分身とだけ", False),
-    "getConversation": ("self", "自分の会話だけ", False),
+    "getConversation": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_view も持つ・K-757）", False),
     "updateConversation": ("self", "自分の会話だけ（名前・星・記憶に使わない・閉じる）", False),
     "deleteConversation": ("self", "自分の会話だけ", False),
-    "listConversationMessages": ("self", "自分の会話だけ", False),
-    "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
-    "sendConversationMessage": ("self", "自分の会話だけ。分身は本人の権限の中でだけ読む・動く", False),
-    "stopConversation": ("self", "自分の会話だけ", False),
+    "listConversationMessages": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）", False),
+    "streamConversation": ("self", "自分の会話だけ。本人の会話が変わった合図を流す（会話の字は流さない・D-113）", False),
+    "sendConversationMessage": ("self", "自分の AI との会話（clone）だけ。言った字は本人の PC の AI が取りに来る（チケット・作る画面の会話は種類ごとの口）", False),
+    "stopConversation": ("self", "自分の会話だけ（種類を問わない）。動いている仕事に止める合図・待っている仕事は取りやめ", False),
+    "startDraftConversation": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
+    "sendDraftMessage": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),
     "answerAgentPermission": ("self", "自分の分身の許可だけ", False),
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),
@@ -1332,7 +1341,6 @@ PERMS = {
     "getCloneNow": ("self", "自分の分身だけ", False),
     "getCloneGrowth": ("self", "自分の分身だけ", False),
     "listCloneActivity": ("self", "自分の分身がやったことだけ", False),
-    "exportCloneActivity": ("self", "自分の分身がやったことだけ", False),
     "takeoverActionRun": ("assignee", "そのチケットの担当者だけ（自分で進める形に切り替える。動いている・待っている仕事はその場で止める）", False),
     # ログイン・登録（ログイン前は public。どれも IP ごとの上限が厳しい・同じ答えを返して有る無しを漏らさない）
     "createSignup": ("public", "誰でも。確認のメールを押すまで会社も利用者も作らない（D-088.2）。漏れたパスワードは弾く（D-125.137）", False),
@@ -1401,14 +1409,14 @@ PERMS = {
     "askFromBridge": ("device", "同上（本人に聞く）", False),
     "getBridgeQuestionAnswer": ("device", "同上", False),
     "getJobControl": ("device", "同上（止める・割り込みの指示を受け取る）", False),
-    "reportBrowserState": ("device", "同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）", False),
-    "mirrorConversationEntries": ("device", "同上（会話の記録の写し。正は本人の PC・D-112）", False),
-    "listMirrorTargets": ("device", "同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）", False),
+    "reportBrowserState": ("device", "同上。仕事の間のブラウザの様子（使う・使えない）だけ。写真・画面の写しは送らない（K-761）", False),
+    "mirrorConversationEntries": ("device", "同上（その仕事を受け取った PC だけ。会話は仕事から決める・記録と同じ id の文だけ写す・D-112）", False),
+    "listMirrorTargets": ("device", "同上（直近 14 日の本人の会話と、そこで使った Claude Code の session と最新の仕事の id）", False),
     "putArtifactFromBridge": ("device", "同上", False),
     "callKanameTool": ("device", "同上。分身は本人の権限の中でだけ Kaname の道具を呼べる", False),
     "resolveCredential": ("device", "その人の PC の実行器だけ。持ち主と使える場所が合うときだけ・その仕事の間だけ。AI と画面には返さない（D-128.57）", False),
     "reportCredentialCheck": ("device", "その人の PC", False),
-    "getFileForBridge": ("device", "その仕事に付いたファイルだけ（期限つきの署名 URL）", False),
+    "getFileForBridge": ("device", "その仕事に付いた資料だけ（期限つきの署名 URL）。動いている仕事の間だけ（K-761）", False),
     # 運営：配るもの（運営の人で、そのできることを持つ人だけ・D-128.70）
     "listOpsWorkTypes": ("ops:distribute", "配るものを持つ運営の人", False),
     "getOpsWorkType": ("ops:distribute", "同上。どのワークスペースがどの版を使っているかは数だけ（中身は見ない）", False),
@@ -1592,10 +1600,6 @@ PERMS = {
 SUCCESS_STATUS: dict[str, int] = {}
 
 # チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
-import sys as _sys  # noqa: E402
-from pathlib import Path as _Path  # noqa: E402
-
-_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
 import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
 

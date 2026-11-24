@@ -17,7 +17,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id/artifacts", op(deps, "listTicketArtifacts"));
   app.post("/api/v1/tickets/:id/attachments", op(deps, "createTicketAttachment"));
   app.patch("/api/v1/tickets/:id/body", op(deps, "updateTicketBody"));
-  app.get("/api/v1/tickets/:id/checks", op(deps, "listChecks"));
   app.patch("/api/v1/tickets/:id/client-share", op(deps, "updateTicketClientShare"));
   app.post("/api/v1/tickets/:id/complete", op(deps, "completeTicket"));
   app.get("/api/v1/tickets/:id/decisions", op(deps, "listTicketDecisions"));
