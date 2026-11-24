@@ -1927,6 +1927,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/shell-slots.tsx",
+    "apps/web/features/F7/detail-slots.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k599-f7-slots.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F1/password-reset/**",
     "apps/api/src/hooks/password-reset.ts",
     "apps/api/src/features/F1/admin-recovery/**"
@@ -2170,6 +2179,7 @@
   "apps/web/features/F4/doc/editor/doc-editor.tsx": "編集の部品の本体 ./doc-editor-live を next/dynamic で遅く読む（同じ置き場の部品・ファイルは読まない）。置き場 apps/web/features/F4/doc/editor/ は data_links で結ぶ",
   "apps/api/test/features/F4/ticket-estimate.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ。また 08_api/openapi.yaml と packages/contracts/src/schemas.ts を readFileSync で読む（契約の updateTicket の入力に estimate_minutes が在ること・K583-API-017）・K-583",
   "apps/web/tests/k/k600-f7-list-slots.spec.ts": "差し込み口の入口 apps/web/features/F7/list-slots.tsx・区画のファイル apps/web/features/F7/（overview/overview-slot.tsx・calendar/calendar-slot.tsx・gantt/gantt-slot.tsx・due/due-mark-slot.tsx・due/number-cards-slot.tsx・due/mine-chips-slot.tsx）・前からのファイル apps/web/features/F4/ticket-list/（list-table.tsx・list-page.tsx・list-views.tsx・use-ticket-list.ts）と apps/web/features/F4/create-ticket/tickets-page.tsx を読む（K-600）",
+  "apps/web/tests/k/k599-f7-slots.spec.ts": "段 8 の差し込み口の入口 apps/web/features/F7/shell-slots.tsx・detail-slots.tsx と区画のファイル 7 個（notice/notice-slot・search/search-slot・saved/saved-view-slot・due/due-slot・delete/more-menu-slot・stopped/stopped-hand-slot・overview/group-link-slot）、前からのファイル F4 の ticket-shell.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.tsx、F5 の delegate-band.tsx・use-run.ts、components/k/shell.tsx を文字で読む（data_links で結ぶ・K-599）",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
   "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
