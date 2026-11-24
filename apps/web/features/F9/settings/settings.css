@@ -1,0 +1,305 @@
+/* チケットの設定（種別・状態・項目）の下絵。色・字・角丸・余白は正本のトークン（--k-*）だけ。クラスの頭は k-f9s- */
+
+.k-page.k-me-page.k-f9s-page {
+  max-width: none;
+}
+/* 共通のタブ（components/k の .k-tab[data-selected]）は、今の版の部品が付ける属性（data-active・aria-selected）と合っておらず、
+   選んだ形が出ない（前からの物・PM に報告）。下絵ではこの画面の中だけ、同じ値で選んだ形を出す */
+.k-f9s-page .k-tab[aria-selected="true"] {
+  color: var(--k-primary);
+  border-bottom-color: var(--k-primary);
+  font-weight: var(--k-fw-h3);
+}
+.k-f9s-hint {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 左に並び・右に直す欄（幅 767 以下は縦） ---- */
+.k-f9s-md {
+  display: grid;
+  grid-template-columns: var(--k-c-create-aside-width) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--k-s-lg);
+  min-width: 0;
+  padding-top: var(--k-s-md);
+}
+.k-f9s-side {
+  display: grid;
+  gap: var(--k-s-sm);
+  justify-items: start;
+  min-width: 0;
+}
+.k-f9s-list {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+  overflow: hidden;
+}
+.k-f9s-list li + li {
+  border-top: var(--k-c-detail-rule-border-bottom);
+}
+.k-f9s-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: calc(var(--k-s-xl) - var(--k-s-xs));
+  padding: 0 var(--k-s-md);
+  color: var(--k-on-surface);
+  font-size: var(--k-text-body);
+  text-decoration: none;
+}
+.k-f9s-item:hover {
+  background: var(--k-select);
+  text-decoration: none;
+}
+.k-f9s-item[aria-current="true"] {
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-weight: var(--k-fw-h3);
+}
+.k-f9s-item-t {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-f9s-item small {
+  flex: none;
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body);
+  color: var(--k-on-surface-variant);
+}
+.k-f9s-form,
+.k-f9s-stage-edit {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+  padding: var(--k-s-lg);
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-f9s-form .k-field {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-f9s-acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+}
+
+/* ---- 色（見分けの色 8 つ） ---- */
+.k-f9s-dot {
+  flex: none;
+  width: var(--k-s-sm);
+  height: var(--k-s-sm);
+  border-radius: var(--k-r-full);
+}
+.k-f9s-colors,
+.k-f9s-options {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.k-f9s-colors legend,
+.k-f9s-options legend {
+  padding: 0;
+  margin-bottom: var(--k-s-xs);
+}
+.k-f9s-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+}
+.k-f9s-swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--k-s-lg) + var(--k-s-sm));
+  height: calc(var(--k-s-lg) + var(--k-s-sm));
+  border-radius: var(--k-r-full);
+  color: var(--k-on-primary);
+  cursor: pointer;
+}
+.k-f9s-swatch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.k-f9s-swatch svg {
+  visibility: hidden;
+}
+.k-f9s-swatch:has(input:checked) {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 2px;
+}
+.k-f9s-swatch:has(input:checked) svg {
+  visibility: visible;
+}
+.k-f9s-dot[data-tone="indigo"],
+.k-f9s-swatch[data-tone="indigo"],
+.k-f9s-pill[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-f9s-dot[data-tone="teal"],
+.k-f9s-swatch[data-tone="teal"],
+.k-f9s-pill[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-f9s-dot[data-tone="amber"],
+.k-f9s-swatch[data-tone="amber"],
+.k-f9s-pill[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-f9s-dot[data-tone="coral"],
+.k-f9s-swatch[data-tone="coral"],
+.k-f9s-pill[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-f9s-dot[data-tone="sage"],
+.k-f9s-swatch[data-tone="sage"],
+.k-f9s-pill[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-f9s-dot[data-tone="plum"],
+.k-f9s-swatch[data-tone="plum"],
+.k-f9s-pill[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-f9s-dot[data-tone="lavender"],
+.k-f9s-swatch[data-tone="lavender"],
+.k-f9s-pill[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-f9s-dot[data-tone="teal-light"],
+.k-f9s-swatch[data-tone="teal-light"],
+.k-f9s-pill[data-tone="teal-light"] {
+  background: var(--k-d-teal-light);
+}
+
+/* ---- 状態の並び ---- */
+.k-f9s-stack {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+  padding-top: var(--k-s-md);
+}
+.k-f9s-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-f9s-stage + .k-f9s-stage {
+  border-top: var(--k-c-detail-rule-border-bottom);
+}
+.k-f9s-stage-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-s-xl);
+  padding: var(--k-s-xs) var(--k-s-md);
+}
+.k-f9s-grip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-sm);
+  background: transparent;
+  color: var(--k-neutral);
+  cursor: grab;
+}
+.k-f9s-pill {
+  padding: 0 var(--k-s-md);
+  border-radius: var(--k-r-full);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-label-md);
+  line-height: calc(var(--k-lh-body) + 0.2);
+  white-space: nowrap;
+}
+.k-f9s-lock {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-f9s-stage-acts {
+  display: inline-flex;
+  gap: var(--k-s-xs);
+  margin-left: auto;
+}
+.k-f9s-stage-acts .k-btn[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f9s-stage-edit {
+  margin: 0 var(--k-s-md) var(--k-s-md);
+  border-color: var(--k-line-strong);
+}
+
+/* ---- 項目のマスタ ---- */
+.k-f9s-options ul {
+  list-style: none;
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0 0 var(--k-s-sm);
+  padding: 0;
+}
+.k-f9s-options li {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+}
+.k-f9s-options li .k-input {
+  flex: 1;
+  min-width: 0;
+}
+.k-f9s-check {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-f9s-check input {
+  flex: none;
+  width: var(--k-s-md);
+  height: var(--k-s-md);
+  margin: 0;
+  accent-color: var(--k-primary);
+}
+.k-f9s-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm) var(--k-s-lg);
+}
+
+@media (max-width: 767px) {
+  .k-f9s-md {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .k-f9s-form,
+  .k-f9s-stage-edit {
+    padding: var(--k-s-md);
+  }
+}
