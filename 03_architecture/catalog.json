@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 386,
+  "api": 389,
   "api_built": 117,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 150,
   "ui": 19,
   "packages": 13,
-  "errors": 291,
+  "errors": 298,
   "stack": 68,
   "env": 41
  },
@@ -2104,6 +2104,40 @@
    ]
   },
   {
+   "op": "withdrawKnowledgeRequest",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge/requests/:id",
+   "what": "削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-687"
+   ]
+  },
+  {
+   "op": "dismissKnowledgeRequest",
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/dismiss",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-687"
+   ]
+  },
+  {
    "op": "findSimilarKnowledge",
    "method": "POST",
    "path": "/api/v1/knowledge/similar",
@@ -2500,6 +2534,23 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-69"
+   ]
+  },
+  {
+   "op": "requestKnowledgeRaise",
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/:id/raise",
+   "what": "作成・実行（knowledge_pages）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-687"
    ]
   },
   {

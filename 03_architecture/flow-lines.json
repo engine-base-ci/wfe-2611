@@ -367,6 +367,14 @@
    "boundary": false,
    "lines": []
   },
+  "knowledge_requests": {
+   "writes": [
+    "F9"
+   ],
+   "reads": [],
+   "boundary": false,
+   "lines": []
+  },
   "layers": {
    "writes": [
     "F10"

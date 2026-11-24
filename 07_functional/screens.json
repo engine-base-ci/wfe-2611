@@ -45337,6 +45337,86 @@
       "D-152.34",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/raise",
+     "table": "knowledge_requests",
+     "operation_id": "requestKnowledgeRaise",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-147",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/requests/:id",
+     "table": "knowledge_requests",
+     "operation_id": "withdrawKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/dismiss",
+     "table": "knowledge_requests",
+     "operation_id": "dismissKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -46467,6 +46547,86 @@
       "D-152.34",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/raise",
+     "table": "knowledge_requests",
+     "operation_id": "requestKnowledgeRaise",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-147",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/requests/:id",
+     "table": "knowledge_requests",
+     "operation_id": "withdrawKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/dismiss",
+     "table": "knowledge_requests",
+     "operation_id": "dismissKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
     }
    ],
    "related_entities": [
@@ -46474,6 +46634,7 @@
     "E-122",
     "E-123",
     "E-147",
+    "E-149",
     "E-055",
     "E-002",
     "E-142",

@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 147 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 148 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 74 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -141,6 +141,7 @@
 | E-122 | `knowledge_page_versions` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
 | E-123 | `knowledge_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.52 |
 | E-147 | `knowledge_folders` | 16. 第1フェーズの表 | scope_layered | 3 | D-125 D-128 D-152.1 |
+| E-149 | `knowledge_requests` | 16. 第1フェーズの表 | account_scoped | 1 | D-125 D-128 D-152.13 D-152.2 |
 | E-148 | `knowledge_limits` | 16. 第1フェーズの表 | none | 1 | D-125 D-128 D-152.16 |
 | E-124 | `clients` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.121 D-128 D-128.53 |
 | E-125 | `client_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.54 |
@@ -281,7 +282,7 @@
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |
 | work-types | 業務の型 | A119 | 1 | 0 | 9 | 10 | R1 R2 R3 |
-| knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 39 | 18 | R1 R2 R3 |
+| knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 42 | 19 | R1 R2 R3 |
 | clients | 取引先 | A121 | 1 | 0 | 15 | 18 | R1 R2 |
 | requests | 届いた依頼 | A122 | 1 | 0 | 6 | 16 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 4 | 5 | R6 |

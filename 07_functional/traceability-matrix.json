@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 147,
+  "entities_count": 148,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -3168,6 +3168,7 @@
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
     "E-147 knowledge_folders",
+    "E-149 knowledge_requests",
     "E-055 layers",
     "E-002 scopes",
     "E-142 scope_memberships",
@@ -3222,7 +3223,10 @@
     "DELETE /api/knowledge_pages/:id",
     "PUT /api/knowledge_pages/:id/must",
     "POST /api/knowledge/similar",
-    "POST /api/knowledge_pages/:id/copy"
+    "POST /api/knowledge_pages/:id/copy",
+    "POST /api/knowledge_pages/:id/raise",
+    "DELETE /api/knowledge/requests/:id",
+    "POST /api/knowledge/requests/:id/dismiss"
    ],
    "access_roles": [
     "R1",
@@ -11643,6 +11647,24 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge_pages/:id/copy"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/raise"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/requests/:id"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/dismiss"
     }
    ]
   },
@@ -14299,6 +14321,17 @@
    ]
   },
   {
+   "entity_id": "E-149",
+   "entity_name": "knowledge_requests",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
    "entity_id": "E-148",
    "entity_name": "knowledge_limits",
    "used_by_screens": [],
@@ -15410,7 +15443,8 @@
     "E-144",
     "E-145",
     "E-146",
-    "E-147"
+    "E-147",
+    "E-149"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
@@ -15559,7 +15593,8 @@
     "E-144",
     "E-145",
     "E-146",
-    "E-147"
+    "E-147",
+    "E-149"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",

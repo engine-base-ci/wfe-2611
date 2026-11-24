@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 386,
+  "total_apis": 389,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -3122,6 +3122,21 @@
      "role": "action",
      "endpoint": "POST /api/v1/knowledge_pages/:id/copy",
      "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/raise",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/requests/:id",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/dismiss",
+     "act": "A136"
     }
    ],
    "transitions": [],

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:cd73da06fdb67f57
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:dbcfc700e477d9d4
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6804,6 +6804,117 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "DELETE",
+    "path": "/api/v1/knowledge/requests/:id",
+    "operationId": "withdrawKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeRequestEnded",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge/requests/:id/dismiss",
+    "operationId": "dismissKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeDismissInput",
+    "success": 200,
+    "output": "KnowledgeRequestEnded",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "POST",
     "path": "/api/v1/knowledge/similar",
     "operationId": "findSimilarKnowledge",
@@ -8045,6 +8156,71 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     ],
     "acts": [
       "A114"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "knowledge_pages",
+        "sql": "(deleted_at is not null or app.kpage_writable(id))"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge_pages/:id/raise",
+    "operationId": "requestKnowledgeRaise",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeRaiseInput",
+    "success": 201,
+    "output": "KnowledgeRequest",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
     ],
     "screens": [
       "knowledge"
@@ -20592,4 +20768,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "cd73da06fdb67f57";
+export const OPENAPI_HASH = "dbcfc700e477d9d4";

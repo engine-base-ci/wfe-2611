@@ -1973,6 +1973,20 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-raise.ts",
+    "apps/api/src/features/F9/knowledge/raise.ts",
+    "apps/api/src/features/F9/knowledge/raise-end.ts",
+    "apps/api/src/features/F9/knowledge/page-guards/pending-request.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/request-marks.ts",
+    "apps/api/src/features/F9/knowledge/page-parts/**",
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-raise.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],
