@@ -167,6 +167,7 @@ export const MIGRATIONS = [
   "20261125021100_run_stop.sql",
   "20261125021200_approval_stop.sql",
   "20261125021300_approval_withdraw.sql",
+  "20261125021900_approval_check_summary.sql",
   "20261125022200_approval_self_edit.sql",
   "20261125022400_approval_return_next.sql",
   "20261125023000_approval_history.sql",
