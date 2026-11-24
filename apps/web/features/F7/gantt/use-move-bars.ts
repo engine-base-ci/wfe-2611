@@ -45,20 +45,22 @@ export const msgOf = (code: string): string => errorText(code).entry.message;
 /** 正本の文（first なら 1 文目） */
 export const textOf = (code: string, first = false): string => (first ? errorText(code).title : msgOf(code));
 
-/** 口の断り → 置き場ごとの字（理由の欄・日付の欄・小窓の上）と、閉じる・読み直す */
+/** 口の断り → 置き場ごとの字（理由の欄・日付の欄・小窓の上）と、読み直す。どれも小窓は開いたまま（md「欄の確かめと断り」）。
+ *  403 は E-PAGE-002、ほかの E-PAGE-*（404 の E-PAGE-001・落ちた・止まっている 等）は E-PAGE-007 の 1 文目。
+ *  消えていた（404）ときは E-DUE-008 と同じく、小窓は開いたまま棒の口を読み直す */
 export function refusalOf(r: Pick<CallErr, "kind" | "code" | "status">): {
   reason?: string;
   date?: string;
   notice?: string;
-  gone?: boolean;
   reload?: boolean;
 } {
   const code = r.status === 503 && !(r.code in CATALOG) ? PAGE_ERROR.down : errorCodeOf(r);
-  if (code === PAGE_ERROR.notFound) return { gone: true };
   if (code === "E-DUE-001" || code === "E-DUE-002") return { reason: msgOf(code) };
   if (code === "E-VAL-012") return { date: msgOf(code), notice: msgOf(code) };
   if (RELOAD_CODES.has(code)) return { notice: msgOf(code), reload: true };
-  if (code.startsWith("E-PAGE-")) return { notice: textOf(code, true) };
+  if (code === PAGE_ERROR.forbidden) return { notice: textOf(code, true) };
+  if (code === PAGE_ERROR.notFound) return { notice: textOf(PAGE_ERROR.loadFailed, true), reload: true };
+  if (code.startsWith("E-PAGE-")) return { notice: textOf(PAGE_ERROR.loadFailed, true) };
   return { notice: msgOf(code) };
 }
 
@@ -191,11 +193,6 @@ export function useMoveBars({ onMoved }: { onMoved: () => void }): MoveBars {
         return;
       }
       const f = refusalOf(res);
-      if (f.gone) {
-        setDraft(null);
-        onMoved();
-        return;
-      }
       // 断られた後の送り直しは別の操作（同じ鍵だと最初の断りが返る）なので鍵を替える
       set((d) => ({ ...d, key: newKey(), ...(f.reason ? { reasonError: f.reason } : { notice: f.notice }) }));
       if (f.reload) onMoved();

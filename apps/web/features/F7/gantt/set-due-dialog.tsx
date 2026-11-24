@@ -1,7 +1,8 @@
 "use client";
 // 期限が無いチケットに期限を決める小窓（K-482・絵に無い物・字は md の勧め）。題「期限を決めますか」・期限の日・理由（必須）・親の期限の確かめ。
 //   手元で確かめる（口と 2 層）：理由（checkReason）・今日より前の日（E-VAL-012 と同じ字）。送るのは updateTicket の { due_on, due_reason, expected_due_on: null }（開始日は送らない）。
-//   断りの置き場：理由の誤り＝理由の欄の下／日付の断り（手元の過去日・口の E-VAL-012）＝期限の欄の下／ほか＝小窓の上の赤い箱。どれも書いた中身は消さない。
+//   断りの置き場：理由の誤り＝理由の欄の下／日付の断り（手元の過去日・口の E-VAL-012）＝期限の欄の下／ほか＝小窓の上の赤い箱
+//   （403 は E-PAGE-002・404 などほかの E-PAGE-* は E-PAGE-007 の 1 文目）。どれも書いた中身は消さず、小窓は開いたまま。
 //   見た目は確かめの小窓（MoveImpactDialog）の class を使い回す（新しい値は足さない）
 import { useState } from "react";
 import { Button, Dialog, TextArea, TextField, useNotify } from "@/components/k";
@@ -21,7 +22,7 @@ export interface SetDueDialogProps {
   /** 親の期限（親が無い・期限が無ければ null） */
   parent: { number: string; due: string } | null;
   onClose: () => void;
-  /** 決まった（行を外し、棒の口を読み直す）。day は決めた期限（チケットが消えていたら null） */
+  /** 決まった（行を外し、棒の口を読み直す）。day は決めた期限 */
   onDone: (id: string, day: string | null) => void;
 }
 
@@ -60,7 +61,6 @@ export function SetDueDialog({ ticket, parent, onClose, onDone }: SetDueDialogPr
       if (f.reason) setReasonError(f.reason);
       else if (f.date) setDateError(f.date);
       else setNotice(f.notice ?? null);
-      if (f.gone) onDone(ticket.id, null);
     } catch {
       setNotice(textOf("E-PAGE-007", true));
     } finally {

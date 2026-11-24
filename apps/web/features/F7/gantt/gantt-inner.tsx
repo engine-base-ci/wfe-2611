@@ -3,7 +3,8 @@
 //   本線の components/views/gantt-inner.tsx と同じ作り）。左の表は 件名・担当者・状態、棒は状態の色（正本のトークン）、土日と今日は列の色で示す。
 //   見た目は gantt.css が svar の変数（--wx-*）を正本のトークンに置き換える。棒の中身と節目の旗は taskTemplate で描く。
 //   棒を動かす（K-482）：つかんで離したときの update-task を api.intercept で取り、onMove（動かした端と日数）を呼んで false を返す（店の値は替えない）。
-//   つかんでいる間の drag-task は見た目（$x・$w）だけを替えるので、最初の位置を覚えておき、取り消したら drag-task で元の位置に戻す
+//   つかんでいる間の drag-task は見た目（$x・$w）だけを替えるので、最初の位置を覚えておき、取り消したら drag-task で元の位置に戻す。
+//   期限を動かす以外（つながり・並べ替え・編集の小窓・進み具合）は intercept で false を返して効かせない
 import { Gantt, Willow, type IApi, type IColumnConfig, type IScaleConfig, type ITask } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 import { useCallback, useLayoutEffect, useMemo, useState } from "react";
@@ -114,7 +115,13 @@ export default function GanttInner({ tasks, scale, start, end, today, readonly, 
   );
   const init = useCallback(
     (api: IApi) => {
-      if (!onMove) return;
+      // 棒をつかんで期限を動かす以外は効かせない（口に送らず保存されない物・md は「あとに続くもの」を押せない形・D-145.9・D-151.12）：
+      //   つながりを作る・行の並べ替え・svar の編集の小窓。進み具合のつまみ等の diff の無い update-task も下で止める（つまみの見た目は gantt.css で出さない）
+      for (const action of ["add-link", "move-task", "show-editor"] as const) api.intercept(action, () => false);
+      if (!onMove) {
+        api.intercept("update-task", () => false);
+        return;
+      }
       const first = new Map<number, Place>();
       api.intercept("drag-task", (e) => {
         const id = Number(e.id);
@@ -125,7 +132,7 @@ export default function GanttInner({ tasks, scale, start, end, today, readonly, 
         return true;
       });
       api.intercept("update-task", (e) => {
-        if (e.inProgress || typeof e.diff !== "number" || !e.diff || !e.task) return true;
+        if (e.inProgress || typeof e.diff !== "number" || !e.diff || !e.task) return false;
         const id = Number(e.id);
         const back = first.get(id);
         first.delete(id);

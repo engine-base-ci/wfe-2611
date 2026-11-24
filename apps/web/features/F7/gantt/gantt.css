@@ -107,6 +107,11 @@
   height: calc(var(--k-c-gantt-scale-height) * 2 + var(--k-c-gantt-row-height) * 18);
   overflow: hidden;
 }
+/* 棒をつかんで期限を動かす以外のつまみは出さない（つながりを作る・進み具合。どちらも口に送らず保存されない・K-482） */
+.k-f7-gantt-body .wx-link,
+.k-f7-gantt-body .wx-progress-marker {
+  display: none;
+}
 .k-f7-gantt-body .wx-willow-theme {
   height: 100%;
   --wx-font-family: var(--k-font);
