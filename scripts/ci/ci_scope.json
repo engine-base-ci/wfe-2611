@@ -54,6 +54,7 @@
   ],
   "paths": [
    "05_flow/*.py",
+   "05_flow/build_api.d/**",
    "05_flow/*.json",
    "05_flow/*.html",
    "04_design/**",
@@ -1759,6 +1760,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/saved/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k479-save-view.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/stopped.ts",
     "apps/api/src/features/F7/stopped/**"
    ],
@@ -1775,6 +1784,14 @@
    ],
    "tests": [
     "apps/api/test/generated/post_action_runs_id_takeover.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F7/stopped/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k486-stopped-band.spec.ts"
    ]
   },
   {
@@ -1879,6 +1896,14 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-sort-fields.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F1/password-reset/**",
     "apps/api/src/hooks/password-reset.ts",
     "apps/api/src/features/F1/admin-recovery/**"
@@ -1930,6 +1955,20 @@
    ],
    "tests": [
     "apps/web/tests/k/k1100-stage-locked.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "05_flow/phase1.py",
+    "05_flow/flow.json",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/me-sub.tsx",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1113-shell-words.spec.ts"
    ]
   }
  ],
@@ -2094,6 +2133,7 @@
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
   "apps/api/test/features/contract/k144.d/K-477.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-477）",
   "apps/api/test/features/contract/k144.d/K-485.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/web/tests/k/k486-stopped-band.spec.ts": "正本 07_qa/test-specs/errors.json を読み（番号から文を引く）、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/stopped/（views.tsx・stop-copy.ts・stopped.css）を共通の道具 stage2-match.ts の matchMock で開いて比べる（K-486）",
   "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/ticket-delete.harness.ts": "土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487",
   "apps/api/test/features/contract/k144.d/K-488.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
@@ -2103,7 +2143,8 @@
   "apps/web/tests/k/k599-f7-slots.spec.ts": "段 8 の差し込み口の入口 apps/web/features/F7/shell-slots.tsx・detail-slots.tsx と区画のファイル 7 個（notice/notice-slot・search/search-slot・saved/saved-view-slot・due/due-slot・delete/more-menu-slot・stopped/stopped-hand-slot・overview/group-link-slot）、前からのファイル F4 の ticket-shell.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.tsx、F5 の delegate-band.tsx・use-run.ts、components/k/shell.tsx を文字で読む（data_links で結ぶ・K-599）",
   "apps/web/tests/k/k600-f7-list-slots.spec.ts": "差し込み口の入口 apps/web/features/F7/list-slots.tsx・区画のファイル apps/web/features/F7/（overview/overview-slot.tsx・calendar/calendar-slot.tsx・gantt/gantt-slot.tsx・due/due-mark-slot.tsx・due/number-cards-slot.tsx・due/mine-chips-slot.tsx）・前からのファイル apps/web/features/F4/ticket-list/（list-table.tsx・list-page.tsx・list-views.tsx・use-ticket-list.ts）と apps/web/features/F4/create-ticket/tickets-page.tsx を読む（K-600）",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
-  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
+  "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
