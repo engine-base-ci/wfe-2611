@@ -92,7 +92,9 @@ test("K1155-UI-003 項目名の字は名前だけ。＊は ::after（色 --k-err
   }
 });
 
-test("K1155-UI-004 任意の欄（題名・メール）は印が出ず、getByLabel(名前, {exact:true}) で 1 件ずつ", async ({ page }) => {
+test("K1155-UI-004 任意の欄（題名・メール）は印が出ず、getByLabel(名前, {exact:true}) で 1 件ずつ", async ({
+  page,
+}) => {
   await open(page);
   for (const [id, name] of [
     ["field-md", "題名"],
@@ -160,7 +162,7 @@ function tsxUnder(dir: string): string[] {
   return out;
 }
 
-test("K1155-UI-006 ＊だけを中身に持つ aria-hidden の span が画面のコードに無い。k.css に .k-label[data-required]::after（content: \"*\" / \"\"）が在り .k-req が無い", () => {
+test('K1155-UI-006 ＊だけを中身に持つ aria-hidden の span が画面のコードに無い。k.css に .k-label[data-required]::after（content: "*" / ""）が在り .k-req が無い', () => {
   const files = ["components", "features", "app"].flatMap((d) => tsxUnder(join(WEB, d)));
   expect(files.length).toBeGreaterThan(50);
   const star = /<span\b[^>]*aria-hidden="true"[^>]*>\s*\*\s*<\/span>/;
