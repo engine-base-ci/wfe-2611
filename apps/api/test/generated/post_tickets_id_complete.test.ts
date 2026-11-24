@@ -34,6 +34,8 @@ describe("POST /api/v1/tickets/:id/complete", () => {
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-030」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-030");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-complete.test.ts）：UNWANTED: IF 必ず守るから入った確認項目にチェックの付いていない物があるなら、Kaname は 409 と残りの行の一覧（E-KNW-240）を返し、何も書かない
+  it.todo("test_post_tickets_id_complete_conflict_2");
   it("test_post_tickets_id_complete_rejected_422_2", () => {
     // UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-029」（同じ CI の G3 で流れる）

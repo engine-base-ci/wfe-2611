@@ -2022,6 +2022,15 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261125014100_knowledge_complete_guard.sql",
+    "apps/api/src/features/F5/approve-complete/errors.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-complete-guard.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],
