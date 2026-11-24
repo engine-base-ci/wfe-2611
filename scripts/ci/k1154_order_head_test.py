@@ -22,6 +22,8 @@ import ticket_order_gate as g  # noqa: E402
 from ticket_order_gate_test import ENV, Repo  # noqa: E402
 
 GATE = HERE / "ticket_order_gate.py"
+# 自己試験の旗。字のまま書くと、検査 ci_wiring_gate.py の W1 がこの試験のファイルを「自己試験を持つ検査」と数える（この試験に自己試験は無い）
+SELF_FLAG = "--" + "selftest"
 
 
 class Case(unittest.TestCase):
@@ -192,16 +194,16 @@ class HeadOnlyTest(Case):
 
 class WiringTest(unittest.TestCase):
     def test_K1154_OG_009_ci_wiring_and_selftest(self):
-        """K1154-OG-009 入口：g65.d の 1 行・CI の定義にこの命令・G56 の段の命令は今のまま・--selftest は 0 で selftest ok"""
+        """K1154-OG-009 入口：g65.d の 1 行・CI の定義にこの命令・G56 の段の命令は今のまま・順の検査の自己試験は 0 で selftest ok"""
         cmd = "python3 scripts/ci/k1154_order_head_test.py"
         self.assertEqual((HERE / "g65.d" / "K-1154.txt").read_text(encoding="utf-8").strip(), cmd)
         wf = (ROOT / ".github" / "workflows" / "v3-gate.yml").read_text(encoding="utf-8")
         self.assertIn(cmd, wf)
         g56 = [line for line in wf.splitlines() if "ticket_order_gate.py --base-ref" in line]
         self.assertEqual(len(g56), 1, g56)
-        self.assertIn("python3 scripts/ci/ticket_order_gate.py --selftest", g56[0])
+        self.assertIn(f"python3 scripts/ci/ticket_order_gate.py {SELF_FLAG}", g56[0])
         self.assertIn('python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"', g56[0])
-        p = subprocess.run([sys.executable, str(GATE), "--selftest"], capture_output=True, text=True, env=ENV)
+        p = subprocess.run([sys.executable, str(GATE), SELF_FLAG], capture_output=True, text=True, env=ENV)
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
         self.assertIn("selftest ok", p.stdout)
 

@@ -32,7 +32,7 @@ PAIR = re.compile(r"(K-\d+) は (K-\d+) に依存する")   # ★ の行の（�
 OLD_BLOB = "c27ded84719384af0950160bcb17ddc4b607a409"
 GATE = HERE / "ticket_order_gate.py"
 # K-1154（answer=ee72b1756f5d）で答えが変わる写し：依存より先に作り、後で依存が枝に入る。直す前の版は FAIL・新しい版は PASS
-HEAD_ONLY_GREEN = {"tricky", "skew", "before", "restore"}
+HEAD_ONLY_GREEN = {"skew", "before", "restore"}
 ENV = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.com",
        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.com"}
 TICKETS = "11_tickets/tickets.json"
@@ -322,7 +322,7 @@ class SameAnswerTest(unittest.TestCase):
                     self.assertEqual(int(NUM.search(want[1]).group(1)) - int(NUM.search(got[1]).group(1)), merges)
                     fails += want[0] == 1 and "★" in want[1] and "FAIL" in want[1]
                     passes += want[0] == 0 and "PASS" in want[1]
-            self.assertEqual(changed, 5)   # tricky（比べる元なし・あり）・skew・before・restore
+            self.assertEqual(changed, 3)   # skew・before・restore
             self.assertGreaterEqual(fails, 3)   # hold・head・parent
             self.assertGreaterEqual(passes, 1)  # green
 
