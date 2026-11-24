@@ -158,6 +158,7 @@ export const MIGRATIONS = [
   "20261122100400_ticket_field_values_set.sql",
   "20261122100500_ticket_delegate_body.sql",
   "20261122100600_ticket_complete_unchecked.sql",
+  "20261122100700_item_restore.sql",
   "20261122100800_ticket_create_fields.sql",
   "20261122100900_ticket_duplicate.sql",
   "20261122101000_ticket_read_adds.sql",
