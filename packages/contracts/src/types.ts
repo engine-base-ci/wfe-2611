@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:dbcfc700e477d9d4
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:4c2c81450c8279f0
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -258,6 +258,8 @@ export type KnowledgeRequests = { kind?: string; page_id?: string; folder_id?: s
 export type KnowledgeRequestsInput = { kind?: string; page_id?: string; folder_id?: string; from_scope_id?: string; from_is_personal?: string; to_scope_id?: string; to_folder_id?: string; requested_by?: string; message?: string; state?: string; decided_by?: string; decided_at?: string; decline_reason?: string; dismissed_at?: string };
 export type KnowledgeLimits = { shelf?: string; must_max?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type KnowledgeLimitsInput = { shelf?: string; must_max?: number };
+export type KnowledgeBreaches = { ticket_id?: string; page_id?: string; test_spec_id?: string | null; kind?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type KnowledgeBreachesInput = { ticket_id?: string; page_id?: string; test_spec_id?: string | null; kind?: string };
 export type Clients = { name?: string; owner_member_id?: string | null; visibility?: string; default_share?: unknown; routing?: string | null; email_domain?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type ClientsInput = { name?: string; owner_member_id?: string | null; visibility?: string; default_share?: unknown; routing?: string | null; email_domain?: string | null };
 export type ClientGroups = { client_id?: string; scope_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };

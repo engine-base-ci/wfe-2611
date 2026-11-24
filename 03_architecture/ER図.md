@@ -415,6 +415,8 @@ erDiagram
   knowledge_folders ||--o{ knowledge_pages : "フォルダ"
   knowledge_pages ||--o{ knowledge_requests : "上げる・共有の頼み"
   members ||--o{ knowledge_requests : "頼んだ人"
+  tickets ||--o{ knowledge_breaches : "破られた決まり"
+  knowledge_pages ||--o{ knowledge_breaches : "破られた数"
   class_axes ||--o{ class_values : "値"
   scopes ||--o{ scope_memberships : "入っている人（兼ねる）"
   tickets ||--o{ ticket_class_values : "分類"
@@ -450,6 +452,7 @@ erDiagram
 | **`knowledge_folders`** | `<scoped>`（scope＝棚）/ `is_personal`（自分の棚）/ `owner_member_id` / `parent_folder_id`（空＝棚の直下・深さ 6 まで）/ `name`（1〜100 字・同じ棚の同じ親で重ならない）/ `position` | **★新設（K-674・D-152.1）。**ナレッジのフォルダ。読める・書けるは棚の決めと同じ |
 | **`knowledge_requests`** | `<common>` / `kind`（上げる・共有）/ `page_id`（上げるは要る）/ `folder_id`（共有でフォルダのとき・page_id とどちらか 1 つ）/ `from_scope_id` / `from_is_personal`（元の棚）/ `to_scope_id`（先：グループか会社のいちばん上）/ `to_folder_id`（入れるフォルダ）/ `requested_by` / `message`（1,000 字まで）/ `state`（承認待ち・承認済み・断り・取り下げ）/ `decided_by` / `decided_at` / `decline_reason` / `dismissed_at`（断りの帯を消した） | **★新設（K-687・D-152.2・D-152.13）。**上の棚に上げる・共有するの頼み（K-688 の承認・断る、K-689 の共有も同じ表）。同じ物・種類・先の承認待ちは 1 つだけ。アプリの役は読むだけで、書くのは DB の関数（`app.kn_raise_request`・`app.kn_request_end`）だけ |
 | **`knowledge_limits`** | `shelf`（主キー：会社・グループ・自分）/ `must_max`（0 以上） | **★新設（K-685・D-152.16）。マスタ（製品共通の設定・会社の列を持たない）。**必ず守るの上限（会社 30・グループ 20〔グループごと〕・自分 10〔本人ごと〕）。アプリの役は読むだけで、運営が行を直して変える |
+| **`knowledge_breaches`** | `<common>` / `ticket_id` / `page_id`（破られた必ず守るのページ）/ `test_spec_id`（その確認項目の行）/ `kind`（AI が終わりを知らせたのにチェックが無い・AI が付けたチェックを人が外した・AI が自分で直したと知らせた） | **★新設（K-700・D-152.24）。**破られた数。同じチケット・ページ・出来事は 1 行だけ。追記だけで、アプリの役は読むだけ（書くのは DB の関数 `app.knowledge_record_breach`・`app.knowledge_breach_scan` と引き金だけ）。読めるのはそのページを書ける人 |
 | **`clients`** | `<common>` / `name` / `owner_member_id`（取引先の担当）/ `visibility`（全員・担当グループだけ）/ `default_share jsonb`（種別ごとの既定の見せ方）/ `routing`（分身が振り分ける）/ `email_domain`（招待はドメインが合う人だけ） | **★新設（D-125.121・D-128.53・D-128.54）** |
 | **`client_groups`** | `<common>` / `client_id` / `scope_id` | 担当グループ（いくつでも ← D-128.54） |
 | **`client_contacts`** | `<common>` / `client_id` / `name` / `email` / `role`（依頼できる・見るだけ）/ `member_id`（クライアントの場所に入るとき）/ `cc_role`（請求の宛先・CC・使わない） | 先方の人 |
@@ -611,7 +614,7 @@ erDiagram
 | 作業の段 | `ticket_stages` | |
 | 会社が足す項目 | `custom_fields` `ticket_field_values` | 項目の定義と、チケットごとの値（K-563・段 10 の K-706・K-717） |
 | 切り替えの決まり | `handover_rules` | |
-| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` `knowledge_folders` `knowledge_requests` | フォルダはページの置き場（棚の中の入れ子・K-674） |
+| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` `knowledge_folders` `knowledge_requests` `knowledge_breaches` | フォルダはページの置き場（棚の中の入れ子・K-674） |
 | 取引先 | `clients` `client_groups` `client_contacts` | |
 | 依頼 | `client_requests` `conversations` | |
 | 検収 | `acceptances` | |

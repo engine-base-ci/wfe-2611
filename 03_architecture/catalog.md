@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 389（作った 121・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
+API 389（作った 121・後のフェーズの行為だけ 20）・前の道すじ 26・表 151・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
 
 ## 共通の処理
 
@@ -82,6 +82,7 @@ API 389（作った 121・後のフェーズの行為だけ 20）・前の道す
 | `invoices` | skeleton | F12 |  |  |
 | `kaname_auth` | internal |  |  |  |
 | `kind_sections` | skeleton | F4,F9 |  | ○ |
+| `knowledge_breaches` | skeleton |  |  |  |
 | `knowledge_folders` | skeleton | F9 |  |  |
 | `knowledge_limits` | skeleton |  |  |  |
 | `knowledge_links` | skeleton | F9 |  |  |

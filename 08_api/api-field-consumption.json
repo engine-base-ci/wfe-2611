@@ -12033,6 +12033,49 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   },
   {
+   "entity": "knowledge_breaches",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_breaches",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_breaches",
+   "field": "page_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_breaches",
+   "field": "test_spec_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_breaches",
+   "field": "kind",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "clients",
    "field": "<common>",
    "consumed_by_screens": [],

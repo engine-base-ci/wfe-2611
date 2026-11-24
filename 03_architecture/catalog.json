@@ -9,7 +9,7 @@
   "api_built": 121,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 150,
+  "db": 151,
   "ui": 19,
   "packages": 13,
   "errors": 298,
@@ -6952,6 +6952,14 @@
    ],
    "reads": [],
    "boundary": true
+  },
+  {
+   "table": "knowledge_breaches",
+   "class": "skeleton",
+   "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "knowledge_folders",

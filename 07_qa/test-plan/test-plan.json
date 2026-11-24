@@ -748,9 +748,9 @@
   "l1_rows": 5094,
   "ears_endpoints": 389,
   "ears_tests": 4332,
-  "entities": 148,
-  "policies": 423,
-  "access_cases": 1578,
+  "entities": 149,
+  "policies": 424,
+  "access_cases": 1580,
   "errors": 298,
   "journey_rows": 88,
   "critical_tasks": 88
