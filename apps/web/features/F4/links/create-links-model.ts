@@ -11,8 +11,7 @@ export const LINKS_MAX = 20;
 const KINDS: readonly CreateLinkKind[] = ["derived_from", "related"];
 
 /** 派生元を関連より前に（それぞれの中は渡した順のまま） */
-const ordered = (list: readonly CreateLink[]): CreateLink[] =>
-  KINDS.flatMap((k) => list.filter((l) => l.kind === k));
+const ordered = (list: readonly CreateLink[]): CreateLink[] => KINDS.flatMap((k) => list.filter((l) => l.kind === k));
 
 /** 同じ種類・同じ相手がもう在るか */
 export function isLinked(list: readonly CreateLink[], kind: CreateLinkKind, id: string): boolean {
@@ -51,11 +50,11 @@ function readStage(v: unknown): CreateLink["stage"] | undefined {
 
 /** 下書きの 1 行（形の違う行は null） */
 function readOne(v: unknown): CreateLink | null {
-  if (!isObj(v) || !isKind(v["kind"])) return null;
-  const { id, number, title } = v;
-  if (typeof id !== "string" || typeof number !== "string") return null;
+  if (!isObj(v)) return null;
+  const { kind, id, number, title } = v;
+  if (!isKind(kind) || typeof id !== "string" || typeof number !== "string") return null;
   const stage = readStage(v["stage"]);
-  return { kind: v["kind"], id, number, title: typeof title === "string" ? title : "", ...(stage ? { stage } : {}) };
+  return { kind, id, number, title: typeof title === "string" ? title : "", ...(stage ? { stage } : {}) };
 }
 
 /** 下書きの links を読む（配列でなければ無し・形の違う行はその行だけ捨てる・先頭の 20 件まで） */

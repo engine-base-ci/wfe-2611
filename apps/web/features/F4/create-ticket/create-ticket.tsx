@@ -297,7 +297,8 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
           notify_member_ids: d.notify_member_ids ?? [],
           draft_id: tabDraftId(owner),
           ...(source.current ? { source_draft_id: source.current } : {}),
-          ...(links ? { links } : {}),
+          // 作るときにつなぐ相手（K-580・口は K-581）。契約の生成した型は links を string[] とするが、口は [{ kind, other_ticket_id }] を受ける
+          ...(links ? { links: links as unknown as string[] } : {}),
         },
         screenId: "tickets",
       });
@@ -406,12 +407,7 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
               doc={body.doc}
               onChange={(doc) => update((cur) => ({ ...cur, body: onBodyEdit(cur.body ?? body, doc) }))}
             />
-            <LinksSlot
-              value={d.links ?? []}
-              onChange={(links) => set({ links })}
-              busy={busy}
-              title={d.title ?? ""}
-            />
+            <LinksSlot value={d.links ?? []} onChange={(links) => set({ links })} busy={busy} title={d.title ?? ""} />
             <ItemsTable
               mode="create"
               fields={master}
