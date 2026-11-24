@@ -47,7 +47,7 @@ describe("K-560 前の答えの区画の並び（K-578 が外すまで）", () =
       content: [{ type: "paragraph", content: [{ type: "text", text: "月末の請求を出す" }] }],
     };
     await f.admin.query(
-      "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version, created_by, updated_by) values ($1, $2, 'body', 0, $3::jsonb, 3, $4, $4)",
+      "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version, created_by, updated_by) values ($1, $2, 'body', 0, $3::jsonb, 3, $4, $4) on conflict (ticket_id, section_key) do update set body = excluded.body, version = excluded.version, deleted_at = null",
       [c.tenantId, id, JSON.stringify({ doc, text: "月末の請求を出す" }), me.id],
     );
     const d = (await asJson(await f.req("GET", `/tickets/${id}`, { headers: me.auth }))).data as Row;

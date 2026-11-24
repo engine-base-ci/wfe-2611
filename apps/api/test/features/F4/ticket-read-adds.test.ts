@@ -492,12 +492,18 @@ const docOf = (...texts: string[]) => ({
   type: "doc",
   content: texts.map((t) => ({ type: "paragraph", content: [{ type: "text", text: t }] })),
 });
-/** 本文の行（ticket_sections の鍵 body）を DB に直に入れる（口を通さない・準備） */
+/** 本文の行（ticket_sections の鍵 body）を DB に直に書く（口を通さない・準備）。作る口が本文の行と版 1 を書くので、
+ *  同じ行（ticket_id・鍵 body は 1 つだけ）を中身と版で置き換える（消した印も外す） */
 const putBody = (w: World, ticketId: string, doc: unknown, text: string, version = 1) =>
   f.admin.query(
-    "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version, created_by, updated_by) values ($1, $2, 'body', 0, $3::jsonb, $4, $5, $5)",
+    "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version, created_by, updated_by) values ($1, $2, 'body', 0, $3::jsonb, $4, $5, $5) on conflict (ticket_id, section_key) do update set body = excluded.body, version = excluded.version, deleted_at = null",
     [w.tenantId, ticketId, JSON.stringify({ doc, text }), version, w.me.id],
   );
+/** 本文の行を消した印にする（本文の行が無いチケット＝前の道で作った物と同じに読ませる・準備） */
+const dropBody = (ticketId: string) =>
+  f.admin.query("update ticket_sections set deleted_at = now() where ticket_id = $1 and section_key = 'body'", [
+    ticketId,
+  ]);
 /** 会社の項目を入れる（kinds＝出す種別。空なら全部の種別）。返すのは項目の id */
 async function putField(
   w: World,
@@ -543,9 +549,14 @@ const putValue = (w: World, ticketId: string, fieldId: string, value: unknown, g
 const FIELD_KEYS = ["description", "field_type", "id", "name", "options", "position", "required", "value"];
 
 describe("K-560 詳細の答えの本文・項目・確認項目の数・結果の場所と、種別のひな形", () => {
-  it("K560-API-021 body は { doc, text, version }：本文の行（鍵 body）がある物はその中身と版・無いチケットは空の本文（doc が空・text が空・version 0）", async () => {
+  it("K560-API-021 body は { doc, text, version }：本文の行（鍵 body）がある物はその中身と版・無いチケット（消した行も）は空の本文（doc が空・text が空・version 0）", async () => {
     const w = await world();
     const t = await make(w);
+    // 作る口が書いた本文の行（版 1）がそのまま出る
+    const made = await detailOk(w.me, t.id);
+    expect(keysOf(made["body"])).toEqual(["doc", "text", "version"]);
+    expect(made["body"]).toMatchObject({ doc: docOf("書いた"), version: 1 });
+    await dropBody(t.id);
     const d0 = await detailOk(w.me, t.id);
     expect(keysOf(d0["body"])).toEqual(["doc", "text", "version"]);
     expect(d0["body"]).toMatchObject({ doc: emptyDoc, text: "", version: 0 });
