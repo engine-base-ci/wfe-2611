@@ -128,6 +128,7 @@ export const MIGRATIONS = [
   "20261119120600_credential_login_check.sql",
   "20261119120700_credential_resolve.sql",
   "20261119120800_credential_service_tenant.sql",
+  "20261119121000_drop_legacy_credential_functions.sql",
   "20261120130000_ticket_timeline.sql",
   "20261120130100_ticket_thread_seen_mark.sql",
   "20261120130200_ticket_message_post.sql",
