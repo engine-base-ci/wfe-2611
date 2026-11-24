@@ -1,7 +1,7 @@
 "use client";
 // 詳細のパネルの項目の置き場（K-1153・開発用）。下絵の詳細の頁（features/F4/doc/detail-views.tsx の DetailPage）と同じ外枠と並び
 //   （Frame の中の div.k-detail・左に本文の区・右に aside.k-detail-panel > div.k-detail-panel-body）の中に ItemsPanel を出す。
-//   クエリ ticket=<uuid>（読むチケット）・slots=approver,group（差し込み口が使えることの確かめ）。
+//   クエリ ticket=<uuid>（読むチケット）・slots=approver,group,actual（差し込み口が使えることの確かめ）。
 //   getTicket の fields を 1 回読み、直した値は ItemsPanel が 1 項目ずつ updateTicket で送る（404 のときだけ読み直す）
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -16,7 +16,11 @@ import { parseTheme } from "@/lib/theme";
 
 const CRUMBS = [{ label: "チケット", href: "/tickets" }, { label: "詳細の項目" }];
 /** 差し込み口に渡す見本の字（slots= の名前 → 中身） */
-const SAMPLE: Partial<Record<PanelSlot, ReactNode>> = { approver: "高本 聖斗", group: "営業（EG）" };
+const SAMPLE: Partial<Record<PanelSlot, ReactNode>> = {
+  approver: "高本 聖斗",
+  group: "営業（EG）",
+  actual: "2 時間 30 分",
+};
 
 interface Detail {
   ticket: { id: string; number: string; title: string };
