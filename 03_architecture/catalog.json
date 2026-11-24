@@ -8,7 +8,7 @@
   "api": 369,
   "api_built": 97,
   "api_only_later_phase": 20,
-  "legacy_routes": 26,
+  "legacy_routes": 20,
   "db": 148,
   "ui": 19,
   "packages": 13,
@@ -5988,9 +5988,6 @@
   "/bridge/answer",
   "/bridge/ask",
   "/bridge/browser",
-  "/bridge/code",
-  "/bridge/credentials/check-result",
-  "/bridge/credentials/resolve",
   "/bridge/state",
   "/me",
   "/onboard/draft",
@@ -5999,10 +5996,7 @@
   "/onboard/testrun",
   "/onboard/testrun/cancel",
   "/setup-state",
-  "/setup-step",
-  "/vault/credentials",
-  "/vault/credentials/:id/answer",
-  "/vault/credentials/:id/login-check"
+  "/setup-step"
  ],
  "db": [
   {
