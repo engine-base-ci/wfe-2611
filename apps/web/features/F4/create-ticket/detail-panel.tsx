@@ -9,6 +9,7 @@
 import { Bot, PanelRight } from "lucide-react";
 import type { ReactNode, RefObject } from "react";
 import * as F6 from "@/features/F6/detail-slots";
+import * as F7 from "@/features/F7/detail-slots";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { RunLatest } from "@/features/F5/delegate/run-log";
 import type { RunView } from "@/features/F5/delegate/use-run";
@@ -36,9 +37,9 @@ function Fields({ rows }: { rows: [string, ReactNode, { over?: boolean }?][] }) 
   );
 }
 
-function Sec({ label, children }: { label: string; children: ReactNode }) {
+function Sec({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
   return (
-    <section aria-label={label} className="k-detail-panel-sec">
+    <section aria-label={label} className={className ? `k-detail-panel-sec ${className}` : "k-detail-panel-sec"}>
       <h2>{label}</h2>
       {children}
     </section>
@@ -91,7 +92,8 @@ export function DetailPanel(p: DetailPanelProps) {
           ]}
         />
       </Sec>
-      <Sec label="日付と時間">
+      {/* 期限の小窓（K-484）がこの区画の直下に重ねて開く印（K-599） */}
+      <Sec label="日付と時間" className="k-f7-due-anchor">
         <Fields
           rows={[
             ["開始日", t.start_on ? mmddWeek(t.start_on) : ""],
@@ -100,9 +102,11 @@ export function DetailPanel(p: DetailPanelProps) {
               <>
                 {t.due_on ? mmddWeek(t.due_on) : ""}
                 {over > 0 ? `${over} 日過ぎ` : ""}
-                <InertButton label="期限を変える" size="sm" className="k-detail-due-btn">
-                  ▾
-                </InertButton>
+                <F7.DueSlot ticket={p.slot}>
+                  <InertButton label="期限を変える" size="sm" className="k-detail-due-btn">
+                    ▾
+                  </InertButton>
+                </F7.DueSlot>
               </>,
               { over: over > 0 },
             ],
