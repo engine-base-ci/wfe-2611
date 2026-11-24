@@ -102,6 +102,39 @@ export interface TicketBody {
   todo: string;
 }
 const jst = (days: number): string => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
+/** 期限を入れる：日付の欄（textbox「期限」）でも、押すと小窓が開くボタン（K-444 の後）でも通る。
+ *  apps/web/tests/k/create-mock.ts の fillDue の写し（e2e は web の試験の道具を読まない。K-431 が 2 つを同じ形に保つ）。
+ *  小窓では月を送ってカレンダーの日（名前「12月1日（月）」）を押し、「〜にする」を押す。今日より前は小窓で選べないので投げる */
+export async function fillDue(page: Page, ymd: string): Promise<void> {
+  const box = page.getByRole("textbox", { name: "期限", exact: true });
+  const button = page.getByRole("button", { name: "期限", exact: true });
+  await expect(box.or(button)).toBeVisible();
+  if ((await box.count()) > 0) return box.fill(ymd);
+  if (ymd === "") return;
+  if (ymd < jst(0)) throw new Error(`期限の小窓は今日より前（${ymd}）を選べない`);
+  await button.click();
+  const dlg = page.getByRole("dialog", { name: "期限を決める", exact: true });
+  const [y, m, d] = ymd.split("-").map(Number) as [number, number, number];
+  for (let i = 0; i < 24 && (await dlg.getByText(`${y}年 ${m}月`, { exact: true }).count()) === 0; i += 1)
+    await dlg.getByRole("button", { name: "次の月", exact: true }).click();
+  const week = "日月火水木金土"[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  await dlg.getByRole("button", { name: `${m}月${d}日（${week}）`, exact: true }).click();
+  await dlg.getByRole("button", { name: /にする$/ }).click();
+  await expect(dlg).toHaveCount(0);
+}
+/** 本文（見たまま編集・K-442）に字を書く。text の行ごとに改行して打つ（先頭の「- 」はそのまま字として入る。変換は通さない）。
+ *  薄い説明の節（ひな形）があれば最初のそこへ、無ければ本文の先頭へ打つ */
+async function writeBody(page: Page, text: string): Promise<void> {
+  const box = page.getByRole("textbox", { name: "本文", exact: true });
+  await expect(box).toBeVisible();
+  const ghost = box.locator('p[data-ghost="true"]').first();
+  if ((await ghost.count()) > 0) await ghost.click();
+  else await box.click();
+  for (const [i, line] of text.split("\n").entries()) {
+    if (i > 0) await page.keyboard.press("Enter");
+    await page.keyboard.type(line);
+  }
+}
 /** 左のメニューの「チケットを作る」から作る → 詳細へ。できたチケットの id を返す */
 export async function createTicket(page: Page, me: Person, title: string, body: TicketBody): Promise<string> {
   await page.goto("/tickets");
@@ -114,10 +147,9 @@ export async function createTicket(page: Page, me: Person, title: string, body: 
   await page.getByRole("textbox", { name: "題名", exact: true }).fill(title);
   await page.getByRole("combobox", { name: "担当者" }).click();
   await page.getByRole("option", { name: me.name, exact: true }).click();
-  await page.getByRole("textbox", { name: "期限", exact: true }).fill(jst(3));
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill(body.purpose);
-  await page.getByRole("textbox", { name: "完了の条件", exact: true }).fill(body.done);
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).fill(body.todo);
+  // 期限：日付の欄でも小窓のボタンでも入れる（fillDue・apps/web/tests/k/create-mock.ts の fillDue の写し）
+  await fillDue(page, jst(3));
+  await writeBody(page, [body.purpose, body.done, body.todo].join("\n"));
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect.poll(() => pathOf(page), "作ったら詳細へ移る").toMatch(/^\/tickets\/[0-9a-f-]{36}$/);
   await expect(h1(page, title)).toBeVisible();

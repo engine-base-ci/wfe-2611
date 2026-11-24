@@ -13,7 +13,7 @@
   "ui": 19,
   "packages": 13,
   "errors": 292,
-  "stack": 68,
+  "stack": 70,
   "env": 41
  },
  "api": [
@@ -7866,6 +7866,14 @@
    {
     "package": "remark-math",
     "for": "会話の書式（数式）"
+   },
+   {
+    "package": "remark-parse",
+    "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）"
+   },
+   {
+    "package": "unified",
+    "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）"
    },
    {
     "package": "resend",

@@ -290,7 +290,8 @@ test("K450-UI-013 先に変えられた（409 E-SPEC-020・チェック／文を
   await editor(page).fill("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.reads).toBe(3);
-  await expect(lineOf(page, "別の人の文")).toHaveCount(1);
+  // 入力を開いたままの行は字の代わりに入力が出る。行が口の最新になったことは箱の名前（行の文）で確かめる
+  await expect(boxOf(page, "別の人の文")).toHaveCount(1);
   await expect(editor(page)).toHaveValue("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.updates.length).toBe(3);
@@ -365,15 +366,23 @@ test("K450-UI-016 開いた後に完了が確定した（can_edit は true の�
   await boxOf(page, T[2]!).check();
   await note(page, msg("E-SPEC-001"));
   await expect(boxOf(page, T[2]!)).not.toBeChecked();
+  // 次の操作の知らせを前の知らせと見分けるため、前の知らせ（5 秒で消える）が消えるのを待つ
+  await expect(toastOf(page, msg("E-SPEC-001")).first()).toBeHidden({ timeout: 9000 });
   m.force.update = [conflict("E-SPEC-001")];
   await textBtn(page, T[4]!).click();
   await editor(page).fill("直す");
   await editor(page).press("Enter");
   await expect.poll(() => m.updates.length).toBe(2);
-  await expect(lineOf(page, T[4]!)).toHaveCount(1);
+  await note(page, msg("E-SPEC-001"));
+  // 完了したので直せない：入力は閉じ、行の文は元のまま
+  await expect(editor(page)).toHaveCount(0);
+  await expect(boxOf(page, T[4]!)).toHaveCount(1);
+  expect(m.specs.find((s) => s.title === T[4])).toBeDefined();
+  await expect(toastOf(page, msg("E-SPEC-001")).first()).toBeHidden({ timeout: 9000 });
   m.force.remove = [conflict("E-SPEC-001")];
   await rmBtn(page, T[3]!).click();
   await expect.poll(() => m.deletes.length).toBe(1);
+  await note(page, msg("E-SPEC-001"));
   await expect(lineOf(page, T[3]!)).toHaveCount(1);
   expect(m.specs).toHaveLength(5);
 });
@@ -549,7 +558,8 @@ const CTRL = ["width", "height", "font-size", "color", "background-color", "bord
 const SPEC_PAIRS: FidelityPair[] = [
   pair("li-text", ".k-f4d-specs .k-f4d-spec-text", ["font-size", "color", "line-height", "texts"]),
   pair("box", ".k-f4d-specs .k-f4d-spec-box", ["width", "height"]),
-  pair("remove", ".k-f4d-specs .k-f4d-spec-list button", CTRL),
+  pair("remove", '.k-f4d-specs .k-f4d-spec-list button[aria-label$="を外す"]', CTRL),
+  pair("text-btn", ".k-f4d-specs .k-f4d-spec-btn", [...CTRL, "line-height"]),
   pair("acts", ".k-f4d-specs .k-f4d-spec-acts button", CTRL),
   pair("hint", ".k-f4d-specs .k-f4d-hint", TXT),
 ];
@@ -559,6 +569,13 @@ const DIALOG_PAIRS: FidelityPair[] = [
   pair("label", ".k-dialog .k-label", TXT),
   pair("input", ".k-dialog .k-input", ["width", "font-size", "border-top-color"]),
   pair("actions", ".k-dialog-actions button", CTRL),
+];
+/** 下絵 f4v2-create-specs の行（features/F4/doc/views.tsx の SPEC_LINES と同じ字） */
+const CREATE_LINES = [
+  "請求書が宛先に届いている",
+  "支払期日が 12/15 になっている",
+  "請求額が明細の合計と合っている",
+  "送る前に文面を目で見る",
 ];
 type MockState = { id: string; what: string; pairs: FidelityPair[]; setup: (page: Page, w: number) => Promise<void> };
 const detailOpen = async (page: Page, w: number): Promise<void> => {
@@ -587,7 +604,7 @@ const STATES: MockState[] = [
     ],
     setup: async (page, w) => {
       await detailOpen(page, w);
-      await lines(page).first().getByRole("button", { name: T[0], exact: true }).click();
+      await textBtn(page, T[4]!).click();
       await expect(editor(page)).toBeVisible();
     },
   },
@@ -607,9 +624,15 @@ const STATES: MockState[] = [
     what: "作る面の確認項目（チェックの箱は押せない形）の行の字・箱",
     pairs: SPEC_PAIRS,
     setup: async (page, w) => {
+      // 下絵 f4v2-create-specs と同じ 4 行（同じ字・同じ並び）を画面の中に足す
       await mockTestSpecs(page);
-      await openHost(page, { mode: "create", width: w, n: 2 });
-      await expect(lines(page)).toHaveCount(2);
+      await openHost(page, { mode: "create", width: w });
+      for (const t of CREATE_LINES) {
+        await typeInto(page, t);
+        await press(page).click();
+        await expect(dialogOf(page)).toHaveCount(0);
+      }
+      await expect(lines(page)).toHaveCount(CREATE_LINES.length);
     },
   },
 ];
@@ -679,7 +702,8 @@ test("K450-UI-028 外から開ける：SpecsItem に addOpen を渡すと（親�
   const m2 = await mockTestSpecs(p2, { specs: fiveSpecs() });
   await openHost(p2, { mode: "detail", count: 5, ext: "only" });
   await extBtn(p2).click();
-  await typeInto(p2, "請求書の宛先が合っている");
+  await expect(dialogOf(p2)).toBeVisible();
+  await dialogOf(p2).getByRole("textbox", { name: "確かめること", exact: true }).fill("請求書の宛先が合っている");
   await press(p2).click();
   await expect.poll(() => m2.adds.length).toBe(1);
   await expect(dialogOf(p2)).toHaveCount(0);
