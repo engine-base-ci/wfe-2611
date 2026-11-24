@@ -3087,6 +3087,64 @@ K-673,段 10 の決定：決定ログの新しい節 §152（代表の決め 1�
 - [ ] **答えの記録は枝に足してある・この葉が運ぶ**：`01_hearing/decider-answers.jsonl` に決め 1〜8 の 6 つの答え（6d11a514116f・bc3c857621bc・836b911fcf82・233756b2891a・e053d5507686・08a63df0368c）が入っている（追記だけ・前の答えを消さない・id で和を取る。bc3c857621bc と 08a63df0368c は段 5 の K-430 も運ぶので、同じ id の行は 1 つにする）。決定の検査 G60（`decision_source_gate.py --label 高本さん --since D-130`）が緑（切る段の枝で確かめ済み）
 - [ ] 決定の検査（trace_gate の T1・T3・T6・T7・T8・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。切る段の枝では赤）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-731,動いている AI の実行を止める口（stopActionRun）と、止めた後に PC から届く「終わった」を承認待ちにしない（app.bridge_finish_job の作り直しはこの葉だけ・試し打ちの結末の呼び口 app.dry_run_job_end を空の形で先に置く）。flow.json の A104・A106 の古い文も運ぶ（決定ログの節 §153 は先に K-780 が運ぶ・K-61 の葉・段 6）,タスク,K-61,未着手,実装,2026-11-28,F5・止める,"動いている AI の実行を、人が止められるようにする（今は［止める］が押せない形・口は契約だけで 501）。あわせて、**止めた仕事に PC から「終わった」が届いても承認待ちにしない**（K-61 の完了の条件 4）。段 6 の最初の口の葉なので、段 6 全体の文書のうち flow.json の古い文もこの葉が運ぶ（決定ログの新しい節 §153 は K-780 が先に運ぶ）。
+
+1. **止める** `stopActionRun`（POST /api/v1/action_runs/:id/stop・体は空）：実行の記録はその場で止まりにし、チケットを作業中に戻し、「AI に任せている」の旗を下ろし、やり取りに「〈名〉が AI を止めました」を 1 行、証跡 1 行。仕事（PC に渡した物）は 2 通り：**まだ PC が取っていない（queued）**ならその場で止まりにする（PC が取りに来ても渡らない）／**PC が動かしている（running・asking）**なら止める合図（`bridge_jobs.stop_requested_at`）を立てるだけで、仕事は PC が合図を読んで返すまで動いたまま（PC には `getJobControl` で stop が届く）。承認の後の実行（phase execute）も同じ口で止められる（D-153.25）。止められる人は**担当者だけ**（担当の AI だから・任せた人もマネージャーも止められない。D-153.24）。お知らせ（受け箱）は書かない：お知らせはそのチケットの担当者だけに 1 件で、止めた本人が担当者なら自分あてには出さない（D-153.7）。止められるのは担当者だけなので、止める口が書くお知らせは無い（止まったことは担当者の鈴に段 8 の引き金 K-464 の `ticket.stopped` が出す）。答えは `ActionRunStopped`（id・ticket_id・phase・status・stopped_reason・stopped_at の 6 つ。段 8 の K-485 が `ActionRunView` に足す欄と食い違わないよう、実行の見え方とは別の小さな形にした）。
+2. **止めた後に届く「終わった」を使わない** `app.bridge_finish_job`（0092）を作り直す：仕事に止める合図が立っていて（`stop_requested_at`）、**その実行がもう止まっている**（queued・running・asking でない。この葉の止める口は実行を先に止める）チケットの仕事は、PC が done・stopped・cancelled のどれを返しても、成果物の版も承認の行も作らず、実行の記録・段・旗にも触らず（もう一度任せ直した新しい実行を壊さない）、仕事だけ閉じる（結果は残さない）。結果のある done が届いたときだけ、やり取りに「止めたので、届いた結果は使いませんでした」を 1 行（D-153.20）。この関数を作り直すのは**この葉だけ**（段 6 の試し打ち・AI のチェックの葉は触らない）。
+3. **試し打ちの結末の呼び口を先に置く**：`app.bridge_finish_job` に「実行の phase が dry_run なら `app.dry_run_job_end(仕事, 結末, 結果, 理由, 続きの id)` を呼び、null でなければその答えを返す」分かれ道を足す。`app.dry_run_job_end` は**空の形**（何もせず null を返す＝前の道を通す・誰にも execute を渡さない）で置く。本物にするのは K-746（試し打ち）。
+4. **文書を運ぶ**：flow.json の行為 A104（AI に任せる）・A106（完了にする）の古い文（業務の型・ナレッジ更新の候補）を新しい形に直す。
+
+「自分で直す」（止まった後に人が引き取る）は段 8 の K-485。承認待ちを止める（stopApproval）は K-732。画面は K-734。","- [ ] 下の表の 27 行（K731-API-001〜021・023・024・K731-DB-001〜002・K731-FL-001〜002）が緑：`apps/api/test/features/F5/run-stop.test.ts`・`run-stop-execute.test.ts`（土台は段 1 の `F5/delegate-kit.ts`・`F3/leaf-hooks.ts`・`F5/approve-complete.harness.ts`・変えない）・`scripts/ci/k731_flow_test.py`
+- [ ] 契約の口 `stopActionRun` が 501 でない。生成の試験 `apps/api/test/generated/post_action_runs_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-731.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-980（`k144.d/K-731.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑。特に `app.bridge_finish_job` を使う K-62 の試験（delegate・delegate-bridge）と前の道すじの試験（agent_chat・bridge_orphans ほか）が今のまま緑
+- [ ] 決定の検査（trace_gate の T1〜T12・decision_source_gate）と画面の導出の検査（flow_gate・flow_db_gate）が緑（§153 は K-780 が先に運ぶ。T1・T6・T8 は作る段で tickets.json を作り直してから）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-732,承認待ちを使わずに止める口（stopApproval：成果物は残し、チケットは作業中に戻す）と、承認の残りの口の試験の手助け（approval-more.kit.ts）（K-61 の葉）,タスク,K-61,未着手,実装,2026-11-29,F5・止める,"承認待ちの成果物を、送らずに止められるようにする（今は承認の帯の［止める］が押せない形・口は契約だけで 501）。
+
+1. **承認待ちを止める** `stopApproval`（POST /api/v1/approvals/:id/stop・体は空）：承認の行を「止めた」（decision stop・status stopped）で決め、**成果物は使わず残し**（区画の版・本文は変えない）、チケットを承認待ちから作業中に戻し、「AI に任せている」の旗を下ろし、やり取りに「〈名〉が承認待ちを止めました（成果物の版 N は残っています）」を 1 行、証跡 1 行。止められるのは承認する人（今の担当者）だけ（D-153.26・承認する・差し戻すと同じ）。お知らせ（受け箱）は書かない：お知らせはそのチケットの担当者だけに 1 件で、止めた本人が担当者なら自分あてには出さない（D-153.7）。止められるのは承認する人（今の担当者）だけなので、止める口が書くお知らせは無い。止めた後は、もう一度「AI に任せる」を押せる。答えは `ApprovalStopped`（id・decision・decided_at・status_id・ticket_id の 5 つ。差し戻しの答え `ApprovalDecided` と違い、新しい実行が無いので run_id・pc を持たない）。
+2. **承認の残りの口の試験の手助け** `apps/api/test/features/F5/approval-more.kit.ts`（carry）：K-733・K-742・K-744・K-748・K-750 の試験が使う（口を叩く関数と、葉の hooks のファイルを最初に叩くときに 1 回だけ読む `loadHook`）。**口の登録は葉ごとの hooks のファイル**：この葉は `apps/api/src/hooks/approval-stop.ts`（stopApproval だけ）。取り下げる・自分で直す・決めた履歴は K-733・K-742・K-750 が自分の hooks のファイルと口のファイルを作る。
+
+承認する・差し戻す（K-162・K-163）の口と、承認の後の実行を止める口（K-731）は触らない。画面は K-734。","- [ ] 下の表の 17 行（K732-API-001〜014・K732-API-016〜018）が緑：`apps/api/test/features/F5/approval-stop.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
+- [ ] 契約の口 `stopApproval` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-732.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-981（`k144.d/K-732.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑（替えるのは row_rules の試験が見る式 1 行だけ）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-733,承認を取り下げる口（withdrawApproval：承認した後・PC が仕事を受け取る前だけ。承認待ちに戻す）（K-61 の葉）,タスク,K-61,未着手,実装,2026-11-30,F5・止める,"承認した後、**PC がまだ仕事を受け取っていない間だけ**、承認を取り下げて承認待ちに戻せるようにする（D-125.105・D-131.14。今は［承認を取り下げる］が押せない形・口は契約だけで 501）。
+
+`withdrawApproval`（POST /api/v1/approvals/:id/withdraw・体は空）：承認した本人が押す。決まった承認は変えられない（0063）ので、**決まった承認の行に取り下げの印（withdrawn_at）を付け**（decision approve のまま履歴に残る）、**同じ成果物の新しい承認待ちの行**を作る（承認する人は今の担当者・取り消せないの印と人が見る項目は前のまま。承認の後の 24 時間の聞き直し〔0098〕と同じ作り）。承認の後の実行（待っていた仕事と実行の記録）は取り消し（cancelled・仕事の cancelled は人が承認を取り下げたときだけ・D-131.14）、チケットは承認待ちに戻り、「AI に任せている」の旗は下り、やり取りに「〈名〉が承認を取り下げました（承認待ちに戻りました）」を 1 行、証跡 1 行。お知らせ（受け箱）はそのチケットの今の担当者だけに 1 件で、取り下げた本人が担当者なら自分あては出さない（任せた人には出さない。D-153.7）。担当者が替わった後に前の承認者が取り下げたときだけ、今の担当者に届く。答えは `ApprovalWithdrawn`（id・withdrawn_at・ticket_id・approval_id＝新しい承認待ちの行の 4 つ）。
+
+**間に合わなかったとき**は 3 つに分ける。PC がもう受け取って動かしている（running・asking）は 409・E-APR-010「もう実行が始まっています。止めるには［止める］を押してください」（止めるのは K-731 の口）。実行がもう終わった・PC が受け取った後に止まった（done・taken 後の stopped）は 409・E-APR-012「もう実行が終わっています」（止めると言うのは言い過ぎなので文を分けた）。取り下げられない承認（まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた〔24 時間・人が止めた・止められた〕）は 409・E-APR-011。
+
+承認する・差し戻す（K-162・K-163）と承認待ちを止める（K-732）は触らない。画面は K-735。","- [ ] 下の表の 18 行（K733-API-001〜018）が緑：`apps/api/test/features/F5/approval-withdraw.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
+- [ ] 契約の口 `withdrawApproval` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_id_withdraw.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-733.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-982（`k144.d/K-733.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-741,使わない口と表を片付ける（markHumanCheck・listChecks・exportCloneActivity を契約・生成物・親の apis から外し、checks の表に凍結の印を付ける。表と行は消さない）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・契約,"代表が「確認項目は文とチェックだけ（機械・AI・人の種類と判定の型は持たない）。だれがチェックしたかは記録を別に作らず、やり取りに 1 行」と決めた（D-150.39・.40）。前の形のまま契約に残っている次の 2 本を、契約・生成物・親チケットの `apis:` から外し、使わない表に凍結の印を付ける。
+
+| 操作 ID | 方法・道 | 前の役割 | 今の代わり |
+|---|---|---|---|
+| `markHumanCheck` | POST /checks/:id/human | ③ 人の確認を割り当てられた人が「確かめた」の印を付ける | 人がチェックを付ける口は段 5 の `updateTestSpec`（K-435） |
+| `exportCloneActivity` | POST /clones/me/activity/export | 分身がやったことを書き出す（持ち出す） | 作らない。書き出しは作らない（代表の決め 2026-11-22・D-153.33）。やったことの［書き出す］は画面に出さない |
+| `listChecks` | GET /tickets/:id/checks | 検査の結果（`checks` の行）を読む | 確認項目と付けた人は `listTestSpecs`（K-434）・承認のカードは `getApproval` の `checks`（K-739） |
+
+3 本とも今は契約だけで 501 を返す口（作ってはいない）なので、外しても動いている物は変わらない。表 `checks`（0072・検査の結果の追記専用の表）は**書くコードが 1 行も無い**ので、消さずに目録で凍結する（D-128.127 の決まり）。確認の数と行は、新しい形で K-739 が `test_specs` から出す。","- [ ] 下の表の 12 行（K741-API-001〜012）が緑：`apps/api/test/features/F5/checks-retire.test.ts`
+- [ ] `markHumanCheck`・`listChecks`・`exportCloneActivity` が `05_flow/screen_api.py の全部の表（SCREEN_API・PERMS ほか）に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 3 本（`get_tickets_id_checks.test.ts`・`post_checks_id_human.test.ts`・`post_clones_me_activity_export.test.ts`）が消えている（作り手 `gen_ears_tests.mjs` が消す）
+- [ ] `08_api/retired-endpoints.json` に 3 本が 1 行ずつある。契約の検査（`node scripts/ci/contract.mjs check`・`python3 scripts/ci/contract_shape_test.py`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-753,分身の今を読む口（getMyClone・getCloneNow：部屋の頭の名前・いつから・PC と、いま・このあと・あなたを待っている・止まった）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-03,F5・分身の部屋,"左のメニュー「〇〇のAI」で開く分身の部屋の「ようす」（画面は K-755）が読む契約の口 2 本を作る（今はどちらも 501）：`getMyClone`（GET /api/v1/clones/me）と `getCloneNow`（GET /api/v1/clones/me/now）。
+
+- `getMyClone`＝部屋の頭：名前（「〇〇のAI」の〇〇）・表示の名前・いつから一緒に働いているか・PC（まだ・生きている・閉じている）
+- `getCloneNow`＝ようす：いま動いている物・このあとやる物・あなたを待っている承認の数・止まった物の数
+
+「自分の分身」の実行は、**そのチケットの今の実行（いちばん新しい実行）を作った人（`action_runs.created_by`）が自分**である物（任せ直された物は、任せ直した人の分身の物）。読むだけで何も書かない。育ち具合（getCloneGrowth）は K-754、やったこと（listCloneActivity）も K-754、書き出しは作らない（代表の決め 2026-11-22・D-153.33）。［書き出す］は画面に出さない・exportCloneActivity は K-741 が契約から外す。","- [ ] 下の表の 21 行（K753-API-001〜021）が緑：`apps/api/test/features/F5/clone-room-now.test.ts`（土台 `clone-room.harness.ts`）
+- [ ] 契約の口 `getMyClone`・`getCloneNow` が 501 でない。生成の試験 `get_clones_me.test.ts`・`get_clones_me_now.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-753.json` の covers）
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-757,会話の置き場（conversations に種類 talk_kind とチケット ticket_id・前の道すじの「開いている会話」を自分の AI の会話だけに絞る）と、会話を読む 3 つの口（getConversation・listConversations・listConversationMessages）の作り直し（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-05,F5・自分のAIと話す,"段 6 の束 G「自分の AI と話す」の土台。会話の**置き場**（3 つの種類を 1 つの表で分ける）と、会話を**読む** 3 つの口を、前の道すじ（`/api/auth-ext/agent/*`・`apps/api/src/auth/agent.ts`・`ext.ts`）から契約の口（`/api/v1/conversations…`）へ移す。言う・止める（K-758）・流す（K-759）・チケットの中で話す（K-763）・作る画面の会話（K-774〜K-776）は、ここで決める置き場と答えの形（ConversationView・MessageView）をそのまま使う。
 
 1. **置き場**：`conversations` に種類 `talk_kind`（`clone`＝自分の AI との会話・`ticket`＝チケットの右のパネルの会話・`draft`＝チケットを作る画面の会話）と `ticket_id` を足す。前から在る会話は全部 `clone`（列の既定値）。`ticket` は人 × チケットで 1 つだけ（一意の索引）。
@@ -3108,6 +3166,52 @@ K-758,自分の AI に言う・止める口（sendConversationMessage・stopConv
 - [ ] 契約の口 `sendConversationMessage`・`stopConversation` が 501 でない。生成の試験 `apps/api/test/generated/post_conversations_id_messages.test.ts`・`post_conversations_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-758.json` の covers）
 - [ ] 共有の試験 k144 の葉の行 K144-API-922・923（`k144.d/K-758.ts`・carry）が緑
 - [ ] 前の道すじの言う・止める口の試験（`agent_chat.test.ts` ほか）は替えずに緑（前の口と関数は K-765 が消すまでそのまま）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-759,書きながらの返事を流す口（streamConversation：本人の会話が変わったら合図を流す・1 本 50 秒で区切る・ログインが切れたら閉じる）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"分身の部屋の「話す」（画面は K-762）が、自分の AI の返事が書かれていくのをすぐ読み直せるように、契約の口 `streamConversation`（GET /api/v1/conversations/:id/stream）を作る（今は契約だけで 501）。前の道すじ `GET /api/auth-ext/agent/stream`（apps/api/src/auth/agent-stream.ts）の中身を契約の口へ移す。
+
+流すのは**「変わった」の合図だけ**（会話の字は流さない）。画面は合図を受けるたびに会話を読み直す（読む口は K-757）。見える範囲の決まりは読む口の 1 か所のまま（D-113）。
+
+- **会話の持ち主だけ**：自分の会話でなければ 404（他人・別の会社・無い・消した会話は在るかを漏らさない）
+- **合図の種類**（画面の葉 K-762 が使う・名前を変えない）：`ready`（つながった。画面は**ここで会話を読み直す**＝流れが無かった間の取りこぼしを拾う）・`change`（本人の会話が変わった。同じ瞬間の分は 1 回にまとまる）・`down`（知らせの接続が落ちた。画面は見に行く形に戻る）・`end`（データは `reconnect`＝1 本の長さを過ぎた／`unauthenticated`＝ログインが切れた。画面は reconnect ならつなぎ直す）・コメント行 `: alive`（生きている合図）
+- 1 本の長さは 50 秒（置き場の関数の上限 60 秒より前に区切る）。生きている合図とログインの確かめは 25 秒ごと。画面は 1 ページに 1 本だけ開く（D-115。画面の側の決め・K-762）
+- 知らせは本人の**全会話の変化を 1 つにまとめた合図**（どの会話が変わったかは載せない）。画面は開いている会話を読み直す","- [ ] 下の表の 15 行（K759-API-001〜015）が緑：`apps/api/test/features/F5/talk-stream.test.ts`（偽の知らせの接続を差す。013 だけ本物の接続）
+- [ ] 契約の口 `streamConversation` が 501 でない。生成の試験 `apps/api/test/generated/get_conversations_id_stream.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-759.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-924（`k144.d/K-759.ts`・carry）が緑
+- [ ] 前の道すじの流れ `/api/auth-ext/agent/stream` の試験 `apps/api/test/agent_stream.test.ts` が変えずに緑（同じ本体を通る）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-760,PC の側：会話の写しを送る・取り戻す先を読む（mirrorConversationEntries：記録と同じ id の文を会話に写す／listMirrorTargets：写し漏れを取り戻す先）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-07,F5・自分のAIと話す,"自分の AI の会話は、本人の PC の Claude Code の記録が正本で、Kaname の会話はその**写し**（D-112）。PC が文を写す口と、写し漏れを取り戻す先を教える口を契約の口にする（今はどちらも契約だけで 501）。前の道すじ `POST /api/auth-ext/bridge/entries`・`POST /api/auth-ext/bridge/mirror-targets`（agent.ts）の中身を移し、Bridge の呼び先も契約の道に替える。
+
+- `mirrorConversationEntries`（POST /api/v1/bridge/jobs/:id/conversation-entries・体は `{ entries: [{ uuid, text, at? }] }`）：その仕事の**会話**に、自分の AI の文を記録と同じ id で写す。会話は**仕事から決める**（体に会話の id・仕事の id を持たない）。同じ id は二度入れない／同じ返答の続きは書き換える（D-115）／写す前からある同じ文には id を付けるだけ／「覚える」の印は吹き出しに出さない（D-105.1）。答え `{ inserted }`（入れた数）
+- `listMirrorTargets`（GET /api/v1/bridge/mirror-targets・問い合わせは `limit` だけ）：直近 14 日の本人の会話と、そこで使った Claude Code の session を、**いちばん新しい仕事の id つき**で新しい順に返す（既定 50 件・上限 50）。PC は返った物のうち記録がある物を、その仕事の道すじで写す","- [ ] 下の表の 24 行（K760-API-001〜020・K760-BR-001〜005）が緑：`apps/api/test/features/F5/talk-mirror.test.ts`（口・本物の DB・本物の PC の印）と `apps/bridge/test/loop-mirror.test.ts`（偽の Kaname・偽の CLI・一時フォルダの記録）。土台は K-761 が持ち込む `F5/talk-pc.kit.ts`・`bridge/test/fake-kaname.ts`
+- [ ] 契約の口 `mirrorConversationEntries`・`listMirrorTargets` が 501 でない。生成の試験 `post_bridge_jobs_id_conversation_entries.test.ts`・`get_bridge_mirror_targets.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-760.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-925（`k144.d/K-760.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-761,PC の側：ブラウザの様子と仕事に付いたファイル（reportBrowserState：仕事の間のブラウザの様子を残す／getFileForBridge：仕事に付いたファイルの署名 URL）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"PC（Bridge）が仕事の間に呼ぶ契約の口 2 本を作る（今はどちらも契約だけで 501）。Bridge の呼び先も契約の道に替える。
+
+- `reportBrowserState`（POST /api/v1/bridge/jobs/:id/browser・体は `{ browser, state }`）：その仕事で AI が使うブラウザ（`chrome`＝本人の Chrome／`dedicated`＝Bridge 専用）の**様子**を、仕事の出来事（bridge_job_events・種類 `browser`）に残す。様子は `using`（使う仕事として始めた）と `off`（使えなかった）の 2 つ。**写真・画面の写しは作らない**（送らない・残さない。契約の「触る表」から attachments を外す）。画面（`work` の 1 行）には出さない：使えなかったことは前から会話の 1 行（`notice`）で出ており、同じことを二重に出さない
+- `getFileForBridge`（GET /api/v1/bridge/files/:ref?job_id=<仕事の id>・`:ref` は資料の id）：その仕事に**付いた資料**の、期限つきの署名 URL を返す（`{ url, name, mime, size }`）。前の道すじ `POST /api/auth-ext/bridge/attachment`（agent.ts）の中身を移す。付いていない物・ほかの仕事の物・消した物は 404。**資料を付ける口は作らない**（D-153.16）ので、新しい道では付く物が無い（前の道すじで付けた物と試験だけが対象）。署名 URL を受ける所 `GET /api/auth-ext/files/:ref`（署名と期限だけで判定）はそのまま使う
+
+Bridge の側：資料を取りに行く呼び先を新しい口へ替え、ブラウザを使う仕事では仕事の始めに `using`・使えなかったとき（`onBrowserOff`）に `off` を送る。","- [ ] 下の表の 14 行（K761-API-001〜010・K761-BR-001〜004）が緑：`apps/api/test/features/F5/job-extra.test.ts`（口・本物の DB・本物の PC の印・手元の置き場）と `apps/bridge/test/loop-browser-state.test.ts`（偽の Kaname・偽の CLI）。土台は carry の `F5/talk-pc.kit.ts`・`bridge/test/fake-kaname.ts`
+- [ ] 契約の口 `reportBrowserState`・`getFileForBridge` が 501 でない。生成の試験 `post_bridge_jobs_id_browser.test.ts`・`get_bridge_files_ref.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-761.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-926・931（`k144.d/K-761.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/bridge/test/loop.test.ts` の資料の呼び先だけ替える）で緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-763,チケットの中で話す口（getTicketAgentSession・sendTicketAgentMessage：チケットごとの会話を読む・言う。AI に渡す中身は呼んだ人の権限の中だけ）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"チケットの右のパネルの「〇〇のAI」タブで、そのチケットのことを自分の AI に相談できるようにする（口は契約だけで 501）。
+
+- `getTicketAgentSession`（GET /api/v1/tickets/:id/agent-session）：そのチケットを見られる人が、**自分の**そのチケットの会話を読む。会話がまだ無ければ会話なしの空の形（何も作らない）。ほかの人の会話・自分の AI との会話・作る画面の会話は出ない
+- `sendTicketAgentMessage`（POST /api/v1/tickets/:id/agent-session/messages・体は `{ text }`）：そのチケットに書ける人が言う。会話が無ければ作り（種類 `ticket`・人 × チケットで 1 つ）、人の言葉の行と、AI への仕事を 1 つ積む。**仕事の頭に付ける文脈（題・本文・確認項目の文とチェック・直近のやり取り）は、呼んだ人が見られる範囲だけで組む**。道具は足さない
+
+許可に答える・提案を反映して確認をやり直す（`applyTicketAgentProposal`・K-59 の物）・添付・引用は作らない（D-153.16）。画面は K-764。","- [ ] 下の表の 27 行（K763-API-001〜027）が緑：`apps/api/test/features/F5/talk-ticket.test.ts`（土台は K-757 が持ち込む `F5/talk.harness.ts`・変えない）
+- [ ] 契約の口 2 本が 501 でない。生成の試験 `get_tickets_id_agent_session`・`post_tickets_id_agent_session_messages` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-763.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-927・928（`k144.d/K-763.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-774,作る画面の会話の口（startDraftConversation・sendDraftMessage：チケットの無い会話を始める・言うたびに欄の今の中身と人が直した欄を付けて仕事を積む）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-08,F5・話す,"チケットを作る画面の右の AI との会話（D-153.17）の口を作る。人は欄に自分で書いてもよく、AI は**言うたびに、その時の欄の中身と人が直した欄を受け取ってから答える**。口は新しい（契約に無かったので `screen_api.py` に行を足す）。
@@ -3143,3 +3247,99 @@ PM の決め（作り方・記録済み）：
 - [ ] 前からの試験（下の「## 前からの試験を替えた所」）が緑
 - [ ] 見た目の検査（design_gate の D1〜D8・`--raw-lengths`・gen_tokens の check）が緑。CSS に生の長さを書かない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-1112,共通の台帳の本体（screen_api.py の表・08_api/phase1 の口の文書の表）に葉が直に行を足さない形にする（足す分は葉ごとのファイル .d・G74 で止める・K-324 の葉）,タスク,K-324,未着手,実装,2026-11-23,共通・CI,"取り込みで、葉どうしが同じ共通の台帳に自分の行を足してぶつかり、本線を取り込み直して CI を取り直すことが多発している（2026-11-23、取り込みの段の 10 本が `05_flow/screen_api.py` と `08_api/phase1/01_チケット.md` の重なりで止まった）。
+
+- `05_flow/screen_api.py`：葉ごとの置き場 `05_flow/screen_api.d/K-<番号>.py`（K-325・26 本）は既にあり、本体の頭の段の表 24 個（SCREEN_API・INPUTS・ERRORS_4XX・PERMS・RESPONSES・INPUT_RULES・UNEXPRESSIBLE_422 など）は全部 dict・set・list の字なので、どれも .d だけで足せる。それでも 11 月 15 日からの葉 30 本が本体に直に書いていた（決まりと検査が無かった）
+- `08_api/phase1/01_チケット.md`：葉ごとの置き場が無く、葉は表の行を直に直す・足す（11 月 10 日から 14 本・隣り合う行どうしでぶつかる）
+
+このチケットで、新しい葉が本体を触らずに葉ごとのファイルだけで足せる形にし、本体に直に足したら CI（G74）で赤にする。","- [ ] 下の表の 16 行（K1112-BA-001〜016）が緑：`scripts/ci/k1112_body_append_test.py`
+- [ ] 作り直した CI の定義・試験計画の差分が、G74 の段 1 つが増えるだけ（下の「自分の確かめ」）
+- [ ] screen_api.py の生成物（機能の分解・API の契約）が 1 バイトも変わらない（本体も .d も変えない）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] CI（このチケットの範囲）が緑"
+K-1114,直し：画面の試験を全部流す回（G48）で本線のまま赤になる 3 種を直す（登録の口の回数の上限に当たる準備・組み立てた画面の置き場を読む D8・文書の高さの丸めで 0.39px 被ると数える）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"K-1105 の CI（run 45106396961）で G48 が画面の試験を全部流し、K-1105 が触っていない画面の試験 39 本が赤だった。種類は 3 つで、どれも本線（claude/modest-lamport-77ue02 の先頭 eb836a1ac）のままで赤になる。段を本線に入れる全部の CI（画面の試験を全部流す回）で必ず赤になるので、ここで直す。
+
+| 種類 | 赤の本数 | 原因 | 分け |
+|---|---|---|---|
+| k357（K357-UI-001〜024） | 37 | 準備の `signupViaApi` が、別々の人を 1 つの届く元（IP）から続けて登録する。登録と確認の口は契約で IP ごと 1 分 10 回（`createSignup`・`verifySignup` の rateLimit）。全部を流す回では前の試験（k356 など）の登録と合わせて 1 分 10 回を超え、`sign-up 429 RATE_LIMITED` で準備が落ちる | 試験の誤り（準備が上限に当たる）。上限は本番の正しい守り |
+| K400-DS-002 | 1 | D8（生の長さ）は `apps/web` の下を全部読む。CI の web の組は画面を組み立ててから（`NEXT_DIST_DIR=.next-prod`）試験を流すので、組み立てた JS と CSS（`.next-prod`）の生の値を 4155 個数えて赤。読まない置き場（SKIP_DIRS）に `.next` はあるが `.next-prod` が無い | 検査の道具の不具合（本番の画面の不具合ではない） |
+| K138-SH-019 | 1 | チケットの詳細の幅 375 で、本文の最後の物（右の面の下の余白）の下端 840.39 ＞ 下のタブの上端 840。文書の高さ（scrollHeight）は整数に丸められ、本文の高さが端数（.39px）だと最後の 1px 未満までは送れない。字は 16px 上で終わっていて、見た目の被りは無い | 試験の誤り（測り方が 1px 未満の丸めを被りと数える） |
+
+PM の決め（作り方）：
+1. 登録の上限は変えない。試験の準備の道具が 1 人ごとに別の届く元（`x-forwarded-for`・10.x.x.x）で登録・確認・招待の受諾の口を呼ぶ（前からの道具 newcomer.ts・test-pc.ts・k336 と同じ形）。上限が残っていることはこの葉の試験 K1114-UI-002 が見る
+2. D8・D6（使われない段）・class_gate・chat_one（画面の試験から流れる会話の口の検査）・contract_shape_test の読まない置き場に `.next-prod` を足す
+3. 被りの測り方は 1px からを数える（同じ測り方の k220 も同じ類なので直す）","- [ ] 下の表の行（K1114-CI-001〜003・K1114-UI-001〜002）が緑
+- [ ] G48 で赤だった K357-UI-001〜024・K400-DS-002・K138-SH-019 が緑（替えた前からの試験と、替えない k357・k400）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-1115,直し：切る段から 1 本を持ち込む台本（cut_take）が、重ねた元の行のすぐ下に足すだけの自分の行を「ぶつかる」と止める（K-581 の start --cut）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"段 5 の K-581（鎖の手前）を `flow.py start K-581 --cut c/段5` で始めると、持ち込みの台本 `scripts/tickets/cut_take.py` が共有の試験 `apps/api/test/features/contract/k144-contract.test.ts` で「本線の後からの変更とぶつかる」と止まる（followups.md の K-581 の行）。
+
+原因：台本は共有の試験を 3 方で合わせるとき、元の版を「切る段の枝と本線の分かれ目」にしている。K-581 の重ねた元 K-437 は分かれ目の後に本線へ入り、切る段の版では K-437 の行のすぐ下に K-581 の行がある。分かれ目から見ると、本線は「K-437 の行を足した」、切る段は「K-437 の行と K-581 の行を足した」になり、同じ所を別々に変えたとして git merge-file がぶつかる。中身は「本線の版に自分の行を足すだけ」で、本当のぶつかりではない。
+
+PM の決め（作り方）：
+1. 分かれ目を元にして合わせ、ぶつからなければ今のまま
+2. ぶつかったときだけ、元の版を「切る段の版から自分の印（行の末尾の `// K-xxx` と範囲）を外した物」にして合わせ直す。これで差は自分の行だけになり、本線の版にそれを足す
+3. 合わせ直すと、切る段で足した印の無い行（どのチケットの物でもない行）を本線が消したように見えて落ちることがある。そういう行があれば落とさずに止める。判定は、まだのチケットの印と範囲を外した後の切る段の版で見る（外した範囲の中身は数えない）。同じ字面の行（`});` など）を見落とさないよう、行ごとの数で比べる：切る段の版での数が、分かれ目の数と合わせた結果の数の大きい方を超える行を「落ちた」とする（空行は数えない）
+4. 2 回目の合わせもぶつかれば、今までどおり止める","- [ ] 下の表の行（K1115-CT-001〜005）が緑
+- [ ] 前からの K187-CT-001〜011 が緑のまま（`python3 scripts/ci/k187_cut_take_test.py` で 11 本。このファイルは替えない）
+- [ ] チケットの範囲の CI が緑
+- [ ] 取り込んだ後、K-581 の `flow.py start K-581 --cut c/段5` が止まらない（PM が確かめる）"
+K-1116,直し：契約 fuzz（G36）で出た前からの口の赤を直す（記憶を直す口に作る口の値域が漏れる・ログインのメールの形が部品の確かめより広い・PC の確かめに答える口の作った直後の確かめ）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"K-424（段 4・契約 fuzz の上限を外す葉）の CI の G36（回 wfq 45098922381・別名の回 wfr 45114016413）で、上限の 429 に隠れていた前からの口の赤が 4 種出た。K-424 は apps/api/src を変えない葉なので、ここで直す。本線の先頭 14896746c で 4 種をコードと契約で確かめた。
+
+| 種類 | 回の赤 | 原因（本線で確かめた） | どちらが正か | 直し |
+|---|---|---|---|---|
+| 1 | PATCH /memories/{id} が confidence ""AAA"" を 200（ST201） | 記憶を直す口（updateMemory）は title と body しか使わず、ほかの欄は受けて捨てる（apps/api/src/hooks/agent.ts）。ところが契約の UpdateMemoryInput の confidence に pattern、kind_id に enum がある。作り手 `05_flow/build_api.py` は、形を分け合う口の自分の形（UpdateMemoryInput）を作るとき、最初の口（createMemory）の値域を書き込んだ後の MemoriesInput を写していた。createMemory の値域が updateMemory に漏れた | 作り手が誤り（ほかの口の値域が漏れる）。漏れを直すと confidence は表の型（numeric）の形 `^-?[0-9]+(\.[0-9]+)?$` に戻るが、口は使わない欄なので ""AAA"" をまだ受ける。契約に書いた形は口が守るのが正なので、口も直す | 作り手は、値域を書き込む前の形を写して自分の形を作る。口は確かさを入口が直す前の生の字で表の型の形と比べ、外なら 422（欄 confidence）で断る（使わないのは今のまま） |
+| 2 | POST /auth/sign-in が改行・制御の字を含むメールを 422 E-VAL-004（ST202） | 口は正規化（NFKC・空白を除く・小文字）の後に EMAIL_RE と、ログインの部品 better-auth の `z.email()`（zod 4.6.7 の email の形・英数字と `_'+-.` だけ）で見る。部品が断ると E-VAL-004（packages/auth/src/signup.ts の INVALID_EMAIL）。契約の形は EMAIL_RE と同じ広さ（`^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$`）で、部品の確かめが入っていない | 口が正（部品が断るメールは登録できない・断る番号も決めてある）。契約が誤り | ログインの口のメールの形を、部品の z.email() の形を前後の空白（` \t\n\r` だけ）で挟んだ物にする（K-638 の断片）。全角・途中の空白は契約の外（口はもっと広く受ける。K-638 と同じ書き方） |
+| 3 | POST /tickets が due_on ""0000-00-00"" を 422（ST202） | 本線の契約は due_on を形（`^[0-9]{4}-…$`）だけで書き、暦に無い日を書けない。K-437（t/K-437・実装済み・K-424 は取り込み済み）が due_on に `format: date` を足して直す | K-437 で直る | このチケットでは直さない（K-437 の範囲の createTicket の値域の表を本線で触るとぶつかる）。開始の日 start_on は K-437 の後も形だけ（下の申し送り） |
+| 4 | POST /credentials の直後に login-check/answer が 404 E-CRED-014（ST302） | 答える口は、PC がコードを頼んだ（確かめを始めた）後だけ受ける。設定を作っただけでは頼まれていないので 404 E-CRED-014（K-355 の決め・契約にも 404 がある）。schemathesis が「作った物の id を使う口」と見て、自分で引いた線（inferred link）で続けて叩き、作った直後に 404 は「作った物が無い」と数えた | 口と契約が正。fuzz の続けて叩く線の作りが当たらない | fuzz の設定で、この口だけ ensure_resource_availability（ST302）を外す（schemathesis 4.33 は口ごとの設定をその口の答えの確かめに使う・engine/_check_context.py）。ほかの口の ST302 は今のまま |
+
+PM の決め（作り方）：
+1. 種類 1 は作り手の写し方を直し、口は契約の形（表の型）で確かさを断る。入口の zod と DB の関数は変えない。確かさは今までどおり使わない（書かない）
+2. 種類 2 は契約を部品の確かめに合わせる。口の振る舞い（断る番号・失敗に数えない）は変えない
+3. 種類 3 は K-437 が直すので触らない
+4. 種類 4 は fuzz の設定。口の 404 は変えない","- [ ] 下の表の行（K1116-CT-001〜007）が緑
+- [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている
+- [ ] チケットの範囲の CI が緑。K-424 の CI の G36 で種類 1・2・4 が出ない（PM が確かめる）"
+K-1117,直し：契約の形を口の受け方と同じ字の集まりにする（登録のメールを部品の z.email() に合わせる・\s \S \d \w を Python と JS で同じ字にする）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"K-1116 の申し送り（前からある別の場所の問題 c）の 3 つを直す。本線の先頭 14896746c（K-1116 の枝 t/K-1116 の土台と同じ口）で 3 つとも起きることを確かめた。
+
+| 種類 | 起きること（本線で確かめた） | どちらが正か | 直し |
+|---|---|---|---|
+| 1 | 登録（createSignup）・再設定（requestPasswordReset）の契約のメールの形 `^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$` に、""a﹫b@example.com""・""a＠b@example.com""・""﻿@example.com"" が合う（Python の re で True）。口は normalizeEmail（NFKC・空白を全部除く・小文字）の後の EMAIL_RE で 3 つとも断る（﹫・＠ は NFKC で @ になり @ が 2 つ・BOM は JS の \s なので除かれてローカル部が空）。契約 fuzz の ST202 の種 | 口の正規化が正。契約が広すぎる | 登録の契約のメールの形を、ログインの口（K-1116）と同じ「部品の z.email() の形を前後の空白 `[ \t\n\r]*` で挟んだ物」にする（1 つの置き場 scripts/ci/email_patterns.py からログインと登録が引く）。再設定はこのチケットでは口を変えられない（下の「再設定を外した訳」）。BOM の分だけは種類 2 の直しで契約の外になる |
+| 2 | 契約の `\s` `\S`（と `\d`）は、schemathesis（Python）と口（JS の trim・正規表現）で字の集まりが違う。updateMemory の body `\S` に ""\x1c""・""\x85"" は Python では形の外なのに口の trim は残して 200（ST201 の種）、""﻿"" は Python では形どおりなのに口の trim が除いて 422（ST202 の種）。`\d` は Python では全部の国の数字（""٣""）に当たり、JS は 0〜9 だけ。契約の pattern のうち 38 か所がこの字を使う | 口（JS）が正 | 作り手 05_flow/build_api.py が契約（08_api/openapi.yaml）を書く前に、pattern の `\s` `\S` `\d` `\D` `\w` `\W` を JS と同じ字を並べた形に直す（scripts/ci/portable_regex.py の portable）。元の表（screen_api.py・screen_api.d・contract_shape.d の写し）は今の字のまま。JS が同じ pattern の字を使う預けたログインの login（patterns.ts の LOGIN_PATTERN）だけは元の字を変換の後の字にそろえる（JS での意味は同じ） |
+| 3 | 登録の口は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る（better-auth 1.7.15 の sign-up.mjs:151）。""日本@例.jp"" は EMAIL_RE を通り z.email() で落ちる（tsx で確かめた）：登録の申し込みとメールはできるのに、リンクを押すと確定できない | 部品の z.email() が正 | 登録の口は、正規化の後に EMAIL_RE と部品の z.email() の両方で見て、外なら 422 E-VAL-004（欄 email）。今の断り方（番号・文言・申し込みを作らない・メールを送らない）のまま |
+
+PM の決め（作り方・頼まれた向き：部品の z.email() と口の正規化（NFKC・trim）を正にする）：
+1. 種類 1・3 は、登録の口に部品の確かめ（isLoginEmail）を足し、契約は部品の形を前後の空白で挟んだ物（口より狭く書く）
+2. 種類 2 は、作り手の出口で 1 回だけ直す（元の表を 20 か所以上書き換えない・これから足す pattern も同じに直る）。`[\s\S]`（どの字でも）は両方で同じなのでそのまま。直せない形（字の組の中の `\S` など）は作り手が止める
+3. `$`（Python は末の改行の前でも当たる）と `.` の違いは、このチケットでは変えない（K-1116 の口が末の改行 1 つを受ける形で合わせている・申し送り）
+
+### 再設定を外した訳
+
+再設定の口（apps/api/src/features/F1/password-reset/index.ts）は、いま作っている K-1106（実装済み・DB の失敗を 503 にする）が同じファイルを変える。同時に作れない（start が止めた）うえ、K-1106 と K-1116 の枝は合わせるとぶつかる（08_api/phase1/01_チケット.md・start が止めた）ので重ねても始められない。
+再設定の契約だけを狭めると、口が受ける形の外の入力を 201 で受ける（fuzz の ST201 の種）ので、口と契約は同じ葉で変える。K-1106 が本線に入った後の葉に回す（申し送り）。","- [ ] 下の表の行（K1117-CT-001〜007・K1117-API-001〜002）が緑
+- [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている
+- [ ] チケットの範囲の CI が緑（前からの試験 contract_shape_test.py・k1116・k638・k639・credentials-create の K352-API-026 も）"
+K-1120,直し：G74（本体への直の足し）を、分かれ目と今の先頭の木の差で判定する（途中で足して後で戻した履歴は数えない）・PM の直し,タスク,K-324,未着手,実装,2026-11-23,共通・CI,"G74（K-1112 が入れた「共通の台帳の本体に葉が直に行を足さない」の検査 `scripts/ci/body_append_gate.py`）は、比べる元から先頭までのコミットを 1 つずつ見る。そのため、K-1112 が本線に入る前に本体に行を足したコミット（K-401 の 725225cd7：`05_flow/screen_api.py` の書く表 3 行）が枝の履歴に在るだけで、後のコミットで本体を戻して断片（.d）に移しても赤のまま変わらない。葉の履歴は書き直せない（重ねた子が全部持っている）。K-401 は段 9 の根なので、段 9 の全部が止まっている。
+
+この検査が守りたいのは「取り込みでぶつからないよう、取り込む木の本体に葉の行が増えていない」ことで、それは分かれ目（比べる元）と今の先頭の木を比べれば分かる。途中のコミットで足して後で戻した物は、取り込む木に無いのでぶつからない。
+
+PM の決め（作り方）：
+1. 判定は「比べる元の木に無く、今の先頭の木に在る鍵・行」だけ。途中のコミットは数えない
+2. 赤の文の頭のコミットは、直す人が場所を探せるように今までどおり出す（比べる元から先頭までで、その鍵・行を最後に足したコミット）。判定には使わない
+3. 猶予の台帳（`scripts/ci/body_append_grandfather.json`）の扱いは変えない：台帳の鍵は数えない・台帳が分かれ目より増えたら赤・台帳の作り手（--ledger-now）は枝のコミットを 1 つずつ見るまま","- [ ] 下の表の行（K1120-CT-001〜011）が緑
+- [ ] 前からの試験 `scripts/ci/k1112_body_append_test.py` が替えずに緑（G74 の段で流れる）
+- [ ] チケットの範囲の CI が緑。K-401 の枝（本体を戻して断片に移した後）の G74 が緑（PM が確かめる）"
+K-1121,直し：契約の作り手 05_flow/build_api.py の表（INTERNAL_TABLES・INTERNAL・KEY_CURSOR_OPS）に葉が足す分を、葉ごとの断片 05_flow/build_api.d/K-<番号>.py に書く形にし、本体への直の足しを G74 で止める・PM の直し,タスク,K-324,未着手,実装,2026-11-23,共通・CI,"契約の作り手 `05_flow/build_api.py` の本体の表に、葉が手で鍵を書き足している（今日の枝で見えた物：`KEY_CURSOR_OPS` に listConversations・listConversationMessages・listCloneActivity。段 6 の枝 i/段6 と K-754・K-757〜K-776）。同時に作る葉が同じ行を書き換えるので、取り込みのたびに本線や段の枝とぶつかる（2026-11-23 に K-705・K-675・K-717・K-681・K-676・K-677・K-679 の 7 本が build_api.py で止まった）。
+
+`05_flow/screen_api.py` には葉ごとの断片の置き場（`05_flow/screen_api.d/K-<番号>.py`・部品 `scripts/ci/registry_d.py` の merge_py）と、本体への直の足しを止める検査 G74（`scripts/ci/body_append_gate.py`・K-1112・K-1120）がある。build_api.py にも同じ形を作る。
+
+PM の決め（作り方）：
+1. 置き場は `05_flow/build_api.d/`。足せる表は build_api.py の本体の表 `INTERNAL_TABLES`（dict）・`INTERNAL`（set）・`KEY_CURSOR_OPS`（set）の 3 つだけ。合わせ方は screen_api.d と同じ部品 `registry_d.merge_py`（dict は鍵ごと・同じ鍵は止める／set は和／知らない表の名前・置けない名前は止める）。3 つの名前は作り手と検査で同じ 1 つの一覧（検査の `BUILD_TABLES`）
+2. 断片が足した値の書き間違いを黙って捨てない：KEY_CURSOR_OPS は契約の一覧の口の operationId、INTERNAL_TABLES の鍵は ER の表の名前、INTERNAL は ER のどれかの表の列の名前でなければ、作り手が止まる（生成物を書かない）。本体の今の値は見ない（今の値は変えない）
+3. 今の本体にある値は本体に残す（移さない）。新しい葉から断片に書く
+4. G74 の対象に build_api.py を足す。数えるのは、3 つの表の頭の段の定義（dict・set の字）の新しい鍵と、3 つの表の名前を書き換える文（`X[k] = …`・`X |= …`・`X = …`（定義の字の外）・`X.add(…)`・`X.update(…)` など）。書き換える文はモジュールのどこにあっても（for・if・関数の中でも）数える。今の build_api.py には 3 つの表を定義の外で書き換える所は無い（精査 R が AST で確かめた）。作り手が断片を受ける入れ物 `_D` も見る名前に入れ、`_D` やその添え字を書き換える文（`_D[""INTERNAL""].add(…)`・`_D[k][j] = …`・代入し直し）もどこにあっても数える。書き換えはメソッドの名前（add・update・setdefault・pop・remove・discard・clear・append・extend・insert・*_update など、中身を変える物）で見る（items・get などの読むだけは数えない）。除くのは、この葉が入れる 2 つの文の 1 つ目だけ：入れ物の定義 `_D = {'INTERNAL_TABLES': INTERNAL_TABLES, 'INTERNAL': INTERNAL, 'KEY_CURSOR_OPS': set()}` と合わせの文 `KEY_CURSOR_OPS = KEY_CURSOR_OPS | _D['KEY_CURSOR_OPS']`（同じ字の 2 つ目からは数える。部品の呼び出し `merge_py(_D, …)` は _D のメソッドでも代入でもないので数えない）。3 つの外の表・作り方の手順・読み込み・書き出しは数えない（作り手の作り方の直しは本体でしてよい）。`_D` 以外の別の名前に写してから足す形（`y = INTERNAL; y.add(…)`）は見ない（リスク）
+5. 今作っている葉（この決まりの前に始めた葉）と段の枝が既に build_api.py の本体に足していた鍵は、新しい猶予の台帳 `scripts/ci/body_append_grandfather_build_api.json` に書く。今の台帳 `body_append_grandfather.json` は 1 バイトも変えない（増やせない決まりなので、build_api.py の分は別の台帳にする）。台帳は受ける鍵の頭が決まっている：新しい台帳は `05_flow/build_api.py|` の鍵だけ・今の台帳はそれ以外だけ。違う頭の鍵が台帳に在れば赤。どちらの台帳も分かれ目より増えたら赤（減らすだけ）。分かれ目に台帳が無い（台帳を作る回）は増えたかを見ない（K-1112 と同じ）
+6. 新しい台帳は `body_append_gate.py --ledger-now --ledger scripts/ci/body_append_grandfather_build_api.json` で作る。`--ledger` を付けると書くのはその台帳だけ（無ければ今までどおり今の台帳だけ）。tickets の名前は葉の番号（枝 t/<番号>）か枝の名前そのもの（`i/段6` のように / を含む）。段の枝 i/段6 を tickets に入れるので、葉の枝が消えても段の枝の鍵は台帳に入る。比べる元：葉の CI は本線との分かれ目か重ねた依存を合わせた木、段の枝の全部の CI は本線との分かれ目。どちらでも鍵の字は同じなので台帳の 1 つの鍵で数えない
+7. 断片が無いときに作り手の生成物（08_api の契約）が 1 バイトも変わらないこと","- [ ] 下の表の行（K1121-BD-001〜014）が緑
+- [ ] 前からの試験 `scripts/ci/k1112_body_append_test.py`・`scripts/ci/k1120_body_append_tree_test.py` が替えずに緑（G74・G65 の段で流れる）
+- [ ] 作り手で作り直して、08_api の生成物の差が 0（生成物が最新かの検査が緑）
+- [ ] チケットの範囲の CI が緑"

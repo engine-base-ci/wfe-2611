@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-23",
+ "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 371,
+  "total_apis": 368,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -900,11 +900,6 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/clones/me/activity",
-     "act": "A53"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/clones/me/activity/export",
      "act": "A53"
     },
     {
@@ -2442,16 +2437,6 @@
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/test-specs/lint",
      "act": "A102"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/checks",
-     "act": "A102"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/checks/:id/human",
-     "act": "A15"
     },
     {
      "role": "action",

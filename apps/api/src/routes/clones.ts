@@ -7,7 +7,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/clones/me", op(deps, "getMyClone"));
   app.patch("/api/v1/clones/me", op(deps, "updateMyClone"));
   app.get("/api/v1/clones/me/activity", op(deps, "listCloneActivity"));
-  app.post("/api/v1/clones/me/activity/export", op(deps, "exportCloneActivity"));
   app.get("/api/v1/clones/me/growth", op(deps, "getCloneGrowth"));
   app.get("/api/v1/clones/me/knows/counts", op(deps, "countKnows"));
   app.get("/api/v1/clones/me/now", op(deps, "getCloneNow"));
