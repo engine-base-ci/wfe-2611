@@ -214,8 +214,10 @@ schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
 # 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
 KEY_CURSOR_OPS = {"listApprovalQueue", "listNotifications", "listTickets", "listConversations", "listConversationMessages"}
+# sort の値を口が持つ一覧の口（K-748）。sort は表の列でなく、QUERY_RANGES の enum（決まった値）で書く（入口 op.ts・list_query.ts の OWN_SORT_OPS と同じ集まり）
+OWN_SORT_OPS = {"listApprovalQueue"}
 def qtype(q, table, op=None):
-    cols = sorted(_DBC.get(table, {}))
+    cols = [] if op in OWN_SORT_OPS else sorted(_DBC.get(table, {}))
     if q == "limit": return {"type": "integer", "minimum": 1, "maximum": getattr(_sa, "LIST_DETAILS", {}).get(op, {}).get("limit_max", 200)}
     if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
     if q.endswith("_id"): return {"type": "string", "format": "uuid"}   # *_id は正式な uuid（scope_id も・D-129.42・K-144）

@@ -2061,6 +2061,26 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F5/approve-complete/queue.ts",
+    "apps/api/src/features/F5/approve-complete/queue-more.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/approval-queue-more.test.ts",
+    "apps/api/test/features/F5/approve-complete-queue.test.ts",
+    "apps/api/test/k234_one_transaction.test.ts",
+    "apps/api/test/k236_read_sweep.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/approval-queue-more.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_approvals_queue.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F5/more/history.ts",
     "apps/api/src/hooks/approval-history.ts"
    ],

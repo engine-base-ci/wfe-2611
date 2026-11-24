@@ -8,6 +8,7 @@ import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps, Hook, HookArgs, HookReply } from "./deps.js";
 import type { TenantContext } from "@kaname/db/context";
 import { checkFor, stepUpFresh, stepUpOrFreshLogin } from "./permissions.js";
+import { OWN_SORT_OPS } from "./list_query.js";
 import { kanameError } from "@kaname/errors";
 export type { ContractDeps } from "./deps.js";
 
@@ -344,7 +345,8 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
         details.push({ field: "scope_id", message: "この一覧はグループで絞れない" });
       if (
         q["sort"] !== undefined &&
-        (!/^[a-z_][a-z0-9_]{0,62}$/.test(q["sort"]) || !repo.hasColumn(def.table as TableName, q["sort"]))
+        (!/^[a-z_][a-z0-9_]{0,62}$/.test(q["sort"]) ||
+          (!OWN_SORT_OPS.has(operationId) && !repo.hasColumn(def.table as TableName, q["sort"])))
       )
         details.push({ field: "sort", message: "列名" });
       if (details.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details });
@@ -352,7 +354,8 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
         where: q["scope_id"] ? { scope_id: q["scope_id"] } : {},
         limit,
         offset: offset!,
-        ...(q["sort"] ? { orderBy: q["sort"] } : {}),
+        // OWN_SORT_OPS の sort は表の列ではない（口が読む）ので、素の一覧の並びには渡さない（K-748）
+        ...(q["sort"] && !OWN_SORT_OPS.has(operationId) ? { orderBy: q["sort"] } : {}),
       };
     }
     // 5) 冪等（POST）。同じキーで同時に来た要求は、先に来た 1 本の結果を待って同じ結果を返す（記録は 1 回）

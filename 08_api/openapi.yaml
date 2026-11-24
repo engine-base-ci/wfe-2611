@@ -16744,44 +16744,19 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - artifact
+          - handover
       - name: sort
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          pattern: ^[a-z_][a-z0-9_]{0,62}$
           enum:
-          - action_run_id
-          - approver_member_id
-          - bulk_batch_id
-          - created_at
-          - created_by
-          - decided_at
-          - decision
-          - deleted_at
-          - escalated_by_policy_id
-          - human_checks
-          - id
-          - irreversible
-          - kind
-          - level
-          - memory_candidate
-          - next_actor
-          - note
-          - parent_approval_id
-          - requested_by
-          - resolved_at
-          - return_reason
-          - return_targets
-          - scope_id
-          - status_id
-          - step_up_at
-          - subject_id
-          - subject_type
-          - tenant_id
-          - ticket_id
-          - updated_at
-          - updated_by
-          - withdrawn_at
+          - due
+          - waiting
+          - title
       - name: cursor
         in: query
         allowEmptyValue: true
