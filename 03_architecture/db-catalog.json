@@ -229,6 +229,14 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
+  "knowledge_folders": {
+   "class": "skeleton",
+   "why": "ナレッジの口が使う（K-674）"
+  },
+  "knowledge_limits": {
+   "class": "skeleton",
+   "why": "必ず守るの付け外しの口が上限を読む（K-685）"
+  },
   "knowledge_page_versions": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
@@ -600,6 +608,10 @@
   "validations": {
    "class": "frozen",
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "knowledge_breaches": {
+   "class": "skeleton",
+   "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）"
   }
  }
 }

@@ -7354,11 +7354,16 @@ components:
     TicketStages:
       type: object
       properties:
-        name: &id658
+        key: &id658
           type: string
-        position: &id659
+          nullable: true
+        name: &id659
+          type: string
+        color_key: &id660
+          type: string
+        position: &id661
           type: integer
-        is_fixed: &id660
+        is_fixed: &id662
           type: boolean
         id:
           type: string
@@ -7380,9 +7385,6 @@ components:
           type: string
           format: date-time
           nullable: true
-        key:
-          type: string
-          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -7397,20 +7399,22 @@ components:
     TicketStagesInput:
       type: object
       properties:
-        name: *id658
-        position: *id659
-        is_fixed: *id660
+        key: *id658
+        name: *id659
+        color_key: *id660
+        position: *id661
+        is_fixed: *id662
       additionalProperties: false
     ClassAxes:
       type: object
       properties:
-        key: &id661
+        key: &id663
           type: string
-        name: &id662
+        name: &id664
           type: string
-        is_builtin: &id663
+        is_builtin: &id665
           type: boolean
-        position: &id664
+        position: &id666
           type: integer
         id:
           type: string
@@ -7446,23 +7450,23 @@ components:
     ClassAxesInput:
       type: object
       properties:
-        key: *id661
-        name: *id662
-        is_builtin: *id663
-        position: *id664
+        key: *id663
+        name: *id664
+        is_builtin: *id665
+        position: *id666
       additionalProperties: false
     ClassValues:
       type: object
       properties:
-        axis_id: &id665
+        axis_id: &id667
           type: string
           format: uuid
-        label: &id666
+        label: &id668
           type: string
-        color: &id667
+        color: &id669
           type: string
           nullable: true
-        position: &id668
+        position: &id670
           type: integer
         id:
           type: string
@@ -7497,18 +7501,18 @@ components:
     ClassValuesInput:
       type: object
       properties:
-        axis_id: *id665
-        label: *id666
-        color: *id667
-        position: *id668
+        axis_id: *id667
+        label: *id668
+        color: *id669
+        position: *id670
       additionalProperties: false
     TicketClassValues:
       type: object
       properties:
-        ticket_id: &id669
+        ticket_id: &id671
           type: string
           format: uuid
-        value_id: &id670
+        value_id: &id672
           type: string
           format: uuid
         id:
@@ -7545,23 +7549,23 @@ components:
     TicketClassValuesInput:
       type: object
       properties:
-        ticket_id: *id669
-        value_id: *id670
+        ticket_id: *id671
+        value_id: *id672
       additionalProperties: false
     CustomFields:
       type: object
       properties:
-        name: &id671
+        name: &id673
           type: string
-        field_type: &id672
+        field_type: &id674
           type: string
-        required: &id673
+        required: &id675
           type: boolean
-        description: &id674
+        description: &id676
           type: string
           nullable: true
-        options: &id675 {}
-        position: &id676
+        options: &id677 {}
+        position: &id678
           type: integer
         id:
           type: string
@@ -7598,20 +7602,20 @@ components:
     CustomFieldsInput:
       type: object
       properties:
-        name: *id671
-        field_type: *id672
-        required: *id673
-        description: *id674
-        options: *id675
-        position: *id676
+        name: *id673
+        field_type: *id674
+        required: *id675
+        description: *id676
+        options: *id677
+        position: *id678
       additionalProperties: false
     CustomFieldKinds:
       type: object
       properties:
-        field_id: &id677
+        field_id: &id679
           type: string
           format: uuid
-        kind_id: &id678
+        kind_id: &id680
           type: string
           format: uuid
         id:
@@ -7647,19 +7651,19 @@ components:
     CustomFieldKindsInput:
       type: object
       properties:
-        field_id: *id677
-        kind_id: *id678
+        field_id: *id679
+        kind_id: *id680
       additionalProperties: false
     TicketFieldValues:
       type: object
       properties:
-        ticket_id: &id679
+        ticket_id: &id681
           type: string
           format: uuid
-        field_id: &id680
+        field_id: &id682
           type: string
           format: uuid
-        value: &id681 {}
+        value: &id683 {}
         id:
           type: string
           format: uuid
@@ -7693,20 +7697,20 @@ components:
     TicketFieldValuesInput:
       type: object
       properties:
-        ticket_id: *id679
-        field_id: *id680
-        value: *id681
+        ticket_id: *id681
+        field_id: *id682
+        value: *id683
       additionalProperties: false
     HandoverRules:
       type: object
       properties:
-        target: &id682
+        target: &id684
           type: string
-        axis_id: &id683
+        axis_id: &id685
           type: string
           format: uuid
           nullable: true
-        mode: &id684
+        mode: &id686
           type: string
         id:
           type: string
@@ -7743,46 +7747,46 @@ components:
     HandoverRulesInput:
       type: object
       properties:
-        target: *id682
-        axis_id: *id683
-        mode: *id684
+        target: *id684
+        axis_id: *id685
+        mode: *id686
       additionalProperties: false
     TestSpecs:
       type: object
       properties:
-        ticket_id: &id685
+        ticket_id: &id687
           type: string
           format: uuid
-        check_kind: &id686
+        check_kind: &id688
           type: string
           nullable: true
-        title: &id687
+        title: &id689
           type: string
-        judge_type: &id688
+        judge_type: &id690
           type: string
           nullable: true
-        params: &id689 {}
+        params: &id691 {}
         version:
           type: integer
-        off_reason: &id690
+        off_reason: &id692
           type: string
           nullable: true
-        checked_at: &id691
+        checked_at: &id693
           type: string
           format: date-time
           nullable: true
-        checked_by_member_id: &id692
+        checked_by_member_id: &id694
           type: string
           format: uuid
           nullable: true
-        checked_by_ai: &id693
+        checked_by_ai: &id695
           type: boolean
-        checked_basis: &id694
+        checked_basis: &id696
           type: string
           nullable: true
-        source: &id695
+        source: &id697
           type: string
-        source_ref_id: &id696
+        source_ref_id: &id698
           type: string
           format: uuid
           nullable: true
@@ -7822,42 +7826,42 @@ components:
     TestSpecsInput:
       type: object
       properties:
-        ticket_id: *id685
-        check_kind: *id686
-        title: *id687
-        judge_type: *id688
-        params: *id689
-        off_reason: *id690
-        checked_at: *id691
-        checked_by_member_id: *id692
-        checked_by_ai: *id693
-        checked_basis: *id694
-        source: *id695
-        source_ref_id: *id696
+        ticket_id: *id687
+        check_kind: *id688
+        title: *id689
+        judge_type: *id690
+        params: *id691
+        off_reason: *id692
+        checked_at: *id693
+        checked_by_member_id: *id694
+        checked_by_ai: *id695
+        checked_basis: *id696
+        source: *id697
+        source_ref_id: *id698
       additionalProperties: false
     Checks:
       type: object
       properties:
-        ticket_id: &id697
+        ticket_id: &id699
           type: string
           format: uuid
-        test_spec_id: &id698
+        test_spec_id: &id700
           type: string
           format: uuid
-        spec_version: &id699
+        spec_version: &id701
           type: integer
-        artifact_version_id: &id700
+        artifact_version_id: &id702
           type: string
           format: uuid
           nullable: true
-        attempt: &id701
+        attempt: &id703
           type: integer
-        result: &id702
+        result: &id704
           type: string
-        evidence: &id703 {}
-        runner: &id704
+        evidence: &id705 {}
+        runner: &id706
           type: string
-        checked_by_member_id: &id705
+        checked_by_member_id: &id707
           type: string
           format: uuid
           nullable: true
@@ -7896,56 +7900,56 @@ components:
     ChecksInput:
       type: object
       properties:
-        ticket_id: *id697
-        test_spec_id: *id698
-        spec_version: *id699
-        artifact_version_id: *id700
-        attempt: *id701
-        result: *id702
-        evidence: *id703
-        runner: *id704
-        checked_by_member_id: *id705
+        ticket_id: *id699
+        test_spec_id: *id700
+        spec_version: *id701
+        artifact_version_id: *id702
+        attempt: *id703
+        result: *id704
+        evidence: *id705
+        runner: *id706
+        checked_by_member_id: *id707
       additionalProperties: false
     TicketDecisions:
       type: object
       properties:
-        ticket_id: &id706
+        ticket_id: &id708
           type: string
           format: uuid
-        text: &id707
+        text: &id709
           type: string
-        reason: &id708
+        reason: &id710
           type: string
           nullable: true
-        decided_by: &id709
+        decided_by: &id711
           type: string
           format: uuid
           nullable: true
-        decided_at: &id710
+        decided_at: &id712
           type: string
           format: date-time
-        source_message_id: &id711
+        source_message_id: &id713
           type: string
           format: uuid
           nullable: true
-        superseded_by_id: &id712
+        superseded_by_id: &id714
           type: string
           format: uuid
           nullable: true
-        promoted_to: &id713
+        promoted_to: &id715
           type: string
-        decided_note: &id714
+        decided_note: &id716
           type: string
           nullable: true
-        cancelled_at: &id715
+        cancelled_at: &id717
           type: string
           format: date-time
           nullable: true
-        cancelled_by: &id716
+        cancelled_by: &id718
           type: string
           format: uuid
           nullable: true
-        cancel_reason: &id717
+        cancel_reason: &id719
           type: string
           nullable: true
         id:
@@ -7984,59 +7988,59 @@ components:
     TicketDecisionsInput:
       type: object
       properties:
-        ticket_id: *id706
-        text: *id707
-        reason: *id708
-        decided_by: *id709
-        decided_at: *id710
-        source_message_id: *id711
-        superseded_by_id: *id712
-        promoted_to: *id713
-        decided_note: *id714
-        cancelled_at: *id715
-        cancelled_by: *id716
-        cancel_reason: *id717
+        ticket_id: *id708
+        text: *id709
+        reason: *id710
+        decided_by: *id711
+        decided_at: *id712
+        source_message_id: *id713
+        superseded_by_id: *id714
+        promoted_to: *id715
+        decided_note: *id716
+        cancelled_at: *id717
+        cancelled_by: *id718
+        cancel_reason: *id719
       additionalProperties: false
     TicketMessages:
       type: object
       properties:
-        ticket_id: &id718
+        ticket_id: &id720
           type: string
           format: uuid
-        author_member_id: &id719
+        author_member_id: &id721
           type: string
           format: uuid
           nullable: true
-        kind: &id720
+        kind: &id722
           type: string
-        body: &id721
+        body: &id723
           type: string
           nullable: true
-        mentions: &id722
+        mentions: &id724
           type: array
           items:
             type: string
             format: uuid
-        changes: &id723
+        changes: &id725
           nullable: true
-        quote_of_id: &id724
+        quote_of_id: &id726
           type: string
           format: uuid
           nullable: true
-        reactions: &id725 {}
-        notify_member_ids: &id726
+        reactions: &id727 {}
+        notify_member_ids: &id728
           type: array
           items:
             type: string
             format: uuid
-        quote_text: &id727
+        quote_text: &id729
           type: string
           nullable: true
-        edited_at: &id728
+        edited_at: &id730
           type: string
           format: date-time
           nullable: true
-        deleted_by: &id729
+        deleted_by: &id731
           type: string
           format: uuid
           nullable: true
@@ -8076,42 +8080,42 @@ components:
     TicketMessagesInput:
       type: object
       properties:
-        ticket_id: *id718
-        author_member_id: *id719
-        kind: *id720
-        body: *id721
-        mentions: *id722
-        changes: *id723
-        quote_of_id: *id724
-        reactions: *id725
-        notify_member_ids: *id726
-        quote_text: *id727
-        edited_at: *id728
-        deleted_by: *id729
+        ticket_id: *id720
+        author_member_id: *id721
+        kind: *id722
+        body: *id723
+        mentions: *id724
+        changes: *id725
+        quote_of_id: *id726
+        reactions: *id727
+        notify_member_ids: *id728
+        quote_text: *id729
+        edited_at: *id730
+        deleted_by: *id731
       additionalProperties: false
     ReferenceLogs:
       type: object
       properties:
-        ticket_id: &id730
+        ticket_id: &id732
           type: string
           format: uuid
-        action_run_id: &id731
-          type: string
-          format: uuid
-          nullable: true
-        ref_type: &id732
-          type: string
-        ref_id: &id733
+        action_run_id: &id733
           type: string
           format: uuid
           nullable: true
-        url: &id734
+        ref_type: &id734
+          type: string
+        ref_id: &id735
+          type: string
+          format: uuid
+          nullable: true
+        url: &id736
           type: string
           nullable: true
-        title: &id735
+        title: &id737
           type: string
           nullable: true
-        seen_at: &id736
+        seen_at: &id738
           type: string
           format: date-time
         id:
@@ -8149,54 +8153,68 @@ components:
     ReferenceLogsInput:
       type: object
       properties:
-        ticket_id: *id730
-        action_run_id: *id731
-        ref_type: *id732
-        ref_id: *id733
-        url: *id734
-        title: *id735
-        seen_at: *id736
+        ticket_id: *id732
+        action_run_id: *id733
+        ref_type: *id734
+        ref_id: *id735
+        url: *id736
+        title: *id737
+        seen_at: *id738
       additionalProperties: false
     KnowledgePages:
       type: object
       properties:
-        is_personal: &id737
+        is_personal: &id739
           type: boolean
-        parent_page_id: &id738
+        parent_page_id: &id740
           type: string
           format: uuid
           nullable: true
-        title: &id739
+        title: &id741
           type: string
-        owner_member_id: &id740
+        summary: &id742
+          type: string
+        is_must: &id743
+          type: boolean
+        copied_from_page_id: &id744
           type: string
           format: uuid
-        state: &id741
+          nullable: true
+        folder_id: &id745
           type: string
-        verify_interval_days: &id742
+          format: uuid
+          nullable: true
+        position: &id746
+          type: integer
+        owner_member_id: &id747
+          type: string
+          format: uuid
+        state: &id748
+          type: string
+        verify_interval_days: &id749
           type: integer
           nullable: true
-        verified_at: &id743
+        verified_at: &id750
           type: string
           format: date-time
           nullable: true
-        verify_due_on: &id744
+        verify_due_on: &id751
           type: string
           format: date
           nullable: true
-        topics: &id745
+        topics: &id752
           type: array
           items:
             type: string
-        current_version: &id746
+        current_version: &id753
           type: integer
-        form: &id747
+        form: &id754
           type: string
-        archived_at: &id748
+        archived_at: &id755
           type: string
           format: date-time
           nullable: true
-        archived_to_page_id: &id749
+        archived_to_page_id: &id756
           type: string
           format: uuid
           nullable: true
@@ -8235,66 +8253,73 @@ components:
       - D-125.108
       - D-128
       - D-128.50
+      - D-152.1
+      - D-152.3
     KnowledgePagesInput:
       type: object
       properties:
-        is_personal: *id737
-        parent_page_id: *id738
-        title: *id739
-        owner_member_id: *id740
-        state: *id741
-        verify_interval_days: *id742
-        verified_at: *id743
-        verify_due_on: *id744
-        topics: *id745
-        current_version: *id746
-        form: *id747
-        archived_at: *id748
-        archived_to_page_id: *id749
+        is_personal: *id739
+        parent_page_id: *id740
+        title: *id741
+        summary: *id742
+        is_must: *id743
+        copied_from_page_id: *id744
+        folder_id: *id745
+        position: *id746
+        owner_member_id: *id747
+        state: *id748
+        verify_interval_days: *id749
+        verified_at: *id750
+        verify_due_on: *id751
+        topics: *id752
+        current_version: *id753
+        form: *id754
+        archived_at: *id755
+        archived_to_page_id: *id756
       additionalProperties: false
     KnowledgePageVersions:
       type: object
       properties:
-        page_id: &id750
+        page_id: &id757
           type: string
           format: uuid
         version:
           type: integer
-        kind: &id751
+        kind: &id758
           type: string
-        body: &id752 {}
-        note: &id753
+        body: &id759 {}
+        note: &id760
           type: string
           nullable: true
-        author_member_id: &id754
+        author_member_id: &id761
           type: string
           format: uuid
           nullable: true
-        proposed_from_ticket_id: &id755
+        proposed_from_ticket_id: &id762
           type: string
           format: uuid
           nullable: true
-        proposed_by_clone: &id756
+        proposed_by_clone: &id763
           type: boolean
-        decision: &id757
+        decision: &id764
           type: string
           nullable: true
-        decline_reason: &id758
+        decline_reason: &id765
           type: string
           nullable: true
-        decided_by: &id759
+        decided_by: &id766
           type: string
           format: uuid
           nullable: true
-        decided_at: &id760
+        decided_at: &id767
           type: string
           format: date-time
           nullable: true
-        published_by: &id761
+        published_by: &id768
           type: string
           format: uuid
           nullable: true
-        published_at: &id762
+        published_at: &id769
           type: string
           format: date-time
           nullable: true
@@ -8331,19 +8356,19 @@ components:
     KnowledgePageVersionsInput:
       type: object
       properties:
-        page_id: *id750
-        kind: *id751
-        body: *id752
-        note: *id753
-        author_member_id: *id754
-        proposed_from_ticket_id: *id755
-        proposed_by_clone: *id756
-        decision: *id757
-        decline_reason: *id758
-        decided_by: *id759
-        decided_at: *id760
-        published_by: *id761
-        published_at: *id762
+        page_id: *id757
+        kind: *id758
+        body: *id759
+        note: *id760
+        author_member_id: *id761
+        proposed_from_ticket_id: *id762
+        proposed_by_clone: *id763
+        decision: *id764
+        decline_reason: *id765
+        decided_by: *id766
+        decided_at: *id767
+        published_by: *id768
+        published_at: *id769
       additionalProperties: false
     KnowledgeLinks:
       type: object
@@ -8376,22 +8401,245 @@ components:
           type: string
           nullable: true
       additionalProperties: false
-    Clients:
+    KnowledgeFolders:
       type: object
       properties:
-        name: &id763
+        is_personal: &id770
+          type: boolean
+        owner_member_id: &id771
           type: string
-        owner_member_id: &id764
+          format: uuid
+        parent_folder_id: &id772
           type: string
           format: uuid
           nullable: true
-        visibility: &id765
+        name: &id773
           type: string
-        default_share: &id766 {}
-        routing: &id767
+        position: &id774
+          type: integer
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        scope_id:
+          type: string
+          format: uuid
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
+      x-table: knowledge_folders
+      x-source:
+      - D-125
+      - D-128
+      - D-152.1
+    KnowledgeFoldersInput:
+      type: object
+      properties:
+        is_personal: *id770
+        owner_member_id: *id771
+        parent_folder_id: *id772
+        name: *id773
+        position: *id774
+      additionalProperties: false
+    KnowledgeRequests:
+      type: object
+      properties:
+        kind: &id775
+          type: string
+        page_id: &id776
+          type: string
+          format: uuid
+        folder_id: &id777
+          type: string
+          format: uuid
+        from_scope_id: &id778
+          type: string
+          format: uuid
+        from_is_personal: &id779
+          type: string
+        to_scope_id: &id780
+          type: string
+          format: uuid
+        to_folder_id: &id781
+          type: string
+          format: uuid
+        requested_by: &id782
+          type: string
+          format: uuid
+        message: &id783
+          type: string
+        state: &id784
+          type: string
+        decided_by: &id785
+          type: string
+          format: uuid
+        decided_at: &id786
+          type: string
+          format: date-time
+        decline_reason: &id787
+          type: string
+        dismissed_at: &id788
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: knowledge_requests
+      x-source:
+      - D-125
+      - D-128
+      - D-152.13
+      - D-152.2
+    KnowledgeRequestsInput:
+      type: object
+      properties:
+        kind: *id775
+        page_id: *id776
+        folder_id: *id777
+        from_scope_id: *id778
+        from_is_personal: *id779
+        to_scope_id: *id780
+        to_folder_id: *id781
+        requested_by: *id782
+        message: *id783
+        state: *id784
+        decided_by: *id785
+        decided_at: *id786
+        decline_reason: *id787
+        dismissed_at: *id788
+      additionalProperties: false
+    KnowledgeLimits:
+      type: object
+      properties:
+        shelf: &id789
+          type: string
+        must_max: &id790
+          type: integer
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      x-table: knowledge_limits
+      x-source:
+      - D-125
+      - D-128
+      - D-152.16
+    KnowledgeLimitsInput:
+      type: object
+      properties:
+        shelf: *id789
+        must_max: *id790
+      additionalProperties: false
+    KnowledgeBreaches:
+      type: object
+      properties:
+        ticket_id: &id791
+          type: string
+          format: uuid
+        page_id: &id792
+          type: string
+          format: uuid
+        test_spec_id: &id793
+          type: string
+          format: uuid
+          nullable: true
+        kind: &id794
+          type: string
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
+      x-table: knowledge_breaches
+      x-source:
+      - D-125
+      - D-128
+      - D-152.24
+    KnowledgeBreachesInput:
+      type: object
+      properties:
+        ticket_id: *id791
+        page_id: *id792
+        test_spec_id: *id793
+        kind: *id794
+      additionalProperties: false
+    Clients:
+      type: object
+      properties:
+        name: &id795
+          type: string
+        owner_member_id: &id796
+          type: string
+          format: uuid
+          nullable: true
+        visibility: &id797
+          type: string
+        default_share: &id798 {}
+        routing: &id799
           type: string
           nullable: true
-        email_domain: &id768
+        email_domain: &id800
           type: string
           nullable: true
         id:
@@ -8430,17 +8678,17 @@ components:
     ClientsInput:
       type: object
       properties:
-        name: *id763
-        owner_member_id: *id764
-        visibility: *id765
-        default_share: *id766
-        routing: *id767
-        email_domain: *id768
+        name: *id795
+        owner_member_id: *id796
+        visibility: *id797
+        default_share: *id798
+        routing: *id799
+        email_domain: *id800
       additionalProperties: false
     ClientGroups:
       type: object
       properties:
-        client_id: &id769
+        client_id: &id801
           type: string
           format: uuid
         scope_id:
@@ -8480,26 +8728,26 @@ components:
     ClientGroupsInput:
       type: object
       properties:
-        client_id: *id769
+        client_id: *id801
       additionalProperties: false
     ClientContacts:
       type: object
       properties:
-        client_id: &id770
+        client_id: &id802
           type: string
           format: uuid
-        name: &id771
+        name: &id803
           type: string
-        email: &id772
+        email: &id804
           type: string
           nullable: true
-        role: &id773
+        role: &id805
           type: string
-        member_id: &id774
+        member_id: &id806
           type: string
           format: uuid
           nullable: true
-        cc_role: &id775
+        cc_role: &id807
           type: string
         id:
           type: string
@@ -8534,44 +8782,44 @@ components:
     ClientContactsInput:
       type: object
       properties:
-        client_id: *id770
-        name: *id771
-        email: *id772
-        role: *id773
-        member_id: *id774
-        cc_role: *id775
+        client_id: *id802
+        name: *id803
+        email: *id804
+        role: *id805
+        member_id: *id806
+        cc_role: *id807
       additionalProperties: false
     ClientRequests:
       type: object
       properties:
-        client_id: &id776
+        client_id: &id808
           type: string
           format: uuid
-        contact_id: &id777
+        contact_id: &id809
           type: string
           format: uuid
           nullable: true
-        title: &id778
+        title: &id810
           type: string
-        body: &id779
+        body: &id811
           type: string
           nullable: true
-        due_on: &id780
+        due_on: &id812
           type: string
           format: date
           nullable: true
-        state: &id781
+        state: &id813
           type: string
-        ticket_id: &id782
-          type: string
-          format: uuid
-          nullable: true
-        routed_scope_id: &id783
+        ticket_id: &id814
           type: string
           format: uuid
           nullable: true
-        questions: &id784 {}
-        decline_reason: &id785
+        routed_scope_id: &id815
+          type: string
+          format: uuid
+          nullable: true
+        questions: &id816 {}
+        decline_reason: &id817
           type: string
           nullable: true
         id:
@@ -8608,48 +8856,48 @@ components:
     ClientRequestsInput:
       type: object
       properties:
-        client_id: *id776
-        contact_id: *id777
-        title: *id778
-        body: *id779
-        due_on: *id780
-        state: *id781
-        ticket_id: *id782
-        routed_scope_id: *id783
-        questions: *id784
-        decline_reason: *id785
+        client_id: *id808
+        contact_id: *id809
+        title: *id810
+        body: *id811
+        due_on: *id812
+        state: *id813
+        ticket_id: *id814
+        routed_scope_id: *id815
+        questions: *id816
+        decline_reason: *id817
       additionalProperties: false
     Acceptances:
       type: object
       properties:
-        ticket_id: &id786
+        ticket_id: &id818
           type: string
           format: uuid
-        artifact_version_id: &id787
+        artifact_version_id: &id819
           type: string
           format: uuid
           nullable: true
-        contact_id: &id788
+        contact_id: &id820
           type: string
           format: uuid
-        due_on: &id789
+        due_on: &id821
           type: string
           format: date
           nullable: true
-        message: &id790
+        message: &id822
           type: string
           nullable: true
-        result: &id791
+        result: &id823
           type: string
           nullable: true
-        comment: &id792
+        comment: &id824
           type: string
           nullable: true
-        decided_at: &id793
+        decided_at: &id825
           type: string
           format: date-time
           nullable: true
-        reminded_at: &id794
+        reminded_at: &id826
           type: string
           format: date-time
           nullable: true
@@ -8687,30 +8935,30 @@ components:
     AcceptancesInput:
       type: object
       properties:
-        ticket_id: *id786
-        artifact_version_id: *id787
-        contact_id: *id788
-        due_on: *id789
-        message: *id790
-        result: *id791
-        comment: *id792
-        decided_at: *id793
-        reminded_at: *id794
+        ticket_id: *id818
+        artifact_version_id: *id819
+        contact_id: *id820
+        due_on: *id821
+        message: *id822
+        result: *id823
+        comment: *id824
+        decided_at: *id825
+        reminded_at: *id826
       additionalProperties: false
     TenantMemberships:
       type: object
       properties:
-        auth_user_id: &id795
+        auth_user_id: &id827
           type: string
           nullable: true
-        member_id: &id796
+        member_id: &id828
           type: string
           format: uuid
-        role: &id797
+        role: &id829
           type: string
-        status: &id798
+        status: &id830
           type: string
-        joined_at: &id799
+        joined_at: &id831
           type: string
           format: date-time
           nullable: true
@@ -8749,22 +8997,22 @@ components:
     TenantMembershipsInput:
       type: object
       properties:
-        auth_user_id: *id795
-        member_id: *id796
-        role: *id797
-        status: *id798
-        joined_at: *id799
+        auth_user_id: *id827
+        member_id: *id828
+        role: *id829
+        status: *id830
+        joined_at: *id831
       additionalProperties: false
     TermsVersions:
       type: object
       properties:
-        kind: &id800
+        kind: &id832
           type: string
         version:
           type: string
-        url: &id801
+        url: &id833
           type: string
-        published_at: &id802
+        published_at: &id834
           type: string
           format: date-time
         id:
@@ -8801,26 +9049,26 @@ components:
     TermsVersionsInput:
       type: object
       properties:
-        kind: *id800
-        url: *id801
-        published_at: *id802
+        kind: *id832
+        url: *id833
+        published_at: *id834
       additionalProperties: false
     TermsConsents:
       type: object
       properties:
-        member_id: &id803
+        member_id: &id835
           type: string
           format: uuid
-        auth_user_id: &id804
+        auth_user_id: &id836
           type: string
           nullable: true
-        terms_version_id: &id805
+        terms_version_id: &id837
           type: string
           format: uuid
-        agreed_at: &id806
+        agreed_at: &id838
           type: string
           format: date-time
-        ip: &id807
+        ip: &id839
           type: string
           nullable: true
         id:
@@ -8857,31 +9105,31 @@ components:
     TermsConsentsInput:
       type: object
       properties:
-        member_id: *id803
-        auth_user_id: *id804
-        terms_version_id: *id805
-        agreed_at: *id806
-        ip: *id807
+        member_id: *id835
+        auth_user_id: *id836
+        terms_version_id: *id837
+        agreed_at: *id838
+        ip: *id839
       additionalProperties: false
     Passkeys:
       type: object
       properties:
-        auth_user_id: &id808
+        auth_user_id: &id840
           type: string
           format: uuid
-        credential_id: &id809
+        credential_id: &id841
           type: string
           format: uuid
-        public_key: &id810
+        public_key: &id842
           type: string
-        name: &id811
+        name: &id843
           type: string
-        transports: &id812
+        transports: &id844
           type: string
-        last_used_at: &id813
+        last_used_at: &id845
           type: string
           format: date-time
-        revoked_at: &id814
+        revoked_at: &id846
           type: string
           format: date-time
         id:
@@ -8908,24 +9156,24 @@ components:
     PasskeysInput:
       type: object
       properties:
-        auth_user_id: *id808
-        credential_id: *id809
-        public_key: *id810
-        name: *id811
-        transports: *id812
-        last_used_at: *id813
-        revoked_at: *id814
+        auth_user_id: *id840
+        credential_id: *id841
+        public_key: *id842
+        name: *id843
+        transports: *id844
+        last_used_at: *id845
+        revoked_at: *id846
       additionalProperties: false
     Operations:
       type: object
       properties:
-        key: &id815
+        key: &id847
           type: string
-        name: &id816
+        name: &id848
           type: string
-        kind: &id817
+        kind: &id849
           type: string
-        current_version: &id818
+        current_version: &id850
           type: integer
         id:
           type: string
@@ -8962,21 +9210,21 @@ components:
     OperationsInput:
       type: object
       properties:
-        key: *id815
-        name: *id816
-        kind: *id817
-        current_version: *id818
+        key: *id847
+        name: *id848
+        kind: *id849
+        current_version: *id850
       additionalProperties: false
     TicketLinks:
       type: object
       properties:
-        from_ticket_id: &id819
+        from_ticket_id: &id851
           type: string
           format: uuid
-        to_ticket_id: &id820
+        to_ticket_id: &id852
           type: string
           format: uuid
-        kind: &id821
+        kind: &id853
           type: string
         id:
           type: string
@@ -9013,62 +9261,62 @@ components:
     TicketLinksInput:
       type: object
       properties:
-        from_ticket_id: *id819
-        to_ticket_id: *id820
-        kind: *id821
+        from_ticket_id: *id851
+        to_ticket_id: *id852
+        kind: *id853
       additionalProperties: false
     TicketHandovers:
       type: object
       properties:
-        ticket_id: &id822
+        ticket_id: &id854
           type: string
           format: uuid
-        kind: &id823
+        kind: &id855
           type: string
-        from_member_id: &id824
-          type: string
-          format: uuid
-        to_member_id: &id825
+        from_member_id: &id856
           type: string
           format: uuid
-          nullable: true
-        to_scope_id: &id826
+        to_member_id: &id857
           type: string
           format: uuid
           nullable: true
-        reason: &id827
+        to_scope_id: &id858
+          type: string
+          format: uuid
+          nullable: true
+        reason: &id859
           type: string
           nullable: true
-        ask: &id828
+        ask: &id860
           type: string
           nullable: true
-        reply_due: &id829
+        reply_due: &id861
           type: string
           format: date-time
           nullable: true
-        switch: &id830 {}
-        state: &id831
+        switch: &id862 {}
+        state: &id863
           type: string
-        decline_reason: &id832
+        decline_reason: &id864
           type: string
           nullable: true
-        decided_at: &id833
+        decided_at: &id865
           type: string
           format: date-time
           nullable: true
-        notify_managers: &id834
+        notify_managers: &id866
           type: boolean
-        reminded_at: &id835
+        reminded_at: &id867
           type: string
           format: date-time
           nullable: true
-        overdue_notified_at: &id836
+        overdue_notified_at: &id868
           type: string
           format: date-time
           nullable: true
-        switch_applied: &id837
+        switch_applied: &id869
           nullable: true
-        answered_by: &id838
+        answered_by: &id870
           type: string
           format: uuid
           nullable: true
@@ -9107,41 +9355,41 @@ components:
     TicketHandoversInput:
       type: object
       properties:
-        ticket_id: *id822
-        kind: *id823
-        from_member_id: *id824
-        to_member_id: *id825
-        to_scope_id: *id826
-        reason: *id827
-        ask: *id828
-        reply_due: *id829
-        switch: *id830
-        state: *id831
-        decline_reason: *id832
-        decided_at: *id833
-        notify_managers: *id834
-        reminded_at: *id835
-        overdue_notified_at: *id836
-        switch_applied: *id837
-        answered_by: *id838
+        ticket_id: *id854
+        kind: *id855
+        from_member_id: *id856
+        to_member_id: *id857
+        to_scope_id: *id858
+        reason: *id859
+        ask: *id860
+        reply_due: *id861
+        switch: *id862
+        state: *id863
+        decline_reason: *id864
+        decided_at: *id865
+        notify_managers: *id866
+        reminded_at: *id867
+        overdue_notified_at: *id868
+        switch_applied: *id869
+        answered_by: *id870
       additionalProperties: false
     SavedViews:
       type: object
       properties:
-        member_id: &id839
+        member_id: &id871
           type: string
           format: uuid
-        name: &id840
+        name: &id872
           type: string
-        share: &id841
+        share: &id873
           type: string
         scope_id:
           type: string
           format: uuid
           nullable: true
-        filters: &id842 {}
-        columns: &id843 {}
-        density: &id844
+        filters: &id874 {}
+        columns: &id875 {}
+        density: &id876
           type: string
         id:
           type: string
@@ -9177,31 +9425,31 @@ components:
     SavedViewsInput:
       type: object
       properties:
-        member_id: *id839
-        name: *id840
-        share: *id841
-        filters: *id842
-        columns: *id843
-        density: *id844
+        member_id: *id871
+        name: *id872
+        share: *id873
+        filters: *id874
+        columns: *id875
+        density: *id876
       additionalProperties: false
     TicketImports:
       type: object
       properties:
-        uploaded_by: &id845
+        uploaded_by: &id877
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        source: &id846
+        source: &id878
           type: string
-        mapping: &id847 {}
-        rows: &id848
+        mapping: &id879 {}
+        rows: &id880
           type: integer
-        errors: &id849 {}
-        state: &id850
+        errors: &id881 {}
+        state: &id882
           type: string
-        committed_at: &id851
+        committed_at: &id883
           type: string
           format: date-time
           nullable: true
@@ -9241,42 +9489,42 @@ components:
     TicketImportsInput:
       type: object
       properties:
-        uploaded_by: *id845
-        source: *id846
-        mapping: *id847
-        rows: *id848
-        errors: *id849
-        state: *id850
-        committed_at: *id851
+        uploaded_by: *id877
+        source: *id878
+        mapping: *id879
+        rows: *id880
+        errors: *id881
+        state: *id882
+        committed_at: *id883
       additionalProperties: false
     LearningCandidates:
       type: object
       properties:
-        owner_member_id: &id852
+        owner_member_id: &id884
           type: string
           format: uuid
-        trigger: &id853
+        trigger: &id885
           type: string
-        proposed_as: &id854
+        proposed_as: &id886
           type: string
-        text: &id855
+        text: &id887
           type: string
-        evidence: &id856 {}
-        check_result: &id857 {}
-        decided_by: &id858
+        evidence: &id888 {}
+        check_result: &id889 {}
+        decided_by: &id890
           type: string
           format: uuid
           nullable: true
-        state: &id859
+        state: &id891
           type: string
-        decided_at: &id860
+        decided_at: &id892
           type: string
           format: date-time
           nullable: true
-        result_type: &id861
+        result_type: &id893
           type: string
           nullable: true
-        result_id: &id862
+        result_id: &id894
           type: string
           format: uuid
           nullable: true
@@ -9317,34 +9565,34 @@ components:
     LearningCandidatesInput:
       type: object
       properties:
-        owner_member_id: *id852
-        trigger: *id853
-        proposed_as: *id854
-        text: *id855
-        evidence: *id856
-        check_result: *id857
-        decided_by: *id858
-        state: *id859
-        decided_at: *id860
-        result_type: *id861
-        result_id: *id862
+        owner_member_id: *id884
+        trigger: *id885
+        proposed_as: *id886
+        text: *id887
+        evidence: *id888
+        check_result: *id889
+        decided_by: *id890
+        state: *id891
+        decided_at: *id892
+        result_type: *id893
+        result_id: *id894
       additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
-        member_id: &id863
+        member_id: &id895
           type: string
           format: uuid
-        code_hash: &id864
+        code_hash: &id896
           type: string
-        expires_at: &id865
+        expires_at: &id897
           type: string
           format: date-time
-        used_at: &id866
+        used_at: &id898
           type: string
           format: date-time
           nullable: true
-        used_session_id: &id867
+        used_session_id: &id899
           type: string
           format: uuid
           nullable: true
@@ -9382,11 +9630,11 @@ components:
     BridgePairingCodesInput:
       type: object
       properties:
-        member_id: *id863
-        code_hash: *id864
-        expires_at: *id865
-        used_at: *id866
-        used_session_id: *id867
+        member_id: *id895
+        code_hash: *id896
+        expires_at: *id897
+        used_at: *id898
+        used_session_id: *id899
       additionalProperties: false
     NotificationSettings:
       type: object
@@ -9425,41 +9673,41 @@ components:
     OpsPlanProposals:
       type: object
       properties:
-        plan_id: &id868
+        plan_id: &id900
           type: string
           format: uuid
-        from_version: &id869
+        from_version: &id901
           type: integer
           nullable: true
-        to_version: &id870
+        to_version: &id902
           type: integer
           nullable: true
-        changes: &id871 {}
-        existing_policy: &id872
+        changes: &id903 {}
+        existing_policy: &id904
           type: string
-        notice_days: &id873
+        notice_days: &id905
           type: integer
           nullable: true
-        new_from: &id874
+        new_from: &id906
           type: string
           format: date
           nullable: true
-        reason: &id875
+        reason: &id907
           type: string
-        proposed_by: &id876
+        proposed_by: &id908
           type: string
           format: uuid
-        decided_by: &id877
+        decided_by: &id909
           type: string
           format: uuid
           nullable: true
-        state: &id878
+        state: &id910
           type: string
-        decided_at: &id879
+        decided_at: &id911
           type: string
           format: date-time
           nullable: true
-        return_reason: &id880
+        return_reason: &id912
           type: string
           nullable: true
         id:
@@ -9496,37 +9744,37 @@ components:
     OpsPlanProposalsInput:
       type: object
       properties:
-        plan_id: *id868
-        from_version: *id869
-        to_version: *id870
-        changes: *id871
-        existing_policy: *id872
-        notice_days: *id873
-        new_from: *id874
-        reason: *id875
-        proposed_by: *id876
-        decided_by: *id877
-        state: *id878
-        decided_at: *id879
-        return_reason: *id880
+        plan_id: *id900
+        from_version: *id901
+        to_version: *id902
+        changes: *id903
+        existing_policy: *id904
+        notice_days: *id905
+        new_from: *id906
+        reason: *id907
+        proposed_by: *id908
+        decided_by: *id909
+        state: *id910
+        decided_at: *id911
+        return_reason: *id912
       additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
-        member_id: &id881
+        member_id: &id913
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        is_primary: &id882
+        is_primary: &id914
           type: boolean
-        role: &id883
+        role: &id915
           type: string
-        since: &id884
+        since: &id916
           type: string
           format: date
-        changed_by: &id885
+        changed_by: &id917
           type: string
           format: uuid
           nullable: true
@@ -9565,22 +9813,22 @@ components:
     ScopeMembershipsInput:
       type: object
       properties:
-        member_id: *id881
-        is_primary: *id882
-        role: *id883
-        since: *id884
-        changed_by: *id885
+        member_id: *id913
+        is_primary: *id914
+        role: *id915
+        since: *id916
+        changed_by: *id917
       additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
-        role: &id886
+        role: &id918
           type: string
-        target_kind_id: &id887
+        target_kind_id: &id919
           type: string
-        ability_id: &id888
+        ability_id: &id920
           type: string
-        scope_kind: &id889
+        scope_kind: &id921
           type: string
         id:
           type: string
@@ -9605,10 +9853,10 @@ components:
     RoleBundleDefaultsInput:
       type: object
       properties:
-        role: *id886
-        target_kind_id: *id887
-        ability_id: *id888
-        scope_kind: *id889
+        role: *id918
+        target_kind_id: *id919
+        ability_id: *id920
+        scope_kind: *id921
       additionalProperties: false
     StepUpInput:
       type: object
@@ -14064,6 +14312,436 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    KnowledgeFolderCreateInput:
+      type: object
+      properties:
+        shelf:
+          type: string
+          enum:
+          - company
+          - group
+          - me
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 100
+      additionalProperties: false
+      x-operation: createKnowledgeFolder
+      required:
+      - shelf
+      - name
+      x-required-by: hooks
+      anyOf:
+      - properties:
+          shelf:
+            enum:
+            - company
+            - me
+      - required:
+        - group_id
+        properties:
+          group_id:
+            type: string
+            format: uuid
+    KnowledgeFolderUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 100
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+      additionalProperties: false
+      x-operation: updateKnowledgeFolder
+      anyOf:
+      - required:
+        - name
+      - required:
+        - parent_folder_id
+      - required:
+        - position
+    KnowledgePageCreateInput:
+      type: object
+      properties:
+        shelf:
+          type: string
+          enum:
+          - company
+          - group
+          - me
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+      additionalProperties: false
+      x-operation: createKnowledgePage
+      required:
+      - shelf
+      - title
+      x-required-by: hooks
+      anyOf:
+      - properties:
+          shelf:
+            enum:
+            - company
+            - me
+      - required:
+        - group_id
+        properties:
+          group_id:
+            type: string
+            format: uuid
+    KnowledgeDraftInput:
+      type: object
+      properties:
+        title:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+        doc:
+          type: object
+      additionalProperties: false
+      x-operation: saveKnowledgeDraft
+      anyOf:
+      - required:
+        - title
+      - required:
+        - desc
+      - required:
+        - doc
+    KnowledgePublishInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: publishKnowledgePage
+    KnowledgePageMoveInput:
+      type: object
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+      additionalProperties: false
+      x-operation: updateKnowledgePage
+      anyOf:
+      - required:
+        - folder_id
+      - required:
+        - position
+    KnowledgeMustInput:
+      type: object
+      properties:
+        must:
+          type: boolean
+      additionalProperties: false
+      x-operation: setKnowledgeMust
+      required:
+      - must
+      x-required-by: hooks
+    KnowledgeSimilarInput:
+      type: object
+      properties:
+        title:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+        text:
+          type: string
+          maxLength: 10000
+        exclude_page_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: findSimilarKnowledge
+      required:
+      - title
+      x-required-by: hooks
+    KnowledgeCopyInput:
+      type: object
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: copyKnowledgePage
+    KnowledgeRaiseInput:
+      type: object
+      properties:
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        message:
+          type: string
+          nullable: true
+          maxLength: 1000
+      additionalProperties: false
+      x-operation: requestKnowledgeRaise
+    KnowledgeDismissInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: dismissKnowledgeRequest
+    TicketStageCreateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 20
+        color_key:
+          type: string
+          enum:
+          - indigo
+          - teal
+          - amber
+          - coral
+          - sage
+          - plum
+          - lavender
+          - teal-light
+      additionalProperties: false
+      x-operation: createTicketStage
+      required:
+      - name
+      - color_key
+      x-required-by: hooks
+    TicketStageUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 20
+        color_key:
+          type: string
+          enum:
+          - indigo
+          - teal
+          - amber
+          - coral
+          - sage
+          - plum
+          - lavender
+          - teal-light
+      additionalProperties: false
+      x-operation: updateTicketStage
+      anyOf:
+      - required:
+        - name
+      - required:
+        - color_key
+    TicketStageOrderInput:
+      type: object
+      properties:
+        stage_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      additionalProperties: false
+      x-operation: reorderTicketStages
+      required:
+      - stage_ids
+      x-required-by: hooks
+    TicketFieldCreateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 80
+        field_type:
+          type: string
+          enum:
+          - short_text
+          - long_text
+          - number
+          - date
+          - select
+          - multi_select
+          - check
+        kind_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+                pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+                maxLength: 80
+      additionalProperties: false
+      x-operation: createTicketField
+      required:
+      - name
+      - field_type
+      - kind_ids
+      x-required-by: hooks
+      oneOf:
+      - properties:
+          field_type:
+            enum:
+            - select
+            - multi_select
+          options:
+            minItems: 1
+        required:
+        - options
+      - properties:
+          field_type:
+            enum:
+            - short_text
+            - long_text
+            - number
+            - date
+            - check
+          options:
+            maxItems: 0
+    TicketFieldUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 80
+        field_type:
+          type: string
+          enum:
+          - short_text
+          - long_text
+          - number
+          - date
+          - select
+          - multi_select
+          - check
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+            - name
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+                pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+                maxLength: 80
+        kind_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      additionalProperties: false
+      x-operation: updateTicketField
+      allOf:
+      - anyOf:
+        - required:
+          - name
+        - required:
+          - field_type
+        - required:
+          - required
+        - required:
+          - description
+        - required:
+          - options
+        - required:
+          - kind_ids
+      - not:
+          required:
+          - field_type
+          - options
+          properties:
+            field_type:
+              enum:
+              - short_text
+              - long_text
+              - number
+              - date
+              - check
+    TicketFieldOrderInput:
+      type: object
+      properties:
+        field_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      additionalProperties: false
+      x-operation: reorderTicketFields
+      required:
+      - field_ids
+      x-required-by: hooks
     ActionRunStopInput:
       type: object
       properties: {}
@@ -15428,16 +16106,27 @@ components:
     KnowledgeTree:
       type: object
       properties:
-        places:
+        company_name:
+          type: string
+        company_nodes:
           type: array
           items:
             type: object
-        topics:
+        groups:
           type: array
           items:
             type: object
-        archived:
-          type: integer
+        my_nodes:
+          type: array
+          items:
+            type: object
+        can_write:
+          type: object
+        admin_counts:
+          type: object
+          nullable: true
+        truncated:
+          type: boolean
       x-operation: getKnowledgeTree
     KnowledgeAnswer:
       type: object
@@ -15458,31 +16147,45 @@ components:
     KnowledgePageDetail:
       type: object
       properties:
-        page:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        desc:
+          type: string
+        state:
+          type: string
+        must:
+          type: boolean
+        must_blocked:
+          type: string
+          nullable: true
+        place:
           type: object
+        acts:
+          type: array
+          items:
+            type: string
         body:
           type: object
-        toc:
-          type: array
-          items:
-            type: object
-        children:
-          type: array
-          items:
-            type: object
-        backlinks:
-          type: array
-          items:
-            type: object
-        related_rules:
-          type: array
-          items:
-            type: object
-        proposal_marks:
-          type: array
-          items:
-            type: object
+          nullable: true
         draft:
+          type: object
+          nullable: true
+        request:
+          type: object
+          nullable: true
+        copied_from:
+          type: object
+          nullable: true
+        shared_from:
+          type: object
+          nullable: true
+        raise_to:
+          type: object
+          nullable: true
+        foot:
           type: object
       x-operation: getKnowledgePage
     KnowledgeUsage:
@@ -16426,6 +17129,227 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    KnowledgeVersionItem:
+      type: object
+      properties:
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        by_name:
+          type: string
+          nullable: true
+      x-operation: listKnowledgeVersions
+    KnowledgeVersion:
+      type: object
+      properties:
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        by_name:
+          type: string
+          nullable: true
+        body:
+          type: object
+      x-operation: getKnowledgePageVersion
+    KnowledgeFolder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shelf:
+          type: string
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+      x-operation: updateKnowledgeFolder
+    KnowledgeFolderDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteKnowledgeFolder
+    KnowledgePageStub:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        desc:
+          type: string
+        state:
+          type: string
+        must:
+          type: boolean
+        place:
+          type: object
+      x-operation: copyKnowledgePage
+    KnowledgeDraftSaved:
+      type: object
+      properties:
+        saved_at:
+          type: string
+        title:
+          type: string
+        desc:
+          type: string
+      x-operation: saveKnowledgeDraft
+    KnowledgeDraftDiscarded:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        page_deleted:
+          type: boolean
+      x-operation: discardKnowledgeDraft
+    KnowledgePublished:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+      x-operation: publishKnowledgePage
+    KnowledgePageDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteKnowledgePage
+    KnowledgeMustSet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        must:
+          type: boolean
+        used:
+          type: integer
+        limit:
+          type: integer
+      x-operation: setKnowledgeMust
+    KnowledgeSimilar:
+      type: object
+      properties:
+        pages:
+          type: array
+          items:
+            type: object
+      x-operation: findSimilarKnowledge
+    KnowledgeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        page_id:
+          type: string
+          format: uuid
+        to_name:
+          type: string
+        at:
+          type: string
+      x-operation: requestKnowledgeRaise
+    KnowledgeRequestEnded:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+      x-operation: dismissKnowledgeRequest
+    TicketStageSetting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+          nullable: true
+        name:
+          type: string
+        color_key:
+          type: string
+        position:
+          type: integer
+        lock:
+          type: string
+          nullable: true
+      x-operation: reorderTicketStages
+    TicketStageDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteTicketStage
+    TicketFieldSetting:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        field_type:
+          type: string
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          type: array
+          items:
+            type: object
+        position:
+          type: integer
+        kind_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        all_kinds:
+          type: boolean
+        value_count:
+          type: integer
+      x-operation: reorderTicketFields
+    TicketFieldDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteTicketField
     ActionRunStopped:
       type: object
       properties:
@@ -18588,7 +19512,7 @@ paths:
       responses:
         '201':
           description: 成功
-          content: &id890
+          content: &id922
             application/json:
               schema:
                 type: object
@@ -18651,7 +19575,7 @@ paths:
                 $ref: '#/components/schemas/Error'
         '202':
           description: 受け付けた（まだ決まっていない）
-          content: *id890
+          content: *id922
   /api/v1/auth/invitations/{token}/resend-request:
     post:
       operationId: requestInvitationResend
@@ -28158,7 +29082,7 @@ paths:
   /api/v1/knowledge/ask:
     post:
       operationId: askKnowledge
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28171,6 +29095,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）
       x-step-up: false
@@ -28239,7 +29171,7 @@ paths:
   /api/v1/knowledge/ask/feedback:
     post:
       operationId: sendKnowledgeAnswerFeedback
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -28252,6 +29184,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 答えを見た本人。「いいえ」は持ち主への直す案になる
       x-step-up: false
@@ -28317,10 +29257,296 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/folders:
+    post:
+      operationId: createKnowledgeFolder
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: 社内の人。その棚に書ける人だけ作れる（口が app.kfolder_writable・棚を決める。見えない棚は 404・書けない棚は 403）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeFolderCreateInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolder'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-020／E-KNW-021
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/folders/{id}:
+    patch:
+      operationId: updateKnowledgeFolder
+      summary: 更新（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: そのフォルダに書ける人（口が app.kfolder_visible で 404・app.kfolder_writable で 403）。同じ棚の中だけ
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeFolderUpdateInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolder'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-020／E-KNW-021／E-KNW-022／E-KNW-023
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteKnowledgeFolder
+      summary: 削除（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: 同上。中が空で、共有していないフォルダだけ
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolderDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-024／E-KNW-051
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge/home:
     get:
       operationId: getKnowledgeHome
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28332,6 +29558,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（置き場の権限・自分のページは本人）
       x-step-up: false
@@ -28382,7 +29616,7 @@ paths:
   /api/v1/knowledge/link-targets:
     get:
       operationId: searchKnowledgeLinkTargets
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28394,6 +29628,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページ・決まり・取引先だけ
       x-step-up: false
@@ -28426,17 +29668,22 @@ paths:
           enum:
           - archived_at
           - archived_to_page_id
+          - copied_from_page_id
           - created_at
           - created_by
           - current_version
           - deleted_at
+          - folder_id
           - form
           - id
+          - is_must
           - is_personal
           - owner_member_id
           - parent_page_id
+          - position
           - scope_id
           - state
+          - summary
           - tenant_id
           - title
           - topics
@@ -28492,18 +29739,22 @@ paths:
   /api/v1/knowledge/proposals:
     get:
       operationId: listKnowledgeProposals
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: read
       x-permission-scope: 見られるページへの案だけ
       x-step-up: false
@@ -28602,19 +29853,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/accept:
     post:
       operationId: acceptKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る
       x-step-up: false
@@ -28696,19 +29952,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/decline:
     post:
       operationId: declineKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 同上（理由を残す）
       x-step-up: false
@@ -28787,10 +30048,279 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/requests/{id}:
+    delete:
+      operationId: withdrawKnowledgeRequest
+      summary: 削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: 頼んだ人だけ（app.kn_request_visible で 404・app.kn_request_end で 403）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeRequestEnded'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-104
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/requests/{id}/dismiss:
+    post:
+      operationId: dismissKnowledgeRequest
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: 頼んだ人だけ（断られた頼みの帯を消す・app.kn_request_end）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeDismissInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeRequestEnded'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-105
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/similar:
+    post:
+      operationId: findSimilarKnowledge
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: self
+      x-permission-scope: 社内の人（見える棚の公開済みのページだけから探す）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeSimilarInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeSimilar'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge/tree:
     get:
       operationId: getKnowledgeTree
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28802,8 +30332,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
-      x-permission: read
-      x-permission-scope: 同上
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: self
+      x-permission-scope: 社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）
       x-step-up: false
       security:
       - session: []
@@ -28852,7 +30390,7 @@ paths:
   /api/v1/knowledge/verifications:
     get:
       operationId: listKnowledgeVerifications
-      summary: 取得（knowledge）— ナレッジのページを書く・直す
+      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -28864,6 +30402,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ。分身の点検は持ち主の PC がつながっているときに作る
       x-step-up: false
@@ -28901,17 +30447,22 @@ paths:
           enum:
           - archived_at
           - archived_to_page_id
+          - copied_from_page_id
           - created_at
           - created_by
           - current_version
           - deleted_at
+          - folder_id
           - form
           - id
+          - is_must
           - is_personal
           - owner_member_id
           - parent_page_id
+          - position
           - scope_id
           - state
+          - summary
           - tenant_id
           - title
           - topics
@@ -28967,7 +30518,7 @@ paths:
   /api/v1/knowledge_imports:
     post:
       operationId: createKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -28980,6 +30531,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（取り込む先の置き場に書ける人）。ファイルは検査してから読む（関門 C4）
       x-step-up: false
@@ -29048,7 +30607,7 @@ paths:
   /api/v1/knowledge_imports/{id}:
     get:
       operationId: getKnowledgeImport
-      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -29060,6 +30619,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人
       x-step-up: false
@@ -29123,7 +30690,7 @@ paths:
   /api/v1/knowledge_imports/{id}/commit:
     post:
       operationId: commitKnowledgeImport
-      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - imports
       x-acts:
@@ -29136,6 +30703,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）
       x-step-up: false
@@ -29217,7 +30792,7 @@ paths:
   /api/v1/knowledge_pages:
     get:
       operationId: listKnowledgePages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29229,6 +30804,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。しまったページは書ける人だけ
       x-step-up: false
@@ -29271,17 +30854,22 @@ paths:
           enum:
           - archived_at
           - archived_to_page_id
+          - copied_from_page_id
           - created_at
           - created_by
           - current_version
           - deleted_at
+          - folder_id
           - form
           - id
+          - is_must
           - is_personal
           - owner_member_id
           - parent_page_id
+          - position
           - scope_id
           - state
+          - summary
           - tenant_id
           - title
           - topics
@@ -29349,7 +30937,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29362,8 +30950,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
-      x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
+      x-permission-scope: 社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）
       x-step-up: false
       security:
       - session: []
@@ -29372,7 +30968,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePagesInput'
+              $ref: '#/components/schemas/KnowledgePageCreateInput'
       responses:
         '201':
           description: 成功
@@ -29382,7 +30978,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePages'
+                    $ref: '#/components/schemas/KnowledgePageStub'
                   meta:
                     type: object
         '401':
@@ -29409,6 +31005,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -29421,16 +31029,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/v1/knowledge_pages/{id}:
     get:
       operationId: getKnowledgePage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29442,8 +31044,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
-      x-permission-scope: 見られるページだけ。下書きは書いている本人と書ける人
+      x-permission-scope: 見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675
       x-step-up: false
       security:
       - session: []
@@ -29490,21 +31100,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     patch:
       operationId: updateKnowledgePage
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29517,8 +31127,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
-      x-permission-scope: 同上（置き場・親・持ち主・確かめの間隔・話題）
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675
       x-step-up: false
       security:
       - session: []
@@ -29534,7 +31152,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePagesInput'
+              $ref: '#/components/schemas/KnowledgePageMoveInput'
       responses:
         '200':
           description: 成功
@@ -29544,7 +31162,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePages'
+                    $ref: '#/components/schemas/KnowledgePageStub'
                   meta:
                     type: object
         '401':
@@ -29571,6 +31189,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-011／E-KNW-052
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -29583,16 +31213,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/knowledge_pages/{id}/archive:
-    post:
-      operationId: archiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+    delete:
+      operationId: deleteKnowledgePage
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -29605,6 +31228,104 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。必ず守る・共有・承認待ちのページは消せない
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgePageDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-011／E-KNW-050／E-KNW-051
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/archive:
+    post:
+      operationId: archiveKnowledgePage
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。しまうと探しても出ず分身も読まない。版と記録は残り戻せる
       x-step-up: false
@@ -29686,7 +31407,7 @@ paths:
   /api/v1/knowledge_pages/{id}/attachments:
     post:
       operationId: uploadKnowledgeAttachment
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - attachments
       x-acts:
@@ -29699,6 +31420,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上。ファイルは検査してから置く（関門 C4）
       x-step-up: false
@@ -29777,12 +31506,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/knowledge_pages/{id}/draft:
-    patch:
-      operationId: saveKnowledgeDraft
-      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す
+  /api/v1/knowledge_pages/{id}/copy:
+    post:
+      operationId: copyKnowledgePage
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
-      - knowledge_page_versions
+      - knowledge_pages
       x-acts:
       - A114
       x-screens:
@@ -29793,8 +31522,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
-      x-permission: write
-      x-permission-scope: 同上。下書きは公開するまで知らせない・分身も読まない
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: read
+      x-permission-scope: 見えるページを自分の棚へ写す（写す先は自分の棚だけ）
       x-step-up: false
       security:
       - session: []
@@ -29810,9 +31547,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePageVersionsInput'
+              $ref: '#/components/schemas/KnowledgeCopyInput'
       responses:
-        '200':
+        '201':
           description: 成功
           content:
             application/json:
@@ -29820,7 +31557,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgePageStub'
                   meta:
                     type: object
         '401':
@@ -29841,8 +31578,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-080
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -29859,15 +31608,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      operationId: discardKnowledgeDraft
-      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す
+  /api/v1/knowledge_pages/{id}/draft:
+    patch:
+      operationId: saveKnowledgeDraft
+      summary: 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -29880,8 +31624,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
-      x-permission-scope: 下書きを書いた本人
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675
       x-step-up: false
       security:
       - session: []
@@ -29892,6 +31644,12 @@ paths:
         schema:
           type: string
           format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeDraftInput'
       responses:
         '200':
           description: 成功
@@ -29901,7 +31659,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgeDraftSaved'
                   meta:
                     type: object
         '401':
@@ -29928,8 +31686,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-KNW-012
           content:
             application/json:
               schema:
@@ -29940,10 +31698,111 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: discardKnowledgeDraft
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_page_versions
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeDraftDiscarded'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-030
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge_pages/{id}/links:
     get:
       operationId: getKnowledgeLinks
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -29955,6 +31814,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 同上。つながりの先も見られるものだけ
       x-step-up: false
@@ -30017,7 +31884,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: linkKnowledgeMention
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_links
       x-acts:
@@ -30030,6 +31897,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
       x-step-up: false
@@ -30111,7 +31986,7 @@ paths:
   /api/v1/knowledge_pages/{id}/markdown:
     get:
       operationId: exportKnowledgeMarkdown
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30123,6 +31998,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ（期限つきの署名 URL）
       x-step-up: false
@@ -30186,7 +32069,7 @@ paths:
   /api/v1/knowledge_pages/{id}/messages:
     get:
       operationId: listKnowledgeMessages
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -30198,6 +32081,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られるページだけ
       x-step-up: false
@@ -30305,7 +32196,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: postKnowledgeMessage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - messages
       x-acts:
@@ -30318,6 +32209,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
       x-permission-scope: 見られる人なら書ける（閲覧のみも質問できる）
       x-step-up: false
@@ -30396,12 +32295,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/knowledge_pages/{id}/publish:
-    post:
-      operationId: publishKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+  /api/v1/knowledge_pages/{id}/must:
+    put:
+      operationId: setKnowledgeMust
+      summary: 置き換え（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
-      - knowledge_page_versions
+      - knowledge_pages
       x-acts:
       - A114
       x-screens:
@@ -30412,8 +32311,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
-      x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。棚ごとの上限まで
       x-step-up: false
       security:
       - session: []
@@ -30429,9 +32336,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePageVersionsInput'
+              $ref: '#/components/schemas/KnowledgeMustInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -30439,7 +32346,109 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgeMustSet'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-011／E-KNW-060／E-KNW-061
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/publish:
+    post:
+      operationId: publishKnowledgePage
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_page_versions
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: write
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgePublishInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgePublished'
                   meta:
                     type: object
         '401':
@@ -30461,13 +32470,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-KNW-040／E-KNW-041
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -30484,8 +32499,101 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/raise:
+    post:
+      operationId: requestKnowledgeRaise
+      summary: 作成・実行（knowledge_pages）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。先の棚と承認する人は app.kn_raise_request が決める
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeRaiseInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeRequest'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-011／E-KNW-100／E-KNW-101／E-KNW-102／E-KNW-103／E-KNW-106
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -30493,7 +32601,7 @@ paths:
   /api/v1/knowledge_pages/{id}/unarchive:
     post:
       operationId: unarchiveKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30506,6 +32614,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 同上
       x-step-up: false
@@ -30587,18 +32703,23 @@ paths:
   /api/v1/knowledge_pages/{id}/usage:
     get:
       operationId: getKnowledgeUsage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項
       tags:
       - reference_logs
       x-acts:
-      - A114
+      - A137
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
+      - D-152.12
+      - D-152.17
+      - D-152.23
+      - D-152.24
+      - D-152.29
+      - D-152.4
+      - D-152.5
       x-permission: read
       x-permission-scope: 見られるページだけ。読んだチケットは見られるものだけ出す
       x-step-up: false
@@ -30653,6 +32774,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:
@@ -30662,7 +32789,7 @@ paths:
   /api/v1/knowledge_pages/{id}/verify:
     post:
       operationId: verifyKnowledgePage
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_pages
       x-acts:
@@ -30675,6 +32802,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者
       x-step-up: false
@@ -30756,7 +32891,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions:
     get:
       operationId: listKnowledgeVersions
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_page_versions）— ページの公開した版を新しい順に見る
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30768,8 +32903,16 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: read
-      x-permission-scope: 見られるページだけ
+      x-permission-scope: 見えるページだけ（行の守り）。公開した版を新しい順に・K-675
       x-step-up: false
       security:
       - session: []
@@ -30793,33 +32936,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - author_member_id
-          - body
-          - created_at
-          - created_by
-          - decided_at
-          - decided_by
-          - decision
-          - decline_reason
-          - deleted_at
-          - id
-          - kind
-          - note
-          - page_id
-          - proposed_by_clone
-          - proposed_from_ticket_id
-          - published_at
-          - published_by
-          - tenant_id
-          - updated_at
-          - updated_by
-          - version
       responses:
         '200':
           description: 成功
@@ -30831,7 +32947,99 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/KnowledgePageVersions'
+                      $ref: '#/components/schemas/KnowledgeVersionItem'
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/versions/{v}:
+    get:
+      operationId: getKnowledgePageVersion
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      tags:
+      - knowledge_page_versions
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points: []
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
+      x-permission: read
+      x-permission-scope: 見えるページだけ（行の守り）。公開した版の本文
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: v
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]{0,8}$
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeVersion'
                   meta:
                     type: object
         '401':
@@ -30858,14 +33066,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -30873,7 +33081,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions/{v}/restore:
     post:
       operationId: restoreKnowledgeVersion
-      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
       tags:
       - knowledge_page_versions
       x-acts:
@@ -30886,6 +33094,14 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
+      - D-152.1
+      - D-152.14
+      - D-152.15
+      - D-152.16
+      - D-152.28
+      - D-152.3
+      - D-152.33
+      - D-152.34
       x-permission: write
       x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）
       x-step-up: false
@@ -31141,7 +33357,7 @@ paths:
   /api/v1/learning_candidates:
     get:
       operationId: listLearningCandidates
-      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31169,6 +33385,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分の分身の覚えたいこと。層に上がってきたものはその層のマネージャー
       x-step-up: false
@@ -31269,7 +33488,7 @@ paths:
   /api/v1/learning_candidates/{id}/accept:
     post:
       operationId: acceptLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31298,6 +33517,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 自分のものは本人。層・ワークスペースに入れるのはマネージャー・管理者（D-125.110）
       x-step-up: false
@@ -31379,7 +33601,7 @@ paths:
   /api/v1/learning_candidates/{id}/dismiss:
     post:
       operationId: dismissLearningCandidate
-      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる
+      summary: 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違
       tags:
       - learning_candidates
       x-acts:
@@ -31408,6 +33630,9 @@ paths:
       - D-125.111
       - D-125.118
       - D-125.167
+      - D-152.24
+      - D-152.25
+      - D-152.4
       x-permission: self
       x-permission-scope: 同上
       x-step-up: false
@@ -42385,7 +44610,7 @@ paths:
   /api/v1/rules/check:
     post:
       operationId: checkRule
-      summary: 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先）
+      summary: 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先）
       tags:
       - policies
       x-acts:
@@ -42405,6 +44630,11 @@ paths:
       - D-125.81
       - D-126.12
       - D-127.11
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: self
       x-permission-scope: 書いている本人（点検だけで何も変えない）
       x-step-up: false
@@ -43594,6 +45824,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/ticket-field-master:
+    get:
+      operationId: listTicketFieldMaster
+      summary: 取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数）
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 会社の項目を直せる人（custom_fields の edit・既定は管理者・D-125.66）。どの種別で出すかと値の数を見る
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/ticket-fields:
     get:
       operationId: listTicketFields
@@ -43680,6 +45995,377 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: createTicketField
+      summary: 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。項目を足す（型 7 つ・選ぶ物・必須・説明・どの種別で出すか）。項目の数・選ぶ物の数に上限は無い（D-130.1）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketFieldCreateInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-FMS-001／E-FMS-004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket-fields/{id}:
+    patch:
+      operationId: updateTicketField
+      summary: 更新（ticket-fields）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 会社の項目を直せる人（custom_fields の edit・既定は管理者・D-125.66）。送った欄だけ直す。値が入っている項目の型は変えられない
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketFieldUpdateInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）・選ぶ型でない項目を選ぶ型に変えるのに選ぶ物を送らない（今の型で決まる・同じ選ぶ型のままなら選ぶ物を送らなくてよい））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）
+          - 選ぶ型でない項目を選ぶ型に変えるのに選ぶ物を送らない（今の型で決まる・同じ選ぶ型のままなら選ぶ物を送らなくてよい）
+        '409':
+          description: E-FMS-001／E-FMS-002／E-FMS-004／E-FMS-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteTicketField
+      summary: 削除（ticket-fields）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。値が入っていても消せる（値の行は残り、見えなくなるだけ）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketFieldDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket-fields/order:
+    post:
+      operationId: reorderTicketFields
+      summary: 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。全部の項目の並びを渡す
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketFieldOrderInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-FMS-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -44883,6 +47569,7 @@ paths:
         schema:
           type: string
           enum:
+          - color_key
           - created_at
           - created_by
           - deleted_at
@@ -44905,7 +47592,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TicketStages'
+                      $ref: '#/components/schemas/TicketStageSetting'
                   meta:
                     type: object
         '401':
@@ -44934,6 +47621,372 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: createTicketStage
+      summary: 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - ticket_stages
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: チケットの状態を直せる人（ticket_stages の edit・既定は管理者・D-125.66）。作業の状態は 8 まで・終わりの状態の直前に足す
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketStageCreateInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketStageSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-STG-001／E-STG-002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_stages/{id}:
+    patch:
+      operationId: updateTicketStage
+      summary: 更新（ticket_stages）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - ticket_stages
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。名前と色を直す（仕組みの状態は色だけ・始めと終わりは key を変えない）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketStageUpdateInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketStageSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-STG-001／E-STG-004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteTicketStage
+      summary: 削除（ticket_stages）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - ticket_stages
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。始め・終わり・仕組みの状態・使っているチケットが在る状態は消せない
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketStageDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-STG-003／E-STG-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_stages/order:
+    post:
+      operationId: reorderTicketStages
+      summary: 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目）
+      tags:
+      - ticket_stages
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
+      x-permission: admin
+      x-permission-scope: 同上。全部の状態の並びを渡す（始めが先頭・終わりが最後）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketStageOrderInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketStageSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-STG-006／E-STG-007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -50666,7 +53719,7 @@ paths:
   /api/v1/workspace/escalation-rules:
     post:
       operationId: createEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50681,6 +53734,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（D-128.87）
       x-step-up: false
@@ -50749,7 +53807,7 @@ paths:
   /api/v1/workspace/escalation-rules/{id}:
     patch:
       operationId: updateEscalationRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50764,6 +53822,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50838,7 +53901,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteEscalationRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50853,6 +53916,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -50916,7 +53984,7 @@ paths:
   /api/v1/workspace/escalation-rules/preview:
     post:
       operationId: previewEscalationRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -50931,6 +53999,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上（当てはまる件数を数えるだけ）
       x-step-up: false
@@ -51421,7 +54494,7 @@ paths:
   /api/v1/workspace/rules:
     get:
       operationId: getWorkspaceRules
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51435,6 +54508,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバーなら読める。直せるのは決まりを直せる人
       x-step-up: false
@@ -51484,7 +54562,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     post:
       operationId: createWorkspaceRule
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51499,6 +54577,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。層の決まりはその層のマネージャーも（D-127.11）
       x-step-up: false
@@ -51567,7 +54650,7 @@ paths:
   /api/v1/workspace/rules/{id}:
     patch:
       operationId: updateWorkspaceRule
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51582,6 +54665,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51656,7 +54744,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     delete:
       operationId: deleteWorkspaceRule
-      summary: 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 削除（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - policies
       x-acts:
@@ -51671,6 +54759,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 同上
       x-step-up: false
@@ -51734,7 +54827,7 @@ paths:
   /api/v1/workspace/ticket-shape:
     get:
       operationId: getTicketShape
-      summary: 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 取得（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51748,6 +54841,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: read
       x-permission-scope: ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）
       x-step-up: false
@@ -51797,7 +54895,7 @@ paths:
                 $ref: '#/components/schemas/Error'
     patch:
       operationId: saveTicketShape
-      summary: 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 更新（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51812,6 +54910,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）
       x-step-up: false
@@ -51874,7 +54977,7 @@ paths:
   /api/v1/workspace/ticket-shape/preview:
     post:
       operationId: previewTicketShapeChange
-      summary: 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      summary: 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目）
       tags:
       - ticket_kinds
       x-acts:
@@ -51889,6 +54992,11 @@ paths:
       - D-125.67
       - D-125.70
       - D-125.81
+      - D-152.18
+      - D-152.30
+      - D-152.31
+      - D-152.32
+      - D-152.36
       x-permission: admin
       x-permission-scope: 決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）
       x-step-up: false

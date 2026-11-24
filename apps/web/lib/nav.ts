@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:265e2e1fa19a3fe9
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:fc6b22365a67d744
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -36,9 +36,7 @@ export const NAV: NavData = {
       "icon": "bot",
       "screens": [
         "clone-chat",
-        "ai-activity",
-        "work-types",
-        "rules"
+        "ai-activity"
       ],
       "tab": "AI"
     },
@@ -149,8 +147,6 @@ export const NAV: NavData = {
       "approvals",
       "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
       "knowledge",
       "members",
       "member-detail",
@@ -172,8 +168,6 @@ export const NAV: NavData = {
       "approvals",
       "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
       "knowledge",
       "members",
       "member-detail",
@@ -195,8 +189,6 @@ export const NAV: NavData = {
       "approvals",
       "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
       "knowledge",
       "account",
       "credentials",
@@ -319,21 +311,25 @@ export const NAV: NavData = {
     "knowledge": [
       {
         "label": "ページ",
-        "desc": "層ごとのページ"
+        "desc": "会社・グループ・自分の棚のページ"
       },
       {
-        "label": "記憶",
-        "desc": "自分の AI の記憶と上がってきた候補"
+        "label": "管理",
+        "desc": "承認待ちと見直すページ（管理者とマネージャーだけ）"
       }
     ],
     "masters": [
       {
-        "label": "守ること・承認・やり方",
-        "desc": "全員の分身に効く決まりと、承認を上に回すとき"
+        "label": "種別",
+        "desc": "名前・色・本文のひな形"
       },
       {
-        "label": "チケットの形",
-        "desc": "種別ごとの欄の並び・必須・出す・外す"
+        "label": "状態",
+        "desc": "名前・色・並び"
+      },
+      {
+        "label": "項目",
+        "desc": "会社が足す項目"
       }
     ],
     "member-detail": [
@@ -1417,16 +1413,16 @@ export const NAV: NavData = {
     },
     "masters": {
       "id": "masters",
-      "name": "決まり",
-      "route": "/workspace/rules",
+      "name": "チケットの設定",
+      "route": "/workspace/ticket-settings",
       "needsLogin": true,
       "hasShell": true,
       "roles": [
         "R1",
         "R2"
       ],
-      "purpose": "ワークスペースの管理 › 決まり。全員の分身とチケットに効く 守ること・承認を回すとき・やり方 と、チケットの形（種別ごとの欄の並び・必須）",
-      "primaryAction": "この形にする",
+      "purpose": "ワークスペースの管理 › チケットの設定。種別（名前・色・本文のひな形）・状態（名前・色・並び）・項目（会社が足す項目）を会社のやり方に合わせて足す・直す・並べる・消す。管理者だけが開ける",
+      "primaryAction": "保存する",
       "release": "v1"
     },
     "layers": {
@@ -1484,7 +1480,7 @@ export const NAV: NavData = {
         "R2",
         "R3"
       ],
-      "purpose": "層ごとのページと記憶を書く・直す・確かめる。どのチケットで使われたかが分かる",
+      "purpose": "会社・グループ・自分の棚のページを、フォルダの木から選んで書く・直す・上げる・共有する・写す。必ず守るのページは AI が毎回読んで守る。管理する人は承認待ちと見直すページを見る",
       "primaryAction": "ページを書く",
       "release": "v1"
     },
