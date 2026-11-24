@@ -11,8 +11,6 @@ export const ROW_WORDS = ["self", "read", "write", "assignee", "approver", "reci
 
 /** path の :id が指す表（path の :id の前の段）。段の名前が表の名前と違うものだけ書く */
 export const ID_TABLE = {
-  "/api/v1/work_types": "skills",
-  "/api/v1/rules": "policies",
   "/api/v1/bridge/devices": "sessions",
   "/api/v1/me/sessions": "sessions",
   "/api/v1/me/workspaces": "tenant_memberships",
@@ -114,8 +112,6 @@ export const OP_RULES = {
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人・担当者・マネージャー
   stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
-  // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
-  copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
   //   ワークスペースの物を別の管理者が直す・消すので持ち主で絞らない。edit の判定（403・E-CRED-007）と、消した物・失効しただけの物の 404 は
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）

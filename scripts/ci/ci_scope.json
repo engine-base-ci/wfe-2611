@@ -2056,6 +2056,36 @@
   },
   {
    "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "08_api/phase1/03_分身の部屋.md",
+    "08_api/phase1/06_運営の配るもの.md",
+    "08_api/phase1/07_ワークスペースの管理.md",
+    "08_api/phase1/08_取引先とクライアントの場所.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "apps/api/src/routes/index.ts",
+    "apps/api/src/routes/ops.ts",
+    "apps/api/src/routes/workspace.ts",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md",
+    "11_tickets/K-71.md",
+    "11_tickets/K-72.md",
+    "01_hearing/決定ログ_進行中.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/rules-work-types-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-fields-edit.ts",
     "apps/api/src/hooks/ticket-fields-write.ts",
     "apps/api/src/hooks/ticket-fields-read.ts",
@@ -2295,6 +2325,7 @@
   "apps/api/test/features/F9/settings.harness.ts": "入っている葉の hooks のファイル（ticket-stages-write ほか）を F3/leaf-hooks.ts の動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-705",
   "apps/api/test/features/contract/k144.d/K-705.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-705",
   "apps/api/test/features/contract/k144.d/K-706.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-706",
+  "apps/api/test/features/F9/rules-work-types-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・scripts/ci/row_rules.mjs・zt_gate.py・08_api/phase1/*.md・11_tickets/K-69.md・K-71.md・K-72.md・01_hearing/決定ログ_進行中.md を readFileSync で読み、git grep で外した操作 ID を探す（K711-API-003〜011・014）・K-711",
   "apps/api/test/features/contract/k144.d/K-717.ts": "葉の hooks のファイル（ticket-fields-edit）を F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-717",
   "apps/bridge/test/knowledge-tool.test.ts": "道具のサーバー（MCP_SERVER_SOURCE を一時のフォルダに書いた物）を spawn で子として起こし、JSON-RPC で knowledge_open を呼ぶ。読むのは試験が自分で書いた一時のファイルだけで、リポジトリの別のファイルは読まない（K-718）",
   "apps/web/test/k725-memory-ui-retire.test.ts": "apps/web の頁・部品・ext.ts・index.ts・conversation.tsx・markdown.tsx・built-routes.ts を readFileSync で読み、git grep で消した名前を探し、scripts/ci/raw_length_ledger.json・chat_one.mjs・07_qa/test-specs/screens/*.md の行を読む（K725-API-001〜010）",

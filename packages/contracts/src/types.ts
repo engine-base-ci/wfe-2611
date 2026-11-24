@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:eefd357b4b08a76b
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:5878185e849ec25f
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
