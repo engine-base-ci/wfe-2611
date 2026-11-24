@@ -154,16 +154,20 @@ test("K252-UI-006 一覧・グループの一覧・横の詳細を 320・375・7
 });
 
 for (const path of PATHS) {
-  test(`K252-UI-007 ${path} 検索条件の箱（キャンバス List）：言葉の欄は使える（題名か番号で絞る）・かんたん・詳しく・検索条件を保存・畳む・状態の札・親子・種別・分類・節目・担当者・AI に任せている はグレーで押せない（D-145.9）`, async ({
+  test(`K252-UI-007 ${path} 検索条件の箱（キャンバス List）：言葉の欄・かんたん・詳しく・状態の札・親子・種別・担当者・AI に任せている は使える（K-478）・畳む・分類・節目はグレーで押せない（D-145.9）。検索条件を保存は K-479 の試験が見る`, async ({
     page,
   }) => {
     const m = await mockList(page);
     await open(page, path);
     const box = page.getByRole("region", { name: "検索条件" });
     await expect(box.getByRole("textbox", { name: "題名か番号で絞る" })).toBeEnabled();
-    for (const t of ["かんたん", "詳しく", "検索条件を保存", "畳む"])
-      await expectDisabled(page, box.locator('[aria-disabled="true"]', { hasText: t }).first(), t);
-    for (const t of ["状態", "親子", "種別", "分類", "節目", "担当者", "AI に任せている"]) {
+    for (const t of ["かんたん", "詳しく"])
+      await expect(box.getByRole("button", { name: t, exact: true }), t).not.toHaveAttribute("aria-disabled", "true");
+    await expect(box.getByRole("group", { name: "状態", exact: true })).toBeVisible();
+    await expect(box.getByRole("group", { name: "親子", exact: true })).toBeVisible();
+    for (const t of ["種別", "担当者", "AI に任せている"])
+      await expect(box.getByRole("combobox", { name: t, exact: true }), t).toBeEnabled();
+    for (const t of ["畳む", "分類", "節目"]) {
       const it = box.locator('[aria-disabled="true"]', { hasText: t }).first();
       await expectDisabled(page, it, t);
     }

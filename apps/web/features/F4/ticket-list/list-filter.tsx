@@ -5,6 +5,10 @@
 //   表の上の道具：件数は総数を返さない口なので空（[data-value] の中は空）。まとめて操作・CSV で取り込むは押せない。表示設定は一覧の共通の部品（list-columns.tsx）
 import { useEffect, useRef, useState } from "react";
 import { ColumnSettings, type Columns } from "./list-columns";
+import type { ListExtra } from "./use-ticket-list";
+
+/** URL の絞りの組と、その替え方（K-600 は型だけ。使うのは絞りをつなぐ葉 K-478） */
+type ExtraProps = { extra?: ListExtra; onExtra?: (next: ListExtra) => void };
 
 /** 言葉の欄に入る字の上限（D-128.157） */
 export const QUERY_MAX = 100;
@@ -56,7 +60,7 @@ const clip = (v: string): string => {
   return chars.length > QUERY_MAX ? chars.slice(0, QUERY_MAX).join("") : v;
 };
 
-export function ListSearch({ onQuery }: { onQuery: (q: string) => void }) {
+export function ListSearch({ onQuery }: { onQuery: (q: string) => void } & ExtraProps) {
   const [text, setText] = useState("");
   const sent = useRef("");
   useEffect(() => {
@@ -115,7 +119,7 @@ export function ListSearch({ onQuery }: { onQuery: (q: string) => void }) {
 }
 
 /** 表の上の道具（件数・まとめて操作・CSV で取り込む・表示設定） */
-export function ListTools({ columns }: { columns: Columns }) {
+export function ListTools({ columns }: { columns: Columns } & ExtraProps) {
   return (
     <div className="k-list-filter" role="group" aria-label="一覧の道具">
       <span className="k-list-dim" data-value />
