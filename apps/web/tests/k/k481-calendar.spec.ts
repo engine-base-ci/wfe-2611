@@ -27,7 +27,7 @@ const TEXT = {
   forbidden: "この画面を見る権限がありません。",
 } as const;
 
-type Row = ReturnType<typeof item>;
+type Row = Omit<ReturnType<typeof item>, "due_on"> & { due_on: string | null };
 const t = (i: number, due: string | null, o: Record<string, unknown> = {}): Row =>
   item(i, { number: `EG-${i}`, title: `チケット ${i}`, due_on: due, ...o });
 // 月の格子に出る項目（1 日 2 件まで）は 17 個：モックの見本（f7-calendar）と同じ数にして、突き合わせの「当たった数」（項目・点）をそろえる。
