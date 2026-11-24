@@ -1913,6 +1913,22 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/doc/editor/",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/",
+    "apps/web/features/F4/doc/bar-tools.tsx",
+    "apps/web/features/F4/doc/color-swatches.ts",
+    "apps/web/features/F4/doc/doc.css",
+    "apps/web/features/F4/doc/extra.css",
+    "apps/web/features/F4/doc/views.tsx",
+    "apps/web/features/F4/doc/editor-views.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k568-doc-editor-more.spec.ts",
+    "apps/web/test/k568-markdown.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F4/items/",
     "apps/web/app/(dev)/dev/f4-items/"
    ],
@@ -2216,6 +2232,7 @@
   "apps/api/test/features/F4/ticket-field-values.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-564",
   "apps/web/test/k567-doc-convert.test.ts": "写した部品の関数の頭（apps/web/features/F4/doc/editor/bar/ の use-mark-button.ts・use-undo-redo.ts・use-link-popover.ts）を字で読み、出どころと MIT の表示を確かめる（K567-UN-008）。読む置き場は data_links で結ぶ",
   "apps/web/features/F4/doc/editor/doc-editor.tsx": "編集の部品の本体 ./doc-editor-live を next/dynamic で遅く読む（同じ置き場の部品・ファイルは読まない）。置き場 apps/web/features/F4/doc/editor/ は data_links で結ぶ",
+  "apps/web/test/k568-markdown.test.ts": "写した部品の関数の頭（apps/web/features/F4/doc/editor/bar/use-color-highlight.ts）を字で読み、出どころと MIT の表示を確かめる（K568-UN-008）。読む置き場は data_links で結ぶ",
   "apps/web/tests/k/items-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-569）",
   "apps/web/tests/k/k571-detail-body.spec.ts": "詳細の画面のファイル（ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・detail-entry-slots.tsx）を readFileSync で読む（K571-UI-007・014）",
   "apps/web/features/F4/doc/editor/doc-view-color.tsx": "色のある文書の読むだけの形の本体 ./doc-view-live を import() で遅く読む（同じ置き場の部品・ファイルは読まない）。置き場 apps/web/features/F4/doc/editor/ は data_links で結ぶ",

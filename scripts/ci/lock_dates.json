@@ -1,6 +1,6 @@
 {
  "_doc": "部品の出た日の記録（K-156・D-133.1）。stack_gate.py の S6 が読む。lockfile の sha256 が変わったときだけ、無い名前@版を registry に聞いて書き直す（手元で python3 scripts/ci/stack_gate.py を流してコミットする）。CI は記録が lockfile と合わなければ赤（S7）",
- "lockfile_sha256": "6735783032c8507dd41b63e3f8278c8bbe0cc51266c8ad5423227699e97461b6",
+ "lockfile_sha256": "ec47cc446fd289214ba9eca154a39739bb55315d9abf12a00c6e63d800257070",
  "asked_on": "2026-11-23",
  "dates": {
   "@alloc/quick-lru@5.3.0": "2026-08-31T17:27:30.730Z",
