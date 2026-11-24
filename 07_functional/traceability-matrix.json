@@ -3005,18 +3005,17 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "features": [
     "F-011",
     "F-026"
    ],
    "entities": [
-    "E-112 class_axes",
-    "E-113 class_values",
     "E-109 ticket_kinds",
     "E-110 kind_sections",
     "E-111 ticket_stages",
-    "E-115 handover_rules",
+    "E-144 custom_fields",
+    "E-146 ticket_field_values",
     "E-065 distributions",
     "E-037 policies",
     "E-002 scopes",
@@ -3026,6 +3025,9 @@
     "E-052 audit_events",
     "E-038 approvals",
     "E-106 tickets",
+    "E-112 class_axes",
+    "E-113 class_values",
+    "E-115 handover_rules",
     "E-114 ticket_class_values",
     "E-119 ticket_messages",
     "E-067 tenant_distributions"
@@ -3156,13 +3158,13 @@
    "features": [
     "F-011",
     "F-013",
-    "F-026"
+    "F-026",
+    "F-030"
    ],
    "entities": [
     "E-121 knowledge_pages",
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
-    "E-028 memories",
     "E-055 layers",
     "E-002 scopes",
     "E-142 scope_memberships",
@@ -11150,7 +11152,7 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "required_apis": [
     {
      "act": "A118",
@@ -11471,7 +11473,7 @@
      "path_draft": "/api/knowledge_pages/:id/markdown"
     },
     {
-     "act": "A114",
+     "act": "A137",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge_pages/:id/usage"
@@ -11531,19 +11533,19 @@
      "path_draft": "/api/knowledge_pages/:id/unarchive"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/knowledge/proposals"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge/proposals/:id/accept"
     },
     {
-     "act": "A114",
+     "act": "A136",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge/proposals/:id/decline"
@@ -12349,8 +12351,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "used_by_features": [
     "F-001",
@@ -13991,7 +13992,8 @@
    "entity_id": "E-144",
    "entity_name": "custom_fields",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -13999,6 +14001,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14027,7 +14030,8 @@
    "entity_id": "E-146",
    "entity_name": "ticket_field_values",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -14035,6 +14039,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14931,6 +14936,7 @@
     "GET /api/sessions",
     "GET /api/tenants",
     "GET /api/tickets",
+    "PATCH /api/tickets/:id",
     "POST /api/sessions"
    ]
   },
@@ -15022,6 +15028,7 @@
     "GET /api/tickets",
     "PATCH /api/approvals/:id",
     "PATCH /api/policies/:id",
+    "PATCH /api/tickets/:id",
     "POST /api/conversations",
     "POST /api/tickets"
    ]
@@ -15309,19 +15316,21 @@
     "E-126",
     "E-133",
     "E-134",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
     "GET /api/tenants",
-    "PATCH /api/class_axes/:id",
     "PATCH /api/duties/:id",
     "PATCH /api/invoices/:id",
     "PATCH /api/knowledge_pages/:id",
     "PATCH /api/layers/:id",
     "PATCH /api/ledger_definitions/:id",
-    "POST /api/class_axes",
-    "POST /api/skill_attachments"
+    "PATCH /api/ticket_kinds/:id",
+    "POST /api/skill_attachments",
+    "POST /api/ticket_kinds"
    ]
   },
   {
@@ -15461,11 +15470,11 @@
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
-    "GET /api/knowledge_pages",
     "GET /api/messages",
     "GET /api/policies",
     "GET /api/tenants",
     "PATCH /api/conversations/:id",
+    "PATCH /api/knowledge_pages/:id",
     "PATCH /api/tickets/:id",
     "POST /api/clones",
     "POST /api/conversations",
@@ -16138,6 +16147,7 @@
     "app-setup",
     "clients",
     "inquiry",
+    "knowledge",
     "members",
     "ops-disclosure",
     "ops-notices",

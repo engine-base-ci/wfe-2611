@@ -2134,8 +2134,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2154,8 +2153,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2174,8 +2172,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2194,8 +2191,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2214,8 +2210,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2234,8 +2229,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2254,8 +2248,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2274,8 +2267,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2294,8 +2286,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2314,8 +2305,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -2334,8 +2324,7 @@
     "account",
     "member-detail",
     "masters",
-    "rules",
-    "knowledge"
+    "rules"
    ],
    "internal": false,
    "reason": null
@@ -10719,7 +10708,8 @@
    "entity": "custom_fields",
    "field": "name",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10728,7 +10718,8 @@
    "entity": "custom_fields",
    "field": "field_type",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10737,7 +10728,8 @@
    "entity": "custom_fields",
    "field": "required",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10746,7 +10738,8 @@
    "entity": "custom_fields",
    "field": "description",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10755,7 +10748,8 @@
    "entity": "custom_fields",
    "field": "options",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10764,7 +10758,8 @@
    "entity": "custom_fields",
    "field": "position",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10805,7 +10800,8 @@
    "entity": "ticket_field_values",
    "field": "ticket_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10814,7 +10810,8 @@
    "entity": "ticket_field_values",
    "field": "field_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10823,7 +10820,8 @@
    "entity": "ticket_field_values",
    "field": "value",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null

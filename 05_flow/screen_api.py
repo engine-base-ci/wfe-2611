@@ -407,7 +407,7 @@ SCREEN_API = {
         ("POST", "/knowledge_pages/:id/versions/:v/restore", "A114", "knowledge_page_versions", "restoreKnowledgeVersion", ["knowledge_pages"]),
         ("GET", "/knowledge_pages/:id/markdown", "A114", "knowledge_pages", "exportKnowledgeMarkdown", []),
         # 使われ方・つながり・やり取り
-        ("GET", "/knowledge_pages/:id/usage", "A114", "reference_logs", "getKnowledgeUsage", ["tickets", "action_runs"]),
+        ("GET", "/knowledge_pages/:id/usage", "A137", "reference_logs", "getKnowledgeUsage", ["tickets", "action_runs"]),
         ("GET", "/knowledge_pages/:id/links", "A114", "knowledge_links", "getKnowledgeLinks", ["policies", "clients", "tickets"]),
         ("POST", "/knowledge_pages/:id/links", "A114", "knowledge_links", "linkKnowledgeMention", ["knowledge_page_versions"]),
         ("GET", "/knowledge/link-targets", "A114", "knowledge_pages", "searchKnowledgeLinkTargets", ["clients", "policies"]),
@@ -419,9 +419,10 @@ SCREEN_API = {
         ("POST", "/knowledge_pages/:id/archive", "A114", "knowledge_pages", "archiveKnowledgePage", ["knowledge_links"]),
         ("POST", "/knowledge_pages/:id/unarchive", "A114", "knowledge_pages", "unarchiveKnowledgePage", []),
         # 直す案（チケットの完了から）
-        ("GET", "/knowledge/proposals", "A114", "knowledge_page_versions", "listKnowledgeProposals", ["tickets"]),
-        ("POST", "/knowledge/proposals/:id/accept", "A114", "knowledge_page_versions", "acceptKnowledgeProposal", ["knowledge_pages", "notifications"]),
-        ("POST", "/knowledge/proposals/:id/decline", "A114", "knowledge_page_versions", "declineKnowledgeProposal", []),
+        # K-727：A136（上げる・承認する・断る）と A137（AI が読んだ記録）の口は、新しい持ち主の葉（K-687〜K-689・K-685／K-698）が入るまで前からの口に結ぶ。外すのは K-711
+        ("GET", "/knowledge/proposals", "A136", "knowledge_page_versions", "listKnowledgeProposals", ["tickets"]),
+        ("POST", "/knowledge/proposals/:id/accept", "A136", "knowledge_page_versions", "acceptKnowledgeProposal", ["knowledge_pages", "notifications"]),
+        ("POST", "/knowledge/proposals/:id/decline", "A136", "knowledge_page_versions", "declineKnowledgeProposal", []),
         # 取り込む
         ("POST", "/knowledge_imports", "A114", "imports", "createKnowledgeImport", ["attachments"]),
         ("GET", "/knowledge_imports/:id", "A114", "imports", "getKnowledgeImport", []),
