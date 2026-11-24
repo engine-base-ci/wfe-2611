@@ -2064,6 +2064,20 @@
   },
   {
    "paths": [
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "05_flow/phase1.py",
+    "05_flow/flow.json",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/me-sub.tsx",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1113-shell-words.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F4/items/",
     "apps/web/app/(dev)/dev/f4-items/"
    ],
@@ -2251,7 +2265,8 @@
   "apps/api/test/features/F4/ticket-estimate.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ。また 08_api/openapi.yaml と packages/contracts/src/schemas.ts を readFileSync で読む（契約の updateTicket の入力に estimate_minutes が在ること・K583-API-017）・K-583",
   "apps/web/test/k587-bar-origin.test.ts": "写した部品の関数の頭（apps/web/features/F4/doc/editor/bar/ の use-heading.ts・use-list.ts・use-text-align.ts・use-block-button.ts）を字で読み、出どころと MIT の表示を確かめる（K587-UN-001）。読む置き場は data_links で結ぶ",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
-  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
+  "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
