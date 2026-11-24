@@ -255,7 +255,10 @@ describe("K-697 AI に渡す物（DB の関数 app.knowledge_context）", () => 
     const t = await mkTicket(other, other.g1, other.mem1);
     await pub(w, w.co.rootScope, w.boss, "会社の決まり", "会社", { must: true });
     expect(await ctxOf(w.mem1.id, t)).toBeNull();
-    await h.admin.query("update members set suspended_at = now() where id = $1", [w.mem2.id]);
+    await h.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      w.mem2.id,
+      w.boss.id,
+    ]);
     expect(await ctxOf(w.mem2.id, null)).toBeNull();
     await h.admin.query("update members set deleted_at = now() where id = $1", [w.mem1.id]);
     expect(await ctxOf(w.mem1.id, null)).toBeNull();
