@@ -9907,12 +9907,6 @@ components:
           - type: string
             pattern: ^(?:0*(?:[0-9]{1,5}|100000))?$
           nullable: true
-        sections:
-          type: object
-          propertyNames:
-            pattern: ^[a-z][a-z0-9_]{0,40}$
-          additionalProperties:
-            type: string
         notify_member_ids:
           type: array
           items:
@@ -11557,18 +11551,6 @@ components:
     TicketCompleteInput:
       type: object
       properties:
-        todo_checked:
-          type: array
-          items:
-            type: integer
-            minimum: 0
-            maximum: 2147483647
-          nullable: true
-        todo_version:
-          type: integer
-          nullable: true
-          minimum: 0
-          maximum: 2147483647
         conditions_confirmed:
           type: boolean
           enum:
@@ -14748,10 +14730,6 @@ components:
       properties:
         ticket:
           type: object
-        sections:
-          type: array
-          items:
-            type: object
         kind:
           type: object
           nullable: true
@@ -14818,10 +14796,6 @@ components:
           type: integer
         is_builtin:
           type: boolean
-        sections:
-          type: array
-          items:
-            type: object
         body_template:
           type: object
           nullable: true
