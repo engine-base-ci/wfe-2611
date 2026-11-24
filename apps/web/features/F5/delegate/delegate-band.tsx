@@ -186,6 +186,8 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   // 任せる前の要約の名前：読めたらその名前、読めなかったら「自分」。読み終わるまでは要約を出さない
   const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: canDelegate, ...ONCE });
   const viewer = who.isSuccess ? who.data.display_name || "自分" : who.isError ? "自分" : null;
+  // 帯が画面から外れたら（別の頁へ・別のチケットへ）、知らせ・小窓・書きかけの理由を元に戻す（戻ってきたときに前の知らせを言い切らない）
+  useEffect(() => delegateFlow.show(ticket.id), [ticket.id]);
   // 任せられない形に替わったら（走り出した・段が変わった）、開いていた小窓も閉じる
   useEffect(() => {
     if (!canDelegate) delegateFlow.close(ticket.id);
