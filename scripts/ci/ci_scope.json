@@ -1759,6 +1759,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/delete/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k590-delete-restore.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F7/shell-slots.tsx",
     "apps/web/features/F7/detail-slots.tsx"
    ],
@@ -1984,6 +1992,8 @@
   "apps/api/test/features/contract/k144.d/K-489.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
+  "apps/web/tests/k/k590-delete-restore.spec.ts": "正本 07_qa/test-specs/errors.json を文字で読み、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/delete/ を突き合わせの道具 stage2-match.ts で比べ、道具 delete-mock.ts・list-mock.ts・kit.ts・F5 の approve-complete.harness.ts を読む（K-590）",
+  "apps/web/tests/k/delete-mock.ts": "前からの土台 tests/features/F5/approve-complete.harness.ts と list-mock.ts、scripts/ci/fidelity_compare.mjs の型を読む（K-590）",
   "apps/web/tests/k/k599-f7-slots.spec.ts": "段 8 の差し込み口の入口 apps/web/features/F7/shell-slots.tsx・detail-slots.tsx と区画のファイル 7 個（notice/notice-slot・search/search-slot・saved/saved-view-slot・due/due-slot・delete/more-menu-slot・stopped/stopped-hand-slot・overview/group-link-slot）、前からのファイル F4 の ticket-shell.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.tsx、F5 の delegate-band.tsx・use-run.ts、components/k/shell.tsx を文字で読む（data_links で結ぶ・K-599）",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
