@@ -337,7 +337,7 @@ for (const w of [1440, 375]) {
 }
 
 /** チケットの一覧（/tickets）を、ログインの印と口の答え（一覧 3 件）を網の手前で差し替えて開く */
-async function openTickets(page: Page, width: number) {
+async function openTickets(page: Page, width: number, path = "/tickets") {
   const WS = "aaaaaaaa-0000-4000-8000-000000000217";
   const ME = "11111111-0000-4000-8000-000000000217";
   await page.setViewportSize({ width, height: 1000 });
@@ -382,20 +382,22 @@ async function openTickets(page: Page, width: number) {
     return route.fulfill({ status: 404, json: { error: "not_found", code: "NOT_FOUND" } });
   });
   await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
-  const res = await page.goto("/tickets");
+  const res = await page.goto(path);
   expect(res?.status()).toBe(200);
   await page.getByRole("table", { name: "チケットの一覧" }).waitFor({ state: "visible" });
 }
 
 for (const w of [1440, 375]) {
-  // K-251 で一覧の画面は箇条（ul.k-list）から表と右の列に替わった。本文の行（.k-list-body）の中身が、左右とも 24px 内側で帯の見出しと左の縁がそろうことを同じ強さで見る
-  test(`K217-UI-020 本物の画面（/tickets）幅 ${w}：一覧の本文（表の列と右の列）は左右とも 24px 内側で、帯の見出しと左の縁がそろう`, async ({
+  // K-251 で一覧の画面は箇条（ul.k-list）から表と右の列に替わった。本文の行（.k-list-body）の中身が、左右とも 24px 内側で帯の見出しと左の縁がそろうことを同じ強さで見る。
+  // 幅 767 以下の自分に関わるものは表と右の列を隠したスマホの本文（K-478・モック f7-mine-mobile と K478-UI-025 が見る）なので、375 は表の在る一覧（?view=all・右の列は無い）で見る
+  test(`K217-UI-020 本物の画面（/tickets）幅 ${w}：一覧の本文（表の列と、在れば右の列）は左右とも 24px 内側で、帯の見出しと左の縁がそろう`, async ({
     page,
   }) => {
-    await openTickets(page, w);
+    await openTickets(page, w, w <= 767 ? "/tickets?view=all" : "/tickets");
     const page_ = await box(page.locator(".k-list-page").first());
     const main = await box(page.locator(".k-list-body > .k-list-main").first());
-    const side = await box(page.locator(".k-list-body > .k-list-side").first());
+    const sideAt = page.locator(".k-list-body > .k-list-side");
+    const side = (await sideAt.count()) > 0 ? await box(sideAt.first()) : main;
     const left = Math.min(main.x, side.x);
     const right = Math.max(main.x + main.width, side.x + side.width);
     expect(Math.abs(left - page_.x - 24)).toBeLessThanOrEqual(1);
