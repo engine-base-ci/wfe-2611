@@ -218,7 +218,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           return bare("E-PAGE-003", 503);
         }
         const row = await a.repo.table("tickets").get(a.ctx, String(r["id"]));
-        return { status: 201, body: { data: row ?? { id: r["id"], number: r["number"] } } };
+        return { status: 201, body: { data: row ? withoutFrozen(row) : { id: r["id"], number: r["number"] } } };
       },
     },
     listTicketKinds: {
