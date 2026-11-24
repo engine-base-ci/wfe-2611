@@ -19,10 +19,20 @@
     "test_post_knowledge_pages_id_raise_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_knowledge_pages_id_raise_conflict_2": "K687-API-006",
+    "test_post_knowledge_pages_id_raise_conflict_3": "K687-API-005",
+    "test_post_knowledge_pages_id_raise_conflict_4": "K687-API-005",
+    "test_post_knowledge_pages_id_raise_conflict_5": "K687-API-007",
+    "test_post_knowledge_pages_id_raise_conflict_6": "K687-API-004",
+    "test_post_knowledge_pages_id_raise_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {
-    "test_post_knowledge_pages_id_raise_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 3 欄）"
+    "test_post_knowledge_pages_id_raise_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 3 欄）",
+    "test_post_knowledge_pages_id_raise_conflict_7": "共有しているページ（E-KNW-106）は共有の置き場（K-689）と確かめ（K-719 が page-guards/shared.ts を差し替える）が入ってから。K-719 が自分の試験に行を足す"
    }
   },
   "withdrawKnowledgeRequest": {
@@ -47,6 +57,10 @@
     "test_delete_knowledge_requests_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_delete_knowledge_requests_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    }
   },
@@ -67,6 +81,10 @@
      "mark": "K53-API-005"
     },
     "test_post_knowledge_requests_id_dismiss_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_requests_id_dismiss_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }

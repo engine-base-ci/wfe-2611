@@ -34,17 +34,32 @@ describe("POST /api/v1/knowledge_pages/:id/raise", () => {
     // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-009");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF 上げる・共有する頼みが承認待ちなら、Kaname は 409 と E-KNW-011 を返し、頼みもお知らせもページも変えない
-  it.todo("test_post_knowledge_pages_id_raise_conflict_2");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF ページが会社の棚にあり、これより上の棚が無いなら、Kaname は 409 と E-KNW-100 を返し、頼みもお知らせもページも変えない
-  it.todo("test_post_knowledge_pages_id_raise_conflict_3");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF 自分の棚のページで上げる先のグループを選んでいないなら、Kaname は 409 と E-KNW-101 を返し、頼みもお知らせもページも変えない
-  it.todo("test_post_knowledge_pages_id_raise_conflict_4");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF 上げる先に承認できる人がいないなら、Kaname は 409 と E-KNW-102 を返し、頼みもお知らせもページも変えない
-  it.todo("test_post_knowledge_pages_id_raise_conflict_5");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF 入れるフォルダが上げる先の棚に無いなら、Kaname は 409 と E-KNW-103 を返し、頼みもお知らせもページも変えない
-  it.todo("test_post_knowledge_pages_id_raise_conflict_6");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF ページ（か上のフォルダ）をほかのグループに共有しているなら、Kaname は 409 と E-KNW-106 を返し、頼みもお知らせもページも変えない
+  it("test_post_knowledge_pages_id_raise_conflict_2", () => {
+    // UNWANTED: IF 上げる・共有する頼みが承認待ちなら、Kaname は 409 と E-KNW-011 を返し、頼みもお知らせもページも変えない
+    // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-006");
+  });
+  it("test_post_knowledge_pages_id_raise_conflict_3", () => {
+    // UNWANTED: IF ページが会社の棚にあり、これより上の棚が無いなら、Kaname は 409 と E-KNW-100 を返し、頼みもお知らせもページも変えない
+    // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-005");
+  });
+  it("test_post_knowledge_pages_id_raise_conflict_4", () => {
+    // UNWANTED: IF 自分の棚のページで上げる先のグループを選んでいないなら、Kaname は 409 と E-KNW-101 を返し、頼みもお知らせもページも変えない
+    // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-005");
+  });
+  it("test_post_knowledge_pages_id_raise_conflict_5", () => {
+    // UNWANTED: IF 上げる先に承認できる人がいないなら、Kaname は 409 と E-KNW-102 を返し、頼みもお知らせもページも変えない
+    // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-007」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-007");
+  });
+  it("test_post_knowledge_pages_id_raise_conflict_6", () => {
+    // UNWANTED: IF 入れるフォルダが上げる先の棚に無いなら、Kaname は 409 と E-KNW-103 を返し、頼みもお知らせもページも変えない
+    // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-004」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-raise.test.ts", "utf8")).toContain("K687-API-004");
+  });
+  // 当てはまらない（共有しているページ（E-KNW-106）は共有の置き場（K-689）と確かめ（K-719 が page-guards/shared.ts を差し替える）が入ってから。K-719 が自分の試験に行を足す）：UNWANTED: IF ページ（か上のフォルダ）をほかのグループに共有しているなら、Kaname は 409 と E-KNW-106 を返し、頼みもお知らせもページも変えない
   it.todo("test_post_knowledge_pages_id_raise_conflict_7");
   it("test_post_knowledge_pages_id_raise_session_unresolved", () => {
     // UNWANTED: IF DB が使えないなら、Kaname は 503 と E-PAGE-003 を返し、頼みもお知らせもページも変えない
@@ -65,8 +80,11 @@ describe("POST /api/v1/knowledge_pages/:id/raise", () => {
   });
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_post_knowledge_pages_id_raise_mfa_pending");
-  // 本物の試験はまだ無い（apps/api/test/features/F9/knowledge-raise.test.ts）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_post_knowledge_pages_id_raise_session_unresolved_2");
+  it("test_post_knowledge_pages_id_raise_session_unresolved_2", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_knowledge_pages_id_raise_shape", () => {
     // UBIQUITOUS: POST /api/v1/knowledge_pages/:id/raise の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F9/knowledge-raise.test.ts の「K687-API-001」（同じ CI の G3 で流れる）
