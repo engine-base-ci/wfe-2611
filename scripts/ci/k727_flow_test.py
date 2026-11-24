@@ -65,9 +65,10 @@ class FlowTest(unittest.TestCase):
         self.assertEqual([x["label"] for x in sub["masters"]], ["種別", "状態", "項目"])
 
     def test_K727_FL_005_rules_worktypes_kept_until_k711(self) -> None:
-        """画面 rules・work-types は K-711 が口と一緒に外すまで第 1 フェーズのまま残る（先に後のフェーズへ送ると契約の口が黙って消える・D-152.22）"""
+        """画面 rules・work-types は K-711 が口と一緒に後のフェーズへ送った（口より先に送ると契約の口が黙って消える・D-152.22。
+        送る回は口を全部外した K-711・PM の決め 2026-11-24）。画面は消さずに v2 で残る"""
         for sid in ("rules", "work-types"):
-            self.assertEqual(SCREENS[sid]["release"], "v1", sid)
+            self.assertEqual(SCREENS[sid]["release"], "v2", sid)
 
     def test_K727_FL_006_flows(self) -> None:
         """flows.json：F9 に A118・A114・A136・A93・A137 が在り、A117 は F10 に移り F9 に無い。効き方の影響 E3 の変更は「チケットの設定」と「必ず守る」を言う"""
@@ -80,9 +81,9 @@ class FlowTest(unittest.TestCase):
         self.assertIn("必ず守る", e3["change"])
 
     def test_K727_FL_007_parents(self) -> None:
-        """親の入れ物：K-69 の screens は knowledge・masters・rules・work-types（knowledge・masters は画面の葉が本線に入るまで親が持つ・layers は持たない）・題が新しい形。K-70 の screens に layers が入る"""
+        """親の入れ物：K-69 の screens は knowledge・masters（画面の葉が本線に入るまで親が持つ・layers は持たない。rules・work-types は K-711 が後のフェーズへ送って外した）・題が新しい形。K-70 の screens に layers が入る"""
         h69 = heads("11_tickets/K-69.md")
-        self.assertEqual(h69["screens"], "[knowledge, masters, rules, work-types]")
+        self.assertEqual(h69["screens"], "[knowledge, masters]")
         self.assertIn("ナレッジ", h69["title"])
         self.assertIn("layers", heads("11_tickets/K-70.md")["screens"])
 
