@@ -24821,6 +24821,60 @@
     "リスクと懸念": "- 字で書いた題でなく、報告にも出ない題（`${id}` で作る題で、その試験が 1 本も流れなかった）は照らさない。前は配列の字（`[\"USH-01-010\", …]`）で照らしていた。ファイルが読めず 1 本も流れない回は、試験の道具が先に赤で止まる（web_run は試験が落ちたら op_gate まで行かない）ので、黙って緑にはならない\n- `test`・`it`・`describe` を別の名前で import して使う形（`import { test as base }` の `base(\"…\")`）は字で書いた題に数えない。流れれば報告の題で拾う"
    },
    "file": "11_tickets/K-1122.md"
+  },
+  {
+   "id": "K-1155",
+   "title": "直し：必須の欄の印（＊）を項目名の label の字から外す（components/k/field.tsx と期限の欄 features/F4/due/views.tsx。＊は CSS の ::after で同じ所に同じ見た目で出し、読み上げの名前にも label の字にも入れない）。getByLabel(名前, {exact:true}) で必須の欄が 1 件取れる・見た目は 1px も変えない・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-22",
+   "milestone": "共通",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測 K-1100（CSS と試験 1 本で 0.5 時間）・K-1113（画面の字と試験 1 本で 1 時間）から引いた。部品 2 つの印の出し方を替える 10 分・CSS の規則 5 分・見本の画面に欄を 5 つ足す 10 分・試験 1 本（同じ所で前の作りと写しを比べる）25 分・確かめ 10 分",
+   "decisions": [
+    "D-128.78"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の部品の印の出し方・CSS・開発用の見本の画面・試験だけ。口・DB・外・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k1155-required-label.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を 1px も変えない直し（＊を label の中の span から同じ label の ::after に移すだけ・字・色・左の間・行は同じ）。どの正の絵の組も替えない。同じ版で前の作りと写しを撮って 1 バイトも違わないことを試験で見る",
+   "apis": [],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/components/k/field.tsx",
+    "apps/web/components/k/k.css",
+    "apps/web/features/F4/due/views.tsx",
+    "apps/web/app/(dev)/dev/k/design/page.tsx"
+   ],
+   "flow": "必須の欄に入れて送る",
+   "sections": {
+    "目的": "共通の部品 `apps/web/components/k/field.tsx` の項目名は今、`<label>名前<span aria-hidden=\"true\">*</span></label>` の形で必須の印を出している。読み上げの名前（getByRole の name）は aria-hidden の ＊ を数えないので「名前」になるが、Playwright 1.63 の `getByLabel(名前, { exact: true })` は label の字（DOM の字）を ＊ まで含めて比べるので 0 件になる（画面の確かめ係の見つけ・2026-11-24）。K-569 の 6 本・K-683 の 9 本がこれで赤。\n\n同じ形（＊の span を項目名の中に置く）は、期限の欄 `features/F4/due/views.tsx` の DueField（ボタンが aria-labelledby で項目名の span を指す）にもある。\n\n```search\ngit grep -n -E '^[[:space:]]+\\*$' b199e9775 -- 'apps/web/components/*.tsx' 'apps/web/features/*.tsx' 'apps/web/app/*.tsx'\n2\n```\n\n（直す前の本線 b199e9775 で数えた。field.tsx と due/views.tsx の 2 か所。どちらも直前の行が `<span className=\"k-req\" aria-hidden=\"true\">`）\n\nPM の決め（作り方）：\n1. 項目名の要素（Field.Label・期限の span）の字は名前だけにする。必須のときは項目名の要素に `data-required` を付け、＊は k.css の `.k-label[data-required]::after` で出す：`content: \"*\"; content: \"*\" / \"\";`（前の行は代わりの字の書き方を知らない古いブラウザ用。後の行で読み上げの代わりの字を空にし、読み上げの名前に ＊ を入れない）・色 `var(--k-error)`・左の間 `var(--k-s-xs)`（今の `.k-req` と同じ値）\n2. ::after は label の最後の子の inline の箱と同じに並ぶので、字の位置・折り返し・補足（hint）の行の並びは今と同じ。見た目は 1px も変えない\n3. 使わなくなった `.k-req` の規則は k.css から消す（どこからも使わない）\n4. `aria-required`・`required` は今のまま（読み上げは「必須」を aria-required で伝える）",
+    "完了の条件": "- [ ] 下の表の行（K1155-UI-001〜007）が緑：`apps/web/tests/k/k1155-required-label.spec.ts`\n- [ ] 前からの試験（下の「## 前からの試験を替えた所」）が緑のまま\n- [ ] design_gate（D1〜D6）と下絵の突き合わせ（G70）が緑のまま\n- [ ] チケットの範囲の CI が緑。K-569・K-683 の枝の getByLabel(名前, {exact:true}) の赤がこの葉の取り込みの後に消える（PM が確かめる）",
+    "前提と制約": "分類: TOOL\n\n- 変えるのは印の出し方だけ。項目名の字・大きさ・色・行の高さ・欄との間・補足の並びは変えない\n- 開発用の見本の画面 `/dev/k/design`（K-218）の入力欄の区画に、必須の欄を 5 つ足す（試験の的・data-testid）：\n  - `req-md`：TextField「件名」required（md）\n  - `req-lg-hint`：TextField「会社名」required size lg hint「あとで変えられる」\n  - `req-area`：TextArea「理由」required\n  - `req-pw`：PasswordField「新しいパスワード」required size lg\n  - `req-due`：DueField（value null・期限の欄）\n- 前からの的（field-md・field-lg・input-md・input-lg ほか）と並びは変えない（足した欄は入力欄の区画の後ろに置く）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 項目名の部品 | `apps/web/components/k/field.tsx` の Frame（Field.Label） | 字を名前だけにし data-required を付ける |\n| 期限の欄 | `apps/web/features/F4/due/views.tsx` の DueField | 同じく |\n| 項目名の CSS | `apps/web/components/k/k.css` の `.k-label`・`.k-req` | `.k-label[data-required]::after` を足し `.k-req` を消す |\n| 見本の画面 | `apps/web/app/(dev)/dev/k/design/page.tsx`（K-218） | 必須の欄を 5 つ足す |\n| 探したが無かった物 | — | 足す部品は無い |",
+    "依存の理由": "なし（depends_on は空）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 項目名 | `field.tsx` の Frame：`<Field.Label className=\"k-label\" data-required={required ? \"\" : undefined}>{label}</Field.Label>`（＊の span を消す） |\n| 期限の欄 | `due/views.tsx` の DueField：`<span className=\"k-label\" id={…} data-required=\"\">期限</span>`（＊の span を消す） |\n| CSS | `k.css`：`.k-req` を消し、`.k-label[data-required]::after { content: \"*\"; content: \"*\" / \"\"; color: var(--k-error); margin-left: var(--k-s-xs); }` を足す |\n| 見本の画面 | `page.tsx`：上の 5 つの欄を `<section aria-label=\"必須の欄\">` に並べる（DueField は `@/features/F4/due/views` から） |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k1155-required-label.spec.ts`（実 Chrome。見本の画面 /dev/k/design を開く。口は呼ばない。固定の待ちは使わない）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1155-UI-001 | 入口 | 必須の欄 5 つ（件名・会社名・理由・新しいパスワード・期限）を `getByLabel(名前, { exact: true })` で探す（幅 1440） | どれも 1 件ちょうどで、見えている。件名・会社名・理由・新しいパスワードは input／textarea で aria-required=\"true\"。期限は aria-haspopup=\"dialog\" のボタン |\n| K1155-UI-002 | 入口 | 同じ欄を読み上げの名前（getByRole の name・exact）で探す | 件名・会社名・理由は textbox が 1 件ずつ・期限は button が 1 件。「件名*」「件名 *」の名前では 0 件 |\n| K1155-UI-003 | 入力 | 項目名の要素の字（textContent）と ::after を読む | 字は名前だけ（「件名」「会社名」「理由」「新しいパスワード」「期限」・＊が無い）。::after の content は ＊ を含み、色は `--k-error` の色、左の余白は `--k-s-xs` の値。項目名の中に aria-hidden の子は無い |\n| K1155-UI-004 | 対象の状態 | 任意の欄（題名・メール） | ::after の content は none（印が出ない）。`getByLabel(\"題名\", {exact:true})`・`getByLabel(\"メール\", {exact:true})` は 1 件ずつ |\n| K1155-UI-005 | 守り | 1px も変えない：幅 1440・375 と明るい・暗い見た目で、必須の欄 5 つの箱（data-testid の箱）の写しを撮り、同じ所で項目名を前の作り（data-required を外し、名前の後ろに `<span aria-hidden=\"true\" style=\"color: var(--k-error); margin-left: var(--k-s-xs)\">*</span>`）に戻してもう一度撮る | 2 つの写しが 1 バイトも違わない。項目名の箱の位置と大きさも同じ（差 0）。会社名は補足の字の箱の位置も同じ |\n| K1155-UI-006 | 守り | 画面のコード（apps/web の components・features・app の .tsx）を読む | ＊だけを中身に持つ aria-hidden の span が 0。k.css に `.k-label[data-required]::after` の規則が在り、`content: \"*\" / \"\"` を持つ。`.k-req` の規則が無い |\n| K1155-UI-007 | 操作の揺れ | 必須の欄（件名）で、項目名を押す | 件名の入力欄に入力の印（focus）が移る（label と欄のつなぎは今のまま） |\n\n### テストの型の受け（分類 TOOL）\n\n- 見た目が変わらない：UI-005（同じ所・同じ版で前の作りと写しを比べる・2 幅 × 2 見た目）\n- 読み上げ：UI-002・UI-003（名前に ＊ が入らない）。押した結果：UI-007\n- TP-TOOL-02（検査が何も見ていないのに緑）：UI-006 は読んだ .tsx が 50 より多いことと、::after の規則が在ることを先に見る（読めずに空で緑にしない）。UI-005 は補足の箱が 1 つ在ることも見る\n- 要らない: TP-TOOL-01 日本語の名前のファイルを読まない（.tsx と k.css だけ）\n- 要らない: TP-TOOL-03 台によって答えが変わる物を読まない（同じ版の画面の写しどうしを、同じ流れの中で比べるだけ）\n\n### 8 つの観点\n\n| 観点 | 判定 |\n|---|---|\n| 入力 | 003 |\n| 対象の状態 | 004（任意の欄） |\n| 時間の流れ | N/A：時間で変わる物を扱わない |\n| 入口 | 001・002 |\n| 利用者の状態 | N/A：見本の画面はログインに依らない |\n| 失敗 | N/A：口を呼ばない |\n| 操作の揺れ | 007 |\n| 守り | 005・006 |",
+    "外に影響する手順": "なし（画面の部品と CSS だけ）",
+    "前からの試験を替えた所": "項目名の要素（.k-label・.k-req）の字・箱を見ている前からの試験と、changes: を使う前からの試験（cut_check.py prior）を検索で出した（直す前の本線 b199e9775）。\n\n```search\ngit grep -l -E 'k-req|\\.k-label' b199e9775 -- apps/web/tests apps/web/test 'scripts/ci/*_test.py'\n8\n```\n\n- apps/web/tests/k/handover-mock.ts: 替えない — `.k-dialog .k-label` の字の大きさ・太さ・色を見るだけ（字の中身と ＊ は見ない）\n- apps/web/tests/k/k218-design-parts.spec.ts: 替えない — 任意の欄 field-md・field-lg の項目名の字の形と欄との間を見るだけ。足した必須の欄は的にしない\n- apps/web/tests/k/k221-login-frame.spec.ts: 替えない — 目に見える項目名に「メールアドレス」「パスワード」が無いことを見る（ログインの欄は必須の印を持たない）\n- apps/web/tests/k/k224-create-frame.spec.ts: 替えない — 「題名」の項目名の箱の位置を見るだけ（箱は変わらない）\n- apps/web/tests/k/k229-modals.spec.ts: 替えない — 項目名の字の大きさと太さだけ\n- apps/web/tests/k/k255-signup-waiting.spec.ts: 替えない — 項目名（hasText の部分一致）の字の形と箱、補足の行の並び。登録の欄は必須の印を持たない\n- apps/web/tests/k/k395-progress.spec.ts: 替えない — 小窓の項目名の x・y と字の形（箱は変わらない）\n- scripts/ci/k218_design_canvas_test.py: 替えない — `.k-label` の選び方の名前を見るだけ\n- apps/web/tests/k/k217-page-parts.spec.ts: 替えない — k.css に本文の見出しの規則が在ることを見るだけ（cut_check.py prior が出した）\n- apps/web/tests/k/k381-popup-layer.spec.ts: 替えない — k.css の .k-popup-layer の規則だけ（同上）\n- scripts/ci/k214_class_gate_test.py: 替えない — 写しのリポジトリに自分の k.css を書いて検査を流すだけ（同上）",
+    "決定ログ": "- 2026-11-24 PM の決め（作り方）：＊は項目名の要素の外の字（CSS の ::after・読み上げの代わりの字は空）にする。label の外に span を出す形は、項目名の要素が欄の箱の直下の子である前提の CSS（`.k-field > .k-label`・`.k-create-assign-row > .k-field > :not(.k-label)` など）を崩すので選ばない",
+    "リスクと懸念": "- `content: \"*\" / \"\"` を知らないブラウザは前の行の `content: \"*\"` を使う（印は出る。読み上げの名前に ＊ が入ることがあるが、今の span の形と同じ所に出る）\n- ::after は字として選べない（今の span は選べた）。見た目は変わらない"
+   },
+   "file": "11_tickets/K-1155.md"
   }
  ]
 }

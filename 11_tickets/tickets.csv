@@ -3234,3 +3234,22 @@ PM の決め（作り方・2026-11-24 06:30 案 A）：
 5. 全部の回（`--all`）・`--task`・`--wave` の照らし方は変えない。行 ID の形 ID_RE も変えない","- [ ] 下の表の行（K1122-OG-001〜008）が緑
 - [ ] 前からの試験 `scripts/ci/k177_web_scope_test.py`（K177-WS-016 など）・`scripts/ci/ci_results_test.py`・`scripts/ci/ci_scope_test.py` が替えずに緑
 - [ ] チケットの範囲の CI が緑。K-1151 の枝の web の組の op_gate が K57-UI-016 で赤にならない（PM が確かめる）"
+K-1155,"直し：必須の欄の印（＊）を項目名の label の字から外す（components/k/field.tsx と期限の欄 features/F4/due/views.tsx。＊は CSS の ::after で同じ所に同じ見た目で出し、読み上げの名前にも label の字にも入れない）。getByLabel(名前, {exact:true}) で必須の欄が 1 件取れる・見た目は 1px も変えない・PM の直し",タスク,K-22,未着手,実装,2026-11-24,共通・画面,"共通の部品 `apps/web/components/k/field.tsx` の項目名は今、`<label>名前<span aria-hidden=""true"">*</span></label>` の形で必須の印を出している。読み上げの名前（getByRole の name）は aria-hidden の ＊ を数えないので「名前」になるが、Playwright 1.63 の `getByLabel(名前, { exact: true })` は label の字（DOM の字）を ＊ まで含めて比べるので 0 件になる（画面の確かめ係の見つけ・2026-11-24）。K-569 の 6 本・K-683 の 9 本がこれで赤。
+
+同じ形（＊の span を項目名の中に置く）は、期限の欄 `features/F4/due/views.tsx` の DueField（ボタンが aria-labelledby で項目名の span を指す）にもある。
+
+```search
+git grep -n -E '^[[:space:]]+\*$' b199e9775 -- 'apps/web/components/*.tsx' 'apps/web/features/*.tsx' 'apps/web/app/*.tsx'
+2
+```
+
+（直す前の本線 b199e9775 で数えた。field.tsx と due/views.tsx の 2 か所。どちらも直前の行が `<span className=""k-req"" aria-hidden=""true"">`）
+
+PM の決め（作り方）：
+1. 項目名の要素（Field.Label・期限の span）の字は名前だけにする。必須のときは項目名の要素に `data-required` を付け、＊は k.css の `.k-label[data-required]::after` で出す：`content: ""*""; content: ""*"" / """";`（前の行は代わりの字の書き方を知らない古いブラウザ用。後の行で読み上げの代わりの字を空にし、読み上げの名前に ＊ を入れない）・色 `var(--k-error)`・左の間 `var(--k-s-xs)`（今の `.k-req` と同じ値）
+2. ::after は label の最後の子の inline の箱と同じに並ぶので、字の位置・折り返し・補足（hint）の行の並びは今と同じ。見た目は 1px も変えない
+3. 使わなくなった `.k-req` の規則は k.css から消す（どこからも使わない）
+4. `aria-required`・`required` は今のまま（読み上げは「必須」を aria-required で伝える）","- [ ] 下の表の行（K1155-UI-001〜007）が緑：`apps/web/tests/k/k1155-required-label.spec.ts`
+- [ ] 前からの試験（下の「## 前からの試験を替えた所」）が緑のまま
+- [ ] design_gate（D1〜D6）と下絵の突き合わせ（G70）が緑のまま
+- [ ] チケットの範囲の CI が緑。K-569・K-683 の枝の getByLabel(名前, {exact:true}) の赤がこの葉の取り込みの後に消える（PM が確かめる）"
