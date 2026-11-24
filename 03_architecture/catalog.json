@@ -63,7 +63,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-731"
    ]
   },
   {
@@ -166,7 +167,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-732"
    ]
   },
   {
@@ -1760,7 +1762,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-68"
+    "K-68",
+    "K-401"
    ]
   },
   {
@@ -2056,7 +2059,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-676"
+   ]
   },
   {
    "op": "listKnowledgeVerifications",
@@ -2146,7 +2151,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-679"
+   ]
   },
   {
    "op": "getKnowledgePage",
@@ -2161,7 +2168,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-677"
+   ]
   },
   {
    "op": "updateKnowledgePage",
@@ -2176,7 +2185,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-681"
+   ]
   },
   {
    "op": "archiveKnowledgePage",
@@ -2221,7 +2232,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-679"
+   ]
   },
   {
    "op": "discardKnowledgeDraft",
@@ -2236,7 +2249,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-679"
+   ]
   },
   {
    "op": "getKnowledgeLinks",
@@ -2386,7 +2401,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-677"
+   ]
   },
   {
    "op": "restoreKnowledgeVersion",
@@ -4688,7 +4705,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-68"
+    "K-68",
+    "K-401"
    ]
   },
   {
@@ -5236,7 +5254,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-746"
    ]
   },
   {
@@ -5253,7 +5272,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-68"
+    "K-68",
+    "K-401"
    ]
   },
   {
@@ -5495,7 +5515,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {
@@ -5512,7 +5533,8 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {

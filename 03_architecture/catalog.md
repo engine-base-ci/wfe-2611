@@ -357,17 +357,17 @@ API 371（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 作った | K-59,K-434 |
 | `lintTestSpecs` | POST /api/v1/tickets/:id/test-specs/lint | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
-| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
-| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
+| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59,K-433 |
+| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59,K-433 |
 | `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | K-59 |
 | `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | K-59 |
 | `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 作った | K-62 |
-| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61 |
+| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61,K-731 |
 | `getApproval` | GET /api/v1/approvals/:id | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-161 |
 | `approveApproval` | POST /api/v1/approvals/:id/approve | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-162 |
 | `editApproval` | POST /api/v1/approvals/:id/edit | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `returnApproval` | POST /api/v1/approvals/:id/return | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-163 |
-| `stopApproval` | POST /api/v1/approvals/:id/stop | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める／AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61 |
+| `stopApproval` | POST /api/v1/approvals/:id/stop | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める／AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61,K-732 |
 | `withdrawApproval` | POST /api/v1/approvals/:id/withdraw | 作成・実行（approvals）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61 |
 | `bulkApprove` | POST /api/v1/approvals/bulk | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
@@ -395,7 +395,7 @@ API 371（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | K-61 |
 | `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 作った | K-165 |
 | `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 作った | K-62 |
-| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61 |
+| `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61,K-746 |
 | `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 作った | K-62 |
 | `updateTicketDecision` | PATCH /api/v1/ticket_decisions/:id | 更新（ticket_decisions）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-391 |
 | `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
@@ -420,9 +420,9 @@ API 371（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-488 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-487 |
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
-| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
-| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
-| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68 |
+| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68,K-401 |
+| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68,K-401 |
+| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68,K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -431,19 +431,19 @@ API 371（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `listKnowledgeProposals` | GET /api/v1/knowledge/proposals | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-676 |
 | `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createKnowledgeImport` | POST /api/v1/knowledge_imports | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeImport` | GET /api/v1/knowledge_imports/:id | 取得（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `commitKnowledgeImport` | POST /api/v1/knowledge_imports/:id/commit | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgePages` | GET /api/v1/knowledge_pages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
+| `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-677 |
+| `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-681 |
 | `archiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/archive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `uploadKnowledgeAttachment` | POST /api/v1/knowledge_pages/:id/attachments | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
+| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
 | `getKnowledgeLinks` | GET /api/v1/knowledge_pages/:id/links | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `linkKnowledgeMention` | POST /api/v1/knowledge_pages/:id/links | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -453,7 +453,7 @@ API 371（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `unarchiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/unarchive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeUsage` | GET /api/v1/knowledge_pages/:id/usage | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `verifyKnowledgePage` | POST /api/v1/knowledge_pages/:id/verify | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-677 |
 | `restoreKnowledgeVersion` | POST /api/v1/knowledge_pages/:id/versions/:v/restore | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
