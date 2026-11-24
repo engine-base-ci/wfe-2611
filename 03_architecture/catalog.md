@@ -476,10 +476,10 @@ API 377（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 作った | K-60 |
 | `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `createTicketKind` | POST /api/v1/ticket_kinds | 作成・実行（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-704 |
-| `updateTicketKind` | PATCH /api/v1/ticket_kinds/:id | 更新（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-704 |
-| `deleteTicketKind` | DELETE /api/v1/ticket_kinds/:id | 削除（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-704 |
-| `reorderTicketKinds` | POST /api/v1/ticket_kinds/order | 作成・実行（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-704 |
+| `createTicketKind` | POST /api/v1/ticket_kinds | 作成・実行（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69,K-704 |
+| `updateTicketKind` | PATCH /api/v1/ticket_kinds/:id | 更新（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69,K-704 |
+| `deleteTicketKind` | DELETE /api/v1/ticket_kinds/:id | 削除（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69,K-704 |
+| `reorderTicketKinds` | POST /api/v1/ticket_kinds/order | 作成・実行（ticket_kinds）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69,K-704 |
 | `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
 | `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
 | `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |

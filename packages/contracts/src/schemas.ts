@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:1ae7d3813ab41d87
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:1631d1d2c223251d
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2611,13 +2611,14 @@ export const TicketSectionVersionsInput = z.strictObject({
 export const TicketKinds = z.strictObject({
   name: z.string().optional(),
   color: z.string().nullable().optional(),
+  color_key: z.string().nullable().optional(),
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
+  body_template: z.unknown().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
-  body_template: z.unknown().nullable().optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
   description: z.string().nullable().optional(),
@@ -2626,8 +2627,10 @@ export const TicketKinds = z.strictObject({
 export const TicketKindsInput = z.strictObject({
   name: z.string().optional(),
   color: z.string().nullable().optional(),
+  color_key: z.string().nullable().optional(),
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
+  body_template: z.unknown().nullable().optional(),
 });
 export const KindSections = z.strictObject({
   kind_id: z.uuid().optional(),

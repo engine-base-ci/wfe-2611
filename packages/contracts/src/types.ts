@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:1ae7d3813ab41d87
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:1631d1d2c223251d
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -216,8 +216,8 @@ export type TicketSections = { ticket_id?: string; section_key?: string; positio
 export type TicketSectionsInput = { ticket_id?: string; section_key?: string; position?: number; body?: unknown };
 export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; restored_from?: number | null; updated_by?: string | null };
 export type TicketSectionVersionsInput = { ticket_id?: string; section_id?: string; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean };
-export type TicketKinds = { name?: string; color?: string | null; position?: number; is_builtin?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; body_template?: unknown | null; created_by?: string | null; deleted_at?: string | null; description?: string | null; updated_by?: string | null };
-export type TicketKindsInput = { name?: string; color?: string | null; position?: number; is_builtin?: boolean };
+export type TicketKinds = { name?: string; color?: string | null; color_key?: string | null; position?: number; is_builtin?: boolean; body_template?: unknown | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; description?: string | null; updated_by?: string | null };
+export type TicketKindsInput = { name?: string; color?: string | null; color_key?: string | null; position?: number; is_builtin?: boolean; body_template?: unknown | null };
 export type KindSections = { kind_id?: string; section_key?: string; label?: string; mode?: string; position?: number; default_test_specs?: unknown | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_visible?: boolean; content_type?: string; created_by?: string | null; deleted_at?: string | null; hint?: string | null; updated_by?: string | null; used_for_acceptance?: boolean };
 export type KindSectionsInput = { kind_id?: string; section_key?: string; label?: string; mode?: string; position?: number; default_test_specs?: unknown | null };
 export type TicketStages = { name?: string; position?: number; is_fixed?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; key?: string | null; updated_by?: string | null };

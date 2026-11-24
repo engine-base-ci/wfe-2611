@@ -3301,14 +3301,18 @@
     "checkRule",
     "countKnows",
     "createMemory",
+    "createTicketKind",
     "deleteMemory",
+    "deleteTicketKind",
     "dismissLearningCandidate",
     "listLearningCandidates",
     "listMemories",
     "postponeLearningCandidate",
     "promoteMemoryToRule",
+    "reorderTicketKinds",
     "requestRuleException",
-    "updateMemory"
+    "updateMemory",
+    "updateTicketKind"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
