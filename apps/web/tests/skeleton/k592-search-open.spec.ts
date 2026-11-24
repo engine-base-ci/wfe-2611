@@ -79,7 +79,7 @@ test("K592-M2-02 番号で探す：番号を全角・小文字・前後の空白
 }) => {
   const s = await seeded(page, "番号");
   const { number } = await ticketFacts(s.t2);
-  const odd = `　${number.toLowerCase().replace(/[0-9A-Za-z-]/g, (c) => (c === "-" ? "－" : String.fromCharCode(c.charCodeAt(0) + 0xfee0)))} `;
+  const odd = `\u3000${number.toLowerCase().replace(/[0-9A-Za-z-]/g, (c) => (c === "-" ? "－" : String.fromCharCode(c.charCodeAt(0) + 0xfee0)))} `;
   await page.goto("/tickets");
   const found = await searchFor(page, odd);
   const hit = hitLink(found, `${s.key} 見積を作る`);
