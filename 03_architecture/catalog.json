@@ -3610,7 +3610,7 @@
    "op": "listOpsInvoices",
    "method": "GET",
    "path": "/api/v1/ops/invoices",
-   "what": "取得（ops）— 請求書を出し、入金を記録する",
+   "what": "取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき）",
    "flows": [
     "F12"
    ],

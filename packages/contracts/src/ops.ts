@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:45e38de523b3bc4f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:faf6c03c19929b80
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -220,10 +220,10 @@ export interface Ops {
   updateOpsInquiry: { params: { id: string }; query: never; body: T.InquiriesInput; data: T.Inquiries };
   addOpsInquiryNote: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   replyOpsInquiry: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  listOpsInvoices: { params: never; query: { "month"?: string | number; "state"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Invoices[] };
-  recordPayment: { params: { id: string }; query: never; body: T.PaymentsInput; data: T.Payments };
+  listOpsInvoices: { params: never; query: { "month"?: string | number; "state"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.OpsInvoiceRow[] };
+  recordPayment: { params: { id: string }; query: never; body: T.PaymentRecordInput; data: T.OpsInvoiceRow };
   exportOpsInvoices: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };
-  issueOpsInvoices: { params: never; query: never; body: T.InvoicesInput; data: T.Invoices };
+  issueOpsInvoices: { params: never; query: never; body: T.OpsInvoiceIssueInput; data: T.OpsInvoiceIssue };
   listOpsMembers: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.OpsMembers[] };
   addOpsMember: { params: never; query: never; body: T.OpsMembersInput; data: T.OpsMembers };
   updateOpsMemberCaps: { params: { id: string }; query: never; body: T.OpsMembersInput; data: T.OpsMembers };
@@ -258,7 +258,7 @@ export interface Ops {
   resendOpsVerification: { params: { id: string; mid: string }; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
   sendWorkspaceNotice: { params: { id: string }; query: never; body: T.NoticesInput; data: T.Notices };
   openPeek: { params: { id: string }; query: never; body: T.SupportAccessGrantsInput; data: T.SupportAccessGrants };
-  changeOpsWorkspacePlan: { params: { id: string }; query: never; body: T.SubscriptionsInput; data: T.Subscriptions };
+  changeOpsWorkspacePlan: { params: { id: string }; query: never; body: T.OpsPlanChangeInput; data: T.PlanChange };
   resumeWorkspace: { params: { id: string }; query: never; body: T.AccountEventsInput; data: T.AccountEvents };
   stopWorkspace: { params: { id: string }; query: never; body: T.AccountEventsInput; data: T.AccountEvents };
   exportOpsWorkspaces: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };
@@ -351,13 +351,13 @@ export interface Ops {
   getWorkspaceSettings: { params: never; query: never; body: never; data: T.WorkspaceSettings };
   updateWorkspace: { params: never; query: never; body: T.TenantsInput; data: T.Tenants };
   getBilling: { params: never; query: never; body: never; data: T.Billing };
-  updateBillingContact: { params: never; query: never; body: T.SubscriptionsInput; data: T.Subscriptions };
+  updateBillingContact: { params: never; query: never; body: T.BillingContactInput; data: T.BillingContact };
   requestWorkspaceDeletion: { params: never; query: never; body: T.AccountEventsInput; data: T.AccountEvents };
   cancelWorkspaceDeletion: { params: never; query: never; body: never; data: T.AccountEvents };
   uploadWorkspaceLogo: { params: never; query: never; body: T.TenantsInput; data: T.Tenants };
   getWorkspaceMembers: { params: never; query: never; body: never; data: T.WorkspaceMembers };
   updateWorkspacePermissions: { params: never; query: never; body: T.PermissionsInput; data: T.Permissions };
-  changePlan: { params: never; query: never; body: T.SubscriptionsInput; data: T.Subscriptions };
+  changePlan: { params: never; query: never; body: T.PlanChangeInput; data: T.PlanChange };
   listWorkspacePlans: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.PlanChoice[] };
   getTicketShape: { params: never; query: never; body: never; data: T.TicketShape };
   saveTicketShape: { params: never; query: never; body: T.TicketKindsInput; data: T.TicketKinds };

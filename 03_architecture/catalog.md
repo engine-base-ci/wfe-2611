@@ -254,7 +254,7 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `updateOpsInquiry` | PATCH /api/v1/ops/inquiries/:id | 更新（ops）— 問い合わせに答える | F12 | 契約だけ（501） |  |
 | `addOpsInquiryNote` | POST /api/v1/ops/inquiries/:id/notes | 作成・実行（ops）— 問い合わせに答える | F12 | 契約だけ（501） |  |
 | `replyOpsInquiry` | POST /api/v1/ops/inquiries/:id/replies | 作成・実行（ops）— 問い合わせに答える | F12 | 契約だけ（501） |  |
-| `listOpsInvoices` | GET /api/v1/ops/invoices | 取得（ops）— 請求書を出し、入金を記録する | F12 | 契約だけ（501） |  |
+| `listOpsInvoices` | GET /api/v1/ops/invoices | 取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき） | F12 | 契約だけ（501） |  |
 | `recordPayment` | POST /api/v1/ops/invoices/:id/payments | 作成・実行（ops）— 請求書を出し、入金を記録する | F12 | 契約だけ（501） |  |
 | `exportOpsInvoices` | POST /api/v1/ops/invoices/export | 作成・実行（ops）— 請求書を出し、入金を記録する | F12 | 契約だけ（501） |  |
 | `issueOpsInvoices` | POST /api/v1/ops/invoices/issue | 作成・実行（ops）— 請求書を出し、入金を記録する | F12 | 契約だけ（501） |  |
