@@ -178,6 +178,7 @@ export const MIGRATIONS = [
   "20261125024000_talk_mirror.sql",
   "20261125024100_job_browser_file.sql",
   "20261125024300_ticket_talk.sql",
+  "20261125024800_approval_bulk.sql",
   "20261125025400_draft_talk.sql",
   "20261125025600_draft_adopt.sql",
 ] as const;

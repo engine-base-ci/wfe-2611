@@ -2,6 +2,7 @@
 import type { HookModule } from "./registry.js";
 import { register as adminRecovery } from "./admin-recovery.js";
 import { register as agent } from "./agent.js";
+import { register as approvalBulk } from "./approval-bulk.js";
 import { register as approvalEdit } from "./approval-edit.js";
 import { register as approvalHistory } from "./approval-history.js";
 import { register as approvalStop } from "./approval-stop.js";
@@ -66,4 +67,4 @@ import { register as twoFactor } from "./two-factor.js";
 import { register as verifyEmail } from "./verify-email.js";
 import { register as workspaceInvitationLink } from "./workspace-invitation-link.js";
 import { register as workspaceInvitations } from "./workspace-invitations.js";
-export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approvalEdit, approvalHistory, approvalStop, approvalWithdraw, approveComplete, auth, bridgeBrowser, bridgeJobExtra, bridge, changePassword, cloneRoom, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, credentialsResolve, delegate, deviceBrowserCheck, deviceBrowser, deviceRevoke, draftAdopt, draftTalk, handoversRead, handovers, invitationConfirm, invitations, login, mySecurity, notificationsList, passkeys, passwordReset, runStop, savedViews, scopeOverview, search, serviceStatus, setupTasks, signup, stopped, talkMirror, talkRead, talkSay, talkStream, testSpecsCreate, testSpecsEdit, ticketBody, ticketDecisionUpdate, ticketDecisions, ticketDeletePreview, ticketDelete, ticketFieldsRead, ticketLinks, ticketMessageEdit, ticketMessagePost, ticketTalk, ticketTimelineSeen, ticketTimeline, ticketUpdate, tickets, twoFactor, verifyEmail, workspaceInvitationLink, workspaceInvitations];
+export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approvalBulk, approvalEdit, approvalHistory, approvalStop, approvalWithdraw, approveComplete, auth, bridgeBrowser, bridgeJobExtra, bridge, changePassword, cloneRoom, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, credentialsResolve, delegate, deviceBrowserCheck, deviceBrowser, deviceRevoke, draftAdopt, draftTalk, handoversRead, handovers, invitationConfirm, invitations, login, mySecurity, notificationsList, passkeys, passwordReset, runStop, savedViews, scopeOverview, search, serviceStatus, setupTasks, signup, stopped, talkMirror, talkRead, talkSay, talkStream, testSpecsCreate, testSpecsEdit, ticketBody, ticketDecisionUpdate, ticketDecisions, ticketDeletePreview, ticketDelete, ticketFieldsRead, ticketLinks, ticketMessageEdit, ticketMessagePost, ticketTalk, ticketTimelineSeen, ticketTimeline, ticketUpdate, tickets, twoFactor, verifyEmail, workspaceInvitationLink, workspaceInvitations];
