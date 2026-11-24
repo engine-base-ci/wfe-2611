@@ -45417,6 +45417,86 @@
       "D-152.27",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A136",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/approvals",
+     "table": "knowledge_requests",
+     "operation_id": "listKnowledgeApprovals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-147"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/approve",
+     "table": "knowledge_requests",
+     "operation_id": "approveKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/decline",
+     "table": "knowledge_requests",
+     "operation_id": "declineKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -46609,6 +46689,86 @@
      "path_draft": "/api/knowledge/requests/:id/dismiss",
      "table": "knowledge_requests",
      "operation_id": "dismissKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/approvals",
+     "table": "knowledge_requests",
+     "operation_id": "listKnowledgeApprovals",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-147"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/approve",
+     "table": "knowledge_requests",
+     "operation_id": "approveKnowledgeRequest",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-149",
+      "E-121",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/decline",
+     "table": "knowledge_requests",
+     "operation_id": "declineKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-149",

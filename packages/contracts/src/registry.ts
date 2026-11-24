@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:dbcfc700e477d9d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:841d8e3f10cfb4e5
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6278,6 +6278,54 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/knowledge/approvals",
+    "operationId": "listKnowledgeApprovals",
+    "table": "knowledge_requests",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeApproval",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "POST",
     "path": "/api/v1/knowledge/ask",
     "operationId": "askKnowledge",
@@ -6833,6 +6881,120 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       409,
       503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge/requests/:id/approve",
+    "operationId": "approveKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeApproveInput",
+    "success": 200,
+    "output": "KnowledgeRequestDecided",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/knowledge/requests/:id/decline",
+    "operationId": "declineKnowledgeRequest",
+    "table": "knowledge_requests",
+    "kind": "create",
+    "input": "KnowledgeDeclineInput",
+    "success": 200,
+    "output": "KnowledgeRequestDecided",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      503,
+      413,
       429,
       403,
       403,
@@ -20768,4 +20930,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "dbcfc700e477d9d4";
+export const OPENAPI_HASH = "841d8e3f10cfb4e5";

@@ -12679,6 +12679,23 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: dismissKnowledgeRequest
+    KnowledgeApproveInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: approveKnowledgeRequest
+    KnowledgeDeclineInput:
+      type: object
+      properties:
+        reason:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 1000
+      additionalProperties: false
+      x-operation: declineKnowledgeRequest
+      required:
+      - reason
+      x-required-by: hooks
     TicketStageCreateInput:
       type: object
       properties:
@@ -15139,6 +15156,55 @@ components:
         state:
           type: string
       x-operation: dismissKnowledgeRequest
+    KnowledgeApproval:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        from_name:
+          type: string
+        from_shelf_name:
+          type: string
+        to_shelf_name:
+          type: string
+        title:
+          type: string
+        desc:
+          type: string
+        message:
+          type: string
+          nullable: true
+        requested_at:
+          type: string
+        similar:
+          type: object
+          nullable: true
+        body:
+          type: object
+          nullable: true
+      x-operation: listKnowledgeApprovals
+    KnowledgeRequestDecided:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        page_id:
+          type: string
+          format: uuid
+          nullable: true
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: declineKnowledgeRequest
     TicketStageSetting:
       type: object
       properties:
@@ -26799,6 +26865,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/approvals:
+    get:
+      operationId: listKnowledgeApprovals
+      summary: 取得（knowledge_requests）— 自分が承認できる承認待ちを新しい順に見る
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: self
+      x-permission-scope: 承認できる人（管理者・どれかのグループのマネージャー）だけ。行は自分が承認する承認待ちだけ（app.kn_approval_rows）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KnowledgeApproval'
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge/ask:
     post:
       operationId: askKnowledge
@@ -27845,6 +27996,204 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/requests/{id}/approve:
+    post:
+      operationId: approveKnowledgeRequest
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: その頼みを承認する人だけ（app.kn_request_visible で 404・app.kn_request_decide で 403）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeApproveInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeRequestDecided'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-110／E-KNW-111／E-KNW-103
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/requests/{id}/decline:
+    post:
+      operationId: declineKnowledgeRequest
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_requests
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: その頼みを承認する人だけ（理由が要る・app.kn_request_decide）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeDeclineInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeRequestDecided'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-110
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:

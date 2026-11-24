@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 389,
+  "total_apis": 392,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -3136,6 +3136,21 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge/requests/:id/dismiss",
+     "act": "A136"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge/approvals",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/approve",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/decline",
      "act": "A136"
     }
    ],

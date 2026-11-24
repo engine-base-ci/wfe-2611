@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。298 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。300 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5145,6 +5145,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-110": {
+    "id": "E-KNW-110",
+    "cls": "conflict",
+    "message": "この頼みはもう決まっています",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-110",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-111": {
+    "id": "E-KNW-111",
+    "cls": "conflict",
+    "message": "頼んだ人がもうそのグループにいないので、承認できません",
+    "action": "断る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-111",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
     ],
     "where": {
       "screen": "knowledge"

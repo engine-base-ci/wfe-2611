@@ -2006,6 +2006,17 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-approvals.ts",
+    "apps/api/src/features/F9/knowledge/approvals.ts",
+    "apps/api/src/features/F9/knowledge/decide.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/approvals-count.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-approvals.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],

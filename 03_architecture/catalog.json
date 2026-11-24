@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 389,
+  "api": 392,
   "api_built": 118,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 150,
   "ui": 19,
   "packages": 13,
-  "errors": 298,
+  "errors": 300,
   "stack": 68,
   "env": 41
  },
@@ -1934,6 +1934,23 @@
    "owner_tickets": []
   },
   {
+   "op": "listKnowledgeApprovals",
+   "method": "GET",
+   "path": "/api/v1/knowledge/approvals",
+   "what": "取得（knowledge_requests）— 自分が承認できる承認待ちを新しい順に見る",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-688"
+   ]
+  },
+  {
    "op": "askKnowledge",
    "method": "POST",
    "path": "/api/v1/knowledge/ask",
@@ -2118,6 +2135,40 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-687"
+   ]
+  },
+  {
+   "op": "approveKnowledgeRequest",
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/approve",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-688"
+   ]
+  },
+  {
+   "op": "declineKnowledgeRequest",
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/decline",
+   "what": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_requests"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-688"
    ]
   },
   {

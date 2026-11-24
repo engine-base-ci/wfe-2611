@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:dbcfc700e477d9d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:841d8e3f10cfb4e5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -120,6 +120,7 @@ export interface Ops {
   resendInvitation: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
   createInvitationLink: { params: never; query: never; body: T.InvitationLinkCreateInput; data: T.InvitationLink };
   downloadInvoicePdf: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
+  listKnowledgeApprovals: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.KnowledgeApproval[] };
   askKnowledge: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgeAnswer };
   sendKnowledgeAnswerFeedback: { params: never; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   createKnowledgeFolder: { params: never; query: never; body: T.KnowledgeFolderCreateInput; data: T.KnowledgeFolder };
@@ -131,6 +132,8 @@ export interface Ops {
   acceptKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   declineKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   withdrawKnowledgeRequest: { params: { id: string }; query: never; body: never; data: T.KnowledgeRequestEnded };
+  approveKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeApproveInput; data: T.KnowledgeRequestDecided };
+  declineKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDeclineInput; data: T.KnowledgeRequestDecided };
   dismissKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDismissInput; data: T.KnowledgeRequestEnded };
   findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };

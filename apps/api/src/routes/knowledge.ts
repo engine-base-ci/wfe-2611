@@ -4,6 +4,7 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
+  app.get("/api/v1/knowledge/approvals", op(deps, "listKnowledgeApprovals"));
   app.post("/api/v1/knowledge/ask", op(deps, "askKnowledge"));
   app.post("/api/v1/knowledge/ask/feedback", op(deps, "sendKnowledgeAnswerFeedback"));
   app.post("/api/v1/knowledge/folders", op(deps, "createKnowledgeFolder"));
@@ -15,6 +16,8 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/knowledge/proposals/:id/accept", op(deps, "acceptKnowledgeProposal"));
   app.post("/api/v1/knowledge/proposals/:id/decline", op(deps, "declineKnowledgeProposal"));
   app.delete("/api/v1/knowledge/requests/:id", op(deps, "withdrawKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/approve", op(deps, "approveKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/decline", op(deps, "declineKnowledgeRequest"));
   app.post("/api/v1/knowledge/requests/:id/dismiss", op(deps, "dismissKnowledgeRequest"));
   app.post("/api/v1/knowledge/similar", op(deps, "findSimilarKnowledge"));
   app.get("/api/v1/knowledge/tree", op(deps, "getKnowledgeTree"));

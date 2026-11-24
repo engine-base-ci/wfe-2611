@@ -3226,7 +3226,10 @@
     "POST /api/knowledge_pages/:id/copy",
     "POST /api/knowledge_pages/:id/raise",
     "DELETE /api/knowledge/requests/:id",
-    "POST /api/knowledge/requests/:id/dismiss"
+    "POST /api/knowledge/requests/:id/dismiss",
+    "GET /api/knowledge/approvals",
+    "POST /api/knowledge/requests/:id/approve",
+    "POST /api/knowledge/requests/:id/decline"
    ],
    "access_roles": [
     "R1",
@@ -11665,6 +11668,24 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge/requests/:id/dismiss"
+    },
+    {
+     "act": "A136",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/approvals"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/approve"
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/requests/:id/decline"
     }
    ]
   },

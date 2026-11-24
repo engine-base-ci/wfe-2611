@@ -1300,6 +1300,17 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/knowledge/approvals",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::listKnowledgeApprovals",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/knowledge/ask",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::askKnowledge",
@@ -1413,6 +1424,28 @@
    "method": "DELETE",
    "path": "/api/v1/knowledge/requests/:id",
    "implementation_path": "apps/api/src/routes/knowledge_requests.ts::withdrawKnowledgeRequest",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/approve",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::approveKnowledgeRequest",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/decline",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::declineKnowledgeRequest",
    "screen_ids_referencing": [
     "knowledge"
    ],

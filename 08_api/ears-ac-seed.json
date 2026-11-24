@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 389,
+ "endpoints_count": 392,
  "ac_seeds": [
   {
    "endpoint": "POST /api/v1/acceptances/:id/remind",
@@ -4147,6 +4147,37 @@
    ]
   },
   {
+   "endpoint": "GET /api/v1/knowledge/approvals",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/approvals が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 承認できる人でないなら、Kaname は 403 を返し、承認待ちを見せない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF DB が使えないなら、Kaname は 503 と E-PAGE-003 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: GET /api/v1/knowledge/approvals の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
+   ]
+  },
+  {
    "endpoint": "POST /api/v1/knowledge/ask",
    "feature_id": "F-011",
    "screen_ids": [
@@ -4522,6 +4553,76 @@
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
     "UBIQUITOUS: DELETE /api/v1/knowledge/requests/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/knowledge/requests/:id/approve",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/requests/:id/approve が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 承認する人でないなら、Kaname は 403 を返し、何も変えない",
+    "UNWANTED: IF 頼みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
+    "UNWANTED: IF 頼みがもう決まっている（承認・断り・取り下げ済み・同時に押した負けた方）なら、Kaname は 409 と E-KNW-110 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 を返し、何も変えない",
+    "UNWANTED: IF 自分の棚のページを上げる頼みで、頼んだ人がもう先のグループにいないなら、Kaname は 409 と E-KNW-111 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 入れるフォルダが先の棚に無い（頼んだあとにフォルダが付け替わった）なら、Kaname は 409 と E-KNW-103 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF DB が使えないなら、Kaname は 503 と E-PAGE-003 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/knowledge/requests/:id/approve の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/knowledge/requests/:id/decline",
+   "feature_id": "F-011",
+   "screen_ids": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/requests/:id/decline が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 承認する人でないなら、Kaname は 403 を返し、何も変えない",
+    "UNWANTED: IF 頼みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も変えない",
+    "UNWANTED: IF 頼みがもう決まっている（承認・断り・取り下げ済み・同時に押した負けた方）なら、Kaname は 409 と E-KNW-110 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 断る理由が決まりに合わないなら、Kaname は 422 と欄 reason の理由を返し、頼みを変えない",
+    "UNWANTED: IF DB が使えないなら、Kaname は 503 と E-PAGE-003 を返し、頼みもお知らせもページも変えない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/knowledge/requests/:id/decline の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "source": [
     "D-125.167",

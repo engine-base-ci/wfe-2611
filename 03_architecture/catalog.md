@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 389（作った 118・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
+API 392（作った 118・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 300・部品 68・設定 41
 
 ## 共通の処理
 
@@ -429,6 +429,7 @@ API 389（作った 118・後のフェーズの行為だけ 20）・前の道す
 | `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
 | `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
+| `listKnowledgeApprovals` | GET /api/v1/knowledge/approvals | 取得（knowledge_requests）— 自分が承認できる承認待ちを新しい順に見る | F9 | 契約だけ（501） | K-688 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
 | `createKnowledgeFolder` | POST /api/v1/knowledge/folders | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
@@ -440,6 +441,8 @@ API 389（作った 118・後のフェーズの行為だけ 20）・前の道す
 | `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
 | `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
 | `withdrawKnowledgeRequest` | DELETE /api/v1/knowledge/requests/:id | 削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
+| `approveKnowledgeRequest` | POST /api/v1/knowledge/requests/:id/approve | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-688 |
+| `declineKnowledgeRequest` | POST /api/v1/knowledge/requests/:id/decline | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-688 |
 | `dismissKnowledgeRequest` | POST /api/v1/knowledge/requests/:id/dismiss | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
 | `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-686 |
 | `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-676 |
