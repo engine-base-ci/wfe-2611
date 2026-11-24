@@ -2,7 +2,8 @@
 // svar-gantt（@svar-ui/react-gantt v2・MIT・D-079）の実体。ブラウザ専用なので SSR に載せない（gantt-chart.tsx が next/dynamic で読む。
 //   本線の components/views/gantt-inner.tsx と同じ作り）。左の表は 件名・担当者・状態、棒は状態の色（正本のトークン）、土日と今日は列の色で示す。
 //   見た目は gantt.css が svar の変数（--wx-*）を正本のトークンに置き換える。棒の中身と節目の旗は taskTemplate で描く。
-//   下絵では読むだけ（readonly）。葉が readonly を外し、update-task で期限を動かす確かめ（MoveImpactDialog）につなぐ
+//   棒を動かす（K-482）：つかんで離したときの update-task を api.intercept で取り、onMove（動かした端と日数）を呼んで false を返す（店の値は替えない）。
+//   つかんでいる間の drag-task は見た目（$x・$w）だけを替えるので、最初の位置を覚えておき、取り消したら drag-task で元の位置に戻す
 import { Gantt, Willow, type IApi, type IColumnConfig, type IScaleConfig, type ITask } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 import { useCallback, useLayoutEffect, useMemo, useState } from "react";
@@ -79,9 +80,21 @@ export interface GanttInnerProps {
   end: Date;
   today: Date;
   readonly: boolean;
-  /** 棒を動かした（つかんで離した）とき。葉が確かめの小窓につなぐ */
-  onMove?: (id: number, start: Date, end: Date) => void;
+  /** 棒を動かした（つかんで離した）とき。edge は動かした端（move＝棒ごと・start＝左の端・end＝右の端）、diff は目盛りの数（日・週・月） */
+  onMove?: (id: number, move: GanttMove) => void;
 }
+
+export interface GanttMove {
+  edge: "move" | "start" | "end";
+  diff: number;
+}
+
+interface Place {
+  left: number;
+  width: number;
+}
+const edgeOf = (task: Partial<ITask>): GanttMove["edge"] =>
+  task.start && task.end ? "move" : task.start ? "start" : "end";
 
 const sameDay = (a: Date, b: Date): boolean =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -102,9 +115,23 @@ export default function GanttInner({ tasks, scale, start, end, today, readonly, 
   const init = useCallback(
     (api: IApi) => {
       if (!onMove) return;
-      api.on("update-task", (e) => {
-        const t = e.task;
-        if (!e.inProgress && t?.start && t.end) onMove(Number(e.id), t.start, t.end);
+      const first = new Map<number, Place>();
+      api.intercept("drag-task", (e) => {
+        const id = Number(e.id);
+        const t = api.getTask(e.id) as (ITask & { $x?: number; $w?: number }) | undefined;
+        if (e.inProgress && !first.has(id) && t && typeof t.$x === "number" && typeof t.$w === "number")
+          first.set(id, { left: t.$x, width: t.$w });
+        if (!e.inProgress) first.delete(id);
+        return true;
+      });
+      api.intercept("update-task", (e) => {
+        if (e.inProgress || typeof e.diff !== "number" || !e.diff || !e.task) return true;
+        const id = Number(e.id);
+        const back = first.get(id);
+        first.delete(id);
+        if (back) api.exec("drag-task", { id: e.id, left: back.left, width: back.width, inProgress: false });
+        onMove(id, { edge: edgeOf(e.task), diff: e.diff });
+        return false;
       });
     },
     [onMove],

@@ -1808,6 +1808,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/gantt/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k482-gantt.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F7/due/**",
     "apps/api/src/features/ticket-update/**",
     "apps/api/src/hooks/ticket-update.ts",
