@@ -133,7 +133,8 @@ test("K599-SL-004 外枠 Shell は新しい任意の props を受ける（渡さ
     "defaultSearching",
   ])
     if (!new RegExp(`\\b${p}\\?:`).test(c)) bad.push(`Shell の props に ${p}?: が無い`);
-  if ((c.match(/準備中/g) ?? []).length > 5) bad.push("shell.tsx の「準備中」の字が増えた");
+  // 前からの shell.tsx（注を外したコード）の「準備中」は 9 個（知らせ・項目・自分のメニュー・会社の切り替え・グループの★・グループの行・いまの場所・探す 2）
+  if ((c.match(/準備中/g) ?? []).length > 9) bad.push("shell.tsx の「準備中」の字が増えた");
   expect(bad, bad.join("\n")).toEqual([]);
 });
 
