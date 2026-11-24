@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 386（作った 107・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 291・部品 68・設定 41
+API 389（作った 117・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
 
 ## 共通の処理
 
@@ -83,10 +83,11 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `kaname_auth` | internal |  |  |  |
 | `kind_sections` | skeleton | F4,F9 |  | ○ |
 | `knowledge_folders` | skeleton | F9 |  |  |
+| `knowledge_limits` | skeleton |  |  |  |
 | `knowledge_links` | skeleton | F9 |  |  |
 | `knowledge_page_versions` | skeleton | F9 |  |  |
 | `knowledge_pages` | skeleton | F9 |  |  |
-| `layers` | skeleton | F9 |  |  |
+| `layers` | skeleton | F10 |  |  |
 | `learning_candidates` | skeleton | F9 |  |  |
 | `login_attempts` | internal |  |  |  |
 | `member_kinds` | internal |  |  |  |
@@ -109,7 +110,7 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `saved_views` | skeleton | F7 |  |  |
 | `schema_migrations` | internal |  |  |  |
 | `scope_memberships` | skeleton | F10 |  |  |
-| `scopes` | skeleton | F9 |  |  |
+| `scopes` | skeleton | F10 |  |  |
 | `security_events` | skeleton | F1,F10,F12 |  | ○ |
 | `sessions` | skeleton | F1,F10,F3 |  | ○ |
 | `skill_test_runs` | skeleton | F9 |  |  |
@@ -173,6 +174,8 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） | K-70 |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） | K-70 |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-421 |
+| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F10 | 契約だけ（501） |  |
+| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F10 | 契約だけ（501） |  |
 | `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
@@ -196,6 +199,9 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `resumeMember` | POST /api/v1/members/:id/resume | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 契約だけ（501） |  |
 | `updateMemberRole` | PATCH /api/v1/members/:id/role | 更新（members）— メンバーの所属（兼務）・権限を決める | F10 | 契約だけ（501） | K-70 |
 | `suspendMember` | POST /api/v1/members/:id/suspend | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 契約だけ（501） |  |
+| `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-60 |
+| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F10 | 契約だけ（501） |  |
+| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F10 | 契約だけ（501） |  |
 | `getWorkspaceSettings` | GET /api/v1/workspace | 取得（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `updateWorkspace` | PATCH /api/v1/workspace | 更新（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `requestWorkspaceDeletion` | POST /api/v1/workspace/deletion | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
@@ -423,50 +429,51 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
 | `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
-| `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `createKnowledgeFolder` | POST /api/v1/knowledge/folders | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `updateKnowledgeFolder` | PATCH /api/v1/knowledge/folders/:id | 更新（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `deleteKnowledgeFolder` | DELETE /api/v1/knowledge/folders/:id | 削除（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgeHome` | GET /api/v1/knowledge/home | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `searchKnowledgeLinkTargets` | GET /api/v1/knowledge/link-targets | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `listKnowledgeProposals` | GET /api/v1/knowledge/proposals | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `createKnowledgeImport` | POST /api/v1/knowledge_imports | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgeImport` | GET /api/v1/knowledge_imports/:id | 取得（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `commitKnowledgeImport` | POST /api/v1/knowledge_imports/:id/commit | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `listKnowledgePages` | GET /api/v1/knowledge_pages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `deleteKnowledgePage` | DELETE /api/v1/knowledge_pages/:id | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `archiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/archive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `uploadKnowledgeAttachment` | POST /api/v1/knowledge_pages/:id/attachments | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `copyKnowledgePage` | POST /api/v1/knowledge_pages/:id/copy | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgeLinks` | GET /api/v1/knowledge_pages/:id/links | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `linkKnowledgeMention` | POST /api/v1/knowledge_pages/:id/links | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `listKnowledgeMessages` | GET /api/v1/knowledge_pages/:id/messages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `postKnowledgeMessage` | POST /api/v1/knowledge_pages/:id/messages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `setKnowledgeMust` | PUT /api/v1/knowledge_pages/:id/must | 置き換え（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `publishKnowledgePage` | POST /api/v1/knowledge_pages/:id/publish | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `unarchiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/unarchive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgeUsage` | GET /api/v1/knowledge_pages/:id/usage | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `verifyKnowledgePage` | POST /api/v1/knowledge_pages/:id/verify | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_page_versions）— ページの公開した版を新しい順に見る | F9 | 契約だけ（501） | K-69 |
-| `getKnowledgePageVersion` | GET /api/v1/knowledge_pages/:id/versions/:v | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `restoreKnowledgeVersion` | POST /api/v1/knowledge_pages/:id/versions/:v/restore | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-69 |
-| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `listLearningCandidates` | GET /api/v1/learning_candidates | 取得（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | K-69 |
-| `acceptLearningCandidate` | POST /api/v1/learning_candidates/:id/accept | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | K-69 |
-| `dismissLearningCandidate` | POST /api/v1/learning_candidates/:id/dismiss | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／上がってきた記憶と食い違いを確かめる | F9 | 契約だけ（501） | K-69 |
+| `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `createKnowledgeFolder` | POST /api/v1/knowledge/folders | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `updateKnowledgeFolder` | PATCH /api/v1/knowledge/folders/:id | 更新（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `deleteKnowledgeFolder` | DELETE /api/v1/knowledge/folders/:id | 削除（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `getKnowledgeHome` | GET /api/v1/knowledge/home | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `searchKnowledgeLinkTargets` | GET /api/v1/knowledge/link-targets | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `listKnowledgeProposals` | GET /api/v1/knowledge/proposals | 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
+| `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
+| `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
+| `withdrawKnowledgeRequest` | DELETE /api/v1/knowledge/requests/:id | 削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
+| `dismissKnowledgeRequest` | POST /api/v1/knowledge/requests/:id/dismiss | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
+| `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-676 |
+| `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `createKnowledgeImport` | POST /api/v1/knowledge_imports | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `getKnowledgeImport` | GET /api/v1/knowledge_imports/:id | 取得（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `commitKnowledgeImport` | POST /api/v1/knowledge_imports/:id/commit | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `listKnowledgePages` | GET /api/v1/knowledge_pages | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-679 |
+| `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-677 |
+| `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-681 |
+| `deleteKnowledgePage` | DELETE /api/v1/knowledge_pages/:id | 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-681 |
+| `archiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/archive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `uploadKnowledgeAttachment` | POST /api/v1/knowledge_pages/:id/attachments | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `copyKnowledgePage` | POST /api/v1/knowledge_pages/:id/copy | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-679 |
+| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-679 |
+| `getKnowledgeLinks` | GET /api/v1/knowledge_pages/:id/links | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `linkKnowledgeMention` | POST /api/v1/knowledge_pages/:id/links | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `listKnowledgeMessages` | GET /api/v1/knowledge_pages/:id/messages | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `postKnowledgeMessage` | POST /api/v1/knowledge_pages/:id/messages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `setKnowledgeMust` | PUT /api/v1/knowledge_pages/:id/must | 置き換え（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-685 |
+| `publishKnowledgePage` | POST /api/v1/knowledge_pages/:id/publish | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `requestKnowledgeRaise` | POST /api/v1/knowledge_pages/:id/raise | 作成・実行（knowledge_pages）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
+| `unarchiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/unarchive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `getKnowledgeUsage` | GET /api/v1/knowledge_pages/:id/usage | 取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項 | F9 | 契約だけ（501） | K-69 |
+| `verifyKnowledgePage` | POST /api/v1/knowledge_pages/:id/verify | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_page_versions）— ページの公開した版を新しい順に見る | F9 | 作った | K-69,K-677 |
+| `getKnowledgePageVersion` | GET /api/v1/knowledge_pages/:id/versions/:v | 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-677 |
+| `restoreKnowledgeVersion` | POST /api/v1/knowledge_pages/:id/versions/:v/restore | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |
+| `listLearningCandidates` | GET /api/v1/learning_candidates | 取得（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違 | F9 | 契約だけ（501） | K-69 |
+| `acceptLearningCandidate` | POST /api/v1/learning_candidates/:id/accept | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違 | F9 | 契約だけ（501） | K-69 |
+| `dismissLearningCandidate` | POST /api/v1/learning_candidates/:id/dismiss | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて）／見直すページを確かめる（承認待ち・使われていない・食い違 | F9 | 契約だけ（501） | K-69 |
 | `requestRuleException` | POST /api/v1/learning_candidates/:id/exception-request | 作成・実行（learning_candidates）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
 | `postponeLearningCandidate` | POST /api/v1/learning_candidates/:id/later | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `listMemories` | GET /api/v1/memories | 取得（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
@@ -477,21 +484,18 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `getRule` | GET /api/v1/rules/:id | 取得（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `updateRule` | PATCH /api/v1/rules/:id | 更新（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `deleteRule` | DELETE /api/v1/rules/:id | 削除（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
-| `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
-| `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 作った | K-60 |
-| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
-| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
+| `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
 | `listTicketFieldMaster` | GET /api/v1/ticket-field-master | 取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数） | F9 | 作った | K-706 |
-| `createTicketField` | POST /api/v1/ticket-fields | 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-706 |
-| `updateTicketField` | PATCH /api/v1/ticket-fields/:id | 更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-717 |
-| `deleteTicketField` | DELETE /api/v1/ticket-fields/:id | 削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-717 |
-| `reorderTicketFields` | POST /api/v1/ticket-fields/order | 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-717 |
+| `createTicketField` | POST /api/v1/ticket-fields | 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-706 |
+| `updateTicketField` | PATCH /api/v1/ticket-fields/:id | 更新（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-717 |
+| `deleteTicketField` | DELETE /api/v1/ticket-fields/:id | 削除（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-717 |
+| `reorderTicketFields` | POST /api/v1/ticket-fields/order | 作成・実行（ticket-fields）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-717 |
 | `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） | K-69 |
 | `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） | K-69 |
-| `createTicketStage` | POST /api/v1/ticket_stages | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-705 |
-| `updateTicketStage` | PATCH /api/v1/ticket_stages/:id | 更新（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-705 |
-| `deleteTicketStage` | DELETE /api/v1/ticket_stages/:id | 削除（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-705 |
-| `reorderTicketStages` | POST /api/v1/ticket_stages/order | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-705 |
+| `createTicketStage` | POST /api/v1/ticket_stages | 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
+| `updateTicketStage` | PATCH /api/v1/ticket_stages/:id | 更新（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
+| `deleteTicketStage` | DELETE /api/v1/ticket_stages/:id | 削除（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
+| `reorderTicketStages` | POST /api/v1/ticket_stages/order | 作成・実行（ticket_stages）— チケットの設定を整える（種別・状態・項目） | F9 | 作った | K-705 |
 | `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `createWorkType` | POST /api/v1/work_types | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `getWorkType` | GET /api/v1/work_types/:id | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
@@ -501,17 +505,17 @@ API 386（作った 107・後のフェーズの行為だけ 20）・前の道す
 | `requestWorkTypeSpread` | POST /api/v1/work_types/:id/spread-requests | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `tryWorkType` | POST /api/v1/work_types/:id/try | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `listWorkTypeVersions` | GET /api/v1/work_types/:id/versions | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
-| `createEscalationRule` | POST /api/v1/workspace/escalation-rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `updateEscalationRule` | PATCH /api/v1/workspace/escalation-rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `deleteEscalationRule` | DELETE /api/v1/workspace/escalation-rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `previewEscalationRule` | POST /api/v1/workspace/escalation-rules/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `getWorkspaceRules` | GET /api/v1/workspace/rules | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `createWorkspaceRule` | POST /api/v1/workspace/rules | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `updateWorkspaceRule` | PATCH /api/v1/workspace/rules/:id | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `deleteWorkspaceRule` | DELETE /api/v1/workspace/rules/:id | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
-| `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-69 |
+| `createEscalationRule` | POST /api/v1/workspace/escalation-rules | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `updateEscalationRule` | PATCH /api/v1/workspace/escalation-rules/:id | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `deleteEscalationRule` | DELETE /api/v1/workspace/escalation-rules/:id | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `previewEscalationRule` | POST /api/v1/workspace/escalation-rules/preview | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `getWorkspaceRules` | GET /api/v1/workspace/rules | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `createWorkspaceRule` | POST /api/v1/workspace/rules | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `updateWorkspaceRule` | PATCH /api/v1/workspace/rules/:id | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `deleteWorkspaceRule` | DELETE /api/v1/workspace/rules/:id | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `getTicketShape` | GET /api/v1/workspace/ticket-shape | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `saveTicketShape` | PATCH /api/v1/workspace/ticket-shape | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
+| `previewTicketShapeChange` | POST /api/v1/workspace/ticket-shape/preview | 作成・実行（workspace）— チケットの設定を整える（種別・状態・項目） | F9 | 契約だけ（501） | K-69 |
 | `restoreArtifactVersion` | POST /api/v1/artifact_versions/:id/restore | 作成・実行（artifact_versions）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `updateArtifact` | PATCH /api/v1/artifacts/:id | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `putArtifactFromBridge` | POST /api/v1/bridge/jobs/:id/artifacts | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |

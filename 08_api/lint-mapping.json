@@ -1384,7 +1384,7 @@
     "knowledge"
    ],
    "acts": [
-    "A114"
+    "A136"
    ]
   },
   {
@@ -1395,7 +1395,7 @@
     "knowledge"
    ],
    "acts": [
-    "A114"
+    "A136"
    ]
   },
   {
@@ -1406,7 +1406,29 @@
     "knowledge"
    ],
    "acts": [
-    "A114"
+    "A136"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/knowledge/requests/:id",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::withdrawKnowledgeRequest",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/requests/:id/dismiss",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::dismissKnowledgeRequest",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
    ]
   },
   {
@@ -1664,6 +1686,17 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/knowledge_pages/:id/raise",
+   "implementation_path": "apps/api/src/routes/knowledge_requests.ts::requestKnowledgeRaise",
+   "screen_ids_referencing": [
+    "knowledge"
+   ],
+   "acts": [
+    "A136"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/unarchive",
    "implementation_path": "apps/api/src/routes/knowledge_pages.ts::unarchiveKnowledgePage",
    "screen_ids_referencing": [
@@ -1681,7 +1714,7 @@
     "knowledge"
    ],
    "acts": [
-    "A114"
+    "A137"
    ]
   },
   {

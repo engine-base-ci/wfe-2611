@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:558e845ef98176de
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:dbcfc700e477d9d4
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -130,6 +130,8 @@ export interface Ops {
   listKnowledgeProposals: { params: never; query: { "mine"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgePageVersions[] };
   acceptKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   declineKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  withdrawKnowledgeRequest: { params: { id: string }; query: never; body: never; data: T.KnowledgeRequestEnded };
+  dismissKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDismissInput; data: T.KnowledgeRequestEnded };
   findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };
   listKnowledgeVerifications: { params: never; query: { "mine"?: string | number; "soon"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeVerification[] };
@@ -153,6 +155,7 @@ export interface Ops {
   postKnowledgeMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   setKnowledgeMust: { params: { id: string }; query: never; body: T.KnowledgeMustInput; data: T.KnowledgeMustSet };
   publishKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePublishInput; data: T.KnowledgePublished };
+  requestKnowledgeRaise: { params: { id: string }; query: never; body: T.KnowledgeRaiseInput; data: T.KnowledgeRequest };
   unarchiveKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
   getKnowledgeUsage: { params: { id: string }; query: never; body: never; data: T.KnowledgeUsage };
   verifyKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
