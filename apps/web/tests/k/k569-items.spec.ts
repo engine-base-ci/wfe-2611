@@ -1,9 +1,8 @@
-// K-569「項目の表（作る面の 2 列の表と詳細の右のパネル「項目」：用意してある項目と会社が足した項目 7 つの型を同じ並びで・必須・説明・
-//   誤りの出し方・種別を変えると入れ替わる・詳細で値を直す）」の試験
-//   （実 Chrome・口は網の手前で差し替え：tests/k/items-mock.ts・実装より先に積む）。開く場所は開発用の頁 /dev/f4-items（作る面と詳細は
-//   K-442・K-571 がこの部品を組む。この葉は部品の動きを見る）。モックとの突き合わせは /dev/mock/f4v2 の 5 つの状態（create-custom・create-missing・create-missing-types・detail-item-edit・detail-item-error）。
-//   見ること：直した値は画面だけでなく、頁を読み直した答えにも出る（作った答えだけで合格にしない）。断りは口の番号と正本の文のまま。
-//   画面は役の名前で出し分けず、口の答えで出し分ける。固定の待ちは使わない（要素と口の数を待つ）。
+// K-569「項目の表（作る面の 2 列の表：用意してある項目と会社が足した項目 7 つの型を同じ並びで・必須・説明・
+//   誤りの出し方・種別を変えると入れ替わる）」の試験。詳細で値を直す側は K-1153（tests/k/k1153-item-edit.spec.ts）
+//   （実 Chrome・口は網の手前で差し替え：tests/k/items-mock.ts・実装より先に積む）。開く場所は開発用の頁 /dev/f4-items（作る面は
+//   K-442 がこの部品を組む。この葉は部品の動きを見る）。モックとの突き合わせは /dev/mock/f4v2 の 3 つの状態（create-custom・create-missing・create-missing-types）。
+//   正の絵は K-431 の版（絵は書き換えない・2026-11-24 の PM の決め）。固定の待ちは使わない（要素と口の数を待つ）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type Page } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
@@ -17,54 +16,41 @@ import {
   WIDTHS,
   byName,
   choose,
-  conflict,
-  failed,
   field,
-  forbidden,
   grid,
   mockFields,
-  msg,
-  notFound,
   openHost,
   optId,
   overflowX,
   pairOf,
   sentFields,
-  toastOf,
-  FORBIDDEN_TEXT,
   type FieldApi,
-  type FieldsMock,
 } from "./items-mock";
 import { matchMock } from "./stage2-match";
 
 const CORE = ["状態", "担当者", "優先度", "節目", "開始日", "期限", "予定時間", "実績時間", "親"];
 const CUSTOM = MASTER_ALL.map((f) => f.name);
+/** 表の最後はいつも確認項目の行（全幅・中身は K-450 の差し込み口。無ければ 0 件の 1 行の説明） */
+const SPECS = "確認項目";
 const clean = (t: string): string => t.replace(/[＊\s]/g, "");
 const namesOf = async (page: Page): Promise<string[]> =>
   (await grid(page).locator(".k-f4d-name").allTextContents()).map(clean);
 const make = (page: Page) => page.getByRole("button", { name: "作る", exact: true });
 const box = (page: Page, name: string) => grid(page).getByLabel(name, { exact: true });
-const editBtn = (page: Page, name: string) => grid(page).getByRole("button", { name: `${name}を直す`, exact: true });
 const fid = (name: string, master: FieldApi[] = MASTER_ALL): string => byName(master, name).id;
-const ids = { memo: fid("先方の担当者名"), amt: fid("請求額"), due: fid("支払期日") };
-/** 値の字を押して入力に替え、字を入れて Enter で決める（文字・数・日付） */
-async function edit(page: Page, name: string, text: string): Promise<void> {
-  await editBtn(page, name).click();
-  const input = box(page, name);
-  await input.fill(text);
-  await input.press("Enter");
-}
-const detail = (page: Page, _m: FieldsMock): Promise<void> => openHost(page, { mode: "detail" });
+/** チェックの型の箱：名前は説明の字（下絵の「原本を郵送する」）。説明が無ければ項目の名前 */
+const check = (page: Page, label: string) => grid(page).getByRole("checkbox", { name: label, exact: true });
 
-test("K569-UI-001 作る面の表の並び：名前「項目」のグループの中に、用意してある項目（状態・担当者・優先度・節目・開始日・期限・予定時間・実績時間・親）の後ろへ会社の 8 つがマスタの並びで続き、見出しで分かれず、どの行も同じ組の形", async ({
+test("K569-UI-001 作る面の表の並び：名前「項目」のグループの中に、用意してある項目（状態・担当者・優先度・節目・開始日・期限・予定時間・実績時間・親）の後ろへ会社の 8 つがマスタの並びで続き、最後に全幅の確認項目の行・見出しで分かれず、どの行も同じ組の形", async ({
   page,
 }) => {
   await mockFields(page);
   await openHost(page, { mode: "create" });
   await expect(grid(page).getByLabel("社内メモ", { exact: true })).toBeVisible();
-  expect((await namesOf(page)).slice(0, 17)).toEqual([...CORE, ...CUSTOM]);
+  expect(await namesOf(page)).toEqual([...CORE, ...CUSTOM, SPECS]);
   await expect(grid(page).locator("h2, h3")).toHaveCount(0);
-  for (const n of [...CORE, ...CUSTOM]) {
+  await expect(pairOf(page, SPECS)).toHaveAttribute("data-full", "true");
+  for (const n of [...CORE, ...CUSTOM, SPECS]) {
     await expect(pairOf(page, n)).toHaveCount(1);
     await expect(pairOf(page, n).locator(".k-f4d-cell")).toHaveCount(1);
   }
@@ -84,7 +70,7 @@ test("K569-UI-002 必須の印と説明：必須の会社の項目（支払期�
   await expect(pairOf(page, "請求額")).toContainText("税込の金額（円）");
 });
 
-test("K569-UI-003 型 7 つの入力：名前で探せる入力が 7 つ（textbox・複数行の textbox・数字の textbox・日付の欄・選ぶ欄・チェックの並びのグループ・チェックの箱）で、選択肢は答えの並び", async ({
+test("K569-UI-003 型 7 つの入力：名前で探せる入力が 7 つ（textbox・全幅の行の複数行の textbox・数字の textbox・日付の欄・選ぶ欄・チェックの並びのグループ・説明の字を名前に持つチェックの箱）で、選択肢は答えの並び", async ({
   page,
 }) => {
   await mockFields(page);
@@ -92,6 +78,8 @@ test("K569-UI-003 型 7 つの入力：名前で探せる入力が 7 つ（textb
   await expect(grid(page).getByRole("textbox", { name: "先方の担当者名", exact: true })).toBeVisible();
   const memo = grid(page).getByRole("textbox", { name: "社内メモ", exact: true });
   expect(await memo.evaluate((e) => e.tagName)).toBe("TEXTAREA");
+  await expect(pairOf(page, "社内メモ")).toHaveAttribute("data-full", "true");
+  await expect(pairOf(page, "請求額")).toHaveAttribute("data-full", "false");
   await expect(grid(page).getByRole("textbox", { name: "請求額", exact: true })).toHaveAttribute(
     "inputmode",
     "numeric",
@@ -107,10 +95,12 @@ test("K569-UI-003 型 7 つの入力：名前で探せる入力が 7 つ（textb
   await expect(docs.getByRole("checkbox")).toHaveCount(3);
   for (const n of ["請求書", "明細", "納品書"])
     await expect(docs.getByRole("checkbox", { name: n, exact: true })).toBeVisible();
-  await expect(grid(page).getByRole("checkbox", { name: "原本の郵送", exact: true })).toBeVisible();
+  await expect(check(page, "原本を郵送する")).toBeVisible();
+  await expect(pairOf(page, "原本の郵送").locator(".k-f4d-hint, .k-desc")).toHaveCount(0);
+  await expect(docs.locator(".k-f4d-hint")).toHaveText("送るものをすべて選びます");
 });
 
-test("K569-UI-004 7 つに値を入れて「作る」：送る値の fields が型ごとの形（空白を落とした文字・文字・数（0 も 0）・YYYY-MM-DD・選択肢の id・選択肢の並びの id の並び・true）で、入れなかった分類は鍵ごと無い", async ({
+test("K569-UI-004 7 つに値を入れて「作る」：送る値の fields が型ごとの形（空白を落とした文字・文字・数（0 も 0）・YYYY-MM-DD・選択肢の id・選択肢の並びの id の並び・true）で、入れなかった分類は鍵ごと無く、付けていない必須でないチェックも鍵ごと無い", async ({
   page,
 }) => {
   await mockFields(page);
@@ -123,7 +113,7 @@ test("K569-UI-004 7 つに値を入れて「作る」：送る値の fields が�
   const docs = grid(page).getByRole("group", { name: "送る書類", exact: true });
   await docs.getByRole("checkbox", { name: "納品書", exact: true }).check();
   await docs.getByRole("checkbox", { name: "請求書", exact: true }).check();
-  await box(page, "原本の郵送").check();
+  await check(page, "原本を郵送する").check();
   await make(page).click();
   await expect.poll(() => sentFields(page)).not.toBeNull();
   const f = byName(MASTER_ALL, "送る書類");
@@ -136,6 +126,11 @@ test("K569-UI-004 7 つに値を入れて「作る」：送る値の fields が�
     [f.id]: [optId(f, "請求書"), optId(f, "納品書")],
     [fid("原本の郵送")]: true,
   });
+  await check(page, "原本を郵送する").uncheck();
+  await make(page).click();
+  await expect
+    .poll(async () => fid("原本の郵送") in ((await sentFields(page)) ?? { [fid("原本の郵送")]: 1 }))
+    .toBe(false);
 });
 
 test("K569-UI-005 必須が空で「作る」：支払期日「支払期日を選んでください」・PJコード「PJコードを選んでください」が欄の下に出て、送る値は出ず、最初の誤りの欄にキーボードの場所があり、値を入れるとその欄の赤い字が消える", async ({
@@ -161,50 +156,52 @@ test("K569-UI-006 必須の型ごとの言い方：7 つの型が全部必須の
   await openHost(page, { mode: "create" });
   await make(page).click();
   const want: [string, string][] = [
-    ["メモ", "メモを書いてください"],
-    ["詳しい説明", "詳しい説明を書いてください"],
-    ["件数", "件数を入れてください"],
-    ["納品日", "納品日を選んでください"],
-    ["区分", "区分を選んでください"],
-    ["書類", "書類を選んでください"],
-    ["確認済み", "確認済みにチェックを付けてください"],
+    ["先方の担当者名", "先方の担当者名を書いてください"],
+    ["社内メモ", "社内メモを書いてください"],
+    ["請求額", "請求額を入れてください"],
+    ["支払期日", "支払期日を選んでください"],
+    ["分類", "分類を選んでください"],
+    ["送る書類", "送る書類を選んでください"],
+    ["原本の郵送", "原本の郵送にチェックを付けてください"],
   ];
-  for (const [n, t] of want) await expect(pairOf(page, n)).toContainText(t);
+  for (const [n, t] of want) await expect(pairOf(page, n).locator(".k-err")).toHaveText(t);
+  // 複数選ぶ・チェックは誤りの字が説明の字の代わりに出る（下絵 RequiredTypes と同じ）
+  await expect(pairOf(page, "送る書類").locator(".k-f4d-hint")).toHaveCount(0);
   expect(await sentFields(page)).toBeNull();
 });
 
-test("K569-UI-007 空と 0 とチェックの false：必須の数の 0 は通る・必須のチェックは付けて外すと止まる・必須の文字は空白だけ（全角の空白・タブ）で止まる・必須でない数の欄の「abc」は「請求額は数で入れてください」で止まる", async ({
+test("K569-UI-007 空と 0 とチェックの false と数の字：必須の数の 0 は通る・必須のチェックは付けて外すと止まる・必須の文字は空白だけ（全角の空白・タブ）で止まる・必須でない数の「abc」「1-2」は「件数は数で入れてください」で止まり・全角の数字とカンマと前後の空白（「 １,２００ 」）は 1200・小数と負の数はそのまま数", async ({
   page,
 }) => {
-  const master = [
-    byName(MASTER_REQ7, "件数"),
-    byName(MASTER_REQ7, "確認済み"),
-    byName(MASTER_REQ7, "メモ"),
-    byName(MASTER_ALL, "請求額"),
-  ];
-  await mockFields(page, { masters: { [KIND_A]: master } });
+  const amt = byName(MASTER_REQ7, "請求額");
+  const mail = byName(MASTER_REQ7, "原本の郵送");
+  const memo = byName(MASTER_REQ7, "先方の担当者名");
+  const count = field(9, "件数", "number");
+  await mockFields(page, { masters: { [KIND_A]: [amt, mail, memo, count] } });
   await openHost(page, { mode: "create" });
-  await box(page, "件数").fill("0");
-  await box(page, "メモ").fill("　\t　");
-  await box(page, "確認済み").check();
-  await box(page, "確認済み").uncheck();
-  await box(page, "請求額").fill("abc");
+  await box(page, "請求額").fill("0");
+  await box(page, "先方の担当者名").fill("　\t　");
+  await check(page, "原本を郵送する").check();
+  await check(page, "原本を郵送する").uncheck();
+  await box(page, "件数").fill("abc");
   await make(page).click();
-  await expect(pairOf(page, "メモ")).toContainText("メモを書いてください");
-  await expect(pairOf(page, "確認済み")).toContainText("確認済みにチェックを付けてください");
-  await expect(pairOf(page, "請求額")).toContainText("請求額は数で入れてください");
-  await expect(pairOf(page, "件数")).not.toContainText("入れてください");
+  await expect(pairOf(page, "先方の担当者名")).toContainText("先方の担当者名を書いてください");
+  await expect(pairOf(page, "原本の郵送")).toContainText("原本の郵送にチェックを付けてください");
+  await expect(pairOf(page, "件数")).toContainText("件数は数で入れてください");
+  await expect(pairOf(page, "請求額").locator(".k-err")).toHaveCount(0);
   expect(await sentFields(page)).toBeNull();
-  await box(page, "メモ").fill("あ");
-  await box(page, "確認済み").check();
-  await box(page, "請求額").fill("");
+  await box(page, "件数").fill("1-2");
+  await make(page).click();
+  await expect(pairOf(page, "件数")).toContainText("件数は数で入れてください");
+  await box(page, "先方の担当者名").fill("あ");
+  await check(page, "原本を郵送する").check();
+  await box(page, "件数").fill(" １,２００ ");
   await make(page).click();
   await expect.poll(() => sentFields(page)).not.toBeNull();
-  expect(await sentFields(page)).toEqual({
-    [byName(MASTER_REQ7, "件数").id]: 0,
-    [byName(MASTER_REQ7, "メモ").id]: "あ",
-    [byName(MASTER_REQ7, "確認済み").id]: true,
-  });
+  expect(await sentFields(page)).toEqual({ [amt.id]: 0, [memo.id]: "あ", [mail.id]: true, [count.id]: 1200 });
+  await box(page, "件数").fill("-2.5");
+  await make(page).click();
+  await expect.poll(async () => (await sentFields(page))?.[count.id]).toBe(-2.5);
 });
 
 test("K569-UI-008 種別を変える：行が入れ替わるが口は増えず（会社の項目のマスタは種別の口の答えの各種別の fields から読み、listTicketFields は呼ばない）・A に戻すと入れた値が残り・B のとき「作る」の送る値に A だけの項目の鍵は無い", async ({
@@ -239,14 +236,16 @@ test("K569-UI-009 会社の項目が 0 件・読めない：0 件は用意して
 }) => {
   const m = await mockFields(page, { masters: { [KIND_A]: [] } });
   await openHost(page, { mode: "create" });
-  expect((await namesOf(page)).slice(0, 9)).toEqual(CORE);
+  expect(await namesOf(page)).toEqual([...CORE, SPECS]);
   await expect(page.getByText("会社の項目を読めませんでした")).toHaveCount(0);
-  expect(await namesOf(page)).toHaveLength(9);
+  await expect(grid(page).getByRole("alert")).toHaveCount(0);
   m.masters[KIND_A] = MASTER_ALL;
   m.kindsStatus = 503;
   await openHost(page, { mode: "create" });
-  await expect(page.getByText("会社の項目を読めませんでした")).toBeVisible();
+  await expect(grid(page).getByRole("alert")).toContainText("会社の項目を読めませんでした");
   await expect(grid(page).getByRole("combobox", { name: "担当者", exact: true })).toBeEnabled();
+  // 赤い箱は用意してある項目の行の直ぐ後・確認項目の前（表の形をずらさない）
+  expect(await namesOf(page)).toEqual([...CORE, "会社の項目", SPECS]);
   m.kindsStatus = 200;
   const before = m.kindReads;
   await page.getByRole("button", { name: "読み直す", exact: true }).click();
@@ -310,240 +309,7 @@ test("K569-UI-012 優先度「高」：既定は中で理由の欄なし・高�
   await expect(grid(page).getByRole("textbox", { name: "高にする理由", exact: true })).toHaveCount(0);
 });
 
-test("K569-UI-013 詳細の値の見せ方：日付「12/15（火）」・選ぶ型は選択肢の名前・複数選ぶは「請求書、明細」・数は「95,000」・チェックは箱が付き・値の無い項目は空白。並びは getTicket の fields の順", async ({
-  page,
-}) => {
-  const docs = byName(MASTER_ALL, "送る書類");
-  const m = await mockFields(page, {
-    values: {
-      [ids.due]: "2026-12-15",
-      [fid("PJコード")]: optId(byName(MASTER_ALL, "PJコード"), "SK-2026-11 セイコー商事 保守"),
-      [ids.amt]: 95000,
-      [docs.id]: [optId(docs, "請求書"), optId(docs, "明細")],
-      [fid("原本の郵送")]: true,
-    },
-  });
-  await detail(page, m);
-  await expect(editBtn(page, "支払期日")).toHaveText("12/15（火）");
-  await expect(editBtn(page, "PJコード")).toHaveText("SK-2026-11 セイコー商事 保守");
-  await expect(editBtn(page, "請求額")).toHaveText("95,000");
-  await expect(editBtn(page, "送る書類")).toHaveText("請求書、明細");
-  await expect(box(page, "原本の郵送")).toBeChecked();
-  await expect(editBtn(page, "分類")).toHaveText("");
-  await expect(editBtn(page, "社内メモ")).toHaveText("");
-  expect((await namesOf(page)).slice(-8)).toEqual(CUSTOM);
-});
-
-test("K569-UI-014 会社の項目が 0 件の詳細（getTicket の fields が空）：会社の項目の行が出ず、用意してある項目の行は出て、赤い箱は出ない", async ({
-  page,
-}) => {
-  const m = await mockFields(page, { detail: [] });
-  await detail(page, m);
-  expect(await namesOf(page)).toEqual(CORE);
-  await expect(page.getByRole("alert")).toHaveCount(0);
-});
-
-test("K569-UI-015 値を直す（文字・数・日付・選ぶ・複数選ぶ・チェックの 6 型）：決めると口が 1 回（体は fields にその 1 項目だけ・型ごとの形）・画面の字が替わり・頁を読み直しても同じ", async ({
-  page,
-}) => {
-  const docs = byName(MASTER_ALL, "送る書類");
-  const pj = byName(MASTER_ALL, "PJコード");
-  const m = await mockFields(page);
-  await detail(page, m);
-  await edit(page, "先方の担当者名", " 山田商事 ");
-  await expect.poll(() => m.patches.length).toBe(1);
-  expect(m.patches[0]).toEqual({ fields: { [ids.memo]: "山田商事" } });
-  await edit(page, "請求額", "1200");
-  await expect.poll(() => m.patches.length).toBe(2);
-  expect(m.patches[1]).toEqual({ fields: { [ids.amt]: 1200 } });
-  await edit(page, "支払期日", "2026-12-20");
-  await expect.poll(() => m.patches.length).toBe(3);
-  expect(m.patches[2]).toEqual({ fields: { [ids.due]: "2026-12-20" } });
-  await editBtn(page, "PJコード").click();
-  await choose(grid(page), page, "PJコード", "SK-2026-12 セイコー商事 追加開発");
-  await expect.poll(() => m.patches.length).toBe(4);
-  expect(m.patches[3]).toEqual({ fields: { [pj.id]: optId(pj, "SK-2026-12 セイコー商事 追加開発") } });
-  await editBtn(page, "送る書類").click();
-  const g = grid(page).getByRole("group", { name: "送る書類", exact: true });
-  await g.getByRole("checkbox", { name: "請求書", exact: true }).check();
-  await g.getByRole("checkbox", { name: "納品書", exact: true }).check();
-  await grid(page).getByRole("button", { name: "送る書類を決める", exact: true }).click();
-  await expect.poll(() => m.patches.length).toBe(5);
-  expect(m.patches[4]).toEqual({ fields: { [docs.id]: [optId(docs, "請求書"), optId(docs, "納品書")] } });
-  await box(page, "原本の郵送").check();
-  await expect.poll(() => m.patches.length).toBe(6);
-  expect(m.patches[5]).toEqual({ fields: { [fid("原本の郵送")]: true } });
-  await expect(editBtn(page, "請求額")).toHaveText("1,200");
-  await page.reload();
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("山田商事");
-  await expect(editBtn(page, "請求額")).toHaveText("1,200");
-  await expect(editBtn(page, "支払期日")).toHaveText("12/20（日）");
-  await expect(editBtn(page, "PJコード")).toHaveText("SK-2026-12 セイコー商事 追加開発");
-  await expect(editBtn(page, "送る書類")).toHaveText("請求書、納品書");
-  await expect(box(page, "原本の郵送")).toBeChecked();
-});
-
-test("K569-UI-016 空にする（必須でない日付・数・文字）：入力を空（文字は空白だけ）にして決めると体の値が null・画面の値は空白・読み直しても空", async ({
-  page,
-}) => {
-  const day = field(9, "納品日", "date");
-  const m = await mockFields(page, {
-    detail: [...MASTER_ALL, day],
-    values: { [ids.amt]: 5, [ids.memo]: "あ", [day.id]: "2026-12-01" },
-  });
-  await detail(page, m);
-  await editBtn(page, "請求額").click();
-  await box(page, "請求額").fill("");
-  await box(page, "請求額").press("Enter");
-  await expect.poll(() => m.patches.length).toBe(1);
-  expect(m.patches[0]).toEqual({ fields: { [ids.amt]: null } });
-  await edit(page, "納品日", "");
-  await expect.poll(() => m.patches.length).toBe(2);
-  expect(m.patches[1]).toEqual({ fields: { [day.id]: null } });
-  await edit(page, "先方の担当者名", "　 ");
-  await expect.poll(() => m.patches.length).toBe(3);
-  expect(m.patches[2]).toEqual({ fields: { [ids.memo]: null } });
-  await page.reload();
-  await expect(editBtn(page, "請求額")).toHaveText("");
-  await expect(editBtn(page, "納品日")).toHaveText("");
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("");
-});
-
-test("K569-UI-017 必須の項目を空にして決める：口を呼ばず欄の下に「支払期日を選んでください」・入力は開いたまま元の値は変わらず・入れ直すと決められる", async ({
-  page,
-}) => {
-  const m = await mockFields(page, { values: { [ids.due]: "2026-12-15" } });
-  await detail(page, m);
-  await edit(page, "支払期日", "");
-  await expect(pairOf(page, "支払期日")).toContainText("支払期日を選んでください");
-  await expect(box(page, "支払期日")).toBeVisible();
-  expect(m.patches).toEqual([]);
-  await page.reload();
-  await expect(editBtn(page, "支払期日")).toHaveText("12/15（火）");
-  await edit(page, "支払期日", "2026-12-16");
-  await expect.poll(() => m.patches.length).toBe(1);
-  await expect(editBtn(page, "支払期日")).toHaveText("12/16（水）");
-});
-
-test("K569-UI-018 口が 409（E-FLD-001・002・003・004）：どれもその行の欄の下に正本の文がそのまま出て、入力は開いたまま入れた値が残り、読み直しても元のまま、もう一度決めて通ると赤い字が消える", async ({
-  page,
-}) => {
-  const m = await mockFields(page);
-  await detail(page, m);
-  let n = 0;
-  for (const code of ["E-FLD-001", "E-FLD-002", "E-FLD-003", "E-FLD-004"]) {
-    n += 1;
-    m.next = [conflict(code)];
-    await edit(page, "先方の担当者名", `x${n}`);
-    await expect.poll(() => m.patches.length).toBe(n * 2 - 1);
-    await expect(pairOf(page, "先方の担当者名")).toContainText(msg(code));
-    await expect(box(page, "先方の担当者名")).toHaveValue(`x${n}`);
-    expect(m.values[ids.memo]).toBe(n === 1 ? undefined : `x${n - 1}`);
-    await box(page, "先方の担当者名").press("Enter");
-    await expect.poll(() => m.patches.length).toBe(n * 2);
-    await expect(pairOf(page, "先方の担当者名")).not.toContainText(msg(code));
-    await expect(editBtn(page, "先方の担当者名")).toHaveText(`x${n}`);
-  }
-  await page.reload();
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("x4");
-});
-
-test("K569-UI-019 口が 404（E-PAGE-001・項目が消された）：その行の欄の下に正本の文が出て詳細の読み直し（getTicket）が 1 回走り、読み直しの答えに項目が無ければその行は消える", async ({
-  page,
-}) => {
-  const m = await mockFields(page);
-  await detail(page, m);
-  expect(m.ticketReads).toBe(1);
-  m.next = [notFound()];
-  m.detail = MASTER_ALL.filter((f) => f.name !== "先方の担当者名");
-  await edit(page, "先方の担当者名", "x");
-  await expect.poll(() => m.ticketReads).toBe(2);
-  await expect(pairOf(page, "先方の担当者名")).toHaveCount(0);
-  await expect(pairOf(page, "請求額")).toBeVisible();
-});
-
-test("K569-UI-020 口が 403（書けない人）：5 秒で消える小さな知らせ「この操作をする権限がありません。権限が変わったかもしれません。画面を読み直してください」・値は元に戻り入力は閉じ・口は 1 回・読み直しても元の値", async ({
-  page,
-}) => {
-  const m = await mockFields(page, { values: { [ids.memo]: "元" } });
-  await detail(page, m);
-  m.next = [forbidden()];
-  await edit(page, "先方の担当者名", "変えたい");
-  await expect(toastOf(page, FORBIDDEN_TEXT)).toBeVisible();
-  await expect(box(page, "先方の担当者名")).toHaveCount(0);
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("元");
-  expect(m.patches).toHaveLength(1);
-  await expect(toastOf(page, FORBIDDEN_TEXT)).toBeHidden({ timeout: 9000 });
-  await page.reload();
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("元");
-});
-
-test("K569-UI-021 口が 503（E-PAGE-003）：小さな知らせに正本の文が出て入力は開いたまま入れた値が残り、もう一度決めると通って値が替わる（1 回目は反映されていない）", async ({
-  page,
-}) => {
-  const m = await mockFields(page);
-  await detail(page, m);
-  m.next = [failed()];
-  await edit(page, "先方の担当者名", "あとで");
-  await expect(toastOf(page, msg("E-PAGE-003"))).toBeVisible();
-  await expect(box(page, "先方の担当者名")).toHaveValue("あとで");
-  expect(m.values[ids.memo]).toBeUndefined();
-  await box(page, "先方の担当者名").press("Enter");
-  await expect.poll(() => m.patches.length).toBe(2);
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("あとで");
-  await page.reload();
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("あとで");
-});
-
-test("K569-UI-022 決めるを二度押し（Enter を続けて 2 回・答えを止めておく）：口は 1 回・送っている間は入力が押せず・答えが来ると 1 つの値になる", async ({
-  page,
-}) => {
-  const m = await mockFields(page);
-  await detail(page, m);
-  const release = m.hold();
-  await editBtn(page, "先方の担当者名").click();
-  await box(page, "先方の担当者名").fill("z");
-  await box(page, "先方の担当者名").press("Enter");
-  await expect.poll(() => m.patches.length).toBe(1);
-  await expect(box(page, "先方の担当者名")).toBeDisabled();
-  await page.keyboard.press("Enter");
-  release();
-  await expect(editBtn(page, "先方の担当者名")).toHaveText("z");
-  expect(m.patches).toHaveLength(1);
-});
-
-test("K569-UI-023 別の項目を続けて直す・途中でやめる：2 つ続けて直すと口は 2 回で体の鍵はそれぞれ 1 項目だけ・Esc でやめると口は 0 回で元の値が出て打った字は捨てられる", async ({
-  page,
-}) => {
-  const m = await mockFields(page);
-  await detail(page, m);
-  await edit(page, "先方の担当者名", "a");
-  await expect.poll(() => m.patches.length).toBe(1);
-  await edit(page, "請求額", "5");
-  await expect.poll(() => m.patches.length).toBe(2);
-  expect(m.patches.map((p) => Object.keys(p.fields))).toEqual([[ids.memo], [ids.amt]]);
-  await editBtn(page, "社内メモ").click();
-  await box(page, "社内メモ").fill("消える");
-  await box(page, "社内メモ").press("Escape");
-  await expect(editBtn(page, "社内メモ")).toHaveText("");
-  expect(m.patches).toHaveLength(2);
-  await editBtn(page, "社内メモ").click();
-  await expect(box(page, "社内メモ")).toHaveValue("");
-});
-
-test("K569-UI-024 完了したチケットの値（getTicket の completed が入っている）：会社の項目は直せて（口が 200 を返し画面が替わる）、「完了したので直せません」の押せない形は出ない", async ({
-  page,
-}) => {
-  const m = await mockFields(page, { completed: true });
-  await detail(page, m);
-  await expect(editBtn(page, "請求額")).toBeEnabled();
-  await edit(page, "請求額", "7");
-  await expect.poll(() => m.patches.length).toBe(1);
-  await expect(editBtn(page, "請求額")).toHaveText("7");
-  await expect(page.getByText(/完了したので/)).toHaveCount(0);
-});
-
-test("K569-UI-025 幅ごとのはみ出し：幅 375・768・1440 の作る面（会社の項目 8 つ・誤りが全部出た形）と詳細で scrollWidth - clientWidth が 0・名前の列が入力に重ならない", async ({
+test("K569-UI-025 幅ごとのはみ出し：幅 375・768・1440 の作る面（会社の項目 8 つ・誤りが全部出た形）で scrollWidth - clientWidth が 0・どの幅でも名前の列と入力の列が 2 列のまま重ならない", async ({
   page,
 }) => {
   await mockFields(page);
@@ -555,12 +321,8 @@ test("K569-UI-025 幅ごとのはみ出し：幅 375・768・1440 の作る面�
     for (const n of ["支払期日", "請求額", "社内メモ"]) {
       const name = (await pairOf(page, n).locator(".k-f4d-name").boundingBox())!;
       const cell = (await pairOf(page, n).locator(".k-f4d-cell").boundingBox())!;
-      const apart = name.x + name.width <= cell.x + 1 || name.y + name.height <= cell.y + 1;
-      expect(apart, `幅 ${w}・${n}：名前が入力に重なっている`).toBe(true);
+      expect(name.x + name.width <= cell.x + 1, `幅 ${w}・${n}：名前が入力に重なっている（2 列でない）`).toBe(true);
     }
-    await openHost(page, { mode: "detail", width: w });
-    await expect(editBtn(page, "支払期日")).toBeVisible();
-    expect(await overflowX(page), `詳細 幅 ${w}`).toBe(0);
   }
 });
 
@@ -584,15 +346,16 @@ test("K569-UI-026 キーボード：先方の担当者名から Tab で 分類�
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  await expect(box(page, "原本の郵送")).toBeFocused();
+  await expect(check(page, "原本を郵送する")).toBeFocused();
   await page.keyboard.press("Space");
-  await expect(box(page, "原本の郵送")).toBeChecked();
+  await expect(check(page, "原本を郵送する")).toBeChecked();
   await page.keyboard.press("Tab");
   await expect(grid(page).getByRole("textbox", { name: "社内メモ", exact: true })).toBeFocused();
 });
 
-// ---------------------------------------------------------------- 下絵との突き合わせ（会社の項目の行＝表の 10 番目から。位置は比べない）
-const R = ".k-f4d-grid > .k-f4d-pair:nth-child(n+10):nth-child(-n+17)";
+// ---------------------------------------------------------------- 下絵との突き合わせ（会社の項目の行＝表の 10 番目から n 行。位置は比べない）
+//   表の直の子は 用意してある 9 行 → 会社の項目の n 行 → 確認項目の行。R は会社の項目の行だけ（create-missing の 3 つなら 10〜12）
+const R = (n: number): string => `.k-f4d-grid > .k-f4d-pair:nth-child(n+10):nth-child(-n+${9 + n})`;
 const pair = (name: string, sel: string, props: string[]): FidelityPair => ({
   name,
   role: name,
@@ -602,20 +365,31 @@ const pair = (name: string, sel: string, props: string[]): FidelityPair => ({
 });
 const TXT = ["font-size", "font-weight", "color", "line-height", "texts"];
 const CTRL = ["width", "height", "font-size", "border-top-color"];
-const CUSTOM_PAIRS: FidelityPair[] = [
-  pair("name", `${R} .k-f4d-name`, TXT),
-  pair("req", `${R} .k-f4d-req-mark`, ["color", "texts"]),
-  pair("input", `${R} .k-input`, CTRL),
-  pair("trigger", `${R} .k-select-trigger`, CTRL),
-  pair("multi", `${R} .k-f4d-multi label`, ["font-size", "color", "texts"]),
-  pair("hint", `${R} .k-f4d-hint`, ["font-size", "color", "texts"]),
-  pair("err", `${R} .k-err`, ["font-size", "color", "texts"]),
+const customPairs = (n: number): FidelityPair[] => [
+  pair("name", `${R(n)} .k-f4d-name`, TXT),
+  pair("req", `${R(n)} .k-f4d-req-mark`, ["color", "texts"]),
+  pair("input", `${R(n)} .k-input`, CTRL),
+  pair("trigger", `${R(n)} .k-select-trigger`, CTRL),
+  pair("desc", `${R(n)} .k-desc`, ["font-size", "color", "texts"]),
+  pair("multi", `${R(n)} .k-f4d-multi label`, ["font-size", "color", "texts"]),
+  pair("check", `${R(n)} .k-f4d-check`, ["font-size", "color", "texts"]),
+  pair("hint", `${R(n)} .k-f4d-hint`, ["font-size", "color", "texts"]),
+  pair("err", `${R(n)} .k-err`, ["font-size", "color", "texts"]),
 ];
-for (const [row, id, master, press] of [
-  ["K569-UI-027", "f4v2-create-custom", MASTER_ALL, false],
-  ["K569-UI-028", "f4v2-create-missing", MASTER_3, true],
+/** 比べた役ごとの「当たった数」の行（下絵の側の数）。的が両方 0 個で緑になっていないかを見る */
+const hits = (rows: { part: string; prop: string; canvas: unknown }[], part: string): number =>
+  Number(rows.find((r) => r.part === part && r.prop === "当たった数")?.canvas ?? 0);
+for (const [row, id, master, press, must] of [
+  [
+    "K569-UI-027",
+    "f4v2-create-custom",
+    MASTER_ALL,
+    false,
+    ["name", "req", "input", "trigger", "desc", "multi", "check", "hint"],
+  ],
+  ["K569-UI-028", "f4v2-create-missing", MASTER_3, true, ["name", "req", "input", "trigger", "desc", "err"]],
 ] as const) {
-  test(`${row} 下絵との突き合わせ（${id}）：幅 375・768・1440 で会社の項目の名前の字・必須の印・入力の幅と高さと枠の色・${press ? "欄の下の赤い字" : "説明の字"}が下絵と同じ`, async ({
+  test(`${row} 下絵との突き合わせ（${id}）：幅 375・768・1440 で会社の項目の名前の字・必須の印・入力の幅と高さと枠の色・説明の字・${press ? "欄の下の赤い字" : "複数選ぶとチェックの字"}が下絵と同じ`, async ({
     browser,
   }) => {
     for (const w of WIDTHS) {
@@ -632,15 +406,15 @@ for (const [row, id, master, press] of [
             await expect(pairOf(page, "PJコード")).toContainText("PJコードを選んでください");
           }
         },
-        { base: "/dev/mock/f4v2", pairs: CUSTOM_PAIRS, blur: true },
+        { base: "/dev/mock/f4v2", pairs: customPairs(master.length), blur: true },
       );
-      expect(rows.length, `${id} 幅 ${w}：比べた値が 0 件`).toBeGreaterThan(0);
+      for (const part of must) expect(hits(rows, part), `${id} 幅 ${w}：${part} の的が下絵に 0 個`).toBeGreaterThan(0);
       expect(bad, bad.join("\n")).toEqual([]);
     }
   });
 }
 
-test("K569-UI-029 口の数：作る面は会社の項目のための口を足さず（種別の口 1 本の答えから読む・listTicketFields は呼ばない）・詳細は getTicket の 1 本のまま・直すときの PATCH 以外に書く口が無く・本人の Bridge（38617）に飛ばない", async ({
+test("K569-UI-029 口の数：作る面は会社の項目のための口を足さず（種別の口 1 本の答えから読む・listTicketFields は呼ばない）・種別を変えても値を入れても「作る」を押しても書く口が無く・本人の Bridge（38617）に飛ばない", async ({
   page,
 }) => {
   const bridge: string[] = [];
@@ -652,70 +426,41 @@ test("K569-UI-029 口の数：作る面は会社の項目のための口を足�
   await expect(pairOf(page, "請求額")).toBeVisible();
   expect(m.reads).toEqual([]);
   expect(m.kindReads).toBe(1);
-  await openHost(page, { mode: "detail" });
-  await expect(editBtn(page, "請求額")).toBeVisible();
+  await choose(page.locator("body"), page, "種別", "課題");
+  await box(page, "支払期日").fill("2026-12-01");
+  await make(page).click();
+  await expect.poll(() => sentFields(page)).not.toBeNull();
   expect(m.reads).toEqual([]);
-  expect(m.ticketReads).toBe(1);
-  await edit(page, "請求額", "3");
-  await expect.poll(() => m.patches.length).toBe(1);
+  expect(m.kindReads).toBe(1);
+  expect(m.ticketReads).toBe(0);
+  expect(m.patches).toEqual([]);
   expect(m.writes).toEqual([]);
   expect(bridge).toEqual([]);
 });
 
-// ---------------------------------------------------------------- 下絵に足された 3 つの状態（誤りの型ごとの文・詳細でその場で直す・直して断られた）
+// ---------------------------------------------------------------- 下絵に足された状態（必須が空の型ごとの誤りの文）。詳細の 2 つは K-1153
 const MISSING_PAIRS: FidelityPair[] = [
   pair("name", ".k-f4d-grid > .k-f4d-pair .k-f4d-name", TXT),
   pair("err", ".k-f4d-grid > .k-f4d-pair .k-err", ["font-size", "color", "texts"]),
 ];
-const EDIT_PAIRS: FidelityPair[] = [
-  pair("input", ".k-f4d-grid .k-input", CTRL),
-  pair("err", ".k-f4d-grid .k-err", ["font-size", "color", "texts"]),
-];
-test("K569-UI-030 下絵との突き合わせ（f4v2-create-missing-types・f4v2-detail-item-edit・f4v2-detail-item-error）：幅 375・768・1440 で誤りの文 7 つ・その場で直している入力・断られた欄の下の赤い字が下絵と同じ値", async ({
+test("K569-UI-030 下絵との突き合わせ（f4v2-create-missing-types）：幅 375・768・1440 で、表の全部の名前の字（用意してある項目・会社の 7 つ・確認項目）と必須が空の型ごとの誤りの文 7 つ（字・色・字の大きさ）が下絵と同じ", async ({
   browser,
 }) => {
-  const states = [
-    {
-      id: "f4v2-create-missing-types",
-      pairs: MISSING_PAIRS,
-      setup: async (page: Page, w: number) => {
+  for (const w of WIDTHS) {
+    const { rows, bad } = await matchMock(
+      browser,
+      "f4v2-create-missing-types",
+      w,
+      async (page) => {
         await mockFields(page, { masters: { [KIND_A]: MASTER_REQ7 } });
         await openHost(page, { mode: "create", width: w });
         await make(page).click();
-        await expect(pairOf(page, "確認済み")).toContainText("確認済みにチェックを付けてください");
+        await expect(pairOf(page, "原本の郵送")).toContainText("原本の郵送にチェックを付けてください");
       },
-    },
-    {
-      id: "f4v2-detail-item-edit",
-      pairs: EDIT_PAIRS,
-      setup: async (page: Page, w: number) => {
-        await mockFields(page);
-        await openHost(page, { mode: "detail", width: w });
-        await editBtn(page, "先方の担当者名").click();
-        await expect(box(page, "先方の担当者名")).toBeVisible();
-      },
-    },
-    {
-      id: "f4v2-detail-item-error",
-      pairs: EDIT_PAIRS,
-      setup: async (page: Page, w: number) => {
-        const m = await mockFields(page);
-        await openHost(page, { mode: "detail", width: w });
-        m.next = [conflict("E-FLD-004")];
-        await edit(page, "先方の担当者名", "x");
-        await expect(pairOf(page, "先方の担当者名")).toContainText(msg("E-FLD-004"));
-      },
-    },
-  ];
-  for (const s of states) {
-    for (const w of WIDTHS) {
-      const { rows, bad } = await matchMock(browser, s.id, w, (page) => s.setup(page, w), {
-        base: "/dev/mock/f4v2",
-        pairs: s.pairs,
-        blur: true,
-      });
-      expect(rows.length, `${s.id} 幅 ${w}：比べた値が 0 件`).toBeGreaterThan(0);
-      expect(bad, bad.join("\n")).toEqual([]);
-    }
+      { base: "/dev/mock/f4v2", pairs: MISSING_PAIRS, blur: true },
+    );
+    for (const part of ["name", "err"])
+      expect(hits(rows, part), `幅 ${w}：${part} の的が下絵に 0 個`).toBeGreaterThan(0);
+    expect(bad, bad.join("\n")).toEqual([]);
   }
 });
