@@ -2006,6 +2006,15 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F9/knowledge/ai/context.ts",
+    "apps/api/src/features/F5/delegate/bridge.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-ai-context.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-stages-write.ts",
     "apps/api/src/features/F9/settings/stages.ts"
    ],
