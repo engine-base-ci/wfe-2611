@@ -21,6 +21,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/knowledge_pages/:id/messages", op(deps, "postKnowledgeMessage"));
   app.put("/api/v1/knowledge_pages/:id/must", op(deps, "setKnowledgeMust"));
   app.post("/api/v1/knowledge_pages/:id/publish", op(deps, "publishKnowledgePage"));
+  app.post("/api/v1/knowledge_pages/:id/raise", op(deps, "requestKnowledgeRaise"));
   app.post("/api/v1/knowledge_pages/:id/unarchive", op(deps, "unarchiveKnowledgePage"));
   app.get("/api/v1/knowledge_pages/:id/usage", op(deps, "getKnowledgeUsage"));
   app.post("/api/v1/knowledge_pages/:id/verify", op(deps, "verifyKnowledgePage"));

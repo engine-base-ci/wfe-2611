@@ -1411,6 +1411,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F10/invite/**",
+    "apps/web/app/(work)/members/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k420-members-invite.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitation-link.ts",
     "apps/api/src/features/F10/invite/link.ts",
     "apps/api/src/features/F2/invitations/**",
@@ -1839,6 +1848,26 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-tree.ts",
+    "apps/api/src/features/F9/knowledge/tree.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-tree.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-tree.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_knowledge_tree.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/f9-knowledge-page-read.ts",
     "apps/api/src/features/F9/knowledge/read.ts",
     "apps/api/src/features/F9/knowledge/versions.ts",
@@ -1940,6 +1969,39 @@
    ],
    "tests": [
     "apps/api/test/generated/put_knowledge_pages_id_must.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-similar.ts",
+    "apps/api/src/features/F9/knowledge/similar.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-similar.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-similar.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_similar.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-raise.ts",
+    "apps/api/src/features/F9/knowledge/raise.ts",
+    "apps/api/src/features/F9/knowledge/raise-end.ts",
+    "apps/api/src/features/F9/knowledge/page-guards/pending-request.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/request-marks.ts",
+    "apps/api/src/features/F9/knowledge/page-parts/**",
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-raise.test.ts"
    ]
   },
   {
