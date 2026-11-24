@@ -2265,6 +2265,22 @@ K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブ�
 - [ ] K369-UI-017（人が確かめる）：代表が下絵を見て OK と言う。前からの 24 の状態 × 3 幅は済み（2026-11-19 の会話・PM の決定の控えに記録。K-350 の書き方と同じで、答え ID は求めない）。answer=7cf148a79dc9 で足した 7 つ（pc-os-warning*・pc-bridge-*）は代表に見てもらうのを待っている（まとめ役が聞く）
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-371,前の預けたログイン情報とブラウザの DB の関数（app.my_credentials・bridge_take_code ほか 6 つと agent_set_browser・agent_browser_check）を migration で消す。使う所が残っていないことを機械で見る（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-28,F3・預けたログイン情報,"前の預けたログイン情報の道すじ（`/api/auth-ext/vault/*`・`/bridge/credentials/*`・`/bridge/code`）は K-358 が、前のブラウザの道（`/api/auth-ext/agent/browser`・`/agent/browser-check`）は K-367 が消す。その道すじだけが呼んでいた DB の関数は、K-358・K-367 では重さの決まり（db と web を 1 本で触らない）で残した（K-358 の「前提と制約」・K-367 の 51 行目）。この葉はそれを migration で消し、使う所が残っていないことを機械で見る。
+
+消す 8 つ（引数は最後の版）：
+
+| 関数 | 作った所 | 呼んでいた道 | 消す葉 |
+|---|---|---|---|
+| `app.my_credentials(uuid)` | 0047・0065・0066 | GET /api/auth-ext/vault/credentials | K-358 |
+| `app.bridge_credential(uuid, uuid, uuid)` | 0064・0065・0066 | POST /api/auth-ext/bridge/credentials/resolve | K-358 |
+| `app.credential_login_check_retry(uuid, uuid)` | 0066 | POST /api/auth-ext/vault/credentials/:id/login-check | K-358 |
+| `app.agent_answer_code(uuid, uuid, text, text)` | 0066 | POST /api/auth-ext/vault/credentials/:id/answer | K-358 |
+| `app.bridge_take_code(uuid, uuid, text)` | 0066 | POST /api/auth-ext/bridge/code | K-358 |
+| `app.bridge_login_check_result(uuid, uuid, text, text)` | 0065・0066 | POST /api/auth-ext/bridge/credentials/check-result | K-358 |
+| `app.agent_set_browser(uuid, text)` | 0057 | POST /api/auth-ext/agent/browser | K-367 |
+| `app.agent_browser_check(uuid, text)` | 0057 | POST /api/auth-ext/agent/browser-check | K-367 |","- [ ] 下の表の行（K371-DB-001〜005・K371-SRC-001）が緑：`packages/db/test/legacy_credential_functions.test.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・db と shared の組）が緑"
 K-372,預けたログイン情報の画面の「預ける」小窓（本人確認して保存）を契約の口 createCredential につなぎ、はじめの設定の段 4 を通す（K-56 の葉・K-356 から分けた）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"預けたログイン情報の画面（`/settings/credentials`・入れ物は K-356）の「預ける」を押せるようにし、小窓（ログイン情報／API キー・値・預ける先・2 段階の種類・使える場所・期限）を契約の口 createCredential（K-352）につなぐ。
 口が本人確認の取り直しを求めたら段 2 の取り直し（StepUp・K-318）をはさみ、同じ体で 1 回だけ送り直す。はじめの設定の途中の人が 1 件預けたら段 4（D-089・「ログイン情報を 1 件預ける」）を通す。
 正の絵はモック `/dev/mock/f3/cred-add-login`・`cred-add-key`・`cred-add-error`・`cred-stepup`（代表 OK answer=0a262be577b2）。
