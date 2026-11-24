@@ -144,8 +144,8 @@
   visibility: hidden;
 }
 .k-f9s-swatch:has(input:checked) {
-  outline: 2px solid var(--k-primary);
-  outline-offset: 2px;
+  outline: var(--k-c-f9s-swatch-ring-border);
+  outline-offset: var(--k-c-f9s-swatch-ring-gap-width);
 }
 .k-f9s-swatch:has(input:checked) svg {
   visibility: visible;
@@ -236,7 +236,7 @@
   color: var(--k-on-primary);
   font-size: var(--k-text-body-sm);
   font-weight: var(--k-fw-label-md);
-  line-height: calc(var(--k-lh-body) + 0.2);
+  line-height: var(--k-c-f9s-pill-lh);
   white-space: nowrap;
 }
 .k-f9s-lock {

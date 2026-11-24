@@ -1218,6 +1218,9 @@
   --k-c-f4d-caret-margin: 0 0 0 1px;
   --k-c-f4d-sample-ink-fg: var(--k-st-progress);
   --k-c-f4d-sample-mark-bg: var(--k-st-warning-container);
+  --k-c-f9s-pill-lh: 1.8;
+  --k-c-f9s-swatch-ring-border: 2px solid var(--k-primary);
+  --k-c-f9s-swatch-ring-gap-width: 2px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {

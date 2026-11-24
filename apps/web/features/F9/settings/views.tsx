@@ -5,10 +5,32 @@
 import { Check, GripVertical, Plus } from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge, Button, Select, Tabs, TextField } from "@/components/k";
-import { DocEditor, Ghost } from "@/features/F9/knowledge/doc-temp";
+import type { Block, Doc } from "@kaname/contracts";
+import { DocEditor } from "@/features/F4/doc/editor";
 import "./settings.css";
 
 const noop = (): void => undefined;
+
+// 種別の本文のひな形の見本（段 5 の文書の木。薄い字は ghost の段落）
+const heading = (text: string): Block => ({ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text }] });
+const ghost = (text: string): Block => ({
+  type: "paragraph",
+  attrs: { ghost: true },
+  content: [{ type: "text", text }],
+});
+const KIND_TEMPLATE: Doc = {
+  type: "doc",
+  content: [
+    heading("目的"),
+    ghost("どの取引先の・何月分の請求かを書きます"),
+    heading("完了の条件"),
+    ghost("どうなれば終わりかを書きます（例：請求書が届き、支払期日が合っている）"),
+    heading("実施事項"),
+    ghost("やることを、チェックの行で並べます"),
+    heading("参考"),
+    ghost("前の月の請求書や、取引先との決めごとがあれば書きます"),
+  ],
+};
 
 /** 選べる色（正本の見分けの色 8 つ） */
 export type Tone = "indigo" | "teal" | "amber" | "coral" | "sage" | "plum" | "lavender" | "teal-light";
@@ -100,16 +122,7 @@ export function KindsPanel({ kinds, current }: { kinds: readonly KindRow[]; curr
           <p className="k-f9s-hint">
             チケットを作る面で、この種別を選ぶと本文に例として入ります。書く人は消しても、書き換えても構いません。
           </p>
-          <DocEditor>
-            <h2>目的</h2>
-            <Ghost>どの取引先の・何月分の請求かを書きます</Ghost>
-            <h2>完了の条件</h2>
-            <Ghost>どうなれば終わりかを書きます（例：請求書が届き、支払期日が合っている）</Ghost>
-            <h2>実施事項</h2>
-            <Ghost>やることを、チェックの行で並べます</Ghost>
-            <h2>参考</h2>
-            <Ghost>前の月の請求書や、取引先との決めごとがあれば書きます</Ghost>
-          </DocEditor>
+          <DocEditor doc={KIND_TEMPLATE} onChange={noop} />
         </div>
         <div className="k-f9s-acts">
           <Button variant="outlined">この種別を消す…</Button>
