@@ -12,6 +12,9 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import f12_contract_kit as k  # noqa: E402
+import portable_regex  # noqa: E402
+
+NOT_BLANK = portable_regex.portable("\\S")   # 作り手は契約の \S を JS と同じ字の組に直して書く（K-1117）
 
 KINDS = ["incident", "maintenance", "release"]
 INCIDENT_STATES = ["investigating", "identified", "monitoring", "resolved"]
@@ -74,7 +77,7 @@ class OpsNotices(unittest.TestCase):
         for op, field in (("createOpsNotice", "title"), ("createOpsNotice", "body"), ("updateOpsNotice", "title"),
                           ("updateOpsNotice", "body"), ("sendWorkspaceNotice", "title"), ("sendWorkspaceNotice", "body"),
                           ("addIncidentUpdate", "body")):
-            self.assertEqual(k.input_prop(op, field).get("pattern"), "\\S", f"{op}.{field} は空白だけを断る（D-156.38）")
+            self.assertEqual(k.input_prop(op, field).get("pattern"), NOT_BLANK, f"{op}.{field} は空白だけを断る（D-156.38）")
 
     def test_K1004_DC_008_detail_update_publish(self) -> None:
         """K1004-DC-008 getOpsNotice・updateOpsNotice・publishOpsNotice の答えは 1 件の 16 欄。updateOpsNotice の入力は作ると同じ 11 欄で必須なし。publishOpsNotice の入力は空の体"""
