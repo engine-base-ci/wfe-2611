@@ -5,7 +5,7 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 359,
+  "api": 355,
   "api_built": 112,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
@@ -17,21 +17,6 @@
   "env": 41
  },
  "api": [
-  {
-   "op": "remindAcceptance",
-   "method": "POST",
-   "path": "/api/v1/acceptances/:id/remind",
-   "what": "作成・実行（acceptances）— 成果物を確認してもらう（検収を頼む）",
-   "flows": [
-    "F11"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "acceptances"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
   {
    "op": "getActionRun",
    "method": "GET",
@@ -4260,36 +4245,6 @@
    "owner_tickets": []
   },
   {
-   "op": "getPortalAcceptance",
-   "method": "GET",
-   "path": "/api/v1/portal/acceptances/:id",
-   "what": "取得（portal）— 検収する（OK・直してほしい）",
-   "flows": [
-    "F11"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "acceptances"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
-   "op": "answerAcceptance",
-   "method": "POST",
-   "path": "/api/v1/portal/acceptances/:id/answer",
-   "what": "作成・実行（portal）— 検収する（OK・直してほしい）",
-   "flows": [
-    "F11"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "acceptances"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
-  },
-  {
    "op": "uploadPortalAttachment",
    "method": "POST",
    "path": "/api/v1/portal/attachments",
@@ -5110,23 +5065,6 @@
    "owner_tickets": [
     "K-67",
     "K-488"
-   ]
-  },
-  {
-   "op": "requestAcceptance",
-   "method": "POST",
-   "path": "/api/v1/tickets/:id/acceptances",
-   "what": "作成・実行（tickets）— 成果物を確認してもらう（検収を頼む）",
-   "flows": [
-    "F11"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "acceptances"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-71"
    ]
   },
   {
@@ -5958,9 +5896,7 @@
    "table": "acceptances",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F11"
-   ],
+   "writes": [],
    "reads": [],
    "boundary": false
   },

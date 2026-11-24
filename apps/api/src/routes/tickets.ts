@@ -10,7 +10,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id", op(deps, "getTicket"));
   app.patch("/api/v1/tickets/:id", op(deps, "updateTicket"));
   app.delete("/api/v1/tickets/:id", op(deps, "deleteTicket"));
-  app.post("/api/v1/tickets/:id/acceptances", op(deps, "requestAcceptance"));
   app.get("/api/v1/tickets/:id/agent-session", op(deps, "getTicketAgentSession"));
   app.post("/api/v1/tickets/:id/agent-session/apply", op(deps, "applyTicketAgentProposal"));
   app.post("/api/v1/tickets/:id/agent-session/messages", op(deps, "sendTicketAgentMessage"));

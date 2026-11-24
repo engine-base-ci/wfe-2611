@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 359（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
+API 355（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
 
 ## 共通の処理
 
@@ -51,7 +51,7 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | 表 | 区分 | 書く流れ | 読む流れ | 境目 |
 |---|---|---|---|---|
 | `abilities` | internal |  |  |  |
-| `acceptances` | skeleton | F11 |  |  |
+| `acceptances` | skeleton |  |  |  |
 | `account_events` | skeleton | F10,F12 |  | ○ |
 | `action_runs` | skeleton | F5,F7 |  | ○ |
 | `approvals` | skeleton | F5,F9 |  | ○ |
@@ -209,7 +209,6 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `uploadWorkspaceLogo` | POST /api/v1/workspace/logo | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-419 |
 | `updateWorkspacePermissions` | PATCH /api/v1/workspace/permissions | 更新（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
-| `remindAcceptance` | POST /api/v1/acceptances/:id/remind | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） |  |
 | `updateClientContact` | PATCH /api/v1/client_contacts/:id | 更新（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `removeClientContact` | DELETE /api/v1/client_contacts/:id | 削除（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `inviteClientContact` | POST /api/v1/client_contacts/:id/invitation | 作成・実行（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
@@ -229,8 +228,6 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `updateClientShare` | PATCH /api/v1/clients/:id/share | 更新（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `listClientLinkCandidates` | GET /api/v1/clients/link-candidates | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `getPortalHome` | GET /api/v1/portal | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
-| `getPortalAcceptance` | GET /api/v1/portal/acceptances/:id | 取得（portal）— 検収する（OK・直してほしい） | F11 | 契約だけ（501） |  |
-| `answerAcceptance` | POST /api/v1/portal/acceptances/:id/answer | 作成・実行（portal）— 検収する（OK・直してほしい） | F11 | 契約だけ（501） |  |
 | `uploadPortalAttachment` | POST /api/v1/portal/attachments | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `listPortalNotices` | GET /api/v1/portal/notices | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
 | `createPortalRequest` | POST /api/v1/portal/requests | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
@@ -238,7 +235,6 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `postPortalRequestMessage` | POST /api/v1/portal/requests/:id/messages | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `askPortalRequestQuestions` | POST /api/v1/portal/requests/questions | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 契約だけ（501） |  |
 | `getPortalTicket` | GET /api/v1/portal/tickets/:id | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
-| `requestAcceptance` | POST /api/v1/tickets/:id/acceptances | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | K-71 |
 | `updateTicketClientShare` | PATCH /api/v1/tickets/:id/client-share | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） | K-71 |
 | `listMyInquiries` | GET /api/v1/inquiries | 取得（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |
 | `createInquiry` | POST /api/v1/inquiries | 作成・実行（inquiries）— 運営に問い合わせる | F12 | 契約だけ（501） |  |

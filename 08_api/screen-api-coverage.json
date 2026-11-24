@@ -4,13 +4,15 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 35,
-  "total_apis": 359,
+  "total_apis": 355,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
    "legal"
   ],
-  "acts_without_endpoint": []
+  "acts_without_endpoint": [
+   "A126"
+  ]
  },
  "screens": [
   {
@@ -2555,11 +2557,6 @@
     },
     {
      "role": "action",
-     "endpoint": "POST /api/v1/tickets/:id/acceptances",
-     "act": "A123"
-    },
-    {
-     "role": "action",
      "endpoint": "PATCH /api/v1/tickets/:id/client-share",
      "act": "A123"
     },
@@ -3052,11 +3049,6 @@
      "role": "action",
      "endpoint": "POST /api/v1/client_contacts/:id/invitation",
      "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/acceptances/:id/remind",
-     "act": "A123"
     }
    ],
    "transitions": [],
@@ -3197,16 +3189,6 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/portal/tickets/:id",
      "act": "A125"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/portal/acceptances/:id",
-     "act": "A126"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/portal/acceptances/:id/answer",
-     "act": "A126"
     },
     {
      "role": "data_fetch",

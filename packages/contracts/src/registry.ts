@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:478685c41a39c2aa
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:b78d6f3dddd67ce3
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -41,64 +41,6 @@ export interface EndpointDef {
   ignoresScope: boolean;
 }
 export const ENDPOINTS: readonly EndpointDef[] = [
-  {
-    "method": "POST",
-    "path": "/api/v1/acceptances/:id/remind",
-    "operationId": "remindAcceptance",
-    "table": "acceptances",
-    "kind": "create",
-    "input": "AcceptancesInput",
-    "success": 201,
-    "output": "Acceptances",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2",
-      "C6"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A123"
-    ],
-    "screens": [
-      "clients"
-    ],
-    "perm": {
-      "word": "assignee",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "acceptances",
-        "sql": "exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id)))"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
   {
     "method": "GET",
     "path": "/api/v1/action_runs/:id",
@@ -13799,111 +13741,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "GET",
-    "path": "/api/v1/portal/acceptances/:id",
-    "operationId": "getPortalAcceptance",
-    "table": "acceptances",
-    "kind": "get",
-    "input": null,
-    "success": 200,
-    "output": "PortalAcceptance",
-    "outputList": false,
-    "generic": false,
-    "auth": "client",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      404,
-      422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A126"
-    ],
-    "screens": [
-      "portal"
-    ],
-    "perm": {
-      "word": "client",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/portal/acceptances/:id/answer",
-    "operationId": "answerAcceptance",
-    "table": "acceptances",
-    "kind": "create",
-    "input": "AcceptancesInput",
-    "success": 201,
-    "output": "Acceptances",
-    "outputList": false,
-    "generic": false,
-    "auth": "client",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2",
-      "C6"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A126"
-    ],
-    "screens": [
-      "portal"
-    ],
-    "perm": {
-      "word": "client",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "POST",
     "path": "/api/v1/portal/attachments",
     "operationId": "uploadPortalAttachment",
@@ -16540,64 +16377,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "POST",
-    "path": "/api/v1/tickets/:id/acceptances",
-    "operationId": "requestAcceptance",
-    "table": "acceptances",
-    "kind": "create",
-    "input": "AcceptancesInput",
-    "success": 201,
-    "output": "Acceptances",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2",
-      "C6"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A123"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "assignee",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "GET",
     "path": "/api/v1/tickets/:id/agent-session",
     "operationId": "getTicketAgentSession",
@@ -19165,4 +18944,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "478685c41a39c2aa";
+export const OPENAPI_HASH = "b78d6f3dddd67ce3";

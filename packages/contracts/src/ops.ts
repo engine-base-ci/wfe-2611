@@ -1,9 +1,8 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:478685c41a39c2aa
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b78d6f3dddd67ce3
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
-  remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
   stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunTakeoverInput; data: T.ActionRunView };
@@ -263,8 +262,6 @@ export interface Ops {
   stopWorkspace: { params: { id: string }; query: never; body: T.AccountEventsInput; data: T.AccountEvents };
   exportOpsWorkspaces: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };
   getPortalHome: { params: never; query: never; body: never; data: T.PortalHome };
-  getPortalAcceptance: { params: { id: string }; query: never; body: never; data: T.PortalAcceptance };
-  answerAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   uploadPortalAttachment: { params: never; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listPortalNotices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Notices[] };
   createPortalRequest: { params: never; query: never; body: T.ClientRequestsInput; data: T.ClientRequests };
@@ -314,7 +311,6 @@ export interface Ops {
   getTicket: { params: { id: string }; query: never; body: never; data: T.TicketDetail };
   updateTicket: { params: { id: string }; query: never; body: T.TicketUpdateInput; data: T.TicketUpdated };
   deleteTicket: { params: { id: string }; query: { "children"?: string | number; "parent_id"?: string | number; "reason"?: string | number }; body: never; data: T.TicketDeleted };
-  requestAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.Conversations };
   applyTicketAgentProposal: { params: { id: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
   sendTicketAgentMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };

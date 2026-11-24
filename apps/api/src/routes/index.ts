@@ -2,7 +2,6 @@
 import type { Hono } from "hono";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps } from "../contract/op.js";
-import { register as acceptances } from "./acceptances.js";
 import { register as action_runs } from "./action_runs.js";
 import { register as approvals } from "./approvals.js";
 import { register as artifact_versions } from "./artifact_versions.js";
@@ -54,7 +53,6 @@ import { register as tickets } from "./tickets.js";
 import { register as workspace } from "./workspace.js";
 
 export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
-  acceptances(app, deps);
   action_runs(app, deps);
   approvals(app, deps);
   artifact_versions(app, deps);

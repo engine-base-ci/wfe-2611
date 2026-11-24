@@ -74,7 +74,6 @@ SCREEN_API = {
         ("GET", "/tickets/:id/artifacts", "A101", "artifacts", "listTicketArtifacts", ["artifact_versions"]),
         ("GET", "/artifact_versions/:id", "A101", "artifact_versions", "getArtifactVersion", []),
         ("POST", "/tickets/:id/attachments", "A101", "attachments", "createTicketAttachment", []),
-        ("POST", "/tickets/:id/acceptances", "A123", "acceptances", "requestAcceptance", ["client_contacts", "notifications"]),
         ("PATCH", "/tickets/:id/client-share", "A123", T, "updateTicketClientShare", ["clients"]),
         # 一覧の設定・知らせ・選ぶもの
         ("GET", "/saved_views", "A58", "saved_views", "listSavedViews", []),
@@ -328,7 +327,6 @@ SCREEN_API = {
         ("PATCH", "/client_contacts/:id", "A121", "client_contacts", "updateClientContact", ["audit_events"]),
         ("DELETE", "/client_contacts/:id", "A121", "client_contacts", "removeClientContact", ["tenant_memberships", "sessions", "invitations", "audit_events"]),
         ("POST", "/client_contacts/:id/invitation", "A121", "invitations", "inviteClientContact", ["notifications", "audit_events"]),
-        ("POST", "/acceptances/:id/remind", "A123", "acceptances", "remindAcceptance", ["notifications"]),
     ],
     "requests": [
         ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["clients", "client_contacts"]),
@@ -346,8 +344,6 @@ SCREEN_API = {
         ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_requests", "notifications"]),
         ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
         ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", ["artifacts", "ticket_messages"]),
-        ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
-        ("POST", "/portal/acceptances/:id/answer", "A126", "acceptances", "answerAcceptance", [T, "ticket_messages", "notifications"]),
         ("GET", "/portal/notices", "A125", "notices", "listPortalNotices", ["status_incidents"]),
     ],
     # ---------------------------------------------------------------- ナレッジ（08_api/phase1/09_ナレッジ.md）
@@ -1132,7 +1128,6 @@ RESPONSES = {
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
     "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
-    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"company_name": "string", "company_nodes": "array", "groups": "array", "my_nodes": "array", "can_write": "object", "admin_counts": "object?", "truncated": "boolean"}),   # K-675（土台 3.1）
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
@@ -1271,7 +1266,6 @@ PERMS = {
     "listTicketArtifacts": ("read", "そのチケットを見られる人", False),
     "getArtifactVersion": ("read", "そのチケットを見られる人（ファイルは期限つきの署名 URL）", False),
     "createTicketAttachment": ("write", "そのグループの人（大きさ・種類の上限）", False),
-    "requestAcceptance": ("assignee", "担当者とマネージャー。送る先はその取引先の人だけ", False),
     "listSavedViews": ("self", "自分のものと、グループの全員に見せたもの", False),
     "createSavedView": ("self", "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）", False),
     "updateSavedView": ("self", "作った本人", False),
@@ -1476,7 +1470,6 @@ PERMS = {
     "updateClientContact": ("manager", "同上", False),
     "removeClientContact": ("manager", "同上。外すとクライアントの場所に入れなくなり、セッションはすぐ切れる", False),
     "inviteClientContact": ("manager", "同上（7 日で切れる招待）", False),
-    "remindAcceptance": ("assignee", "そのチケットの担当者とマネージャー", False),
     "listClientRequests": ("read", "見られる取引先の依頼だけ", False),
     "getClientRequest": ("read", "同上。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
     "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
@@ -1491,8 +1484,6 @@ PERMS = {
     "postPortalRequestMessage": ("client", "「依頼できる」の人だけ。自分の取引先の依頼だけ", False),
     "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
     "getPortalTicket": ("client", "自分の取引先のチケットで、見せると決めた項目だけ", False),
-    "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
-    "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
     "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
     "getKnowledgeTree": ("self", "社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）", False),

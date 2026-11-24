@@ -4715,8 +4715,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -4742,8 +4741,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -4755,8 +4753,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -4768,8 +4765,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -4781,8 +4777,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -11896,7 +11891,6 @@
    "entity": "client_contacts",
    "field": "client_id",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -11908,7 +11902,6 @@
    "entity": "client_contacts",
    "field": "name",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -11920,7 +11913,6 @@
    "entity": "client_contacts",
    "field": "email",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -11932,7 +11924,6 @@
    "entity": "client_contacts",
    "field": "role",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -11944,7 +11935,6 @@
    "entity": "client_contacts",
    "field": "member_id",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -11956,7 +11946,6 @@
    "entity": "client_contacts",
    "field": "cc_role",
    "consumed_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
@@ -12092,7 +12081,6 @@
    "entity": "acceptances",
    "field": "ticket_id",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12103,7 +12091,6 @@
    "entity": "acceptances",
    "field": "artifact_version_id",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12114,7 +12101,6 @@
    "entity": "acceptances",
    "field": "contact_id",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12125,7 +12111,6 @@
    "entity": "acceptances",
    "field": "due_on",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12136,7 +12121,6 @@
    "entity": "acceptances",
    "field": "message",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12147,7 +12131,6 @@
    "entity": "acceptances",
    "field": "result",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12158,7 +12141,6 @@
    "entity": "acceptances",
    "field": "comment",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12169,7 +12151,6 @@
    "entity": "acceptances",
    "field": "decided_at",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
@@ -12180,7 +12161,6 @@
    "entity": "acceptances",
    "field": "reminded_at",
    "consumed_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],

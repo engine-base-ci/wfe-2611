@@ -38822,28 +38822,6 @@
     {
      "act": "A123",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets/:id/acceptances",
-     "table": "acceptances",
-     "operation_id": "requestAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-126",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A123",
-     "role": "action",
      "method": "PATCH",
      "path_draft": "/api/tickets/:id/client-share",
      "table": "tickets",
@@ -40953,28 +40931,6 @@
     {
      "act": "A123",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets/:id/acceptances",
-     "table": "acceptances",
-     "operation_id": "requestAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-126",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A123",
-     "role": "action",
      "method": "PATCH",
      "path_draft": "/api/tickets/:id/client-share",
      "table": "tickets",
@@ -41508,8 +41464,6 @@
     "E-049",
     "E-080",
     "E-037",
-    "E-128",
-    "E-126",
     "E-061",
     "E-075",
     "E-144",
@@ -45671,27 +45625,6 @@
       "D-125.121",
       "D-125.167"
      ]
-    },
-    {
-     "act": "A123",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/acceptances/:id/remind",
-     "table": "acceptances",
-     "operation_id": "remindAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
     }
    ],
    "required_apis": [
@@ -45968,27 +45901,6 @@
      ],
      "source": [
       "D-125.121",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A123",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/acceptances/:id/remind",
-     "table": "acceptances",
-     "operation_id": "remindAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
       "D-125.167"
      ]
     }
@@ -47021,50 +46933,6 @@
      ]
     },
     {
-     "act": "A126",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/portal/acceptances/:id",
-     "table": "acceptances",
-     "operation_id": "getPortalAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-051"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A126",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/portal/acceptances/:id/answer",
-     "table": "acceptances",
-     "operation_id": "answerAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-106",
-      "E-119",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
      "act": "A125",
      "role": "data_fetch",
      "method": "GET",
@@ -47237,50 +47105,6 @@
      ]
     },
     {
-     "act": "A126",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/portal/acceptances/:id",
-     "table": "acceptances",
-     "operation_id": "getPortalAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-051"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A126",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/portal/acceptances/:id/answer",
-     "table": "acceptances",
-     "operation_id": "answerAcceptance",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-128",
-      "E-106",
-      "E-119",
-      "E-080"
-     ],
-     "choke_points": [
-      "C2",
-      "C6"
-     ],
-     "source": [
-      "D-125.124",
-      "D-125.167"
-     ]
-    },
-    {
      "act": "A125",
      "role": "data_fetch",
      "method": "GET",
@@ -47311,7 +47135,6 @@
     "E-080",
     "E-049",
     "E-119",
-    "E-051",
     "E-075",
     "E-077"
    ],

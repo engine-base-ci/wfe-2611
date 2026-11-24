@@ -3,17 +3,6 @@
  "skill": "api-design",
  "endpoints": [
   {
-   "method": "POST",
-   "path": "/api/v1/acceptances/:id/remind",
-   "implementation_path": "apps/api/src/routes/acceptances.ts::remindAcceptance",
-   "screen_ids_referencing": [
-    "clients"
-   ],
-   "acts": [
-    "A123"
-   ]
-  },
-  {
    "method": "GET",
    "path": "/api/v1/action_runs/:id",
    "implementation_path": "apps/api/src/routes/action_runs.ts::getActionRun",
@@ -2881,28 +2870,6 @@
    ]
   },
   {
-   "method": "GET",
-   "path": "/api/v1/portal/acceptances/:id",
-   "implementation_path": "apps/api/src/routes/acceptances.ts::getPortalAcceptance",
-   "screen_ids_referencing": [
-    "portal"
-   ],
-   "acts": [
-    "A126"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/portal/acceptances/:id/answer",
-   "implementation_path": "apps/api/src/routes/acceptances.ts::answerAcceptance",
-   "screen_ids_referencing": [
-    "portal"
-   ],
-   "acts": [
-    "A126"
-   ]
-  },
-  {
    "method": "POST",
    "path": "/api/v1/portal/attachments",
    "implementation_path": "apps/api/src/routes/attachments.ts::uploadPortalAttachment",
@@ -3447,17 +3414,6 @@
    ],
    "acts": [
     "A116"
-   ]
-  },
-  {
-   "method": "POST",
-   "path": "/api/v1/tickets/:id/acceptances",
-   "implementation_path": "apps/api/src/routes/acceptances.ts::requestAcceptance",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A123"
    ]
   },
   {

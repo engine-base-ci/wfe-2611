@@ -2891,8 +2891,6 @@
     "E-049 messages",
     "E-080 notifications",
     "E-037 policies",
-    "E-128 acceptances",
-    "E-126 client_contacts",
     "E-061 sessions",
     "E-075 notices",
     "E-144 custom_fields",
@@ -2968,7 +2966,6 @@
     "GET /api/tickets/:id/artifacts",
     "GET /api/artifact_versions/:id",
     "POST /api/tickets/:id/attachments",
-    "POST /api/tickets/:id/acceptances",
     "PATCH /api/tickets/:id/client-share",
     "GET /api/saved_views",
     "POST /api/saved_views",
@@ -3236,8 +3233,7 @@
     "POST /api/clients/:id/contacts",
     "PATCH /api/client_contacts/:id",
     "DELETE /api/client_contacts/:id",
-    "POST /api/client_contacts/:id/invitation",
-    "POST /api/acceptances/:id/remind"
+    "POST /api/client_contacts/:id/invitation"
    ],
    "access_roles": [
     "R1",
@@ -3368,7 +3364,6 @@
     "E-080 notifications",
     "E-049 messages",
     "E-119 ticket_messages",
-    "E-051 artifact_versions",
     "E-075 notices",
     "E-077 status_incidents"
    ],
@@ -3380,8 +3375,6 @@
     "POST /api/portal/requests/:id/messages",
     "POST /api/portal/attachments",
     "GET /api/portal/tickets/:id",
-    "GET /api/portal/acceptances/:id",
-    "POST /api/portal/acceptances/:id/answer",
     "GET /api/portal/notices"
    ],
    "access_roles": [
@@ -10957,12 +10950,6 @@
     {
      "act": "A123",
      "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets/:id/acceptances"
-    },
-    {
-     "act": "A123",
-     "role": "action",
      "method": "PATCH",
      "path_draft": "/api/tickets/:id/client-share"
     },
@@ -11553,12 +11540,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/client_contacts/:id/invitation"
-    },
-    {
-     "act": "A123",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/acceptances/:id/remind"
     }
    ]
   },
@@ -11696,18 +11677,6 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/portal/tickets/:id"
-    },
-    {
-     "act": "A126",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/portal/acceptances/:id"
-    },
-    {
-     "act": "A126",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/portal/acceptances/:id/answer"
     },
     {
      "act": "A125",
@@ -12628,8 +12597,7 @@
     "bridge-setup",
     "approvals",
     "clone-chat",
-    "tickets",
-    "portal"
+    "tickets"
    ],
    "used_by_features": [
     "F-001",
@@ -12640,7 +12608,6 @@
     "F-011",
     "F-013",
     "F-021",
-    "F-022",
     "F-023",
     "F-024"
    ]
@@ -14154,22 +14121,14 @@
    "entity_id": "E-126",
    "entity_name": "client_contacts",
    "used_by_screens": [
-    "tickets",
     "rules",
     "clients",
     "requests"
    ],
    "used_by_features": [
-    "F-001",
-    "F-004",
-    "F-005",
-    "F-006",
-    "F-010",
     "F-011",
     "F-013",
-    "F-021",
-    "F-023",
-    "F-024"
+    "F-021"
    ]
   },
   {
@@ -14189,21 +14148,12 @@
    "entity_id": "E-128",
    "entity_name": "acceptances",
    "used_by_screens": [
-    "tickets",
     "clients",
     "portal"
    ],
    "used_by_features": [
-    "F-001",
-    "F-004",
-    "F-005",
-    "F-006",
-    "F-010",
-    "F-013",
     "F-021",
-    "F-022",
-    "F-023",
-    "F-024"
+    "F-022"
    ]
   },
   {
@@ -14587,8 +14537,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-130",
     "E-131",
@@ -14720,8 +14668,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-131",
     "E-132",
@@ -14818,8 +14764,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-134",
     "E-135",
@@ -14909,8 +14853,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-135",
     "E-136",
@@ -15112,8 +15054,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-132",
     "E-134",
@@ -15370,7 +15310,6 @@
     "E-124",
     "E-125",
     "E-126",
-    "E-128",
     "E-129",
     "E-133",
     "E-135",
@@ -15760,7 +15699,6 @@
     "E-044",
     "E-049",
     "E-050",
-    "E-051",
     "E-075",
     "E-077",
     "E-080",
@@ -15826,8 +15764,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-135",
     "E-136",
@@ -15890,8 +15826,6 @@
     "E-120",
     "E-121",
     "E-124",
-    "E-126",
-    "E-128",
     "E-129",
     "E-135",
     "E-136",

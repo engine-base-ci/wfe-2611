@@ -33,14 +33,6 @@
   "tickets"
  ],
  "tables": {
-  "acceptances": {
-   "writes": [
-    "F11"
-   ],
-   "reads": [],
-   "boundary": false,
-   "lines": []
-  },
   "account_events": {
    "writes": [
     "F10",
