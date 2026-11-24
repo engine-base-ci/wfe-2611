@@ -5,15 +5,15 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 373,
-  "api_built": 105,
+  "api": 369,
+  "api_built": 97,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 292,
-  "stack": 68,
+  "errors": 262,
+  "stack": 56,
   "env": 41
  },
  "api": [
@@ -366,24 +366,6 @@
    "status": "作った",
    "owner_tickets": [
     "K-334"
-   ]
-  },
-  {
-   "op": "confirmInvitationJoin",
-   "method": "POST",
-   "path": "/api/v1/auth/invitations/confirm",
-   "what": "作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る）",
-   "flows": [
-    "F1",
-    "F2"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "invitations"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-422"
    ]
   },
   {
@@ -1763,7 +1745,7 @@
    "op": "listHandoverRules",
    "method": "GET",
    "path": "/api/v1/handover_rules",
-   "what": "取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）",
+   "what": "取得（handover_rules）— 渡されたものを受ける／断る（理由）",
    "flows": [
     "F8"
    ],
@@ -1771,8 +1753,9 @@
    "tables": [
     "handover_rules"
    ],
-   "status": "作った",
+   "status": "契約だけ（501）",
    "owner_tickets": [
+    "K-68",
     "K-401"
    ]
   },
@@ -4661,8 +4644,9 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "作った",
+   "status": "契約だけ（501）",
    "owner_tickets": [
+    "K-68",
     "K-401"
    ]
   },
@@ -5215,40 +5199,6 @@
    ]
   },
   {
-   "op": "previewTicketHandover",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/handover-preview",
-   "what": "取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
-   "flows": [
-    "F8"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "tickets"
-   ],
-   "status": "作った",
-   "owner_tickets": [
-    "K-401"
-   ]
-  },
-  {
-   "op": "listTicketHandovers",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/handovers",
-   "what": "取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで）",
-   "flows": [
-    "F8"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "ticket_handovers"
-   ],
-   "status": "作った",
-   "owner_tickets": [
-    "K-405"
-   ]
-  },
-  {
    "op": "createTicketHandover",
    "method": "POST",
    "path": "/api/v1/tickets/:id/handovers",
@@ -5260,26 +5210,10 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "作った",
+   "status": "契約だけ（501）",
    "owner_tickets": [
+    "K-68",
     "K-401"
-   ]
-  },
-  {
-   "op": "listTicketItemChanges",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/item-changes",
-   "what": "取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "ticket_messages"
-   ],
-   "status": "作った",
-   "owner_tickets": [
-    "K-433"
    ]
   },
   {
@@ -5511,7 +5445,7 @@
    "op": "listTicketVersions",
    "method": "GET",
    "path": "/api/v1/tickets/:id/versions",
-   "what": "取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない）",
+   "what": "取得（tickets）— チケットの中身（区画）を書く・直す",
    "flows": [
     "F4"
    ],
@@ -5519,7 +5453,7 @@
    "tables": [
     "ticket_section_versions"
    ],
-   "status": "作った",
+   "status": "契約だけ（501）",
    "owner_tickets": [
     "K-59",
     "K-433"
@@ -5535,9 +5469,9 @@
    ],
    "only_later_phase": false,
    "tables": [
-    "ticket_sections"
+    "ticket_section_versions"
    ],
-   "status": "作った",
+   "status": "契約だけ（501）",
    "owner_tickets": [
     "K-59",
     "K-433"
@@ -7376,8 +7310,7 @@
     "F6"
    ],
    "reads": [
-    "F11",
-    "F4"
+    "F11"
    ],
    "boundary": true
   },
@@ -7385,10 +7318,10 @@
    "table": "ticket_section_versions",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [],
-   "reads": [
+   "writes": [
     "F4"
    ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -7431,9 +7364,7 @@
     "F6",
     "F7"
    ],
-   "reads": [
-    "F8"
-   ],
+   "reads": [],
    "boundary": true
   },
   {
@@ -7918,54 +7849,6 @@
    {
     "package": "zod",
     "for": "記録にある名前のまま"
-   },
-   {
-    "package": "@tiptap/core",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/react",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/pm",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/starter-kit",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-highlight",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-table",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-task-list",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-task-item",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-text-align",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-text-style",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-superscript",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
-   },
-   {
-    "package": "@tiptap/extension-subscript",
-    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
    }
   ],
   "env": [

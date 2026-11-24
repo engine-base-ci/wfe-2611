@@ -126,7 +126,7 @@ test("K573-UI-003 入力：理由を書いて「理由を書いて任せる」�
   const m = await mockNoSpecs(page);
   await openDetail(page);
   await pressDelegate(page);
-  await reasonBox(page).fill(`　 ${REASON} \n`);
+  await reasonBox(page).fill(`\u3000 ${REASON} \n`);
   await goBtn(page).click();
   await expect.poll(() => m.delegates.length).toBe(1);
   expect(m.delegates[0]).toEqual({ no_spec_reason: REASON });
