@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。298 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。299 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5148,6 +5148,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "knowledge"
+    }
+  },
+  "E-KNW-240": {
+    "id": "E-KNW-240",
+    "cls": "conflict",
+    "message": "必ず守る決まりから入った確認項目に、チェックの付いていない物があるので、まだ完了にできません",
+    "action": "確認項目に戻る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-KNW-240",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   },
   "E-STG-001": {

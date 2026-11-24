@@ -166,6 +166,7 @@ export const MIGRATIONS = [
   "20261125012700_knowledge_requests.sql",
   "20261125013900_knowledge_guard_specs.sql",
   "20261125014000_knowledge_breaches.sql",
+  "20261125014100_knowledge_complete_guard.sql",
   "20261125014500_ticket_stage_settings.sql",
   "20261125014600_ticket_field_master.sql",
   "20261125015700_ticket_field_edit.sql",

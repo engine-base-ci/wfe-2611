@@ -3,6 +3,7 @@
 //   K-161 は読む口（not_found）。K-162 は承認（not_member・not_approver・not_writable → 403・decided → 409・guard_failed → 503）。
 //   K-163 は差し戻し（reason_empty → 422）。K-165 は完了（done・stage → 409／not_confirmed・children_left → 422。K-566 で todo_changed・todo_left・todo_out_of_range は外した）。
 //   K-166 は完了の not_doing → 409（作業中でない）・children_left の明細に子の id・見えない子は件数だけ・guard_failed と知らない言葉 → 503
+//   K-701 は完了の knowledge_left → 409（E-KNW-240・必ず守るから入った確認項目の残りの行を detail.left に）
 import { isUuid } from "@kaname/contracts";
 import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
@@ -48,12 +49,28 @@ function childDetails(children: unknown, hidden: unknown): Detail[] {
   return n > 0 ? [...seen, { field: "children", message: `ほかに、あなたに見えない子が ${n} 件あります` }] : seen;
 }
 
+/** 必ず守るの残りの行 1 つ（画面の小窓「まだ完了にできません」が並べる・K-703） */
+export type GuardLeft = { id: string; title: string; page_id: string; page_title: string };
+/** DB の答えの並び（app.knowledge_guard_left）を、1 つずつ鍵 4 つの文字の物に直す。行の文・題名はログに出さない */
+function guardLeft(left: unknown): GuardLeft[] {
+  return (Array.isArray(left) ? left : []).map((x): GuardLeft => {
+    const { id, title, page_id, page_title } = (x ?? {}) as Record<string, unknown>;
+    return {
+      id: String(id ?? ""),
+      title: String(title ?? ""),
+      page_id: String(page_id ?? ""),
+      page_title: String(page_title ?? ""),
+    };
+  });
+}
+
 /** DB の関数の答え { error: <言葉> } → 答え。知らない言葉は止める側（503・言葉は記録にだけ残し、答えに出さない） */
 export function replyOf(
   r: {
     error?: unknown;
     children?: unknown;
     children_hidden?: unknown;
+    left?: unknown;
   },
   where: string,
 ): HookReply {
@@ -75,6 +92,9 @@ export function replyOf(
   // 終わっていない子（D-128.138）：押した人に見える子は id と「番号 題名」（K63-API-095）。
   //   見えない子は id・番号・題名を出さず、件数だけを 1 件で足す（決める人の答え db67f3cde899 ①・K63-API-096・097）
   if (word === "children_left") return withDetails("E-VAL-024", 422, childDetails(r.children, r.children_hidden));
+  // 必ず守るから入った確認項目にチェックの無い行（K-701・D-152.12）。人が足した確認項目では止めない（K-566）。体は正本のエラーに detail: { left } を足す（欄・明細は付けない）
+  if (word === "knowledge_left")
+    return { status: 409, body: kanameError("E-KNW-240", { left: guardLeft(r.left) }).toJSON() };
   // 守りの判定で例外（guard_failed・fail-closed・K63-API-059・063）。知らない言葉（bad_decision を含む）も止める側
   return down(where, word);
 }
