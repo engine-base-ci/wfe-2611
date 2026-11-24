@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-24 凍結）
+# Kaname API 設計書 v1.0（2026-11-25 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -390,7 +390,14 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1065 ／ 内部専用 277 ／ どの画面にも出ない 0
+- 検査したフィールド 1075 ／ 内部専用 280 ／ どの画面にも出ない 7
+  - ★ guest_groups.name
+  - ★ guest_groups.name_key
+  - ★ guest_groups.request_scope_id
+  - ★ guest_group_members.guest_group_id
+  - ★ guest_group_members.member_id
+  - ★ ticket_guest_shares.ticket_id
+  - ★ ticket_guest_shares.guest_group_id
 
 ## 5. 共通仕様
 
@@ -400,4 +407,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-24 凍結（endpoints 369）
+- v1.0 2026-11-25 凍結（endpoints 369）
