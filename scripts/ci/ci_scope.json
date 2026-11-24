@@ -1656,6 +1656,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/overview/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k480-overview.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/stopped.ts",
     "apps/api/src/features/F7/stopped/**"
    ],

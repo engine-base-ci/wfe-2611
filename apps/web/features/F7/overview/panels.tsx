@@ -27,6 +27,10 @@ export interface UpdateDay {
 export interface UpdateFilter {
   label: string;
   current?: boolean;
+  /** 押したとき（手元で絞る）。無ければ押しても何もしない */
+  onPick?: () => void;
+  /** 押せない札（aria-disabled・Tab で止まらない） */
+  disabled?: boolean;
 }
 export interface UpdateFeedProps {
   filters: readonly UpdateFilter[];
@@ -82,12 +86,16 @@ export function UpdateFeed({ filters, days }: UpdateFeedProps) {
               className="k-f7-overview-chip"
               data-current={f.current || undefined}
               aria-pressed={f.current ?? false}
+              aria-disabled={f.disabled ? "true" : undefined}
+              tabIndex={f.disabled ? -1 : undefined}
+              onClick={f.disabled ? undefined : f.onPick}
             >
               {f.label}
             </button>
           ))}
         </span>
       </div>
+      {days.length === 0 ? <p className="k-f7-overview-none">最近の更新はありません</p> : null}
       {days.map((d) => (
         <div key={d.label}>
           <h3 className="k-f7-overview-day-label">{d.label}</h3>
