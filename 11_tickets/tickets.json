@@ -22614,10 +22614,11 @@
    "choke_points": [],
    "choke_none": "画面だけ。書く（本文の行と版の行・やり取りの 1 行・証跡）のは口の葉 K-432 の関門 C2 で、画面は契約の口 updateTicketBody と getTicket を呼ぶだけ。DB・外・秘密・知らせに直に触らない（この PC の写しは localStorage だけ）",
    "tests": [
-    "apps/web/tests/k/k447-body-edit.spec.ts",
+    "apps/web/tests/k/k447-body-edit.spec.ts"
+   ],
+   "carry": [
     "apps/web/tests/k/body-edit-mock.ts"
    ],
-   "carry": [],
    "depends_on": [
     "K-571",
     "K-432",
