@@ -2501,6 +2501,7 @@
   "apps/api/test/features/F5/approval-more.kit.ts": "葉の hooks のファイル apps/api/src/hooks/approval-stop.ts（と K-733・K-742・K-750 の hooks のファイル）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-732（K-733・K-742・K-744・K-748・K-750 も同じ手助けを使う）",
   "apps/api/test/features/contract/k144.d/K-732.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-733.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/approval-checks.test.ts": "契約の表 05_flow/screen_api.py と queue.ts を readFileSync で読む（K739-API-018）・K-739",
   "apps/api/test/features/F5/checks-retire.test.ts": "契約・生成物・目録・親の md を readFileSync で読み、git grep と flow_db_gate.py を spawnSync で動かす（K741-API-002〜010）・K-741",
   "apps/api/test/features/contract/k144.d/K-742.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F5/clone-room.harness.ts": "hooks のファイル apps/api/src/hooks/clone-room.ts を動的 import で読む（準備で読まず最初の要求で 1 回）。読む物と使う試験は data_links で結ぶ・K-753",

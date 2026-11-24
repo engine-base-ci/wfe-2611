@@ -83,7 +83,7 @@ async function listShaped(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions, qq
   const v = await withTenant(pool, a.ctx, async (cl) => {
     overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
     const r = await cl.query<{ v: { rows?: unknown[]; more?: boolean; counts?: Partial<Counts>; error?: string } }>(
-      "select app.approval_queue_page($1, $2, $3, $4) as v",
+      "select app.approval_page_checks(app.approval_queue_page($1, $2, $3, $4)) as v",
       [qq.kind, qq.sort, limit, offset],
     );
     return r.rows[0]?.v ?? null;
@@ -112,12 +112,10 @@ async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
   let overdue: Overdue = [];
   const { rows, counts } = await withTenant(pool, a.ctx, async (cl) => {
     overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
-    const r = await cl.query<{ v: QueueItem[] }>("select app.approval_queue($1, $2, $3, $4) as v", [
-      limit + 1,
-      key?.due ?? null,
-      key?.created ?? null,
-      key?.id ?? null,
-    ]);
+    const r = await cl.query<{ v: QueueItem[] }>(
+      "select app.approval_checks_overlay(app.approval_queue($1, $2, $3, $4)) as v",
+      [limit + 1, key?.due ?? null, key?.created ?? null, key?.id ?? null],
+    );
     const n = await cl.query<{ c: Partial<Counts> | null }>("select app.approval_queue_counts() as c");
     return { rows: r.rows[0]?.v ?? [], counts: toCounts(n.rows[0]?.c) };
   });
@@ -141,7 +139,10 @@ async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
 async function getOne(pool: pg.Pool, a: HookArgs) {
   const v = await withTenant(pool, a.ctx, async (cl) => {
     await sweepBeforeRead(cl, SWEEP_OF_APPROVAL, [a.id], "承認の 1 件");
-    const r = await cl.query<{ v: Record<string, unknown> | null }>("select app.approval_detail($1) as v", [a.id]);
+    const r = await cl.query<{ v: Record<string, unknown> | null }>(
+      "select app.approval_detail_checks(app.approval_detail($1)) as v",
+      [a.id],
+    );
     return r.rows[0]?.v ?? null;
   });
   // 読めない・成果物の承認でない（D-131.11）・消された は、どれも同じ 404（中身を返さない）

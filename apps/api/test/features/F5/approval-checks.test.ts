@@ -78,7 +78,8 @@ const detailOf = async (id: string, who = boss): Promise<Record<string, unknown>
   return ((await json(r)).data ?? {}) as Record<string, unknown>;
 };
 const itemOf = async (approvalId: string, who = boss): Promise<Record<string, unknown>> => {
-  const r = await queue(who);
+  // 同じ試験のファイルの前の行が承認待ちを残すので、既定の 20 件でなく上限の 200 件で読む（確かめる中身は同じ）
+  const r = await queue(who, "?limit=200");
   expect(r.status).toBe(200);
   const rows = (await json(r)).data as unknown as Record<string, unknown>[];
   return rows.find((x) => x["id"] === approvalId)!;
@@ -350,7 +351,7 @@ describe("K-739 承認の「確認」を確認項目から出す", () => {
   it("K739-API-019 札（kind=artifact）と並べ替え（sort=title）を付けた一覧（K-748 の頁の道）でも check_summary は数の字。DB の関数 app.approval_page_checks は rows の artifact の行だけ差し替え、渡しの行・more・counts・rows の無い答えはそのまま", async () => {
     const m = await mixed("札を付ける");
     const plain = await itemOf(m.d.approvalId);
-    const r = await queue(boss, "?kind=artifact&sort=title");
+    const r = await queue(boss, "?kind=artifact&sort=title&limit=200");
     expect(r.status, await r.clone().text()).toBe(200);
     const rows = (await json(r)).data as unknown as Record<string, unknown>[];
     const hit = rows.find((x) => x["id"] === m.d.approvalId)!;
