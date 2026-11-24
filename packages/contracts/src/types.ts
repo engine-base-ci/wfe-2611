@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:3b2ba7c431787229
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:c6d1fb8fb500579d
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -274,6 +274,12 @@ export type Operations = { key?: string; name?: string; kind?: string; current_v
 export type OperationsInput = { key?: string; name?: string; kind?: string; current_version?: number };
 export type TicketLinks = { from_ticket_id?: string; to_ticket_id?: string; kind?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketLinksInput = { from_ticket_id?: string; to_ticket_id?: string; kind?: string };
+export type GuestGroups = { name?: string; name_key?: string; request_scope_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type GuestGroupsInput = { name?: string; name_key?: string; request_scope_id?: string };
+export type GuestGroupMembers = { guest_group_id?: string; member_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type GuestGroupMembersInput = { guest_group_id?: string; member_id?: string };
+export type TicketGuestShares = { ticket_id?: string; guest_group_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
+export type TicketGuestSharesInput = { ticket_id?: string; guest_group_id?: string };
 export type TicketHandovers = { ticket_id?: string; kind?: string; from_member_id?: string; to_member_id?: string | null; to_scope_id?: string | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: unknown; state?: string; decline_reason?: string | null; decided_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketHandoversInput = { ticket_id?: string; kind?: string; from_member_id?: string; to_member_id?: string | null; to_scope_id?: string | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: unknown; state?: string; decline_reason?: string | null; decided_at?: string | null };
 export type SavedViews = { member_id?: string; name?: string; share?: string; scope_id?: string | null; filters?: unknown; columns?: unknown; density?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
