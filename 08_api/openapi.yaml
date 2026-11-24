@@ -14552,6 +14552,224 @@ components:
       required:
       - field_ids
       x-required-by: hooks
+    NoticeReadInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: markNoticeRead
+    OpsNoticeCreateInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - incident
+          - maintenance
+          - release
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        audience_mode:
+          type: string
+          enum:
+          - all
+          - plans
+          - workspaces
+        audience_plans:
+          type: array
+          items:
+            type: string
+            enum:
+            - free
+            - team
+            - business
+          uniqueItems: true
+        audience_workspace_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+        placements:
+          type: array
+          items:
+            type: string
+            enum:
+            - band
+            - list
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        publish_at:
+          type: string
+          nullable: true
+          format: date-time
+        maintenance_from:
+          type: string
+          nullable: true
+          format: date-time
+        maintenance_to:
+          type: string
+          nullable: true
+          format: date-time
+        impact:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+      additionalProperties: false
+      x-operation: createOpsNotice
+      required:
+      - kind
+      - title
+      - body
+      - audience_mode
+      - placements
+      x-required-by: hooks
+    OpsNoticeUpdateInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - incident
+          - maintenance
+          - release
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        audience_mode:
+          type: string
+          enum:
+          - all
+          - plans
+          - workspaces
+        audience_plans:
+          type: array
+          items:
+            type: string
+            enum:
+            - free
+            - team
+            - business
+          uniqueItems: true
+        audience_workspace_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+        placements:
+          type: array
+          items:
+            type: string
+            enum:
+            - band
+            - list
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        publish_at:
+          type: string
+          nullable: true
+          format: date-time
+        maintenance_from:
+          type: string
+          nullable: true
+          format: date-time
+        maintenance_to:
+          type: string
+          nullable: true
+          format: date-time
+        impact:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+      additionalProperties: false
+      x-operation: updateOpsNotice
+    OpsNoticePublishInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: publishOpsNotice
+    IncidentUpdateInput:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+          - investigating
+          - identified
+          - monitoring
+          - resolved
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: addIncidentUpdate
+      required:
+      - state
+      - body
+      x-required-by: hooks
+    WorkspaceNoticeInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+        placements:
+          type: array
+          items:
+            type: string
+            enum:
+            - band
+            - list
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        admins_only:
+          type: boolean
+      additionalProperties: false
+      x-operation: sendWorkspaceNotice
+      required:
+      - title
+      - body
+      - placements
+      x-required-by: hooks
+      not:
+        properties:
+          admins_only:
+            const: true
+          placements:
+            contains:
+              const: band
+        required:
+        - admins_only
+        - placements
     ScopeOverview:
       type: object
       properties:
@@ -16174,19 +16392,50 @@ components:
     OpsNoticeDetail:
       type: object
       properties:
-        notice:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        title:
+          type: string
+        audience:
           type: object
+        state:
+          type: string
+        placements:
+          type: array
+          items:
+            type: string
+        publish_at:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          nullable: true
+        author_name:
+          type: string
+          nullable: true
+        incident_state:
+          type: string
+          nullable: true
+        admins_only:
+          type: boolean
+        body:
+          type: string
+        maintenance:
+          type: object
+          nullable: true
+        impact:
+          type: string
+          nullable: true
         updates:
           type: array
           items:
             type: object
-        affects:
+        reach:
           type: object
-        placements:
-          type: array
-          items:
-            type: object
-      x-operation: getOpsNotice
+      x-operation: sendWorkspaceNotice
     PublicServiceStatus:
       type: object
       properties:
@@ -16250,10 +16499,13 @@ components:
           type: array
           items:
             type: object
-        banner:
+        bands:
+          type: array
+          items:
+            type: object
+        maintenance_now:
           type: object
-        maintenance:
-          type: object
+          nullable: true
       x-operation: getServiceStatusForMember
     InvitationResendResult:
       type: object
@@ -17025,6 +17277,75 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketField
+    Notice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        state:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+        unread:
+          type: boolean
+        maintenance:
+          type: object
+          nullable: true
+        updates:
+          type: array
+          items:
+            type: object
+      x-operation: listNotices
+    NoticeRead:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        read_at:
+          type: string
+      x-operation: markNoticeRead
+    OpsNoticeRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        title:
+          type: string
+        audience:
+          type: object
+        state:
+          type: string
+        placements:
+          type: array
+          items:
+            type: string
+        publish_at:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          nullable: true
+        author_name:
+          type: string
+          nullable: true
+        incident_state:
+          type: string
+          nullable: true
+        admins_only:
+          type: boolean
+      x-operation: listOpsNotices
     Error:
       type: object
       properties:
@@ -37067,7 +37388,7 @@ paths:
   /api/v1/notices:
     get:
       operationId: listNotices
-      summary: 取得（notices）— お知らせを見る
+      summary: 取得（notices）— 自分に届いたお知らせを新しい順に読む（本文と障害の続報まで・1 件を開く口は無い）
       tags:
       - notices
       x-acts:
@@ -37096,11 +37417,17 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - incident
+          - maintenance
+          - release
       - name: unread
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - 'true'
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -37114,32 +37441,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - affects
-          - body
-          - created_at
-          - created_by
-          - deleted_at
-          - emailed_admins_at
-          - id
-          - kind_id
-          - maintenance_from
-          - maintenance_to
-          - placements
-          - publish_at
-          - published_by
-          - state
-          - target_plan_ids
-          - target_tenant_id
-          - tenant_id
-          - title
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -37151,7 +37452,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Notices'
+                      $ref: '#/components/schemas/Notice'
                   meta:
                     type: object
         '401':
@@ -37223,7 +37524,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticeDeliveriesInput'
+              $ref: '#/components/schemas/NoticeReadInput'
       responses:
         '201':
           description: 成功
@@ -37233,7 +37534,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/NoticeDeliveries'
+                    $ref: '#/components/schemas/NoticeRead'
                   meta:
                     type: object
         '401':
@@ -38761,7 +39062,7 @@ paths:
   /api/v1/ops/notices:
     get:
       operationId: listOpsNotices
-      summary: 取得（ops）— お知らせを出す
+      summary: 取得（notices）— 運営のお知らせを新しい順に見る（下書き・予定・出した・直った）
       tags:
       - notices
       x-acts:
@@ -38786,11 +39087,20 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - incident
+          - maintenance
+          - release
       - name: state
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - draft
+          - scheduled
+          - published
+          - resolved
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -38804,32 +39114,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - affects
-          - body
-          - created_at
-          - created_by
-          - deleted_at
-          - emailed_admins_at
-          - id
-          - kind_id
-          - maintenance_from
-          - maintenance_to
-          - placements
-          - publish_at
-          - published_by
-          - state
-          - target_plan_ids
-          - target_tenant_id
-          - tenant_id
-          - title
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -38841,7 +39125,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Notices'
+                      $ref: '#/components/schemas/OpsNoticeRow'
                   meta:
                     type: object
         '401':
@@ -38902,7 +39186,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticesInput'
+              $ref: '#/components/schemas/OpsNoticeCreateInput'
       responses:
         '201':
           description: 成功
@@ -38912,7 +39196,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notices'
+                    $ref: '#/components/schemas/OpsNoticeDetail'
                   meta:
                     type: object
         '401':
@@ -39069,7 +39353,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticesInput'
+              $ref: '#/components/schemas/OpsNoticeUpdateInput'
       responses:
         '200':
           description: 成功
@@ -39079,7 +39363,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notices'
+                    $ref: '#/components/schemas/OpsNoticeDetail'
                   meta:
                     type: object
         '401':
@@ -39160,7 +39444,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticesInput'
+              $ref: '#/components/schemas/OpsNoticePublishInput'
       responses:
         '201':
           description: 成功
@@ -39170,7 +39454,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notices'
+                    $ref: '#/components/schemas/OpsNoticeDetail'
                   meta:
                     type: object
         '401':
@@ -39257,7 +39541,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatusIncidentsInput'
+              $ref: '#/components/schemas/IncidentUpdateInput'
       responses:
         '201':
           description: 成功
@@ -39267,7 +39551,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/StatusIncidents'
+                    $ref: '#/components/schemas/OpsNoticeDetail'
                   meta:
                     type: object
         '401':
@@ -41518,7 +41802,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoticesInput'
+              $ref: '#/components/schemas/WorkspaceNoticeInput'
       responses:
         '201':
           description: 成功
@@ -41528,7 +41812,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notices'
+                    $ref: '#/components/schemas/OpsNoticeDetail'
                   meta:
                     type: object
         '401':
