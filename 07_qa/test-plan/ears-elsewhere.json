@@ -2742,6 +2742,67 @@
     "test_post_knowledge_requests_id_dismiss_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は空）"
    }
   },
+  "getKnowledgeShares": {
+   "file": "apps/api/test/features/F9/knowledge-shares.test.ts",
+   "reason": "共有の選びが読めるかは棚（グループ）と役（元のマネージャー・共有先のマネージャー）で変わる。生成の試験の偽のセッションでは棚も所属も共有も作れない（K-689）",
+   "covers": {
+    "test_get_knowledge_shares_ok": "K689-API-001",
+    "test_get_knowledge_shares_shape": "K689-API-001",
+    "test_get_knowledge_shares_rejected_401": "K689-API-020",
+    "test_get_knowledge_shares_rejected_403": "K689-API-003",
+    "test_get_knowledge_shares_not_found": "K689-API-003",
+    "test_get_knowledge_shares_rate_limited": "K689-API-020",
+    "test_get_knowledge_shares_rejected_422": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-140"
+    },
+    "test_get_knowledge_shares_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_knowledge_shares_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_knowledge_shares_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "setKnowledgeShares": {
+   "file": "apps/api/test/features/F9/knowledge-shares.test.ts",
+   "reason": "共有を頼む・やめるは棚・役・相手のグループのマネージャーの有無・頼みの状態で変わる。生成の試験の偽のセッションでは棚も所属も作れない（K-689）",
+   "covers": {
+    "test_put_knowledge_shares_ok": "K689-API-004",
+    "test_put_knowledge_shares_shape": "K689-API-004",
+    "test_put_knowledge_shares_rejected_401": "K689-API-020",
+    "test_put_knowledge_shares_rejected_403": "K689-API-010",
+    "test_put_knowledge_shares_not_found": "K689-API-010",
+    "test_put_knowledge_shares_rejected_422": "K689-API-011",
+    "test_put_knowledge_shares_conflict": "K689-API-010",
+    "test_put_knowledge_shares_rate_limited": "K689-API-021",
+    "test_put_knowledge_shares_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_put_knowledge_shares_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_put_knowledge_shares_conflict_2": "K689-API-010",
+    "test_put_knowledge_shares_conflict_3": "K689-API-010",
+    "test_put_knowledge_shares_conflict_4": "K689-API-010",
+    "test_put_knowledge_shares_conflict_5": "K689-API-010",
+    "test_put_knowledge_shares_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_put_knowledge_shares_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 4 欄）"
+   }
+  },
   "createTicketStage": {
    "file": "apps/api/test/features/F9/ticket-stages-write.test.ts",
    "reason": "状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）",

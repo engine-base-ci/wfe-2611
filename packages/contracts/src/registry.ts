@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:582911631eafb6f9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e970e5bf181bec73
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6887,6 +6887,116 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/knowledge/shares",
+    "operationId": "getKnowledgeShares",
+    "table": "knowledge_shares",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "KnowledgeShares",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "page_id",
+      "folder_id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      404,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A136"
+    ],
+    "screens": [
+      "knowledge"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/knowledge/shares",
+    "operationId": "setKnowledgeShares",
+    "table": "knowledge_shares",
+    "kind": "update",
+    "input": "KnowledgeSharesInput",
+    "success": 200,
+    "output": "KnowledgeShares",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      422,
+      404,
+      409,
+      409,
+      409,
+      409,
+      409,
       503,
       413,
       429,
@@ -20768,4 +20878,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "582911631eafb6f9";
+export const OPENAPI_HASH = "e970e5bf181bec73";

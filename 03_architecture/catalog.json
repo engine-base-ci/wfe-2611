@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 389,
-  "api_built": 118,
+  "api": 391,
+  "api_built": 120,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 150,
+  "db": 151,
   "ui": 19,
   "packages": 13,
-  "errors": 298,
+  "errors": 301,
   "stack": 68,
   "env": 41
  },
@@ -2135,6 +2135,40 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-687"
+   ]
+  },
+  {
+   "op": "getKnowledgeShares",
+   "method": "GET",
+   "path": "/api/v1/knowledge/shares",
+   "what": "取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_shares"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-689"
+   ]
+  },
+  {
+   "op": "setKnowledgeShares",
+   "method": "PUT",
+   "path": "/api/v1/knowledge/shares",
+   "what": "置き換え（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_shares"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-689"
    ]
   },
   {
@@ -6995,6 +7029,16 @@
    "table": "knowledge_pages",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "writes": [
+    "F9"
+   ],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "knowledge_shares",
+   "class": "skeleton",
+   "why": "グループを選んで共有の口と見える関数が使う（K-689）",
    "writes": [
     "F9"
    ],

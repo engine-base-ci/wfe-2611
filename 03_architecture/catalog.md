@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 389（作った 118・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 298・部品 68・設定 41
+API 391（作った 120・後のフェーズの行為だけ 20）・前の道すじ 26・表 151・画面の部品 19・共通の処理 13・エラー 301・部品 68・設定 41
 
 ## 共通の処理
 
@@ -87,6 +87,7 @@ API 389（作った 118・後のフェーズの行為だけ 20）・前の道す
 | `knowledge_links` | skeleton | F9 |  |  |
 | `knowledge_page_versions` | skeleton | F9 |  |  |
 | `knowledge_pages` | skeleton | F9 |  |  |
+| `knowledge_shares` | skeleton | F9 |  |  |
 | `layers` | skeleton | F10 |  |  |
 | `learning_candidates` | skeleton | F9 |  |  |
 | `login_attempts` | internal |  |  |  |
@@ -441,6 +442,8 @@ API 389（作った 118・後のフェーズの行為だけ 20）・前の道す
 | `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-69 |
 | `withdrawKnowledgeRequest` | DELETE /api/v1/knowledge/requests/:id | 削除（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
 | `dismissKnowledgeRequest` | POST /api/v1/knowledge/requests/:id/dismiss | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 契約だけ（501） | K-687 |
+| `getKnowledgeShares` | GET /api/v1/knowledge/shares | 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 作った | K-689 |
+| `setKnowledgeShares` | PUT /api/v1/knowledge/shares | 置き換え（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し | F9 | 作った | K-689 |
 | `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-686 |
 | `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 作った | K-69,K-676 |
 | `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。 | F9 | 契約だけ（501） | K-69 |

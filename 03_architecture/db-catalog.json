@@ -233,6 +233,10 @@
    "class": "skeleton",
    "why": "ナレッジの口が使う（K-674）"
   },
+  "knowledge_shares": {
+   "class": "skeleton",
+   "why": "グループを選んで共有の口と見える関数が使う（K-689）"
+  },
   "knowledge_limits": {
    "class": "skeleton",
    "why": "必ず守るの付け外しの口が上限を読む（K-685）"
