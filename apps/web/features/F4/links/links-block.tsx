@@ -77,6 +77,8 @@ export function LinksBlock({ ticket }: { ticket: SlotTicket }): ReactNode {
   };
   const onQuery = (text: string) => {
     setAddGone(false);
+    // 探す字が変わったら前の選びを外す（新しい字の一覧に無い候補とつながないように・UI-014・015）
+    if (text !== search.text) setChosen(null);
     search.setText(text);
   };
   const onSelect = (number: string) => {
