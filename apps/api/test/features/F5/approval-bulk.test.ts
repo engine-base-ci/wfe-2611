@@ -73,14 +73,15 @@ const dataOf = async <R>(r: Response): Promise<R> => (await json(r)).data as unk
 /** 承認する人（担当者）を 1 人作る。「全部」は自分が承認する物だけなので、試験ごとに別の人にして数を独立させる */
 const approver = (name: string) => f.person(T.tenantId, T.rootScope, { name, ticketAbility: "edit" });
 interface Mine {
-  t: Ticket;
+  t: Ticket & { title: string };
   d: Delegated;
 }
 /** その人が承認する承認待ちの成果物を n 件（古い順に 1 件ずつ作る） */
 async function mine(p: Person, n: number, o: { prefix?: string; irreversible?: boolean } = {}): Promise<Mine[]> {
   const out: Mine[] = [];
   for (let i = 1; i <= n; i += 1) {
-    const t = await ticket({ assignee: p, title: `${o.prefix ?? "請求"} ${i}` });
+    const title = `${o.prefix ?? "請求"} ${i}`;
+    const t = { ...(await ticket({ assignee: p, title })), title }; // 土台の Ticket は題名を持たないので、作った題名を添える
     out.push({ t, d: await delegated(t, o.irreversible === undefined ? {} : { irreversible: o.irreversible }) });
   }
   return out;
@@ -163,7 +164,12 @@ describe("K-768 まとめて承認の確かめ（previewBulkApproval：何も書
     // 書けなくなった
     const w = await ticket({ assignee: a, title: "書けない物" });
     const wd = await delegated(w);
-    await f.admin.query("delete from permissions where grantee_member_id = $1", [a.id]);
+    // 担当者は権限を消しても書ける（app.ticket_writable は担当者なら真）。担当者でも書けなくなるのは、ほかの人が取り込んだ下書きのチケットになったとき（app.ticket_draft_ok が偽）
+    const imp = await one<{ id: string }>(
+      "insert into ticket_imports (tenant_id, uploaded_by, scope_id, source, created_by) values ($1, $2, $3, 'generic', $2) returning id",
+      [w.tenant, boss.id, w.scope],
+    );
+    await f.admin.query("update tickets set draft_import_id = $1 where id = $2", [imp.id, w.id]);
     const v2 = await dataOf<Prev>(await preview(a, { approval_ids: [wd.approvalId] }));
     expect(v2.eligible).toEqual([]);
     expect(["not_writable", "unavailable"]).toContain(v2.excluded[0]!.reason);
