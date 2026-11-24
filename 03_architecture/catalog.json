@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
-  "api_built": 104,
+  "api": 366,
+  "api_built": 114,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 266,
+  "errors": 274,
   "stack": 56,
   "env": 41
  },
@@ -61,9 +61,10 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-731"
    ]
   },
   {
@@ -164,9 +165,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-732"
    ]
   },
   {
@@ -181,9 +183,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-733"
    ]
   },
   {
@@ -755,9 +758,9 @@
    "tables": [
     "attachments"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-761"
    ]
   },
   {
@@ -804,9 +807,9 @@
    "tables": [
     "bridge_job_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-761"
    ]
   },
   {
@@ -838,9 +841,9 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -945,7 +948,7 @@
    "op": "listMirrorTargets",
    "method": "GET",
    "path": "/api/v1/bridge/mirror-targets",
-   "what": "取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）",
    "flows": [
     "F5"
    ],
@@ -953,9 +956,9 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -1022,23 +1025,6 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-73"
-   ]
-  },
-  {
-   "op": "markHumanCheck",
-   "method": "POST",
-   "path": "/api/v1/checks/:id/human",
-   "what": "作成・実行（checks）— 承認する／自分で直す／差し戻す／止める",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
    ]
   },
   {
@@ -1326,9 +1312,9 @@
    "tables": [
     "clones"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-753"
    ]
   },
   {
@@ -1357,23 +1343,6 @@
    "only_later_phase": false,
    "tables": [
     "action_runs"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
-   ]
-  },
-  {
-   "op": "exportCloneActivity",
-   "method": "POST",
-   "path": "/api/v1/clones/me/activity/export",
-   "what": "作成・実行（clones）— 分身がやったことを見る → チケットへ戻る",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "export_jobs"
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
@@ -1426,9 +1395,9 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-753"
    ]
   },
   {
@@ -1607,9 +1576,9 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-759"
    ]
   },
   {
@@ -5067,23 +5036,6 @@
    ]
   },
   {
-   "op": "listChecks",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/checks",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "updateTicketClientShare",
    "method": "PATCH",
    "path": "/api/v1/tickets/:id/client-share",
@@ -5104,7 +5056,7 @@
    "op": "completeTicket",
    "method": "POST",
    "path": "/api/v1/tickets/:id/complete",
-   "what": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
+   "what": "作成・実行（tickets）— 完了にする",
    "flows": [
     "F5"
    ],
@@ -6189,15 +6141,11 @@
   },
   {
    "table": "checks",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F5"
-   ],
-   "reads": [
-    "F4"
-   ],
-   "boundary": true
+   "class": "frozen",
+   "why": "確認項目は文とチェックだけで、種類・判定の型・検査の結果の表は持たない（D-150.39・D-150.40）。口は無く、コードも書かない。表と行は消さない（K-741）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "class_axes",
@@ -6385,8 +6333,7 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
     "F10",
-    "F12",
-    "F5"
+    "F12"
    ],
    "reads": [],
    "boundary": true

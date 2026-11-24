@@ -331,16 +331,15 @@
     "E-039 action_runs",
     "E-046 bridge_job_events",
     "E-049 messages",
-    "E-117 checks",
     "E-080 notifications",
-    "E-094 attachments",
     "E-043 conversations",
     "E-050 artifacts",
     "E-051 artifact_versions",
     "E-106 tickets",
     "E-120 reference_logs",
     "E-042 credentials",
-    "E-052 audit_events"
+    "E-052 audit_events",
+    "E-094 attachments"
    ],
    "related_apis": [
     "POST /api/bridge/pairing-codes",
@@ -603,6 +602,7 @@
     "E-138 ticket_imports",
     "E-117 checks",
     "E-050 artifacts",
+    "E-116 test_specs",
     "E-039 action_runs",
     "E-051 artifact_versions",
     "E-119 ticket_messages",
@@ -876,16 +876,15 @@
     "E-097 skill_test_runs",
     "E-098 skill_attachments",
     "E-038 approvals",
+    "E-061 sessions",
     "E-108 ticket_section_versions",
     "E-028 memories",
-    "E-139 learning_candidates",
-    "E-093 export_jobs"
+    "E-139 learning_candidates"
    ],
    "related_apis": [
     "GET /api/clones/me/now",
     "GET /api/clones/me/growth",
     "GET /api/clones/me/activity",
-    "POST /api/clones/me/activity/export",
     "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
@@ -2886,11 +2885,11 @@
     "E-094 attachments",
     "E-050 artifacts",
     "E-052 audit_events",
-    "E-051 artifact_versions",
     "E-038 approvals",
     "E-049 messages",
     "E-080 notifications",
     "E-037 policies",
+    "E-051 artifact_versions",
     "E-128 acceptances",
     "E-126 client_contacts",
     "E-061 sessions",
@@ -2938,8 +2937,6 @@
     "DELETE /api/test_specs/:id",
     "POST /api/tickets/:id/test-specs/suggest",
     "POST /api/tickets/:id/test-specs/lint",
-    "GET /api/tickets/:id/checks",
-    "POST /api/checks/:id/human",
     "POST /api/tickets/:id/delegate",
     "POST /api/tickets/:id/dry-run",
     "GET /api/tickets/:id/runs",
@@ -3120,7 +3117,6 @@
     "E-133 operations",
     "E-037 policies",
     "E-106 tickets",
-    "E-117 checks",
     "E-038 approvals",
     "E-080 notifications"
    ],
@@ -5430,12 +5426,6 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clones/me/activity"
-    },
-    {
-     "act": "A53",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/clones/me/activity/export"
     },
     {
      "act": "A57",
@@ -10814,18 +10804,6 @@
      "path_draft": "/api/tickets/:id/test-specs/lint"
     },
     {
-     "act": "A102",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/checks"
-    },
-    {
-     "act": "A15",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/checks/:id/human"
-    },
-    {
      "act": "A104",
      "role": "action",
      "method": "POST",
@@ -12925,6 +12903,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",
@@ -13542,7 +13521,6 @@
    "entity_id": "E-093",
    "entity_name": "export_jobs",
    "used_by_screens": [
-    "ai-activity",
     "audit",
     "export",
     "account-close",
@@ -13551,7 +13529,6 @@
     "ops-billing"
    ],
    "used_by_features": [
-    "F-005",
     "F-006",
     "F-010",
     "F-011",
@@ -14026,6 +14003,7 @@
    "entity_id": "E-116",
    "entity_name": "test_specs",
    "used_by_screens": [
+    "approvals",
     "tickets"
    ],
    "used_by_features": [
@@ -14044,10 +14022,8 @@
    "entity_id": "E-117",
    "entity_name": "checks",
    "used_by_screens": [
-    "bridge-setup",
     "approvals",
-    "tickets",
-    "work-types"
+    "tickets"
    ],
    "used_by_features": [
     "F-001",
@@ -14055,7 +14031,6 @@
     "F-005",
     "F-006",
     "F-010",
-    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14851,7 +14826,6 @@
     "E-084",
     "E-085",
     "E-088",
-    "E-093",
     "E-094",
     "E-095",
     "E-096",
@@ -15261,7 +15235,6 @@
     "E-113",
     "E-114",
     "E-115",
-    "E-117",
     "E-119",
     "E-120",
     "E-121",
@@ -15429,8 +15402,8 @@
     "GET /api/messages",
     "GET /api/policies",
     "GET /api/tenants",
+    "GET /api/tickets",
     "PATCH /api/conversations/:id",
-    "PATCH /api/tickets/:id",
     "POST /api/clones",
     "POST /api/conversations",
     "POST /api/knowledge_pages",
