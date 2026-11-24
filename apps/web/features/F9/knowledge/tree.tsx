@@ -238,16 +238,30 @@ export interface KnowledgeTreeProps {
   onCloseDrawer?: (() => void) | undefined;
   /** 口が木を途中で切った（木の下に一言） */
   truncated?: boolean | undefined;
+  /** 面を替える（ページ／管理）。渡さない間は、動き（acts）を持つ本番では「管理」を押せない形にする */
+  onView?: ((view: "pages" | "admin") => void) | undefined;
 }
 
-function ViewSwitch({ view, admin }: { view: "pages" | "admin"; admin: AdminCounts }) {
+function ViewSwitch({
+  view,
+  admin,
+  onView,
+  inert,
+}: {
+  view: "pages" | "admin";
+  admin: AdminCounts;
+  onView?: ((view: "pages" | "admin") => void) | undefined;
+  inert: boolean;
+}) {
   const n = admin.approvals + admin.review;
+  const act = (v: "pages" | "admin") =>
+    onView ? { onClick: () => onView(v) } : inert && v !== view ? { "aria-disabled": true as const } : {};
   return (
     <div className="k-f9-switch" role="group" aria-label="ナレッジの面">
-      <button type="button" aria-pressed={view === "pages"}>
+      <button type="button" aria-pressed={view === "pages"} {...act("pages")}>
         ページ
       </button>
-      <button type="button" aria-pressed={view === "admin"}>
+      <button type="button" aria-pressed={view === "admin"} {...act("admin")}>
         管理
         {n ? <span className="k-f9-count">{n}</span> : null}
       </button>
@@ -305,6 +319,7 @@ export function KnowledgeTree({
   acts,
   onCloseDrawer,
   truncated = false,
+  onView,
 }: KnowledgeTreeProps) {
   return (
     <>
@@ -323,7 +338,7 @@ export function KnowledgeTree({
             <X size={16} aria-hidden="true" />
           </button>
         </div>
-        {admin ? <ViewSwitch view={view} admin={admin} /> : null}
+        {admin ? <ViewSwitch view={view} admin={admin} onView={onView} inert={acts !== undefined} /> : null}
         {view === "admin" && admin ? (
           <AdminNav admin={admin} active={adminList} />
         ) : state === "loading" ? (
