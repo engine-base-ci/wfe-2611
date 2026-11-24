@@ -1511,6 +1511,28 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/handover-claim.ts",
+    "apps/api/src/features/F8/handovers/create/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/claim.ts",
+    "packages/db/migrations/20261121091000_handover_group.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F8/handover/"
    ],
    "tests": [
@@ -1543,6 +1565,14 @@
    ],
    "tests": [
     "apps/web/tests/k/k414-offer.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/errors.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k415-distribute.spec.ts"
    ]
   },
   {
@@ -2135,7 +2165,9 @@
   "apps/api/test/features/F8/handover-overdue.test.ts": "承認待ちの口の hooks のファイル apps/api/src/hooks/approve-complete.ts を it の中で動的 import で読み、メールの偽を持つ材料で作り直す（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-407",
   "apps/api/test/features/F8/handover-offer.test.ts": "K-401 の口の hooks のファイル apps/api/src/hooks/handovers.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-408",
   "apps/api/test/features/F8/distribute.harness.ts": "段 9 の口の hooks のファイル apps/api/src/hooks/handover*.ts を existsSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-409",
+  "apps/api/test/features/contract/k144.d/K-410.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handover-claim.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-410",
   "apps/web/tests/k/k414-offer.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読み、口が断ったときの文を番号で引く（K-414。K-369 の断片と同じ形で data_links に結ぶ）",
+  "apps/web/tests/k/k415-distribute.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文を番号で引く）。data_links で結ぶ（実ブラウザの試験は web の組が流す）・K-415",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "packages/db/test/k426_function_execute_private.test.ts": "この葉の migration のファイルを読み、取引の中でもう一度当てる（migration の道で db の組に当たる）と、口の文（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src）を読んで app の関数の名前を集める（DB の試験なので db の組で流れる）・K-426",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
