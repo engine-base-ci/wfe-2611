@@ -5,7 +5,9 @@
   "screens_count": 74,
   "features_count": 32,
   "entities_count": 146,
-  "uncovered_screens": [],
+  "uncovered_screens": [
+   "clients"
+  ],
   "static_screens": [
    {
     "screen_id": "legal",
@@ -2980,7 +2982,6 @@
     "GET /api/ticket-fields",
     "GET /api/handover_rules",
     "GET /api/members",
-    "GET /api/clients",
     "POST /api/tickets/:id/timeline/seen",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
@@ -3208,33 +3209,9 @@
     "E-125 client_groups",
     "E-126 client_contacts",
     "E-091 invitations",
-    "E-037 policies",
-    "E-127 client_requests",
-    "E-128 acceptances",
-    "E-106 tickets",
-    "E-052 audit_events",
-    "E-121 knowledge_pages",
-    "E-119 ticket_messages",
-    "E-039 action_runs",
-    "E-109 ticket_kinds",
-    "E-080 notifications",
-    "E-129 tenant_memberships",
-    "E-061 sessions"
+    "E-037 policies"
    ],
-   "related_apis": [
-    "GET /api/clients",
-    "GET /api/clients/link-candidates",
-    "POST /api/clients",
-    "GET /api/clients/:id",
-    "PATCH /api/clients/:id",
-    "GET /api/clients/:id/activity",
-    "PATCH /api/clients/:id/share",
-    "GET /api/clients/:id/portal-preview",
-    "POST /api/clients/:id/contacts",
-    "PATCH /api/client_contacts/:id",
-    "DELETE /api/client_contacts/:id",
-    "POST /api/client_contacts/:id/invitation"
-   ],
+   "related_apis": [],
    "access_roles": [
     "R1",
     "R2"
@@ -11032,12 +11009,6 @@
      "path_draft": "/api/members"
     },
     {
-     "act": "A103",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients"
-    },
-    {
      "act": "A107",
      "role": "action",
      "method": "POST",
@@ -11468,80 +11439,7 @@
   {
    "screen_id": "clients",
    "screen_name": "取引先",
-   "required_apis": [
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients"
-    },
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients/link-candidates"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/clients"
-    },
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients/:id"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/clients/:id"
-    },
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients/:id/activity"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/clients/:id/share"
-    },
-    {
-     "act": "A121",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/clients/:id/portal-preview"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/clients/:id/contacts"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "PATCH",
-     "path_draft": "/api/client_contacts/:id"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "DELETE",
-     "path_draft": "/api/client_contacts/:id"
-    },
-    {
-     "act": "A121",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/client_contacts/:id/invitation"
-    }
-   ]
+   "required_apis": []
   },
   {
    "screen_id": "requests",
@@ -12382,8 +12280,7 @@
     "services",
     "ops-tenant",
     "tickets",
-    "knowledge",
-    "clients"
+    "knowledge"
    ],
    "used_by_features": [
     "F-001",
@@ -12640,8 +12537,7 @@
     "member-detail",
     "tickets",
     "masters",
-    "layers",
-    "clients"
+    "layers"
    ],
    "used_by_features": [
     "F-001",
@@ -12829,7 +12725,6 @@
     "ops-tenant",
     "member-detail",
     "tickets",
-    "clients",
     "ops-team"
    ],
    "used_by_features": [
@@ -13172,7 +13067,6 @@
     "member-detail",
     "tickets",
     "knowledge",
-    "clients",
     "requests",
     "portal"
    ],
@@ -13677,7 +13571,6 @@
     "tickets",
     "masters",
     "knowledge",
-    "clients",
     "requests",
     "portal"
    ],
@@ -13740,8 +13633,7 @@
    "entity_name": "ticket_kinds",
    "used_by_screens": [
     "tickets",
-    "masters",
-    "clients"
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -13984,7 +13876,6 @@
     "approvals",
     "tickets",
     "masters",
-    "clients",
     "portal"
    ],
    "used_by_features": [
@@ -14028,8 +13919,7 @@
    "entity_name": "knowledge_pages",
    "used_by_screens": [
     "tickets",
-    "knowledge",
-    "clients"
+    "knowledge"
    ],
    "used_by_features": [
     "F-001",
@@ -14135,7 +14025,6 @@
    "entity_id": "E-127",
    "entity_name": "client_requests",
    "used_by_screens": [
-    "clients",
     "requests",
     "portal"
    ],
@@ -14148,11 +14037,9 @@
    "entity_id": "E-128",
    "entity_name": "acceptances",
    "used_by_screens": [
-    "clients",
     "portal"
    ],
    "used_by_features": [
-    "F-021",
     "F-022"
    ]
   },
@@ -14166,8 +14053,7 @@
     "account",
     "ops-tenant",
     "member-detail",
-    "tickets",
-    "clients"
+    "tickets"
    ],
    "used_by_features": [
     "F-001",
@@ -15672,7 +15558,6 @@
     "E-125",
     "E-126",
     "E-127",
-    "E-128",
     "E-129",
     "E-135",
     "E-136",

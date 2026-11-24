@@ -45,8 +45,6 @@ const exemptField = (op, field) => {
 const ME = "app.user_id()";
 const TICKET_PEOPLE = (t) => `(${t}.assignee_member_id = ${ME} or ${t}.created_by = ${ME} or app.manages_scope(${t}.scope_id))`;
 const VIA_TICKET = (col = "ticket_id") => `exists (select 1 from tickets t where t.id = ${col} and ${TICKET_PEOPLE("t")})`;
-const CLIENT_MANAGER = (cid) =>
-  `(app.client_editable(${cid}) or exists (select 1 from client_groups g where g.client_id = ${cid} and g.deleted_at is null and app.manages_scope(g.scope_id)))`;
 
 /** 言葉 → :id の表 → 条件。read は「行が見える」だけ（RLS の select がそのまま守り） */
 export const RULES = {
@@ -94,11 +92,7 @@ export const RULES = {
   recipient: {
     ticket_handovers: `to_member_id = ${ME}`,
   },
-  manager: {
-    // 取引先の担当・担当グループのマネージャー・管理者
-    clients: CLIENT_MANAGER("clients.id"),
-    client_contacts: CLIENT_MANAGER("client_contacts.client_id"),
-  },
+  manager: {},
 };
 /** 口ごとに言葉の中の人が違うもの（screen_api.py の範囲の説明） */
 export const OP_RULES = {

@@ -2143,6 +2143,34 @@
   },
   {
    "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "08_api/phase1/08_取引先とクライアントの場所.md",
+    "08_api/phase1/01_チケット.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "apps/api/src/routes/index.ts",
+    "apps/api/src/routes/clients.ts",
+    "apps/api/src/routes/client_contacts.ts",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/decision_source_gate.py",
+    "11_tickets/K-59.md",
+    "11_tickets/K-71.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/clients-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -2338,6 +2366,7 @@
   "apps/api/test/features/contract/k144.d/K-717.ts": "葉の hooks のファイル（ticket-fields-edit）を F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-717",
   "apps/bridge/test/knowledge-tool.test.ts": "道具のサーバー（MCP_SERVER_SOURCE を一時のフォルダに書いた物）を spawn で子として起こし、JSON-RPC で knowledge_open を呼ぶ。読むのは試験が自分で書いた一時のファイルだけで、リポジトリの別のファイルは読まない（K-718）",
   "apps/web/test/k725-memory-ui-retire.test.ts": "apps/web の頁・部品・ext.ts・index.ts・conversation.tsx・markdown.tsx・built-routes.ts を readFileSync で読み、git grep で消した名前を探し、scripts/ci/raw_length_ledger.json・chat_one.mjs・07_qa/test-specs/screens/*.md の行を読む（K725-API-001〜010）",
+  "apps/api/test/features/F11/clients-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-59.md・K-71.md・01_hearing/決定ログ_進行中.md・01_hearing/decider-answers.jsonl を readFileSync で読み、scripts/ci/decision_source_gate.py を子プロセスで流し、git grep で外した操作 ID を探す（K924-API-002〜011）・K-924",
   "apps/api/test/features/F11/acceptances-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・build_functional.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-71.md・01_hearing/決定ログ_進行中.md を readFileSync で読み、git grep で外した操作 ID を探す（K926-API-002〜010）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },

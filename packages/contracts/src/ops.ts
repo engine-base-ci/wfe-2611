@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b78d6f3dddd67ce3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:ef3b37d47a4028df
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -64,24 +64,12 @@ export interface Ops {
   getLatestBridgeRelease: { params: never; query: { "os"?: string | number; "arch"?: string | number }; body: never; data: T.BridgeRelease };
   reportUsage: { params: never; query: never; body: T.AgentUsageSnapshotsInput; data: T.AgentUsageSnapshots };
   markHumanCheck: { params: { id: string }; query: never; body: T.ChecksInput; data: T.Checks };
-  updateClientContact: { params: { id: string }; query: never; body: T.ClientContactsInput; data: T.ClientContacts };
-  removeClientContact: { params: { id: string }; query: never; body: never; data: T.ClientContacts };
-  inviteClientContact: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
   listClientRequests: { params: never; query: { "state"?: string | number; "client_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientRequests[] };
   getClientRequest: { params: { id: string }; query: never; body: never; data: T.ClientRequestDetail };
   updateClientRequest: { params: { id: string }; query: never; body: T.ClientRequestsInput; data: T.ClientRequests };
   acceptClientRequest: { params: { id: string }; query: never; body: T.ClientRequestsInput; data: T.ClientRequests };
   declineClientRequest: { params: { id: string }; query: never; body: T.ClientRequestsInput; data: T.ClientRequests };
   replyToClientRequest: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  listClients: { params: never; query: { "q"?: string | number; "mine"?: string | number; "has_requests"?: string | number; "waiting_acceptance"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientRow[] };
-  createClient: { params: never; query: never; body: T.ClientsInput; data: T.Clients };
-  getClient: { params: { id: string }; query: never; body: never; data: T.ClientDetail };
-  updateClient: { params: { id: string }; query: never; body: T.ClientsInput; data: T.Clients };
-  listClientActivity: { params: { id: string }; query: { "client_visible"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientActivityItem[] };
-  createClientContact: { params: { id: string }; query: never; body: T.ClientContactsInput; data: T.ClientContacts };
-  getClientPortalPreview: { params: { id: string }; query: never; body: never; data: T.PortalHome };
-  updateClientShare: { params: { id: string }; query: never; body: T.ClientsInput; data: T.Clients };
-  listClientLinkCandidates: { params: never; query: { "name"?: string | number; "domain"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientLinkCandidate[] };
   getMyClone: { params: never; query: never; body: never; data: T.Clones };
   updateMyClone: { params: never; query: never; body: T.ClonesInput; data: T.Clones };
   listCloneActivity: { params: never; query: { "kind"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActivityItem[] };

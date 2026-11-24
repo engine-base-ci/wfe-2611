@@ -4,13 +4,16 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 35,
-  "total_apis": 355,
-  "coverage_rate": 1.0,
-  "uncovered_screens": [],
+  "total_apis": 343,
+  "coverage_rate": 0.971,
+  "uncovered_screens": [
+   "clients"
+  ],
   "static_screens": [
    "legal"
   ],
   "acts_without_endpoint": [
+   "A121",
    "A126"
   ]
  },
@@ -2626,11 +2629,6 @@
      "act": "A103"
     },
     {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients",
-     "act": "A103"
-    },
-    {
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/timeline/seen",
      "act": "A107"
@@ -2989,70 +2987,9 @@
    "screen_id": "clients",
    "screen_name": "取引先",
    "mock_path": null,
-   "required_apis": [
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients",
-     "act": "A121"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients/link-candidates",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/clients",
-     "act": "A121"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients/:id",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "PATCH /api/v1/clients/:id",
-     "act": "A121"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients/:id/activity",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "PATCH /api/v1/clients/:id/share",
-     "act": "A121"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/clients/:id/portal-preview",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/clients/:id/contacts",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "PATCH /api/v1/client_contacts/:id",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "DELETE /api/v1/client_contacts/:id",
-     "act": "A121"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/client_contacts/:id/invitation",
-     "act": "A121"
-    }
-   ],
+   "required_apis": [],
    "transitions": [],
-   "coverage_status": "OK",
+   "coverage_status": "NONE",
    "missing": []
   },
   {

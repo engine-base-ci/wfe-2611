@@ -275,13 +275,13 @@
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
 | member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R1 R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A137 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 88 | 42 | R1 R2 R3 R4 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A137 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 87 | 42 | R1 R2 R3 R4 |
 | masters | チケットの設定 | A118 A120 | 1 | 0 | 14 | 15 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 1 | 7 | R1 R2 R3 |
 | work-types | 業務の型 | A119 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 39 | 18 | R1 R2 R3 |
-| clients | 取引先 | A121 | 1 | 0 | 12 | 16 | R1 R2 |
+| clients | 取引先 | A121 | 1 | 0 | 0 | 5 | R1 R2 |
 | requests | 届いた依頼 | A122 | 1 | 0 | 6 | 16 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 4 | 5 | R6 |
 | legal | 規約・プライバシーポリシー | A96 | 1 | 0 | 0 | 2 | R1 R2 R3 R4 |
@@ -292,4 +292,4 @@
 
 - api-design：`traceability-matrix.json` の `screen_to_apis`（path_draft は下書き。確定は api-design）
 - task-decomposition：`features.json` の `ears_ac_seed`（Tier 2）、`screens.json` の `mock_path` / `h1_text` / `section_h2_texts`（Tier 1）、`entities.json` の `access_control_policies`（access control verifier）
-- 未被覆：画面 0 ／ 機能 0
+- 未被覆：画面 1 ／ 機能 0

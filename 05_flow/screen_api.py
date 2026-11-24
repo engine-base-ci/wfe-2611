@@ -89,7 +89,6 @@ SCREEN_API = {
         ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
-        ("GET", "/clients", "A103", "clients", "listClients", []),
     ],
     # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
     "approvals": [
@@ -315,18 +314,6 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- 取引先とクライアントの場所（08_api/phase1/08_取引先とクライアントの場所.md）
     "clients": [
-        ("GET", "/clients", "A121", "clients", "listClients", ["client_groups", "client_contacts", "client_requests", "acceptances", "tickets"]),
-        ("GET", "/clients/link-candidates", "A121", T, "listClientLinkCandidates", ["clients"]),
-        ("POST", "/clients", "A121", "clients", "createClient", ["client_groups", T, "audit_events"]),
-        ("GET", "/clients/:id", "A121", "clients", "getClient", ["client_groups", "client_contacts", "client_requests", "acceptances", T, "policies", "knowledge_pages"]),
-        ("PATCH", "/clients/:id", "A121", "clients", "updateClient", ["client_groups", "audit_events"]),
-        ("GET", "/clients/:id/activity", "A121", "ticket_messages", "listClientActivity", ["client_requests", "acceptances", "action_runs"]),
-        ("PATCH", "/clients/:id/share", "A121", "clients", "updateClientShare", ["ticket_kinds", "audit_events"]),
-        ("GET", "/clients/:id/portal-preview", "A121", "clients", "getClientPortalPreview", [T, "acceptances", "client_requests"]),
-        ("POST", "/clients/:id/contacts", "A121", "client_contacts", "createClientContact", ["invitations", "notifications", "audit_events"]),
-        ("PATCH", "/client_contacts/:id", "A121", "client_contacts", "updateClientContact", ["audit_events"]),
-        ("DELETE", "/client_contacts/:id", "A121", "client_contacts", "removeClientContact", ["tenant_memberships", "sessions", "invitations", "audit_events"]),
-        ("POST", "/client_contacts/:id/invitation", "A121", "invitations", "inviteClientContact", ["notifications", "audit_events"]),
     ],
     "requests": [
         ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["clients", "client_contacts"]),
@@ -1118,11 +1105,6 @@ RESPONSES = {
     "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
     "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
-    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
-    "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
-    "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
-    "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
-    "getClientPortalPreview": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
     "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "ticket_draft": "object", "questions": "array", "reply_draft": "string", "route_suggestion": "object"}),
     "getPortalHome": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
@@ -1163,7 +1145,6 @@ META = {
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
-    "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
     "listOpsInvoices": {"summary": "object"},
@@ -1180,7 +1161,6 @@ QUERIES = {
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
-    "listClients": ["q", "mine", "scope_id", "has_requests", "waiting_acceptance"],
     "listSavedViews": ["share"],
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
@@ -1195,9 +1175,7 @@ QUERIES = {
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
-    "listClientActivity": ["client_visible"],
     "listClientRequests": ["state", "client_id"],
-    "listClientLinkCandidates": ["name", "domain"],
     "listKnowledgePages": ["scope_id", "parent_id", "topic", "owner_id", "state", "sort"],
     "searchKnowledgeLinkTargets": ["q"],
     "listKnowledgeVerifications": ["mine", "soon"],
@@ -1277,7 +1255,6 @@ PERMS = {
     "listTicketStages": ("read", "同上", False),
     "listTicketFields": ("read", "そのワークスペースのメンバー", False),
     "listMembers": ("read", "同上（メールは管理者と本人だけ）", False),
-    "listClients": ("read", "見られる取引先だけ（担当グループだけの取引先・D-128.54）", False),
     # 承認待ち
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
@@ -1459,17 +1436,6 @@ PERMS = {
     "updateBillingContact": ("admin", "同上", False),
     # 取引先（社内・D-128.53・D-128.54）
     "updateTicketClientShare": ("assignee", "担当者とマネージャー。テスト仕様・決定ログ・分身の記録は見せられない（D-128.53）", False),
-    "listClientLinkCandidates": ("write", "取引先を足す人。見られるチケットの中だけ", False),
-    "createClient": ("write", "メンバー以上（閲覧のみは不可）", False),
-    "getClient": ("read", "見られる取引先だけ（担当グループだけの取引先はそのグループの人と管理者）。チケットはグループの権限で見える", False),
-    "updateClient": ("manager", "取引先の担当・担当グループのマネージャー・管理者", False),
-    "listClientActivity": ("read", "同上。チケットのやり取りは見られるものだけ", False),
-    "updateClientShare": ("manager", "取引先の担当・担当グループのマネージャー・管理者。テスト仕様・決定ログ・分身の記録は見せられない", False),
-    "getClientPortalPreview": ("read", "見られる取引先だけ（先方からの見え方を見るだけ）", False),
-    "createClientContact": ("manager", "取引先の担当・担当グループのマネージャー・管理者", False),
-    "updateClientContact": ("manager", "同上", False),
-    "removeClientContact": ("manager", "同上。外すとクライアントの場所に入れなくなり、セッションはすぐ切れる", False),
-    "inviteClientContact": ("manager", "同上（7 日で切れる招待）", False),
     "listClientRequests": ("read", "見られる取引先の依頼だけ", False),
     "getClientRequest": ("read", "同上。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
     "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
