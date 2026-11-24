@@ -1686,6 +1686,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/home/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k453-home-suggest.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/notifications-*.ts",
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/notifications/**"
