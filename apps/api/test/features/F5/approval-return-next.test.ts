@@ -252,7 +252,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     expect(await lineOf(t.id)).toHaveLength(1);
   });
 
-  it("K744-API-009 手順「DB に書く」が失敗（関数が使えない・next_actor が self でも clone でも）：500・E-PAGE-003。承認の行・実行・段・旗・やり取りは変わらない", async () => {
+  it("K744-API-009 手順「DB に書く」が失敗（関数が使えない・next_actor が self でも clone でも）：503・E-PAGE-003。承認の行・実行・段・旗・やり取りは変わらない", async () => {
     for (const next of ["self", "clone"] as const) {
       const t = await ticket();
       const d = await delegated(t);
@@ -260,7 +260,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
       await f.admin.query("revoke execute on function app.approval_decide(uuid, text, text, text) from kaname_app");
       try {
         const r = await back(boss, d.approvalId, REASON, next);
-        expect(r.status, next).toBe(500);
+        expect(r.status, next).toBe(503);
         expect(await code(r), next).toBe("E-PAGE-003");
       } finally {
         await f.admin.query("grant execute on function app.approval_decide(uuid, text, text, text) to kaname_app");
@@ -270,7 +270,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     }
   });
 
-  it("K744-API-010 手順「証跡」が失敗（証跡の書き込みが例外・self）：500・E-PAGE-003。同じ取引なので承認の行も段も切り替わらない", async () => {
+  it("K744-API-010 手順「証跡」が失敗（証跡の書き込みが例外・self）：503・E-PAGE-003。同じ取引なので承認の行も段も切り替わらない", async () => {
     const t = await ticket();
     const d = await delegated(t);
     await f.admin.query(
@@ -282,7 +282,7 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
     );
     try {
       const r = await back(boss, d.approvalId, REASON, "self");
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(await code(r)).toBe("E-PAGE-003");
     } finally {
       await f.admin.query("drop trigger if exists k744_fail_audit on audit_events");
