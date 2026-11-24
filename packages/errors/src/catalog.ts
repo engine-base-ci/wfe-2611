@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。298 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。301 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5141,6 +5141,57 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-KNW-106",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-120": {
+    "id": "E-KNW-120",
+    "cls": "conflict",
+    "message": "元のグループには共有できません",
+    "action": "別のグループを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-120",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-121": {
+    "id": "E-KNW-121",
+    "cls": "conflict",
+    "message": "共有できるのは、グループの棚のページとフォルダだけです",
+    "action": "上げるなど別の道を使う",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-121",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-122": {
+    "id": "E-KNW-122",
+    "cls": "conflict",
+    "message": "共有先に承認できる人がいません。そのグループのマネージャーに知らせてください",
+    "action": "マネージャーを決めてもらう",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-122",
     "must_not": false,
     "layers": [
       "UI",

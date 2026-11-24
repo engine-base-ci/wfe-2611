@@ -3,9 +3,9 @@
  "created_at": "2026-11-24",
  "_doc": "entities.json の access_control_policies × 場合（見える範囲／見えない層／他の会社／SET LOCAL 無し／権限なし）。1 行 1 test。pnpm ci:access-matrix が全行を実 Postgres で流す",
  "counts": {
-  "entities": 148,
-  "policies": 423,
-  "cases": 1578
+  "entities": 149,
+  "policies": 424,
+  "cases": 1580
  },
  "cases": [
   {
@@ -21411,6 +21411,36 @@
    "source": [
     "D-152.2",
     "D-152.13"
+   ]
+  },
+  {
+   "entity": "E-150",
+   "table": "knowledge_shares",
+   "policy": "knowledge_shares_read",
+   "role": "authenticated",
+   "role_ja": "ログイン済み（本人のもの）",
+   "operation": "select",
+   "case": "ログイン済み（会社の人）",
+   "expected": "OK",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.kpage_writable(page_id) OR app.kfolder_writable(folder_id) OR app.kn_group_manager(current_set",
+   "source": [
+    "D-152.6",
+    "D-152.27"
+   ]
+  },
+  {
+   "entity": "E-150",
+   "table": "knowledge_shares",
+   "policy": "knowledge_shares_read",
+   "role": "authenticated",
+   "role_ja": "ログイン済み（本人のもの）",
+   "operation": "select",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（0 行）",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.kpage_writable(page_id) OR app.kfolder_writable(folder_id) OR app.kn_group_manager(current_set",
+   "source": [
+    "D-152.6",
+    "D-152.27"
    ]
   },
   {
