@@ -20,34 +20,30 @@ describe("POST /api/v1/tickets/:id/decisions", () => {
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-014");
   });
   it("test_post_tickets_id_decisions_not_found", () => {
-    // UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+    // UNWANTED: IF チケットか決めた人か元の書き込みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-014");
   });
-  it("test_post_tickets_id_decisions_rejected_422", () => {
-    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
-    // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-008」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-008");
-  });
-  it("test_post_tickets_id_decisions_rejected_422_2", () => {
-    // UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない
-    // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-010」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-010");
-  });
-  it("test_post_tickets_id_decisions_rejected_422_3", () => {
-    // UNWANTED: IF 決めた人が同じ会社の今のメンバーでないか、元の書き込みがこのチケットの消していない書き込みでないなら、Kaname は 422（E-VAL-043・E-VAL-044）を返し、何も書かない
+  it("test_post_tickets_id_decisions_conflict", () => {
+    // UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-011");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F6/decisions.test.ts）：UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）
-  it.todo("test_post_tickets_id_decisions_rejected_422_4");
+  it("test_post_tickets_id_decisions_rejected_422", () => {
+    // UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-008」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-008");
+  });
   it("test_post_tickets_id_decisions_unavailable", () => {
     // UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-016");
   });
-  // 当てはまらない（入口の共通の 1MB（D-130.1））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_post_tickets_id_decisions_too_large");
+  it("test_post_tickets_id_decisions_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_post_tickets_id_decisions_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-019」（同じ CI の G3 で流れる）

@@ -3546,6 +3546,30 @@
    "reason": null
   },
   {
+   "entity": "action_runs",
+   "field": "taken_over_at",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "ops-support",
+    "ops-home",
+    "account",
+    "services",
+    "ops-tenant",
+    "tickets",
+    "masters",
+    "rules",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "service_registry",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -7507,6 +7531,35 @@
   },
   {
    "entity": "notifications",
+   "field": "read_at",
+   "consumed_by_screens": [
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "bridge-setup",
+    "clone-chat",
+    "members",
+    "ops-support",
+    "company-settings",
+    "app-setup",
+    "ops-skills",
+    "inquiry",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant",
+    "member-detail",
+    "tickets",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "notifications",
    "field": "retry_count",
    "consumed_by_screens": [
     "invite-accept",
@@ -10207,6 +10260,28 @@
    "reason": null
   },
   {
+   "entity": "tickets",
+   "field": "no_spec_reason",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "ticket_sections",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -10500,7 +10575,6 @@
    "entity": "class_axes",
    "field": "key",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10510,7 +10584,6 @@
    "entity": "class_axes",
    "field": "name",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10520,7 +10593,6 @@
    "entity": "class_axes",
    "field": "is_builtin",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10530,7 +10602,6 @@
    "entity": "class_axes",
    "field": "position",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10547,7 +10618,6 @@
    "entity": "class_values",
    "field": "axis_id",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10557,7 +10627,6 @@
    "entity": "class_values",
    "field": "label",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10567,7 +10636,6 @@
    "entity": "class_values",
    "field": "color",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10577,7 +10645,6 @@
    "entity": "class_values",
    "field": "position",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10616,6 +10683,126 @@
     "tickets",
     "masters",
     "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "custom_fields",
+   "field": "name",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "field_type",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "required",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "description",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "options",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "position",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "field_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "kind_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "field_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "value",
+   "consumed_by_screens": [
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -10719,6 +10906,51 @@
   {
    "entity": "test_specs",
    "field": "off_reason",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_member_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_ai",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source_ref_id",
    "consumed_by_screens": [
     "tickets"
    ],

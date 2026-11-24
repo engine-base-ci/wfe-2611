@@ -9,11 +9,9 @@ import {
   setupDecisions,
   VAL_TEXT,
   VAL_CANCEL,
-  VAL_NOT_YET,
   CONF_REVISED,
   CONF_CANCELLED,
   DECISION_KIND,
-  CLIENT_RULE_LATER,
   f,
   T,
   boss,
@@ -228,15 +226,13 @@ describe("K-391 決定を取り消す", () => {
 });
 
 describe("K-391 入力と守り", () => {
-  it("K391-API-009 取引先のルールにする（action promote）：422 E-VAL-018・欄 action「取引先の画面ができてから使えます」・promoted_to は ticket のまま", async () => {
+  it("K391-API-009 ルールにする（action promote）はこの口に無い：422・欄 action・何も書かない・promoted_to は ticket のまま", async () => {
     const t = await ticket();
     const id = await decision(t);
     const before = await snapshot(t.id);
     const r = await change(boss, id, { action: "promote" });
     expect(r.status).toBe(422);
-    const j = await json(r);
-    expect(j["code"]).toBe(VAL_NOT_YET);
-    expect(j.details).toEqual([{ field: "action", message: CLIENT_RULE_LATER }]);
+    expect(fields(await json(r))).toContain("action");
     expect(await snapshot(t.id)).toEqual(before);
     expect((await decisionsOf(t.id))[0]!.promoted_to).toBe("ticket");
   });
