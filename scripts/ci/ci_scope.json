@@ -1735,6 +1735,19 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/links/links-block.tsx",
+    "apps/web/features/F4/links/use-links.ts",
+    "apps/web/features/F4/links/link-search.ts",
+    "apps/web/features/F4/links/views.tsx",
+    "apps/web/features/F4/links/links.css",
+    "apps/web/features/F4/links/detail-entry.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k452-links.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/notifications-*.ts",
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/notifications/**"
