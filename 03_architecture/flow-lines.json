@@ -11,7 +11,6 @@
   "attachments",
   "bridge_jobs",
   "checks",
-  "clients",
   "conversations",
   "custom_fields",
   "export_jobs",
@@ -28,7 +27,6 @@
   "tenant_memberships",
   "tenants",
   "ticket_kinds",
-  "ticket_messages",
   "ticket_stages",
   "tickets"
  ],
@@ -171,14 +169,6 @@
     "F5→F4"
    ]
   },
-  "client_contacts": {
-   "writes": [
-    "F11"
-   ],
-   "reads": [],
-   "boundary": false,
-   "lines": []
-  },
   "client_requests": {
    "writes": [
     "F11"
@@ -186,18 +176,6 @@
    "reads": [],
    "boundary": false,
    "lines": []
-  },
-  "clients": {
-   "writes": [
-    "F11"
-   ],
-   "reads": [
-    "F4"
-   ],
-   "boundary": true,
-   "lines": [
-    "F11→F4"
-   ]
   },
   "clones": {
    "writes": [],
@@ -292,24 +270,17 @@
    "writes": [
     "F1",
     "F10",
-    "F11",
     "F2"
    ],
    "reads": [],
    "boundary": true,
    "lines": [
     "F1→F10",
-    "F1→F11",
     "F1→F2",
     "F10→F1",
-    "F10→F11",
     "F10→F2",
-    "F11→F1",
-    "F11→F10",
-    "F11→F2",
     "F2→F1",
-    "F2→F10",
-    "F2→F11"
+    "F2→F10"
    ]
   },
   "invoices": {
@@ -754,13 +725,9 @@
    "writes": [
     "F6"
    ],
-   "reads": [
-    "F11"
-   ],
-   "boundary": true,
-   "lines": [
-    "F6→F11"
-   ]
+   "reads": [],
+   "boundary": false,
+   "lines": []
   },
   "ticket_section_versions": {
    "writes": [

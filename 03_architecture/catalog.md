@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 359（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
+API 347（作った 112・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 320・部品 68・設定 41
 
 ## 共通の処理
 
@@ -63,10 +63,10 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `bridge_jobs` | skeleton | F3,F5 |  | ○ |
 | `bridge_pairing_codes` | skeleton | F3 |  |  |
 | `checks` | skeleton | F5 | F4 | ○ |
-| `client_contacts` | skeleton | F11 |  |  |
+| `client_contacts` | skeleton |  |  |  |
 | `client_groups` | internal |  |  |  |
 | `client_requests` | skeleton | F11 |  |  |
-| `clients` | skeleton | F11 | F4 | ○ |
+| `clients` | skeleton |  |  |  |
 | `clones` | skeleton |  | F5 |  |
 | `conversations` | skeleton | F4 | F5 | ○ |
 | `credentials` | skeleton | F3 |  |  |
@@ -78,7 +78,7 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `handover_rules` | skeleton |  | F8 |  |
 | `imports` | skeleton | F9 |  |  |
 | `inquiries` | skeleton | F12 |  |  |
-| `invitations` | skeleton | F1,F10,F11,F2 |  | ○ |
+| `invitations` | skeleton | F1,F10,F2 |  | ○ |
 | `invoices` | skeleton | F12 |  |  |
 | `kaname_auth` | internal |  |  |  |
 | `kind_sections` | skeleton | F4,F9 |  | ○ |
@@ -133,7 +133,7 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `ticket_imports` | skeleton | F4 |  |  |
 | `ticket_kinds` | skeleton | F9 | F4 | ○ |
 | `ticket_links` | skeleton | F4 |  |  |
-| `ticket_messages` | skeleton | F6 | F11 | ○ |
+| `ticket_messages` | skeleton | F6 |  |  |
 | `ticket_section_versions` | skeleton | F4 |  |  |
 | `ticket_sections` | skeleton | F4 |  |  |
 | `ticket_stages` | skeleton | F9 | F4 | ○ |
@@ -210,24 +210,12 @@ API 359（作った 112・後のフェーズの行為だけ 20）・前の道す
 | `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-419 |
 | `updateWorkspacePermissions` | PATCH /api/v1/workspace/permissions | 更新（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `remindAcceptance` | POST /api/v1/acceptances/:id/remind | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） |  |
-| `updateClientContact` | PATCH /api/v1/client_contacts/:id | 更新（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `removeClientContact` | DELETE /api/v1/client_contacts/:id | 削除（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `inviteClientContact` | POST /api/v1/client_contacts/:id/invitation | 作成・実行（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `listClientRequests` | GET /api/v1/client_requests | 取得（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `getClientRequest` | GET /api/v1/client_requests/:id | 取得（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `updateClientRequest` | PATCH /api/v1/client_requests/:id | 更新（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `acceptClientRequest` | POST /api/v1/client_requests/:id/accept | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `declineClientRequest` | POST /api/v1/client_requests/:id/decline | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
 | `replyToClientRequest` | POST /api/v1/client_requests/:id/reply | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） |  |
-| `listClients` | GET /api/v1/clients | 取得（clients）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／取引先を作り、担当者を招待する | F11,F4 | 契約だけ（501） | K-59 |
-| `createClient` | POST /api/v1/clients | 作成・実行（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `getClient` | GET /api/v1/clients/:id | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `updateClient` | PATCH /api/v1/clients/:id | 更新（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `listClientActivity` | GET /api/v1/clients/:id/activity | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `createClientContact` | POST /api/v1/clients/:id/contacts | 作成・実行（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `getClientPortalPreview` | GET /api/v1/clients/:id/portal-preview | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `updateClientShare` | PATCH /api/v1/clients/:id/share | 更新（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
-| `listClientLinkCandidates` | GET /api/v1/clients/link-candidates | 取得（clients）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
 | `getPortalHome` | GET /api/v1/portal | 取得（portal）— 進みと成果物を見る | F11 | 契約だけ（501） |  |
 | `getPortalAcceptance` | GET /api/v1/portal/acceptances/:id | 取得（portal）— 検収する（OK・直してほしい） | F11 | 契約だけ（501） |  |
 | `answerAcceptance` | POST /api/v1/portal/acceptances/:id/answer | 作成・実行（portal）— 検収する（OK・直してほしい） | F11 | 契約だけ（501） |  |
