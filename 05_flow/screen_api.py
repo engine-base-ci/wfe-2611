@@ -549,7 +549,7 @@ INPUTS = {
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
     # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
     "approveApproval": ("ApprovalApproveInput", {}),
-    "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
+    "returnApproval": ("ApprovalReturnInput", {"note": "string", "next_actor": "string?"}),   # next_actor：clone（既定・AI が直す）か self（自分で直す・K-744）
     # K-332：招待で参加する。ログインしていない人は名前とパスワード（ログイン中の人は空・K-333）。宛てのメールは招待のもの（体の email は口の前処理が落とす）
     "acceptInvitation": ("InvitationAcceptInput", {"name": "string?", "password": "string?"}),
     # K-165：完了にする。todo_checked は済ませた実施事項の番号（0 から）の並び・todo_version は画面が読んだ todo の区画の版（無ければ 0）・conditions_confirmed は完了の条件を確かめた印
@@ -678,7 +678,7 @@ ERRORS_4XX = {
          "trigger": "もう決まった（承認・差し戻し）か取り下げた承認を差し戻す",
          "ears_form": "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-020"],
-         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・次に直す人 next_actor が clone・self でない（欄 next_actor・K-744）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
          "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
@@ -1068,8 +1068,8 @@ RESPONSES = {
     "getJobControl": ("JobControl", {"stop": "boolean", "reason": "string?", "steers": "array"}),   # 止める理由が無ければ null（K-62・Q2 回 2）
     "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
     # K-162：承認した答え（pc は任せた人の PC が 75 秒以内に知らせていれば live・K-62 と同じ式）。差し戻し（K-163）も同じ形
-    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
-    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
+    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
+    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
     "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
     "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
     # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。
@@ -1267,7 +1267,7 @@ PERMS = {
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
     "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
     "editApproval": ("approver", "承認する人", False),
-    "returnApproval": ("approver", "承認する人（理由が必須）", False),
+    "returnApproval": ("approver", "承認する人（理由が必須）。次は誰が直すかを選べる（AI／自分・K-744）", False),
     "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
     "withdrawApproval": ("approver", "承認した本人だけ・実行中になる前だけ（D-125.105）", False),
     "previewBulkApproval": ("approver", "自分が承認するものだけ", False),

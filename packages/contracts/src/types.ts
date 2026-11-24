@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:06abba0828cbeced
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:44a3f3ecee8767fa
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -320,7 +320,7 @@ export type BridgeProgressInput = { seq?: number; kind: string; text?: string; a
 export type BridgeFinishInput = { state: string; result?: string; reason?: string; agent_session_id?: string };
 export type BridgeToolInput = { input?: unknown };
 export type ApprovalApproveInput = Record<string, never>;
-export type ApprovalReturnInput = { note: string };
+export type ApprovalReturnInput = { note: string; next_actor?: string | null };
 export type InvitationAcceptInput = { name?: string | null; password?: string | null };
 export type TicketCompleteInput = { todo_checked?: string[] | null; todo_version?: number | null; conditions_confirmed: boolean };
 export type InvitationResendInput = Record<string, never>;
@@ -401,7 +401,7 @@ export type TicketDraft = { draft_id?: string; body?: Record<string, unknown> | 
 export type BridgeJob = { job?: Record<string, unknown> | null; forbidden_domains?: string[]; next_ms?: number; outdated?: boolean };
 export type JobControl = { stop?: boolean; reason?: string | null; steers?: string[] };
 export type TicketDelegation = { run_id?: string; job_id?: string; status?: string; pc?: string };
-export type ApprovalDecided = { id?: string; decision?: string | null; decided_at?: string | null; status_id?: string | null; ticket_id?: string | null; run_id?: string; pc?: string };
+export type ApprovalDecided = { id?: string; decision?: string | null; decided_at?: string | null; status_id?: string | null; ticket_id?: string | null; run_id?: string | null; pc?: string };
 export type BridgeFinish = { ok?: boolean; outcome?: string };
 export type BridgeToolResult = { result?: Record<string, unknown> | null };
 export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; taken_over_at?: string | null; reason_kind?: string | null; checks?: Record<string, unknown> };

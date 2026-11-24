@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:06abba0828cbeced
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:44a3f3ecee8767fa
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3641,6 +3641,7 @@ export const ApprovalApproveInput = z.strictObject({
 });
 export const ApprovalReturnInput = z.strictObject({
   note: z.string().optional(),
+  next_actor: z.string().nullable().optional(),
 });
 export const InvitationAcceptInput = z.strictObject({
   name: z.string().nullable().optional(),
@@ -4109,7 +4110,7 @@ export const ApprovalDecided = z.strictObject({
   decided_at: z.string().nullable().optional(),
   status_id: z.string().nullable().optional(),
   ticket_id: z.string().nullable().optional(),
-  run_id: z.string().optional(),
+  run_id: z.string().nullable().optional(),
   pc: z.string().optional(),
 });
 export const BridgeFinish = z.strictObject({

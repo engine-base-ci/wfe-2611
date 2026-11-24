@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
-  "frozen_at": "2026-11-23",
+  "created_at": "2026-11-24",
+  "frozen_at": "2026-11-24",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -1510,7 +1510,7 @@
      "errors": [
       "E-VAL-020"
      ],
-     "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+     "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・次に直す人 next_actor が clone・self でない（欄 next_actor・K-744）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
      "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"
     },
     {
@@ -1601,7 +1601,7 @@
    "implementation_path": "apps/api/src/routes/approvals.ts::returnApproval",
    "permission": {
     "who": "approver",
-    "scope": "承認する人（理由が必須）",
+    "scope": "承認する人（理由が必須）。次は誰が直すかを選べる（AI／自分・K-744）",
     "step_up": false
    },
    "path_params": [
