@@ -26761,6 +26761,78 @@
    "file": "11_tickets/K-924.md"
   },
   {
+   "id": "K-926",
+   "title": "検収の口 4 本（requestAcceptance・remindAcceptance・getPortalAcceptance・answerAcceptance）を契約から外す：契約の表・生成物・文書・親の apis と tests・検査の表から消す。足す予定だった listTicketAcceptances・withdrawAcceptance は作らない（K-71 の葉・段 12）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-71",
+   "milestone": "F11",
+   "area": "契約",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い段 10 の K-711（契約の口 29 本を外す・試験 14 行・見込み 1）と、同じ段の K-924（取引先の口 12 本を外す・見込み 1）から、口が 4 本で少ない分を引いた：契約の表（SCREEN_API 4 行・RESPONSES 1・PERMS 4）を消して作り手を回す 10 分・検査の表 2 つ（row_rules.mjs・build_functional.py）と文書 2 つと親の md 1 つを直す 10 分・外す口の記録 4 行 5 分・自分の確かめ（試験 12 行）10 分・試験を流して直す 10 分",
+   "decisions": [
+    "D-155.35",
+    "D-155.41",
+    "D-155.42",
+    "D-155.44"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "契約・目録・文書・検査の表を直すだけ。データを書かず、外へも出さず、DB・秘密・お知らせに触らない（関門を通る物が無い）。外す口は今どれも 501 で動いていない",
+   "tests": [
+    "apps/api/test/features/F11/acceptances-retire.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-924"
+   ],
+   "acts": [
+    "A123",
+    "A126"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "口・契約・文書だけで見た目を変えない葉（changes に apps/web/ の道が無い）。行為 A126 と対象「検収」を流れから外すのは K-870",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "05_flow/screen_api.py",
+    "05_flow/build_functional.py",
+    "08_api/retired-endpoints.json",
+    "scripts/ci/row_rules.mjs",
+    "08_api/phase1/08_取引先とクライアントの場所.md",
+    "08_api/phase1/01_チケット.md",
+    "11_tickets/K-71.md",
+    "apps/api/test/features/F11/acceptances-retire.test.ts",
+    "scripts/ci/ci_scope.d/K-926.json"
+   ],
+   "flow": "ゲストと回す",
+   "sections": {
+    "目的": "代表の決め（answer=6ba09f587792・D-155.44）で、段 12 は**検収を作らない**。芯は「チケットはチケット。特別扱いしない。新しいのは『ゲストが見られるか』だけ」で、OK／直してほしいのボタン・検収の帯・検収を頼む小窓・前日の催促・取り下げ・検収の知らせ・完了の条件にすることを全部外す。前の形のまま契約に残っている**検収の口 4 本**を、契約・生成物・文書・親チケットの `apis:`・`tests:` から外す。道は今どれも契約だけで 501 を返す口（作ってはいない）なので、外しても動いている物は変わらない。\n\n| まとまり | 操作 ID（方法・道） | 行為 | 本数 |\n|---|---|---|---|\n| 検収を頼む・催促 | `requestAcceptance`（POST /tickets/:id/acceptances）・`remindAcceptance`（POST /acceptances/:id/remind） | A123 | 2 |\n| 先方の検収 | `getPortalAcceptance`（GET /portal/acceptances/:id）・`answerAcceptance`（POST /portal/acceptances/:id/answer） | A126 | 2 |\n\n足す予定だった `listTicketAcceptances`・`withdrawAcceptance`（切り方の前の案）は、契約に入っていないので作らない（外す物が無い）。\n\n**触らない物**：チケットの見せ方の古い口 `updateTicketClientShare`（A123・K-881 が見せる相手の口に置き換える）・先方の場所のほかの口（`getPortalHome` ほか）・依頼の口・DB の表 `acceptances`（消さず、凍結の印は K-883）。行為 A123 は流れに残し（K-870 が「チケットをゲストのグループに見せる」に言い換える）、A126 は K-870 が流れから消す。",
+    "完了の条件": "- [ ] 下の表の 12 行（K926-API-001〜012）が緑：`apps/api/test/features/F11/acceptances-retire.test.ts`\n- [ ] 外した 4 の操作 ID が `05_flow/screen_api.py` の全部の表（SCREEN_API・RESPONSES・PERMS）と `05_flow/build_functional.py` に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 4 本が消えている（作り手 `gen_ears_tests.mjs` が消す）\n- [ ] 先方の場所のほかの口・依頼の口が契約に残っている\n- [ ] 契約の検査（`python3 scripts/ci/contract_shape_test.py`・`node scripts/ci/contract.mjs check`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- **口の置き場は 1 か所**：`05_flow/screen_api.py`（前からある行を直すので本体・`.d` に書かない）。SCREEN_API は `\"tickets\"` の表の 78 行（`requestAcceptance`・A123）と `\"clients\"` の表の 368 行（`remindAcceptance`・A123）・`\"portal\"` の 388・389 行（`getPortalAcceptance`・`answerAcceptance`・A126）。RESPONSES は `getPortalAcceptance`（1108 行）・PERMS は 4 行（1253・1490・1505・1506 行）。**操作 ID の名前で探す**（行番号は K-924・K-711 が先に直すとずれる）。ほかの口の「触る表の一覧」に `\"acceptances\"` が出てくる行（`getPortalHome` など）は口を外さないので、この葉では触らない（表は凍結で残る・K-883）\n- **作り手で作り直す（手で書かない）**：`python3 05_flow/build_api.py`・`node scripts/ci/contract.mjs gen`・`node scripts/ci/gen_ears_tests.mjs`・`python3 scripts/ci/build_registries.py`・`python3 scripts/ci/build_catalog.py`・`python3 scripts/ci/gen_ts_registries.py`。出る物＝`08_api/*`・`packages/contracts/src/{ops,registry,schemas,types}.ts`・`apps/api/src/routes/*`（`acceptances.ts` は丸ごと消え、`tickets.ts`・`portal.ts`・`index.ts` の行が減る）・`apps/api/test/generated/*`（4 本が消える）・`07_qa/test-plan/*`・`03_architecture/catalog.*`。作り手の出力に外した名前が 1 つでも残れば、その表の行を消し忘れている\n- **道の外し方**：外した道は、入口が道ごと持たないので 404（501 でない）\n- **外す口の記録（契約の破壊的変更の検査 G11・`node scripts/ci/contract.mjs check`）**：意図して消す口は `08_api/retired-endpoints.json` に 1 本ずつ根拠の決定と理由を書いたものだけ通る。4 本を `{ \"method\": \"POST\", \"path\": \"/api/v1/tickets/{id}/acceptances\", \"decision\": \"D-155.44\", \"reason\": \"…\" }` の形で足す。理由は 1 行（例「検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）」）。**根拠 D-155.44 が決定ログに在ることが要る**（K-924 が決定ログ §155 を運ぶので、K-924 の後）\n- **検査の表**：`scripts/ci/row_rules.mjs` の `RULES.assignee` の `acceptances: VIA_TICKET()` の 1 行を消す（`VIA_TICKET` はほかの行が使うので残す）。`05_flow/build_functional.py` の `_NOTIFY_OPS` から `requestAcceptance` を消す\n- **文書**：`08_api/phase1/08_取引先とクライアントの場所.md` の検収の行（催促・確認してほしいもの・返事する）と、「チケットの詳細（検収を頼むの隣）」の節の見出し（口 `updateTicketClientShare` の行は K-881 が置き換えるので残す）・`01_チケット.md` の「検収を頼む」の行（83 行）と `POST /tickets/:id/acceptances` の行（174 行）を消す。各文書の末尾の「足した表」「置き換えた表」の節は事実の記録なので触らない\n- **親の md**：`11_tickets/K-71.md`（段 12・まだ切っていない入れ物）の `apis:` から `requestAcceptance` を、`tests:` から検収の 4 つの生成の試験（`post_tickets_id_acceptances`・`post_acceptances_id_remind`・`get_portal_acceptances_id`・`post_portal_acceptances_id_answer`）を外す\n- **行為 A126・対象「検収」の流れからの送りはこの葉でやらない**：K-870 が消す（この葉が口を外した後でないと契約の口が黙って消える＝KC5）\n- 断る番号（控え帳）：外した道は 404。この葉は番号を足さない・消さない。外のサービス・メール・PC・AI は呼ばない。データを書かない",
+    "依存の理由": "- K-924: 要る — 同じ `05_flow/screen_api.py`（`\"clients\"` の表に `remindAcceptance` の行が在る）・`11_tickets/K-71.md`・`08_api/retired-endpoints.json`・`08_api/phase1/08_取引先とクライアントの場所.md` を K-924 が先に直す。外す口の記録の根拠 D-155.44 は、K-924 が運ぶ決定ログ §155 に在る。同じ作り手の出力（`apps/api/src/routes/*`・生成の試験）が増減するので、その後に外す",
+    "目録で探した結果": "- 使う：`05_flow/screen_api.py`・作り手（`build_api.py`・`contract.mjs`・`gen_ears_tests.mjs`・`build_registries.py`・`build_catalog.py`・`gen_ts_registries.py`）・K-924 と段 10 の K-711 の「口を外す」の置き方・試験 `clients-retire.test.ts` の読み方・試験の土台 `makeFixture`\n- 作る：`apps/api/test/features/F11/acceptances-retire.test.ts`・`scripts/ci/ci_scope.d/K-926.json`。探したが同じ形は K-924 だけで、同じ形で書く\n- 同じ形の箇所（外す操作 ID を呼ぶ所）の洗い出し：\n\n```search\ngit grep -n -w -E \"requestAcceptance|remindAcceptance|getPortalAcceptance|answerAcceptance\" -- 05_flow scripts apps/api/src apps/web 11_tickets/K-59.md 11_tickets/K-71.md ':!scripts/tickets'\n15\n```\n\n  （15 件：契約の本体 `05_flow/screen_api.py` に 9・通知の口の表 `05_flow/build_functional.py` に 1・道の登録 `apps/api/src/routes/` の 4 ファイル（`acceptances.ts` 1・`portal.ts` 2・`tickets.ts` 1）・`11_tickets/K-71.md` の `apis:` に 1。コードの呼び手は無い。この命令は直した後に 0 になる。`scripts/tickets/cut_m1.py` は歴史の記録なので触らない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 契約の表を消す | `05_flow/screen_api.py`：前提と制約の 4 の操作 ID を、SCREEN_API・RESPONSES・PERMS から消す。**消す前に** `git grep -n -w -E \"<4 の操作 ID>\" 05_flow/screen_api.py` で全部出し、消した後に 0 件であることを見る |\n| 生成物 | `python3 05_flow/build_api.py` → `node scripts/ci/contract.mjs gen` → `node scripts/ci/gen_ears_tests.mjs` → `python3 scripts/ci/build_registries.py` → `python3 scripts/ci/build_catalog.py` → `python3 scripts/ci/gen_ts_registries.py`。`apps/api/src/routes/acceptances.ts` が消えること、`routes/index.ts` の読み込みが消えること、`apps/api/test/generated/*` の 4 本が消えることを見る（手で消さない） |\n| 検査の表と外す口の記録 | `scripts/ci/row_rules.mjs`・`05_flow/build_functional.py`・`08_api/retired-endpoints.json`（前提と制約のとおり） |\n| 文書 | `08_api/phase1/08_取引先とクライアントの場所.md`・`01_チケット.md`（前提と制約） |\n| 親の md | `11_tickets/K-71.md`（前提と制約） |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-926.json`（下） |\n| **生成の試験は作る段の最初に** | 新しい口は足さない（外すだけ）ので、新しい生成の試験は出ない。**作る段の最初に、契約の表を消して作り手を回し、生成物と 4 本の消えた生成の試験を先にコミットする**。そのあと検査の表と文書と親の md を直す |\n\n### 範囲の地図（ci_scope.d/K-926.json）\n\n```json\n{\n \"reads_ok\": {\n  \"apps/api/test/features/F11/acceptances-retire.test.ts\": \"契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・build_functional.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-71.md・01_hearing/決定ログ_進行中.md を readFileSync で読み、git grep で外した操作 ID を探す（K926-API-002〜010）\"\n }\n}\n```",
+    "外に影響する手順": "なし — 契約・生成物・文書・検査の表を直すだけ（データを書かず、お知らせも外のサービスも AI も呼ばず、証跡も残さない）。外す口は今どれも 501 で動いていない。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F11/acceptances-retire.test.ts`（本物の入口を 1 つ立て、外した道を直に呼んで 404 を見る・契約と生成物と文書のファイルを読む・`git grep` で字を探す。DB には表が在ることだけを見る）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 外した検収の道 4 | 直に呼ぶ | 書ける人 | 404（501 でない） | このチケット | K926-API-001 |\n| 契約・目録・生成物 | ファイルを読む | — | 4 の操作 ID が無い | このチケット | K926-API-002〜004 |\n| 残す口 | ファイルを読む | — | 先方の場所のほかの口・依頼の口が在る | このチケット | K926-API-005 |\n| 親の md・文書 | ファイルを読む | — | 外した口と道の行が無く、ほかの口は残る | このチケット | K926-API-006・007 |\n| コード・検査の表・前からの試験 | 字を探す | — | 外した操作 ID が 0 件 | このチケット | K926-API-008・009 |\n| 外す口の記録 | ファイルを読む | — | 4 本が 1 行ずつ・根拠 D-155.44 | このチケット | K926-API-010 |\n| 表 | DB を読む | — | 凍結の前に表が在る | このチケット | K926-API-011 |\n| ほかの道 | 呼ぶ | 書ける人 | 巻き込まれず 404 でない | このチケット | K926-API-012 |\n| 行為 A126・対象「検収」 | 流れ | — | 送るのは K-870 | K-870 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K926-API-001 | 入口 | 検収の 4 の道を直に呼ぶ | どれも 404（501 でない）で、答えの体に外した操作 ID の名前が出ない（試験が体の字を見る） |\n| K926-API-002 | 守り | 契約と目録の 10 のファイル（screen_api.py・build_functional.py・endpoints.json・openapi.yaml・types.ts・lint-mapping.json・registry.ts・ops.ts・catalog.json・catalog.md） | 4 の操作 ID が 1 つも出てこない。screen_api.py に行為 A126 が無い |\n| K926-API-003 | 守り | 口の道の登録 | routes/acceptances.ts が無く、routes/index.ts がそれを読まず、routes/tickets.ts・portal.ts に外した道が出てこない |\n| K926-API-004 | 守り | 生成の試験 | 外した 4 の道に対応する生成の試験（post_tickets_id_acceptances.test.ts ほか）のファイルが 4 とも消える |\n| K926-API-005 | 守り | 残す口 | endpoints.json に先方の場所のほかの口 7・依頼の口 1 が在る |\n| K926-API-006 | 守り | 親の md | K-71 の apis に外した操作 ID が無く、tests に検収の 4 つの生成の試験が無い。依頼の生成の試験は残る |\n| K926-API-007 | 守り | 文書 2 つ | 08_取引先とクライアントの場所.md・01_チケット.md に検収の 4 つの道の行が無い。届いた依頼・クライアントの場所の行は残る |\n| K926-API-008 | 守り | コードと検査の表 | apps/api/src（routes を除く）・apps/web・apps/bridge に外した操作 ID が 0 件。row_rules.mjs に acceptances の行の言葉が無く、build_functional.py の _NOTIFY_OPS に requestAcceptance が無い |\n| K926-API-009 | 守り | 前からの試験 | 手で書いた試験（apps・packages の test・tests と scripts/ci の python の試験。生成の試験・K-924 と K-926 の試験を除く）に、外した操作 ID が出てくるファイルが 0 |\n| K926-API-010 | 守り | 外す口の記録（retired-endpoints.json） | 4 の口が（方法・道）ごとに 1 行ずつ在り、根拠の決定は D-155.44・理由は空でない。決定ログに D-155.44 の行が在る |\n| K926-API-011 | 守り | 表 | acceptances の表が DB に在る（消えていない・凍結の印は K-883） |\n| K926-API-012 | 操作の揺れ | 外した道の隣の道 | チケットの一覧・先方の場所のホームの道は 404 でない（外す作業が別の道を巻き込んでいない） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 外す口は入力を持たない（呼ばれない）。道の値の形は 001 が道ごとの 404 で見る |\n| 対象の状態 | 要らない | 外した口に状態を持つ物は無い（どれも 501 で動いていない） |\n| 時間の流れ | 要らない | 期限・取り消し・催促を持たない（外す口が催促・期限の口だが、動いていない） |\n| 入口 | 該当 | 001（直に呼ぶ）・012（隣の道） |\n| 利用者の状態 | 要らない | 誰が呼んでも同じ（道が無い） |\n| 失敗 | 要らない | 外に出る手順が無い |\n| 操作の揺れ | 該当 | 012（外した道の隣は動く） |\n| 守り | 該当 | 002〜011（契約・生成物・文書・検査の表・外す口の記録・表の残り） |\n\n### 分類の型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K926-API-007（`08_取引先とクライアントの場所.md`・`01_チケット.md`・`決定ログ_進行中.md` などの日本語の名前のファイルを `readFileSync` で読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K926-API-002・004（外した操作 ID が「無い」ことだけを見ると、読むファイルが空でも緑になる。K926-API-005 が「残す口は在る」を同じファイルで見る） |\n| 要らない: TP-TOOL-03 容れ物の中と手元で設定・証明書・版が違う | 試験は git と node だけで動き、容れ物ごとの設定を読まない |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外の物（バケット・秘密・DNS）を使わない |\n| G-12 切り替わりの瞬間 | N/A | 外す口は契約だけで 501 のまま動いていない。画面は呼んでいない（008 が `apps/web` の字を見る） |\n| G-13 機能の組み合わせ | 該当 | 外す口 × 残す口（先方の場所のほかの口・依頼の口）が同じ表・同じ文書に在る（005・007・012） |\n| G-14 口座状態の波及 | N/A | 退会・権限変更の後の扱いは変えない |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | N/A | 口も文も増えない（道が 4 減る） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | 検収の口は画面が呼んでいない（契約だけ） | 変えない（0）。口が 4 減る |\n| 直列の段 | — | 変えない |\n| 口ごとの文の数・取引の数 | — | 変えない（口のコードは無い） |\n| 認証の要る答えの Cache-Control | private, no-store | 同じ |\n| 新しい住所 | — | 増えない（4 減る） |",
+    "前からの試験を替えた所": "外す操作 ID を使う前からの試験を探した（2026-11-23）。\n\n```search\ngit grep -l -w -E \"requestAcceptance|remindAcceptance|getPortalAcceptance|answerAcceptance\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'apps/*/tests/**/*.ts' 'packages/*/test/*.ts' 'scripts/ci/*_test.py' ':!apps/api/test/generated/*' ':!apps/api/test/features/F11/clients-retire.test.ts' ':!apps/api/test/features/F11/acceptances-retire.test.ts'\n0\n```\n\n- `apps/api/test/generated/*`：替える — 生成物（口を外すので作り手 `gen_ears_tests.mjs` が 4 本を消す。どれも `it.todo` だけで本物の試験を持たない）\n- `apps/api/src/contract/authz.test.ts`・`apps/api/test/authz_rows.test.ts`・`apps/api/test/row_rules.test.ts`・`scripts/ci/contract.test.mjs`：替えない — 契約の全部の口を歩いて「作っていない口は 501 で止まる」「行の言葉に表と条件がある」を見る試験で、口の数を決め打ちしていない。`row_rules.test.ts` は `RULES` の表を歩くだけ（`acceptances` の 1 行が消えても歩く物が減るだけ）",
+    "決定ログ（足す行）": "- なし（決めは K-924 が運ぶ D-155.44（検収を作らない）に従う）",
+    "リスクと懸念": "- 検収の口は `requestAcceptance` が A123・`remindAcceptance` が A123 だが、`remindAcceptance` の契約の行は `\"clients\"` の表に在る（K-924 が `\"clients\"` の表の 12 行を外した後に残る行）。操作 ID の名前で探して消す（K926-API-002 が見る）\n- `getPortalHome`（先方のホーム）の答えの形に `to_review`（確認してほしいもの）の欄が在る。検収を作らないので、その欄は先方の場所の口の葉 K-906 が答えの形を決めるとき外す（K-906 の申し送り）。この葉は `getPortalHome` を触らない",
+    "申し送り": "- K-870：行為 A126・対象「検収」の流れからの送りは K-870 が持つ。この葉の契約の外しが入っていることが前提\n- K-883：`acceptances` の表を凍結にするのは K-883。この葉で検収の口の行の守りが registry.ts から消える\n- K-906：先方のホームの答えの形（`to_review` の欄・「確認してほしいもの」）を検収なしの形に決める\n- まとめ役へ：(1) `overlap_ok`：`05_flow/screen_api.py`・`11_tickets/K-71.md`・`08_api/retired-endpoints.json`・`08_取引先とクライアントの場所.md` は K-711・K-924・K-881 も触るが、依存で順に入る（K-711 → K-924 → K-926 → K-870）ので不要"
+   },
+   "file": "11_tickets/K-926.md"
+  },
+  {
    "id": "K-1100",
    "title": "承認待ちの鍵の札が幅 375 で折り返さない（鍵の札を鍵の無い札と同じ幅にする）・キャンバスの突き合わせの「今」を止める（K-395 の直し）",
    "kind": "タスク",

@@ -3433,6 +3433,20 @@ K-924,取引先の口 12 本（契約の表では 13 行）を契約から外す
 - [ ] 依頼の口・先方の場所の口が契約に残っている
 - [ ] 契約の検査（`python3 scripts/ci/contract_shape_test.py`・`node scripts/ci/contract.mjs check`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-926,検収の口 4 本（requestAcceptance・remindAcceptance・getPortalAcceptance・answerAcceptance）を契約から外す：契約の表・生成物・文書・親の apis と tests・検査の表から消す。足す予定だった listTicketAcceptances・withdrawAcceptance は作らない（K-71 の葉・段 12）,タスク,K-71,未着手,実装,2026-11-26,F11・契約,"代表の決め（answer=6ba09f587792・D-155.44）で、段 12 は**検収を作らない**。芯は「チケットはチケット。特別扱いしない。新しいのは『ゲストが見られるか』だけ」で、OK／直してほしいのボタン・検収の帯・検収を頼む小窓・前日の催促・取り下げ・検収の知らせ・完了の条件にすることを全部外す。前の形のまま契約に残っている**検収の口 4 本**を、契約・生成物・文書・親チケットの `apis:`・`tests:` から外す。道は今どれも契約だけで 501 を返す口（作ってはいない）なので、外しても動いている物は変わらない。
+
+| まとまり | 操作 ID（方法・道） | 行為 | 本数 |
+|---|---|---|---|
+| 検収を頼む・催促 | `requestAcceptance`（POST /tickets/:id/acceptances）・`remindAcceptance`（POST /acceptances/:id/remind） | A123 | 2 |
+| 先方の検収 | `getPortalAcceptance`（GET /portal/acceptances/:id）・`answerAcceptance`（POST /portal/acceptances/:id/answer） | A126 | 2 |
+
+足す予定だった `listTicketAcceptances`・`withdrawAcceptance`（切り方の前の案）は、契約に入っていないので作らない（外す物が無い）。
+
+**触らない物**：チケットの見せ方の古い口 `updateTicketClientShare`（A123・K-881 が見せる相手の口に置き換える）・先方の場所のほかの口（`getPortalHome` ほか）・依頼の口・DB の表 `acceptances`（消さず、凍結の印は K-883）。行為 A123 は流れに残し（K-870 が「チケットをゲストのグループに見せる」に言い換える）、A126 は K-870 が流れから消す。","- [ ] 下の表の 12 行（K926-API-001〜012）が緑：`apps/api/test/features/F11/acceptances-retire.test.ts`
+- [ ] 外した 4 の操作 ID が `05_flow/screen_api.py` の全部の表（SCREEN_API・RESPONSES・PERMS）と `05_flow/build_functional.py` に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 4 本が消えている（作り手 `gen_ears_tests.mjs` が消す）
+- [ ] 先方の場所のほかの口・依頼の口が契約に残っている
+- [ ] 契約の検査（`python3 scripts/ci/contract_shape_test.py`・`node scripts/ci/contract.mjs check`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-1100,承認待ちの鍵の札が幅 375 で折り返さない（鍵の札を鍵の無い札と同じ幅にする）・キャンバスの突き合わせの「今」を止める（K-395 の直し）,タスク,K-66,未着手,実装,2026-11-23,F6・画面,"本線に入った K-395 が、仕組みの段（確認中・承認待ち・実行中）の段の札に鍵の印を足した（`features/F6/progress/views.tsx` の StageMenu の locked・`progress.css` の `.k-prog-stage-locked` の gap・`slot.tsx`）。印 11px と間 4px の分だけ札が広くなり、幅 375 のチケットの詳細で、頭の行の右（開始日・期限・段の札）の札が次の行へ落ち、見出しが 25px 下がった。
 キャンバスの突き合わせ G70 の `K238-VF-003 ticket-detail（TicketDetail）幅 375` が「見出し・y：キャンバス 139 ／ 画面 164」で赤（見出しの帯・y も 133→158）。K-395 の前の本線 b7959aa46 では緑。今は、列の後ろの葉が画面の範囲を流すたびにここで落ちる（K-470 が返された）。
 
