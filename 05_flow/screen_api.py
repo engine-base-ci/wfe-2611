@@ -136,25 +136,6 @@ SCREEN_API = {
         ("POST", "/learning_candidates/:id/later", "A30", "learning_candidates", "postponeLearningCandidate", []),
         ("POST", "/learning_candidates/:id/exception-request", "A131", "approvals", "requestRuleException", ["learning_candidates", "policies", "notifications"]),
     ],
-    "rules": [
-        ("GET", "/rules", "A131", "policies", "listRules", ["clients", "scopes"]),
-        ("GET", "/rules/:id", "A131", "policies", "getRule", ["action_runs"]),
-        ("POST", "/rules/check", "A131", "policies", "checkRule", ["memories"]),
-        ("POST", "/rules", "A131", "policies", "createRule", ["approvals"]),
-        ("PATCH", "/rules/:id", "A131", "policies", "updateRule", []),
-        ("DELETE", "/rules/:id", "A131", "policies", "deleteRule", []),
-    ],
-    "work-types": [
-        ("GET", "/work_types", "A119", "skills", "listWorkTypes", ["skill_versions"]),
-        ("GET", "/work_types/:id", "A119", "skills", "getWorkType", ["skill_versions", "policies"]),
-        ("POST", "/work_types", "A119", "skills", "createWorkType", ["skill_versions"]),
-        ("POST", "/work_types/:id/copy", "A119", "skills", "copyWorkType", ["skill_versions"]),
-        ("PATCH", "/work_types/:id/draft", "A119", "skill_versions", "updateWorkTypeDraft", []),
-        ("GET", "/work_types/:id/versions", "A119", "skill_versions", "listWorkTypeVersions", []),
-        ("POST", "/work_types/:id/try", "A119", "skill_test_runs", "tryWorkType", ["tickets", "checks"]),
-        ("POST", "/work_types/:id/release", "A119", "skill_versions", "releaseWorkType", ["skills"]),
-        ("POST", "/work_types/:id/spread-requests", "A119", "approvals", "requestWorkTypeSpread", ["notifications"]),
-    ],
     "ai-activity": [
         ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals"]),
         ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),
@@ -260,12 +241,6 @@ SCREEN_API = {
     # ---------------------------------------------------------------- 運営：配るもの（08_api/phase1/06_運営の配るもの.md）
     "ops-skills": [
         # 業務の型と操作（全社向け・節目①）
-        ("GET", "/ops/work_types", "A80", "skills", "listOpsWorkTypes", ["skill_versions", "tenant_distributions"]),
-        ("GET", "/ops/work_types/:id", "A80", "skills", "getOpsWorkType", ["skill_versions", "skill_test_runs", "tenant_distributions"]),
-        ("POST", "/ops/work_type_uploads", "A80", "skill_versions", "uploadWorkTypePackage", ["skill_test_runs"]),
-        ("GET", "/ops/work_type_uploads/:id", "A80", "skill_versions", "getWorkTypeUpload", ["skill_test_runs"]),
-        ("POST", "/ops/work_types/:id/versions", "A80", "skill_versions", "releaseOpsWorkType", ["tenant_distributions", "notifications", "ops_audit_events"]),
-        ("POST", "/ops/work_types/:id/versions/:v/rollback", "A80", "skill_versions", "rollbackOpsWorkType", ["tenant_distributions", "ops_audit_events"]),
         ("GET", "/ops/operations", "A80", "operations", "listOperations", []),
         # ひな形（D-125.72）
         ("GET", "/ops/templates", "A128", "distributions", "listOpsTemplates", ["tenant_distributions"]),
@@ -310,16 +285,6 @@ SCREEN_API = {
         ("PATCH", "/layers/:id", "A117", "layers", "updateLayer", ["audit_events"]),
     ],
     "masters": [
-        # 守ること・承認を上に回すとき・やり方（ワークスペース全体と層）
-        ("GET", "/workspace/rules", "A118", "policies", "getWorkspaceRules", ["scopes", "skills", "action_runs"]),
-        ("POST", "/rules/check", "A118", "policies", "checkRule", ["memories"]),
-        ("POST", "/workspace/rules", "A118", "policies", "createWorkspaceRule", ["audit_events"]),
-        ("PATCH", "/workspace/rules/:id", "A118", "policies", "updateWorkspaceRule", ["audit_events"]),
-        ("DELETE", "/workspace/rules/:id", "A118", "policies", "deleteWorkspaceRule", ["audit_events"]),
-        ("POST", "/workspace/escalation-rules/preview", "A118", "policies", "previewEscalationRule", ["approvals", "tickets"]),
-        ("POST", "/workspace/escalation-rules", "A118", "policies", "createEscalationRule", ["audit_events"]),
-        ("PATCH", "/workspace/escalation-rules/:id", "A118", "policies", "updateEscalationRule", ["audit_events"]),
-        ("DELETE", "/workspace/escalation-rules/:id", "A118", "policies", "deleteEscalationRule", ["audit_events"]),
         # チケットの形（種別と区画・作業の段・分類の軸・担当を渡すとき・D-128.95）
         ("GET", "/workspace/ticket-shape", "A118", "ticket_kinds", "getTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules"]),
         ("POST", "/workspace/ticket-shape/preview", "A118", "ticket_kinds", "previewTicketShapeChange", ["tickets", "ticket_class_values"]),
@@ -364,8 +329,6 @@ SCREEN_API = {
         ("DELETE", "/client_contacts/:id", "A121", "client_contacts", "removeClientContact", ["tenant_memberships", "sessions", "invitations", "audit_events"]),
         ("POST", "/client_contacts/:id/invitation", "A121", "invitations", "inviteClientContact", ["notifications", "audit_events"]),
         ("POST", "/acceptances/:id/remind", "A123", "acceptances", "remindAcceptance", ["notifications"]),
-        ("GET", "/rules", "A121", "policies", "listRules", ["clients", "scopes"]),
-        ("POST", "/rules", "A121", "policies", "createRule", ["approvals"]),
     ],
     "requests": [
         ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["clients", "client_contacts"]),
@@ -391,17 +354,17 @@ SCREEN_API = {
     "knowledge": [
         # ホーム・置き場・探す
         ("GET", "/knowledge/home", "A114", "knowledge_pages", "getKnowledgeHome", ["knowledge_page_versions", "reference_logs"]),
-        ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["scopes"]),
+        ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["knowledge_folders", "scopes"]),
         ("GET", "/knowledge_pages", "A114", "knowledge_pages", "listKnowledgePages", ["reference_logs", "members"]),
         ("POST", "/knowledge/ask", "A114", "knowledge_pages", "askKnowledge", ["bridge_jobs", "policies", "clients"]),
         ("POST", "/knowledge/ask/feedback", "A114", "knowledge_page_versions", "sendKnowledgeAnswerFeedback", []),
         # 1 ページ・書く・下書き・公開
-        ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_links", "policies", "skills"]),
-        ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "bridge_jobs"]),
+        ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_folders", "reference_logs"]),
+        ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "knowledge_folders"]),
         ("PATCH", "/knowledge_pages/:id", "A114", "knowledge_pages", "updateKnowledgePage", []),
-        ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_links"]),
-        ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", []),
-        ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_links", "notifications"]),
+        ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_page_versions"]),
+        ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", ["knowledge_page_versions"]),
+        ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_page_versions"]),
         ("POST", "/knowledge_pages/:id/attachments", "A114", "attachments", "uploadKnowledgeAttachment", []),
         ("GET", "/knowledge_pages/:id/versions", "A114", "knowledge_page_versions", "listKnowledgeVersions", []),
         ("POST", "/knowledge_pages/:id/versions/:v/restore", "A114", "knowledge_page_versions", "restoreKnowledgeVersion", ["knowledge_pages"]),
@@ -909,6 +872,10 @@ EARS_OK = {
 }
 # 成功の番号が 2 つある口（operationId → 201（POST の決め打ち）のほかに返す番号）。K-422：リンクの招待で新しく入る人の参加は 202（確認のメールを送っただけ）
 ALSO_2XX = {"acceptInvitation": [202]}
+# 成功の状態の番号の差し替え（operationId → 番号・K-705）。無い口は POST が 201・ほかは 200。新しい物を作らない POST（並べ直す）は 200
+SUCCESS_STATUS: dict = {}
+# 一覧の口（GET の list・search）でないのに答えの data が並びの口（operationId の集まり・K-705）。並べ直した全部の並びを返す POST など
+LIST_RESULT_OPS: dict = {}   # operationId → 訳
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
 NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "createInvitationLink", "confirmInvitationJoin"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）／K-421：答えにリンクのトークンが入る（器に残さない・二度押しで 2 本のリンクができ、どちらも使える）／K-422：confirmInvitationJoin も答えにログインの印が入る（器に残さない）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
@@ -1145,15 +1112,11 @@ RESPONSES = {
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
-    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string?"}),
     "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
-    "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
     "getMember": ("MemberDetail", {"member": "object", "groups": "array", "role_bundle": "object", "granted": "array", "revoked": "array", "assigned": "object", "clone": "object", "login": "object", "recent_events": "array"}),
     "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
-    "getWorkspaceRules": ("WorkspaceRules", {"rules": "array", "rules_by_layer": "array", "escalations": "array", "work_types": "array"}),
-    "previewEscalationRule": ("EscalationPreview", {"matched_last_month": "integer", "examples": "array"}),
     "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
     "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
     "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
@@ -1171,9 +1134,9 @@ RESPONSES = {
     "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
     "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
-    "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
+    "getKnowledgeTree": ("KnowledgeTree", {"company_name": "string", "company_nodes": "array", "groups": "array", "my_nodes": "array", "can_write": "object", "admin_counts": "object?", "truncated": "boolean"}),   # K-675（土台 3.1）
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
-    "getKnowledgePage": ("KnowledgePageDetail", {"page": "object", "body": "object", "toc": "array", "children": "array", "backlinks": "array", "related_rules": "array", "proposal_marks": "array", "draft": "object"}),
+    "getKnowledgePage": ("KnowledgePageDetail", {"id": "uuid", "title": "string", "desc": "string", "state": "string", "must": "boolean", "must_blocked": "string?", "place": "object", "acts": "string[]", "body": "object?", "draft": "object?", "request": "object?", "copied_from": "object?", "shared_from": "object?", "raise_to": "object?", "foot": "object"}),   # K-675（土台 3.1）
     "getKnowledgeUsage": ("KnowledgeUsage", {"reads_3m": "integer", "returns": "integer", "recent_tickets": "array", "hot_sections": "array"}),
     "getKnowledgeLinks": ("KnowledgeLinks", {"nodes": "array", "edges": "array", "unlinked_mentions": "array"}),
     "searchKnowledgeLinkTargets": ("KnowledgeLinkTarget", {"kind": "string", "id": "string", "title": "string", "place": "string"}),
@@ -1229,8 +1192,6 @@ QUERIES = {
     "listConversations": ["q", "starred"],
     "listMemories": ["kind", "since"],
     "listLearningCandidates": ["trigger", "target"],
-    "listRules": ["scope", "client_id"],
-    "listWorkTypes": ["origin", "sort"],
     "listCloneActivity": ["kind", "from", "to"],
     "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
@@ -1367,23 +1328,6 @@ PERMS = {
     "dismissLearningCandidate": ("self", "同上", False),
     "postponeLearningCandidate": ("self", "本人", False),
     "requestRuleException": ("self", "本人が申請する。OK するのは管理者かその層のマネージャー（承認待ち・D-128.89）", False),
-    # 守ること
-    "listRules": ("read", "自分のもの・自分が使える取引先・自分の層・ワークスペースの決まり", False),
-    "getRule": ("read", "同上。効いた記録は見られるチケットのものだけ", False),
-    "checkRule": ("self", "書いている本人（点検だけで何も変えない）", False),
-    "createRule": ("self", "自分の守ることは本人。取引先の守ることはその取引先の担当とマネージャー。層・ワークスペースの決まりはワークスペースの管理から（ここでは作れない）", False),
-    "updateRule": ("self", "作った本人と、その範囲を直せる人。上の層の決まりは直せない（写して自分用にする）", False),
-    "deleteRule": ("self", "同上", False),
-    # やり方（業務の型）
-    "listWorkTypes": ("read", "自分のもの・層から・ワークスペースから・運営の全社向け のうち使えるものだけ", False),
-    "getWorkType": ("read", "同上。裏のスキルの作りは見せず、欄と説明だけ（D-126.21）", False),
-    "createWorkType": ("self", "自分のやり方として作る", False),
-    "copyWorkType": ("self", "使えるやり方を写して自分用にする", False),
-    "updateWorkTypeDraft": ("self", "自分のやり方は本人。層のやり方はその層のマネージャー、ワークスペースのものは管理者", False),
-    "listWorkTypeVersions": ("read", "そのやり方を使える人", False),
-    "tryWorkType": ("self", "直せる人。外には何も出ない（試すだけ）", False),
-    "releaseWorkType": ("self", "直せる人。機械の検査が通らない版は使い始められない", False),
-    "requestWorkTypeSpread": ("self", "本人が申請する。OK するのはそのグループのマネージャー（承認待ち・D-128.89）", False),
     # やったこと
     "getCloneNow": ("self", "自分の分身だけ", False),
     "getCloneGrowth": ("self", "自分の分身だけ", False),
@@ -1466,12 +1410,6 @@ PERMS = {
     "reportCredentialCheck": ("device", "その人の PC", False),
     "getFileForBridge": ("device", "その仕事に付いたファイルだけ（期限つきの署名 URL）", False),
     # 運営：配るもの（運営の人で、そのできることを持つ人だけ・D-128.70）
-    "listOpsWorkTypes": ("ops:distribute", "配るものを持つ運営の人", False),
-    "getOpsWorkType": ("ops:distribute", "同上。どのワークスペースがどの版を使っているかは数だけ（中身は見ない）", False),
-    "uploadWorkTypePackage": ("ops:distribute", "同上。上げた一式は機械の検査（必須の節・資格情報や固有名が入っていない・テスト場面 5 以上・版と変更点）を通す（D-080）", False),
-    "getWorkTypeUpload": ("ops:distribute", "同上", False),
-    "releaseOpsWorkType": ("ops:distribute", "同上。検査が通らない一式は出せない。全部のワークスペースに効くので本人確認を取り直す", True),
-    "rollbackOpsWorkType": ("ops:distribute", "同上（前の版に戻す）", True),
     "listOperations": ("ops:distribute", "同上（第1フェーズは汎用のブラウザ操作 1 つ・D-126.19）", False),
     "listOpsTemplates": ("ops:distribute", "同上", False),
     "getOpsTemplate": ("ops:distribute", "同上", False),
@@ -1505,14 +1443,6 @@ PERMS = {
     "updateScope": ("admin", "同上", False),
     "createLayer": ("admin", "同上", False),
     "updateLayer": ("admin", "同上", False),
-    "getWorkspaceRules": ("read", "ワークスペースのメンバーなら読める。直せるのは決まりを直せる人", False),
-    "createWorkspaceRule": ("admin", "決まりを直せる人（既定は管理者・D-125.66）。層の決まりはその層のマネージャーも（D-127.11）", False),
-    "updateWorkspaceRule": ("admin", "同上", False),
-    "deleteWorkspaceRule": ("admin", "同上", False),
-    "previewEscalationRule": ("admin", "同上（当てはまる件数を数えるだけ）", False),
-    "createEscalationRule": ("admin", "同上（D-128.87）", False),
-    "updateEscalationRule": ("admin", "同上", False),
-    "deleteEscalationRule": ("admin", "同上", False),
     "getTicketShape": ("read", "ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）", False),
     "previewTicketShapeChange": ("admin", "決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）", False),
     "saveTicketShape": ("admin", "決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）", False),
@@ -1565,18 +1495,18 @@ PERMS = {
     "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
     "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
-    "getKnowledgeTree": ("read", "同上", False),
+    "getKnowledgeTree": ("self", "社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）", False),
     "listKnowledgePages": ("read", "同上。しまったページは書ける人だけ", False),
     "askKnowledge": ("read", "見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）", False),
     "sendKnowledgeAnswerFeedback": ("read", "答えを見た本人。「いいえ」は持ち主への直す案になる", False),
-    "getKnowledgePage": ("read", "見られるページだけ。下書きは書いている本人と書ける人", False),
-    "createKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）", False),
-    "updateKnowledgePage": ("write", "同上（置き場・親・持ち主・確かめの間隔・話題）", False),
-    "saveKnowledgeDraft": ("write", "同上。下書きは公開するまで知らせない・分身も読まない", False),
-    "discardKnowledgeDraft": ("write", "下書きを書いた本人", False),
-    "publishKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる", False),
+    "getKnowledgePage": ("read", "見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675", False),
+    "createKnowledgePage": ("write", "社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）", False),
+    "updateKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675", False),
+    "saveKnowledgeDraft": ("write", "そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675", False),
+    "discardKnowledgeDraft": ("write", "そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675", False),
+    "publishKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675", False),
     "uploadKnowledgeAttachment": ("write", "同上。ファイルは検査してから置く（関門 C4）", False),
-    "listKnowledgeVersions": ("read", "見られるページだけ", False),
+    "listKnowledgeVersions": ("read", "見えるページだけ（行の守り）。公開した版を新しい順に・K-675", False),
     "restoreKnowledgeVersion": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）", False),
     "exportKnowledgeMarkdown": ("read", "見られるページだけ（期限つきの署名 URL）", False),
     "getKnowledgeUsage": ("read", "見られるページだけ。読んだチケットは見られるものだけ出す", False),

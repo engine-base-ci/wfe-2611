@@ -13,6 +13,7 @@
   "checks",
   "clients",
   "conversations",
+  "custom_fields",
   "export_jobs",
   "invitations",
   "kind_sections",
@@ -20,17 +21,15 @@
   "messages",
   "notices",
   "notifications",
-  "policies",
   "reference_logs",
   "security_events",
   "sessions",
-  "skill_versions",
-  "skills",
   "status_incidents",
   "tenant_memberships",
   "tenants",
   "ticket_kinds",
   "ticket_messages",
+  "ticket_stages",
   "tickets"
  ],
  "tables": {
@@ -229,12 +228,16 @@
    "lines": []
   },
   "custom_fields": {
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F9→F4"
+   ]
   },
   "distributions": {
    "writes": [
@@ -328,6 +331,14 @@
     "F4→F9",
     "F9→F4"
    ]
+  },
+  "knowledge_folders": {
+   "writes": [
+    "F9"
+   ],
+   "reads": [],
+   "boundary": false,
+   "lines": []
   },
   "knowledge_links": {
    "writes": [
@@ -538,15 +549,11 @@
   },
   "policies": {
    "writes": [
-    "F11",
     "F9"
    ],
    "reads": [],
-   "boundary": true,
-   "lines": [
-    "F11→F9",
-    "F9→F11"
-   ]
+   "boundary": false,
+   "lines": []
   },
   "reference_logs": {
    "writes": [],
@@ -613,38 +620,6 @@
     "F10→F3",
     "F3→F1",
     "F3→F10"
-   ]
-  },
-  "skill_test_runs": {
-   "writes": [
-    "F9"
-   ],
-   "reads": [],
-   "boundary": false,
-   "lines": []
-  },
-  "skill_versions": {
-   "writes": [
-    "F12",
-    "F9"
-   ],
-   "reads": [],
-   "boundary": true,
-   "lines": [
-    "F12→F9",
-    "F9→F12"
-   ]
-  },
-  "skills": {
-   "writes": [
-    "F9"
-   ],
-   "reads": [
-    "F12"
-   ],
-   "boundary": true,
-   "lines": [
-    "F9→F12"
    ]
   },
   "status_incidents": {
@@ -804,12 +779,16 @@
    "lines": []
   },
   "ticket_stages": {
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F9→F4"
+   ]
   },
   "tickets": {
    "writes": [

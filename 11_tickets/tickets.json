@@ -2413,7 +2413,6 @@
     "listTicketArtifacts",
     "listTicketLinks",
     "listTicketReferences",
-    "listTicketStages",
     "listTicketVersions",
     "makeKindTemplateFromTicket",
     "previewTicketKindChange",
@@ -2427,7 +2426,6 @@
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
     "apps/api/test/generated/get_clients.test.ts",
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
-    "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/get_tickets_id_artifacts.test.ts",
     "apps/api/test/generated/get_tickets_id_checks.test.ts",
     "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
@@ -3327,7 +3325,59 @@
     "postponeLearningCandidate",
     "promoteMemoryToRule",
     "requestRuleException",
-    "updateMemory"
+    "updateMemory",
+    "listKindTemplateUpdates",
+    "applyKindTemplateUpdate",
+    "createEscalationRule",
+    "updateEscalationRule",
+    "deleteEscalationRule",
+    "previewEscalationRule",
+    "getWorkspaceRules",
+    "createWorkspaceRule",
+    "updateWorkspaceRule",
+    "deleteWorkspaceRule",
+    "getTicketShape",
+    "saveTicketShape",
+    "previewTicketShapeChange",
+    "askKnowledge",
+    "sendKnowledgeAnswerFeedback",
+    "getKnowledgeHome",
+    "searchKnowledgeLinkTargets",
+    "listKnowledgeProposals",
+    "acceptKnowledgeProposal",
+    "declineKnowledgeProposal",
+    "getKnowledgeTree",
+    "listKnowledgeVerifications",
+    "createKnowledgeImport",
+    "getKnowledgeImport",
+    "commitKnowledgeImport",
+    "listKnowledgePages",
+    "createKnowledgePage",
+    "getKnowledgePage",
+    "updateKnowledgePage",
+    "archiveKnowledgePage",
+    "uploadKnowledgeAttachment",
+    "saveKnowledgeDraft",
+    "discardKnowledgeDraft",
+    "getKnowledgeLinks",
+    "linkKnowledgeMention",
+    "exportKnowledgeMarkdown",
+    "listKnowledgeMessages",
+    "postKnowledgeMessage",
+    "publishKnowledgePage",
+    "unarchiveKnowledgePage",
+    "getKnowledgeUsage",
+    "verifyKnowledgePage",
+    "listKnowledgeVersions",
+    "restoreKnowledgeVersion",
+    "createKnowledgeFolder",
+    "updateKnowledgeFolder",
+    "deleteKnowledgeFolder",
+    "findSimilarKnowledge",
+    "deleteKnowledgePage",
+    "copyKnowledgePage",
+    "setKnowledgeMust",
+    "getKnowledgePageVersion"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
@@ -3401,7 +3451,15 @@
     "apps/api/test/generated/post_workspace_escalation_rules.test.ts",
     "apps/api/test/generated/post_workspace_escalation_rules_preview.test.ts",
     "apps/api/test/generated/post_workspace_rules.test.ts",
-    "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts"
+    "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts",
+    "apps/api/test/generated/delete_knowledge_folders_id.test.ts",
+    "apps/api/test/generated/delete_knowledge_pages_id.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_versions_v.test.ts",
+    "apps/api/test/generated/patch_knowledge_folders_id.test.ts",
+    "apps/api/test/generated/post_knowledge_folders.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_copy.test.ts",
+    "apps/api/test/generated/post_knowledge_similar.test.ts",
+    "apps/api/test/generated/put_knowledge_pages_id_must.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -24117,6 +24175,81 @@
    "file": "11_tickets/K-567.md"
   },
   {
+   "id": "K-577",
+   "title": "画面の部品：本文の読む形の描き（文書の木 doc → 画面。編集の部品を読み込まない・チェックの箱の取り扱い・リンクの守り）と、編集の部品の遅い読み込みの確かめ（K-59 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（2026-11-22 に本文の道具の決めで足した物：足した節と印の描き・色の値の守り・開発用の頁の文書 2 つの 15 分を足し、全体は 1 時間以内）。形の近い本線の葉 K-369（部品に値を渡して描く・見込み 1）と、同じ部品の核 K-567 から引いた：読む形の描き（doc-view.tsx：節ごとの描きと印・リンク）25 分・開発用の頁に読む形と切り替えのボタンを足す 10 分・遅い読み込みの確かめ（script の中身を見る試験の通し）10 分・自分の確かめ 10 分。K-567 の見込みが 1 時間を超えると見えたため、読む形の描きと遅い読み込みの確かめをここへ分けた（切り分けの番号は K-577）。見込みの根拠になる実測が無いので、最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.57",
+    "D-150.61"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の部品と開発用の頁だけ。口・DB・外・秘密に触らない（読む形は文書を受けて描くだけ）",
+   "tests": [
+    "apps/web/tests/k/k577-doc-view.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-567",
+    "K-584"
+   ],
+   "acts": [
+    "A99",
+    "A101"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f4v2-body-read"
+   ],
+   "flow": "チケットの中身を書く・直す",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/doc/editor/doc-view.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-marks.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-color.tsx",
+    "apps/web/features/F4/doc/editor/doc-view-live.tsx",
+    "apps/web/features/F4/doc/editor/index.ts",
+    "apps/web/features/F4/doc/editor/editor.css",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/live.tsx",
+    "scripts/ci/ci_scope.d/K-577.json"
+   ],
+   "sections": {
+    "目的": "詳細（K-571）が本文を**読む形**で出すとき、編集の部品（Tiptap・ProseMirror）を読み込まずに、文書の木 `doc`（K-561）を画面に描く部品 `DocView` を作る。読む画面は一番よく開くので、編集のための 100kb 超を読み込ませない（`performance.md`）。編集に入ったときだけ K-567 の `DocEditor` が遅く読み込まれることも、この葉の試験で確かめる。\n\n詳細で本文のチェックの箱を読む形のまま付けられるか（K-571・K-447 の決め）は、`DocView` の `onToggleTask` を渡すかどうかで使う側が決める。この葉は取り扱いを渡された／渡されないときの動きだけを持つ。",
+    "完了の条件": "- [ ] 下の表の 12 行（K577-UI-001〜012）が緑：`apps/web/tests/k/k577-doc-view.spec.ts`\n- [ ] K-567 の試験（`k567-doc-editor.spec.ts`・`k567-doc-convert.test.ts`）が変えずに緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- **本文の道具の決め（代表 2026-11-22・D-150.61）への当たり方**：読む形は、K-584 が広げた文書の木の節と印を全部描く（絞らない）。リンクの守り（http・https・mailto だけ）・画像は押せない形（D-150.57）は変えない。編集の道具の数や並びは持たない（K-567・K-587・K-568 の物）\n\n- **この葉の正の絵（下絵に足す状態）**：読む形の本文は下絵 v2 の詳細の状態（f4v2-detail-new・detail-worked・detail-empty）の中に描かれているが、その持ち主は K-571。この葉だけが持つ状態は無い。canvas_field_gate は mock: を空にできないので、本文の読む形（チェックの箱・リンク・表・画像）だけを並べた状態 `f4v2-body-read`（ticket K-577）を下絵 v2 の `mocks.tsx` に足してもらう（PM への頼み・T2 の報告の残り）。足すまで頭の `mock:` は赤。足すときは、下絵の `FreeDoc`・`Checks`・`BillTable`・`Img` を 1 枚に並べるだけで、新しい見た目は作らない\n- **`DocView`（`doc-view.tsx`）は編集の部品を import しない**（`@tiptap/*`・`prosemirror-*` を読まない。境界 B10 の外から読んではいけない物を、この葉は触らない）。`@kaname/contracts` の `Doc` の型と定数だけを使う。サーバーでも描ける（`\"use client\"` を付けない）\n- **利用者が選んだ `#rrggbb` の色の当て方（PM の決め 2026-11-23・案 2）**：JSX の `style={…}` でも `<style>` の要素でも当てない（class_gate・D8・K261-RL-017 を緩めない・例外も足さない）。文書に、形を確かめた `#rrggbb` の色（文字の色か背景）が **1 つでも在るときだけ**、読むだけの編集の部品（Tiptap・`editable: false`・K-567 の `buildExtensions()`）で描く。読み込みは遅い読み込み（`doc-view-color.tsx` が `doc-view-live.tsx` を動的に import する）で、読み込みの間は色を付けない読む形（`DocView` の描き）を先に出す。色の印（inline の style）は Tiptap が自分で付ける。**色の無い文書（大半）は編集の部品を読まないまま**（K577-UI-001）\n- **色のある文書でも同じ結果にする物**：チェックの箱（取り扱いが無ければ disabled・在れば `onToggleTask(位置, 押した後の真偽)` を呼び、表示は渡された `doc` のまま＝Tiptap の `onReadOnlyChecked` で偽を返して戻す）／値の守り（Tiptap に渡す前に、K-567 の `fromEditorJson` で形に合わない色・寄せ・`colspan`・`rowspan`・`start`・許されない href を落とす）／前の 3 つの名前の色は `span[data-c]`（正本のトークン）／箱の名前（読み上げ）は箱の文／画像の置き場は `DocView` と同じ形（`figure.k-f4d-img`・枠は `role=\"img\"`・名前＝caption・K577-UI-011）／表のセルの `colwidth` は読むだけの形でも使わない（渡す前に外す）。書き換えはできない（`contenteditable=\"false\"`・入力欄の役を付けない）。見た目は `editor.css` のトークンでそろえる（K-567 の `k-f4d-pm` の決まりを読む形にも当てる）\n- **描き**：K-561 の節ごとに、下絵 `features/F4/doc/views.tsx` の `FreeDoc`・`Checks`・`BillTable`・`Img` と同じ見た目（`doc.css` の `k-f4d-*`）。見出し（2・3）は `h2`・`h3`・段落は `p`・箇条書きは `ul>li`・チェックの箱は `ul.k-f4d-checks>li>input[type=checkbox]＋span`（済みは `data-done`）・表は `div.k-f4d-tablewrap>table`（1 行目が `th`）・引用は `blockquote.k-f4d-quote`・コードは `pre>code`・画像の置き場は `figure.k-f4d-img`（枠は `role=\"img\"`・名前＝caption・押せない・D-150.57）・hardBreak は `br`。印は bold＝`b`・italic＝`i`・highlight＝`mark`・color＝`span[data-c]`（red・teal・amber）・link＝`a`。薄い字（`ghost`）は `k-f4d-ghost`／`k-f4d-ghost-h` の薄い見た目\n- **リンクの守り**：許された href（`isAllowedHref`・K-567 の `link-policy.ts`）のときだけ `a`（`target=\"_blank\"`・`rel=\"noopener noreferrer\"`）。**許されない href は `a` にせず字だけ出す**（文書がサーバーに前から入っていた物でも守る）。`dangerouslySetInnerHTML` を使わない\n- **チェックの箱**：`onToggleTask` を渡されないときは `disabled`（読むだけ）。渡されたときは押せて、`onToggleTask(index, checked)`（`index` は文書の中の taskItem の出てくる順の位置・0 から・入れ子も数える／`checked` は押した後の真偽）を呼ぶ。**部品の中で文書を書き換えない**（表示は渡された `doc` のまま。使う側が口で書いて新しい `doc` を渡す）。名前（読み上げ）は箱の文\n- **遅い読み込みの確かめ**：開発用の頁を読む形で開いたとき、どの script にも編集の部品が入っていない。編集に切り替えると編集の部品が読まれる（K-567 の `DocEditor` が動的に読む）。確かめは試験の中の script の中身（`prosemirror-state`・`prosemirror-view`・`prosemirror-model`・`@tiptap/core`）で見る\n- **画面の文**：読む形に字を足さない（下絵の字だけ）。開発用の頁のボタンの字『編集に切り替える』『読む形に切り替える』『箱を押せる読む形にする』『危ない href の文書にする』『広い表と長い字の文書にする』は開発用で、本番には出ない\n- **足した節と印の描き**（代表の決め 2026-11-22・D-150.61「出来合いの編集の部品が持つ機能を絞らずに使う」。文書の木は K-584 が広げた形）：番号つきの並び＝`ol>li`（`start` が在れば `ol` の `start` 属性）・区切りの線＝`hr`・見出し level 2・3・4＝`h2`・`h3`・`h4`・文字の寄せ（段落と見出しの `textAlign`）＝4 つの値だけ（`DocView` の自前の描きは `data-align` と `editor.css`・読むだけの編集の部品は Tiptap が付ける inline の text-align。どちらも計算された text-align で確かめる）・表のセル＝`td`／`th` に `colSpan`・`rowSpan`（`colwidth` は読む形では使わない：結合したセルの幅を固定すると狭い幅で溢れるため。表は `k-f4d-tablewrap` の中で横に流れる）・見出しのセル `tableHeader` は行・列・セルのどこでも `th`・印は 下線＝`u`・取り消し線＝`s`・行の中のコード＝`code`・上付き＝`sup`・下付き＝`sub`・文字の色＝前の 3 つの名前は `span[data-c]`（正本のトークン）、`#rrggbb` は読むだけの編集の部品が付ける色（上の決め。`DocView` の自前の描きでは色を付けずに字だけ）・背景の色＝`mark`（属性の無い物は前のまま正本の黄、`#rrggbb` は同じく読むだけの編集の部品が付ける）。`ol`・`h4`・`hr`・行の中の `code` の見た目は `editor.css` に足す（既存の `--k-*` のトークンだけ・生の長さや色を書かない。無い物は K-431 の台帳に足してもらうと報告に書く）。下絵（mock）は触らない＝正の絵の組は `f4v2-body-read` のまま、足した分は開発用の頁の確かめ（行の役・字・計算された style）で見る\n- **色の値の守り**：`color`・`highlight` の色は K-584 の形（前の 3 つの名前〔文字の色だけ〕か `^#[0-9a-f]{6}$`）に完全一致したときだけ色にする（名前は `data-c`・`#rrggbb` は読むだけの編集の部品へ渡す）。**形に合わない値は、サーバーに前から入っていた物でも、色を付けずに字だけ出す**（`rgb()`・名前・`url()`・大文字・3 桁・空・文字以外）。値を連結して style の文字列を作らない（決まった形の値だけを入れる）。`dangerouslySetInnerHTML` を使わない\n- **口は呼ばない**",
+    "目録で探した結果": "- 使う：`@kaname/contracts` の `Doc`・`docToText`（K-561）／`features/F4/doc/doc.css` の `k-f4d-*`（K-431）／K-567 の `link-policy.ts`（`isAllowedHref`）・`DocEditor`（動的）・開発用の頁\n- 作る：`editor/doc-view.tsx`・開発用の頁の読む形。探したが「文書の木を画面に描く」所は 0 件（`git grep -n -E \"docToText|DocView\" -- apps/web` は 0 件。下絵の `FreeDoc` は固定の見本で、文書の木を読まない）\n\n```search\ngit grep -n -E \"docToText|DocView\" -- apps/web\n21\n```\n\n名前に当たる試験が増えた分（全葉を書いた後の数え直し・2026-11-22）：\n- apps/web/test/k568-markdown.test.ts: 替えない — 持ち主は K-568。K-568 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない\n- apps/web/tests/k/complete-mock.ts: 替えない — 持ち主は K-572。K-572 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない",
+    "実施事項": "| ファイル | 中身 |\n|---|---|\n| `editor/doc-view.tsx` | `DocView({ doc, onToggleTask?, ariaLabel? })`。節の描きと印の描きを小さな関数に分ける（足した節と印の描きは `doc-view-marks.tsx` に分けて 200 行以内ずつ・色の値は `DOC_HEX_COLOR` で確かめてから使う）。`taskIndex` は描く前に 1 回の走査で振る（描きの途中で数えない）。`data-testid` は持たない（試験は役割で探す） |\n| `editor/doc-view-color.tsx`（新しく・`\"use client\"`） | 色のある文書の入口。`doc-view-live.tsx` を動的に import し、読み込めるまでは渡された子（色を付けない `DocView` の描き）を出す。編集の部品を静的に import しない |\n| `editor/doc-view-live.tsx`（新しく・`\"use client\"`） | 読むだけの編集の部品（`useEditor`・`editable: false`・`immediatelyRender: false`・`buildExtensions()` に、名前の色を `span[data-c]` で描く印と、箱の名前・`onReadOnlyChecked` を足した物）。渡す中身は `fromEditorJson` → `toEditorContent` を通した物。`doc` が変わったら中身を入れ替える。取り扱いの有無で箱の `disabled` を付け外しする |\n| `editor/index.ts`（K-567 の物に足す） | `DocView` を出す |\n| `editor/editor.css`（K-567 の物に足す） | 読む形だけの見た目（`pre` の横の流れ・`figure` の枠・`ol`・`h4`・`hr`・行の中の `code`）。トークンだけ |\n| `f4v2-editor/live.tsx`（K-567 の物に足す） | 文書 5 つ。`?doc=rich`（K577-UI-006〜008 の文書）：見出し 4『小さい見出し』（center）・番号つき 2 つ（start 3 に『三つ目』『四つ目』／start なしに 1 項目）・区切りの線 1 つ・段落『右寄せの段落』（right）『両端そろえの段落』（justify）・字『下線』（underline）『取り消し線』（strike）『x = 1』（code）『2』（superscript）『i』（subscript）『青緑』（color teal）『赤い字』（color #dc2626）『黄の背景』（highlight #fde68a）『前の黄』（highlight 属性なし）・表（1 行目に colspan 2 の見出し『項目』、2 行目に見出し『運用』と rowspan 2 のセル『保守』）・薄い段落 1 つ。`?doc=badcolor`（K577-UI-009）：段落に『rgb の色』（color `rgb(255,0,0)`）『大文字の色』（`#FF0000`）『三桁の色』（`#f00`）『名前の色』（`pink`）『url の背景』（highlight `url(javascript:alert(1))`）『不正な寄せ』（`textAlign` が `left;background:url(x)`）。番号つき 1 つ（`start` が 2.5 の文字『不正な始まり』）。表 1 つ（1 行に、`colspan` が 1.5 の見出しセル『不正な横結合』と `rowspan` が `\"2\"`（文字）のセル『不正な縦結合』）。`?doc=calm`（K577-UI-001・003〜006）：`full` と同じ節と印で、`#rrggbb` の色の印（文字の色・背景）だけを外した文書（`full` から作る・編集の部品を読まない道）。`?doc=colortask`（K577-UI-011）：段落『色つきの字』（color `#dc2626`）とチェックの箱 2 つ（『送った』済み・『控える』未）と画像の置き場 1 つ（caption『色のある文書の画像.png』）。`?doc=colorbad`（K577-UI-012）：段落を 1 つずつ『正しい赤』（color `#dc2626`）『rgb の色』（color `rgb(255,0,0)`）『大文字の色』（`#FF0000`）『三桁の色』（`#f00`）『名前の色』（`pink`）『url の背景』（highlight `url(javascript:alert(1))`）『不正な寄せ』（`textAlign` が `left;background:url(x)`）『悪いリンク』（link の href が `javascript:alert(1)`）、番号つき 1 つ（`start` 2.5『不正な始まり』）、表 1 つ（`colspan` 1.5 の見出しセル『不正な横結合』と `rowspan` `\"2\"` のセル『不正な縦結合』）。`?mode=read\\|edit`（既定 edit）・『編集に切り替える』『読む形に切り替える』・読む形の出し物 `data-testid=\"doc-read\"`（`DocView` を包む）・『箱を押せる読む形にする』（`onToggleTask` を渡し、押した記録を `data-testid=\"task-log\"` に `[[位置, 付いたか], …]` の JSON で出す）・『危ない href の文書にする』（link の href が `javascript:alert(1)` の文書に差し替える）・『広い表と長い字の文書にする』（列 8 の表と 400 字の段落の文書に差し替える） |",
+    "前からの試験を替えた所": "```search\ngit grep -n -E \"docToText|DocView\" -- apps/web\n21\n```\n\n- 替える前からの試験は無い（読む形の描きは新しい）。K-567 の試験は開発用の頁の編集の動き（`?mode` 無し＝edit）だけを見るので、この葉が頁に読む形を足しても変わらない",
+    "状態 × 入口 × 利用者の状態": "| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 読む形 | 開く | 読める人 | 編集の部品を読み込まず、文書の木どおりに描く | このチケット | K577-UI-001・003 |\n| 読む形 → 編集 | 切り替え | 書ける人 | 編集に入るときだけ編集の部品を読む | このチケット | K577-UI-002 |\n| 読む形のチェックの箱 | 押す | 読める人・書ける人 | 取り扱いが無ければ押せない・あれば位置と真偽が渡る | このチケット | K577-UI-004 |\n| 危ない href を持つ文書 | 開く | 読める人 | リンクにならず字だけ | このチケット | K577-UI-005 |\n| 狭い幅・広い表 | 開く | 携帯・小さい窓 | 頁の横のはみ出し 0 | このチケット | K577-UI-006 |\n| `#rrggbb` の色を持つ文書の読む形 | 開く | 読める人 | 読むだけの編集の部品で描く（書き換えられない・色は計算された色） | このチケット | K577-UI-007・008・010 |\n| 同・チェックの箱 | 押す | 読める人・書ける人 | 色の無い文書と同じ（無ければ押せない・あれば位置と真偽が渡る・表示は変わらない） | このチケット | K577-UI-011 |\n| 同・形に合わない値／危ない href | 開く | 読める人 | 色の無い文書と同じ（外れた値は付かない・リンクにならない） | このチケット | K577-UI-012 |\n| 足した節と印を持つ文書・形に合わない色の値を持つ文書 | 開く | 読める人 | 足した節と印は文書どおりに描かれ、形に合わない色の値は色を付けずに字だけ出る | このチケット | K577-UI-007・008・009 |",
+    "テスト仕様と確認の結果": "| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K577-UI-001 | 入力 | 色の無い文書（`?doc=calm`）の読む形の頁を開いて待つ | どの script にも編集の部品が入っていない。本文の入力欄は無い |\n| K577-UI-002 | 入力 | 『編集に切り替える』→『読む形に切り替える』 | 編集に入ったときだけ編集の部品の script が読まれ、本文の入力欄が出る。戻ると読む形（入力欄は無い） |\n| K577-UI-003 | 入力 | 全部の節を持つ色の無い文書（`?doc=calm`）を読む形で開く | 見出し・箇条書き・チェックの箱 2 つ（済み・未）・表（th が 2 つ）・引用・コード・画像の置き場（名前つき）・色（data-c）・太字・薄い字が文書どおりに出る |\n| K577-UI-004 | 操作の揺れ | 取り扱いを渡さない・渡して箱を押す | 渡さないと箱は押せない。渡すと押せて `[[1, true]]` が記録され、箱の表示は変わらない（文書は部品の中で書き換わらない） |\n| K577-UI-005 | 守り | 許されたリンク・href が javascript: の文書 | 許されたリンクは rel（noopener・noreferrer）・target（_blank）つき。危ないものは `a` にならず字だけ出る |\n| K577-UI-006 | 入力 | 幅 375・768・1440・広い表と長い字の文書・`?doc=rich`（結合したセルの表を含む） | 頁の横のはみ出し 0（どちらの文書でも） |\n| K577-UI-007 | 入力 | `?doc=rich` を読む形で開く（足した節） | 見出し 4 は `h4` で中央寄せ・番号つきは `ol`（start 3）と `ol`（start なし）・区切りの線は `hr`・段落の右寄せと両端そろえは計算された text-align・結合した表は `th[colspan=2]`・`td[rowspan=2]`・列頭の `th` があり、薄い字は薄い見た目 |\n| K577-UI-008 | 入力 | `?doc=rich`（足した印） | 下線 `u`・取り消し線 `s`・行の中のコード `code`・上付き `sup`・下付き `sub`・前の 3 色の名前は `data-c`・`#dc2626` の文字の色は計算された色 rgb(220, 38, 38)・`#fde68a` の背景は rgb(253, 230, 138)・属性の無い背景は `mark`。リンクは前のまま |\n| K577-UI-009 | 守り | `?doc=badcolor`（`rgb()`・大文字・3 桁・名前・`url()` の色の値・4 つの値以外の `textAlign`・整数でない `colspan`・`rowspan`・`start`） | どれも字は出て、`style`・`data-c` が付かず、`colspan`・`rowspan`・`start` の属性も付かず、`javascript`・`url(` を含む style が頁に 1 つも無い（色の値と数・寄せの値の守り） |\n| K577-UI-010 | 入力 | `#rrggbb` の色を持つ文書（`?doc=rich`）を読む形で開く | 編集の部品の script が読まれ、読むだけの形で描かれる（本文の入力欄は無い・`contenteditable=\"true\"` が無い）。`#dc2626` の字は計算された色 rgb(220, 38, 38)・`#fde68a` の背景は rgb(253, 230, 138)。読む形の中に `style` の要素も `data-k-ink`・`data-k-bg` も無い |\n| K577-UI-011 | 操作の揺れ | `#rrggbb` の色とチェックの箱 2 つを持つ文書（`?doc=colortask`）で、取り扱いを渡さない・渡して箱を押す | 渡さないと箱は押せない（disabled）。渡すと押せて `[[1, true]]` が記録され、箱の表示は変わらない（K577-UI-004 と同じ結果）。画像の置き場は名前つきの `role=\"img\"` で出る |\n| K577-UI-012 | 守り | 正しい `#rrggbb` の色 1 つと、形に合わない値（`rgb()`・大文字・3 桁・名前・`url()` の色、4 つの値以外の `textAlign`、整数でない `colspan`・`rowspan`・`start`、`javascript:` の href）を持つ文書（`?doc=colorbad`） | 正しい色だけが計算された色で出る。外れた値の字は出て、`style`・`data-c`・`mark` が付かず、`start` は付かず、`colspan`・`rowspan` は外れた値にならず（無いか 1）、危ないリンクは `a` にならず、`javascript`・`url(` を含む style が頁に 1 つも無い（K577-UI-005・009 と同じ結果） |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 直す・直した物を読み直す | 要らない: 読む形は書かない（書くのは K-567・K-568・K-447）。渡された文書がそのまま出ることは K577-UI-003 |\n| TP-CRUD-01〜06 | 要らない: 読む形は書き込み・消し・保存をしない（K-571 が口の答えで出し分け、K-447 が書く） |",
+    "外に影響する手順": "- なし — 画面の部品と開発用の頁だけ。口・DB・知らせ・外への送り出しをしない",
+    "依存の理由": "- K-584: 要る — `DocView` が描く足した節と印（番号つき・区切りの線・見出し 4・寄せ・結合・5 つの印・`#rrggbb` の色と背景）と、色の値の守り `DOC_HEX_COLOR`・名前の定数が K-584 の物。K-584 の前に始めると、型に無い節と印を描く行が書けず、色の守りの元の形も無い\n- K-567: 要る — 同じ開発用の頁（`live.tsx`・`editor/index.ts`・`editor.css`）を直し、`isAllowedHref`・動的な `DocEditor` を使う。K-431・K-561 は K-567 を通して要る",
+    "表の住所": "- DB の表・migration は触らない。文書の木の形は K-561 の `packages/contracts/src/doc.ts`（読むだけ）。登録先：`scripts/ci/ci_scope.d/K-577.json`",
+    "速さ（今の値と目標の値）": "| 見る所 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数・直列の段 | この葉は口を呼ばない | 増えない（0 のまま） |\n| 読む形の画面に増える script | 無い | 色の無い文書は 0 kb（編集の部品を読み込まない。K577-UI-001 が script の中身で見る）。`#rrggbb` の色を持つ文書だけ、編集の部品を遅く読む（K577-UI-010・100kb 超・実測なし・仮）。`DocView` 自体は数 kb（実測なし・仮） |\n| 新しい住所が増えるか | — | 増えない |",
+    "成果物": "- `DocView`・色のある文書の読むだけの形・開発用の頁の読む形・試験 1 本（12 行）",
+    "決定ログ": "- 2026-11-23 CI の赤 G72（K261-RL-017）と PM の決め（案 2）：`<style>` と `data-k-ink`・`data-k-bg` をやめ、`#rrggbb` の色を持つ文書だけ読むだけの編集の部品（Tiptap）で描く。色の無い全部の節の文書 `?doc=calm`・`?doc=colortask`・`?doc=colorbad` を開発用の頁に足し、行 K577-UI-010〜012 を足した（K577-UI-001・003〜006 は `full` を `calm` に替えた：`full` は `#rrggbb` を持つ）\n- 2026-11-21 切る段（H）：K-567 の見込みが 1 時間を超えるため、読む形の描きと遅い読み込みの確かめを K-577 に分けた。分け方は、編集の核（K-567）／読む形（K-577）／道具の残り（K-568）",
+    "PM に確かめたいこと": "- **色を当てる `style` 属性と検査** → 決まった（PM 2026-11-23・案 2）：利用者の `#rrggbb` の色は `style={…}` でも `<style>` でも当てず、色のある文書だけ読むだけの編集の部品で描く（前提と制約）。見本（K-431・K-568）は SVG の fill・正本のトークン",
+    "代表に聞くこと": "- なし（読む形の字は下絵のまま。詳細で本文のチェックの箱を読む形のまま付けられるかは K-571・K-447 の決め）"
+   },
+   "file": "11_tickets/K-577.md"
+  },
+  {
    "id": "K-581",
    "title": "作る口 createTicket に links（作るときにつなぐ相手・0〜20 件）を足す：作る関数が K-441 の app.ticket_link_add を新しいチケットに 1 件ずつ呼び、見える・書けるの確かめと証跡を 1 か所に保つ（相手が選べないは 404・書けないは 403）（K-59 の葉・K-437 から分けた）",
    "kind": "タスク",
@@ -25388,6 +25521,200 @@
    "file": "11_tickets/K-644.md"
   },
   {
+   "id": "K-670",
+   "title": "段 10 の部品 1：ナレッジの木とページの部品と、下絵の置き場 /dev/mock/f9（状態の一覧・描き手の分け方・外枠・木とページの 8 状態）を本線に入れ、「部署」を「グループ」に直し、本文を段 5 の DocEditor／DocView に替える（K-69 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 5 の K-431（切る段の枝で作り終えた部品とモックを carry で運ぶ・試験 20 行・見込み 1）から引いた：運ぶ 5 分・本文を DocEditor／DocView に替える（page-views・samples の本文を Doc の値にする）25 分・D8 の生の値をトークンに直す 15 分（doc-temp.css の 12 件を含む）・道の一覧の作り直し 2 分・CI の範囲の地図 3 分・試験を流して直す 15 分。口・DB・正本の値の足しは無い",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.61",
+    "D-125.108",
+    "D-152.11",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.35"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・試験の道具・文書だけ。口・DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k670-f9-parts-1.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F9/knowledge/tree.tsx",
+    "apps/web/features/F9/knowledge/page-views.tsx",
+    "apps/web/features/F9/knowledge/types.ts",
+    "apps/web/features/F9/knowledge/samples.tsx",
+    "apps/web/features/F9/knowledge/knowledge.css",
+    "apps/web/features/F9/knowledge/doc-temp.tsx",
+    "apps/web/features/F9/knowledge/doc-temp.css",
+    "apps/web/app/(dev)/dev/mock/f9/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/render.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/render-knowledge.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/frame.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f9/[id]/page.tsx",
+    "apps/web/tests/k/f9-mock-kit.ts"
+   ],
+   "depends_on": [
+    "K-567",
+    "K-577",
+    "K-673"
+   ],
+   "acts": [
+    "A114"
+   ],
+   "screens": [
+    "knowledge"
+   ],
+   "apis": [],
+   "mock": [
+    "kn-tree",
+    "kn-write",
+    "kn-must",
+    "kn-empty",
+    "kn-loading",
+    "kn-failed",
+    "kn-noaccess",
+    "kn-drawer"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F9/knowledge/",
+    "apps/web/app/(dev)/dev/mock/f9/",
+    "apps/web/tests/k/f9-mock-kit.ts",
+    "scripts/ci/ci_scope.d/K-670.json"
+   ],
+   "sections": {
+    "目的": "段 10（K-69・F9 ナレッジ）の切る段の枝 `c/段10` で作り終えた下絵 v2 の部品とモックの置き場を本線に入れ、後ろの画面の葉（K-682・K-683・K-684・K-691〜K-696）が「正の絵」として読める状態にする。三つの部品の葉（K-670・K-671・K-672）の先頭で、**状態の一覧・描き手の分け方・外枠・試験の道具を持つ**。\n\n1. **木とページの部品**：`features/F9/knowledge/{tree,page-views,types,samples}.tsx`・`knowledge.css`（下絵 1・2・3-1・10-1〜10-4・11 の 8 状態：木とページ・書いている・必ず守るを付けた所・まだ 1 枚も無い・読み込み中・読めなかった・見られない・狭い幅の引き出し）\n2. **置き場 `/dev/mock/f9`**：`mocks.tsx`（状態 **32** の**一覧だけ**＝下絵 v2 の 25 ＋ K-684 の 5 ＋ K-720 の 2。持ち主は画面の葉。切る段の枝の最終の形をそのまま運ぶ。描き手がまだ入っていない状態は頁が「まだありません」を出す）・`render.tsx`（描き手に順に聞く）・`render-knowledge.tsx`（この葉の 8 状態と、ほかの葉が使う外枠付きの描き方）・`frame.tsx`（外枠）・索引と 1 状態の頁。**描き手を持ち主ごとに分けた**のは、K-671（帯・小窓・管理の 10 状態）と K-672（チケットの側・設定・メンバーの 7 状態）が別の葉で、どの葉も取り込んだ時点でそのまま組み立つようにするため（一覧に在って描き手がまだ無い状態は、頁が「この状態はまだありません」を 200 で出す）\n3. **直した所（切る段で済み）**：下絵の字と識別子の「部署」を「グループ」に（`ShelfKind` の `\"group\"`・`TreeGroup`・`GroupBlock`・CSS の `k-f9-group`・状態 id `mem-groups`）／状態の持ち主を画面の葉に付け替え／「必ず守る」の上限の字を「会社の『必ず守る』は 30 個まで」に\n4. **本文を段 5 の部品に替える（実装の仕事・境界 B10）**：`page-views.tsx` の `DocEditor`・`DocRead` と `samples.tsx` の本文（今は JSX の見本）を、`@/features/F4/doc/editor` の `DocEditor`（`doc` を受けて `onChange(doc)`）・`DocView`（`doc` を描く）に替える。見本の本文は `Doc` の値（`@kaname/contracts`）にする。**`doc-temp.tsx`・`doc-temp.css` は残す**（設定と詳細の下絵の部品が読むので、K-672 が替えて消す）",
+    "完了の条件": "- [ ] 下の表の 29 行（K670-MK-001〜005・RT-001・CG-001・DS-001・002・UI-001〜020）が緑：`apps/web/tests/k/k670-f9-parts-1.spec.ts`\n- [ ] `npx tsc --noEmit -p apps/web` が通る（名前の付け替え漏れ・本文の差し替えの型）\n- [ ] 手元の CI（このチケットの範囲）が緑。デザインの検査 G37・G72 が緑（D8：knowledge.css の 10 件・tree.tsx の 3 件・doc-temp.css の 12 件の生の値をトークンにした）",
+    "前提と制約": "分類: TOOL\n\n- **代表に確認中・勧めで切る**：画面の文のうち下絵に無い字（「ほか N 個」の 1 行）は仮。見た目を変えない（字と並びは下絵が正）\n- 部品は見た目だけ（値と関数を props で受けて描く・口を呼ばない）。口とのつなぎは後ろの葉（K-682 ほか）が自分のファイルの中で書く。画面の葉は部品を書き換えず、入れ物と hooks を足す\n- **K-567・K-577 に依存**：本文の部品（`DocEditor`・`DocView`）は段 5 の葉が作る。この葉は **名前と引数だけ**（`DocEditor`＝`{ doc, onChange, ariaLabel? }`・`DocView`＝`{ doc, onToggleTask?, ariaLabel? }`・`index.ts` から読む）を使い、Tiptap・ProseMirror を `features/F9` から直に読まない（K670-MK-004）\n- **描き手の一覧は一覧と別のファイル**：`mocks.tsx` に部品の import を書かない（機械の検査 `canvas_field_gate.py` は `export const MOCKS` だけを読む）。`render.tsx` は 5 つの描き手を全部呼ぶ最終の形をこの葉が運び、まだ入っていない葉の描き手は **空の描き手**（`null` を返すだけのファイル）をこの葉が置く。K-671・K-672・K-684 は `render.tsx` を触らず、自分の描き手のファイル（空の描き手）を carry で差し替えるだけ（同じ行を何本もの葉が書き換えない）\n- 道の一覧 `built-routes.ts` は機械生成。手で直さず作り手 `scripts/ci/gen_built_routes.py` で作り直す（`/dev/mock/f9`・`/dev/mock/f9/:id` が足される）\n- 下絵の写し（`.ticket-flow/out/段10-下絵-v2/`）は「部署」→「グループ」で字が変わるので撮り直しが要る（まとめ役）。K-670 の試験は写しを読まない",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- K-567: 要る — `DocEditor`（本文を見たまま編集する部品）の名前と引数・`index.ts` の出口が K-567 の物。始める前に K-670 の本文の差し替えが書けない\n- K-577: 要る — `DocView`（読む形の描き）が K-577 の物",
+    "目録で探した結果": "- 使う：`components/k`（Shell・Dialog・Band・Menu・Empty・ErrorState・Loading・NoAccess）・`features/F10/invite/views.tsx` の `WsHead`・`WsSub`（K-672 が読む）・`features/F4/doc/editor` の `DocEditor`・`DocView`（K-567・K-577）・`lib/built-routes.ts`\n- 探したが無かった：棚（会社・グループ・自分）の木を出す部品は本線に無い（段 5 の文書の木は 1 つの棚で、フォルダと「必ず守る」の印を持たない）。似たものとの違いは、棚が 3 つ・フォルダ・ページの印（必ず守る・承認待ち・断られた・写し）・書ける棚にだけ足すボタンを持つ点",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）。`render.tsx` も最終の形（`renderKnowledge`・`renderTreeOps`・`renderAdmin`・`renderTicket`・`renderWorkspace` に順に聞き、誰も持たない id は「この状態はまだありません：{id}」）のまま運ぶ |\n| 空の描き手を置く | `render-admin.tsx`（`renderAdmin`）・`render-tree-ops.tsx`（`renderTreeOps`）・`ticket-mocks.tsx`（`renderTicket`）・`ws-mocks.tsx`（`renderWorkspace`）を、`(id: string, theme: Theme) => ReactNode` の形で `null` を返すだけのファイルとして書く（1 行の注に「K-671／K-684／K-672 が差し替える」）。持ち主の葉が carry で中身を差し替える。K670-MK-003 は `renderKnowledge(id, theme)` の在るかだけ見る |\n| 外枠の分け方 | 切る段で `frame.tsx` から `WsFrame`（段 9 の K-420 の `WsHead`・`WsSub` を読む）を **`ws-frame.tsx`（K-672 が運ぶ）** に分けた。`frame.tsx` は `features/F10` を読まないので、この葉は K-420 に依存せずに組み立つ。`samples.tsx` が読む管理の一覧の行の型（`ApprovalItem`・`UnusedRow`・`ConflictRow`・`BrokenRow`）は `types.ts` に移し、`admin-views.tsx`（K-671）は `types.ts` から読んで同じ名前を再 export する（`samples.tsx` が後の葉のファイルを読まない） |\n| 本文を段 5 の部品に | `page-views.tsx`：`PageView` の本文を `<DocView doc={doc} />`、`PageEdit` の本文を `<DocEditor doc={doc} onChange={noop} />`（見た目だけなので onChange は何もしない・口は呼ばない）。props の `children` を `doc: Doc` に。`samples.tsx`：`InvoiceDoc`・`ExpenseDoc`・`QuoteDoc`・`MyDiscountDoc` を `Doc` の値（`INVOICE_DOC` ほか）にし、`Caret` の使い所は書いている印を `DocEditor` に任せるので外す。`render-knowledge.tsx`・`render-admin.tsx`（K-671）・`ticket-mocks.tsx`（K-672）の本文の渡し方は同じ形（`doc`） |\n| D8 の生の値をトークンに | `knowledge.css` の 10 件（`.k-f9-mustline` の枠・`.k-f9-node`／`.k-f9-group` の字下げの計算・`.k-f9-switch button` の枠・`.k-f9-tree` と `.k-f9-wrap` の高さ・`.k-f9-tree-skel` の幅・引き出しの幅と高さ）と `tree.tsx` の 3 件（`depthStyle`・74 行に 2 つ）と `doc-temp.css` の 12 件（枠 1px・outline 2px・margin 2px・カーソルの幅・左の線 3px ほか。K-672 が消すまでの間も G72 を緑にするため・まとめ役の数え 2026-11-22）を、正本のトークン（`--k-c-card-border`・`--k-s-*`・`--k-c-shell-bar-height` など）か、字下げの深さを `data-depth` の属性＋ CSS の段（0〜3）に替えて、台帳に足さずに 0 件にする。**台帳は減らすだけ**（足すと G72 が赤） |\n| 道の一覧 | `python3 scripts/ci/gen_built_routes.py` で `built-routes.ts` を作り直す |\n| 試験の道具 | `apps/web/tests/k/f9-mock-kit.ts`（carry・切る段で書いた物。K-671・K-672 の試験も読む）。実装中に変えない |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-670.json`：`data_links` に `{\"paths\": [\"scripts/ci/design_gate.py\", \"scripts/ci/canvas_field_gate.py\", \"scripts/ci/gen_built_routes.py\", \"04_design/DESIGN-kaname.md\", \"apps/web/styles/k-tokens.css\"], \"tests\": [\"apps/web/tests/k/k670-f9-parts-1.spec.ts\"]}`、`reads_ok` に試験が読む物（モックの置き場・F9 の部品・道の一覧・検査の台本・11_tickets） |\n| 画面の試験は手元のブラウザで | 3 幅（375・768・1440）で 8 状態を目で 1 回見る（人が確かめる・数えない） |\n\n### K-684 に要る状態（下絵に無い。足すかは代表に見せてから）\n\n「…」メニューを開いた形は `PageActs` の `moreOpen` で足りる。ほかに要るのは、動かす小窓・消す確かめの小窓・木の ＋ のあとの入力（フォルダを足す／ページを足す）。**この葉は足さない**（代表の見ていない絵を増やさない）。\n\n```search\ngit grep -n -E \"部署|(^|[^a-z])[Dd]epts?([^a-z]|$)|Dept[A-Z]|DEPTS\" -- apps/web/features/F9 'apps/web/app/(dev)/dev/mock/f9'\n0\n```",
+    "外に影響する手順": "- なし — 見た目の部品と開発用のモックと試験の道具だけ（口・DB・知らせ・外への送り出しを持たない）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k670-f9-parts-1.spec.ts`（実 Chrome と、ファイル・検査を読む試験）。口は網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。\n\n| 行 ID | 期待結果 | 確かめ方 | 段 |\n|---|---|---|---|\n| K670-MK-001 | 状態の一覧が 32 件（下絵 v2 の 25 ＋ K-684 の 5 ＋ K-720 の 2）で、持ち主は切り方 1 章の画面の葉（ticket と leaf は同じ K-番号・K-69 は 0 件・重なり 0） | ファイルを読む | 単体 |\n| K670-MK-002 | 画面の字にも識別子にも「部署」「dept」が 0 件（features/F9 と mock/f9） | ファイルを読む | 単体 |\n| K670-MK-003 | 描き手が分かれている：mocks.tsx は一覧だけ（部品を読まない）・render.tsx が描き手に順に聞く・render-knowledge.tsx が K-670 の 8 状態を描く | ファイルを読む | 単体 |\n| K670-MK-004 | 本文は段 5 の部品から読む（境界 B10）：Tiptap・ProseMirror を features/F9 が直に読まず、ナレッジの葉が doc-temp の DocEditor・DocRead を読まない | ファイルを読む | 単体 |\n| K670-MK-005 | 部品は口を呼ばない（features/F9/knowledge の .tsx に fetch・/api/v1 が 0） | ファイルを読む | 単体 |\n| K670-RT-001 | 道の一覧に /dev/mock/f9 と /dev/mock/f9/:id が在る（機械生成 scripts/ci/gen_built_routes.py） | ファイルを読む | 単体 |\n| K670-CG-001 | 画面の持ち主の検査（canvas_field_gate.py）が置き場の状態を読める形で読む（読めない・重複の語が出ない） | 検査を流す | 単体 |\n| K670-DS-001 | デザインの検査 G37（D1〜D7）が緑：features の色・書体・角丸・文字・部品の値が正本に在る | 検査を流す | 単体 |\n| K670-DS-002 | デザインの検査 G72（D8 生の長さ）で、knowledge の部品と mock/f9 に台帳に無い生の値が 0 件（トークンを通す） | 検査を流す | 単体 |\n| K670-UI-001 | 索引 /dev/mock/f9 に 32 件が並び、K-670 の 8 状態は押すと頁が開く | 実ブラウザ | 単体 |\n| K670-UI-002 | 8 状態が幅 375 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-003 | 8 状態が幅 768 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-004 | 8 状態が幅 1440 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K670-UI-005 | kn-tree：棚が 3 つ（会社・グループ・自分）で、画面に「部署」の字が無い・題名と 1 行の説明が出る | 実ブラウザ | 単体 |\n| K670-UI-006 | kn-tree：足すボタン「＋」は書ける棚にだけ（管理者は会社と自分の棚・営業のグループには無い） | 実ブラウザ | 単体 |\n| K670-UI-007 | kn-tree：いま開いているページの行が現在の印を持ち、「必ず守る」の行に印が付く | 実ブラウザ | 単体 |\n| K670-UI-008 | kn-tree：ページの上の帯は主ボタンが「直す」の 1 つで、「…」の中に前の版・リンクのコピー・動かす・消すが並ぶ | 実ブラウザ | 単体 |\n| K670-UI-009 | kn-must：「必ず守る」が付いたページに、見出しの下の 1 行（AI に毎回全部渡す・確認項目にも入る）と木の行の印が出る | 実ブラウザ | 単体 |\n| K670-UI-010 | kn-write：題名・1 行の説明・本文の欄と、自動で保存した字・「やめる」「書き終える」が出る（主ボタンは「書き終える」） | 実ブラウザ | 単体 |\n| K670-UI-011 | kn-write：本文は段 5 の DocEditor（道具の帯『本文の道具』が在り、本文の欄に打てる） | 実ブラウザ | 単体 |\n| K670-UI-012 | kn-tree：読む形の本文は DocView（aria-label『本文』の領域に、見出しと文が出る） | 実ブラウザ | 単体 |\n| K670-UI-013 | kn-empty：1 枚も無いとき『まだページがありません』と「最初のページを書く」が出て、木の棚は『まだありません』 | 実ブラウザ | 単体 |\n| K670-UI-014 | kn-loading：木と本文が読み込み中の形（status が出る）で、ページの題名はまだ出ない | 実ブラウザ | 単体 |\n| K670-UI-015 | kn-failed と kn-noaccess：読めなかった（E-PAGE-007）と見られない（E-PAGE-002）が別の番号で出て、見られないは一手（戻る）が出る | 実ブラウザ | 単体 |\n| K670-UI-016 | kn-drawer：幅 375 では木が引き出しで開き（背景の幕と『木を閉じる』）、幅 1440 では横に並んで幕が出ない | 実ブラウザ | 単体 |\n| K670-UI-017 | 幅 767 以下では木が引き出しで隠れ、本文の上に「木を開く」の帯が出る（kn-tree） | 実ブラウザ | 単体 |\n| K670-UI-018 | 暗いテーマでも 8 状態が開き、横にはみ出さない | 実ブラウザ | 単体 |\n| K670-UI-019 | 8 状態のどれを開いても、口（/api/）を 1 回も呼ばず、本人の Bridge にも届かない | 実ブラウザ | 単体 |\n| K670-UI-020 | 描き手がまだ無い状態（K-671・K-672 が足す）は 200 で「この状態はまだありません」を出し、外枠を出さない | 実ブラウザ | 単体 |",
+    "状態 × 入口 × 利用者の状態の表": "状態を持つ物（期限・使い終わった時刻・状態の列を持つ表）を扱わない（見た目の下絵だけ）。入口は開発用の頁 `/dev/mock/f9/<id>` だけで、本番の道は増えない（道の一覧に開発用の 2 本を足すだけ）。ログインの状態は見ない（口を呼ばない・網の手前で口を 599・Bridge を 404 にして確かめる）。\n\n| 状態 | 入口：開発用の頁 | 見ている人 | 結果 | 受け持ち・テスト |\n|---|---|---|---|---|\n| 木とページ（kn-tree・kn-must） | 頁を開く | 管理者（高本） | 3 つの棚・書ける棚に ＋・必ず守るの印 | K670-UI-005〜009 |\n| 書いている（kn-write） | 頁を開く | メンバー（鈴木） | 欄 3 つ・自動保存の字・主ボタンは書き終える | K670-UI-010・011 |\n| 空・読み込み中・読めなかった・見られない | 頁を開く | 管理者／メンバー | 4 つの形が別々に出る | K670-UI-013〜015 |\n| 狭い幅（kn-drawer） | 幅 375・1440 | 管理者 | 引き出し／横に並ぶ | K670-UI-016・017 |\n| 一覧に在り描き手の無い状態 | 頁を開く | — | 「まだありません」（200・外枠なし） | K670-UI-020 |",
+    "分類の型の受け": "| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K670-MK-002（features/F9 の日本語の名前のファイルまで読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 要らない: 自己試験でわざと壊して赤を見る確かめは入れない（決める人 2026-11-10）。何も見ていないのに緑は、K670-MK-001（一覧の件数と持ち主を数える）・K670-UI-001（索引の 32 件）が数えを見る |\n| TP-TOOL-03 容れ物の中と手元で違う | K670-DS-001・002（容れ物の中と手元で同じ検査の台本を流す） |\n| G-11〜G-16 | G-11：N/A（外の資源を使わない）。G-12：N/A（時間の切り替わりを扱わない）。G-13：N/A（機能の組み合わせを持たない見た目だけの葉）。G-14：N/A（口座・権限を扱わない）。G-15：N/A（外のプロセスを呼ばない）。G-16：口を呼ばない（行 UI の「口を 1 回も呼ばない」）。消費する有限の資源は無い |",
+    "前からの試験を替えた所": "名前の決まった物（部品の置き場・状態 id・名前を付け替えた識別子）で探した前からの試験（2026-11-22）。\n\n```search\ngit grep -l -E \"mem-depts|k-f9-dept|DeptMembersBody|TreeDept\" -- apps/web/tests apps/web/test apps/e2e\n0\n```\n\n- 当たる前からの試験は無い（段 10 の前の形の試験は c/段10 から消えている）。下絵の頁の作り手 `07_functional/段10-F9/下絵の頁の作り手.py` の状態 id `mem-depts` は、まとめ役が `mem-groups` に直す（この葉の試験は読まない）",
+    "表の住所": "- 画面の状態の置き場：`apps/web/app/(dev)/dev/mock/f9/`。表（DB）は触らない",
+    "速さの今の値と目標の値": "| 画面 | 今の値 | 目標の値 |\n|---|---|---|\n| 開発用の頁（/dev/mock/f9/<id>） | 口の数 0・直列の段 0・二重 0 | 同じ（口を呼ばない。K670-UI-019 が見る） |",
+    "決定ログ（足す行）": "- なし（決めは K-673 が決定ログの新しい節に運ぶ。この葉は代表の決め 1・3・8・11・12 に従う）",
+    "リスク": "- 本文の見本を `Doc` の値にすると、段 5 の `validateDoc` に通らない形（節の名前・属性）で書いてしまう → 見本は段 5 の `validateDoc` が通す形だけにする（始める前に K-567・K-577 の最新の版を読む。本文の道具は出来合いの部品の機能を絞らずに使う決まり〔2026-11-22〕なので、色・表・下線なども通るなら使ってよく、使える形を見出し・段落・箇条書き・チェックだけに決め打ちしない）\n- 「部署」→「グループ」の付け替えは字の置換で `depth` が `group` に化けた（切る段で直した）。取り込み後に `git grep -n \"grouph\"` が 0 件のこと",
+    "申し送り": "- K-671・K-672・K-684：`render.tsx` は触らない。この葉が置いた空の描き手（`render-admin.tsx`・`ticket-mocks.tsx`・`ws-mocks.tsx`・`render-tree-ops.tsx`）を carry で差し替える。K-684・K-720 は `mocks.tsx` と K-670 の試験を運ばない（この葉が最終の 32 件を運ぶ）\n- 木とページの部品への足し（`TreeGroup` に uuid の `id` と札の字 `code`・`PageMark` に `\"draft\"`・`PageView` が口の `acts`・`request`・`copied_from`・`shared_from`・`raise_to`・`foot` を読める形）は **K-682 が任意の props で足す**。この葉は見た目の部品を今の形のまま運ぶ\n- K-682：木の ＋ から開く形・「…」の動かす・消す・フォルダを足すは下絵に無い。足すなら K-684 の持ち主の状態（まとめ役が代表に見せる）",
+    "代表に聞くこと": "- なし（下絵 v2 は代表の OK 済み・字は下絵が正）",
+    "見込み": "1 時間（実測なし・仮）。試験の行は 29 行（上限 30）。"
+   },
+   "file": "11_tickets/K-670.md"
+  },
+  {
+   "id": "K-671",
+   "title": "段 10 の部品 2：必ず守るの上限・上の棚に上げる・グループを選んで共有・写して直す・似たページ・管理（承認待ち・見直すページ）の部品と下絵の 10 状態を本線に入れる（K-69 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-670（同じ置き場の部品を運ぶ・見込み 1）から引いた：運ぶ 5 分・render-admin.tsx の本文の渡し方を K-670 の `INVOICE_DOC`（`doc=`）に直す 5 分・D8 の確かめ（admin.css・dialogs はもう 0 件）5 分・道の一覧は K-670 が作る・試験を流して直す 20 分。部品はもう切る段で作り終えている（「グループ」への付け替えと上限の字の直しも済み）ので、この葉は運んで確かめるだけ",
+   "decisions": [
+    "D-150.61",
+    "D-125.108",
+    "D-152.2",
+    "D-152.6",
+    "D-152.7",
+    "D-152.10",
+    "D-152.11",
+    "D-152.13",
+    "D-152.16",
+    "D-152.25",
+    "D-152.26",
+    "D-152.27",
+    "D-152.35"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの描き手と試験だけ。口・DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k671-f9-parts-2.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F9/knowledge/dialogs.tsx",
+    "apps/web/features/F9/knowledge/admin-views.tsx",
+    "apps/web/features/F9/knowledge/admin.css"
+   ],
+   "depends_on": [
+    "K-670"
+   ],
+   "acts": [
+    "A114"
+   ],
+   "screens": [
+    "knowledge"
+   ],
+   "apis": [],
+   "mock": [
+    "kn-must-full",
+    "kn-raise",
+    "kn-raise-waiting",
+    "kn-raise-declined",
+    "kn-approvals",
+    "kn-share",
+    "kn-shared-view",
+    "kn-copy",
+    "kn-similar",
+    "kn-review"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F9/knowledge/dialogs.tsx",
+    "apps/web/features/F9/knowledge/admin-views.tsx",
+    "apps/web/features/F9/knowledge/admin.css",
+    "apps/web/app/(dev)/dev/mock/f9/render-admin.tsx",
+    "scripts/ci/ci_scope.d/K-671.json"
+   ],
+   "sections": {
+    "目的": "K-670 の置き場に、下絵 v2 の帯・小窓・管理の 10 状態を足して本線に入れる。後ろの画面の葉（K-691 必ず守る・似たページ／K-692 上の棚に上げる／K-693 共有・写して直す／K-694 承認待ち／K-696 見直すページ）が「正の絵」として読める状態にする。\n\n- 小窓：必ず守るの上限（3-2）・上の棚に上げる（4-1）・グループを選んで共有（6-1）・似たページ（8）\n- 帯：承認待ち（4-2）・断られた（4-3）・共有された側（6-2）・写し（7）（帯の部品は K-670 の `page-views.tsx`）\n- 管理：承認待ち（5）・見直すページ（9）",
+    "完了の条件": "- [ ] 下の表の 20 行（K671-MK-001・002・DS-001・UI-001〜017）が緑：`apps/web/tests/k/k671-f9-parts-2.spec.ts`\n- [ ] `npx tsc --noEmit -p apps/web` が通る\n- [ ] render-admin.tsx が samples の JSX の本文（`InvoiceDoc`）を読まず、`INVOICE_DOC`（`doc=`）で本文を渡している\n- [ ] 手元の CI（このチケットの範囲）が緑。デザインの検査 G37・G72 が緑",
+    "前提と制約": "分類: TOOL\n\n- **代表に確認中・勧めで切る**：切り方 4 章の 4・5（承認の頼みは左の「承認待ち」に出さない／共有をやめる）は勧めのまま。下絵に「共有をやめる」の見た目は無い（共有の小窓のチェックを外すだけ）ので、この葉は足さない\n- **K-670 に依存**：状態の一覧（`mocks.tsx`）・外枠・外枠付きの描き方（`render-knowledge.tsx` の `expense`・`myDiscount`・`quote`・`writing`・`ADMIN_*`）・試験の道具（`f9-mock-kit.ts`）・`page-views.tsx` の帯の部品は K-670 が運ぶ\n- 上限の字：「会社の『必ず守る』は 30 個までです」（グループ 20・個人 10）。見本の並びは読める量（15 個）だけで、「いま付いているページ（30）」と「ほか 15 個」を出す（`MustFullDialog` の `count`）\n- 画面の言葉は「グループ」「お知らせ」。「部署」は 0 件（K670-MK-002 が features/F9 の全体を見る）\n- 部品は見た目だけ。口を呼ばない・編集の部品を直に読まない（K671-MK-002）",
+    "依存の理由": "- K-670: 要る — 一覧・外枠・外枠付きの描き方・`page-views.tsx` の帯・`INVOICE_DOC`・空の描き手と最終の `render.tsx`・試験の道具",
+    "目録で探した結果": "- 使う：`components/k` の Dialog・Band・Callout・Select・TextArea・Button・Menu・`features/F9/knowledge/page-views.tsx` の帯（K-670）・`samples.tsx` の見本（K-670）\n- 探したが無かった：承認する側の一覧（上げる頼み・共有の頼み・断る理由）・見直すページの 3 つの一覧を出す部品は本線に無い。段 9 の承認待ち（`approvals`）はチケットの仕事の承認の形で、棚の移動を承認する形ではない",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す） |\n| 描き手を差し替える | `render.tsx` は触らない（K-670 が最終の形で運び、`renderAdmin(id, theme)` を呼ぶ形は入っている）。K-670 が置いた空の描き手 `render-admin.tsx` を本物に差し替える（carry: に載せない：重ねた元 t/K-670 と切る段の両方で新しく作ったファイルは持ち込み cut_take が合わせられないため。作る段の最初に `git show 'c/段10:apps/web/app/(dev)/dev/mock/f9/render-admin.tsx'` の中身で置き換えてから下の 2 つを直す・2026-11-23）。`mocks.tsx` は触らない（状態は K-670 が運んだ 32 件の一覧に在る）。`admin-views.tsx` が出す管理の一覧の行の型（`ApprovalItem`・`UnusedRow`・`ConflictRow`・`BrokenRow`）は切る段で `types.ts`（K-670 が運ぶ）に移してあり、`admin-views.tsx` は `types.ts` から読んで同じ名前を再 export する（K-670 の `samples.tsx` が K-671 のファイルを読まないため）。型の置き場を直さない |\n| 本文の渡し方を直す | `render-admin.tsx` の kn-copy：`InvoiceDoc` の import を `INVOICE_DOC` に、`<PageView>` の子の `<InvoiceDoc />` を `doc={INVOICE_DOC}` に直す（K-670 が `PageView` を `doc: Doc` に変え、`samples.tsx` の `InvoiceDoc` を `Doc` の値に替えるので、そのまま運ぶと tsc と K671-UI-001・013 が落ちる） |\n| 上限の見本を渡す | `render-admin.tsx` の kn-must-full が `MustFullDialog` に `count={30}` と並べる見本 15 個（ほか 15 個）を渡していることを、運んだあと K671-UI-005 で確かめる（字の組み立ては `dialogs.tsx:40,55`） |\n| D8 を 0 件のまま | `dialogs.tsx`・`admin-views.tsx`・`admin.css` に生の長さは無い（切る段で確かめ済み）。直した所で足さない |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-671.json`：`data_links` に K-670 と同じ検査の台本と、`\"tests\": [\"apps/web/tests/k/k671-f9-parts-2.spec.ts\"]` |",
+    "外に影響する手順": "- なし — 見た目の部品と開発用のモックの描き手と試験だけ",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k671-f9-parts-2.spec.ts`。口は網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。\n\n| 行 ID | 期待結果 | 確かめ方 | 段 |\n|---|---|---|---|\n| K671-MK-001 | render-admin.tsx が K-671 の 10 状態を描き（case が 10 個）、K-670 が運んだ render.tsx がそれを呼んでいる | ファイルを読む | 単体 |\n| K671-MK-002 | 小窓と管理の部品（dialogs.tsx・admin-views.tsx）は口を呼ばず、編集の部品を直に読まない | ファイルを読む | 単体 |\n| K671-DS-001 | G72（D8 生の長さ）で、dialogs・admin-views・admin.css に台帳に無い生の値が 0 件 | 検査を流す | 単体 |\n| K671-UI-001 | 10 状態が全部開き（200・外枠が出る）、口を 1 回も呼ばない | 実ブラウザ | 単体 |\n| K671-UI-002 | 10 状態が幅 375 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K671-UI-003 | 10 状態が幅 768 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K671-UI-004 | 10 状態が幅 1440 で開き、横のはみ出しが 0 | 実ブラウザ | 単体 |\n| K671-UI-005 | kn-must-full：小窓が「会社の「必ず守る」は 30 個までです」と言い、いま付いているページ（30）から外すボタンが並ぶ（付けるページの題名が出る） | 実ブラウザ | 単体 |\n| K671-UI-006 | kn-raise：上げる先（営業の棚）・承認する人・入れるフォルダ・ひとことが出て、「上げるのを頼む」が主ボタン | 実ブラウザ | 単体 |\n| K671-UI-007 | kn-raise-waiting：帯に「取り下げる」だけが出て、「上の棚に上げる」は出さない（承認待ちの間）・木の行に承認待ちの印 | 実ブラウザ | 単体 |\n| K671-UI-008 | kn-raise-declined：断られた帯に理由が出て、「直してもう一度頼む」「このお知らせを消す」が押せる形 | 実ブラウザ | 単体 |\n| K671-UI-009 | kn-approvals：管理の「承認待ち」の一覧に、頼みごとの「中身を見る」「断る…」「承認する」が並ぶ | 実ブラウザ | 単体 |\n| K671-UI-010 | kn-approvals：断る形のカードには「断る理由」の欄（理由が入っている）と「やめる」「断る」が出て、そのカードに「承認する」は出ない | 実ブラウザ | 単体 |\n| K671-UI-011 | kn-share：小窓「グループを選んで共有」に、見せるグループ（承認する人つき）が並び、共有している物は選べない・主ボタンに選んだ数が出る | 実ブラウザ | 単体 |\n| K671-UI-012 | kn-shared-view：共有された側は帯に「営業から共有されたページです」が出て、主ボタンは「写して直す」・「直す」は出ない | 実ブラウザ | 単体 |\n| K671-UI-013 | kn-copy：写しの帯に元のページの名前と「元のページを開く」が出て、「必ず守る」の元なら「上が効きます」が出る | 実ブラウザ | 単体 |\n| K671-UI-014 | kn-similar：書き終える前の小窓「似たページがあります」に似たページが並び、「戻って直す」と「このまま作る」が出る | 実ブラウザ | 単体 |\n| K671-UI-015 | kn-review：「見直すページ」に 3 つ（使われていない・食い違っている・よく破られる）の一覧が並び、各行に開く／並べて見る／書き方を直すが出る | 実ブラウザ | 単体 |\n| K671-UI-016 | kn-review：食い違いの説明が「会社 › グループ › 自分」の順で、画面に「部署」の字が無い | 実ブラウザ | 単体 |\n| K671-UI-017 | 幅 375 でも小窓が画面に収まり、足のボタン「閉じる」が画面の中に見える（kn-must-full） | 実ブラウザ | 単体 |",
+    "状態 × 入口 × 利用者の状態の表": "状態を持つ物（期限・使い終わった時刻・状態の列を持つ表）を扱わない（見た目の下絵だけ）。入口は開発用の頁 `/dev/mock/f9/<id>` だけで、本番の道は増えない（道の一覧に開発用の 2 本を足すだけ）。ログインの状態は見ない（口を呼ばない・網の手前で口を 599・Bridge を 404 にして確かめる）。\n\n| 状態 | 入口：開発用の頁 | 見ている人 | 結果 | 受け持ち・テスト |\n|---|---|---|---|---|\n| 必ず守るの上限（kn-must-full） | 頁を開く | 管理者 | 小窓に 30 個まで・外すボタン | K671-UI-005・017 |\n| 上の棚に上げる（kn-raise・-waiting・-declined） | 頁を開く | メンバー（鈴木） | 頼む小窓／取り下げるだけ／断られた理由 | K671-UI-006〜008 |\n| 承認待ち（kn-approvals） | 頁を開く | マネージャー（佐藤） | 中身を見る・断る…・承認する／断る理由 | K671-UI-009・010 |\n| 共有（kn-share・kn-shared-view） | 頁を開く | マネージャー／他グループのメンバー | 選ぶ小窓／読むだけで「写して直す」が主 | K671-UI-011・012 |\n| 写して直す（kn-copy） | 頁を開く | メンバー | 写しの帯・必ず守るなら上が効く | K671-UI-013 |\n| 似たページ（kn-similar） | 頁を開く | メンバー | 戻って直す／このまま作る | K671-UI-014 |\n| 見直すページ（kn-review） | 頁を開く | 管理者 | 3 つの一覧 | K671-UI-015・016 |",
+    "分類の型の受け": "| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K671-MK-001（render-admin.tsx の日本語名のファイルを読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 要らない: 自己試験でわざと壊す確かめは入れない（決める人 2026-11-10）。何も見ていないのに緑は、K671-MK-001（case が 10 個ちょうど）・K671-UI-001（10 状態が全部開く）が数えを見る |\n| TP-TOOL-03 容れ物の中と手元で違う | K671-DS-001（容れ物の中と手元で同じ検査の台本を流す） |\n| G-11〜G-16 | G-11：N/A（外の資源を使わない）。G-12：N/A（時間の切り替わりを扱わない）。G-13：N/A（機能の組み合わせを持たない見た目だけの葉）。G-14：N/A（口座・権限を扱わない）。G-15：N/A（外のプロセスを呼ばない）。G-16：口を呼ばない（行 UI の「口を 1 回も呼ばない」）。消費する有限の資源は無い |",
+    "前からの試験を替えた所": "```search\ngit grep -l -E \"ShareDialog|MustFullDialog|RaiseDialog|SimilarDialog|ApprovalsView|ReviewView|WaitingBand|DeclinedBand|CopyBand|SharedBand\" -- apps/web/tests apps/web/test apps/e2e ':!apps/web/tests/k/k67*-f9-parts-*.spec.ts' ':!apps/web/tests/k/f9-mock-kit.ts'\n0\n```\n\n- 当たる前からの試験は無い",
+    "表の住所": "- 画面の状態の置き場：`apps/web/app/(dev)/dev/mock/f9/`。表（DB）は触らない",
+    "速さの今の値と目標の値": "| 画面 | 今の値 | 目標の値 |\n|---|---|---|\n| 開発用の頁（10 状態） | 口の数 0・直列の段 0・二重 0 | 同じ（K671-UI-001 が見る） |",
+    "決定ログ（足す行）": "- なし（K-673 が運ぶ）",
+    "リスク": "- `render.tsx` は K-670 が最終の形で運び、K-671・K-672・K-684 は触らない（自分の描き手のファイルを差し替えるだけ）。同じ行を書き換えないので衝突しない",
+    "申し送り": "- K-691〜K-696（画面の葉）は部品を書き換えず、入れ物と hooks で口につなぐ。小窓の字は下絵が正",
+    "代表に聞くこと": "- なし（切り方 4 章の 4・5 は勧めのまま・PM が代表に出す）",
+    "見込み": "1 時間（実測なし・仮）。試験の行は 20 行（上限 30）。"
+   },
+   "file": "11_tickets/K-671.md"
+  },
+  {
    "id": "K-673",
    "title": "段 10 の決定：決定ログの新しい節 §152（代表の決め 1〜13＋PM の決め・D-152.1〜37）と答えの記録を本線に入れるだけ（文書だけ・依存なし・流れの直しは K-727・K-69 の葉・W0）",
    "kind": "タスク",
@@ -25484,6 +25811,609 @@
     "見込み": "0.5 時間（実測なし・仮）。試験の行は 4 行（上限 30）。"
    },
    "file": "11_tickets/K-673.md"
+  },
+  {
+   "id": "K-674",
+   "title": "ナレッジの置き場（DB）：フォルダの表・ページの 1 行の説明／必ず守る／写しの元／フォルダ／並び・本文を {doc,text} に・棚（会社・グループ・自分）で見える／書けるの関数と行の守りを作り直す（K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "ナレッジ",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 5 の K-561（DB の列・関数・引き金を足す 1 本・migration 1 本・試験 23 行・見込み 1 時間）と本線の K-351（migration 1 本・行の守りの作り直し・試験 20 行・見込み 1 時間）から引いた：migration（列 5・表 1・引き金の作り直し 2・関数 17・本文の移し）30 分・行の守りの作り直し（rls_policies.py と生成）10 分・目録と文書 5 分・自分の確かめ 15 分。試験 29 行（本物の DB・自分の接続）は切る段で書いた。超えるなら関数の半分（読む側の物）と引き金を別の葉に分ける（分け方は報告に）",
+   "decisions": [
+    "D-125.108",
+    "D-128.50",
+    "D-128.51",
+    "D-128.52",
+    "D-130.1",
+    "D-150.35",
+    "D-150.50",
+    "D-152.1",
+    "D-152.3",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "packages/db/test/knowledge_shelves.test.ts"
+   ],
+   "carry": [
+    "packages/db/test/knowledge_clients.test.ts"
+   ],
+   "depends_on": [
+    "K-561",
+    "K-673"
+   ],
+   "acts": [
+    "A114"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（DB の表・関数・行の守りだけ）。口は K-675 以降、画面は K-682 以降が持つ（正は /dev/mock/f9）",
+   "affects": [
+    "@kaname/db",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125011400_knowledge_shelves.sql",
+    "packages/db/policies/20261125011400_knowledge_shelves.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/rls_policies.py",
+    "03_architecture/db-catalog.json",
+    "03_architecture/ER図.md",
+    "08_api/db-columns.json",
+    "08_api/phase1/09_ナレッジ.md"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "sections": {
+    "目的": "段 10 のナレッジ（会社・グループ・個人の物を 1 本の木に貯め、AI が読んで守る）が乗る **DB の置き場** を作る（代表の決め 1〜4・13・切り方 0.1〜0.6）。物は「ナレッジのページ 1 つ」で、棚は **会社・グループ・自分** の 3 つ。今ある表 `knowledge_pages`・`knowledge_page_versions`（0073）を使って直し、**フォルダの表 `knowledge_folders` を新しく作る**。\n\n- ページに足す列：1 行の説明 `summary`・必ず守る `is_must`・写しの元 `copied_from_page_id`・フォルダ `folder_id`・並び `position`\n- 本文は段 5 と同じ `{doc, text}`（`app.ticket_body_valid`＝K-561 が最後の砦）。前の形の本文は `app.kn_body_from_text` で段落にして移す\n- 棚ごとの「読める人・書ける人」を DB の関数と行の守りで決める：会社の棚＝管理者が書く・全員が読む／グループの棚＝そのグループのマネージャーが書く・そのグループの人が読む／自分の棚＝本人だけ。**権限の束（`permissions`・`has_permission`）はナレッジでは使わない**（作り直す）\n- 後ろの葉が同じ名前で使う関数（`app.kn_*`・`app.kpage_visible`・`app.kpage_writable`・`app.kfolder_*`）と、共有（K-689）を見える側に足すための器（`app.kn_shared_visible`・`app.kn_shared_folder_visible`＝この葉では常に false）を置く\n\n口は K-675 以降。頼み（上げる・共有）の表は K-687・K-689、上限の設定の行は K-685、破られた数は K-700（この葉は**名前と列の案だけ**を `07_functional/段10-F9/土台-knowledge.md` に書いた）。",
+    "完了の条件": "- [ ] 下の表の 29 行（K674-DB-001〜029）が緑：`packages/db/test/knowledge_shelves.test.ts`\n- [ ] 前からの `packages/db/test/knowledge_clients.test.ts` は「前からの試験を替えた所」のとおり替えた形（ナレッジの describe を外し、取引先の describe はそのまま）で緑\n- [ ] migration が空の DB に全部当たり、一覧 `packages/db/src/migrations.generated.ts`（作り手 `scripts/ci/gen_migrations.py` の生成物）が最新。同じ migration をもう 1 度当てても失敗しない（K674-DB-029）\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 場合表（`packages/db/test/matrix.test.ts`）が新しい守りで緑（種が合わなければ「リスク」のとおり直す）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: PERM, CRUD\n\n- **関門は C2（DB）**。口を作らない（`apis: []`・`canvas: []`）。名前の決めは `07_functional/段10-F9/土台-knowledge.md`（1 章）が正本で、**この葉の md は同じ内容を作る手順に落としたもの**。食い違えば土台が勝つ\n- **棚の持ち方**：会社＝`scopes.parent_id is null` のグループ・`is_personal = false`／グループ＝その `scopes.id`・`is_personal = false`／自分＝持ち主の主の所属（`members.scope_id`）・`is_personal = true`。会社のいちばん上のグループは 1 社に 1 つ（`app.kn_company_scope()` は消していない最初の 1 つを返す）\n- **書ける人・読める人は DB の関数が毎回その時の所属から決める**（行に写さない）。マネージャー＝`scope_memberships.role = 'manager'` で、`tenant_memberships.status = 'active'`。グループの人＝`scope_memberships` の行か `members.scope_id`。役を外す・グループから抜けるとすぐ効く（K674-DB-021・027）\n- **管理者でも、入っていないグループの棚は読めない**（代表の決め 3・brief 1：読むのは「その部署の人と共有先」）。承認の画面は DB の関数が中身を渡す（K-688）。この葉の守りはそのままにする\n- **新しいページは下書き（`state = 'draft'`）でしか作れない**（行の守りの insert）。公開は「下書きの行を公開に更新する」＝K-680 の関数が行う。下書きのページは持ち主だけが読む・書く。公開済みのページの下書きの版（`kind = 'draft'`）は書いた人だけが読む・書く\n- **使わない列は消さず残す**：`parent_page_id`・`form`・`verify_interval_days`・`verified_at`・`verify_due_on`・`topics`・`archived_at`・`archived_to_page_id`・版の `proposed_*`・`decision`・`decline_reason`・`decided_*`・`state = 'archived'`・`kind = 'proposal'`。消す・凍結の印は K-711（表 `knowledge_links` を含む）\n- **版の一意**：`unique (page_id, kind, version)` を外し、公開の版は `(page_id, version)`（`kind = 'published'`）、下書きの版は `(page_id)`（`kind = 'draft'` かつ `deleted_at is null`）の部分一意にする。下書きを捨てる＝`deleted_at` を入れる（版の行は消さない・`kaname_app` に delete を渡さない前のまま）\n- **必ず守るは公開済みのページだけ**（check `is_must = false or state = 'published'`）。上限の数と本文 2,000 字の判定は K-685・K-680（この葉は列と `app.kn_must_text_max() = 2000` だけ）\n- フォルダ：名前 1〜100 字・同じ棚の同じ親の中で名前は重ならない（大文字小文字を分けず・消した物は数えず・自分の棚は持ち主ごと）・深さ 6 まで・親は同じ棚の同じ会社。失敗は引き金が先頭の印（`KNW_FOLDER_SHELF`・`KNW_FOLDER_DEPTH`・`KNW_FOLDER_CYCLE`・`KNW_PERSONAL_SCOPE`）で言い、会社の食い違いは言葉に「同じ会社」を含めて errcode 22023（土台 1.5）\n- 並び `position` は整数・既定 0。並べ直しは K-678（フォルダ）・K-681（ページ）の口が決める。この葉は列だけ\n- 本文の移し：前の形の行（`{}`・`{text}` だけ）は、守りを足す前に `app.kn_body_from_text(body->>'text')` で置き換える（`where not app.ticket_body_valid(body)`）。同じ migration を 2 度当てても壊れない形にする（`if not exists`・`create or replace`・`drop … if exists`・移しは「合わない行だけ」）\n- 行の守りは `05_flow/rls_policies.py` の POLICIES から `python3 scripts/ci/gen_rls.py --tables knowledge_pages,knowledge_page_versions,knowledge_folders -o packages/db/policies/20261125011400_knowledge_shelves.sql`（migration と同じ名前）で作る（policies は生成物・手で直さない）。`python3 05_flow/build_functional.py` で entities.json を作り直す\n- 外へ出ない：お知らせも AI も呼ばない。ログにページの題名・本文を出さない",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- K-561: 要る — 本文の形の最後の砦 `app.ticket_body_valid(jsonb)` をこの葉の check と移しが使う（K-561 が作る）。入る前に始めると migration が関数を見つけられず止まる",
+    "目録で探した結果": "- 使う：`app.is_admin`（0081）・`app.tenant_id()`・`app.user_id()`・`app.member_ok()`・`scope_memberships`・`tenant_memberships`・`scopes`・`members`（0002・0075）・`app.knowledge_same_tenant`（0073 の引き金。**作り直す**）・`app.set_updated_at`・`app.ticket_body_valid`（K-561）・試験の形は本線の `packages/db/test/knowledge_clients.test.ts`（`withTenant`・管理の接続と自分の接続）\n- 作る：表 `knowledge_folders`・関数 `app.kn_company_scope`・`kn_in_group`・`kn_my_groups`・`kn_group_manager`・`kn_shelf_kind`・`kn_shelf_name`・`kn_shelf_readable`・`kn_shelf_writable`・`kn_shared_visible`・`kn_shared_folder_visible`・`kn_folder_names`・`kn_body_from_text`・`kn_must_text_max`・`kfolder_visible`・`kfolder_writable`、作り直す `app.kpage_visible`・`app.kpage_writable`・`app.knowledge_same_tenant`。探したが同じ形の物は無かった（0073 の読める・書けるは権限の束に頼る形で、棚の決めと合わない。`app.manages_scope`（0082）は「そのグループか上のグループのマネージャーか管理者」で、グループの棚は管理者を入れず上のグループにも広げないので使わない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| migration（1 本・時刻の名前・K-327） | `packages/db/migrations/20261125011400_knowledge_shelves.sql`（名前の式は土台 1.1。まとめ役の式は分が 59 を超えるので訂正した）。順に：① `knowledge_folders` を作る（列は土台 1.2）と索引：一意 `knowledge_folders_name_uq on (tenant_id, scope_id, is_personal, coalesce(case when is_personal then owner_member_id end, '00000000-0000-0000-0000-000000000000'::uuid), coalesce(parent_folder_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(name)) where deleted_at is null`・`knowledge_folders_parent_idx`。check：名前 1〜100 字・`parent_folder_id <> id` ② `knowledge_pages` に `summary text not null default ''`（check 0〜200 字）・`is_must boolean not null default false`（check `knowledge_pages_must_published`）・`copied_from_page_id uuid references knowledge_pages(id)`（check `<> id`）・`folder_id uuid references knowledge_folders(id)`・`position int not null default 0` と索引 `knowledge_pages_folder_idx on (tenant_id, folder_id)` ③ 本文の移し：`app.kn_body_from_text(p text) returns jsonb`（immutable・文字を `\\n` で割って行ごとに段落〔中身の無い行は content の無い段落〕・全部空なら content が空の配列・text は p のまま。始めに `p := coalesce(p, '')`＝前の形の `{}` の行〔`body->>'text'` が null〕も空の本文に移せる）を作り、`update knowledge_page_versions set body = app.kn_body_from_text(body->>'text') where not app.ticket_body_valid(body)`、そのあと check `knowledge_page_versions_body_ok`（`app.ticket_body_valid(body)`）を足す ④ 版の一意：`alter table knowledge_page_versions drop constraint if exists knowledge_page_versions_page_id_kind_version_key`、部分一意 `knowledge_page_versions_published_uq on (page_id, version) where kind = 'published' and deleted_at is null`・`knowledge_page_versions_one_draft_uq on (page_id) where kind = 'draft' and deleted_at is null` ⑤ 関数（全部 `security definer`・`set search_path = public, app, pg_temp`・`stable`〔`kn_body_from_text`・`kn_must_text_max` は immutable〕・public から外し `kaname_app` に渡す）：土台 1.4 の表のとおり。**棚の読める・書けるは `kn_shelf_readable`・`kn_shelf_writable` の 2 つが唯一の正本**で、`kpage_*`・`kfolder_*` はそれを呼ぶ。`kn_shared_visible`・`kn_shared_folder_visible` は `select false`（K-689 が差し替える・この葉の試験 K674-DB-023）⑥ 引き金 `app.knowledge_same_tenant()` の作り直し（`create or replace`・既存の引き金の名前はそのまま）：土台 1.5 の表の 5 つの失敗（印の字は先頭）・ページの folder_id と棚の一致・`knowledge_folders` にも付ける（`knowledge_folders_same_tenant`・`_updated_at`・フォルダの深さと循環は `app.knowledge_folder_guard()` を別に作って前に走らせる）⑦ 行の守りは生成した policies に任せる ⑧ 最後に `insert into app.schema_migrations (name) values ('20261125011400_knowledge_shelves.sql') on conflict do nothing`。`target_kinds` へ足す・`refresh_role_bundle_defaults` は呼ばない（ナレッジは権限の束を使わない）。lint（Squawk）に当たる所（既定つきの列の追加など）は表が小さい理由を書いて `squawk-ignore` |\n| 行の守り | `05_flow/rls_policies.py` の POLICIES：`knowledge_pages`（read・create・update・ops_read の 4 つを土台 1.5 のとおり作り直す。名前は前のまま）・`knowledge_page_versions`（read・add・decide を作り直す）・`knowledge_folders`（`knowledge_folders_read`・`knowledge_folders_write`・ops_read を足す）。`knowledge_links` は前のまま。`python3 05_flow/build_functional.py` → `python3 scripts/ci/gen_rls.py --tables knowledge_pages,knowledge_page_versions,knowledge_folders -o packages/db/policies/20261125011400_knowledge_shelves.sql`（前の `0073_knowledge.sql` の policies は残す・新しい物が drop policy if exists で作り直す） |\n| 生成物 | `packages/db/src/migrations.generated.ts`（作り手 `scripts/ci/gen_migrations.py`）。`pnpm db:columns`（`08_api/db-columns.json`）。`python3 scripts/ci/build_catalog.py`（目録） |\n| 目録・文書 | `03_architecture/db-catalog.json`：`knowledge_folders` を `skeleton`（理由「ナレッジの口が使う（K-674）」）で足す（`knowledge_links` を凍結にするのは K-711）。`03_architecture/ER図.md`：`knowledge_folders` の行・関係（`scopes ||--o{ knowledge_folders`・`knowledge_folders ||--o{ knowledge_pages`）・`knowledge_pages` の行に列 5 つと棚の決めを書き足す。`08_api/phase1/09_ナレッジ.md`：冒頭に「棚は会社・グループ・自分の 3 つ・物はナレッジのページ 1 つ・前の形の口は K-711 が外す」を 1 節足す（口の一覧は K-675 が書く） |\n| 試験 | `packages/db/test/knowledge_shelves.test.ts`（切る段が書いた・29 行）・`packages/db/test/knowledge_clients.test.ts`（carry・ナレッジの describe を外した形） |",
+    "外に影響する手順": "- S1: DB に書く：migration が列・表・関数・引き金・守り・本文の移しを 1 つの取引で当てる（関門 C2）。途中で失敗すれば全部戻り、同じ migration を流し直せる（K674-DB-029）\n- なし — お知らせ（受け箱・関門 C6）も外のサービスも AI も呼ばない（関数は読む・判定するだけ）\n- なし — 証跡はこの葉は足さない（作る・直すは口の葉が `app.record_audit` を呼ぶ）",
+    "テスト仕様と確認の結果": "`packages/db/test/knowledge_shelves.test.ts`（本物の DB・本物の行の守り・管理の接続で種を入れ、自分の接続＋`withTenant` で確かめる。人は管理者・グループのマネージャー 3 人・メンバー・閲覧のみ・どこにも入っていない人・別の会社の管理者）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 会社の棚・公開済み | 読む（select） | 社内の全員 | 読める | このチケット | K674-DB-011・024 |\n| 会社の棚・公開済み | 書く | 管理者／マネージャー・メンバー・閲覧のみ | 書ける／断られる（作れず・0 行） | このチケット | K674-DB-014 |\n| グループの棚・公開済み | 読む | そのグループの人／入っていない人・管理者 | 読める／0 行 | このチケット | K674-DB-012 |\n| グループの棚・公開済み | 書く | そのグループのマネージャー（別の人でも）／メンバー・閲覧のみ・管理者・別のグループのマネージャー | 書ける／断られる | このチケット | K674-DB-015 |\n| 自分の棚 | 読む・書く | 持ち主／ほかの全員（管理者・マネージャー含む） | 読める・書ける／0 行 | このチケット | K674-DB-013・016 |\n| 下書きのページ（まだ公開していない） | 読む・直す | 持ち主／同じ棚のマネージャー・管理者 | できる／0 行 | このチケット | K674-DB-011・018 |\n| 公開済みページの下書きの版 | 読む・公開に更新 | 書いた人／ほかの書ける人 | できる／見えず 0 行 | このチケット | K674-DB-019・020 |\n| グループから抜けた・役を外した後 | 読む・書く | 抜けた人・外された人 | すぐ読めず・書けない | このチケット | K674-DB-021・027 |\n| 別の会社の物 | 読む・作る・直す | 別の会社の人 | 0 行・断られる | このチケット | K674-DB-026・028 |\n| 共有されたページ（K-689 まで） | 読む | 共有先のグループの人 | この葉では共有の器が false で読めない（K-689 が差し替えて読める） | K-689 | K674-DB-023 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K674-DB-001 | 入力 | 列と表 | `knowledge_pages` に summary（既定 `''`・not null）・is_must（既定 false）・position（既定 0）・copied_from_page_id・folder_id（どちらも null 可）がある・前の列（parent_page_id・form・topics・verify_interval_days・archived_at・current_version）も残る・`knowledge_folders` に 9 列（id・tenant_id・scope_id・is_personal・owner_member_id・parent_folder_id・name・position・deleted_at）がある |\n| K674-DB-002 | 入力 | 1 行の説明の長さ | 200 字は入り、201 字は check（23514）で断られる |\n| K674-DB-003 | 入力 | 必ず守るは公開済みだけ | 公開済み＋is_must true は入る・下書きのページに is_must true を入れる／付ける更新は check（23514）で断られる |\n| K674-DB-004 | 入力 | 本文の形と前の形の移し | `{}`・doc の content が配列でない・text が文字でない本文の版は check で断られ、`{doc, text}` の形は入る。`kn_body_from_text('一行目\\n\\n三行目')` は `ticket_body_valid` を通り・text はそのまま・段落 3 つ（真ん中は中身なし）。空の文字と null（前の形の `{}`）は content が空の配列・text 空で `ticket_body_valid` を通る |\n| K674-DB-005 | 操作の揺れ | 下書きの版・公開の版の一意 | 1 ページに生きている下書きの版を 2 つは持てない（23505）・捨てた（deleted_at）後は同じ番号で作り直せる（3 回続けても）・同じページに公開の版の同じ番号は 2 つ入らない（23505） |\n| K674-DB-006 | 入力 | フォルダの名前 | 空・101 字は check、100 字は入る。同じ棚・同じ親で大文字小文字違いの同じ名前は 23505。棚が違う・親が違う・消した物・自分の棚の持ち主が違うなら同じ名前が入る。自分の棚の同じ持ち主の重なりは 23505 |\n| K674-DB-007 | 入力 | フォルダの深さ・循環・棚・会社 | 深さ 6 まで入り 7 つ目は `KNW_FOLDER_DEPTH`。親を自分の下のフォルダにすると `KNW_FOLDER_CYCLE`。別の棚の親は `KNW_FOLDER_SHELF`。別の会社の親は「同じ会社」の言葉で断られる |\n| K674-DB-008 | 守り | ページのフォルダ | 同じ棚のフォルダは入る。別の棚のフォルダ・別の人の自分のフォルダを入れると `KNW_FOLDER_SHELF` |\n| K674-DB-009 | 守り | 写しの元 | 同じ会社のページは入り、別の会社のページを写しの元にすると「同じ会社」で断られる |\n| K674-DB-010 | 守り | 自分の棚の scope | 自分の棚のページ・フォルダの scope が持ち主の主の所属でないと `KNW_PERSONAL_SCOPE` |\n| K674-DB-011 | 守り | 会社の棚を読む | 公開済みは管理者・マネージャー・メンバー・閲覧のみ・どこにも入っていない人の 6 人とも 1 行。下書きは持ち主（管理者）だけ 1 行・ほかは 0 行。別の会社の管理者は 0 行 |\n| K674-DB-012 | 守り | グループの棚を読む | 公開済みはそのグループのマネージャー 2 人・メンバー・閲覧のみが 1 行。別のグループの人・どこにも入っていない人・管理者・別の会社の管理者は 0 行 |\n| K674-DB-013 | 守り | 自分の棚を読む | 持ち主は 1 行・管理者・マネージャー・同じグループの人・別のグループの人・どこにも入っていない人は 0 行 |\n| K674-DB-014 | 守り | 会社の棚に書く | 管理者は作れて直せる。マネージャー・メンバー・閲覧のみ・どこにも入っていない人は作ると row-level security で断られ、直すと 0 行で題名は変わらない |\n| K674-DB-015 | 守り | グループの棚に書く | そのグループのマネージャーは作れる・同じグループの別のマネージャーも直せる。メンバー・閲覧のみ・管理者・別のグループのマネージャーは作れず（row-level security）、メンバーが直すと 0 行 |\n| K674-DB-016 | 守り | 自分の棚に書く | メンバー・閲覧のみ・管理者は自分の棚に作れる。他人を持ち主にすると断られ、管理者・マネージャー・別の人が他人の自分のページを直すと 0 行・持ち主は直せる |\n| K674-DB-017 | 守り | 作り方 | 公開済み（state published）で作る・他人を持ち主にして作るは row-level security で断られる（作るのは下書き・自分が持ち主） |\n| K674-DB-018 | 守り | 下書きのページ | 持ち主は読めて直せる。同じグループのマネージャー・メンバー・閲覧のみ・管理者は 0 行で、別のマネージャーが直すと 0 行 |\n| K674-DB-019 | 守り | 版を読む | 公開の版は同じグループの人が 1 行・別のグループの人は 0 行。下書きの版は書いた人だけが 1 行（別のマネージャー・メンバー・管理者は 0 行） |\n| K674-DB-020 | 守り | 版を書く | メンバーは下書きの版を足せず、他人名義の下書きも足せない（row-level security）。マネージャーが自分として足せて、メンバーが公開に更新すると 0 行・書いた人が更新すると 1 行で、公開の版を同じグループの人が読める |\n| K674-DB-021 | 失敗 | グループから抜けた後（口座状態の波及） | 抜ける前は 1 行・主の所属と所属の行を外すと 0 行で、`kpage_visible` も false（入り直さなくても効く） |\n| K674-DB-022 | 守り | 版は消さない | マネージャーが版を delete すると permission denied |\n| K674-DB-023 | 失敗 | S（共有の器）K-689 まで | `kn_shared_visible`・`kn_shared_folder_visible` はこの葉では false を返す（K-689 が差し替える。共有されても K-689 まで読めない＝見えない側に倒す） |\n| K674-DB-024 | 守り | 関数と守りの一致 | 6 種のページ（会社の公開・会社の下書き・グループの公開・グループの下書き・自分・別のグループ）× 7 人で、`kpage_visible` の答えと select の見え方・`kpage_writable` の答えと update の通り方が全部同じ |\n| K674-DB-025 | 入力 | 補助の関数 | `kn_shelf_name`＝グループの名前・会社＝「会社」・自分＝「自分」。`kn_shelf_kind`＝group・company・me。`kn_folder_names` は棚の直下から順（経理・請求）。`kn_must_text_max()` は 2000 |\n| K674-DB-026 | 守り | 別の会社 | 別の会社の管理者は A のページを読めず（0 行）・会社の棚のページを直せず（0 行）・A の棚にページもフォルダも作れない（row-level security） |\n| K674-DB-027 | 失敗 | マネージャーの役を外した直後 | 外した後の作るは row-level security で断られ、戻すとまた作れる（役はその時の所属の行から決まる） |\n| K674-DB-028 | 守り | 棚は同じ会社 | 別の会社のグループを棚にしたページは「同じ会社」の言葉で断られる |\n| K674-DB-029 | 失敗 | S1 の途中で落ちた DB に同じ migration を流し直す | 失敗せず、ページ・フォルダ・版の行数が変わらず、4 つの関数（kpage_visible・kpage_writable・kn_shelf_readable・kn_shelf_writable）が 1 つずつある |\n\n### テストの型の受け（分類 PERM・CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-PERM-01 役が合わない人 | K674-DB-014（マネージャー・メンバー・閲覧のみが会社の棚に書けない）・015（メンバー・閲覧のみがグループの棚に書けない）・016 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | K674-DB-027（役を外した直後の作る）・021（グループから抜けた直後の読む）。口は要求ごとに DB の関数で今の所属を見る |\n| TP-PERM-03 他の会社の ID を直接指定する | K674-DB-026（別の会社の管理者が A のページを読む・直す・作る）・028・009・007 |\n| TP-PERM-04 一覧・数・検索 | K674-DB-011・012・013（見えない人は 0 行）・024（6 種 × 7 人）。一覧・数・検索の口は K-676・K-686 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-05 付けた直後に効く道は K674-DB-027（外す・戻すの両方向）と同じ。関数が毎回その時の所属を見る |\n| TP-CRUD-01 2 人が同時に直す | K674-DB-005（下書きの版は 1 ページ 1 つ・同時に 2 つ作ろうとした負けは 23505）。同じページを同時に直す版のずれは口の葉（K-679・K-680）が持つ |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | K674-DB-006（消したフォルダの名前が空く）・005（捨てた下書きの版）。消したページを開く 404 は口の葉。この葉は `kpage_visible` が消した物を false にする（deleted_at を入れたページは読めない・書けない） |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 要らない: TP-CRUD-03 消す口を持たない。子のあるフォルダを消せない決めは口の葉 K-678（E-KNW-024）。この葉は消した印（deleted_at）の列とフォルダの名前が空くことだけ（K674-DB-006） |\n| TP-CRUD-04 2 回押し | 要らない: TP-CRUD-04 口を持たない（冪等キーは口の葉）。DB の一意（K674-DB-005・006）が 2 回目の最後の砦になる |\n| TP-CRUD-05 保存の途中で失敗 | K674-DB-029（S1 の流し直し）。口の途中の失敗は口の葉 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: TP-CRUD-06 画面の動き。DB は下書きの版を行として持つ（K674-DB-005・019・020）だけで、自動で保存する口は K-679 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | — | この葉は口を持たない（木の口 K-676 が 1 本・ページの口 K-677 が 1 本） |\n| 直列の段 | — | — |\n| 口ごとの文の数・取引の数 | — | この葉は関数と守りだけ。行の守りの関数は行ごとに呼ばれ、1 行あたり索引引きが最大 3 回（所属・マネージャー・共有の器）。木の口（K-676）は where で棚を絞ってから読み、5,000 行で測る（K-676 の行） |\n| 認証の要る答えの Cache-Control | — | この葉は答えを持たない |\n| 新しい住所 | — | 増えない |\n| staging での答えの時間の前後 | — | 口の葉が測る |",
+    "前からの試験を替えた所": "切る段の検査（`cut_check.py prior`）が出した物と、守りと列を変えるので手で探した物。件数は作る段の木（本線＋この葉が運ぶ物）で数える。この葉の新しい試験（`knowledge_shelves.test.ts`）と carry の `knowledge_clients.test.ts`（外した後は字が無い）は命令のパスで外した。\n\n```search\ngit grep -l \"knowledge_pages\\|knowledge_page_versions\\|kpage_visible\\|kpage_writable\\|knowledge_links\\|knowledge_folders\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'apps/*/tests/**/*.ts' 'packages/*/test/*.ts' 'scripts/ci/*_test.py' ':!apps/api/test/generated/*' ':!packages/db/test/knowledge_shelves.test.ts' ':!packages/db/test/knowledge_clients.test.ts'\n0\n```\n\n- packages/db/test/knowledge_clients.test.ts: 替える — 前の 0073 の守り（権限の束の edit で書ける・下書きは書ける人にも見える）を確かめる「ナレッジ」の describe 4 つが、新しい棚の決めと食い違う。**新しい試験 `knowledge_shelves.test.ts` に移して外す**（carry で運んで切る段で替えた）。取引先の describe は 1 行も変えない\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — db-columns.json を読むが、作った口の一覧は試験の土台に入れた hooks で決まる。ナレッジの口はこの葉では作らない\n- scripts/ci/ci_scope_test.py: 替えない — 範囲の地図（ci_scope.d から作る）の形と結びを見る。この葉は地図の断片を足さない（口を持たない）\n- scripts/ci/contract_shape_test.py: 替えない — 契約の形の表を契約と照らす。この葉は契約を変えない\n- scripts/ci/k248_scope_reach_test.py: 替えない — db-columns.json などの道を文字で持つだけ\n- scripts/ci/k327_migrations_gen_test.py: 替えない — 一覧 migrations.generated.ts が migrations のフォルダと同じか（作り手の --check）を見る。この葉は時刻の名前の migration を 1 本足し、作り手で一覧を作り直す\n- scripts/ci/ci_lean_test.py: 替えない — ER図.md と policies の道を範囲の決め方の例として文字で書いているだけ。中身を読まない\n- packages/db/test/matrix.test.ts・matrix_breaks.test.ts・self_only.test.ts・ops_grants.test.ts・tickets.test.ts・ticket_around.test.ts: 替えない（ただし**作る段で場合表を流して確かめる**）— 場合表（生成物 `07_qa/test-plan/access-matrix.json`）を作り直すと `knowledge_pages` の守りの名前（read・create・update）と中身が変わり、`knowledge_folders` の行が増える。種（`seed_generic.ts`）は既定の値（draft・持ち主＝会社の代表）で入る。種の行が新しい期待（作るのは下書き・見えるのは持ち主か棚の人）に合うかは流して確かめ、合わなければ `packages/db/src/seed_generic.ts` を `changes-add` で直す（「リスク」）\n- packages/db/src/matrix.ts・seeds.ts・seed_generic.ts・repository.ts: 替えない（試験の道具・表の一覧）— `knowledge_pages` の表の名前と列の扱いは変わらない。`knowledge_folders` を表の一覧（`TABLES`）に足すかは、口の葉が汎用の読み書きを使わないので足さない",
+    "成果物": "- migration 1 本と policies 1 本（生成）・`rls_policies.py`・目録（db-catalog・ER 図・db-columns・09_ナレッジ.md）\n- 単体の試験 `knowledge_shelves.test.ts`（切る段が書いた）と、替えた `knowledge_clients.test.ts`（carry）",
+    "決定ログ": "- 2026-11-21 代表の決め 1（answer=6d11a514116f）：「AI に従わせたいこと」は全部ナレッジ。物ごとに入れる形を変えない。画面を物ごとに分けず、フォルダの木で整理する\n- 2026-11-21 代表の決め 3（answer=bc3c857621bc）：個人から見える 1 つの木に、会社・グループ・自分の物が貯まる。複数の会社に入っている人は会社ごとに切り分ける（今の会社の文脈・行の守りで分かれる）\n- 2026-11-22 代表の決め 13：上の棚に上げて承認されたら、ページは上の棚に移る（自分の棚には残らない）。この葉は棚の決め（`scope_id`・`is_personal` を書き換えられる形）だけ。移す関数は K-688\n- 2026-11-22 切り方 0.2・0.3：棚は会社・グループ・自分の 3 つ。書ける人＝会社は管理者・グループはそのグループのマネージャー・自分は本人。読める人＝会社は全員・グループはそのグループの人と共有先・自分は本人だけ。権限の束はナレッジでは使わない\n- 2026-11-22 切る段の決め：管理者でも入っていないグループの棚は読めない（承認する画面は関数が中身を渡す）。下書きのページは持ち主だけ・下書きの版は書いた人だけ。新しいページは下書きでしか作れない。migration の名前の式は分が 59 を超えない形に訂正した（土台 1.1）",
+    "PM に確かめたいこと": "無い（新しく聞くことは無い。下の「リスクと懸念」の 2 つは勧めどおり切った）",
+    "リスクと懸念": "- **場合表の種が合わないかもしれない**：種（`seed_generic.ts`）が `knowledge_pages` を既定の値（draft・持ち主）で入れるので、新しい守りの期待（会社の棚に書けるのは管理者だけ・グループの棚はマネージャーだけ）で OK／NG の行が変わる。作る段で `matrix.test.ts` を流し、合わなければ種を直す。守りそのものを緩めて合わせない\n- **行の守りの関数は行ごとに呼ばれる**。木の口（K-676）が 5,000 行を読むとき、守りの関数が重くなりうる。K-676 の行（5,000 行で測る）で見つける。重ければ関数の引数を行の列から引ける形にして初期化の 1 回計算（`(select app.kn_my_groups())`）に寄せる\n- 前の形の本文の移し（`kn_body_from_text`）は、段 5 の `validateDoc` が通す形（空の行＝中身の無い段落）を前提にしている。K-561 の `app.ticket_body_valid` が空の段落を通さないと移しが止まるので、K674-DB-004 が先に見つける",
+    "申し送り": "- K-675：土台の 1.4 の関数・5 章のファイルの置き場を使う。`app.kn_must_text_max()`（2000）と TS の定数を同じ数にし、試験で見る（K675-API-019）\n- K-676：木は `app.kn_my_groups()` で棚を絞って読む。共有された物は K-689 が `kn_shared_visible` を差し替えた後に出る（この葉の時点では出ない）\n- K-679・K-680：新しいページは `insert … state = 'draft'` で作り、下書きの版は `(page_id)` の部分一意で 1 つ。書き終える＝その下書きの行を `kind = 'published'`・`published_at`・`published_by` に更新し、ページの `state = 'published'`・`current_version + 1`\n- K-687・K-688：上げる＝ページの `scope_id`・`is_personal`・`folder_id` を書き換える。行の守りの update は変えた後の行が書ける棚に合うことを求めるので、**承認する人（相手の棚の書ける人）が呼ぶ `security definer` の関数で書き換える**（行の守りを緩めない）\n- K-689：`app.kn_shared_visible(pid)`・`app.kn_shared_folder_visible(fid)` の 2 つだけを `create or replace` する（行の守りと `kpage_visible` は作り直さない）。共有をやめた（`ended_at`）直後に見えなくなること\n- K-711：`knowledge_links` を `db-catalog.json` で凍結にする。使わない列は残す（この葉では消さない）",
+    "表の住所（2026-11-22）": "- 共通の表に足す分（errors・ears-elsewhere・ci_scope・contract_shape・screen_api）は、この葉は口を作らないので足さない\n- migration は時刻の名前 `packages/db/migrations/20261125011400_knowledge_shelves.sql`（K-327）。行の守りは同じ名前の policies。一覧 `packages/db/src/migrations.generated.ts` は作り手の生成物（touch_rules が changes: に求めるので載せた）\n- `03_architecture/db-catalog.json`・`03_architecture/ER図.md`・`08_api/phase1/09_ナレッジ.md` は行の足し・別々の所（overlap_ok）。`05_flow/rls_policies.py` も overlap_ok（別々の表の行を足す）"
+   },
+   "file": "11_tickets/K-674.md"
+  },
+  {
+   "id": "K-675",
+   "title": "ナレッジの口の置き場：契約の宣言（16 本の入力・答え・断り）・エラーの枠 E-KNW・口の持ち主の表と共通の部品（reply・shelf・body・shape）・試験の土台（K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "ナレッジ",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 9 の K-401（口の置き場・口の登録・共通の確かめ・断りの枠・見込み 1 時間）と本線の K-351（契約の断片 5 つと生成物・見込み 1 時間）から引いた：契約の宣言（screen_api の 8 行直しと .d の新しい 8 本・入力 9・答え 13・断り 16 口）25 分・errors.d 17 件と row_rules の 1 行 10 分・共通の部品 5 ファイル（ops・reply・shelf・body・shape。どれも 10〜40 行）15 分・自分の確かめ 10 分。試験 22 行と土台は切る段で書いた。超えそうなら共通の部品 5 ファイルと土台を別の葉に分ける（分け方は報告に）",
+   "decisions": [
+    "D-125.108",
+    "D-128.50",
+    "D-128.51",
+    "D-130.1",
+    "D-150.35",
+    "D-150.50",
+    "D-152.14",
+    "D-152.15"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-base.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F9/knowledge.harness.ts"
+   ],
+   "depends_on": [
+    "K-674"
+   ],
+   "acts": [
+    "A114"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（契約と口の置き場だけ）。画面の入れ物は K-682 以降、部品は K-670〜K-672 が持つ（正は /dev/mock/f9）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-675.py",
+    "scripts/ci/contract_shape.d/K-675.py",
+    "07_qa/test-specs/errors.d/K-675.json",
+    "scripts/ci/ci_scope.d/K-675.json",
+    "scripts/ci/row_rules.mjs",
+    "apps/api/src/features/F9/knowledge/ops.ts",
+    "apps/api/src/features/F9/knowledge/reply.ts",
+    "apps/api/src/features/F9/knowledge/shelf.ts",
+    "apps/api/src/features/F9/knowledge/body.ts",
+    "apps/api/src/features/F9/knowledge/shape.ts",
+    "apps/api/src/features/F9/knowledge/input.ts",
+    "08_api/phase1/09_ナレッジ.md"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "sections": {
+    "目的": "段 10 のナレッジの口（K-676〜K-690・K-695）が乗る **口の置き場** を 1 回だけ作る（切り方 1 章「先頭の葉が置き場を 1 回だけ作り、後ろの葉は自分のファイルだけを触る」）。次の 4 つ：\n\n1. **契約の宣言**：表が K-674 までに在る 16 本の口（土台 2 章）の入力・答え・断りを、前からある 8 本の直しと新しい 8 本の足しで契約に書く。これで K-676〜K-681・K-685・K-686・K-690 の葉は、契約を足さず自分の口の本体と hooks と試験だけを書く（頼み・共有の表が要る口は、その表を作る K-687〜K-689・K-695 が自分で宣言する）\n2. **エラーの枠**：`E-KNW-NNN` の番号の枠（土台 4 章）と、16 本の口が使う 17 件の台帳（`errors.d/K-675.json`）\n3. **口の持ち主の表と共通の部品**（`apps/api/src/features/F9/knowledge/`）：`ops.ts`（25 本の口 → 持ち主の葉と hooks のファイル）・`reply.ts`（断りの答え）・`shelf.ts`（棚を決める）・`body.ts`（本文を確かめて text を作る）・`shape.ts`（木の印・置き場の形・場所の字・必ず守るの字数の定数）\n4. **試験の土台**（`knowledge.harness.ts`・切る段で書いた）（共有の試験 k144 の uuid の行は、口を作る葉が自分の `k144.d/K-<番号>.ts` に持つ・2026-11-23 PM の決め）\n\n口の振る舞いは作らない。**口の振る舞いが無い口は、契約の入口が 501 で止める**（K-351 と同じ。「まだ使えません」の空の形は作らない：口ごとに 1 葉・1 hooks のファイルなので、作った葉の分だけ 501 が消える）。",
+    "完了の条件": "- [ ] 下の表の 22 行（K675-API-001〜022）が緑：`apps/api/test/features/F9/knowledge-base.test.ts`（土台 `knowledge.harness.ts`）\n- [ ] 契約の 16 本が契約に在り、表の素の読み書きに落ちない（`generic: false`）。生成物（`08_api/endpoints.json`・`openapi.yaml`・`packages/contracts/src/*`・`apps/api/src/routes/*`・`apps/api/test/generated/*`）が最新で、新しい口の生成の試験（it.todo）が作り手で作られている（先にコミットする＝下の「生成の試験」）\n- [ ] 共有の試験 k144 の入口の uuid の行（K144-API-100〜111）は、この葉では置かない。口を作る葉が自分の `k144.d/K-<番号>.ts` に持つ（2026-11-23 PM の決め：作っていない口の行は SHAPE-017 が赤）\n- [ ] エラーの台帳（`errors.json`）に E-KNW の 17 件が入り、`packages/errors/src/catalog.ts` が最新\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: PERM\n\n- **名前の決めは `07_functional/段10-F9/土台-knowledge.md` が正本**（2〜5 章）で、この md は同じ内容を作る手順に落としたもの。食い違えば土台が勝つ\n- **宣言する 16 本**＝土台 2 章の表で「契約」が K-675 の物。前からある操作 ID は 8 本（`getKnowledgeTree`・`getKnowledgePage`・`listKnowledgeVersions`・`createKnowledgePage`・`updateKnowledgePage`・`saveKnowledgeDraft`・`discardKnowledgeDraft`・`publishKnowledgePage`）、新しいのは 8 本（`getKnowledgePageVersion`・`createKnowledgeFolder`・`updateKnowledgeFolder`・`deleteKnowledgeFolder`・`deleteKnowledgePage`・`setKnowledgeMust`・`findSimilarKnowledge`・`copyKnowledgePage`）。**頼み・共有・承認・見直しの 9 本は宣言しない**（その表を作る葉が `.d` に書く。表が無い間に `ID_TABLE`・行の言葉を書くと生成が止まるため）。名前と道と入力・答えの鍵は土台 2・3 章で決め切ってある\n- **前からある 8 本の直し方**：`.d` に同じ鍵があると止まる（`screen_api.d/README.md`）ので、本体 `05_flow/screen_api.py`（overlap_ok）の **SCREEN_API の行・RESPONSES（getKnowledgeTree・getKnowledgePage）・PERMS** を直す。INPUTS・ERRORS_4XX・VALUE_RANGES など本体に無い鍵は `.d` に書く。前の入力の形（表の写し）は無くなる\n- **全部の口を `generic: false` にする**：INPUTS（体のある口）と RESPONSES を宣言する（宣言が無いと表 `knowledge_pages` の素の読み書きに落ち、501 でなく表の答えが返る）。答えは `{ data: … }`・一覧は `{ data: […], meta: { count } }`・削除は `{ data: { id } }`（土台 3 章）\n- **入力は専用で strict**（知らない欄は 422）。`ticket_id` のような表の列を体に入れさせない。欄の型・値域（土台 3.2）：名前 `pattern \"\\\\S\"`・`maxLength 100`／題名 `pattern \"\\\\S\"`・`maxLength 200`／`desc` `maxLength 200`／`text` `maxLength 10000`／`position` `minimum 0`／`*_id`・`parent_folder_id`・`folder_id` は uuid（欄の名前が `_id` で終わる物は uuid）／`shelf` は `company`・`group`・`me` の enum／`doc` は object／`must` は boolean\n- **欄をまたぐ決まりは `INPUT_RULES`（anyOf・契約に書ける形）**：`createKnowledgeFolder`・`createKnowledgePage` は「`shelf` が `company`・`me` か、`group_id` がある」（グループの棚は `group_id` が要る・無ければ 422）／`updateKnowledgeFolder`＝`name`・`parent_folder_id`・`position` のどれか 1 つ／`saveKnowledgeDraft`＝`title`・`desc`・`doc` のどれか 1 つ／`updateKnowledgePage`＝`folder_id`・`position` のどれか 1 つ。**`UNEXPRESSIBLE_422` は使わない**（控え帳 2026-11-20 16:51）\n- **断る番号**（控え帳）：形の誤りは番号なしの **422・VALIDATION_ERROR**／**404**＝指した物が無い・見えない・消した・別の会社（体は `{ error, code }` だけ・欄も details も無し）／**409**＝今の状態ではできない（`E-KNW-…`・体は `{ error, code }`・差し込む値は `detail` 単数＝上限に届いた 060 だけ）／**403**＝その棚に書けない。見えないページに書こうとしたら 404、見えるが書けないは 403。口ごとの一覧は下の表\n- **権限の言葉（PERMS）**：`getKnowledgeTree`・`findSimilarKnowledge`＝`self`／`:id` を読む 4 本（`getKnowledgePage`・`listKnowledgeVersions`・`getKnowledgePageVersion`・`copyKnowledgePage`）＝`read`／そのほか書く口＝`write`。**言葉は「社内の人」までしか見ない**。棚ごとの書ける人は行の守りと口が決める。`write` の `:id` の行の確かめは前からある `RULES.write.knowledge_pages` を `(deleted_at is not null or app.kpage_writable(id))` に直す（消したページは入口を通し、口が `deleted_at is null` つきの読みで 404 にする。直さないと消したページは入口で 403 になり、K-679・K-680・K-681 の「消した → 404」が口まで来ない）。**フォルダの口は入口で行を読まない**：`scripts/ci/row_rules.mjs` の `ROW_EXEMPT` に `\"/api/v1/knowledge/folders\": \"<理由>\"` を足し（理由：行の見える・書けるは `app.kfolder_visible`・`kfolder_writable` を口が呼んで 404・403 を決める。表を `packages/db/src/repository.ts` の `TABLES` に足すと、それを読む 43 本の前からの試験が動くので足さない）、口が決める\n- **呼べる回数**：`saveKnowledgeDraft` は 120/min/user（自動で保存する）・`findSimilarKnowledge`・`copyKnowledgePage` は 30/min/user・読む口は 120/min/user・ほかは 60/min/user（`RATES`）。読む口の一覧 `listKnowledgeVersions` は全部を新しい順に返し 200 行で切る（切ったらログに `[knowledge] 版の一覧を 200 行で切った` を 1 行・題名は出さない）。cursor・limit は入口の共通の形の確かめだけ\n- **口の登録は葉ごとの hooks のファイル**（K-326）：名前は `ops.ts` の表（`f9-knowledge-tree`・`-page-read`・`-folders`・`-draft`・`-publish`・`-page-edit`・`-must`・`-similar`・`-raise`・`-approvals`・`-shares`・`-copy`・`-review`）。この葉は hooks のファイルを作らない。K-326 の一覧は作り手 `python3 scripts/ci/gen_ts_registries.py` が作る\n- **入口の `normalize`（NFKC と前後の空白）は本文 `doc` の文字にも掛かる**（`apps/api/src/contract/op.ts`）。段 5 の本文の口 K-432 と同じ扱い（`doc` は入口の整えの後の形を保存する）に合わせる。扱いを変える話は口の葉（K-679）の「リスク」に書く\n- 外へ出ない：メールもお知らせ（受け箱の行・関門 C6）も出さない。DB に書かない。ログにページの題名・本文を出さない",
+    "依存の理由": "- K-674: 要る — 契約が名指す表（`knowledge_folders`・列 `summary`・`is_must` など）と、試験の土台が入れる行（`knowledge_folders`・`position`・`is_must`・`copied_from_page_id`）、関数 `app.kn_must_text_max`・`app.kn_shelf_readable`・`app.kfolder_writable` が K-674 の migration にある。試験 K675-API-013・014・017 は本物の DB でこれらを使う",
+    "目録で探した結果": "- 使う：契約の入口 `apps/api/src/contract/op.ts`（401・429・501・uuid の確かめ・行に結ぶ確かめ）・`defineHooks`／`HookDeps`（`apps/api/src/hooks/registry.ts`）・`HookReply`（`apps/api/src/contract/deps.ts`）・`kanameError`（`@kaname/errors`）・`withTenant`（`packages/db/src/context.ts`）・`validateDoc`・`toTicketBody`・`DOC_MAX_*`（`@kaname/contracts`・K-561）・K-351 の `credentials.harness.ts`（土台の形）・K-434 の `reply.ts` の断りの答えの形（`apps/api/src/features/F4/test-spec/reply.ts`＝段 5 の葉・同じ形で作る）\n- 作る：`features/F9/knowledge/ops.ts`・`reply.ts`・`shelf.ts`・`body.ts`・`shape.ts`・契約の断片・台帳の断片・土台 `knowledge.harness.ts`。探したが同じ形の物は無かった（棚を決める・本文を確かめて text を作る・木の印を決める部品は、ナレッジが初めて。reply は K-434 の写しではなく、同じ形の別のファイル＝F9 の中に置く）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 契約（前からある 8 本を直す・本体） | `05_flow/screen_api.py`：**SCREEN_API の行**（393〜430 行の `\"knowledge\"` の 8 本の行。表と「触る表」の並びを土台 2 章のとおり：getKnowledgeTree `[\"knowledge_folders\", \"scopes\"]`・getKnowledgePage `[\"knowledge_page_versions\", \"knowledge_folders\", \"reference_logs\"]`・createKnowledgePage `[\"knowledge_page_versions\", \"knowledge_folders\"]`・saveKnowledgeDraft／discardKnowledgeDraft `[\"knowledge_page_versions\"]`・publishKnowledgePage `[\"knowledge_pages\", \"knowledge_page_versions\"]`・updateKnowledgePage・listKnowledgeVersions `[]`）・**RESPONSES**（`getKnowledgeTree`・`getKnowledgePageDetail` の 2 行を土台 3.1 の鍵に：KnowledgeTree＝company_name string・company_nodes array・groups array・my_nodes array・can_write object・admin_counts object?・truncated boolean／KnowledgePageDetail＝id uuid・title string・desc string・state string・must boolean・must_blocked string?・place object・acts array・body object?・draft object?・request object?・copied_from object?・shared_from object?・raise_to object?・foot object）・**PERMS**（8 本：言葉と説明を上の「権限の言葉」に）。ほかの前の行（K-711 が外す 23 本）は触らない |\n| 契約（新しい物・断片） | `05_flow/screen_api.d/K-675.py`：**SCREEN_API**（新しい 8 本の行：getKnowledgePageVersion・createKnowledgeFolder・updateKnowledgeFolder・deleteKnowledgeFolder・deleteKnowledgePage・setKnowledgeMust・findSimilarKnowledge・copyKnowledgePage。act は A114）・**INPUTS**（9 つ：KnowledgeFolderCreateInput `{shelf, group_id, parent_folder_id, name}`／KnowledgeFolderUpdateInput `{name, parent_folder_id, position}`／KnowledgePageCreateInput `{shelf, group_id, folder_id, title, desc}`／KnowledgeDraftInput `{title, desc, doc}`／KnowledgePublishInput `{}`／KnowledgePageMoveInput `{folder_id, position}`／KnowledgeMustInput `{must}`／KnowledgeSimilarInput `{title, desc, text, exclude_page_id}`／KnowledgeCopyInput `{folder_id}`。型は `uuid?`・`string`・`string?`・`integer?`・`boolean`・`object`）・**REQUIRED_INPUTS**（Folder 作る `[shelf, name]`・Page 作る `[shelf, title]`・Must `[must]`・Similar `[title]`）・**VALUE_RANGES**（上の「入力は専用で strict」）・**INPUT_RULES**（上の欄をまたぐ決まり 4 つ）・**RESPONSES**（KnowledgeVersionItem `{version integer, published_at string, by_name string?}`・KnowledgeVersion `{version, published_at, by_name string?, body object}`・KnowledgeFolder `{id uuid, name, shelf, group_id uuid?, parent_folder_id uuid?, position integer}`・KnowledgeFolderDeleted `{id uuid}`・KnowledgePageStub `{id uuid, title, desc, state, must boolean, place object}`・KnowledgeDraftSaved `{saved_at, title, desc}`・KnowledgeDraftDiscarded `{id uuid, page_deleted boolean}`・KnowledgePublished `{id uuid, version integer, published_at}`・KnowledgePageDeleted `{id uuid}`・KnowledgeMustSet `{id uuid, must boolean, used integer, limit integer}`・KnowledgeSimilar `{pages array}`）・**QUERIES**（`listKnowledgeVersions` は `[]`）・**LIST_DETAILS**（listKnowledgeVersions：sort False・limit_max 200・desc「取得（knowledge_page_versions）— ページの公開した版を新しい順に見る」・meta `{ count }`）・**META**・**RATES**・**PERMS**（新しい 8 本）・**PATH_PATTERNS**（getKnowledgePageVersion の `v` は `^[1-9][0-9]{0,8}$`）・**ERRORS_4XX**（16 本。下の表。404・409 の body は `{\"error\": …, \"code\": …}` だけ・060 は `detail` つき）→ `python3 05_flow/build_api.py` で作り直す。`scripts/ci/contract_shape.d/K-675.py`：`scripts/ci/contract_shape_test.py` の `FRAGMENT_NAMES` の 6 つの表のうち、必須の欄・値域・欄をまたぐ決まりに上と同じ行を書き、残りは空 |\n| 行に結ぶ確かめ | `scripts/ci/row_rules.mjs`：`ROW_EXEMPT_FIELDS` に `updateKnowledgeFolder`・`deleteKnowledgeFolder` の欄 `id`（理由は上の「権限の言葉」。2026-11-23 に道ごとの `ROW_EXEMPT` から替えた・決定ログ）。`RULES.write.knowledge_pages` を `(deleted_at is not null or app.kpage_writable(id))` に直す（上の「権限の言葉」） |\n| エラーの台帳 | `07_qa/test-specs/errors.d/K-675.json`：E-KNW-010・011・012・020〜024・030・040・041・050〜052・060・061・080 の 17 件（class `conflict`・where.screen `knowledge`・文と「やること」は下の表。文面は**仮**＝画面の文はモックに無いので画面の葉が決める）。`python3 scripts/ci/build_registries.py` で `errors.json` を作り直し、`packages/errors/src/catalog.ts` が追う |\n| 共通の部品（TS） | `apps/api/src/features/F9/knowledge/`：**ops.ts**＝`export const KNOWLEDGE_OPS: Readonly<Record<string, { leaf: string; file: string }>>`（25 本・土台 2・5 章。`file` は `f9-knowledge-…` で拡張子なし）。**reply.ts**＝`invalid(field, message)`（422・`{error: \"validation_failed\", code: \"VALIDATION_ERROR\", details: [{field, message}]}`）・`notFound()`（404・`{error: \"not_found\", code: \"NOT_FOUND\"}`）・`forbidden()`（403・`{error: \"forbidden\", code: \"FORBIDDEN\"}`）・`conflict(code, detail?)`（409・`{error: \"conflict\", code}`＋あれば `detail`。台帳に無い番号は例外）・`unavailable()`（503・`{error: \"unavailable\", code: \"E-PAGE-003\"}`）。どれも `HookReply`。**shelf.ts**＝`resolveShelf(client, { shelf, group_id? }): Promise<ShelfRef \\| null>`（`ShelfRef = { kind, scopeId, isPersonal, groupId }`。会社＝`app.kn_company_scope()`・自分＝今の人の `members.scope_id`・グループ＝`group_id` が今の会社の会社のいちばん上でないグループで、`app.kn_shelf_readable(g, false, null)` が真のときだけ。外れは null＝口は 404）。**body.ts**＝`parseDocInput(input: unknown): { ok: true; body: TicketBody } \\| { ok: false; message: string }`（`validateDoc` を通し、`toTicketBody` で text を作る）。**input.ts**＝`checkKnowledgeInput(op, input): HookReply | null`（入口の zod は契約の値域・必須・欄をまたぐ決まりを見ないので〔K-144 の作り・PM の決め 2026-11-23〕、16 本の体を受ける 9 口の必須・長さ・値域・1 つは要る・グループの棚の group_id を確かめ、外れは 422 と欄の名前。口の葉は before の最初に呼ぶ）。**shape.ts**＝`KNOWLEDGE_MUST_TEXT_MAX = 2000`・`treeMark({ draft, waiting, declined, copied }): \"waiting\" \\| \"declined\" \\| \"draft\" \\| \"copy\" \\| null`・`toPlace(shelf, shelfName, groupId, folderId, folders)`・`placeText(shelfName, folders)`（`›` でつなぐ）・答えの形の型（`PagePlace`・`PageBrief`・`TreeNode`）。どれも DB を直に書かない・ログに題名と本文を出さない |\n| 登録先（touch_rules） | 契約の断片（上の screen_api.d・contract_shape.d）・`errors.d/K-675.json`・`scripts/ci/ci_scope.d/K-675.json`（下の「範囲の地図」）。口の登録の hooks のファイルは作らない（この葉は `apis: []`）。`python3 scripts/ci/build_registries.py`・`python3 scripts/ci/gen_ts_registries.py` で生成物を作り直す |\n| 生成物 | `08_api/endpoints.json`・`openapi.yaml`・`types.ts`・`packages/contracts/src/*`・`apps/api/src/routes/*`・`apps/api/test/generated/*knowledge*`（新しい口の it.todo と、前からある 8 本の作り直し）は作り手 `python3 05_flow/build_api.py` ＋ `node scripts/ci/contract.mjs gen` ＋ `node scripts/ci/gen_ears_tests.mjs`（いずれも `changes_ignore`）。**前からある 23 本の外す口の生成の試験は K-711 が消す**（この葉では残す） |\n| 文書 | `08_api/phase1/09_ナレッジ.md`：K-674 が足した節の下に「口の一覧（K-675 で宣言した 16 本・K-687〜K-695 で足す 9 本）」を土台 2 章の表で書く。外す 23 本の一覧は K-711 が消す |\n| 試験 | `apps/api/test/features/F9/knowledge-base.test.ts`（切る段が書いた・22 行）・carry：土台 `knowledge.harness.ts` |\n\n### 断りの一覧（ERRORS_4XX・口ごと）\n\n| 口 | 403 | 404 | 409（番号） | 422 |\n|---|---|---|---|---|\n| getKnowledgePage・listKnowledgeVersions | 入口の共通 | 見えない・無い・消した・別の会社 | — | — |\n| getKnowledgePageVersion | 入口の共通 | ページが見えない・その版が無い | — | — |\n| createKnowledgeFolder | その棚に書けない | グループ・親フォルダが見えない・無い・その棚に無い | 020・021 | 名前・棚・group_id の形 |\n| updateKnowledgeFolder | 書けない | フォルダ・親が見えない・無い | 020・021・022・023 | 形・1 つも無い |\n| deleteKnowledgeFolder | 書けない | 見えない・無い | 024・051 | — |\n| createKnowledgePage | その棚に書けない | グループ・フォルダが見えない・無い・その棚に無い | — | 題名・desc・棚の形 |\n| saveKnowledgeDraft | 書けない | 見えない・無い | 012 | 形・doc が通らない・1 つも無い |\n| discardKnowledgeDraft | 書けない | 見えない・無い | 030 | — |\n| publishKnowledgePage | 書けない | 見えない・無い | 040・041 | — |\n| updateKnowledgePage | 書けない | ページ・フォルダが見えない・無い | 011・052 | 形・1 つも無い |\n| deleteKnowledgePage | 書けない | 見えない・無い | 011・050・051 | — |\n| setKnowledgeMust | 書けない | 見えない・無い | 010・011・060（detail）・061 | 形 |\n| findSimilarKnowledge | — | — | — | 題名・text の形 |\n| copyKnowledgePage | — | ページ・フォルダが見えない・無い | 010・080 | 形 |\n\n### 台帳の文（仮）\n\n| 番号 | 文 | やること |\n|---|---|---|\n| E-KNW-010 | このページはまだ書き終えていません。書き終えてから使ってください | 書き終える |\n| E-KNW-011 | このページを上の棚へ上げる（共有する）頼みが承認待ちです。決まるまでは変えられません | 頼みを取り下げる／決まるのを待つ |\n| E-KNW-012 | ほかの人がこのページを書いています。書き終えるまで待ってください | 少し待つ |\n| E-KNW-020 | 同じ場所に同じ名前のフォルダがあります | 名前を変える |\n| E-KNW-021 | フォルダは 6 つ入れ子までです | 浅い所に置く |\n| E-KNW-022 | フォルダを自分の中には動かせません | 別の場所を選ぶ |\n| E-KNW-023 | フォルダは別の棚には動かせません | 同じ棚の中で動かす |\n| E-KNW-024 | 中にページかフォルダがあるので消せません | 先に動かすか消す |\n| E-KNW-030 | 捨てる下書きがありません | 画面を開き直す |\n| E-KNW-040 | 書き終える下書きがありません | 画面を開き直す |\n| E-KNW-041 | 「必ず守る」のページは本文を 2,000 字までにしてください | 本文を短くする |\n| E-KNW-050 | 「必ず守る」が付いているので消せません | 先に外す |\n| E-KNW-051 | ほかのグループに共有しているので消せません | 先に共有をやめる |\n| E-KNW-052 | ページは別の棚には動かせません。上の棚へは「上げる」を使ってください | 「上げる」を使う |\n| E-KNW-060 | 「必ず守る」の上限に届きました | 今付いているページから外す |\n| E-KNW-061 | 本文が 2,000 字を超えているので、「必ず守る」は付けられません | 本文を短くする |\n| E-KNW-080 | 自分の棚のページは写せません | 上の棚のページを選ぶ |\n\n### 生成の試験\n\nこの葉は口の振る舞いを作らないので `ears-elsewhere.d` は書かない（生成の試験は it.todo のまま。各口の葉が自分の `ears-elsewhere.d/K-<番号>.json` で本物の試験に結ぶ）。**手順（作る段の最初）**：① 契約の断片（`screen_api.d/K-675.py`・本体の直し・`contract_shape.d/K-675.py`・`errors.d/K-675.json`・`row_rules.mjs`）を先に書き、作り手で生成物を作り直す ② 生成物（新しい生成の試験を含む）を**先にコミット**する ③ そのあと共通の部品を書く。先の葉（K-676 以降）の契約を前提にした前からの試験を、この葉の carry に入れない。\n\n### 範囲の地図（ci_scope.d/K-675.json）\n\n土台 `knowledge.harness.ts`（carry の道具）は、葉の hooks のファイル `apps/api/src/hooks/f9-knowledge-*.ts` を readdirSync と動的 import で読む。パスを組み立てて読むので import の地図では hooks → 試験が辿れない。`knowledge-base.test.ts` は `08_api/endpoints.json`・`07_qa/test-specs/errors.json` を readFileSync で・置き場 `k144.d` の名前の一覧を readdirSync で読む。K-351 と同じ訳で data_links と reads_ok を書く（形は `scripts/ci/ci_scope.py` の data_links ＝ paths と tests）。\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/hooks/f9-knowledge-*.ts\", \"apps/api/src/features/F9/knowledge/**\"],\n   \"tests\": [\"apps/api/test/features/F9/knowledge-base.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"]}\n ],\n \"reads_ok\": {\n  \"apps/api/test/features/F9/knowledge.harness.ts\": \"入っている葉の hooks のファイル apps/api/src/hooks/f9-knowledge-*.ts を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-675\",\n  \"apps/api/test/features/F9/knowledge-base.test.ts\": \"契約の生成物 08_api/endpoints.json・07_qa/test-specs/errors.json を readFileSync で、置き場 k144.d の名前の一覧を readdirSync で読む。生成物と使う試験は同じ CI で作り直される・K-675\"\n }\n}\n```\n\nK-676〜K-695 の葉は、自分の断片に「自分の hooks のファイルと口のコード → 自分の試験」の 1 行（`paths` は上と重なってよい）を足す。`reads_ok` の鍵は 1 つのファイルしか持てないので、土台の訳はこの葉だけが書く。",
+    "外に影響する手順": "- なし — 契約と口の置き場だけで、DB に書かず・お知らせ（関門 C6）も外のサービスも AI も呼ばない（試験の土台が行を入れるのは試験の準備）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F9/knowledge-base.test.ts`（契約の入力・答えの形を読む行・本物の DB と本物の口の入口を使う行・口の入口は createApp と契約の op・偽の画面のログイン。土台 `knowledge.harness.ts`。口の振る舞いを読み込まない＝振る舞いの無い入口だけを見る）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 口の振る舞いがまだ無い（16 本） | 契約の口を叩く | ログインしていない | 401 | このチケット | K675-API-009 |\n| 同じ | 同じ | ログイン中 | 501 NOT_IMPLEMENTED・何も書かない | このチケット（作った葉の分は 501 が消える） | K675-API-010 |\n| 同じ | 同じ | 上限を超えた | 429・retry_after_sec | このチケット | K675-API-011 |\n| 同じ | 同じ | 同意し直しが要る・付けるまで進めない | 403 | 入口の共通（K-53・K-321） | 生成の試験 mfa_pending ほか |\n| 道の id が uuid でない（12 本） | 同じ | ログイン中 | 422（欄 id・理由 uuid） | 口を作る葉（K-677〜K-681・K-685・K-690） | 各葉の `k144.d/K-<番号>.ts`（K144-API-100〜111・K675-API-021 の割り当てのとおり） |\n| 契約の入力 | 体を送る | どれでも | 知らない欄は入口の strict・必須の抜け・値の外・欄をまたぐ決まりは口の入力の確かめ（input.ts）が 422 | このチケット | K675-API-002〜004 |\n| 契約の答え | 読む | どれでも | 見本の鍵と契約の鍵の集まりが同じ | このチケット | K675-API-005 |\n| グループの棚を指す | 口が棚を決める（shelf.ts） | その人／入っていない人・別の会社 | 決まる／null（口は 404） | このチケット | K675-API-013・014 |\n| 本文を送る | 口が確かめる（body.ts） | どれでも | 合えば `{doc, text}`・外れは理由つき | このチケット | K675-API-015・016 |\n| 口の本体（K-676 以降） | 各口 | 各役 | 各葉が受ける | K-676〜K-690・K-695 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K675-API-001 | 対象の状態 | 契約の 16 本 | 土台 2 章の表のとおり方法・道・成功の状態（201 は作る 4 本）・入力と答えの名前・権限の言葉・道の uuid・一覧か（listKnowledgeVersions だけ）が在り、全部 `generic false`・auth member |\n| K675-API-002 | 入力 | 9 つの入力の strict | 見本の体は通り、`ticket_id` を足すとどれも断られる |\n| K675-API-003 | 入力 | 必須・1 つは要る・グループの棚 | 口の入力の確かめ（`input.ts` の `checkKnowledgeInput`）が、`name`・`title`・`must`・`shelf` が欠けると（ページの `shelf` も）422 と欄の名前を返す。`shelf: group` で `group_id` が null でも 422（欄 group_id）。`shelf: group` で `group_id` が無いと断り、あれば通る。`company`・`me` に `group_id` があっても通る。更新の 3 つ（フォルダ・下書き・ページの移動）は空の体を 422（欄 body）。9 つの口の見本は通る |\n| K675-API-004 | 入力 | 値の形・境目 | 口の入力の確かめ（`input.ts`）が 422 と欄の名前で断る。文字の欄は口ごとに全部（フォルダの名前 100・ページと下書きと似たページの題名 200・説明 200・text 10,000、名前と題名は空白だけも）通る境目と断る境目を見る。棚はフォルダとページの両方・position はフォルダとページの両方：名前 100 字は通り 101 字・空白だけ・知らない棚・uuid でない `group_id`・`parent_folder_id` は断る。`position` -1 は断る。題名 200／201・desc 200／201・text 10,000／10,001 の境目。`doc` が object でないは断る・`text` を送るは入口の strict が断る。`must` が文字・`folder_id` が uuid でないは断る |\n| K675-API-005 | 入力 | 答えの見本 | 土台 3 章の鍵の見本（13 の形）と契約の答えの形の鍵の集まりがちょうど同じ（K-144 の SHAPE と同じ突き合わせ）・見本は形に合い・知らない鍵を足すと合わない |\n| K675-API-006 | 失敗 | 断りの状態コード | 口ごとに要る 403・404・409・422 が契約の断りの並びにあり、読む 3 本と `findSimilarKnowledge` に 409 は無い |\n| K675-API-007 | 失敗 | 断りの体の形 | 404 の体は鍵が `code`・`error` だけ。409（E-KNW）は `{error, code}` か `{error, code, detail}`。422 は `details` を持つ。E-KNW-060 の体は `detail` を持つ |\n| K675-API-008 | 入力 | エラーの台帳 | E-KNW の 17 件（010・011・012・020〜024・030・040・041・050〜052・060・061・080）が class conflict・文・やること・must_not false で在り、番号は決めた枠（K-675 の 17 件か 100〜139・200〜249・300〜329）の中だけ・重ならない |\n| K675-API-009 | 利用者の状態 | ログインしていない | 16 本とも 401 |\n| K675-API-010 | 失敗 | 口の振る舞いがまだ無い | ログイン中の管理者が 16 本を叩くと、どれも 501 と `NOT_IMPLEMENTED`・`knowledge_pages` に行が増えない（表の素の読み書きに落ちない） |\n| K675-API-011 | 守り | 上限 | 上限を 2 に差し替えた口の 3 回目が 429・retry_after_sec は 1〜60 の整数 |\n| K675-API-012 | 失敗 | 断りの答え（reply.ts） | notFound＝404 `{error: \"not_found\", code: \"NOT_FOUND\"}`・forbidden＝403 `{error: \"forbidden\", code: \"FORBIDDEN\"}`・conflict(E-KNW-010)＝409 `{error: \"conflict\", code}`・conflict(E-KNW-060, detail)＝`detail` つき・invalid＝422 `details: [{field, message}]`・unavailable＝503 E-PAGE-003。台帳に無い番号の conflict は例外 |\n| K675-API-013 | 入力 | 棚を決める：会社・自分 | 会社＝会社のいちばん上のグループ・自分＝持ち主の主の所属で自分の棚（isPersonal true）・会社に `group_id` が付いていても無視 |\n| K675-API-014 | 守り | 棚を決める：グループ | 入っているグループは決まる。入っていないグループ・会社のいちばん上・無い id・別の会社のグループは null |\n| K675-API-015 | 入力 | 本文を確かめる：合う | 形の合う doc は `{doc, text}` で doc は渡した物のまま・text は doc から作られる（「あいう」を含む）。節 0 個は text が空 |\n| K675-API-016 | 入力 | 本文を確かめる：外れ | null・文字・配列・空の object・type が違う・知らない節・1MB を超える doc は ok false で理由の文字を返す |\n| K675-API-017 | 守り | 必ず守るの字数の上限 | TS の定数は 2000・DB の `app.kn_must_text_max()` も同じ 2000 |\n| K675-API-018 | 入力 | 答えの形の部品 | 木の印は 承認待ち＞断られた＞下書き＞写し の順で 1 つ・何も無ければ null。置き場の形の鍵は 5 つ（shelf・shelf_name・group_id・folder_id・folders）。場所の字は「営業 › 見積もり › 2026」・フォルダ無しは棚の名前だけ |\n| K675-API-019 | 対象の状態 | 口の持ち主の表 | 25 本の口が土台の持ち主の葉と hooks のファイル（`f9-knowledge-…`）に結ばれ、表の鍵が 25 本ちょうど |\n| K675-API-020 | 操作の揺れ | hooks のファイルの重なり | 入っている `f9-knowledge-*.ts` は、持ち主の表のとおりの口だけを持ち、同じ口を 2 つのファイルが持たない（まだ 1 つも入っていない間は何も無い＝通る） |\n| K675-API-021 | 対象の状態 | 共有の試験の葉のファイル | この葉は入口の uuid の行を持たない（`k144.d` に `K-675.ts` が無い）。道に `:id` を持つ 12 本の行は、口を作る葉が自分の `k144.d/K-<番号>.ts` に持つ（K144-API-100〜102 は K-677・103〜104 は K-678・105〜106 は K-679・107 は K-680・108〜109 は K-681・110 は K-685・111 は K-690） |\n| K675-API-022 | 守り | 行に結ぶ確かめ | ページの 4 本の読む口は `knowledge_pages` で `true`・書く 6 本は `(deleted_at is not null or app.kpage_writable(id))`・フォルダの 2 本は入口で行を読まない（null）・木・フォルダを作る・ページを作る・似たページは null |\n\n### テストの型の受け（分類 PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-PERM-01 役が合わない人 | K675-API-009（ログインしていない人は 401）・014（グループに入っていない人は棚が決まらない＝口は 404）・022（書く口は `kpage_writable`・読む口は行が見えるだけ＝役の決めを契約に持つ）。役ごとの結果は口の葉 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 要らない: TP-PERM-02 この葉は口の振る舞いを持たない。権限は口を呼ぶたびに入口と DB の関数が今の所属で決める（K674-DB-021・027 が外した直後を見る） |\n| TP-PERM-03 他の会社の ID を直接指定する | K675-API-014（別の会社のグループは null）。別の会社のページを指す口の振る舞いは口の葉 |\n| TP-PERM-04 一覧・数・検索 | 要らない: TP-PERM-04 一覧・数・検索の口の振る舞いを持たない（木の口 K-676・似たページの口 K-686・版の一覧 K-677 が受ける）。契約の一覧の形は K675-API-001 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-05 TP-PERM-02 と同じ訳（要求ごとに今の所属で決める） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（木と開いたページ） | 前の口（501） | この葉は口を持たない。木 1 本（K-676）・ページ 1 本（K-677）を同時に始める |\n| 直列の段 | — | 1（木とページは並べて始める） |\n| 口ごとの文の数・取引の数 | — | この葉は口の本体が無い。共通の部品 `resolveShelf` は 1 取引・文 1〜2 つ（棚が会社・自分なら 1 つ・グループなら 2 つ） |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（入口の共通） |\n| 新しい住所 | — | 増える（`/knowledge/folders`・`/knowledge_pages/:id/must`・`/copy`・`/versions/:v`・`/knowledge/similar` など 8 つ・どれも `/api/v1` の下） |\n| staging での答えの時間の前後 | — | 口の葉が測る |",
+    "前からの試験を替えた所": "切る段の検査（`cut_check.py prior`）が出した物と、前からある契約の 8 本を直すので手で探した物。件数は作る段の木（本線＋この葉が運ぶ物）で数える。この葉の新しい試験と carry の道具・`row_rules.mjs` は命令のパスで外した。\n\n```search\ngit grep -l \"getKnowledgeTree\\|getKnowledgePage\\|createKnowledgePage\\|saveKnowledgeDraft\\|publishKnowledgePage\\|listKnowledgeVersions\\|discardKnowledgeDraft\\|updateKnowledgePage\\|knowledge/tree\\|knowledge_pages\" -- 'apps/*/src/*' 'apps/*/test/*' 'apps/*/tests/*' 'apps/*/lib/*' 'apps/*/app/*' 'apps/*/features/*' 'packages/*/src/*' 'packages/*/test/*' 'scripts/ci/*' ':!apps/api/test/generated/*' ':!apps/api/src/routes/*' ':!packages/contracts/src/*' ':!apps/api/test/features/F9/*' ':!scripts/ci/row_rules.mjs' ':!packages/db/src/repository.ts' ':!packages/db/test/knowledge_clients.test.ts'\n0\n```\n\n- packages/db/src/repository.ts・packages/db/test/knowledge_clients.test.ts: 替えない（この葉では。命令のパスで外した）— 前者は表の一覧（`knowledge_pages` の名前）で K-674 の「前からの試験を替えた所」が決めた物、後者は K-674 が carry で替える（ナレッジの describe を外す）物。この葉の木（本線＋K-674）では 0 になる\n- apps/api/src/contract/authz.test.ts: 替えない — 全部の口を契約から読んで、振る舞いの無い口が 501 で止まること・役ごとの言葉を回す。新しい口は同じ形（`generic false`・振る舞い無し）で入るので、行が増えるだけで期待は変わらない。ナレッジの口の名前を直に書いた行は無い（検索で 0）\n- apps/api/test/authz_rows.test.ts: 替えない — 行に結ぶ言葉の口を全部読んで、本物の DB で 404／403 を確かめる。ページの口の行の確かめは `(deleted_at is not null or app.kpage_writable(id))`（消したページは入口を通り、試験の 404／403 の期待は口が決める。消したページを読む行は試験に無いので替えない）・フォルダの口は入口で行を読まない（ROW_EXEMPT）ので対象に入らない\n- apps/api/test/row_rules.test.ts: 替えない — 契約の perm.row を全部本物の表で動かす。ページの口の条件は `(deleted_at is not null or app.kpage_writable(id))`（どちらの列・関数も在るので本物の表で動く）。フォルダの口は perm.row が無い\n- scripts/ci/contract.test.mjs: 替えない — 契約の生成そのものの試験（生成の鍵・行の言葉が表に在るか）。ROW_EXEMPT の 1 行は前から在る仕組み（`/bridge/devices` と同じ）で、足す理由を書く\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 入口の uuid の行・体の値の行を共有の試験の葉のファイルから集める（K-378）。この葉は葉のファイルを足さない（口を作る葉が自分の `k144.d/K-<番号>.ts` を足す・2026-11-23 PM の決め）。本体の行は変えない\n- scripts/ci/contract_shape_test.py: 替えない — 契約の形の表（`contract_shape.d` の断片を足し合わせた物）を契約と照らす。この葉の断片 `contract_shape.d/K-675.py` を足し、前からの行は変えない\n- scripts/ci/ci_scope_test.py・scripts/ci/k248_scope_reach_test.py・scripts/ci/ci_lean_test.py: 替えない — 範囲の地図（`ci_scope.d` の断片から作る）の形と結びを見る。この葉の断片 `ci_scope.d/K-675.json` を足して作り手で作り直す。中身を読まない物は道の字だけ\n- apps/api/test/k326-api-registry.test.ts: 替えない — hooks のフォルダの全部のファイルが register を持つことを見る。この葉は hooks のファイルを作らない\n- apps/api/test/generated/*knowledge*.test.ts（前からある 31 本）: 替えない（作り手が作り直す物）— 前からある 8 本の操作 ID の生成の試験は契約を直すと作り直され、外す 23 本の分は K-711 が消す。これらは `changes_ignore`（生成物）で、中の `it.todo` は各口の葉が `ears-elsewhere.d` で本物の試験に結ぶ",
+    "成果物": "- 契約の断片（`screen_api.d`・`contract_shape.d`）と本体の直し 8 本・`errors.d` 17 件・`row_rules.mjs` の 1 行・`ci_scope.d`\n- `apps/api/src/features/F9/knowledge/` の 5 ファイル（ops・reply・shelf・body・shape）\n- 単体の試験 `knowledge-base.test.ts` と土台 `knowledge.harness.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-22 切り方 0.1・1 章（PM の OK 済み）：物は「ナレッジのページ」1 つ。口は 25 本（宣言する 16 本＋K-687〜K-695 が足す 9 本）。前の口 23 本は K-711 が外す\n- 2026-11-22 切る段の決め：口の振る舞いが無い口は 501 のまま（K-351 の形）。K-401 の「まだ使えません」の空の形は作らない（ナレッジは 1 口 1 葉で、種類ごとの共通の振り分けが無いため）\n- 2026-11-22 切る段の決め：エラーは `E-KNW-NNN`（3 桁・百の位が仕組みの束・十の位が葉ごとの枠）。K-675 の宣言する 16 本の口の分は K-675 の台帳が先にまとめて書く（契約の断りが番号を指すため）\n- 2026-11-22 切る段の決め：フォルダの口は入口で行を読まない（ROW_EXEMPT）。口が `kfolder_visible`・`kfolder_writable` で 404・403 を決める（表を TABLES に足すと 43 本の前からの試験が動くため）\n- 2026-11-23 作る段の直し（CI の赤 G41）：フォルダの口の外しは、道ごとの `ROW_EXEMPT` ではなく、欄で名指しする `ROW_EXEMPT_FIELDS`（`updateKnowledgeFolder`・`deleteKnowledgeFolder` の `id`・理由つき）に書く。権限の試験 `apps/api/src/contract/authz.test.ts` の除外は道の決め打ち 2 つと欄の名指しだけを読むので、道ごとに足すと試験を替えることになる。欄の名指しなら試験を替えずに同じ結果（2 本の口の perm.row が null）になる（K-441 の PM の決め「口ごとは外さない・欄で名指し」と同じ形）。上の文の「ROW_EXEMPT」はこの形に読み替える\n- 2026-11-22 切る段の決め：必ず守るの上限に届いた 409（E-KNW-060）は、体に `detail`（上限・棚の名前・今付いているページの一覧）を持つ。控え帳の「409 は field・details を付けない」は守り、差し込む値は `detail` 単数（K-401 の前例）\n- 2026-11-22 整合の決め：`deleteKnowledgeFolder` の 409 は 024（中身がある）と 051（共有しているので消せない。K-719 が `folder-guard-share.ts` で返す）の 2 つ。契約の断りと土台 2 章をそろえた（K-678・K-719 の頼み）\n- 2026-11-22 切る段の決め：K144 の uuid の行は段 10 の枠 K144-API-100〜149（K-675 が 100〜111）。移すと衝突する本線・c/段5・段8・段9 の番号の外\n- 2026-11-23 PM の決め（案 A）：K-675 は入口の uuid の行を持たない（作っていない口の行を置くと契約の形の検査 SHAPE-017 が赤）。行 ID はそのままで、口を作る葉が自分の `k144.d/K-<番号>.ts` に持つ：100〜102=K-677／103〜104=K-678／105〜106=K-679／107=K-680／108〜109=K-681／110=K-685／111=K-690",
+    "PM に確かめたいこと": "無い（新しく聞くことは無い。製品のふるまいは切り方 4 章の 7 つを勧めのまま書いた：エラーの文面は仮）",
+    "リスクと懸念": "- **見込みが 1 時間を超えうる**：契約の宣言（16 本）と台帳 17 件は量が多い。超えるなら「共通の部品 5 ファイルと土台」を別の葉に分ける（契約の断片・errors・row_rules は 1 つのまま）\n- **前からある 8 本の `screen_api.py` の直しは、K-711 が外す 23 本の行と同じファイル・近い行**。K-711 は K-675 の後（依存）なので順で解く。K-675 は外す 23 本の行を触らない\n- **入口の normalize が本文の字を NFKC にする**（上の前提）。段 5 の K-432 の扱いを写す。違う扱いが要るなら K-679 が決める\n- 台帳の文は仮。画面の文は画面の葉がモックの字に合わせて直す（番号は変えない）",
+    "申し送り": "- K-676〜K-690・K-695：契約は K-675（K-687・K-688・K-689・K-695 は自分で宣言）。自分の hooks のファイル `apps/api/src/hooks/f9-knowledge-<名前>.ts`（`ops.ts` の `file`）・口の本体 `apps/api/src/features/F9/knowledge/<口>.ts`・試験 `knowledge-<名前>.test.ts` を作り、`ears-elsewhere.d/K-<番号>.json` で自分の口の生成の試験を本物の試験に結ぶ。断りは `reply.ts`・棚は `shelf.ts`・本文は `body.ts`・答えの形は `shape.ts` を使う（変えない。足したいときは K-675 に頼む）\n- K-679・K-680・K-681・K-685・K-690 の「口の葉の 403 と 404」：見えないページ・フォルダ・グループは 404（体は `{error, code}` だけ）・見えるが書けないは 403。フォルダの口は入口が行を読まないので、口が先に `kfolder_visible` で 404、次に `kfolder_writable` で 403 を決める\n- K-678・K-719：`deleteKnowledgeFolder` の断りの 409 は 024・051（この葉が宣言した。台帳の E-KNW-051 は `deleteKnowledgePage` と共通）\n- K-711：この葉が残した前からの 23 本（生成の試験を含む）を外す。`getKnowledgeTree`・`getKnowledgePage` など 8 本は残る（K-711 は触らない）\n- K-682（画面の入れ物）：`KnowledgeTree`・`KnowledgePageDetail` などの鍵は土台 3 章。下絵の型の「部署」→「グループ」は K-670 が直す",
+    "表の住所（2026-11-22）": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-675.*`）に書く（K-325）。`errors.json`・`ci_scope.json` は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない\n- 前からある行（`05_flow/screen_api.py` の本体）を直すのは、ナレッジの 8 本の SCREEN_API の行・RESPONSES の 2 行・PERMS の 8 行だけ（overlap_ok）。`scripts/ci/row_rules.mjs` は `ROW_EXEMPT_FIELDS` に 2 つの口の欄 `id` を足し、`RULES.write.knowledge_pages` の 1 行を直す。`08_api/phase1/09_ナレッジ.md` は K-674 が足した節の下に足す（K-674 の後・依存）\n- 試験の行 ID は `K675-API-NNN`。共有の試験の uuid の行 `K144-API-100〜111` は口を作る葉の `k144.d/K-<番号>.ts`"
+   },
+   "file": "11_tickets/K-675.md"
+  },
+  {
+   "id": "K-705",
+   "title": "状態（作業の段）を足す・直す（名前・色）・並べる・消す（書く口 4 本と DB の関数 4 本・色の列 color_key・listTicketStages の答えを決める・始めと終わりと仕組みの状態は消せない）（K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "チケットの設定",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-704（同じ形の口 4 本・関数 4 本・試験 25 行・見込み 1 時間）と段 5 の K-563（migration 1 本・試験 17 行・1 時間）から引いた：migration（色の列・初めの色の引き金・一意の索引・並びの振り直しと関数 4 本＝権限・形・状態の確かめと証跡）25 分・口 4 本と読む口の答えの形・断りの言葉 → 番号 15 分・契約の断片（口 4 本と listTicketStages の答え）10 分・自分の確かめ 10 分で合わせて 60 分。K-704 と同じ形なので型は写せるが、始め・終わり・仕組みの状態の分岐が足されるので上限ぎりぎり（超えるなら「足す・直す」「消す・並べる」の 2 本に分ける。番号はまとめ役が決める）。試験 25 行は切る段で書いた（API 22・DB 3）。実測が無いので最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-125.38",
+    "D-125.66",
+    "D-125.68",
+    "D-128.95",
+    "D-130.1",
+    "D-152.18",
+    "D-152.31"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/ticket-stages-write.test.ts",
+    "apps/api/test/generated/get_ticket_stages.test.ts",
+    "apps/api/test/generated/post_ticket_stages.test.ts",
+    "apps/api/test/generated/patch_ticket_stages_id.test.ts",
+    "apps/api/test/generated/delete_ticket_stages_id.test.ts",
+    "apps/api/test/generated/post_ticket_stages_order.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F9/settings.harness.ts",
+    "apps/api/test/features/contract/k144.d/K-705.ts"
+   ],
+   "depends_on": [
+    "K-673"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "screens": [
+    "masters"
+   ],
+   "apis": [
+    "createTicketStage",
+    "updateTicketStage",
+    "deleteTicketStage",
+    "reorderTicketStages",
+    "listTicketStages"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えない口と DB の葉。状態の画面は K-708 が持つ（正は /dev/mock/f9 の set-stages）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125014500_ticket_stage_settings.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/screen_api.d/K-705.py",
+    "scripts/ci/contract_shape.d/K-705.py",
+    "apps/api/src/hooks/ticket-stages-write.ts",
+    "apps/api/src/features/F9/settings/stages.ts",
+    "07_qa/test-specs/errors.d/K-705.json",
+    "07_qa/test-plan/ears-elsewhere.d/K-705.json",
+    "scripts/ci/ci_scope.d/K-705.json",
+    "08_api/db-columns.json",
+    "03_architecture/ER図.md",
+    "08_api/phase1/01_チケット.md",
+    "11_tickets/K-69.md"
+   ],
+   "flow": "チケットの種別・状態・項目を会社に合わせる",
+   "sections": {
+    "目的": "会社の管理者が「チケットの設定 › 状態」で、チケットの状態（作業の段）を足す・直す（名前・色）・並べる・消すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-stages）。**始めの状態（key が `todo`）と終わりの状態（key が `done`）と仕組みの状態（確認中・承認待ち・実行中）は消せない**。始めと終わりは名前と色を直せる（key は変えないので、作る・完了にする仕組みが探せる）。仕組みの状態は色だけ直せる。\n\n状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。\n\n設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は状態の書く 4 本と `listTicketStages` の答えを持つ（`listTicketStages` の口の持ち主は K-59 のまま：頭の `apis:` には書かない。生成の試験 `get_ticket_stages.test.ts` は、この葉の `ears-elsewhere.d` で結ぶと作り手が作り直すので、作る段の初めに `tests:` に足した）。",
+    "完了の条件": "- [ ] 下の表の 25 行（K705-API-001〜022・K705-DB-001〜003）が緑：`apps/api/test/features/F9/ticket-stages-write.test.ts`\n- [ ] 契約の口 4 本が 501 でない。`listTicketStages` の答えが `TicketStageSetting`（鍵 6）で、生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-705.json` の covers）\n- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-972・973（`updateTicketStage`・`deleteTicketStage` の道の id）が通る\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, PERM, LIST\n\n- **口は書く 4 本＋読む 1 本**。道・入力・答え・上限・権限は土台-settings.md の 3・4 章のとおり（足す POST /ticket_stages・直す PATCH /ticket_stages/:id・消す DELETE /ticket_stages/:id・並べる POST /ticket_stages/order〔PUT の前例が契約に 0 件のため POST〕・読む GET /ticket_stages）\n- **入力の形（契約に書く＝422）**：足す＝`name`（前後の空白〔全角・タブ・改行〕を落として 1〜20 字・NUL は入口が 422。今の `ticket_stages.name` の check と同じ）と `color_key`（8 つの字のどれか）が要る。直す＝`name`・`color_key` のうち 1 つ以上（空の体は 422）。並べる＝`stage_ids`（uuid の並び・1 つ以上）。知らない鍵は 422\n- **断る番号**（土台-settings.md の 3 章）：同じ名前（仕組みの状態の名前も含む）409 E-STG-001／作業の状態（仕組みの状態を除く）が 9 つ目 409 E-STG-002（`ticket_limits` の 23514 を関数が先に数えて返す）／始め・終わり・仕組みの状態を消す 409 E-STG-003／仕組みの状態の名前を変える 409 E-STG-004（同じ名前を送り直すだけなら通る）／使っているチケットが在る 409 E-STG-005（`detail: { ticket_count }`・消したチケットも数える）／並びが今と合わない 409 E-STG-006／始めが先頭・終わりが最後でない 409 E-STG-007／無い・消した・別の会社 404 E-PAGE-001（欄・details なし）／権限なし 403／ログインなし 401／上限 429／DB の失敗 503 E-PAGE-003\n- **足したとき**：key は無し（null）・仕組みの状態でない・並びは**終わりの状態の直前**（そのあと並びを全部 10 刻みで振り直す）・色は選んだ鍵\n- **直すとき**：送った欄だけ変える。key・仕組みの印・並びは変えない。始め（key が todo）・終わり（key が done）は名前も色も直せる。仕組みの状態は色だけ（名前を変えると 409。今の `app.ticket_stage_fixed` の守りはそのまま。色の更新は名前・key を変えないので通る）\n- **消すとき**：始め・終わり・仕組みの状態は消せない。使っているチケット（`tickets.stage_id` がその状態の行。**消したチケットも数える**）が 1 枚でも在れば消せない。そうでなければ `deleted_at` を入れ（行は残す）、並びを 10 刻みで振り直す。名前は消した後なら使い回せる\n- **並べる**：`stage_ids` が今の生きている状態の全部と過不足なく一致し（仕組みの状態も含む）、先頭が始め（todo）・最後が終わり（done）のときだけ。仕組みの状態は始めと終わりの間のどこでもよい。違えば何も変えずに 409（過不足は E-STG-006・始め・終わりの位置は E-STG-007）\n- **読む口 `listTicketStages`**：消していない状態を並び（position・id）の順に返す。鍵ちょうど 6（`id・key・name・color_key・position・lock`）。`lock` は `start`（key が todo）・`end`（key が done）・`system`（`is_fixed`）・null。`{ data, meta: { limit } }`・全部を 1 度に返す（cursor・limit・sort は形だけ受けて動きを変えない）。会社のメンバー全員が読める（前から同じ）\n- 外へ出ない：メールもお知らせも出さない。AI も PC も呼ばない\n- ログに状態の名前を出さない\n- **共有の試験 `k144-contract.test.ts` をこの葉は変えない**（運ぶのは葉のファイル `k144.d/K-705.ts` だけ）\n- **生成の試験は切る段の枝に無い**（口が契約に入るまで作れない）。**作る段の最初に**、契約の断片（`05_flow/screen_api.d/K-705.py`・`scripts/ci/contract_shape.d/K-705.py`）を足して作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成の試験を作り、**実装より先に 1 つのコミットにする**（その後は変えない）。**先の葉の契約を前提にした前からの試験は、この葉の carry に入れない**",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- そのほかの依存は なし — 状態の表（0071）と行の守り・守りの引き金（`ticket_stage_fixed`・`ticket_stage_insert`・`ticket_limits`）は本線に在り、段 5 の葉の物（種別のひな形・項目の表）を使わない。`settings.harness.ts`（carry）は K-704 の葉と共有する物で、K-704 が先に入っても後に入っても読み込みは同じ（同じ内容を両方が carry で運ぶ・重なりは `overlap_ok`）",
+    "目録で探した結果": "- 使う：`ticket_stages`（0071・列 `key`・`is_fixed`・`name` の check 1〜20）・`app.ticket_limits`（作業の状態 8 まで・23514）・`app.ticket_stage_fixed`（仕組みの状態の名前・key を変えない）・`app.ticket_stage_insert`（アプリの接続は仕組みの状態を足せない）・`app.ticket_basics`（新しい会社の初めの 7 つの状態）・`workspace_master(\"ticket_stages\")` の行の守り・`has_permission`・`audit_events`・`withTenant`・K-351 の hooks の書き方・K-704 の関数の形（権限 → 確かめ → 書く → 証跡）\n- 作る：列 `ticket_stages.color_key`・`app.ticket_stage_first_color(text)`・引き金 `ticket_stages_color_default`・一意の索引 `ticket_stages_name_uq`・`app.ticket_stage_renumber(uuid)`・`app.ticket_stage_create / update / delete / reorder`・`apps/api/src/hooks/ticket-stages-write.ts`（`listTicketStages` の before も入れる）・`apps/api/src/features/F9/settings/stages.ts`。探したが同じ形の物は無かった（前の `saveTicketShape` は段も区画も軸もまとめて保存し、色も `lock` も持たない＝K-711 が外す）。形の近い物＝K-704（種別の書く 4 本）\n- 状態の key を探して動く既存の仕組み（作る＝key `todo`・完了にする＝key `done`・渡す・承認の関数）が在るので、始めと終わりは消さず key も変えない（`git grep -n \"'todo'\\|'done'\" -- apps/api/src packages/db/migrations`）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前） | `packages/db/migrations/20261125014500_ticket_stage_settings.sql`：① `alter table ticket_stages add column if not exists color_key text` ② `app.ticket_stage_first_color(p_key text) returns text`（immutable・todo＝teal-light・doing＝indigo・hold＝plum・checking＝teal・awaiting_approval＝amber・running＝coral・done＝sage・それ以外は indigo）③ 今ある行に入れる（`update ticket_stages set color_key = app.ticket_stage_first_color(key) where color_key is null`）④ check `color_key in ('indigo','teal','amber','coral','sage','plum','lavender','teal-light')` と `set not null` ⑤ 引き金 `ticket_stages_color_default`（`before insert`：`color_key` が null なら `app.ticket_stage_first_color(new.key)`。`app.ticket_basics` を作り直さずに、新しい会社の初めの状態にも色が入る）⑥ 一意の索引 `ticket_stages_name_uq on ticket_stages (tenant_id, name) where deleted_at is null`（作る前に、同じ会社の消していない同じ名前の 2 行目以降の名前を `left(name, 16) || '（2）'`〔3 行目は（3）〕にする文を置く。足す対象は `not is_fixed` の行だけで、並びは `is_fixed desc, position, id`＝仕組みの状態の名前が先に残る。`ticket_stage_fixed` が仕組みの状態の名前の変更を拒むのと、`name` の 1〜20 字の check を超えるのとで migration が止まらないように）⑦ `app.ticket_stage_renumber(p_tenant uuid)`（消していない状態を `position, id` の順に 10・20・30… に振り直す）⑧ 関数 4 本（security definer・`search_path = public, app`・`public` から外す・`kaname_app` に execute）：`app.ticket_stage_create(p_name text, p_color_key text) returns jsonb`／`app.ticket_stage_update(p_id uuid, p_patch jsonb) returns jsonb`／`app.ticket_stage_delete(p_id uuid) returns jsonb`／`app.ticket_stage_reorder(p_ids uuid[]) returns jsonb`。どれも ⓐ `has_permission(app.user_id(), 'ticket_stages', null, 'edit')` でなければ `{\"error\":\"forbidden\"}` ⓑ 状態の確かめ（同じ名前 `name_taken`〔仕組みの状態の名前も・前後の空白を落として比べる〕・作業の状態が 8 `limit`・始め・終わり・仕組み `locked_delete`・仕組みの状態の名前変更 `name_locked`・使っている `in_use`・無い `not_found`・並びが違う `order_mismatch`・始め・終わりの位置 `order_ends`）で、断るときは**何も書かずに** `{\"error\":\"<言葉>\"}`（`in_use` は `ticket_count` つき）ⓒ 書く（足す＝終わりの状態の position − 1 で入れて振り直す）ⓓ 証跡（action は `ticket_stage.create`・`.update`・`.delete`・`.reorder`・`target_type` は `ticket_stages`・`choke_point_id` は `C2`）ⓔ 答えは `{\"data\": <状態の行>}`（delete は `{\"data\":{\"id\":…}}`・reorder は全部の並び） |\n| 口（書く 4 本・読む 1 本） | `apps/api/src/features/F9/settings/stages.ts`：入力の確かめ → `app.ticket_stage_*` を withTenant の 1 取引で呼ぶ → 答えの形 `toStageSetting(row)`（鍵ちょうど 6・`lock` は key と `is_fixed` から）。関数の断りの言葉 → 番号（`name_taken`＝409 E-STG-001・`limit`＝E-STG-002・`locked_delete`＝E-STG-003・`name_locked`＝E-STG-004・`in_use`＝E-STG-005〔`detail` に `ticket_count`〕・`order_mismatch`＝E-STG-006・`order_ends`＝E-STG-007・`not_found`＝404 E-PAGE-001・`forbidden`＝403）。想定外の例外は 503 E-PAGE-003。読む口 `listTicketStages` の before は withTenant の 1 文（`select id, key, name, color_key, position, is_fixed from ticket_stages where deleted_at is null order by position, id`） |\n| 口の登録（K-326 の register） | `apps/api/src/hooks/ticket-stages-write.ts`（新しいファイル）：`export function ticketStagesHooks(d: HookDeps): Record<string, Hook>`（`listTicketStages` と書く 4 つの before）と `export const register = defineHooks({ name: \"ticketStagesHooks\", make: (d) => ticketStagesHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的に差す行は書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧に入れる） |\n| 契約の形 | `05_flow/screen_api.d/K-705.py`：`SCREEN_API = {\"masters\": [書く 4 口の行（POST /ticket_stages〔A118〕・PATCH /ticket_stages/:id・DELETE /ticket_stages/:id・POST /ticket_stages/order。表 `ticket_stages`・関連の表 `audit_events`）]}`・`PERMS`・`INPUTS`・`RESPONSES`（`TicketStageSetting` 鍵 6・`listTicketStages` もこの形）・`RATES`（書く 4 つは 30/分/人）・`ERRORS_4XX`（足す：409 E-STG-001・002／直す：404 E-PAGE-001・409 E-STG-001・004／消す：404・409 E-STG-003・005／並べる：409 E-STG-006・007。404・409 の body は `{error, code}` だけ〔E-STG-005 だけ detail に ticket_count〕）。`scripts/ci/contract_shape.d/K-705.py`：体を受ける 3 口の足す行 → `python3 05_flow/build_api.py` で作り直す。**`listTicketStages` の行は前から `05_flow/screen_api.py` に在り（90 行目・表の素の読み）、RESPONSES が無かった。この葉が `.d` の RESPONSES に足す（持ち主 K-59 の `apis:` は変えない）** |\n| 断る番号の登録 | `07_qa/test-specs/errors.d/K-705.json`：E-STG-001〜007（すべて 409・class `conflict`・layers は API と DB・source は D-125.38・切り方 0.13）。文は土台-settings.md の 3 章の字。**この葉が 001〜007 の枠を使う**（`E-STG-` は本枝と c/段5・c/段8・c/段9 に 0 件） |\n| 登録先（touch_rules） | 口の登録は hooks のファイルの register（上）・`05_flow/screen_api.d/K-705.py`・`scripts/ci/contract_shape.d/K-705.py`・`07_qa/test-specs/errors.d/K-705.json`・`07_qa/test-plan/ears-elsewhere.d/K-705.json`・`scripts/ci/ci_scope.d/K-705.json`（K-704 と同じ形）。`python3 scripts/ci/build_registries.py`・`gen_ts_registries.py`・`gen_migrations.py` で生成物を作り直す |\n| 目録・文書 | `pnpm db:columns`。`03_architecture/ER図.md` の `ticket_stages` の行に `color_key`・名前の一意を書き足す。`08_api/phase1/01_チケット.md` に 4 つの口の行を足し、`GET /ticket_stages` の答えの形を書き直す |\n| 親 | `11_tickets/K-69.md` の apis に 4 つの口を足す |\n\n### 生成の試験（ears-elsewhere.d/K-705.json）\n\n`createTicketStage`・`updateTicketStage`・`deleteTicketStage`・`reorderTicketStages` の 4 口を K-704 と同じ形で書く（`file` は `apps/api/test/features/F9/ticket-stages-write.test.ts`・`reason` は「状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）」）。`covers`：ok・shape→K705-API-001〜002／rejected_401・rejected_403→K705-API-017／rejected_422→003・004／conflict→足す＝005・006、直す＝008、消す＝012・013、並べる＝015・016／not_found→010／rate_limited→019／terms_pending→`K53-API-005`／session_unresolved→`K144-API-032`。`na`：upstream_failed は「外を呼ばない（DB の失敗は K705-API-021・022 が見る）」。読む口 `listTicketStages` は生成の試験（`get_ticket_stages.test.ts`）が作り手で作り直され、ok・shape は K705-API-001 に結ぶ（出た名前で 1 対 1 に結び、余る名前は `na` に理由を書く）。\n\n### 範囲の地図（ci_scope.d/K-705.json）\n\nK-704 と同じ形で、`data_links` の paths は `apps/api/src/hooks/ticket-stages-write.ts` と `apps/api/src/features/F9/settings/stages.ts`、tests は `ticket-stages-write.test.ts` と `k144-contract.test.ts`。`reads_ok` に `settings.harness.ts` と `k144.d/K-705.ts` の動的 import の訳を 1 行ずつ。",
+    "外に影響する手順": "1. DB に書く：`ticket_stages` の 1 行（足す・直す・消した印）と並びの振り直し。失敗の行：K705-API-021（書く所で DB が落ちる → 503 E-PAGE-003・状態も証跡も増えない）\n2. 証跡：`audit_events` に 1 行（同じ取引）。失敗の行：K705-API-022（証跡を書く所で落ちる → 503 E-PAGE-003・状態の行も前のまま）\n\nメール・お知らせ・AI・PC は呼ばない。**手順 1・2 は同じ取引なので、失敗すれば全部戻る**（後に残る手順は無い＝後片付けの失敗の行は無い）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F9/ticket-stages-write.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン。土台は `settings.harness.ts`）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作業の状態が 8 未満 | 設定の「状態を足す」 | 管理者 | 201・終わりの直前に入り並びは 10 刻み | このチケット | K705-API-002〜004 |\n| 作業の状態が 8 | 足す | 管理者 | 409 E-STG-002・足されない | このチケット | K705-API-006 |\n| 同じ名前（仕組みの状態の名前を含む） | 足す | 管理者 | 409 E-STG-001 | このチケット | K705-API-005 |\n| 始め・終わり | 名前・色を直す | 管理者 | 200・key は変わらない | このチケット | K705-API-009 |\n| 仕組みの状態 | 色を直す・名前を直す | 管理者 | 色は 200・名前は 409 E-STG-004 | このチケット | K705-API-008 |\n| 始め・終わり・仕組みの状態 | 消す | 管理者 | 409 E-STG-003・消えない | このチケット | K705-API-012 |\n| 使っているチケットが在る（消したチケットも） | 消す | 管理者 | 409 E-STG-005・枚数が detail | このチケット | K705-API-013 |\n| 使っていない作業の状態 | 消す | 管理者 | 200・読みから消え並びが振り直る | このチケット | K705-API-011 |\n| 消した状態・別の会社の状態 | 古い画面から直す・消す | 管理者 | 404 E-PAGE-001 | このチケット | K705-API-010・018 |\n| どれでも | 並べる（過不足・始め・終わりの位置） | 管理者 | 並べ替わる／409 E-STG-006・007・何も変わらない | このチケット | K705-API-014〜016 |\n| どれでも | 4 つの口 | 権限が無い人（権限を外された直後を含む）・ログインなし | 403・401 | このチケット | K705-API-017 |\n| どれでも | 読む（`listTicketStages`） | 会社のメンバー | 200・鍵 6・並びの順・lock つき | このチケット | K705-API-001 |\n| どれでも | 状態の画面（保存・消す・並べる） | 管理者 | 画面は K-708 | K-708 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K705-API-001 | 対象の状態 | 読む | 鍵ちょうど 6・並びの順・lock は todo＝start／done＝end／仕組みの 3 つ＝system／ほかは null・色は全部入っている・別の会社と消した段は出ない |\n| K705-API-002 | 対象の状態 | 足す | 201・鍵ちょうど 6・終わりの段の直前に入り終わりは最後のまま・並びは 10 刻み・読み直すと出る |\n| K705-API-003 | 入力 | 名前の形 | 前後の空白（全角・タブ）は落とす・空白だけ・21 字・NUL は 422（欄 name）・20 字は通る |\n| K705-API-004 | 入力 | 色の形 | 8 つの外・無い・文字でない は 422（欄 color_key） |\n| K705-API-005 | 操作の揺れ | 同じ名前は 409 E-STG-001（仕組みの段の名前も含む・欄なし）・消した名前は使い回せ・別の会社は混ざらない | 同じ名前は 409 E-STG-001（仕組みの段の名前も含む・欄なし）・消した名前は使い回せ・別の会社は混ざらない |\n| K705-API-006 | 対象の状態 | 作業の段（仕組みの段を除く）は 8 まで | 9 つ目は 409 E-STG-002・足されない・仕組みの段は数えない |\n| K705-API-007 | 入力 | 直す | 名前と色が変わり読み直しで同じ・送らない物は変わらない・空の体は 422 |\n| K705-API-008 | 対象の状態 | 仕組みの段（確認中・承認待ち・実行中）は色だけ直せる | 名前を変えると 409 E-STG-004・同じ名前のままの送りは通る |\n| K705-API-009 | 対象の状態 | 始め（未着手）と終わり（完了）は名前も色も直せる・key は変わらない（作る・完了にする仕組みが key で探すため） | 始め（未着手）と終わり（完了）は名前も色も直せる・key は変わらない（作る・完了にする仕組みが key で探すため） |\n| K705-API-010 | 入口 | 無い・消した・別の会社の段は 404 E-PAGE-001（欄・details なし）・uuid でない道は 422 | 無い・消した・別の会社の段は 404 E-PAGE-001（欄・details なし）・uuid でない道は 422 |\n| K705-API-011 | 対象の状態 | 使っていない作業の段は消せる | 読みから消え、名前を使い回せ、並びの 10 刻みは振り直される |\n| K705-API-012 | 対象の状態 | 始め・終わり・仕組みの段は 409 E-STG-003（欄なし）・消えない | 始め・終わり・仕組みの段は 409 E-STG-003（欄なし）・消えない |\n| K705-API-013 | 対象の状態 | 使っているチケットが在る段は 409 E-STG-005・枚数が detail に入る・消したチケットも数える・消えない | 使っているチケットが在る段は 409 E-STG-005・枚数が detail に入る・消したチケットも数える・消えない |\n| K705-API-014 | 対象の状態 | 並べる | 渡した順になり読み直しも同じ・並びは 10 刻み・始めが先頭で終わりが最後なら仕組みの段はどこでもよい |\n| K705-API-015 | 時間の流れ | 並びが今と合わない（足りない・余る・重なる・消した段・別の会社の段）は 409 E-STG-006・何も変わらない・uuid でない要素・空は 422 | 並びが今と合わない（足りない・余る・重なる・消した段・別の会社の段）は 409 E-STG-006・何も変わらない・uuid でない要素・空は 422 |\n| K705-API-016 | 入力 | 始めが先頭でない・終わりが最後でない並びは 409 E-STG-007・何も変わらない | 始めが先頭でない・終わりが最後でない並びは 409 E-STG-007・何も変わらない |\n| K705-API-017 | 利用者の状態 | 権限が無い人は 4 つとも 403・何も変わらない／ログインなしは 401 | 権限が無い人は 4 つとも 403・何も変わらない／ログインなしは 401 |\n| K705-API-018 | 守り | 別の会社の管理者は触れない | 相手の段は 404（直す・消す）・並びに混ぜると 409 |\n| K705-API-019 | 守り | 1 分あたりの上限を超えた書きは 429・retry_after_sec が数 | 1 分あたりの上限を超えた書きは 429・retry_after_sec が数 |\n| K705-API-020 | 守り | 手順 1・2 | 書くたびに証跡が 1 行・会社・操作した人・C2・対象の段つき（失敗した書きには残らない） |\n| K705-API-021 | 失敗 | 失敗（手順 1） | 段の行を書く所で DB が落ちる → 503 E-PAGE-003・段も証跡も増えない |\n| K705-API-022 | 失敗 | 失敗（手順 2） | 証跡を書く所で DB が落ちる → 503 E-PAGE-003・段の行も前のまま（名前・色が戻る） |\n| K705-DB-001 | 守り | 色 | color_key は 8 つ以外を DB が断る（23514）・新しい会社の段には key から初めの色が入る（todo＝teal-light・doing＝indigo・hold＝plum・checking＝teal・awaiting_approval＝amber・running＝coral・done＝sage）・既存の段にも色が入っている |\n| K705-DB-002 | 守り | 名前の一意 | 同じ会社の消していない同じ名前は DB が断る（23505）・消した名前・別の会社の同じ名前は入る |\n| K705-DB-003 | 守り | 前からの守りはそのまま | 仕組みの段の名前を DB で直に変えると 22023・色だけなら通る／関数は edit の権限が無い人には { error: forbidden } で何も書かない |\n\n### テストの型の受け（分類 CRUD・PERM・LIST）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: 直す口は送った欄だけを書く（後の物が残る）。並べる口だけが古い一覧を 409 で止める（K705-API-015） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | K705-API-010（消した状態 → 404）・005（消した名前は使い回せる） |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 子のあるもの＝K705-API-012（始め・終わり・仕組み）・013（使っているチケット）。戻す口は作らない（代表に確認中） |\n| TP-CRUD-04 2 回押し | K705-API-005（同じ足すの 2 回目は 409）・010（消した後の 2 回目は 404） |\n| TP-CRUD-05 保存の途中で失敗 | K705-API-021・022 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: 画面の動き（K-708）。口は 401（K705-API-017） |\n| TP-PERM-01 役が合わない人 | K705-API-017・DB-003 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 要らない: 口は呼ぶたびに今の権限（`has_permission`）で決める。K705-API-017 と同じ道 |\n| TP-PERM-03 他の会社の ID を直接指定する | K705-API-018・010 |\n| TP-PERM-04 一覧・数・検索 | K705-API-001・018（別の会社の状態が一覧に混ざらない）。数・検索は持たない口 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-02 と同じ訳 |\n| TP-LIST-01 0 件・1 件・ページの境目の件数 | 要らない: 状態は初めの 7 つが必ず在り、消せない物があるので 0 件にならない。全部を 1 度に返しページ送りは無い（K705-API-001） |\n| TP-LIST-02 並び替えの値が同じものが多い | K705-API-001・002（position が同じなら id。足すたびに 10 刻みで振り直すので同じ値は出ない） |\n| TP-LIST-03 絞り込みの組み合わせを URL で開き直す・共有する | 要らない: 絞り込みを受けない口（`?sort=` は付けても同じ・K705-API-001） |\n| TP-LIST-04 表記ゆれ・記号・とても長い語で探す | 要らない: 探す語を受けない口。名前の長さ・空白・全角は K705-API-003 |\n| 入力の境界・表記ゆらぎ・状態 | 名前 K705-API-003・色 004・並び 015・016 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（状態の画面を開く・K-708） | 無い（画面は `listTicketStages` をまだ使っていない） | 1 本（`listTicketStages`）。保存・消す・並べるは操作のときに 1 本ずつ |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 読む：1 取引・文は 1／書く：1 取引・文は関数の呼びの 1 つ |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（入口の共通） |\n| 新しい住所 | — | `/ticket_stages` の書く 3 つと `/ticket_stages/order` |\n| staging での答えの時間の前後 | — | 実測なし。staging で記録 |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"listTicketStages\\|ticket_stages\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'packages/*/test/*.ts' ':!apps/api/test/features/F9/ticket-stages-write.test.ts'\n16\n```\n\n- 前からの試験は、初めの状態の行・仕組みの状態の守り・チケットの段の移し（`stage_id`）を見る。**替えない**：列 `color_key`・引き金・索引を足しても初めの 7 つの状態の名前・key・並びは変わらない。`listTicketStages` の生成の試験（`get_ticket_stages.test.ts`）は作り手が作り直す。作る段で上の検索が当てた 16 ファイルを 1 つずつ開き、名前の一意で赤になる物（同じ名前の状態を直に 2 つ入れる準備）があれば、準備の行だけを直す（Tests-Changed: に訳を書く）\n- `ticket_stage_fixed` の試験（仕組みの状態の名前を変えると 22023）はそのまま通る（K705-DB-003 が同じ守りを残して見る）",
+    "成果物": "- migration 1 本（色の列・引き金・一意の索引・振り直しと関数 4 本）・書く口 4 本と読む口の hooks のファイルと `F9/settings/stages.ts`・契約と生成物・登録先の断片 5 つ\n- 単体の試験 `ticket-stages-write.test.ts`・入口の uuid の行 `k144.d/K-705.ts`（切る段が書いた）。共通の土台 `settings.harness.ts` は K-704 と同じ物を carry で運ぶ",
+    "決定ログ": "- 2026-11-22 切る段の決め：始め（key が todo）・終わり（key が done）・仕組みの状態は消さない。作る・完了にするなどが key で探すため。始めと終わりは名前と色を直せる・仕組みの状態は色だけ（今の守りのまま）\n- 2026-11-22 切る段の決め：使っているチケットが在る状態は消せない（消したチケットも数える）。勧め・代表に確認中\n- 2026-11-22 切る段の決め：足した状態は終わりの状態の直前に入り、並びは 10 刻みで振り直す。並べるときは全部の id を渡し、始めを先頭・終わりを最後に置く\n- 2026-11-22 切る段の決め：色は見分けの色 8 つの鍵（`color_key`）。新しい会社の初めの状態の色は key から引き金で入れる（`app.ticket_basics` は作り直さない）\n- 代表の決め 1〜13 の決定ログの新しい節は K-673 が運ぶ。この葉は切り方 0.13（状態は名前・色・並び・始めと終わりは消せない）に従う",
+    "リスクと懸念": "- 見込みが 1 時間ぎりぎり。超えるなら「足す・直す」「消す・並べる」の 2 本に分ける\n- `color_key` を `not null` にする migration は、今ある全部の行に色が入ってから。順序は ③ → ④（作る段で空の DB と今の dev の DB の両方に当てて確かめる）\n- 仕組みの状態は下絵の一覧に出ない（下絵は 5 つ）。画面は `lock: system` の行を一覧から外して並べ替えに使うか決める（K-708）。口は仕組みの状態を並べ替えの対象に含める\n- 状態の名前の一意の索引は、今ある会社に同じ名前の消していない状態が在ると止まる。名前を直す文を先に置く（上）。staging の重なりを作る段で数える",
+    "申し送り": "- K-708（状態の画面）：`listTicketStages` 1 本で一覧を出す（`lock` を `StageRow.locked` の字に直す：start「始めの状態なので消せません」・end「終わりの状態なので消せません」・system「仕組みが使う状態なので消せません」）。保存は `updateTicketStage`・足すは `createTicketStage`・消すは `deleteTicketStage`（409 E-STG-005 は枚数入りの帯）・つまみで並べたら `reorderTicketStages` に全部の id（仕組みの状態も含めて）を渡す。下絵の「状態を足す」は終わりの直前に入る\n- K-715（中間）：状態の色を変える → `listTicketStages` の `color_key`／名前を直す → 詳細の状態の札\n- K-711（片付け）：`getTicketShape`・`saveTicketShape`・`previewTicketShapeChange` を外す前に、この葉の口が入っていること\n- 段 9 の渡す・段 8 の一覧が状態の名前を読んでいる所（`stage` の key で読む物は影響なし）：名前を直せる前提に変わる。名前を前提にした試験があれば、その持ち主の葉に知らせる（作る段で上の検索の当たりを PM に報告）",
+    "代表に確認中・勧めで切る": "- 状態を消すときの動き（使っているチケットが在れば消せない）。実例：「保留」の状態にチケットが 2 枚ある → 「この状態のチケットがあるので、消せません」と出て消えない。勧めのまま切った。違えば K-705 の関数の `in_use` の分岐と K705-API-013 を直す\n- 始め・終わりの状態は名前を変えてよいか（key は変えない）。勧め：変えてよい（下絵の「未着手」「完了」は名前を直す想定）。実例：「完了」を「納品済み」に直しても、チケットを完了にする操作は動く"
+   },
+   "file": "11_tickets/K-705.md"
+  },
+  {
+   "id": "K-706",
+   "title": "項目のマスタを読む口 listTicketFieldMaster と、項目を足す口 createTicketField（読む口 1 本・書く口 1 本・DB の関数 2 本と選ぶ物の組み立ての関数）（K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "チケットの設定",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-704（同じ形の口 4 本・関数 4 本・試験 25 行・見込み 1 時間）と段 5 の K-563（migration 1 本・読む口 1 本・試験 17 行・1 時間）から引いた：migration（読む関数 1 本・足す関数 1 本＝権限・形・状態の確かめと選ぶ物の id の付け方〔K-717 も使う〕と種別の行と証跡）20 分・口 2 本の入力の確かめと答えの形・断りの言葉 → 番号 10 分・契約の断片（口 2 本）8 分・自分の確かめ 7 分で合わせて 45 分。試験 14 行は切る段で書いた（API 13・DB 1）。K-706 の分け元（直す・並べる・消す）は K-717。実測が無いので最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-125.66",
+    "D-130.1",
+    "D-150.36",
+    "D-150.37",
+    "D-150.50",
+    "D-152.18",
+    "D-152.32"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/ticket-fields-write.test.ts",
+    "apps/api/test/generated/get_ticket_field_master.test.ts",
+    "apps/api/test/generated/post_ticket_fields.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F9/settings.harness.ts",
+    "apps/api/test/features/contract/k144.d/K-706.ts"
+   ],
+   "depends_on": [
+    "K-430",
+    "K-563",
+    "K-673"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "screens": [
+    "masters"
+   ],
+   "apis": [
+    "listTicketFieldMaster",
+    "createTicketField"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えない口と DB の葉。項目の画面は K-709 が持つ（正は /dev/mock/f9 の set-fields）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125014600_ticket_field_master.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/screen_api.d/K-706.py",
+    "scripts/ci/contract_shape.d/K-706.py",
+    "apps/api/src/hooks/ticket-fields-write.ts",
+    "apps/api/src/features/F9/settings/fields.ts",
+    "07_qa/test-specs/errors.d/K-706.json",
+    "07_qa/test-plan/ears-elsewhere.d/K-706.json",
+    "scripts/ci/ci_scope.d/K-706.json",
+    "08_api/phase1/01_チケット.md"
+   ],
+   "flow": "チケットの種別・状態・項目を会社に合わせる",
+   "sections": {
+    "目的": "会社の管理者が「チケットの設定 › 項目」で、会社が足す項目（段 5 の `custom_fields`）の一覧を読み、項目を足すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-fields・段 5 K-563 の「マスタの口と画面は段 10」）。型は 7 つ（1 行・複数行・数・日付・1 つ選ぶ・複数選ぶ・チェック）・必須か・説明・選ぶ物・どの種別で出すか。**直す・並べる・消すは K-717**（この葉に依存する）。\n\n段 5 の読む口 `listTicketFields` の答えは鍵ちょうど 7 の約束（K-563・K-560 の試験が数える）で、「どの種別で出すか」と「値が入っている数」を持たない。そのため**マスタの画面が読む口 `listTicketFieldMaster`（管理者だけ）をこの葉で新しく足す**。表・段 5 の読む口・値を書く口（K-564）は作らない。\n\n設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は読む 1 本と足す 1 本を持つ。",
+    "完了の条件": "- [ ] 下の表の 14 行（K706-API-001〜013・K706-DB-001）が緑：`apps/api/test/features/F9/ticket-fields-write.test.ts`\n- [ ] 契約の口 2 本が 501 でない。生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-706.json` の covers）\n- [ ] 段 5 の読む口 `listTicketFields`（鍵 7・種別を指す）が、足した項目を同じ id・順で返す（K706-API-002・003 の突き合わせ）。`listTicketKinds.fields` は K-560 の物でこの葉は見ない\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, PERM, LIST\n\n- **口は読む 1 本・書く 1 本**。道・入力・答え・上限・権限は土台-settings.md の 3・4 章のとおり（読む GET /ticket-field-master・足す POST /ticket-fields）。権限は `custom_fields` の edit（管理者の束に入っている）。**読む口も同じ権限**（値の数を見せるため。メンバーが読む口は段 5 の `listTicketFields` のまま）\n- **入力の形（契約に書く＝422）**：足す＝`name`（前後の空白〔全角・タブ・改行〕を落として 1〜40 字・NUL は入口が 422）・`field_type`（7 つの字）・`kind_ids`（uuid の並び・1 つ以上）が要り、`required`（真偽）・`description`（文字か null。空白だけは null にする）・`options` は任意。**`options` は契約の oneOf で書く**：`field_type` が `select`・`multi_select` なら 1 つ以上の `{ id?: uuid, name }`（`name` は空白を落として 1〜40 字）・ほかの型なら無い。知らない鍵は 422\n- **断る番号**（土台-settings.md の 3 章・控え帳 2026-11-20）：同じ名前（消していない項目の中・前後の空白を落として比べる）409 E-FMS-001／同じ名前の選ぶ物が 1 つの項目に 2 つ 409 E-FMS-004／種別が無い・消した・別の会社 404 E-PAGE-001（欄・details なし）／権限なし 403／ログインなし 401／上限 429／DB の失敗 503 E-PAGE-003。**項目の数・選ぶ物の数に上限は置かない**（D-130.1・K-563 と同じ）\n- **足したとき**：並びは今の最大の次（10 刻み）・`kind_ids` の種別ごとに `custom_field_kinds` の行を 1 つずつ入れる（**明示の行**。`all_kinds` は false）・選ぶ物には `id`（新しい uuid）と並び（1 から）を付ける。**値の形の確かめと必須・選択肢の確かめは値を書く口（K-564・K-437）の物。この葉は書かない**\n- **読む口 `listTicketFieldMaster`**：消していない項目を `position, created_at, id` の順に返す。鍵ちょうど 10（段 5 の `toTicketField` の 7 つ＋ `kind_ids`・`all_kinds`・`value_count`）。`kind_ids` は種別の行（消していない）のうち生きている種別だけ。**種別の行が 1 つも無い（消した行も無い）前からの項目は `all_kinds: true`・`kind_ids` は今ある全部の種別**。消した行しか無い項目は `all_kinds: false`・`kind_ids: []`（段 5 の読みと同じ決め）。`value_count` は消していない値の行の数。`custom_fields` の edit を持たない人は 403\n- **K-717 が使う物をこの葉が作る**：選ぶ物の `[{id, name, position}]` を作る関数 `app.ticket_field_options_build(p_current jsonb, p_new jsonb) returns jsonb`（id が付いた物は今の id・付かない物は新しい id・同じ名前は `dup_option`・今に無い id は `option_not_found` を返す）と、種別の行を組の差で入れ替える関数 `app.ticket_field_kinds_set(p_field uuid, p_kind_ids uuid[]) returns jsonb`（無い・消した・別の会社の種別は `kind_not_found`）。足す関数もこの 2 つを呼ぶ（規則を 2 か所に持たない・L-002）\n- 外へ出ない：メールもお知らせも出さない。AI も PC も呼ばない\n- ログに項目の名前・説明・選ぶ物を出さない\n- **共有の試験 `k144-contract.test.ts` をこの葉は変えない**（運ぶのは葉のファイル `k144.d/K-706.ts` だけ。この葉の口は道の id を持たないので、入口の uuid の行は無い）\n- **生成の試験は切る段の枝に無い**。**作る段の最初に**、契約の断片（`05_flow/screen_api.d/K-706.py`・`scripts/ci/contract_shape.d/K-706.py`）を足して作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成の試験を作り、**実装より先に 1 つのコミットにする**（その後は変えない）。**先の葉の契約を前提にした前からの試験は、この葉の carry に入れない**",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- K-430: 要る — この葉の decisions: の D-150.n（項目の表・型 7 つ・表の持ち方）を決定ログ §150 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる\n- K-563: 要る — 表 `custom_fields`・`custom_field_kinds`・`ticket_field_values`・権限の資源名 `custom_fields`・`toTicketField`（`features/F4/ticket-fields/shape.ts`）・読む口 `listTicketFields` の hooks のファイル（`ticket-fields-read.ts`・試験が段 5 の読みと突き合わせる）を使う。K-563 の md が書く「マスタを作る・直す口と画面は段 10」の持ち主はこの葉（足す・読む）と K-717（直す・並べる・消す）",
+    "目録で探した結果": "- 使う：`custom_fields`・`custom_field_kinds`・`ticket_field_values`（K-563 の表と守りと一意の索引）・`workspace_master`／`child_of_ticket` の行の守り・権限の資源名 `custom_fields`（管理者の束・K-563）・`toTicketField`（K-563 の shape.ts・読みの 7 つの鍵）・`app.custom_field_same_tenant`（K-563 の引き金・別の会社の種別を断る）・`has_permission`・`audit_events`・`withTenant`・K-351 の hooks の書き方・K-704 の関数の形（権限 → 確かめ → 書く → 証跡）・K-564 の「関数の断りの言葉 → 番号」\n- 作る：`app.ticket_field_settings(p_only uuid default null)`（読む）・`app.ticket_field_create`・`app.ticket_field_options_build`・`app.ticket_field_kinds_set`・`apps/api/src/hooks/ticket-fields-write.ts`・`apps/api/src/features/F9/settings/fields.ts`。探したが同じ形の物は無かった（段 5 の `listTicketFields`〔種別を指して読む・鍵 7〕と K-560 の `app.ticket_field_master(p_kind uuid)`〔種別ごとのマスタ〕は、種別の行・値の数を持たず・消した行を区別して管理者に見せる形でもない。前の `saveTicketShape` の軸は K-563 が `custom_fields` に移して凍結済み）。形の近い物＝K-704・K-705（書く口）と K-563 の読む口",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前） | `packages/db/migrations/20261125014600_ticket_field_master.sql`（表・列は作らない。関数だけ・すべて security definer・`search_path = public, app`・`public` から外し `kaname_app` に execute）：① `app.ticket_field_settings(p_only uuid default null) returns jsonb` ＝消していない項目（`p_only` があればその 1 件）を `position, created_at, id` の順に、段 5 の 7 つの鍵（`options` は選ぶ型だけ `position` の順・ほかは `[]`）＋ `kind_ids`（生きている種別の行 ∩ 生きている種別。行が 1 つも無い項目は今ある全部の種別）・`all_kinds`（行が 1 つも無い〔消した行も無い〕なら true）・`value_count`（消していない値の行の数）で返す ② `app.ticket_field_options_build(p_current jsonb, p_new jsonb) returns jsonb`（前提と制約の 3 つ目） ③ `app.ticket_field_kinds_set(p_field uuid, p_kind_ids uuid[]) returns jsonb`（外した種別の行に `deleted_at` を入れ・足した種別の行を入れ・組が同じ行は残す） ④ `app.ticket_field_create(p_name text, p_type text, p_options jsonb, p_required boolean, p_description text, p_kind_ids uuid[]) returns jsonb`：ⓐ `has_permission(app.user_id(), 'custom_fields', null, 'edit')` でなければ `{\"error\":\"forbidden\"}` ⓑ 状態の確かめ（同じ名前 `name_taken`・同じ名前の選ぶ物 `dup_option`・種別が無い・消した・別の会社 `kind_not_found`）で、断るときは**何も書かずに** `{\"error\":\"<言葉>\"}` ⓒ 書く（項目の行・種別の行）ⓓ 証跡 `insert into audit_events (…)`（action は `custom_field.create`・`target_type` は `custom_fields`・`choke_point_id` は `C2`）ⓔ 答えは `{\"data\": <app.ticket_field_settings の 1 行>}`。名前・選ぶ物の名前は前後の空白（全角・タブ・改行）を落としてから比べる。`ticket_field_values`・`custom_fields` の列・一意の索引・守りは変えない |\n| 口（読む 1 本・書く 1 本） | `apps/api/src/features/F9/settings/fields.ts`：入力の確かめ（上の「前提と制約」）→ `app.ticket_field_*` を withTenant の 1 取引で呼ぶ → 答えの形 `toFieldSetting(row)`（鍵ちょうど 10・段 5 の `toTicketField` を使う）。関数の断りの言葉 → 番号（`name_taken`＝409 E-FMS-001・`dup_option`＝E-FMS-004・`kind_not_found`＝404 E-PAGE-001・`forbidden`＝403）。想定外の例外は 503 E-PAGE-003。読む口は権限が無ければ 403。**K-717 が同じ断りの言葉の表を使えるよう、`fields.ts` から `fieldErrorOf(word)` を出す** |\n| 口の登録（K-326 の register） | `apps/api/src/hooks/ticket-fields-write.ts`（新しいファイル）：`export function ticketFieldsWriteHooks(d: HookDeps): Record<string, Hook>`（`listTicketFieldMaster` と `createTicketField` の before）と `export const register = defineHooks({ name: \"ticketFieldsWriteHooks\", make: (d) => ticketFieldsWriteHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的に差す行は書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧に入れる） |\n| 契約の形 | `05_flow/screen_api.d/K-706.py`：`SCREEN_API = {\"masters\": [2 口の行（GET /ticket-field-master〔A118〕・POST /ticket-fields。表 `custom_fields`・関連の表 `custom_field_kinds`・`audit_events`）]}`・`PERMS`（2 つとも「`custom_fields` の edit を持つ人（既定は管理者）」）・`INPUTS`（`options` は oneOf を `INPUT_RULES` に書く）・`RESPONSES`（`TicketFieldSetting` 鍵 10）・`RATES`（足すは 30/分/人・読むは 120）・`ERRORS_4XX`（足す：404 E-PAGE-001〔種別〕・409 E-FMS-001・004。404・409 の body は `{error, code}` だけで field・details・detail を書かない）。`scripts/ci/contract_shape.d/K-706.py`：体を受ける口の足す行（`name` の長さ〔契約の maxLength は落とす前の余裕を持たせて 80・落とした後の 1〜40 字は口が 422 欄つきで見る〕・NUL・`field_type` の enum・`kind_ids` の uuid の並び・`options` の oneOf）→ `python3 05_flow/build_api.py` で作り直す |\n| 断る番号の登録 | `07_qa/test-specs/errors.d/K-706.json`：**E-FMS-001・004**（すべて 409・class `conflict`・layers は API と DB・source は D-150.37・切り方 0.13）。文は土台-settings.md の 3 章の字。E-FMS-002・003・005 は K-717 の errors.d が持つ（同じ id を 2 つのファイルが持てない）。`E-FMS-` は本枝と c/段5・c/段8・c/段9 に 0 件（段 5 の `E-FLD-`〔値を書く〕とは別） |\n| 登録先（touch_rules） | 口の登録は hooks のファイルの register（上）・`05_flow/screen_api.d/K-706.py`・`scripts/ci/contract_shape.d/K-706.py`・`07_qa/test-specs/errors.d/K-706.json`・`07_qa/test-plan/ears-elsewhere.d/K-706.json`・`scripts/ci/ci_scope.d/K-706.json`（K-704 と同じ形）。`python3 scripts/ci/build_registries.py`・`gen_ts_registries.py`・`gen_migrations.py` で生成物を作り直す |\n| 目録・文書 | `03_architecture/ER図.md`・`08_api/db-columns.json` は表も列も足さないので変えない。`08_api/phase1/01_チケット.md` に 2 つの口の行を足す |\n| 親 | `11_tickets/K-69.md` の apis の行はこの葉で書き換えない（同じ行を K-704・K-705・K-717 ほかも書き換えて取り込みのたびに衝突するため）。**最終の形は K-673 が carry で運ぶ**（K-673 の carry に `11_tickets/K-69.md` がある）。この葉の 2 つの口が最終の行に入るのはまとめ役が切る段の枝で 1 回で書く |\n\n### 生成の試験（ears-elsewhere.d/K-706.json）\n\n`createTicketField`・`listTicketFieldMaster` の 2 口を K-704 と同じ形で書く（`file` は `apps/api/test/features/F9/ticket-fields-write.test.ts`・`reason` は「項目のマスタは権限（custom_fields の edit）・名前の一意・種別の行・値の数で答えが変わる。生成の試験の偽のセッションでは作れない（K-706）」）。`covers`：ok・shape→K706-API-001（読む）・002（足す）／rejected_401・rejected_403→K706-API-009／rejected_422→004・005／conflict→006・008／not_found→007／rate_limited→010／terms_pending→`K53-API-005`／session_unresolved→`K144-API-032`。`na`：upstream_failed は「外を呼ばない（DB の失敗は K706-API-012・013 が見る）」。出た名前で 1 対 1 に結び、余る名前は `na` に理由を書く。\n\n### 範囲の地図（ci_scope.d/K-706.json）\n\nK-704 と同じ形で、`data_links` の paths は `apps/api/src/hooks/ticket-fields-write.ts` と `apps/api/src/features/F9/settings/fields.ts`、tests は `ticket-fields-write.test.ts` と `k144-contract.test.ts`。`reads_ok` に `settings.harness.ts` と `k144.d/K-706.ts` の動的 import の訳を 1 行ずつ。試験は段 5 の `ticket-fields-read.ts`（K-563）も読むので、`data_links` の paths に `apps/api/src/hooks/ticket-fields-read.ts` を足す。",
+    "外に影響する手順": "1. DB に書く：`custom_fields` の 1 行と `custom_field_kinds` の行。失敗の行：K706-API-012（書く所で DB が落ちる → 503 E-PAGE-003・項目も証跡も増えない）\n2. 証跡：`audit_events` に 1 行（同じ取引）。失敗の行：K706-API-013（証跡を書く所で落ちる → 503 E-PAGE-003・項目の行も種別の行も増えない）\n\nメール・お知らせ・AI・PC は呼ばない。**手順 1・2 は同じ取引なので、失敗すれば全部戻る**（後に残る手順は無い＝後片付けの失敗の行は無い）。読む口は書かない（外に影響しない）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F9/ticket-fields-write.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン。土台は `settings.harness.ts`。値の行は DB に直に入れる）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 項目 0 件・複数・前からの項目（行が無い） | 設定の「項目」を開く（読む） | 管理者 | 200・鍵 10・並びの順・`all_kinds`・値の数つき | このチケット | K706-API-001 |\n| 種別を選んだ | 足す（設定の「項目を足す」） | 管理者 | 201・種別の行が明示で入り、段 5 の読みはその種別だけに出す | このチケット | K706-API-002〜005 |\n| 同じ名前・同じ名前の選ぶ物・種別が無い | 足す | 管理者 | 409 E-FMS-001・004／404 E-PAGE-001 | このチケット | K706-API-006〜008 |\n| どれでも | 足す・読む | 権限が無い人・ログインなし | 403・401 | このチケット | K706-API-009 |\n| どれでも | 足すを連打（直に API） | 管理者 | 429 | このチケット | K706-API-010 |\n| どれでも | 直す・並べる・消す | 管理者 | K-717 | K-717 | — |\n| どれでも | 項目の画面 | 管理者 | 画面は K-709 | K-709 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K706-API-001 | 対象の状態 | 読む | 鍵ちょうど 10・並びの順・値の数は消していない値だけ・行が無い項目は all_kinds が true で全部の種別・消した項目と別の会社の項目は出ない・項目が 0 件の会社は状態 200・data []（状態コードを直に見る） |\n| K706-API-002 | 入力 | 足す | 201・鍵ちょうど 10・並びは最後・種別は明示・読み直すと出て、段 5 の読む口（種別を指す）はその種別だけに出す |\n| K706-API-003 | 入力 | 選ぶ型 | 選択肢に id と並び（1 から）が付き、段 5 の読む口にも同じ id・順で出る |\n| K706-API-004 | 入力 | 形 | 名前（前後の空白は落とす・空白だけ・41 字・NUL・無い）・型（7 つの外）・必須（真偽でない）は 422（欄つき）・説明が空白だけなら null・40 字は通る・前後に全角空白を付けた 40 字も通る（落とした後の長さで数える。契約の長さは落とす前の余裕を持たせる） |\n| K706-API-005 | 入力 | 選ぶ物と種別の形 | 選ぶ型で選ぶ物が無い・選ばない型に選ぶ物が在る・選ぶ物の名前が空・種別が空・uuid でない は 422 |\n| K706-API-006 | 入力 | 同じ名前の選ぶ物が 1 つの項目に 2 つあれば 409 E-FMS-004（欄なし）・項目は足されない | 同じ名前の選ぶ物が 1 つの項目に 2 つあれば 409 E-FMS-004（欄なし）・項目は足されない |\n| K706-API-007 | 入口 | 種別が無い・消した・別の会社なら 404 E-PAGE-001（欄・details なし）・項目は足されない | 種別が無い・消した・別の会社なら 404 E-PAGE-001（欄・details なし）・項目は足されない |\n| K706-API-008 | 操作の揺れ | 同じ名前は 409 E-FMS-001（欄なし）・別の会社は混ざらない | 同じ名前は 409 E-FMS-001（欄なし）・別の会社は混ざらない |\n| K706-API-009 | 利用者の状態 | 権限が無い人は足す・読むが 403・何も変わらない／ログインなしは 401 | 権限が無い人は足す・読むが 403・何も変わらない／ログインなしは 401 |\n| K706-API-010 | 守り | 1 分あたりの上限を超えた書きは 429・retry_after_sec が数 | 1 分あたりの上限を超えた書きは 429・retry_after_sec が数 |\n| K706-API-011 | 守り | 手順 1・2 | 足すと証跡が 1 行・会社・操作した人・C2・対象の項目つき（失敗した足すには残らない） |\n| K706-API-012 | 失敗 | 失敗（手順 1） | 項目の行を書く所で DB が落ちる → 503 E-PAGE-003・項目も証跡も増えない |\n| K706-API-013 | 失敗 | 失敗（手順 2） | 証跡を書く所で DB が落ちる → 503 E-PAGE-003・項目の行も種別の行も増えない |\n| K706-DB-001 | 守り | 関数の守り | edit の権限が無い人が関数を直に呼んでも { error: forbidden } で何も書かない／権限のある人は書ける |\n\n### テストの型の受け（分類 CRUD・PERM・LIST）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: この葉に直す口は無い（K-717）。足すは名前の一意で 2 人目が 409（K706-API-008） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | 要らない: この葉に直す・消す口は無い（K-717 の K717-API-003・006） |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 要らない: この葉に消す口は無い（K-717） |\n| TP-CRUD-04 2 回押し | K706-API-008（同じ足すの 2 回目は 409） |\n| TP-CRUD-05 保存の途中で失敗 | K706-API-012・013 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: 画面の動き（K-709）。口は 401（K706-API-009） |\n| TP-PERM-01 役が合わない人 | K706-API-009・DB-001 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 要らない: 口は呼ぶたびに今の権限（`has_permission`）で決める。K706-API-009 と同じ道 |\n| TP-PERM-03 他の会社の ID を直接指定する | K706-API-007（別の会社の種別は 404）・001（別の会社の項目・値の数は混ざらない） |\n| TP-PERM-04 一覧・数・検索 | K706-API-001（別の会社の項目が一覧に混ざらない・値の数は自分の会社の物だけ）。検索は持たない口 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-02 と同じ訳 |\n| TP-LIST-01 0 件・1 件・ページの境目の件数 | K706-API-001（項目が 0 件の会社の読みは状態 200・data []・複数の会社）。ページ送りは無い（全部を 1 度に返す） |\n| TP-LIST-02 並び替えの値が同じものが多い | K706-API-001（position が同じなら作った順）・002（足した項目は最大の次なので同じ値は出ない） |\n| TP-LIST-03 絞り込みの組み合わせを URL で開き直す・共有する | 要らない: 絞り込みを受けない口（全部を並びの順に返す） |\n| TP-LIST-04 表記ゆれ・記号・とても長い語で探す | 要らない: 探す語を受けない口。名前の長さ・空白・全角は K706-API-004 |\n| 入力の境界・表記ゆらぎ・状態 | 名前 K706-API-004・型 004・選ぶ物 005・006・種別 005・007 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（項目の画面を開く・K-709） | 無い | 2 本（`listTicketFieldMaster` と `listTicketKinds`＝どの種別で出すかの並び）を同時に。直列の段は 1 |\n| 口ごとの文の数・取引の数 | — | 読む：1 取引・文は 1（関数の呼び）／書く：1 取引・文は関数の呼びの 1 つ |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（入口の共通） |\n| 新しい住所 | — | `/ticket-field-master`・`/ticket-fields`（足す） |\n| staging での答えの時間の前後 | — | 実測なし。staging で記録（項目が多い会社で `listTicketFieldMaster` の値の数の数え方を見る） |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"custom_fields\\|ticket_field_values\\|listTicketFields\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'packages/*/test/*.ts' ':!apps/api/test/features/F9'\n0\n```\n\n- 段 10 の新しい試験の置き場 `apps/api/test/features/F9` は前からの試験ではないので除く（この葉の 2 本・土台 `settings.harness.ts`・K-715 の `flow-ticket-settings.test.ts`・K-721 の `shape-learning-retire.test.ts` が項目の表や読む口の名前を書く）。この枝（c/段10）には段 5 の表が無いので、前からの試験は 0 件。段 5 の枝（c/段5）では 9 ファイル（K-563 の `ticket-fields.test.ts`・K-564 の `ticket-field-values.test.ts` など）が項目の表を使うが、**この葉は表も段 5 の読む口も書く口も変えない**ので、どれも替えない（`listTicketFields` の鍵は 7 のまま・`listTicketKinds.fields` も同じ）\n- 作る段で K-563 が本線に入った後の木で、上の検索を流し直して当たった物を開き、名前の一意・種別の行で赤になる物があれば準備の行だけを直す（Tests-Changed: に訳を書く）",
+    "成果物": "- migration 1 本（関数 4 本）・読む口と足す口の hooks のファイルと `F9/settings/fields.ts`・契約と生成物・登録先の断片 5 つ\n- 単体の試験 `ticket-fields-write.test.ts`・入口の行を持たない `k144.d/K-706.ts`（切る段が書いた）。共通の土台 `settings.harness.ts` は K-704 と同じ物を carry で運ぶ",
+    "決定ログ": "- 2026-11-22 切る段の決め：段 5 の `listTicketFields`（鍵 7）は変えず、マスタの画面が読む口 `listTicketFieldMaster`（管理者だけ・鍵 10）を足す。種別の行・値の数を見せるため\n- 2026-11-22 切る段の決め：保存すると「どの種別で出すか」は明示の行になる（`all_kinds` は false）。前からの項目〔行が無い＝全部の種別〕は、保存するまで今のまま\n- 2026-11-22 切る段の決め：権限は `custom_fields` の edit（管理者の束に入っている）。口と関数の 2 層で確かめる\n- 2026-11-22 まとめ役の決め：K-706 は 1 時間を超えるので、読む・足す（この葉）と直す・並べる・消す（K-717）に分けた。選ぶ物の組み立てと種別の行の入れ替えは、この葉の migration が作り K-717 が使う\n- 代表の決め 1〜13 の決定ログの新しい節は K-673 が運ぶ。この葉は切り方 0.13（項目：7 つの型・選ぶ物・必須・説明・どの種別で出すか）に従う",
+    "リスクと懸念": "- 段 5 の `listTicketKinds.fields`（K-560 の `app.ticket_field_master`）と、この葉の `app.ticket_field_settings` は、どの項目がどの種別に出るかの規則が同じでなければならない（L-002）。作る段で `kind_ids` の決め方を K-560 の関数の規則（行が無い物は全部の種別・消した行しか無い物はどの種別にも出ない）に合わせ、K706-API-002 が段 5 の読みと突き合わせる\n- 見込み 45 分。足りなければ読む口と足す口の 2 本に分ける案もあるが、今は分けない",
+    "申し送り": "- K-717：この葉の `app.ticket_field_options_build`・`app.ticket_field_kinds_set`・`fieldErrorOf` を使う。この葉が入った後に始める\n- K-709（項目の画面）：`listTicketFieldMaster` と `listTicketKinds`（どの種別で出すかのチェックの並び）を同時に呼んで一覧・右の編集を出す。型は鍵を字に直す（土台-settings.md の 4 章）。足すは `createTicketField`・直す・並べる・消すは K-717 の口。種別のチェックは `kind_ids`（1 つ以上＝0 個では「保存する」を押せなくする）\n- K-715（中間）：項目を足す → 段 5 の作る面（`listTicketKinds.fields`）と詳細の項目の表（`listTicketFields`）に出る\n- 段 5 の K-563 の md の「段 10 の軸の葉 K-496・K-505・K-509・D-152.11」は、K-706・K-717 に読み替えてもらう（まとめ役が段 5 の持ち主に知らせる）"
+   },
+   "file": "11_tickets/K-706.md"
+  },
+  {
+   "id": "K-717",
+   "title": "項目を直す・並べる・消す（updateTicketField・deleteTicketField・reorderTicketFields・DB の関数 3 本・型を変える制限）（K-706 の分け・K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "チケットの設定",
+   "assignee": "実装",
+   "due": "2026-11-30",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-704（同じ形の口 4 本・関数 4 本・試験 25 行・見込み 1 時間）と K-706（足す・読む・試験 14 行・45 分）から引いた：migration（関数 3 本＝権限・形・状態の確かめと、K-706 の選ぶ物の組み立てと種別の行の入れ替えの呼び・型を変える制限・証跡）25 分・口 3 本の入力の確かめと答えの形・断りの言葉 → 番号 10 分・契約の断片（口 3 本）10 分・自分の確かめ 10 分で合わせて 55 分。試験 17 行は切る段で書いた（API 16・DB 1）。実測が無いので最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-125.66",
+    "D-130.1",
+    "D-150.36",
+    "D-150.37",
+    "D-150.50",
+    "D-152.18",
+    "D-152.32"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/ticket-fields-edit.test.ts",
+    "apps/api/test/generated/patch_ticket_fields_id.test.ts",
+    "apps/api/test/generated/delete_ticket_fields_id.test.ts",
+    "apps/api/test/generated/post_ticket_fields_order.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F9/settings.harness.ts",
+    "apps/api/test/features/contract/k144.d/K-717.ts"
+   ],
+   "depends_on": [
+    "K-430",
+    "K-563",
+    "K-706"
+   ],
+   "acts": [
+    "A118"
+   ],
+   "screens": [
+    "masters"
+   ],
+   "apis": [
+    "updateTicketField",
+    "deleteTicketField",
+    "reorderTicketFields"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えない口と DB の葉。項目の画面は K-709 が持つ（正は /dev/mock/f9 の set-fields）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125015700_ticket_field_edit.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/screen_api.d/K-717.py",
+    "scripts/ci/contract_shape.d/K-717.py",
+    "apps/api/src/hooks/ticket-fields-edit.ts",
+    "apps/api/src/features/F9/settings/fields-edit.ts",
+    "07_qa/test-specs/errors.d/K-717.json",
+    "07_qa/test-plan/ears-elsewhere.d/K-717.json",
+    "scripts/ci/ci_scope.d/K-717.json",
+    "08_api/phase1/01_チケット.md"
+   ],
+   "flow": "チケットの種別・状態・項目を会社に合わせる",
+   "sections": {
+    "目的": "会社の管理者が「チケットの設定 › 項目」で、会社が足した項目を直す・並べる・消すための口と DB の関数を作る（K-706 の分け。マスタを読む・足すは K-706）。直す＝名前・必須・説明・選ぶ物・どの種別で出すか（・型。ただし値が入っている間は変えられない）。消す＝値が入っていても消せる（見えなくなるだけ・確かめの小窓は画面 K-709）。\n\n設計の全体は **`07_functional/段10-F9/土台-settings.md`**。TicketFieldSetting の形・断る番号・権限・置き場はそこと K-706 のとおり。この葉は K-706 が作る関数（選ぶ物の組み立て・種別の行の入れ替え）と断りの言葉の表を使う。",
+    "完了の条件": "- [ ] 下の表の 17 行（K717-API-001〜016・K717-DB-001）が緑：`apps/api/test/features/F9/ticket-fields-edit.test.ts`\n- [ ] 契約の口 3 本が 501 でない。生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-717.json` の covers）\n- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-974・975（`updateTicketField`・`deleteTicketField` の道の id）が通る\n- [ ] 段 5 の読む口 `listTicketFields`（鍵 7）と `listTicketKinds` の各種別の `fields` が、直した・消した項目を同じに返す（K717-API-001・006）\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, PERM\n\n- **口は 3 本**。直す PATCH /ticket-fields/:id・消す DELETE /ticket-fields/:id・並べる POST /ticket-fields/order（PUT の前例が契約に 0 件のため POST）。権限は `custom_fields` の edit。上限は書く口 30/分/人\n- **入力の形（契約に書く＝422）**：直す＝`name`・`field_type`・`required`・`description`・`options`・`kind_ids` のうち 1 つ以上（空の体は 422）。形の決まりは K-706 の足すと同じ（`name` の長さ・NUL・`kind_ids` は 1 つ以上の uuid・`options` の oneOf：`field_type` を送るときは選ぶ型なら選ぶ物が 1 つ以上要る）。`options` だけを送るときの「選ぶ物が 1 つ以上」も契約（minItems）で書き、空の並びは 422。並べる＝`field_ids`（uuid の並び・1 つ以上）\n- **断る番号**（土台-settings.md の 3 章）：同じ名前に直す 409 E-FMS-001（K-706 の登録）／同じ名前の選ぶ物 409 E-FMS-004（K-706 の登録）／値が 1 つでも入っているのに型を変える 409 E-FMS-002／並びが今と合わない 409 E-FMS-003／選ぶ型でない項目に選ぶ物だけを送る 409 E-FMS-005／無い・消した・別の会社の項目・種別・選択肢の id 404 E-PAGE-001（欄・details なし）／権限なし 403／ログインなし 401／上限 429／DB の失敗 503 E-PAGE-003\n- **直すとき**：送った欄だけ変える。`kind_ids` を送れば K-706 の `app.ticket_field_kinds_set` で種別の行を入れ替える（外した種別の行に `deleted_at`・足した種別の行を入れる・組が同じ行は残す）。選ぶ物は K-706 の `app.ticket_field_options_build` で組み立てる：送った並びが新しい並び・`id` を付けた物は同じ選択肢のまま名前を直す（値が持つ選択肢の id は変わらない）・付けない物は新しい選択肢・送らなかった物は外れる（外した選択肢を持つ既存の値は残る。値を書く口が以後その選択肢を断る）・今に無い id は 404。`field_type` は、値が 0 件ならどの型にも変えられ（選ぶ型 → ほかの型は選ぶ物を消す・ほかの型 → 選ぶ型は選ぶ物を一緒に送る）、1 件でも在れば同じ型だけ（違えば 409 E-FMS-002・何も変えない）。値の数は消していない `ticket_field_values` の行（消したチケットの物も）\n- **消すとき**：`deleted_at` を入れる（項目の行・種別の行・値の行は残す＝見えなくなるだけ。値の行を消さないので、同じ名前で作り直しても前の値は戻らない＝新しい項目の id になる）。値が入っていても消せる。名前は消した後なら使い回せる。**消すと値が見えなくなることの確かめは画面の小窓（K-709）が持つ**\n- **並べる**：`field_ids` が今の生きている項目の全部と過不足なく一致するときだけ（足りない・余る・重なる・消した項目・別の会社の項目は 409 E-FMS-003・何も変えない）。並びは渡した順に 10 刻み。答えは全部の項目\n- 外へ出ない：メールもお知らせも出さない。AI も PC も呼ばない\n- ログに項目の名前・説明・選ぶ物を出さない\n- **共有の試験 `k144-contract.test.ts` をこの葉は変えない**（運ぶのは葉のファイル `k144.d/K-717.ts` だけ）\n- **生成の試験は切る段の枝に無い**。**作る段の最初に**、契約の断片（`05_flow/screen_api.d/K-717.py`・`scripts/ci/contract_shape.d/K-717.py`）を足して作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成の試験を作り、**実装より先に 1 つのコミットにする**（その後は変えない）。**先の葉の契約を前提にした前からの試験は、この葉の carry に入れない**",
+    "依存の理由": "- K-430: 要る — この葉の decisions: の D-150.n を決定ログ §150 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる\n- K-563: 要る — 表 `custom_fields`・`custom_field_kinds`・`ticket_field_values`・権限の資源名 `custom_fields`・読む口 `listTicketFields`（試験が段 5 の読みと突き合わせる）\n- K-706: 要る — マスタを読む口 `listTicketFieldMaster`（試験が直した結果を読み直す）・足す口 `createTicketField`（試験の準備）・`app.ticket_field_settings`（答えの 1 行）・`app.ticket_field_options_build`・`app.ticket_field_kinds_set`・`fieldErrorOf`（断りの言葉の表）・errors.d の E-FMS-001・004 を使う。入る前に始めない",
+    "目録で探した結果": "- 使う：K-706 の関数 3 つと `fieldErrorOf`・`toFieldSetting`・`custom_fields`・`custom_field_kinds`・`ticket_field_values`・`has_permission`・`audit_events`・`withTenant`・K-351 の hooks の書き方・K-704・K-705 の関数の形\n- 作る：`app.ticket_field_update`・`app.ticket_field_delete`・`app.ticket_field_reorder`・`apps/api/src/hooks/ticket-fields-edit.ts`・`apps/api/src/features/F9/settings/fields-edit.ts`。探したが同じ形の物は無かった。形の近い物＝K-704・K-705 の直す・消す・並べる",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前） | `packages/db/migrations/20261125015700_ticket_field_edit.sql`（関数だけ・security definer・`search_path = public, app`・`public` から外し `kaname_app` に execute）：`app.ticket_field_update(p_id uuid, p_patch jsonb) returns jsonb`／`app.ticket_field_delete(p_id uuid) returns jsonb`／`app.ticket_field_reorder(p_ids uuid[]) returns jsonb`。どれも ⓐ `has_permission(app.user_id(), 'custom_fields', null, 'edit')` でなければ `{\"error\":\"forbidden\"}` ⓑ 状態の確かめ（同じ名前 `name_taken`・値が在るのに型を変える `type_locked`・並びが違う `order_mismatch`・同じ名前の選ぶ物 `dup_option`・選ぶ型でないのに選ぶ物 `options_not_allowed`・無い項目 `not_found`・種別が無い `kind_not_found`・選択肢の id が今に無い `option_not_found`）で、断るときは**何も書かずに** `{\"error\":\"<言葉>\"}` ⓒ 書く（選ぶ物は `app.ticket_field_options_build`・種別の行は `app.ticket_field_kinds_set`。並びは 10 刻み）ⓓ 証跡（action は `custom_field.update`・`.delete`・`.reorder`・`target_type` は `custom_fields`・`choke_point_id` は `C2`）ⓔ 答えは `{\"data\": <app.ticket_field_settings の 1 行>}`（delete は `{\"data\":{\"id\":…}}`・reorder は全部の並び）。名前は前後の空白（全角・タブ・改行）を落としてから比べる。表・列・守りは変えない |\n| 口（3 本） | `apps/api/src/features/F9/settings/fields-edit.ts`：入力の確かめ → `app.ticket_field_*` を withTenant の 1 取引で呼ぶ → 答えの形 `toFieldSetting`（K-706）。断りの言葉 → 番号は K-706 の `fieldErrorOf` に、この葉の言葉（`type_locked`＝409 E-FMS-002・`order_mismatch`＝E-FMS-003・`options_not_allowed`＝E-FMS-005・`option_not_found`＝404 E-PAGE-001）を足した表を `fields-edit.ts` に持つ（K-706 の `fields.ts` は変えない）。想定外の例外は 503 E-PAGE-003 |\n| 口の登録（K-326 の register） | `apps/api/src/hooks/ticket-fields-edit.ts`（新しいファイル）：`export function ticketFieldsEditHooks(d: HookDeps): Record<string, Hook>`（3 つの口の before）と `export const register = defineHooks({ name: \"ticketFieldsEditHooks\", make: (d) => ticketFieldsEditHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的に差す行は書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧に入れる） |\n| 契約の形 | `05_flow/screen_api.d/K-717.py`：`SCREEN_API = {\"masters\": [3 口の行（PATCH /ticket-fields/:id〔A118〕・DELETE /ticket-fields/:id・POST /ticket-fields/order。表 `custom_fields`・関連の表 `custom_field_kinds`・`audit_events`）]}`・`PERMS`・`INPUTS`（`options` の oneOf は `INPUT_RULES`）・`RESPONSES`（`TicketFieldSetting` は K-706 の物を使う）・`RATES`（30/分/人）・`ERRORS_4XX`（直す：404 E-PAGE-001・409 E-FMS-001・002・004・005／消す：404／並べる：409 E-FMS-003。404・409 の body は `{error, code}` だけで field・details・detail を書かない）。`scripts/ci/contract_shape.d/K-717.py`：体を受ける 2 口の足す行 → `python3 05_flow/build_api.py` で作り直す |\n| 断る番号の登録 | `07_qa/test-specs/errors.d/K-717.json`：**E-FMS-002・003・005**（すべて 409・class `conflict`・layers は API と DB・source は D-150.37・切り方 0.13）。文は土台-settings.md の 3 章の字。E-FMS-001・004 は K-706 の errors.d が持つ（同じ id を 2 つのファイルが持てない） |\n| 登録先（touch_rules） | 口の登録は hooks のファイルの register（上）・`05_flow/screen_api.d/K-717.py`・`scripts/ci/contract_shape.d/K-717.py`・`07_qa/test-specs/errors.d/K-717.json`・`07_qa/test-plan/ears-elsewhere.d/K-717.json`・`scripts/ci/ci_scope.d/K-717.json`（K-704 と同じ形）。`python3 scripts/ci/build_registries.py`・`gen_ts_registries.py`・`gen_migrations.py` で生成物を作り直す |\n| 目録・文書 | `08_api/phase1/01_チケット.md` に 3 つの口の行を足す（表・列は足さないので ER 図・db-columns は変えない） |\n| 親 | `11_tickets/K-69.md` の apis の行はこの葉で書き換えない（同じ行を K-704・K-705・K-706 ほかも書き換え、依存の無い葉どうしが取り込みの順で必ず衝突するため）。**最終の形は K-673 が carry で運ぶ**（K-673 の carry に `11_tickets/K-69.md` がある）。この葉の 3 つの口が最終の行に入るのはまとめ役が切る段の枝で 1 回で書く |\n\n### 生成の試験（ears-elsewhere.d/K-717.json）\n\n`updateTicketField`・`deleteTicketField`・`reorderTicketFields` の 3 口を K-704 と同じ形で書く（`file` は `apps/api/test/features/F9/ticket-fields-edit.test.ts`・`reason` は「項目を直す・消す・並べるは権限（custom_fields の edit）・名前の一意・値が入っているか・選ぶ物の id で答えが変わる。生成の試験の偽のセッションでは作れない（K-717）」）。`covers`：ok・shape→K717-API-001（直す）・006（消す）・007（並べる）／rejected_401・rejected_403→K717-API-009／rejected_422→003・005／conflict→直す＝001〔E-FMS-001 は 014・E-FMS-004 は 015〕・004・005、並べる＝008／not_found→003・010・016／rate_limited→生成の試験の種の上限（口の共通・K-706 の K706-API-010 と同じ仕組み）の `na`（理由：書く口の上限は足す口の K706-API-010 が口の共通の仕組みで見る）／terms_pending→`K53-API-005`／session_unresolved→`K144-API-032`。`na`：upstream_failed は「外を呼ばない（DB の失敗は K717-API-012・013 が見る）」。出た名前で 1 対 1 に結び、余る名前は `na` に理由を書く。\n\n### 範囲の地図（ci_scope.d/K-717.json）\n\nK-704 と同じ形で、`data_links` の paths は `apps/api/src/hooks/ticket-fields-edit.ts` と `apps/api/src/features/F9/settings/fields-edit.ts`、tests は `ticket-fields-edit.test.ts` と `k144-contract.test.ts`。`reads_ok` に `settings.harness.ts` と `k144.d/K-717.ts` の動的 import の訳を 1 行ずつ。試験は K-706 の hooks のファイルと段 5 の `ticket-fields-read.ts` も読むので、`data_links` の paths にその 2 つを足す。",
+    "外に影響する手順": "1. DB に書く：`custom_fields` の 1 行（直す・消した印・並び）と `custom_field_kinds` の行の入れ替え。失敗の行：K717-API-013（書く所で DB が落ちる → 503 E-PAGE-003・名前も種別の行も証跡も前のまま）\n2. 証跡：`audit_events` に 1 行（同じ取引）。失敗の行：K717-API-012（証跡を書く所で落ちる → 503 E-PAGE-003・項目の行も種別の行も前のまま）\n\nメール・お知らせ・AI・PC は呼ばない。**手順 1・2 は同じ取引なので、失敗すれば全部戻る**（後に残る手順は無い＝後片付けの失敗の行は無い）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F9/ticket-fields-edit.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン。土台は `settings.harness.ts`）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 項目がある | 直す（設定の「保存する」） | 管理者 | 200・読み直しと段 5 の読みで同じ・外した種別には出ない | このチケット | K717-API-001 |\n| 選ぶ型・選ぶ型でない | 選ぶ物を直す | 管理者 | id を引き継ぐ・知らない id は 404・選ぶ型でないなら 409 E-FMS-005・選ぶ物の名前の重なりは 409 E-FMS-004 | このチケット | K717-API-002・005・015 |\n| 同じ名前・無い種別 | 名前・種別を直す | 管理者 | 409 E-FMS-001（自分自身の名前は通る）／404 E-PAGE-001 | このチケット | K717-API-014・016 |\n| 値が 0 件・1 件以上 | 型を変える | 管理者 | 変えられる／409 E-FMS-002 | このチケット | K717-API-004 |\n| 消した項目・別の会社の項目 | 古い画面から直す・消す | 管理者 | 404 E-PAGE-001 | このチケット | K717-API-003・010 |\n| 値が入っている項目 | 消す | 管理者 | 200・読みから消え、値の行は残る | このチケット | K717-API-006 |\n| どれでも | 並べる（過不足） | 管理者 | 並べ替わる／409 E-FMS-003 | このチケット | K717-API-007・008 |\n| どれでも | 3 つの口 | 権限が無い人（権限を外された直後を含む）・ログインなし | 403・401 | このチケット | K717-API-009 |\n| どれでも | 項目の画面（保存・消す・並べる） | 管理者 | 画面は K-709 | K-709 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K717-API-001 | 対象の状態 | 直す | 名前・必須・説明・種別が変わり、読み直しと段 5 の読む口で同じ・外した種別には出なくなり足した種別には出る・送らない物は変わらない |\n| K717-API-002 | 入力 | 選ぶ物を直す | id を付けた物は同じ選択肢のまま名前が変わる・付けない物は新しい選択肢・送らなかった物は外れる・並びは送った順・知らない id は 404 |\n| K717-API-003 | 入口 | 空の体は 422・無い・消した・別の会社の項目は 404 E-PAGE-001（欄・details なし）・uuid でない道は 422 | 空の体は 422・無い・消した・別の会社の項目は 404 E-PAGE-001（欄・details なし）・uuid でない道は 422 |\n| K717-API-004 | 対象の状態 | 型を変える | 値が 1 つも無ければ変えられ（選ぶ型 → ほかで選ぶ物は消える・ほかの型 → 選ぶ型は選ぶ物が要る）、値が 1 つでも在れば 409 E-FMS-002・同じ型の送りは通る |\n| K717-API-005 | 入力 | 選ぶ型でない項目に選ぶ物だけを送ると 409 E-FMS-005（欄なし・何も変わらない）・選ぶ型の選ぶ物を空にする送りは 422（欄 options） | 選ぶ型でない項目に選ぶ物だけを送ると 409 E-FMS-005（欄なし・何も変わらない）・選ぶ型の選ぶ物を空にする送りは 422（欄 options） |\n| K717-API-006 | 対象の状態 | 消す | 値が入っていても消せる・読みから消え、値の行は残る（見えなくなるだけ）・名前を使い回せる・答えは id だけ |\n| K717-API-007 | 対象の状態 | 並べる | 渡した順になり読み直しも同じ・答えは全部の項目 |\n| K717-API-008 | 時間の流れ | 並びが今と合わない（足りない・余る・重なる・消した項目・別の会社の項目）は 409 E-FMS-003・何も変わらない・uuid でない要素・空は 422 | 並びが今と合わない（足りない・余る・重なる・消した項目・別の会社の項目）は 409 E-FMS-003・何も変わらない・uuid でない要素・空は 422 |\n| K717-API-009 | 利用者の状態 | 権限が無い人は直す・消す・並べるが 403・何も変わらない／ログインなしは 401 | 権限が無い人は直す・消す・並べるが 403・何も変わらない／ログインなしは 401 |\n| K717-API-010 | 守り | 別の会社の管理者は触れない | 相手の項目は 404（直す・消す）・並びに混ぜると 409・自分の読みに相手の項目は出ない |\n| K717-API-011 | 守り | 手順 1・2 | 直す・並べる・消すたびに証跡が 1 行・会社・操作した人・C2・対象の項目つき（失敗した書きには残らない） |\n| K717-API-012 | 失敗 | 失敗（手順 2） | 証跡を書く所で DB が落ちる → 503 E-PAGE-003・項目の行も前のまま（名前・種別の行が戻る） |\n| K717-API-013 | 失敗 | 失敗（手順 1） | 項目の行を書く所で DB が落ちる → 503 E-PAGE-003・名前も種別の行も前のまま・証跡も増えない |\n| K717-API-014 | 操作の揺れ | 同じ名前に直す | ほかの項目と同じ名前（前後に全角空白・タブがあっても落として比べる）は 409 E-FMS-001（欄なし・何も変わらない）・自分自身の名前への直しは通る |\n| K717-API-015 | 入力 | 選ぶ物の名前の重なり | 1 つの項目の中で同じ名前の選ぶ物（前後の空白を落として比べる）は 409 E-FMS-004（欄なし・何も変わらない） |\n| K717-API-016 | 入口 | 無い種別 | kind_ids に無い・消した・別の会社の種別を入れると 404 E-PAGE-001（欄・details なし）・何も変わらない |\n| K717-DB-001 | 守り | 種別の行 | 保存した種別の組と同じ行が生きており、外した種別の行は消した印が付く（行ごと消さない）・戻すと同じ組の 2 行目を作らない（一意） |\n\n### テストの型の受け（分類 CRUD・PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: 直す口は送った欄だけを書く（別の欄を同時に直した 2 人は両方残り、同じ欄は後の物が残る）。並べる口だけが古い一覧を 409 で止める（K717-API-008）。選ぶ物を古い一覧で保存すると、別の人が先に足した選択肢は外れる（止めない・代表に確認中） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | K717-API-003（消した項目を直す・消す → 404）・006（消した名前は使い回せる） |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 子のあるもの＝K717-API-006（値が入っている項目は消せる・値の行は残る）。戻す口は作らない |\n| TP-CRUD-04 2 回押し | K717-API-003（消した後の 2 回目は 404）・006 |\n| TP-CRUD-05 保存の途中で失敗 | K717-API-012・013 |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: 画面の動き（K-709）。口は 401（K717-API-009） |\n| TP-PERM-01 役が合わない人 | K717-API-009 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 要らない: 口は呼ぶたびに今の権限（`has_permission`）で決める。K717-API-009 と同じ道 |\n| TP-PERM-03 他の会社の ID を直接指定する | K717-API-010・003（別の会社の項目は 404・並びに混ぜると 409）・016（別の会社の種別は 404） |\n| TP-PERM-04 一覧・数・検索 | K717-API-010（自分の読みに相手の項目が出ない）。数・検索は持たない口 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-02 と同じ訳 |\n| 入力の境界・表記ゆらぎ・状態 | 名前 K717-API-014・選ぶ物 002・005・015・種別 001・016・型 004・並び 008 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（項目の画面・K-709） | 無い | 操作のときに 1 本ずつ（保存＝直す・消す・並べる）。画面を開くときの 2 本は K-706 |\n| 口ごとの文の数・取引の数 | — | 1 取引・文は関数の呼びの 1 つ |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（入口の共通） |\n| 新しい住所 | — | `/ticket-fields/:id`（直す・消す）と `/ticket-fields/order` |\n| staging での答えの時間の前後 | — | 実測なし。staging で記録 |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"custom_fields\\|ticket_field_values\\|listTicketFields\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'packages/*/test/*.ts' ':!apps/api/test/features/F9'\n0\n```\n\n- 段 10 の新しい試験の置き場 `apps/api/test/features/F9` は前からの試験ではないので除く（この葉の 2 本・土台 `settings.harness.ts`・K-715 の `flow-ticket-settings.test.ts`・K-721 の `shape-learning-retire.test.ts` が項目の表や読む口の名前を書く）。この枝（c/段10）には段 5 の表が無いので、前からの試験は 0 件。**この葉は表も段 5 の読む口も書く口も変えない**ので、どれも替えない。作る段で K-563 が本線に入った後の木で、上の検索を流し直して当たった物を開き、種別の行の入れ替えで赤になる物があれば準備の行だけを直す（Tests-Changed: に訳を書く）",
+    "成果物": "- migration 1 本（関数 3 本）・直す・消す・並べる口の hooks のファイルと `F9/settings/fields-edit.ts`・契約と生成物・登録先の断片 5 つ\n- 単体の試験 `ticket-fields-edit.test.ts`・入口の uuid の行 `k144.d/K-717.ts`（切る段が書いた）。共通の土台 `settings.harness.ts` は K-704 と同じ物を carry で運ぶ",
+    "決定ログ": "- 2026-11-22 まとめ役の決め：K-706 を、読む・足す（K-706）と直す・並べる・消す（この葉）に分けた\n- 2026-11-22 切る段の決め：値が 1 つでも入っている項目の型は変えられない。選ぶ物の id は引き継ぐ。項目を消すと値が見えなくなる（値の行は残す・確かめの小窓は画面）。勧め・代表に確認中\n- 代表の決め 1〜13 の決定ログの新しい節は K-673 が運ぶ。この葉は切り方 0.13 に従う",
+    "リスクと懸念": "- K-706 の関数（選ぶ物の組み立て・種別の行の入れ替え）の形が変わると、この葉の関数が壊れる。K-706 が入った後に始め、その関数の戻り値の形（`{\"error\"}` か `{\"ok\": …}`）を作る段で読んでから書く\n- 見込み 55 分。足りなければ「直す」と「並べる・消す」の 2 本に分ける案もあるが、今は分けない",
+    "申し送り": "- K-709（項目の画面）：保存は `updateTicketField`（差分だけ送ってよい。選ぶ物は `[{id, name}]`・既存の物は id を付けたまま・足した物は id なし・つまみで並べ替えた順）・消すは `deleteTicketField`（「この項目を消す…」は `value_count` が 0 でなければ「N 件のチケットに入っている値が見えなくなります」の小窓を出してから呼ぶ）・並べ替えは `reorderTicketFields` に全部の id。型の選びは `value_count` が 0 でなければ選べなくする（口は 409 E-FMS-002）\n- K-715（中間）：種別を外す → その種別のチケットで値を書く口が 409 E-FLD-001／必須にする → 値を書く口が空を 409 で断つ\n- K-711（片付け）：`getTicketShape` などの `axes` 系を外す前に、K-706・K-717 の口が入っていること",
+    "代表に確認中・勧めで切る": "- 項目を消すときの動き（値が入っていても消せる・消すと値は見えなくなる・確かめの小窓の後）と、値が入っている項目の型は変えられない。実例：「請求額」（数）に 12 枚のチケットの値が入っている → 消すときは「12 件のチケットに入っている値が見えなくなります」と出る／型を「1 行」に変えようとすると「値が入っている項目は、型を変えられません」と出る。勧めのまま切った。違えば `type_locked` の分岐と K717-API-004・006 を直す\n- 画面が古い一覧で選ぶ物を保存したとき（別の人が先に足した選択肢が、送られなければ外れる）。勧め：止めない。実例：鈴木さんが「経理」を足した後で、高本さんが古い画面で「営業」だけ直して保存すると「経理」が外れる。違えば選ぶ物の保存に版（更新時刻）を付ける"
+   },
+   "file": "11_tickets/K-717.md"
+  },
+  {
+   "id": "K-718",
+   "title": "Bridge：AI に見せる道具 knowledge_open（ナレッジのページを開く）を足す（道具の定義・仕事の種類ごとの出し分け・進み具合の字・見つからないの文）（K-698 の分け・K-69 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "ナレッジ",
+   "assignee": "実装",
+   "due": "2026-12-04",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の K-62 の Bridge の道具（kaname-tools.ts の定義 1 つ・出し分け・手元の口の試験 K62-BRG-007・012）から引いた：道具の定義と出し分け（kaname-tools.ts）10 分・道具のサーバーの台本に「見つからない」の文 5 分・進み具合の字 5 分・前からの試験 1 本の直し 5 分・自分の確かめ 20 分・試験 8 行（道具のサーバーを子として動かす）の通し 15 分で合わせて 60 分",
+   "decisions": [
+    "D-110.3",
+    "D-110.4",
+    "D-128.138",
+    "D-128.163",
+    "D-150.50",
+    "D-152.17"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面と外へ出ない道具の定義だけ。道具のサーバーは道具の鍵だけを持ち、Bridge の手元の口へ送る（K-62 の決め）。DB・外のサービス・秘密に直に触らない",
+   "tests": [
+    "apps/bridge/test/knowledge-tool.test.ts"
+   ],
+   "carry": [
+    "apps/bridge/test/tool-relay.test.ts"
+   ],
+   "depends_on": [
+    "K-673"
+   ],
+   "acts": [
+    "A114",
+    "A104"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えない（Bridge の道具の定義だけ）。本人の画面には出ない",
+   "affects": [
+    "@kaname/bridge"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/bridge/src/kaname-tools.ts",
+    "apps/bridge/src/stream.ts"
+   ],
+   "flow": "AI がナレッジを読んで守る",
+   "sections": {
+    "目的": "K-698 が足す契約の道具 `knowledge_open`（ナレッジのページを開く）を、**自分のAI（本人の Claude Code）に見せる**。Bridge の道具のサーバー（`kaname-tools.ts` の台本・MCP の「kaname」）に定義を足し、仕事の種類ごとの出し分け・進み具合の字・見つからないときの文を決める。契約の口・DB・道具の鍵の扱いは K-62 のまま（K-698）。\n\n- 道具の定義：名前 `knowledge_open`・入力は `page_id`（文字・必須）だけ。説明は AI が読む（「ナレッジの目次に並んだページを、ページの id を渡して開いて読む」）\n- 出し分け：**チケットの仕事は `ticket_read` と `knowledge_open`**・**会話の仕事は `ticket_read` 以外の全部（`knowledge_open` を含む）**・ログインの試しは何も出さない。手元の口（`tool-relay.ts`）は渡された道具の名前の一覧で通すので、口は変えない\n- 見つからない（契約の口が 404）：AI に「そのページは見つかりません」とだけ返す。在るかどうか・見えない訳を書かない（K-698 の「同じ答え」を守る）。ほかの失敗は前のまま（「Kaname に置けませんでした：…」）\n- 進み具合の字：「ナレッジを開いています」（内部の道具の名前を出さない）\n- **Bridge の版の約束（`BRIDGE_PROTOCOL`）は上げない**：古い Bridge は道具が見えないだけで、必ず守るは本文ごと届く（K-697 の `canOpen` が道具のある仕事だけ「開ける」と言う）。古い Bridge を断らない\n- 許可：`KANAME_TOOL_RULE = \"mcp__kaname\"` は聞かずに使える道具（読むだけ・外に出ない）で、`knowledge_open` も同じ（前のまま・変えない）",
+    "完了の条件": "- [ ] 下の表の 8 行（K718-BRG-001〜008）が緑：`apps/bridge/test/knowledge-tool.test.ts`\n- [ ] 前からの試験 `apps/bridge/test/tool-relay.test.ts`（K62-BRG-012）は「前からの試験を替えた所」のとおり替えた形（チケットの仕事の道具に `knowledge_open` が加わる）で緑。ほかの Bridge の試験は替えずに緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: AI\n\n- **`apps/bridge/src/kaname-tools.ts`**：`TOOL_DEFS` の `ticket_read` の**すぐ後**に `knowledge_open`（`{ name, description, inputSchema: { type: \"object\", properties: { page_id: s(\"ページの id（ナレッジの目次にある id）\") }, required: [\"page_id\"] } }`）。`TICKET_TOOL_NAMES = [\"ticket_read\", \"knowledge_open\"]`。`toolDefsFor`：チケット＝`TICKET_TOOL_NAMES` に当たる定義（定義の並びのまま＝`ticket_read`・`knowledge_open`）・ログインの試し＝空・それ以外（会話・種類なし）＝`ticket_read` を除いた全部（`knowledge_open` を含む）。**会話の仕事では `ticket_read` だけを除く**書き方にする（`TICKET_TOOL_NAMES` で除くと `knowledge_open` が消える）\n- **道具のサーバーの台本**（`MCP_SERVER_SOURCE`）の `call`：`!r.ok` のとき、道具が `knowledge_open` で状態が 404 なら `text(\"そのページは見つかりません\", true)` を返す。**それ以外の失敗の文・成功の文は前のまま**。ほかの道具の振る舞いを変えない。台本はログに何も出さない（`console.log` を入れない）\n- **`apps/bridge/src/stream.ts`** の `label` の `KANAME` の表に `knowledge_open: \"ナレッジを開いています\"` を足す\n- 手元の口（`tool-relay.ts`）・`loop.ts`・`runner.ts` は変えない（渡す道具の名前は `toolDefsFor(kind)` から来る）。`KANAME_TOOLS` の環境変数（その仕事の道具の名前）も同じ\n- ログに道具の入力の中身（ページの id）・答え（本文）・道具の鍵・PC の印を出さない（前のまま）\n- 外へ出ない：メールもお知らせも出さない。本人の PC の中のファイルを読まない（`artifact_put` と違い、PC のファイルは使わない）",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- そのほかの依存は なし — Bridge の定義は API（K-698）と別に入れられる。試験は偽のサーバーを向けるので、API が先に無くても通る。契約の口を実際に通す全体（任せる → 取る → 道具 → 記録）は K-714（中間）",
+    "目録で探した結果": "- 使う：`apps/bridge/src/kaname-tools.ts`（`TOOL_DEFS`・`toolDefsFor`・`MCP_SERVER_SOURCE`）・`apps/bridge/src/stream.ts`（`label`）・`apps/bridge/src/tool-relay.ts`（変えない）・前からの試験 `apps/bridge/test/tool-relay.test.ts`・形は `ticket_read` の定義（K-62）\n- 作る：定義 1 つと 3 つの小さな直し。探したが同じ形の物は無かった（ナレッジを開く道具は無い）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 道具の定義と出し分け | `apps/bridge/src/kaname-tools.ts`：`TOOL_DEFS`・`TICKET_TOOL_NAMES`・`toolDefsFor`（前提と制約） |\n| 道具のサーバーの台本 | 同じファイルの `MCP_SERVER_SOURCE`：`call` の 404 の文（`knowledge_open` だけ） |\n| 進み具合の字 | `apps/bridge/src/stream.ts`：`label` の表に 1 行 |\n| 前からの試験 | `apps/bridge/test/tool-relay.test.ts`：K62-BRG-012 の 2 つの期待を新しい形に（下） |\n| 試験 | `apps/bridge/test/knowledge-tool.test.ts`（切る段が書いた・8 行・道具のサーバーを子として動かし、偽のサーバーで手元の口を通す） |",
+    "外に影響する手順": "なし — 道具の定義と文字だけで、DB に書かず・お知らせも外のサービスも呼ばない。道具が呼ぶ契約の口が書く手順（開いた記録・やり取りの行・証跡）は K-698 の md。道具のサーバーが落ちても本人の Claude Code は他の道具で続けられる（K718-BRG-008）。",
+    "テスト仕様と確認の結果": "`apps/bridge/test/knowledge-tool.test.ts`（Bridge の単体の試験。道具のサーバーの台本を一時フォルダに書いて素の node で動かし、JSON-RPC を送る。手元の口は偽のサーバーへ向ける）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 道具の定義 | 一覧 | AI | knowledge_open が入力 page_id だけで見える | このチケット | K718-BRG-001 |\n| チケットの仕事・会話の仕事・ログインの試し | 道具の出し分け | AI | チケット＝ticket_read＋knowledge_open・会話＝ticket_read 以外の全部・ログインの試し＝空 | このチケット | K718-BRG-002・003 |\n| 道具を呼ぶ | tools/call | AI | 手元の口 → 契約の口へ回る・答えが返る | このチケット | K718-BRG-004 |\n| 見えない・無いページ | 同上 | AI | 「見つかりません」だけ | このチケット | K718-BRG-005 |\n| 道具の無い仕事 | 手元の口 | 道具の鍵 | 403・契約の口に届かない | このチケット | K718-BRG-006 |\n| 進み具合 | 字 | 本人 | ナレッジを開いています | このチケット | K718-BRG-007 |\n| 契約の口が落ちている | tools/call | AI | エラーを返し、サーバーは止まらない | このチケット | K718-BRG-008 |\n| 契約の口・記録・やり取り | 通し | 人・PC | K-698・K-714 | K-698・K-714 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K718-BRG-001 | 入力 | 道具の定義 | 名前 knowledge_open・入力は object で必須が page_id・欄は page_id だけ・説明に「ページ」と「id」が入る |\n| K718-BRG-002 | 入力 | 仕事の種類ごと | チケットは ticket_read・knowledge_open の順・会話は knowledge_open を含み ticket_read を含まない・ログインの試しは空・種類なしは会話と同じ |\n| K718-BRG-003 | 入力 | tools/list | その仕事の道具の名前だけを返す（チケットの仕事は ticket_read と knowledge_open の 2 つ） |\n| K718-BRG-004 | 入力 | tools/call の中継 | page_id だけを手元の口へ送り、契約の口 …/tools/knowledge_open に PC の印と道具の鍵を足して回る。答えの本文がそのまま AI に返り、PC の印は載らない |\n| K718-BRG-005 | 失敗 | 404 | AI には「見つかりません」を返し（エラー扱い）、権限・消された・下書き・別のグループなどの訳は書かない |\n| K718-BRG-006 | 守り | 今の仕事に無い道具 | 道具の無い仕事の鍵で knowledge_open は 403 で、契約の口に届かない |\n| K718-BRG-007 | 入力 | 進み具合の字 | knowledge_open は「ナレッジを開いています」（道具の名前を含まない）・ticket_read・goal_set の字は前のまま |\n| K718-BRG-008 | 失敗 | 契約の口が落ちている | 503 のとき AI にエラーを返し、続けて tools/list も答える（サーバーが止まらない）。台本に console.log が無い |\n\n### テストの型の受け（分類 AI）\n\n| 型 | どこで受けるか |\n|---|---|\n| 要らない: TP-AI-01 外に出す前 | この道具は読むだけで外に出さない |\n| 要らない: TP-AI-02 止める・取り下げ・PC が閉じている | 止め方・PC は前から（K-62）。この葉は道具の定義だけ |\n| 要らない: TP-AI-03 利用量の上限 | 利用量は扱わない |\n| TP-AI-04 予期しない出力（とても長い・空・形が違う） | 契約の口の失敗 K718-BRG-005・008（長い本文は K-698 の 50,000 字の切り） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | — | 画面は無い（AI が呼ぶ道具は 1 ページ 1 回） |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 手元の口 1 回・契約の口 1 回（K-698） |\n| 認証の要る答えの Cache-Control | 前のまま | 前のまま |\n| 新しい住所 | — | 増えない |\n| staging での答えの時間の前後 | — | K-698 に同じ |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"toolDefsFor\\|TICKET_TOOL_NAMES\\|TOOL_DEFS\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' ':!apps/bridge/test/knowledge-tool.test.ts'\n3\n```\n\n- `apps/bridge/test/tool-relay.test.ts`：**替える（carry）** — K62-BRG-012 の「チケットの仕事は ticket_read だけ」を「ticket_read と knowledge_open」に（`toolDefsFor(\"ticket\")` の期待と、`kanameServer` の環境 `KANAME_TOOLS` の期待を `ticket_read,knowledge_open` に）。切る段で替え済み\n- `apps/bridge/test/delegate.test.ts`：替えない — `TOOL_DEFS` に ticket_read が含まれることを見るだけで、足しても通る\n- `apps/bridge/test/kaname-tools.test.ts`：替えない — 道具のサーバーが `TOOL_DEFS` の名前をそのまま返すことを見る形（足した定義も同じ並びで返る）",
+    "成果物": "- `apps/bridge/src/kaname-tools.ts`・`apps/bridge/src/stream.ts`\n- 前からの試験 1 本の直し（`tool-relay.test.ts`・切る段で替え済み）\n- 単体の試験 `knowledge-tool.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-22 切る段の決め：K-698 を 2 つに分けた（API と DB の側＝K-698・Bridge の道具の定義＝K-718。1 本の見込み 1 時間と試験 30 行を超えないため）\n- 2026-11-22 切る段の決め：`knowledge_open` はチケットの仕事にも会話の仕事にも見せる。ログインの試しには見せない\n- 2026-11-22 切る段の決め：Bridge の版の約束は上げない（古い Bridge を断らない）。道具が見えない仕事でも必ず守るは本文ごと届く\n- 2026-11-22 切る段の決め：契約の口が 404 のときは「そのページは見つかりません」だけを AI に返す（訳を書かない・K-698 の「見えない・無いは同じ答え」を AI に届く所まで守る）",
+    "リスクと懸念": "- **古い Bridge**：道具が見えないので目次から開けない。必ず守る（本文ごと）は届く。Bridge の更新を促す（版の約束 `BRIDGE_PROTOCOL` を上げて古い Bridge を断る案は、AI が使えなくなる人が出るので採らない）。道具の説明が増えると、AI に渡す道具の定義が少し長くなる\n- 道具のサーバーの台本は文字列で Bridge が一時フォルダに書く（前の方式のまま）。台本の直しは前の試験（K62-BRG-007・012・kaname-tools.test.ts）が見る\n- この葉の試験は道具のサーバーを子として動かす（素の node）。CI の台で `process.execPath` が使えること（前の kaname-tools.test.ts と同じ前提）",
+    "申し送り": "- K-698：契約の口の道具名 `knowledge_open` と入力 `page_id`（uuid）は K-698 が決める。Bridge の定義は同じ名前・同じ入力にする。K-698 が入力の名前を変えたらこの葉の定義も直す\n- K-697：渡す文の `canOpen` は、道具が見える仕事（チケット・会話）で true。K-718 が入る前の Bridge でも文は出るが、道具の 1 文は出ない\n- K-714（中間）：任せる → 取る → 道具 knowledge_open → 記録とやり取りの行、の通し（実 Bridge ではなく Bridge の部品を通す）",
+    "代表に確認中・勧めで切る": "- なし（決まっていることだけで切った）"
+   },
+   "file": "11_tickets/K-718.md"
+  },
+  {
+   "id": "K-725",
+   "title": "web の前の記憶の画面と呼び出しを外す：dev の見本の頁 /dev/memory（記憶のまとめ・確認待ち）と部品 components/ai/memory.tsx・lib/auth/ext.ts の記憶の関数を消し、残る設定の 3 部品は /dev/ai-settings に移す（K-69 の葉・K-712 より先）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-712（旧い道と関数を消す・試験 17 行・見込み 1）と段 5 の K-582（契約の口を外す・試験 10 行・見込み 0.5）から引いた：web の消しと移し（頁 1・部品 1・ext.ts 1・index.ts・conversation.tsx の数行）15 分・台帳と検査の表と文書の行の移し 10 分・前からの試験の替えは切る段で済ませた・自分の確かめ（試験 14 行・実ブラウザ 4 行）25 分・本線の取り込み 10 分で合わせて 60 分。超えそうなら「文書の行の移し（K725-API-010）」を別の葉に分ける案（番号はまとめ役）",
+   "decisions": [
+    "D-152.1",
+    "D-152.8",
+    "D-152.20"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "web の画面・文書・検査の表を直すだけ。データを書かず、外へも出さず、DB・お知らせ・秘密・AI を呼ばない（消す物は旧い記憶の道を呼んでいた側。関門を通る物が無い）",
+   "tests": [
+    "apps/web/test/k725-memory-ui-retire.test.ts",
+    "apps/web/tests/k/k725-memory-ui-retire.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/screens/clone-chat.spec.ts"
+   ],
+   "depends_on": [
+    "K-673"
+   ],
+   "acts": [
+    "A30"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [
+    "全部の組"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/app/(dev)/dev/memory/page.tsx",
+    "apps/web/app/(dev)/dev/ai-settings/page.tsx",
+    "apps/web/components/ai/memory.tsx",
+    "apps/web/components/ai/index.ts",
+    "apps/web/components/ai/conversation.tsx",
+    "apps/web/lib/auth/ext.ts",
+    "scripts/ci/raw_length_ledger.json",
+    "scripts/ci/chat_one.mjs",
+    "07_qa/test-specs/screens/today.md",
+    "07_qa/test-specs/screens/clone-memory.md",
+    "07_qa/test-specs/screens/clone-chat.md",
+    "scripts/ci/ci_scope.d/K-725.json"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "sections": {
+    "目的": "代表の決め 1・8（記憶は物として無くす。AI に覚えさせたいことは全部ナレッジのページで受ける）に従い、**web の前の記憶の画面と、旧い記憶の道への呼び出し**を外す。後の K-712 が旧い道（`apps/api` の `/agent/memory/…` 9 本と DB の関数）を消すとき、呼ぶ所が web に残っていて 404 になるのを防ぐので、**この葉が K-712 より先**。\n\nweb と DB を 1 本で両方触らない決まり（`ticket-flow.yaml` の weight）なので、K-712 から分けた葉。\n\n見つけた物を全部出した（下の「前からの試験を替えた所」の 1 つ目）。5 ファイル：頁 1・部品 1・`ext.ts`・`index.ts`・生成物 `built-routes.ts`。\n\n| 物 | 扱い | 訳 |\n|---|---|---|\n| `app/(dev)/dev/memory/page.tsx`（頁 `/dev/memory`） | **消し、下半分を新しい頁 `/dev/ai-settings` に移す** | 頁は記憶の 2 部品（まとめ・確認待ち）と、記憶ではない 3 部品（いつも許可・使用量・通知）を並べた見本。前から 3 つの前からの試験（CHT-19-005・CHT-20-002・USH-08-012）が 3 部品の見本としてこの頁を開いている。記憶の名前の道に記憶でない物を残すと嘘になるので、頁の道を変える |\n| `components/ai/memory.tsx`（481 行・`MemoryDigest`・`MemoryReviews`） | **消す** | 旧い記憶の道 9 本を呼ぶ部品。呼ぶ所は上の頁だけ |\n| `components/ai/index.ts` の `export { MemoryDigest, MemoryReviews }` | **その 1 行を消す** | 上の部品を出していた |\n| `lib/auth/ext.ts` の記憶の関数 7（`memoryDigest`・`memoryDigestStart`・`memoryDigestUndo`・`memoryDigestPick`・`memoryEdit`・`memoryDelete`・`memoryReviews`）・上げる 2（`proposalSend`・`proposalDecide`）・型 4（`DigestItem`・`DigestResult`・`DigestStatus`・`Review`） | **消す** | 呼ぶ部品が消える。会話・成果物などの道（`/agent/…` 39 か所）の関数は残す |\n| `lib/built-routes.ts`（生成物） | **作り手で作り直す** | `/dev/memory` が消え `/dev/ai-settings` が入る。手で直さない |\n| `components/ai/conversation.tsx` の「覚えました」の行 | **字だけの行にする（`/ai/memory` へのリンクの枝を消す）** | `isBuilt(\"/ai/memory\")` はいつも偽（その画面は作っていない）なので、リンクの枝は一度も動いたことが無い。残す「覚えました：…」は「覚えて」の印（K-712 が残す・代表に確認中）を受けた結果の表示 |\n| `components/ai/markdown.tsx` の `memory:` の種類（`kaname://memory/<id>`） | **残す** | 前の返事に残る `kaname://memory/…` のリンクを、いまは「記憶の画面は準備中です」と出す。消すと外のリンクとして開く（行き止まり）。AI に教える文（`apps/api/src/auth/conventions.ts`・`apps/bridge/src/conventions.ts`）から「記憶」を外すのは K-712 |\n| `scripts/ci/raw_length_ledger.json`（生の長さの台帳） | 記憶の部品 5 行（`memory.tsx`）と頁 1 行（`dev/memory/page.tsx`）を消す | 台帳は減らすだけ。ファイルが無いのに残ると「台帳を減らす」で赤になる。新しい頁は任意値の大きさを書かず、台帳に足さない |\n| `scripts/ci/chat_one.mjs` の「1 行の欄を作ってよいファイル」の一覧 | `components/ai/memory.tsx` を外す | 消えたファイルの名前が残るだけ（検査の意味は変わらない） |\n| `lib/nav.legacy.ts`・`routes.legacy.ts` の `clone-memory`（`/ai/memory`）・生成物 `lib/nav.ts` の第 2 ナビ「記憶」 | **この葉では変えない** | 前の外枠（`components/shell`・`/dev/shell`）の写しで、前の画面と一緒に外す側（D-128.78）。`nav.ts` の「記憶」は K-673 が第 2 ナビを直す。`tests/shell.spec.ts` の `clone-memory` は外枠の幅の試験で記憶の画面を開かない |\n| `07_qa/test-specs/screens/{today,clone-memory,clone-chat}.md` の行 12 | 「もう無い行」の節へ移す | 外した頁の試験の行。ID と当時の結果を残す（同じ ID を二度使わない）。「覚えて」の行（CHT-21-005）は今の行に残す |",
+    "完了の条件": "- [ ] 下の表の 14 行（K725-API-001〜010・K725-UI-001〜004）が緑：`apps/web/test/k725-memory-ui-retire.test.ts`・`apps/web/tests/k/k725-memory-ui-retire.spec.ts`\n- [ ] `apps/web` の中に消した名前（`agent/memory`・`MemoryDigest`・`MemoryReviews`・`memoryDigest*`・`memoryEdit`・`memoryDelete`・`memoryReviews`・`dev/memory`・`proposalSend`・`proposalDecide`・`DigestItem`・`DigestResult`・`DigestStatus`）が 0 件。残る名前（`AlwaysAllowList`・`UsagePanel`・`NotifyToggles`・`agentMessagesBefore`・`覚えました：`）は在る\n- [ ] 前からの試験 `clone-chat.spec.ts`（carry）が新しい形で緑：記憶の 3 つの試験（CHT-21-001〜004・CHT-15-005・CHT-22-006 の 1 本／CHT-21-006／CHT-22-001〜005）を外し、`/dev/memory` を開く 3 か所を `/dev/ai-settings` に替えた（切る段で済み）。残す CHT-21-005（「覚えて」と言うと個人の記憶に入り「覚えました」が出る）・CHT-19-005・CHT-20-002・USH-08-012 が緑\n- [ ] `npx tsc --noEmit`（apps/web）が通る（`conversation.tsx` の使わなくなった import〔`Link`・`Route`・`Brain` のうち使われなくなった物〕を外す）・`python3 scripts/ci/design_gate.py … --raw-lengths` の D8（台帳）が緑・`python3 scripts/ci/gen_built_routes.py` の出力が `built-routes.ts` と同じ・`apps/web/tests/reachability.spec.ts`（作った道の一覧が生成物と同じ・USH-00-028）が緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "- 正の絵の欄は `canvas: [全部の組]`（まとめ役の決め・2026-11-22）：この葉は画面のコードを消すだけで、自分の正の組を持たない。消した後も、ほかの画面の見た目が変わっていないことを全部の組の突き合わせで確かめる（K-350 などと同じ書き方。`canvas_none` は changes に画面のコードがあると使えない）\n\n分類: TOOL\n\n- **この葉が K-712 より先**：K-712 の `depends_on` に K-725 を足す（まとめ役）。順が逆だと、K-712 が旧い道を消した後に `/dev/memory` の頁と 3 つの試験が 404／500 で赤になる\n- **消すのは web だけ**：`apps/api`・`packages/*`・`apps/bridge`・`05_flow/*`・`08_api/*` は変えない（K-712・K-711・K-722）。旧い道は動いたまま、呼ぶ所が無くなるだけで、この葉の間は害が無い\n- **頁の道を変える訳**：前の頁の下半分（いつも許可・使用量・通知）は記憶ではないが、前から 3 つの前からの試験が開く見本の頁だった。置き場の画面（アカウント・お知らせ・設定）ができるまでの見本で、`RequireSession` の中・本物の API につながる。新しい道 `/dev/ai-settings`、見出し「AI まわりの設定（見本）」（見本の頁の字。製品の画面ではないので仮のまま）。部品の並びは前のまま（`AlwaysAllowList`・`UsagePanel`・`NotifyToggles`）。`max-w-[860px]`（任意値）は台帳に載る生の長さなので、新しい頁では `max-w-3xl`（標準の幅）にする\n- **「覚えました」の行は残す**：「覚えて」の印と道具 `remember` は K-712 の決めで今は残る（代表に確認中・勧めで切る）。会話の画面は印を受けた結果の「覚えました：…」を字だけで出す。押しても記憶の画面へ行けない（前から行けなかった）\n- 控え帳：この葉は新しい口・断りの番号・文を足さない。**画面に出る文**は見本の頁の見出しだけ（仮）。会話の画面の文は変えない\n- `RequireSession` を外した頁は無い（新しい頁も付ける）。ログインしていない人は `/login?next=%2Fdev%2Fai-settings` へ送られる",
+    "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- そのほかの依存は なし — 前の物を外すだけで、先の葉の成果物を使わない。旧い記憶の道（K-712 が消す）は動いたまま。新しい物（`/dev/ai-settings`）は前からある 3 部品を道だけ変えて置く。K-712 の方が K-725 に依存する",
+    "目録で探した結果": "- 使う：前の頁 `app/(dev)/dev/memory/page.tsx` の下半分と `components/ai/settings.tsx` の 3 部品（そのまま）・`RequireSession`（`lib/auth/session.tsx`）・生成の作り手 `scripts/ci/gen_built_routes.py`（`generated.json` の `--app apps/web/app --out apps/web/lib/built-routes.ts`）・試験の土台 `apps/web/tests/_lib/api.ts`（`signupViaApi`・`loginAs`・`setupStep`）・生の長さの台帳（`design_raw_lengths.py` は「減らすだけ」）\n- 作る：`app/(dev)/dev/ai-settings/page.tsx`（前の頁の下半分）・試験 2 本・`scripts/ci/ci_scope.d/K-725.json`。探したが「記憶の呼び出しと部品を外し、残る部品の見本の頁の道を替える」前例は無い（K-138 は前の外枠を外したが頁の道は替えていない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 頁を移す | `apps/web/app/(dev)/dev/ai-settings/page.tsx` を新しく置く：`\"use client\"`・`AlwaysAllowList`・`UsagePanel`・`NotifyToggles` を `RequireSession` の中に並べる（`components/ai` から読む）。見出し「AI まわりの設定（見本）」・先頭のコメントは「自分の AI まわりの設定の見本（いつも許可・使用量・通知）。置き場の画面ができるまでここで押して確かめる」。`max-w-3xl`。前の頁 `dev/memory/page.tsx` は消す |\n| 部品を消す | `components/ai/memory.tsx` を消す。`components/ai/index.ts` の `MemoryDigest, MemoryReviews` の 1 行を消す |\n| 呼び出しを消す | `lib/auth/ext.ts`：記憶の関数 7・上げる 2・型 4 を消す（「会話の記憶」の節見出しのコメントも）。`ext` 本体と会話・成果物の関数は変えない。使われなくなった import があれば外す |\n| 会話の画面 | `components/ai/conversation.tsx` の `who === \"memo\"` の枝：`isBuilt(\"/ai/memory\") ? <Link …/> : <p …/>` を `<p className=\"memline\" data-who=\"memo\"><Brain /><span>覚えました：{m.text}</span></p>` の 1 つにし、コメントを「覚えました（D-105.1）。字だけの行（記憶の画面は無い）」に直す。使われなくなった import（`Link`・`Route` など。ほかで使っていれば残す）を外す。`isBuilt(\"/tasks\")`（別の所）は残す |\n| 生成物 | `python3 scripts/ci/gen_built_routes.py --app apps/web/app --out apps/web/lib/built-routes.ts` で作り直す（手で直さない） |\n| 台帳・検査の表 | `scripts/ci/raw_length_ledger.json`：`file` が `apps/web/components/ai/memory.tsx` の 5 行と `apps/web/app/(dev)/dev/memory/page.tsx` の 1 行を消す。`scripts/ci/chat_one.mjs`：先頭の説明と 43・44 行目の一覧から `memory.tsx` を外す |\n| 仕様書の行 | `07_qa/test-specs/screens/today.md`（CHT-21-001〜004・006）・`clone-memory.md`（CHT-22-001〜006）・`clone-chat.md`（CHT-15-005）の行を、同じファイルの「## もう無い行」の節へ移す（ID・結果の文字はそのまま。節の行数の見出し `（N 行）` を数え直す）。`CHT-21-005` は今の行に残す。`python3 scripts/ci/qa-ladder.py validate`（あれば）と `ci_results.py check` を手元で流して、移した行が赤にならないことを見る |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-725.json`（下） |\n| 前からの試験 | `clone-chat.spec.ts` は切る段で替えた（下）。実装では触らない |\n\n### 範囲の地図（ci_scope.d/K-725.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/web/components/ai/**\", \"apps/web/lib/auth/ext.ts\", \"apps/web/app/(dev)/dev/ai-settings/**\"],\n   \"tests\": [\"apps/web/tests/screens/clone-chat.spec.ts\", \"apps/web/tests/k/k725-memory-ui-retire.spec.ts\", \"apps/web/test/k725-memory-ui-retire.test.ts\"]}\n ],\n \"reads_ok\": {\n  \"apps/web/test/k725-memory-ui-retire.test.ts\": \"apps/web の頁・部品・ext.ts・index.ts・conversation.tsx・markdown.tsx・built-routes.ts を readFileSync で読み、git grep で消した名前を探し、scripts/ci/raw_length_ledger.json・chat_one.mjs・07_qa/test-specs/screens/*.md の行を読む（K725-API-001〜010）\"\n }\n}\n```",
+    "外に影響する手順": "なし — 画面のコード・検査の表・文書の行を消す・移すだけ。データを書かず、お知らせ・メール・外の呼び出し・AI を使わない（K-712 が消す旧い道は動いたまま、web が呼ばなくなるだけ）。",
+    "テスト仕様と確認の結果": "`apps/web/test/k725-memory-ui-retire.test.ts`（ファイルと字を読む・`git grep`・K725-API-001〜010）と `apps/web/tests/k/k725-memory-ui-retire.spec.ts`（実ブラウザ・本物の API と DB・K725-UI-001〜004。Bridge は使わない）。**動く確かめは前からの試験が受ける**：残す設定の 3 部品（CHT-19-005 の「いつも許可」・CHT-20-002 の使用量・USH-08-012 の通知）と「覚えて」→「覚えました」（CHT-21-005）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 前の記憶の頁 `/dev/memory` | 道を直に開く | ログイン中 | 404（見つからない）。まとめ・確認待ちの部品は出ない | このチケット | K725-UI-001 |\n| 設定の見本の頁 `/dev/ai-settings` | 道を直に開く | ログイン中 | 200・3 部品が出る・記憶のまとめと確認待ちは出ない | このチケット | K725-UI-002 |\n| 設定の見本の頁 | 道を直に開く | ログインしていない | `/login?next=%2Fdev%2Fai-settings` へ送られ、部品は出ない | このチケット | K725-UI-004 |\n| 設定の見本の頁 | 開く | ログイン中 | 旧い記憶の道（`/agent/memory`）を 1 度も呼ばない | このチケット | K725-UI-003 |\n| 3 部品の動き（いつも許可・使用量・通知） | 新しい道で開く | ログイン中 | 前と同じに動く | 前からの試験 | CHT-19-005・CHT-20-002・USH-08-012（道だけ替えた） |\n| 記憶のまとめ・上げる候補・確認待ち | 画面から | ログイン中 | 画面が無い（試験も無い）。AI にまとめさせる入口は web に無い | このチケット | K725-API-001・002・003・009 |\n| 会話の「覚えました」の行 | 「覚えて」と言う | ログイン中 | 字だけの行（押せない）。個人の記憶の表に行が入る（K-712 が残す） | 前からの試験＋このチケット | CHT-21-005・K725-API-005 |\n| 過去の返事の `kaname://memory/…` | 返事を読む | ログイン中 | 「記憶の画面は準備中です」（前のまま） | このチケット | K725-API-006 |\n| 作った道の一覧（生成物） | ファイルを読む | — | `/dev/memory` が無く `/dev/ai-settings` が在る | このチケット | K725-API-007 |\n| 生の長さの台帳・会話の部品の検査の許す一覧 | ファイルを読む | — | 消した 2 ファイルの行が無い | このチケット | K725-API-008 |\n| 仕様書の行 | ファイルを読む | — | 12 行が「もう無い行」・「覚えて」の行は今の行 | このチケット | K725-API-010 |\n| 旧い記憶の道（API）・DB の関数 | — | — | 変えない（K-712） | K-712 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K725-API-001 | 守り | 消すファイルと新しい頁のファイル | `dev/memory/page.tsx`・`components/ai/memory.tsx` が無く、`dev/ai-settings/page.tsx` が在り、3 部品（`AlwaysAllowList`・`UsagePanel`・`NotifyToggles`）を並べ、`Memory` の字が無く、任意値の大きさ（`-[数]`）が無い |\n| K725-API-002 | 守り | `apps/web` の全部で消した名前を探す（この葉の試験 2 本を除く） | 13 の名前（`agent/memory`・`MemoryDigest`・`MemoryReviews`・`memoryDigest`・`memoryReviews`・`memoryEdit`・`memoryDelete`・`dev/memory`・`proposalSend`・`proposalDecide`・`DigestStatus`・`DigestResult`・`DigestItem`）が 1 つも出ない（0 ファイル） |\n| K725-API-003 | 守り | `lib/auth/ext.ts` | 記憶の関数・上げる関数・型 4 つが無く、`agentMessagesBefore` と `export interface AgentMsg` と `/agent/` の道（5 か所を超える）は残る |\n| K725-API-004 | 守り | `components/ai/index.ts` | `MemoryDigest`・`MemoryReviews`・`./memory` が無く、設定の 3 部品の行と `Conversation` の行は在る |\n| K725-API-005 | 守り | `components/ai/conversation.tsx` | `/ai/memory` の字が無く、`data-who=\"memo\"` と `覚えました：{m.text}` は在り、「直す」の字の行が無い |\n| K725-API-006 | 守り | `components/ai/markdown.tsx` | `memory: { route: (id) => \\`/ai/memory?id=` の種類が残る（過去の返事のリンクが外のリンクにならない） |\n| K725-API-007 | 守り | 作った道の一覧（生成物 `lib/built-routes.ts`） | `\"/dev/memory\"` が無く、`\"/dev/ai-settings\"` と `\"/dev/mock/f8\"`（本線に前から在る下絵の道・ほかの道を巻き込まない）が在る |\n| K725-API-008 | 守り | 生の長さの台帳と `chat_one.mjs` | 台帳の `file` に 2 つの消したファイルが無く（ほかのファイルの行は残る）、`chat_one.mjs` の許す一覧に `components/ai/memory.tsx` が無く `components/ai/composer.tsx` は在る |\n| K725-API-009 | 守り | 前からの試験 `clone-chat.spec.ts` | `/dev/memory` が 0 か所・`/dev/ai-settings` を開く所が 3 か所・CHT-21-001／CHT-21-006／CHT-22-001 の試験が無く、CHT-21-005・CHT-19-005・CHT-20-002・USH-08-012 の試験は在る |\n| K725-API-010 | 守り | 仕様書 3 ファイルの行 | CHT-21-001〜004・006（today）・CHT-22-001〜006（clone-memory）・CHT-15-005（clone-chat）が「もう無い行」の節に在って今の行に無く、CHT-21-005 は今の行に在る |\n| K725-UI-001 | 入口 | ログイン中の人が `/dev/memory` を直に開く | 404（見つからない）。「まとめ」「確認待ち」の部品が 1 つも出ない |\n| K725-UI-002 | 対象の状態 | ログイン中の人が `/dev/ai-settings` を開く | 200・「いつも許可」「使用量」「通知」の部品が出る・見出し「AI まわりの設定（見本）」・まとめの開始ボタン・結果・確認待ちが 0 個 |\n| K725-UI-003 | 守り | `/dev/ai-settings` を開いて部品が出るまで待つ | ブラウザが出した要求に `/agent/memory` を含む物が 1 つも無い |\n| K725-UI-004 | 利用者の状態 | ログインしていない人が `/dev/ai-settings` を開く | `/login?next=%2Fdev%2Fai-settings` へ送られ、3 部品が 1 つも出ない |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 消す頁・部品は入力を持たない。残る 3 部品の入力は前からの試験が受ける |\n| 対象の状態 | 該当 | UI-002（新しい頁・部品が出て記憶の部品が出ない） |\n| 時間の流れ | 要らない | 時間で変わる物が無い（前の返事の `kaname://memory` は前のまま・API-006） |\n| 入口 | 該当 | UI-001（前の道）・UI-004（新しい道・ログインなし）・API-007（道の一覧） |\n| 利用者の状態 | 該当 | UI-004。権限の違い（管理者・マネージャー）は頁が分けない |\n| 失敗 | 要らない | 外の呼び出しを足さない。部品の失敗の表示は前のまま（前からの試験） |\n| 操作の揺れ | 該当 | API-004・005・006（隣の部品・「覚えました」・過去の返事を巻き込んでいない）・UI-003 |\n| 守り | 該当 | API-001〜010 |\n\n### 分類の型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K725-API-010（`07_qa/test-specs/screens/` の日本語の見出しを含む md を読み、`git grep` は `-z` の出力を分けて読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K725-API-002（「0 件」だけだと探す先が空でも緑なので、API-003・004・005 が残す名前が「在る」ことを必ず見る）。UI-001・UI-004 は `toHaveCount(0)` の前に 404・遷移先という「在る」確かめを置く。UI-003 は 部品が出るまで待ってから要求の一覧を見る（要求がまだ出ていないだけで緑にならない） |\n| 要らない: TP-TOOL-03 容れ物の中と手元で設定・証明書・版が違う | 試験は git・本物の API と DB の標準の道具だけで動き、容れ物ごとの設定を読まない |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外の物を使わない |\n| G-12 切り替わりの瞬間 | N/A | 画面の削除だけ。デプロイの間は旧い道が動いたまま（K-712 より先に入る） |\n| G-13 機能の組み合わせ | 該当 | 消す物 × 残す物（設定の 3 部品・「覚えました」の行・過去の返事のリンク）：API-004・005・006・UI-002 |\n| G-14 口座状態の波及 | N/A | 退会・権限変更の後の扱いは変えない |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | N/A | 要求は増えない（見本の頁で記憶の 2 部品が出していた 2 つの読み出しと 30 秒ごとの確認待ちの読みが減る） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの要求の数 | 見本の頁（記憶のまとめ＋確認待ち＋3 部品）：記憶の 2 つ（`/agent/memory/digest`・`/agent/memory/reviews`）と 30 秒ごとの確認待ちの再読み込みを含む | 記憶の 2 つが無くなる（要求が減る）。残る 3 部品の要求は同じ |\n| 直列の段・取引の数・Cache-Control | 見本の頁のみ・変わらない | 同じ |\n| 新しい住所 | — | 増えない（`/dev/memory` が減り `/dev/ai-settings` に替わる） |\n| 製品の画面 | 影響なし（見本の頁と前の部品だけ） | 同じ |",
+    "前からの試験を替えた所": "消す部品・関数・道の名前を使う前からの試験・検査を探した（2026-11-22・替えた後は 0）。探す先はこの葉の試験 2 本を除く。\n\n```search\ngit grep -l -E \"agent/memory|MemoryDigest|MemoryReviews|memoryDigest|memoryReviews|memoryEdit|memoryDelete|dev/memory|proposalSend|proposalDecide|DigestStatus|DigestResult|DigestItem\" -- apps/web ':!apps/web/test/k725-memory-ui-retire.test.ts' ':!apps/web/tests/k/k725-memory-ui-retire.spec.ts'\n5\n```\n\n試験のファイルの中だけを探した（`clone-chat.spec.ts` を替えた後）：\n\n```search\ngit grep -l -E \"dev/memory|MemoryDigest|MemoryReviews|memoryDigest|memoryEdit|memoryReviews\" -- apps/web/tests apps/web/test ':!apps/web/test/k725-memory-ui-retire.test.ts' ':!apps/web/tests/k/k725-memory-ui-retire.spec.ts'\n0\n```\n\n試験の仕様書の行：\n\n```search\ngit grep -l -E \"CHT-21-00[1-46]|CHT-22-00[1-6]|CHT-15-005\" -- 07_qa/test-specs\n3\n```\n\n生の長さの台帳の行：\n\n```search\ngit grep -n -E \"\\\"file\\\": \\\"apps/web/(components/ai/memory.tsx|app/\\(dev\\)/dev/memory/page.tsx)\\\"\" -- scripts/ci/raw_length_ledger.json\n6\n```\n\n- `apps/web/tests/screens/clone-chat.spec.ts`：**替えた（切る段で）** — 記憶の 3 つの試験を外した：①`CHT-21-001 CHT-21-002 CHT-21-003 CHT-21-004 CHT-15-005 CHT-22-006`（まとめは押したときだけ始まる）②`CHT-21-006`（PC が閉じていたらまとめを始められない・E-MEM-001）③`CHT-22-001 CHT-22-002 CHT-22-003 CHT-22-005`（上げる候補・確認待ち・食い違い）。`page.goto(\"/dev/memory\")` の 6 か所のうち、記憶の 3 試験の 3 か所は試験ごと消え、**残す 3 か所（CHT-19-005 の「いつも許可」・CHT-20-002 の使用量・USH-08-012 の通知）は `/dev/ai-settings` に替えた**（804 行になった）。残す CHT-21-005（「覚えて」と言うと記憶に入り「覚えました」が出る）は替えない。会話の「記憶に使わない」の切り替え（CHT-15 のほかの行・`qa-a1-chat.spec.ts`・`onboard-interview.spec.ts`）は替えない（切り替えの入口は変えない・代表に確認中の 2）\n- `apps/web/tests/screens/qa-a1-chat.spec.ts`・`onboard-interview.spec.ts`：替えない — `[data-incognito]` の切り替えの保存と表示を見る試験。記憶の頁を開かない\n- `apps/web/tests/shell.spec.ts`：替えない — `/dev/shell?screen=clone-memory` は前の外枠の幅の試験（前の外枠の `lib/nav.legacy.ts` の画面名）。記憶の頁を開かない\n- `apps/web/tests/reachability.spec.ts`：替えない — 作った道の一覧が生成物と同じ（USH-00-028）・ナビの先が作った道だけ（USH-00-027）。`/dev/memory` を指す所が無い（作り直した生成物と一致するだけ）\n- `apps/web/test/*.test.ts`（`k-nav-model` ほか）：替えない — 外枠の並び・下書き・テーマなどで、記憶の部品と呼び出しを読まない（上の 2 つ目の探す命令が 0）\n- `apps/api/test/*`・`packages/*/test/*`：この葉では替えない — web の部品を読まない。旧い道を使う API 側の試験は K-712 が替える",
+    "成果物": "- 新しい頁 1・消した頁 1・消した部品 1・直した 3 ファイル（`index.ts`・`conversation.tsx`・`ext.ts`）・作り直した生成物 1・台帳と検査の表の直し 2・仕様書の行の移し 3 ファイル\n- 範囲の地図 1 つ・試験 2 本（14 行・切る段が書いた）・前からの試験 1 つの替え（切る段で済み）",
+    "決定ログ（足す行）": "- なし（決めは K-673 が運ぶ D-152.1（決まり・守ること・やり方・記憶は全部ナレッジ）・D-152.8・D-152.20 に従う）\n- 2026-11-22 切る段の決め：K-712 の申し送りの web の物（`/dev/memory`・`memory.tsx`・`ext.ts` の記憶の関数・`clone-chat.spec.ts` の記憶の試験）を外す葉。見本の頁は消さず、記憶でない 3 部品（いつも許可・使用量・通知）を `/dev/ai-settings` に移す。訳＝その 3 部品は前からの 3 つの試験が見本として開いていて、置き場の画面ができるまで他に無い。頁ごと消すと 3 つの試験が行き場を失う。記憶の名前の道に記憶でない物を残すと誤解させる\n- 2026-11-22 切る段の決め：`conversation.tsx` の「覚えました」の行のリンクの枝を消す。訳＝`/ai/memory` を作っていない（`isBuilt` がいつも偽）ので、枝は一度も動いていない。行そのものは「覚えて」の印の結果なので K-712 の決め（印は残す・代表に確認中）に合わせて残す\n- 2026-11-22 切る段の決め：`markdown.tsx` の `kaname://memory/…` の種類は残す。訳＝前の返事のリンクが外のリンクとして開く行き止まりになるのを防ぐ。AI に教える文（`conventions.ts`）の「記憶」は K-712 が外す\n- 2026-11-22 切る段の決め：記憶の内容を新しいナレッジへ移す道は作らない（代表の決め 8・切り方 0.15：表は消さず凍結・K-722）",
+    "リスクと懸念": "- **canvas の検査が通らない**：`canvas: []`＋`canvas_none` は changes に画面のコード（`apps/web/app|components`）があると `canvas_field_gate.py` が赤にする（K-215 の決め）。画面を**消す**葉に正の組・状態は無い。まとめ役の判断（報告の 3）\n- 「この会話を記憶に使わない」の切り替え（`composer.tsx`・`list.tsx` の「記憶なし」）の文は「毎朝まとめる記憶に入れません」のまま残る。毎朝のまとめは K-712 で動かなくなる（結末を受ける所だけ残る）ので、文が本当でなくなる（代表に確認中の 2）\n- 前の記憶の行（表 `memories`）は利用者から見えなくなるのでなく、**もともと製品の画面には出ていなかった**（記憶の画面 `/ai/memory` は作っていない。見られたのは dev の見本の頁だけ）。見える形の変化は無い\n- 見本の頁の道が変わるので、手元の手順書・ブックマークの `/dev/memory` は 404 になる（dev のみ）\n- 仕様書 3 ファイルの行の移しは手作業（生成の作り手 `build_tasks.py` が持たない行）。移し間違い（ID の落とし・結果の文字の変え）は K725-API-010 と `ci_results.py check` で止まる",
+    "申し送り": "- まとめ役へ：**K-712 の `depends_on` に K-725 を足す**。K-712 の「前提と制約」の「先に web を外す」・「申し送り」の仮の番号 K-723 を K-725 に読み替える（K-723 は別の葉に使われている）。K-712 の「前からの試験を替えた所」の 2 つ目の探す命令（web の記憶の画面と試験・6）は、この葉が取り込まれた後は 0 になる\n- まとめ役へ：**`canvas_field_gate.py` が画面を消す葉を通せない**（報告の 3 に案）\n- K-673：生成物 `lib/nav.ts` の第 2 ナビ「記憶」（`knowledge` の `sub_by_screen`）は K-673 が直す。`lib/nav.legacy.ts`・`routes.legacy.ts` の `clone-memory`（`/ai/memory`）は前の外枠の写しで、前の外枠を外すときに消える（この葉では変えない）\n- K-712：AI に教える文 `apps/api/src/auth/conventions.ts` と `apps/bridge/src/conventions.ts` の「記憶は … `kaname://memory/<id>`」を、旧い道を消すときに外す（この葉は `markdown.tsx` の種類を過去の返事のために残す）\n- K-722：凍結する表 `memories`・`memory_digests`・`memory_proposals` の読み手から、web の記憶の画面はこの葉で無くなる",
+    "代表に確認中・勧めで切る": "- **前の記憶の画面を外すと、利用者の前の記憶は見えなくなるか**（新しく出た）。実例：高本さんが前に AI へ「請求書は税込を先に書く」と覚えさせた行。**製品の画面にはもともと記憶の画面が無く**（作っていない）、見られたのは開発用の見本の頁だけなので、見える形は変わらない。ナレッジに移す道は作らない（代表の決め 8・表は凍結）。勧めは**移さない。必要な人は自分の棚にページとして書き直してもらう**（前の行は表に残る）。違う答え（前の記憶をナレッジの自分の棚へ写す）が来たら、表の行を自分の棚のページに写す口と画面の葉を足す（番号はまとめ役）\n- **会話の「この会話を記憶に使わない」の切り替えと「記憶なし」の印をどうするか**（新しく出た）。実例：高本さんが社外秘の相談の会話で切り替えをオンにすると、入力欄の下に「この会話は、自分のAIが毎朝まとめる記憶に入れません」と出て、一覧に「記憶なし」の印が付く。毎朝のまとめは K-712 で無くなるので、この文は本当でなくなる。勧めは**この葉と K-712 では残し、「覚えて」の答え（K-712 の確認中）と一緒に決める**（「覚えて」をナレッジに書く形にするなら、この切り替えは「この会話をナレッジに書かせない」に替えるか外す）。違う答え（今すぐ外す）が来たら、`composer.tsx`・`list.tsx` の切り替えと印・API の `incognito` の入口・試験（`qa-a1-chat.spec.ts` ほか）を外す葉を足す"
+   },
+   "file": "11_tickets/K-725.md"
   },
   {
    "id": "K-727",
