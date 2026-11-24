@@ -3,12 +3,14 @@
 //   言葉の欄（題名か番号で絞る）：100 字まで・打ち終わってから 300ms で 1 回だけ口を呼ぶ（G-16）・打った字はそのまま渡す（そろえるのは口・K-92）。
 //   かんたん：状態の札・親子・担当者・種別・AI に任せている を URL の絞りの組（extra）に出す（全部 AND・欄の名前は features/F7/saved/filter-params.ts）。
 //     状態の札は押したとき段の口を 1 回だけ読み、名前から段の id を引く（開いたときは読まない・URL の stage_id は口にそのまま送り、札は押した形にしない）。
-//   詳しく：条件を組む（features/F7/saved/condition-builder.tsx）。分類・節目・畳む・検索条件を保存 はまだなので押せない（aria-disabled・グレー）。
+//   詳しく：条件を組む（features/F7/saved/condition-builder.tsx）。分類・節目・畳む はまだなので押せない（aria-disabled・グレー）。
+//   検索条件を保存：K-479 の SaveViewButton を検索条件の箱と、条件を組むの足（saveAction）の 2 か所に置く（グループの一覧 ?scope= でだけ押せる）。
 //   表の上の道具：件数は総数を返さない口なので空。まとめて操作・CSV で取り込むは押せない。表示設定は一覧の共通の部品（list-columns.tsx）に
 //     1 行の高さ・並べ方（sort。既定の「更新が新しい順」と同じなら欄を付けない）を差し込む
 import { useEffect, useRef, useState } from "react";
 import { ConditionBuilder, ViewSettings } from "@/features/F7/saved/views";
 import { COND_KEYS, without, withParams } from "@/features/F7/saved/filter-params";
+import { SaveViewButton } from "@/features/F7/saved/save-view-dialog";
 import { useListDensity } from "@/features/F7/saved/use-list-density";
 import { useListNames, useStageNames } from "@/features/F7/saved/use-list-names";
 import { ColumnSettings, type Columns } from "./list-columns";
@@ -47,15 +49,6 @@ function Off({ className, children, label }: { className: string; children: stri
     <span className={className} aria-disabled="true" title={`${label ?? children}（準備中）`}>
       {children}
     </span>
-  );
-}
-
-/** 押せない形のボタン（button の役・Tab で止まらない・口を呼ばない） */
-function OffButton({ className, children }: { className: string; children: string }) {
-  return (
-    <button type="button" className={className} aria-disabled="true" tabIndex={-1} title={`${children}（準備中）`}>
-      {children}
-    </button>
   );
 }
 
@@ -200,7 +193,7 @@ export function ListSearch({ onQuery, extra = NONE_EXTRA, onExtra }: { onQuery: 
             </button>
           </span>
           <span className="k-list-search-acts">
-            <OffButton className="k-list-tool">検索条件を保存</OffButton>
+            <SaveViewButton className="k-list-tool" q={text} />
             <Off className="k-list-tool" label="畳む">
               畳む ▴
             </Off>
@@ -264,6 +257,7 @@ export function ListSearch({ onQuery, extra = NONE_EXTRA, onExtra }: { onQuery: 
           onNeedStages={states.loadStages}
           onApply={(params) => set({ ...without(extra, COND_KEYS), ...params })}
           onBack={() => setAdvanced(false)}
+          saveAction={<SaveViewButton className="k-btn k-f7-saved-cond-save" q={text} />}
         />
       ) : null}
     </>
