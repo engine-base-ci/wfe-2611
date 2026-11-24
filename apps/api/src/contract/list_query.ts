@@ -10,9 +10,13 @@ const SORT_FORM = /^[a-z_][a-z0-9_]{0,62}$/;
 
 export type QueryIssue = { field: string; message: string };
 
+// sort の値を口が持つ一覧の口（K-748）。入口は列名の形だけ見て、表の列に在るかは見ない（値は口が決まった物だけ通す）。
+//   契約の生成器 05_flow/build_api.py の OWN_SORT_OPS と同じ集まり
+export const OWN_SORT_OPS: ReadonlySet<string> = new Set(["listApprovalQueue"]);
+
 export function listQueryIssues(
   query: Record<string, string | undefined>,
-  ctx: { table: TableName; repo: Pick<Repository, "hasColumn"> },
+  ctx: { table: TableName; repo: Pick<Repository, "hasColumn">; op?: string },
 ): QueryIssue[] {
   const q = Object.fromEntries(Object.entries(query).filter(([, v]) => v !== undefined && v !== ""));
   const issues: QueryIssue[] = [];
@@ -24,7 +28,8 @@ export function listQueryIssues(
   if (q["cursor"] !== undefined && !CURSOR_FORM.test(q["cursor"])) issues.push({ field: "cursor", message: "不正" });
   if (q["scope_id"] !== undefined && !isUuid(q["scope_id"])) issues.push({ field: "scope_id", message: "uuid" });
   const sort = q["sort"];
-  if (sort !== undefined && (!SORT_FORM.test(sort) || !ctx.repo.hasColumn(ctx.table, sort)))
+  const ownSort = ctx.op !== undefined && OWN_SORT_OPS.has(ctx.op);
+  if (sort !== undefined && (!SORT_FORM.test(sort) || (!ownSort && !ctx.repo.hasColumn(ctx.table, sort))))
     issues.push({ field: "sort", message: "列名" });
   return issues;
 }

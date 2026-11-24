@@ -170,6 +170,7 @@ export const MIGRATIONS = [
   "20261125021900_approval_check_summary.sql",
   "20261125022200_approval_self_edit.sql",
   "20261125022400_approval_return_next.sql",
+  "20261125022800_approval_queue_more.sql",
   "20261125023000_approval_history.sql",
   "20261125023300_clone_room_now.sql",
   "20261125023700_talk_conversations.sql",

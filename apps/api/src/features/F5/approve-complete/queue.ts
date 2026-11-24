@@ -2,11 +2,14 @@
 //   一覧は 1 回 20 件（既定・最大 200）。続きは鍵の文字列（最後に返した行の due_on・created_at・id を | でつないで base64url）で、
 //   その行の次から読む（間に新しい行が入っても重複・飛びを出さない）。絞るのも切るのも DB の関数（G-16・D-131.9）。数は DB の count。
 //   読む前に、待っている承認の後の実行の仕事を片付ける（K-164・sweep.ts。片付けが失敗したら飛ばして読めたものを返す）
+//   K-748：kind・sort が付いた要求は app.approval_queue_page（絞る・並べる・頁に切る）の 1 文で読み、鍵は「何件目から」（queue-more.ts）。
+//   付かない要求は今の道のまま（鍵も今の形）で、数だけ app.approval_queue_counts で { total, artifact, handover } を出す（文の数は同じ）
 import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs } from "../../../contract/deps.js";
-import { invalid, notFound } from "./errors.js";
+import { down, invalid, notFound } from "./errors.js";
+import { decodeOffset, encodeOffset, readQueueQuery, type QueueQuery } from "./queue-more.js";
 import { sendOverdueMails } from "../../F8/handovers/overdue.js";
 import type { HandoverMailer } from "../../F8/handovers/deps.js";
 import { SWEEP_OF_APPROVAL, sweepBeforeRead, sweepMineAndOverdue } from "./sweep.js";
@@ -53,29 +56,70 @@ export interface OverdueMailOptions {
   webBaseUrl?: string;
 }
 
-async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
-  const q = a.c.req.query();
-  // limit は入口（op.ts）が 1〜200 の整数と確かめ済み。cursor は入口が base64url の形だけ確かめ、中身はここで確かめる
-  const limit = q["limit"] ? Number(q["limit"]) : LIMIT_DEFAULT;
-  const key = q["cursor"] ? decodeKey(q["cursor"]) : null;
-  if (q["cursor"] && !key) return invalid("cursor", "続きの印が不正です");
-  let overdue: Awaited<ReturnType<typeof sweepMineAndOverdue>> = [];
-  const { rows, total } = await withTenant(pool, a.ctx, async (cl) => {
-    overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
-    const r = await cl.query<{ v: QueueItem[] }>(
-      "select app.approval_checks_overlay(app.approval_queue($1, $2, $3, $4)) as v",
-      [limit + 1, key?.due ?? null, key?.created ?? null, key?.id ?? null],
-    );
-    const n = await cl.query<{ n: number }>("select app.approval_queue_count() as n");
-    return { rows: r.rows[0]?.v ?? [], total: Number(n.rows[0]?.n ?? 0) };
-  });
-  // 取引の後：渡した人が開いたときの期限切れの知らせのメール（送れなくても答えは変えない）
+type Counts = { total: number; artifact: number; handover: number };
+type Overdue = Awaited<ReturnType<typeof sweepMineAndOverdue>>;
+const toCounts = (c: Partial<Counts> | null | undefined): Counts => ({
+  total: Number(c?.total ?? 0),
+  artifact: Number(c?.artifact ?? 0),
+  handover: Number(c?.handover ?? 0),
+});
+
+/** 取引の後：渡した人が開いたときの期限切れの知らせのメール（送れなくても答えは変えない） */
+async function mailOverdue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions, overdue: Overdue) {
   if (overdue.length && a.ctx.tenantId && a.ctx.userId)
     await sendOverdueMails(
       { appPool: pool, ...(mo.mailer ? { mailer: mo.mailer } : {}), config: { webBaseUrl: mo.webBaseUrl ?? "" } },
       { tenantId: a.ctx.tenantId, userId: a.ctx.userId },
       overdue,
     );
+}
+
+/** K-748：kind か sort が付いた要求（絞る・並べる・頁に切るのは DB の関数 app.approval_queue_page の 1 文） */
+async function listShaped(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions, qq: QueueQuery, limit: number) {
+  const cursor = a.c.req.query("cursor");
+  const offset = cursor ? decodeOffset(cursor) : 0;
+  if (offset === null) return invalid("cursor", "続きの印が不正です");
+  let overdue: Overdue = [];
+  const v = await withTenant(pool, a.ctx, async (cl) => {
+    overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
+    const r = await cl.query<{ v: { rows?: unknown[]; more?: boolean; counts?: Partial<Counts>; error?: string } }>(
+      "select app.approval_page_checks(app.approval_queue_page($1, $2, $3, $4)) as v",
+      [qq.kind, qq.sort, limit, offset],
+    );
+    return r.rows[0]?.v ?? null;
+  });
+  await mailOverdue(pool, a, mo, overdue);
+  // bad_query は直に呼ばれたときの 2 層目。口から届いたなら知らない答えとして止める側に倒す
+  if (!v || v.error || !Array.isArray(v.rows)) return down("承認待ちの一覧（絞る・並べる）", v?.error ?? "空");
+  return {
+    status: 200,
+    body: {
+      data: v.rows,
+      meta: { limit, ...(v.more ? { cursor: encodeOffset(offset + limit) } : {}), counts: toCounts(v.counts) },
+    },
+  };
+}
+
+async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
+  const q = a.c.req.query();
+  // limit は入口（op.ts）が 1〜200 の整数と確かめ済み。cursor は入口が base64url の形だけ確かめ、中身はここで確かめる
+  const limit = q["limit"] ? Number(q["limit"]) : LIMIT_DEFAULT;
+  const qq = readQueueQuery(q);
+  if ("reply" in qq) return qq.reply;
+  if (qq.shaped) return listShaped(pool, a, mo, qq, limit);
+  const key = q["cursor"] ? decodeKey(q["cursor"]) : null;
+  if (q["cursor"] && !key) return invalid("cursor", "続きの印が不正です");
+  let overdue: Overdue = [];
+  const { rows, counts } = await withTenant(pool, a.ctx, async (cl) => {
+    overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
+    const r = await cl.query<{ v: QueueItem[] }>(
+      "select app.approval_checks_overlay(app.approval_queue($1, $2, $3, $4)) as v",
+      [limit + 1, key?.due ?? null, key?.created ?? null, key?.id ?? null],
+    );
+    const n = await cl.query<{ c: Partial<Counts> | null }>("select app.approval_queue_counts() as c");
+    return { rows: r.rows[0]?.v ?? [], counts: toCounts(n.rows[0]?.c) };
+  });
+  await mailOverdue(pool, a, mo, overdue);
   const data = rows.slice(0, limit);
   const last = data.at(-1);
   const more = rows.length > limit && last;
@@ -86,7 +130,7 @@ async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
       meta: {
         limit,
         ...(more ? { cursor: encodeKey({ due: last.due_on, created: last.created_at, id: last.id }) } : {}),
-        counts: { total },
+        counts,
       },
     },
   };
