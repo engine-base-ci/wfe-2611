@@ -128,6 +128,23 @@ INTERNAL_TABLES = {"search_embeddings": "検索用の内部の索引（段階 1 
                    "task_handovers": "第1フェーズは「渡す」（ticket_handovers）に置き換えた（D-128.79）",
                    "billing_events": "カード払い（段階 2・D-082.3）の webhook の写し。第1フェーズは請求書払い"}
 INTERNAL = {"id", "tenant_id", "created_at", "updated_at", "created_by", "updated_by", "deleted_at", "scope_id", "version", "token_hash", "package_ref", "storage_ref", "vault_ref", "content_hash", "locator", "embedding", "dedupe_key"}
+# 葉ごとの断片（05_flow/build_api.d/K-<番号>.py）の分を、本体の表 INTERNAL_TABLES・INTERNAL・KEY_CURSOR_OPS に足す（K-1121・部品は screen_api.d と同じ registry_d）。
+#   新しい鍵は本体に書かず断片に書く（G74 が本体への直の足しを赤にする）。同じ鍵を 2 つの断片か本体と断片が持てば止まる。
+#   KEY_CURSOR_OPS は下（qtype の後）で断片の分を和にする。断片が足した値は、契約の一覧の口・ER の表・ER の列に在るかを照らす（書き間違いを黙って捨てない）
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "..", "scripts", "ci"))
+from registry_d import RegistryConflict as _RegistryConflict, merge_py as _merge_py  # noqa: E402
+_D = {"INTERNAL_TABLES": INTERNAL_TABLES, "INTERNAL": INTERNAL, "KEY_CURSOR_OPS": set()}
+_D0 = {k: copy.copy(v) for k, v in _D.items()}
+try:
+    _merge_py(_D, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "build_api.d"))
+except _RegistryConflict as _exc:
+    raise SystemExit(f"05_flow/build_api.d：{_exc}") from None
+_LIST_OPS = {e["operation_id"] for e in endpoints if e.get("operation_id") and e["returns_list"]}
+_FIELDS = {f_["name"] for e in E for f_ in e["fields"]}
+for _t, _ok, _what in (("KEY_CURSOR_OPS", _LIST_OPS, "契約の一覧の口"), ("INTERNAL_TABLES", set(tbl2ent), "ER の表"), ("INTERNAL", _FIELDS, "ER の列")):
+    _bad = sorted(set(_D[_t]) - set(_D0[_t]) - _ok)
+    if _bad: raise SystemExit(f"05_flow/build_api.d の {_t} に{_what}に無い値 {_bad}（書き間違いを黙って捨てない）")
 consumption = []
 for e in E:
     scr = [s["id"] for s in S if e["id"] in s["related_entities"]]
@@ -207,6 +224,7 @@ def qtype(q, table, op=None):
     if q == "cursor" and op in KEY_CURSOR_OPS: return {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,200}$"}   # 鍵の文字列（base64url）
     if q == "cursor": return {"type": "string", "pattern": "^[0-9]{1,9}$"}
     return {"type": "string"}
+KEY_CURSOR_OPS = KEY_CURSOR_OPS | _D['KEY_CURSOR_OPS']   # 葉ごとの断片の分（build_api.d・K-1121）。qtype は呼ぶときにこの名前を読む
 # 問い合わせの値域（QUERY_RANGES・K-468）：qtype の形に、その口・その名前の JSON Schema の言葉を重ねる。書き間違いを黙って捨てない
 _QR = getattr(_sa, "QUERY_RANGES", {}); _QR_WORDS = {"enum", "pattern", "minLength", "maxLength", "format", "anyOf"}
 def _qrange(op, q):
