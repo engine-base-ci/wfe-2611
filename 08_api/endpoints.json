@@ -52534,7 +52534,7 @@
      "errors": [
       "E-VAL-018"
      ],
-     "trigger": "まだ変えられない欄（題名・期限・担当者・見込み・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
+     "trigger": "まだ変えられない欄（題名・期限・担当者・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
      "ears_form": "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない"
     },
     {
@@ -52720,7 +52720,7 @@
       "E-VAL-041",
       "E-VAL-047"
      ],
-     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）・会社の項目の欄 fields が object でない・空・鍵が uuid でない（大文字小文字違いで重なるも）・値が文字・数・真偽・文字の並び・null のどれでもない・NUL を含む（欄 fields）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
+     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）・会社の項目の欄 fields が object でない・空・鍵が uuid でない（大文字小文字違いで重なるも）・値が文字・数・真偽・文字の並び・null のどれでもない・NUL を含む（欄 fields）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・予定時間（estimate_minutes）が 0〜100000 の整数か null でない・空の体・本文の形違い（欄ごとの理由）",
      "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない"
     },
     {
