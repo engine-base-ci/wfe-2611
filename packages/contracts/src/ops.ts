@@ -1,17 +1,17 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b4ce65acb6beb2b3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:4da8df031518e0a3
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
   remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
-  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunStopInput; data: T.ActionRunStopped };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunTakeoverInput; data: T.ActionRunView };
   getApproval: { params: { id: string }; query: never; body: never; data: T.ApprovalDetail };
   approveApproval: { params: { id: string }; query: never; body: T.ApprovalApproveInput; data: T.ApprovalDecided };
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
-  stopApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  stopApproval: { params: { id: string }; query: never; body: T.ApprovalStopInput; data: T.ApprovalStopped };
   withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };

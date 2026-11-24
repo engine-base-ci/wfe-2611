@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:b4ce65acb6beb2b3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:4da8df031518e0a3
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -159,9 +159,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "stopActionRun",
     "table": "action_runs",
     "kind": "create",
-    "input": "ActionRunsInput",
+    "input": "ActionRunStopInput",
     "success": 201,
-    "output": "ActionRuns",
+    "output": "ActionRunStopped",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -182,6 +182,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -205,7 +206,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "action_runs",
-        "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -505,9 +506,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "stopApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalStopInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalStopped",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -528,6 +529,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -552,7 +554,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
+        "sql": "app.ticket_assignee_is_me(ticket_id)"
       }
     },
     "termsOpen": false,
@@ -19883,4 +19885,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "b4ce65acb6beb2b3";
+export const OPENAPI_HASH = "4da8df031518e0a3";

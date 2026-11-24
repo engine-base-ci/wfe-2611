@@ -9000,6 +9000,69 @@
     "D-150.45"
    ],
    "support_code": "CONF-020"
+  },
+  {
+   "id": "E-RUN-001",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "担当者でない人（任せた人・マネージャー・担当者のいないチケットの誰でも）が、動いている AI の実行を止めようとした",
+   "false_when": "そのチケットの担当者が押した",
+   "message": "この AI を止められるのは担当者です",
+   "action": "担当者に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを、担当者でない人（任せた人）が開く",
+    "steps": [
+     "帯の「止める」を押す"
+    ],
+    "needs": "担当者でない人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
+  },
+  {
+   "id": "E-RUN-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "もう止まった・作り終えた・取り消した実行を止めようとした（二度押し・別のタブ）",
+   "false_when": "動いている・待っている実行を担当者が押した",
+   "message": "この実行はもう止まっています（または作り終えています）",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで「止める」を押す",
+     "もう片方のタブで「止める」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
   }
  ],
  "meta": {

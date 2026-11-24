@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。288 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。290 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -5195,6 +5195,44 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-RUN-001": {
+    "id": "E-RUN-001",
+    "cls": "permission",
+    "message": "この AI を止められるのは担当者です",
+    "action": "担当者に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-RUN-001",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-RUN-002": {
+    "id": "E-RUN-002",
+    "cls": "conflict",
+    "message": "この実行はもう止まっています（または作り終えています）",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-RUN-002",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
     }
   }
 };
