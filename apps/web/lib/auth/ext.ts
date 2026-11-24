@@ -296,13 +296,6 @@ export async function agentAttach(file: File): Promise<{ id: string; name: strin
   return json.data;
 }
 export const bridgeState = () => ext<BridgeState>("/bridge/state", undefined, "GET");
-/** AI が使うブラウザを、いまの端末について選ぶ（D-120.1）。次の仕事から効く */
-export const agentSetBrowser = (browser: AgentBrowser) => ext<{ browser: AgentBrowser }>("/agent/browser", { browser });
-/** もう一度確かめる（D-120.3）。Bridge が小さな仕事で Chrome を本当に使えるか試す。結果は PC の状態に出る */
-export const agentBrowserCheck = () => ext<{ job_id: string }>("/agent/browser-check", {});
-/** この端末を外す（自分の Bridge の端末だけ）。外した Bridge は次の要求で鍵を捨て、仕事を取りに来なくなる */
-export const agentRevokeBridge = (session_id: string) =>
-  ext<{ revoked: boolean }>("/agent/bridge-revoke", { session_id });
 /** 「新しい会話」（D-062）。いまの 1 本を閉じる。前のやりとりは消えない */
 export const agentNew = (conversation_id?: string | undefined) =>
   ext<{ closed: boolean }>("/agent/new", conversation_id ? { conversation_id } : {});

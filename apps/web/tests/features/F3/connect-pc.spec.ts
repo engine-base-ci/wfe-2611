@@ -248,9 +248,9 @@ row(R["K57-UI-022"], async (page) => {
   m.on.devices = () => ({ status: 200, body: { data: [device("live")] } });
   await open(page);
   await expect(heading(page)).toBeVisible();
-  await page.getByRole("link", { name: "前の設定の画面" }).click();
-  await expect(page).toHaveURL(/\/setup\/bridge\/legacy$/);
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  // K-367：前の画面 /setup/bridge/legacy を消したので、「前の設定の画面」への導線は出さない（正本 07_qa/test-specs/k/connect-pc.md の K57-UI-022 も K-367 が書き替える）
+  await expect(page.getByRole("link", { name: "前の設定の画面" })).toHaveCount(0);
+  await expect(page.locator('a[href="/setup/bridge/legacy"]')).toHaveCount(0);
 });
 
 row(R["K57-UI-009"], async (page) => {
