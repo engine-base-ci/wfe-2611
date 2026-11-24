@@ -3211,25 +3211,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "create"
     }
   },
-  "E-VAL-014": {
-    "id": "E-VAL-014",
-    "cls": "validation",
-    "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-    "action": "選び直す",
-    "undo": false,
-    "severity": "medium",
-    "support_code": "VAL-014",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
   "E-VAL-015": {
     "id": "E-VAL-015",
     "cls": "conflict",
@@ -4456,6 +4437,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-SEC-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SEC-020": {
+    "id": "E-SEC-020",
+    "cls": "conflict",
+    "message": "もう同じ中身です",
+    "action": "別の版を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-020",
     "must_not": false,
     "layers": [
       "UI",

@@ -5654,40 +5654,6 @@
    "support_code": "VAL-013"
   },
   {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
-  },
-  {
    "id": "E-VAL-015",
    "class": "conflict",
    "where": {
@@ -7756,6 +7722,34 @@
    "severity": "low",
    "source": [
     "D-150.30"
+   ]
+  },
+  {
+   "id": "E-SEC-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す先の版の中身が今の本文と同じ（版を無駄に増やさない）",
+   "false_when": "戻す先の版の中身が今の本文と違う",
+   "message": "もう同じ中身です",
+   "action": "別の版を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開く",
+    "steps": [
+     "今の版と同じ中身の版を選んで、本文をその版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.47"
    ]
   },
   {
