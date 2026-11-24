@@ -137430,7 +137430,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "422",
-   "ears_text": "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない",
+   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
    "test_file": "apps/api/test/generated/post_tickets.test.ts",
    "test_function": "test_post_tickets_rejected_422",
    "test_level": "unit（検証・表記ゆらぎ）",
