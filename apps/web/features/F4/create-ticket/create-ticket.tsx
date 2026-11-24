@@ -16,6 +16,7 @@ import { ItemsTable } from "@/features/F4/items/items-table";
 import { checkFields, parseNumber, toPayload, type FieldValue } from "@/features/F4/items/field-values";
 import { useTicketFields, useTicketKinds } from "@/features/F4/items/use-ticket-fields";
 import { SpecsItem } from "@/features/F4/specs/specs-item";
+import { toLinksPayload } from "@/features/F4/links/create-links-model";
 import {
   bodyOnKindChange,
   dismissTemplate,
@@ -277,6 +278,7 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
       // ここから先の保存は送らない（作った後に届く保存で下書きが生えない・H2）
       store.seal();
       const minutes = toMinutes(d.estimate);
+      const links = toLinksPayload(d.links ?? []);
       const r = await call("createTicket", {
         body: {
           scope_id: d.scope_id!,
@@ -295,6 +297,7 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
           notify_member_ids: d.notify_member_ids ?? [],
           draft_id: tabDraftId(owner),
           ...(source.current ? { source_draft_id: source.current } : {}),
+          ...(links ? { links } : {}),
         },
         screenId: "tickets",
       });
@@ -403,7 +406,12 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
               doc={body.doc}
               onChange={(doc) => update((cur) => ({ ...cur, body: onBodyEdit(cur.body ?? body, doc) }))}
             />
-            <LinksSlot value={[]} onChange={() => undefined} busy={busy} title={d.title ?? ""} />
+            <LinksSlot
+              value={d.links ?? []}
+              onChange={(links) => set({ links })}
+              busy={busy}
+              title={d.title ?? ""}
+            />
             <ItemsTable
               mode="create"
               fields={master}
