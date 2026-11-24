@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:1631d1d2c223251d
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:dca670020f78be8c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3607,7 +3607,6 @@ export const TicketCreateInput = z.strictObject({
   priority_reason: z.string().optional(),
   parent_ticket_id: z.uuid().optional(),
   estimate_minutes: z.unknown().nullable().optional(),
-  sections: z.record(z.string(), z.unknown()).optional(),
   notify_member_ids: z.array(z.uuid()).optional(),
   draft_id: z.uuid().optional(),
   source_draft_id: z.uuid().optional(),
@@ -3667,8 +3666,6 @@ export const InvitationAcceptInput = z.strictObject({
   email: z.string().nullable().optional(),
 });
 export const TicketCompleteInput = z.strictObject({
-  todo_checked: z.array(z.unknown()).nullable().optional(),
-  todo_version: z.number().int().nullable().optional(),
   conditions_confirmed: z.boolean().optional(),
 });
 export const InvitationResendInput = z.strictObject({
@@ -4133,7 +4130,6 @@ export const BridgeDevice = z.strictObject({
 });
 export const TicketDetail = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
-  sections: z.array(z.unknown()).optional(),
   kind: z.record(z.string(), z.unknown()).nullable().optional(),
   stage: z.record(z.string(), z.unknown()).nullable().optional(),
   assignee: z.record(z.string(), z.unknown()).nullable().optional(),
@@ -4160,7 +4156,6 @@ export const TicketKindChoice = z.strictObject({
   color: z.string().nullable().optional(),
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
-  sections: z.array(z.unknown()).optional(),
   body_template: z.record(z.string(), z.unknown()).nullable().optional(),
   fields: z.array(z.unknown()).optional(),
   color_key: z.string().nullable().optional(),
