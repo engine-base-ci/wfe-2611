@@ -1677,6 +1677,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/due/",
+    "apps/web/app/(dev)/dev/mock/f4/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k444-due.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F4/specs/",
     "apps/web/app/(dev)/dev/f4-specs/"
    ],
@@ -2184,6 +2193,7 @@
   "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
   "apps/web/test/k442-create-body.test.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UN-004）",
   "apps/web/tests/k/k442-create-body.spec.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UI-008・017）",
+  "apps/web/tests/k/due-create-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-444）",
   "apps/web/tests/k/test-spec-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-450）",
   "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/notify.harness.ts": "入っている葉の hooks のファイル（notifications-*.ts・shell.ts）を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-461",
