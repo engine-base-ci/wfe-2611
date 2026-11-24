@@ -4,6 +4,7 @@
 //   ほかの項目は部品が押せない形で出す。複製の小窓はメニューの外に並べて置く（メニューが閉じても小窓が残る）。
 //   小窓を閉じたら焦点を「…」へ戻す（開いた時点の焦点は消えていくメニューの項目なので、Base UI の戻し先が決まらない）。
 //   口は呼ばない（複製の元は詳細を開いたときに読んだ答え・版の一覧は頁が読む）。onDelete は段 8 の K-590（消す）の差し込み口
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
@@ -36,7 +37,7 @@ export function DetailMore({ ticket, onDelete }: DetailMoreProps) {
     <>
       <MoreMenu
         onDuplicate={() => setDup(true)}
-        onVersions={() => router.push(versionsHref(ticket.id))}
+        onVersions={() => router.push(versionsHref(ticket.id) as Route)}
         {...(onDelete ? { onDelete } : {})}
       />
       <DuplicateFlow source={sourceOf(ticket.detail)} open={dup} onOpenChange={onDup} />
