@@ -1980,7 +1980,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateKnowledgeFolder",
@@ -1995,7 +1997,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteKnowledgeFolder",
@@ -2010,7 +2014,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeHome",
@@ -2110,7 +2116,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeTree",
@@ -2282,6 +2290,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-69",
     "K-681"
    ]
   },
@@ -2332,7 +2341,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "saveKnowledgeDraft",
@@ -2469,6 +2480,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-69",
     "K-685"
    ]
   },
@@ -2572,6 +2584,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-69",
     "K-677"
    ]
   },
