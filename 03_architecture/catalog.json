@@ -4898,7 +4898,9 @@
     "tenant_distributions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "applyKindTemplateUpdate",
@@ -4913,7 +4915,9 @@
     "kind_sections"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteTicketLink",
@@ -5950,7 +5954,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateEscalationRule",
@@ -5965,7 +5971,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteEscalationRule",
@@ -5980,7 +5988,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "previewEscalationRule",
@@ -5995,7 +6005,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "uploadWorkspaceLogo",
@@ -6088,7 +6100,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createWorkspaceRule",
@@ -6103,7 +6117,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateWorkspaceRule",
@@ -6118,7 +6134,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "deleteWorkspaceRule",
@@ -6133,7 +6151,9 @@
     "policies"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getTicketShape",
@@ -6148,7 +6168,9 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "saveTicketShape",
@@ -6163,7 +6185,9 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "previewTicketShapeChange",
@@ -6178,7 +6202,9 @@
     "ticket_kinds"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   }
  ],
  "legacy_routes": [
