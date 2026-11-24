@@ -150,10 +150,11 @@
   },
   {
    "id": "B8",
-   "concern": "返事の書式の描画",
+   "concern": "返事の書式の描画・貼り付けの Markdown の解析（本文の部品）",
    "vendor": "react-markdown・remark-gfm・shiki・mermaid",
    "allowed_paths": [
-    "apps/web/components/ai/markdown.tsx"
+    "apps/web/components/ai/markdown.tsx",
+    "apps/web/features/F4/doc/editor/markdown.ts"
    ],
    "forbidden_import_patterns": [
     "react-markdown",
@@ -186,6 +187,25 @@
    "ci_check": "pnpm ci:boundary -- --id B9",
    "source": [
     "D-104.22"
+   ]
+  },
+  {
+   "id": "B10",
+   "concern": "本文の見たまま編集",
+   "vendor": "Tiptap（ProseMirror）",
+   "allowed_paths": [
+    "apps/web/features/F4/doc/editor/"
+   ],
+   "forbidden_import_patterns": [
+    "@tiptap/",
+    "prosemirror-"
+   ],
+   "interface": "DocEditor（doc を受けて onChange(doc) を返す）",
+   "swap_cost_days": "3",
+   "also_choke_point": null,
+   "ci_check": "pnpm ci:boundary -- --id B10",
+   "source": [
+    "D-150.48"
    ]
   }
  ],

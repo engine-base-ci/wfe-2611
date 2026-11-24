@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-23",
+ "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 369,
+  "total_apis": 372,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -93,6 +93,16 @@
      "role": "action",
      "endpoint": "POST /api/v1/auth/invitations/:token/resend-request",
      "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A96"
     }
    ],
    "transitions": [],
@@ -2315,11 +2325,6 @@
     },
     {
      "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/work-type-candidates",
-     "act": "A130"
-    },
-    {
-     "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/delete-preview",
      "act": "A116"
     },
@@ -2386,6 +2391,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/versions/:v/restore",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/item-changes",
      "act": "A101"
     },
     {
@@ -2662,6 +2672,31 @@
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/timeline/seen",
      "act": "A107"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A51"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A111"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A48"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A51"
     }
    ],
    "transitions": [],
