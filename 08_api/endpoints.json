@@ -38454,7 +38454,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（ops）— 請求書を出し、入金を記録する",
+   "description": "取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき）",
    "implementation_path": "apps/api/src/routes/invoices.ts::listOpsInvoices",
    "permission": {
     "who": "ops:money",
@@ -38467,15 +38467,15 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "month",
+     "state",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Invoices[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Invoices[] }"
    },
    "id": "EP-218",
    "feature_id": "F-016"

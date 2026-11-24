@@ -1119,8 +1119,11 @@ RESPONSES = {
     "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
     "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
     "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
-    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
-    "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
+    # K-1005：画面（ub-plan・ub-bills）が要る欄に作り直した。プランは plan_key（plan_id は uuid でないのでやめる）・upgrade と upcoming は振る舞いの葉 K-961・K-1017 が中を埋める（D-156.43）
+    "listWorkspacePlans": ("PlanChoice", {"plan_key": "string", "name": "string?", "price_monthly": "integer?", "member_limit": "integer?", "current": "boolean", "can_choose": "boolean", "reason": "string?", "effective_from": "string",
+                                          "summary": "string", "recommended": "boolean", "upgrade": "object?", "upcoming": "object?"}),
+    # K-1005：請求書の状態は unpaid・paid・overdue（D-156.29）・請求先は会社名・宛名・メールの 3 欄（D-156.30）・期限を過ぎた分の数と額（無ければ null）
+    "getBilling": ("Billing", {"terms": "string", "payee": "object", "contact": "object", "invoices": "array", "overdue": "object?", "free": "boolean", "can_edit_contact": "boolean"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
     "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
@@ -1146,7 +1149,7 @@ RESPONSES = {
     "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "string", "name": "string", "admin": "object", "plan": "string", "members": "string", "pc_connected": "string", "runs_month": "integer", "attention": "array", "billing": "string", "state": "string"}),
     "getOpsWorkspace": ("OpsWorkspace", {"workspace": "object", "pc": "object", "runs": "object", "stopped": "object", "files": "object", "stop_reasons": "array", "recent": "array", "info": "object"}),
     "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"name": "string", "email": "string", "role": "string", "last_seen_at": "string", "pc": "string", "login": "string"}),
-    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
+    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "members": "object", "payment_terms": "string", "invoices": "array"}),   # K-1005：利用量は人数だけ（D-156.36）
     "getShell": ("Shell", {"approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object"}),
     "getOpsShell": ("OpsShell", {"inquiries_unassigned": "integer", "inquiries_mine": "integer", "invoices_overdue": "integer", "banner": "object"}),
     "getTicketShape": ("TicketShape", {"kinds": "array", "stages": "array", "axes": "array", "handover_rules": "array", "limits": "object", "template_updates": "integer"}),
@@ -1171,7 +1174,6 @@ META = {
     "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
-    "listOpsInvoices": {"summary": "object"},
 }
 # 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
 RATES = {
