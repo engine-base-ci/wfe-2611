@@ -150,10 +150,11 @@
   },
   {
    "id": "B8",
-   "concern": "返事の書式の描画",
+   "concern": "返事の書式の描画・貼り付けの Markdown の解析（本文の部品）",
    "vendor": "react-markdown・remark-gfm・shiki・mermaid",
    "allowed_paths": [
-    "apps/web/components/ai/markdown.tsx"
+    "apps/web/components/ai/markdown.tsx",
+    "apps/web/features/F4/doc/editor/markdown.ts"
    ],
    "forbidden_import_patterns": [
     "react-markdown",

@@ -56,7 +56,20 @@ export interface TicketSections {
   todo: string;
 }
 
-/** チケットを口で 1 枚作る（種類「タスク」・担当は本人・期限は 3 日後）。作る画面は K-60・K-58 が持つ */
+/** 区画ごとの文字を、本文 1 枚の文書の木（段落）に組む（段落は行ごと。text は口が doc から作るのでここでは作らない）。
+ *  引数の形（区画の鍵 → 本文）は呼ぶ側の試験を替えないために残す。K-437 の口は body を受け、K-578 の後は sections を受けない */
+const bodyOf = (sections: TicketSections) => ({
+  doc: {
+    type: "doc",
+    content: [sections.purpose, sections.done, sections.todo]
+      .flatMap((x) => x.split("\n"))
+      .filter((x) => x !== "")
+      .map((x) => ({ type: "paragraph", content: [{ type: "text", text: x }] })),
+  },
+});
+
+/** チケットを口で 1 枚作る（種類「タスク」・担当は本人・期限は 3 日後）。作る画面は K-60・K-58 が持つ。
+ *  本文は 1 枚で送る（K-442 の準備：区画の入力は K-578 で口が受けなくなる） */
 export async function ticketOf(page: Page, me: Newcomer, title: string, sections: TicketSections): Promise<string> {
   const scope = await admin<{ s: string }>("select scope_id as s from members where id = $1", [me.memberId]);
   const kinds = await asPerson(page, me.token, "GET", "/ticket_kinds");
@@ -70,7 +83,7 @@ export async function ticketOf(page: Page, me: Newcomer, title: string, sections
     title,
     assignee_member_id: me.memberId,
     due_on: due,
-    sections,
+    body: bodyOf(sections),
   });
   if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Body | undefined)?.["id"]) as string | undefined;
