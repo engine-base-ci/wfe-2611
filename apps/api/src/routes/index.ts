@@ -34,14 +34,16 @@ import { register as messages } from "./messages.js";
 import { register as notices } from "./notices.js";
 import { register as notifications } from "./notifications.js";
 import { register as ops } from "./ops.js";
+import { register as policies } from "./policies.js";
 import { register as portal } from "./portal.js";
-import { register as rules } from "./rules.js";
 import { register as saved_views } from "./saved_views.js";
 import { register as scopes } from "./scopes.js";
 import { register as search } from "./search.js";
 import { register as service_status } from "./service_status.js";
 import { register as shell } from "./shell.js";
+import { register as skill_attachments } from "./skill_attachments.js";
 import { register as test_specs } from "./test_specs.js";
+import { register as ticket_field_master } from "./ticket_field_master.js";
 import { register as ticket_fields } from "./ticket_fields.js";
 import { register as ticket_decisions } from "./ticket_decisions.js";
 import { register as ticket_handovers } from "./ticket_handovers.js";
@@ -51,7 +53,6 @@ import { register as ticket_links } from "./ticket_links.js";
 import { register as ticket_messages } from "./ticket_messages.js";
 import { register as ticket_stages } from "./ticket_stages.js";
 import { register as tickets } from "./tickets.js";
-import { register as work_types } from "./work_types.js";
 import { register as workspace } from "./workspace.js";
 
 export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
@@ -87,14 +88,16 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   notices(app, deps);
   notifications(app, deps);
   ops(app, deps);
+  policies(app, deps);
   portal(app, deps);
-  rules(app, deps);
   saved_views(app, deps);
   scopes(app, deps);
   search(app, deps);
   service_status(app, deps);
   shell(app, deps);
+  skill_attachments(app, deps);
   test_specs(app, deps);
+  ticket_field_master(app, deps);
   ticket_fields(app, deps);
   ticket_decisions(app, deps);
   ticket_handovers(app, deps);
@@ -104,6 +107,5 @@ export function registerAll(app: Hono<Vars>, deps: ContractDeps): void {
   ticket_messages(app, deps);
   ticket_stages(app, deps);
   tickets(app, deps);
-  work_types(app, deps);
   workspace(app, deps);
 }
