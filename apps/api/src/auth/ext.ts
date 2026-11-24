@@ -2,7 +2,7 @@
 //   登録（会社を作る hook はパッケージ側）・ロック付きログイン・Bridge の接続コード（資格情報を預ける・取り出す口は契約の口 features/F3/credentials へ移し、前の道すじは K-358 で消した）
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
 import { agentToolRoutes } from "./agent-tools.js";
-import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
+import { ONBOARD_REMEMBER } from "./conventions.js";
 import { Hono } from "hono";
 import { CATALOG } from "@kaname/errors";
 import type pg from "pg";
@@ -11,7 +11,6 @@ import { createDeviceResolver, createSessionResolver, type Resolved } from "@kan
 import { mfaRequired, readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
 import type { Repository } from "@kaname/db/repository";
-import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { ObjectStore } from "@kaname/storage";
 import { agentRoutes, jobOptions, jobOptionsIssue } from "./agent.js";
@@ -333,62 +332,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: r.rows[0]!.s });
   });
 
-  // AI が使うブラウザを、いまの端末について選ぶ（D-120.1）。次の仕事から効く
-  app.post("/agent/browser", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { browser?: unknown };
-    if (!BROWSERS.includes(b.browser as Browser))
-      return bad(c, 422, "VALIDATION_FAILED", "ブラウザは chrome／dedicated／off のどれかです");
-    const r = await d.appPool.query<{ ok: boolean }>("select app.agent_set_browser($1, $2) as ok", [
-      ses.ctx.userId,
-      b.browser,
-    ]);
-    if (!r.rows[0]?.ok) return bad(c, 404, "BRIDGE_NOT_FOUND", "つないだ PC がありません");
-    return c.json({ data: { browser: b.browser } });
-  });
-  // この端末を外す（2026-10-01 QA：モックにあって実装に無かった）。自分の Bridge の端末だけ。外した鍵は次の要求で 410 になり、
-  // Bridge は鍵を捨てて仕事を取りに来なくなる（G-14）。画面の Web ログインのセッションはここでは外さない（kind_id = 'bridge' だけ）
-  app.post("/agent/bridge-revoke", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { session_id?: unknown };
-    const sessionId = idOrNull(b.session_id);
-    if (sessionId === false) return badId(c, "session_id");
-    if (!sessionId) return bad(c, 422, "VALIDATION_FAILED", "外す端末の id が要ります");
-    const n = await withTenant(
-      d.appPool,
-      ses.ctx,
-      async (cl) =>
-        (
-          await cl.query<{ n: number }>(
-            "select coalesce(sum(app.revoke_own_session(s.id, 'logout')), 0)::int as n from sessions s where s.id = $1 and s.kind_id = 'bridge' and s.revoked_at is null",
-            [sessionId],
-          )
-        ).rows[0]!.n,
-    );
-    if (!n) return bad(c, 404, "BRIDGE_NOT_FOUND", "その端末はありません（もう外したか、つないでいない端末です）");
-    return c.json({ data: { revoked: true } });
-  });
-  // もう一度確かめる（D-120.3）：Bridge が小さな仕事で Chrome を本当に使えるか試す。結果は PC の状態（自己診断）に出る
-  app.post("/agent/browser-check", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const r = await d.appPool.query<{ id: string | null }>("select app.agent_browser_check($1, $2) as id", [
-      ses.ctx.userId,
-      BROWSER_CHECK_PROMPT,
-    ]);
-    const id = r.rows[0]?.id ?? null;
-    if (!id)
-      return bad(
-        c,
-        409,
-        "BRIDGE_ASLEEP",
-        "PC の Bridge が動いていないので確かめられません。Bridge を起こしてから押してください",
-      );
-    return c.json({ data: { job_id: id } }, 201);
-  });
-
   // ---- Bridge が話す口（T-B-03・D-090）。鍵は claim で受け取った bridge の session id
   // PC の印（K-57）：引き取りで 1 回だけ渡した印のハッシュで、生きている PC の行を引く。sessions の id は鍵にしない（画面の一覧に出る値なので）
   const resolveDevice = createDeviceResolver(d.appPool);
@@ -407,18 +350,6 @@ export function authExt(d: AuthExtDeps): Hono {
   // 仕事を取る・途中の様子・結末を返す・止める合図・道具は契約の口（/api/v1/bridge/jobs/…）に移した（K-62・apps/api/src/features/F5/delegate/）
   const GONE = (c: Parameters<typeof bad>[0]) =>
     bad(c, 410, "SESSION_GONE", "この端末の接続は切れています。つなぎ直してください");
-
-  // Bridge の窓から選び直す（Kaname の画面で変えたのと同じ・D-120.1）
-  app.post("/bridge/browser", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { browser?: unknown };
-    if (!BROWSERS.includes(b.browser as Browser))
-      return bad(c, 422, "VALIDATION_FAILED", "ブラウザは chrome／dedicated／off のどれかです");
-    const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_set_browser($1, $2) as ok", [sid, b.browser]);
-    if (!r.rows[0]?.ok) return GONE(c);
-    return c.json({ data: { browser: b.browser } });
-  });
 
   // 確認（D-093.3）：CLI が「これを実行していいか」と聞いた。画面に出して本人の答えを待つ
   app.post("/bridge/ask", async (c) => {
