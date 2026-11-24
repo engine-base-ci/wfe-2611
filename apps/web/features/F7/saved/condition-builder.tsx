@@ -2,6 +2,7 @@
 // 条件を組む（キャンバス LsFilter・一覧の検索条件「詳しく」）。値を受け取って描くだけ（口は呼ばない）。
 //   上から：題（件数は出さない：口が総数を返さない）／ことばで探す（AI・まだ使えないので押せない形・D-145.9）／条件の行（かつ）と まとまり（どれか 1 つ・または）／＋ 条件・＋ まとまり／足の行。
 //   各行は 項目 ▾・が（でない・に含む）▾・値の札（×で外す）。値の札は担当者・状態・分類の複数、期限・題名の 1 つ
+import type { ReactNode } from "react";
 import { Button } from "@/components/k";
 
 export interface ConditionRow {
@@ -21,6 +22,8 @@ export interface ConditionBuilderProps {
   /** ことばで探すの見本の文（AI がまだ使えない間は押せない形） */
   aiSample: string;
   items: readonly ConditionItem[];
+  /** 足の「検索条件を保存」（一覧では K-479 の SaveViewButton を渡す。無ければ見本のボタン） */
+  saveAction?: ReactNode;
 }
 
 function Row({ lead, row }: { lead: string; row: ConditionRow }) {
@@ -55,7 +58,7 @@ function Row({ lead, row }: { lead: string; row: ConditionRow }) {
   );
 }
 
-export function ConditionBuilder({ aiSample, items }: ConditionBuilderProps) {
+export function ConditionBuilder({ aiSample, items, saveAction }: ConditionBuilderProps) {
   return (
     <section className="k-f7-saved-cond" aria-label="条件を組む">
       <div className="k-f7-saved-cond-head">
@@ -99,9 +102,11 @@ export function ConditionBuilder({ aiSample, items }: ConditionBuilderProps) {
           かんたんに戻す
         </Button>
         <span className="k-f7-saved-cond-foot-acts">
-          <Button variant="outlined" size="sm">
-            検索条件を保存
-          </Button>
+          {saveAction ?? (
+            <Button variant="outlined" size="sm">
+              検索条件を保存
+            </Button>
+          )}
           <Button size="sm">この条件で見る</Button>
         </span>
       </div>
