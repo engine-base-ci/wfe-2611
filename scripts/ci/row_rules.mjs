@@ -32,6 +32,9 @@ export const ROW_EXEMPT_FIELDS = {
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },
+  restoreTicket: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
+  },
 };
 const exemptField = (op, field) => {
   const why = ROW_EXEMPT_FIELDS[op]?.[field];
