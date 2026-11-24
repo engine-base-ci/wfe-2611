@@ -52534,7 +52534,7 @@
      "errors": [
       "E-VAL-018"
      ],
-     "trigger": "まだ変えられない欄（題名・期限・担当者・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
+     "trigger": "まだ変えられない欄（題名・担当者・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
      "ears_form": "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない"
     },
     {
@@ -52710,6 +52710,84 @@
      "ears_form": "UNWANTED: IF 必須の項目を空にしようとしたなら、Kaname は 409 と E-FLD-004 を返し、何も書かない"
     },
     {
+     "status": 409,
+     "code": "E-VAL-028",
+     "body": {
+      "error": "conflict",
+      "code": "E-VAL-028"
+     },
+     "errors": [
+      "E-VAL-028"
+     ],
+     "trigger": "直した後の開始日が期限より後になる（両方を送ったときも片方だけ送って今の値と合わないときも・欄・明細なし・K-483）",
+     "ears_form": "UNWANTED: IF 開始日が期限より後になる直しを送ったなら、Kaname は 409 と E-VAL-028 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-DUE-005",
+     "body": {
+      "error": "conflict",
+      "code": "E-DUE-005"
+     },
+     "errors": [
+      "E-DUE-005"
+     ],
+     "trigger": "子のチケットの期限を、親（消していない・期限がある）の期限より後にしようとした（K-483）",
+     "ears_form": "UNWANTED: IF 子の期限を親の期限より後にしようとしたなら、Kaname は 409 と E-DUE-005 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-DUE-006",
+     "body": {
+      "error": "conflict",
+      "code": "E-DUE-006"
+     },
+     "errors": [
+      "E-DUE-006"
+     ],
+     "trigger": "親のチケットの期限を、消していない直接の子の期限より前にしようとした（K-483）",
+     "ears_form": "UNWANTED: IF 親の期限を子の期限より前にしようとしたなら、Kaname は 409 と E-DUE-006 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-DUE-007",
+     "body": {
+      "error": "conflict",
+      "code": "E-DUE-007"
+     },
+     "errors": [
+      "E-DUE-007"
+     ],
+     "trigger": "完了したチケットの期限か開始日を変えようとした（K-483）",
+     "ears_form": "UNWANTED: IF 完了したチケットの期限か開始日を変えようとしたなら、Kaname は 409 と E-DUE-007 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-DUE-008",
+     "body": {
+      "error": "conflict",
+      "code": "E-DUE-008"
+     },
+     "errors": [
+      "E-DUE-008"
+     ],
+     "trigger": "画面が見ていた期限・開始日（expected_due_on・expected_start_on）が今の値と違う（K-483）",
+     "ears_form": "UNWANTED: IF 画面が見ていた期限と今の期限が違うなら、Kaname は 409 と E-DUE-008 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-VAL-012",
+     "body": {
+      "error": "conflict",
+      "code": "E-VAL-012"
+     },
+     "errors": [
+      "E-VAL-012"
+     ],
+     "trigger": "期限を日本時間の今日より前の日に変えようとした（今日は通る・開始日は過去でもよい・欄・明細なし・K-483）",
+     "ears_form": "UNWANTED: IF 期限を今日より前の日に変えようとしたなら、Kaname は 409 と E-VAL-012 を返し、何も書かない"
+    },
+    {
      "status": 422,
      "code": "VALIDATION_ERROR",
      "body": {
@@ -52720,8 +52798,36 @@
       "E-VAL-041",
       "E-VAL-047"
      ],
-     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）・会社の項目の欄 fields が object でない・空・鍵が uuid でない（大文字小文字違いで重なるも）・値が文字・数・真偽・文字の並び・null のどれでもない・NUL を含む（欄 fields）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・予定時間（estimate_minutes）が 0〜100000 の整数か null でない・空の体・本文の形違い（欄ごとの理由）",
+     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）・会社の項目の欄 fields が object でない・空・鍵が uuid でない（大文字小文字違いで重なるも）・値が文字・数・真偽・文字の並び・null のどれでもない・NUL を含む（欄 fields）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・予定時間（estimate_minutes）が 0〜100000 の整数か null でない・期限・開始日・expected_due_on・expected_start_on が暦にある YYYY-MM-DD か null でない（時刻つきも）・期限なしで理由を送った・expected_due_on を due_on なしで・expected_start_on を start_on なしで送った（K-483）・空の体・本文の形違い（欄ごとの理由）",
      "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない"
+    },
+    {
+     "status": 422,
+     "code": "E-DUE-001",
+     "body": {
+      "error": "validation",
+      "code": "E-DUE-001",
+      "details": []
+     },
+     "errors": [
+      "E-DUE-001"
+     ],
+     "trigger": "期限（due_on）を送ったのに理由（due_reason）が無い・null・空・空白だけ・制御文字だけ（欄 due_reason・K-483）",
+     "ears_form": "UNWANTED: IF 理由なしで期限を変えようとしたなら、Kaname は 422 と E-DUE-001 を返し、何も書かない"
+    },
+    {
+     "status": 422,
+     "code": "E-DUE-002",
+     "body": {
+      "error": "validation",
+      "code": "E-DUE-002",
+      "details": []
+     },
+     "errors": [
+      "E-DUE-002"
+     ],
+     "trigger": "期限を変える理由が 201 文字以上（欄 due_reason・K-483）",
+     "ears_form": "UNWANTED: IF 期限を変える理由が 200 文字を超えたなら、Kaname は 422 と E-DUE-002 を返し、何も書かない"
     },
     {
      "status": 503,
@@ -52822,7 +52928,15 @@
     "UNWANTED: IF 選択肢に無い値を項目に入れようとしたなら、Kaname は 409 と E-FLD-002 を返し、何も書かない",
     "UNWANTED: IF 項目の型と合わない値を入れようとしたなら、Kaname は 409 と E-FLD-003 を返し、何も書かない",
     "UNWANTED: IF 必須の項目を空にしようとしたなら、Kaname は 409 と E-FLD-004 を返し、何も書かない",
+    "UNWANTED: IF 開始日が期限より後になる直しを送ったなら、Kaname は 409 と E-VAL-028 を返し、何も書かない",
+    "UNWANTED: IF 子の期限を親の期限より後にしようとしたなら、Kaname は 409 と E-DUE-005 を返し、何も書かない",
+    "UNWANTED: IF 親の期限を子の期限より前にしようとしたなら、Kaname は 409 と E-DUE-006 を返し、何も書かない",
+    "UNWANTED: IF 完了したチケットの期限か開始日を変えようとしたなら、Kaname は 409 と E-DUE-007 を返し、何も書かない",
+    "UNWANTED: IF 画面が見ていた期限と今の期限が違うなら、Kaname は 409 と E-DUE-008 を返し、何も書かない",
+    "UNWANTED: IF 期限を今日より前の日に変えようとしたなら、Kaname は 409 と E-VAL-012 を返し、何も書かない",
     "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない",
+    "UNWANTED: IF 理由なしで期限を変えようとしたなら、Kaname は 422 と E-DUE-001 を返し、何も書かない",
+    "UNWANTED: IF 期限を変える理由が 200 文字を超えたなら、Kaname は 422 と E-DUE-002 を返し、何も書かない",
     "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
@@ -52841,7 +52955,7 @@
    "implementation_path": "apps/api/src/routes/tickets.ts::updateTicket",
    "permission": {
     "who": "write",
-    "scope": "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）",
+    "scope": "そのチケットを書ける人（担当者・書ける権限の人）。段・実績・保留（段 7）と期限・開始日（段 8・期限を変えるときは理由が必須）だけ。担当は渡す口（F8）で変える。ほかの欄は E-VAL-018",
     "step_up": false
    },
    "path_params": [

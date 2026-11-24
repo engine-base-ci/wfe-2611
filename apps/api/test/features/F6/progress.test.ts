@@ -340,19 +340,18 @@ describe("K-387 実績（人が使った時間）", () => {
 });
 
 describe("K-387 入力と守り", () => {
-  it("K387-API-018 ほかの欄（題名・期限・担当者。優先度は K-440・予定時間は K-583 の組が受ける）：422 E-VAL-018・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない", async () => {
+  it("K387-API-018 ほかの欄（題名・担当者。優先度は K-440・予定時間は K-583・期限は K-483 の組が受ける）：422 E-VAL-018・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない", async () => {
     const t = await ticket();
     const before = await snapshot(t.id);
     const r = await patch(boss, t.id, {
       stage_id: await stageOf(T.tenantId, "doing"),
       title: "別の題名",
-      due_on: "2026-12-01",
       assignee_member_id: writer.id,
     });
     expect(r.status).toBe(422);
     const j = await json(r);
     expect(j["code"]).toBe(VAL_NOT_YET);
-    expect(fields(j).sort()).toEqual(["assignee_member_id", "due_on", "title"]);
+    expect(fields(j).sort()).toEqual(["assignee_member_id", "title"]);
     expect(new Set((j.details ?? []).map((d) => d.message))).toEqual(new Set([NOT_YET_FIELD]));
     expect(await snapshot(t.id)).toEqual(before);
   });

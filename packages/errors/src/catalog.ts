@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。291 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。297 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4931,6 +4931,114 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "save"
+    }
+  },
+  "E-DUE-001": {
+    "id": "E-DUE-001",
+    "cls": "validation",
+    "message": "期限を変える理由を書いてください",
+    "action": "理由を書いてから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-002": {
+    "id": "E-DUE-002",
+    "cls": "validation",
+    "message": "理由は 200 文字までにしてください",
+    "action": "理由を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-005": {
+    "id": "E-DUE-005",
+    "cls": "conflict",
+    "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+    "action": "親の期限を先に延ばすか、親の期限までの日にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-006": {
+    "id": "E-DUE-006",
+    "cls": "conflict",
+    "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+    "action": "子の期限を先に変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-006",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-007": {
+    "id": "E-DUE-007",
+    "cls": "conflict",
+    "message": "完了したチケットの期限は変えられません",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-008": {
+    "id": "E-DUE-008",
+    "cls": "conflict",
+    "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-008",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
     }
   },
   "E-STP-001": {

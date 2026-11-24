@@ -167,5 +167,6 @@ export const MIGRATIONS = [
   "20261123082700_ticket_delete_preview.sql",
   "20261123082800_ticket_delete.sql",
   "20261123085900_run_takeover.sql",
+  "20261123088300_ticket_due.sql",
   "20261123100000_function_execute_private_after.sql",
 ] as const;

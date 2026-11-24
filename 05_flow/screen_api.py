@@ -1259,7 +1259,7 @@ PERMS = {
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
-    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
+    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。段・実績・保留（段 7）と期限・開始日（段 8・期限を変えるときは理由が必須）だけ。担当は渡す口（F8）で変える。ほかの欄は E-VAL-018", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),

@@ -5754,7 +5754,7 @@
     "screen": "tickets",
     "state": "list"
    },
-   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・期限・担当者・優先度・見込み など・段 8 で作る）を送った（K-387）",
+   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・担当者・見込み など）を送った（K-387・優先度と親は K-440・期限と開始日は K-483 の組）",
    "false_when": "view・q・scope_id・limit・cursor だけ。updateTicket で段・実績・保留の理由と再開の条件だけを送った",
    "message": "この絞り込みはまだ使えません",
    "action": "絞り込みを外して開き直す",
@@ -8548,6 +8548,191 @@
     "D-128.83",
     "D-151.9"
    ]
+  },
+  {
+   "id": "E-DUE-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限（due_on）を変えるのに、理由（due_reason）が無い・null・空・空白だけ・制御文字だけ（K-483・期限をなくすときも初めて決めるときも要る）",
+   "false_when": "理由を書いて期限を変えた・開始日だけを直した",
+   "message": "期限を変える理由を書いてください",
+   "action": "理由を書いてから変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "理由を空にして期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-150.4",
+    "D-151.11"
+   ],
+   "support_code": "DUE-001"
+  },
+  {
+   "id": "E-DUE-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限を変える理由が 201 文字以上（K-483）",
+   "false_when": "理由が 200 文字まで",
+   "message": "理由は 200 文字までにしてください",
+   "action": "理由を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "201 文字の理由で期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-130.1"
+   ],
+   "support_code": "DUE-002"
+  },
+  {
+   "id": "E-DUE-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "子のチケットの期限を、親のチケットの期限より後の日にしようとした（K-483・消した親・期限の無い親は見ない）",
+   "false_when": "親の期限と同じ日か前・親に期限が無い",
+   "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+   "action": "親の期限を先に延ばすか、親の期限までの日にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "親より後の日に子の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-005"
+  },
+  {
+   "id": "E-DUE-006",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "親のチケットの期限を、子のチケット（消していない直接の子）の期限より前の日にしようとした（K-483）",
+   "false_when": "子の期限と同じ日か後・期限をなくす・消した子だけが後",
+   "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+   "action": "子の期限を先に変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "子より前の日に親の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-006"
+  },
+  {
+   "id": "E-DUE-007",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "完了したチケットの期限か開始日を変えようとした（K-483）",
+   "false_when": "完了していないチケット",
+   "message": "完了したチケットの期限は変えられません",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "完了したチケットの期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-007"
+  },
+  {
+   "id": "E-DUE-008",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "画面が見ていた期限・開始日（expected_due_on・expected_start_on）が今の値と違う＝ほかの人が先に変えた（K-483）",
+   "false_when": "expected を送らない・今の値と合う",
+   "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "別の画面で期限を変えた後、古い画面で変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-008"
   },
   {
    "id": "E-STP-001",

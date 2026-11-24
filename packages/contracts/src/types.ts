@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:ddc7462ce2bc996f
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:d469d1a28bb9167c
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -337,7 +337,7 @@ export type TicketTimelineSeenInput = { seen_at?: string | null };
 export type TicketMessageInput = { body: string; mention_member_ids?: string[]; notify_member_ids?: string[]; quote_of_id?: string | null; stage_key?: string; stage_id?: string; hold_reason?: string; resume_condition?: string };
 export type TicketMessageEditInput = { body: string; mention_member_ids?: string[] };
 export type TicketMessageStarInput = Record<string, never>;
-export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string | null; fields?: Record<string, unknown>; estimate_minutes?: number | null };
+export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string | null; fields?: Record<string, unknown>; estimate_minutes?: number | null; due_on?: string | null; start_on?: string | null; due_reason?: string; expected_due_on?: string | null; expected_start_on?: string | null };
 export type TicketDecisionInput = { text: string; reason?: string | null; decided_by_member_id?: string | null; decided_note?: string | null; source_message_id?: string | null; promoted_to?: string | null };
 export type TicketDecisionUpdateInput = { action: string; text?: string | null; reason?: string | null };
 export type TicketHandoverCreateInput = { kind: string; to_member_id?: string | null; to_scope_id?: string | null; reason: string; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown> | null; notify_managers?: boolean | null; replaces?: string | null };

@@ -12113,6 +12113,26 @@ components:
           nullable: true
           minimum: 0
           maximum: 100000
+        due_on:
+          type: string
+          nullable: true
+          pattern: ^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$
+        start_on:
+          type: string
+          nullable: true
+          pattern: ^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$
+        due_reason:
+          type: string
+          maxLength: 200
+          pattern: '[^\s\u0000-\u001f\u007f-\u009f]'
+        expected_due_on:
+          type: string
+          nullable: true
+          pattern: ^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$
+        expected_start_on:
+          type: string
+          nullable: true
+          pattern: ^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$
       additionalProperties: false
       x-operation: updateTicket
       allOf:
@@ -12141,6 +12161,10 @@ components:
           - fields
         - required:
           - estimate_minutes
+        - required:
+          - due_on
+        - required:
+          - start_on
       - anyOf:
         - not:
             required:
@@ -12167,6 +12191,33 @@ components:
               - hold_reason
             - required:
               - resume_condition
+      - anyOf:
+        - not:
+            required:
+            - due_on
+        - required:
+          - due_reason
+          properties:
+            due_reason:
+              type: string
+      - anyOf:
+        - not:
+            required:
+            - due_reason
+        - required:
+          - due_on
+      - anyOf:
+        - not:
+            required:
+            - expected_due_on
+        - required:
+          - due_on
+      - anyOf:
+        - not:
+            required:
+            - expected_start_on
+        - required:
+          - start_on
       oneOf:
       - properties:
           priority:
@@ -45263,7 +45314,7 @@ paths:
       - D-125.97
       - D-125.98
       x-permission: write
-      x-permission-scope: そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）
+      x-permission-scope: そのチケットを書ける人（担当者・書ける権限の人）。段・実績・保留（段 7）と期限・開始日（段 8・期限を変えるときは理由が必須）だけ。担当は渡す口（F8）で変える。ほかの欄は E-VAL-018
       x-step-up: false
       security:
       - session: []
@@ -45311,13 +45362,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-018／VALIDATION_ERROR
+          description: E-VAL-018／VALIDATION_ERROR／E-DUE-001／E-DUE-002
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004／E-FLD-001／E-FLD-002／E-FLD-003／E-FLD-004
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004／E-FLD-001／E-FLD-002／E-FLD-003／E-FLD-004／E-VAL-028／E-DUE-005／E-DUE-006／E-DUE-007／E-DUE-008／E-VAL-012
           content:
             application/json:
               schema:

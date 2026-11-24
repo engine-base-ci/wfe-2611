@@ -109,10 +109,50 @@ describe("PATCH /api/v1/tickets/:id", () => {
     // 本物の試験：apps/api/test/features/F4/ticket-field-values.test.ts の「K564-API-005」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-field-values.test.ts", "utf8")).toContain("K564-API-005");
   });
+  it("test_patch_tickets_id_conflict_14", () => {
+    // UNWANTED: IF 開始日が期限より後になる直しを送ったなら、Kaname は 409 と E-VAL-028 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-013」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-013");
+  });
+  it("test_patch_tickets_id_conflict_15", () => {
+    // UNWANTED: IF 子の期限を親の期限より後にしようとしたなら、Kaname は 409 と E-DUE-005 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-015」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-015");
+  });
+  it("test_patch_tickets_id_conflict_16", () => {
+    // UNWANTED: IF 親の期限を子の期限より前にしようとしたなら、Kaname は 409 と E-DUE-006 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-016」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-016");
+  });
+  it("test_patch_tickets_id_conflict_17", () => {
+    // UNWANTED: IF 完了したチケットの期限か開始日を変えようとしたなら、Kaname は 409 と E-DUE-007 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-017」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-017");
+  });
+  it("test_patch_tickets_id_conflict_18", () => {
+    // UNWANTED: IF 画面が見ていた期限と今の期限が違うなら、Kaname は 409 と E-DUE-008 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-018」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-018");
+  });
+  it("test_patch_tickets_id_conflict_19", () => {
+    // UNWANTED: IF 期限を今日より前の日に変えようとしたなら、Kaname は 409 と E-VAL-012 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-007」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-007");
+  });
   it("test_patch_tickets_id_rejected_422_2", () => {
     // UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-028」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-028");
+  });
+  it("test_patch_tickets_id_rejected_422_3", () => {
+    // UNWANTED: IF 理由なしで期限を変えようとしたなら、Kaname は 422 と E-DUE-001 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-005");
+  });
+  it("test_patch_tickets_id_rejected_422_4", () => {
+    // UNWANTED: IF 期限を変える理由が 200 文字を超えたなら、Kaname は 422 と E-DUE-002 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F7/due-change.test.ts の「K483-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/due-change.test.ts", "utf8")).toContain("K483-API-005");
   });
   it("test_patch_tickets_id_unavailable", () => {
     // UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す
