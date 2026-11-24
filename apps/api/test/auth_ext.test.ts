@@ -109,30 +109,5 @@ describe("Bridge の接続コードと資格情報（T-U-09／10）", () => {
     const r = await post("/api/auth-ext/bridge/pair", {}, { authorization: `Bearer ${token}` });
     expect(r.status).toBe(404);
   });
-  it("資格情報を預けると表には vault_ref だけ。平文はどこにも無い", async () => {
-    const email = `${uniq()}@example.com`;
-    const { token } = await register(email, "F");
-    const r = await post(
-      "/api/auth-ext/vault/credentials",
-      {
-        service_name: "発注ナビ",
-        login: "me@example.com",
-        password: "S3cret-Plain!",
-        totp_secret: "JBSW Y3DP EHPK 3PXP",
-      },
-      { authorization: `Bearer ${token}` },
-    );
-    expect(r.status).toBe(201);
-    const j = (await r.json()) as { data: { id: string; vault_ref: string } };
-    expect(j.data.vault_ref).toMatch(/^sec_/);
-    const row = await admin.query("select vault_ref, kind_id from credentials where id = $1", [j.data.id]);
-    expect(row.rows[0]).toMatchObject({ vault_ref: j.data.vault_ref, kind_id: "password_totp" });
-    const leak = await admin.query(
-      "select count(*) as n from credentials where vault_ref like '%S3cret%' or kind_id like '%S3cret%'",
-    );
-    expect(Number(leak.rows[0].n)).toBe(0);
-    expect(
-      (await post("/api/auth-ext/vault/credentials", { login: "x" }, { authorization: `Bearer ${token}` })).status,
-    ).toBe(422);
-  });
+  // K-358：資格情報を預ける前の道すじ（/vault/credentials）の試験は消した（契約の口 createCredential の K352-API-001 が見る）
 });

@@ -49,6 +49,7 @@
   "package_paths": ["apps/*/vercel.json"],
   "paths": [
    "05_flow/*.py",
+   "05_flow/build_api.d/**",
    "05_flow/*.json",
    "05_flow/*.html",
    "04_design/**",
@@ -228,14 +229,6 @@
    ],
    "tests": [
     "apps/web/test/k-tokens.test.ts"
-   ]
-  },
-  {
-   "paths": [
-    "apps/api/src/auth/agent-tools.ts"
-   ],
-   "tests": [
-    "apps/api/test/bridge_credentials.test.ts"
    ]
   },
   {
