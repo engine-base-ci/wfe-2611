@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。283 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。285 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4282,6 +4282,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-080": {
+    "id": "E-HND-080",
+    "cls": "conflict",
+    "message": "今日はもう催促しました",
+    "action": "明日もう一度押す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-080",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-081": {
+    "id": "E-HND-081",
+    "cls": "conflict",
+    "message": "この渡しは催促できません",
+    "action": "取り消すか、返事を待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-081",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
     ],
     "where": {
       "screen": "tickets"
