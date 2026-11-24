@@ -73,7 +73,7 @@ async function mk(w: World, o: { version?: number | null } = {}): Promise<{ id: 
   return (
     await f.admin.query<{ id: string; number: string }>(
       `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, due_on, assignee_member_id, work_type_version)
-       select $1, $2, 'pending', $3, (select id from ticket_stages where tenant_id = $1 and key = 'todo'), '業務の型を持っていたチケット', $4::date, $5, $6
+       select $1, $2, 'pending', $3, (select id from ticket_stages where tenant_id = $1 and key = 'todo'), '前の形のチケット', $4::date, $5, $6
        returning id, number`,
       [w.tenantId, w.root, w.kindId, jst(3), w.mate.id, o.version ?? null],
     )
