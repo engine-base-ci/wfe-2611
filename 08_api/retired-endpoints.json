@@ -510,6 +510,30 @@
    "path": "/api/v1/ops/work_types/{id}/versions/{v}/rollback",
    "decision": "D-152.20",
    "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（rollbackOpsWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/tickets/{id}/acceptances",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（requestAcceptance・K-926）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/acceptances/{id}/remind",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（remindAcceptance・K-926）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/portal/acceptances/{id}",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（getPortalAcceptance・K-926）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/portal/acceptances/{id}/answer",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（answerAcceptance・K-926）"
   }
  ]
 }

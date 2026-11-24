@@ -83,7 +83,6 @@ export const RULES = {
   assignee: {
     // 担当者・作成者・マネージャー。戻すは消した本人も（D-128.84）
     tickets: `(${TICKET_PEOPLE("tickets")} or deleted_by = ${ME})`,
-    acceptances: VIA_TICKET(),
     // 実行：始めた人・そのグループのマネージャー・その実行の承認のチケットの担当者
     action_runs: `(created_by = ${ME} or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = ${ME}))`,
   },
