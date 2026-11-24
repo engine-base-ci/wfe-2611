@@ -2955,6 +2955,24 @@ K-584,文書の木に足す節と印（validateDoc・docToText を広げる：�
 - [ ] 決定ログ §150 に D-150.61 の行が在り、D-150.48 が「改めた（2026-11-22 → D-150.61）」になって、`python3 scripts/ci/k430_decision_log_test.py`（COUNT 61 に替えた版）の DC-001・DC-003 が緑・`python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` が PASS
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり、替える物以外は替えずに緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-599,段 8 の外枠と詳細の差し込み口（外枠の鈴・探す欄・左のメニューの保存した条件・詳細の期限と「…」・止まった箱ぜんたい）を、入れた時点では何も出さずに 1 回で足す（K-67 の葉・8-W0 の差し込み口の分。K-460 から分け、一覧の分は K-600 に分けた）,タスク,K-67,未着手,実装,2026-11-25,F7・画面,"段 8 の画面の葉は、同じ前からのファイル（外枠 `ticket-shell.tsx`・`components/k/shell.tsx`、詳細 `detail-panel.tsx`・`detail-head.tsx`・`ticket-detail.tsx`、止まった帯 `delegate-band.tsx`）に中身を足す。段 7 の K-395・段 9 の K-400 も詳細の 3 ファイルに別の行を足す。取り合わないよう、**差し込み口だけを先に 1 回で入れる**（切り方.md 1 章・PM の決め。K-380 と同じ作り）。入れた時点では何も出さない（今の見た目と操作のまま）。後ろの画面の葉は、自分の区画のファイル `features/F7/<区画>/…-slot.tsx` だけを直す。
+
+この葉は**外枠と詳細**の差し込み口。**一覧の分（見え方のタブ・期限の印・数の札と絞りの札・URL の絞りの組 `extra` と数 `counts`）は K-600**（葉の上限 1 時間を守るため、PM が許した分け方）。2 本は触るファイルが重ならない（この葉は `list-*.tsx`・`use-ticket-list.ts`・`tickets-page.tsx` を触らない）。
+
+差し込み口 10 個（入口 2 つ）：
+
+| 入口 | 名前 | 入る所（前からのファイル） | 中身を本物にする葉 |
+|---|---|---|---|
+| `shell-slots.tsx` | `useNoticeSlot`・`NoticeSlot` | `ticket-shell.tsx`（鈴の押し方と重なる箱） | K-467 |
+| 同 | `useSearchSlot`・`SearchSlot` | `ticket-shell.tsx`（探す欄と重なる箱） | K-471 |
+| 同 | `SavedViewSlot` | `ticket-shell.tsx` → Shell の `belowGroups`（左のメニューの**グループの行の全部の下**・1 か所） | K-479 |
+| 同 | `groupHref(scopeId)` | `ticket-shell.tsx`（K-466 が外枠の `groups` の行き先に使う。K-599 は呼ばない）。左のメニューの**グループの行の行き先**：概要が本物になるまで `null`（行は押せない形）・本物になれば `/tickets?view=overview&scope=<id>`（行は概要へのリンク） | K-480（区画 `overview/group-link-slot.tsx` の `READY` を true にするだけ） |
+| `detail-slots.tsx` | `DueSlot` | `detail-panel.tsx`（「期限」の行の「期限を変える」） | K-484 |
+| 同 | `MoreMenuSlot` | `detail-head.tsx`（題名の行の「…」） | K-590 |
+| 同 | `StoppedHandSlot` | `delegate-band.tsx`（**止まった箱ぜんたい**＝止まった `RunBox` と確認の結果の表を入れた `k-check-stack`） | K-486 |","- [ ] 下の表の行（K599-SL-001〜008・UI-001〜004）が緑：`apps/web/tests/k/k599-f7-slots.spec.ts`
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑（外枠・詳細・止まった帯の見た目と操作が今のまま）
+- [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の入れた組が全部の幅で緑（外枠を変えたので G70 は全部の組・canvas: [全部の組]）
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-600,段 8 の一覧の差し込み口（見え方のタブ・期限の印・数の札と絞りの札）と、URL の絞りの組 extra・数 counts の配線を、入れた時点では何も出さずに 1 回で足す（K-67 の葉・8-W0 の差し込み口の分。K-599 から分けた）,タスク,K-67,未着手,実装,2026-11-25,F7・画面,"段 8 の一覧の画面の葉（K-478・K-480・K-481・K-482）は、同じ前からのファイル（一覧 `list-page.tsx`・`list-views.tsx`・`list-table.tsx`・`use-ticket-list.ts`、`?view=` の読み `tickets-page.tsx`）に中身を足す。取り合わないよう、**差し込み口と、絞りの組・数の配線だけを先に 1 回で入れる**（K-599 の一覧の分。切り方.md 1 章・PM の決め）。入れた時点では何も出さない（今の見た目と操作のまま）。後ろの画面の葉は、自分の区画のファイル `features/F7/<区画>/…-slot.tsx` だけを直す。外枠と詳細の差し込み口は K-599。この葉と K-599 は触るファイルが重ならない。
 
 差し込み口 7 個（入口 1 つ）と、配線 2 つ：

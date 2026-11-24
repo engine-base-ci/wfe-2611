@@ -244,7 +244,7 @@ function DetailView({
                   {t.title}
                 </h2>
               ) : (
-                <DetailTitle title={t.title} me={myName} />
+                <DetailTitle title={t.title} me={myName} ticket={st} />
               )}
               <F6.TitleSlot ticket={st} />
               <div className="k-detail-bands" ref={bands.ref} data-shown={[...bands.shown].join(" ") || undefined}>
@@ -270,6 +270,7 @@ function DetailView({
                   run={runs.current}
                   onRun={runs.follow}
                   onChanged={changed}
+                  slot={st}
                 />
                 <F8.HandoverBandSlot
                   ticket={st}
