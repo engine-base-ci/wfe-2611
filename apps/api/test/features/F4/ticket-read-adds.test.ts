@@ -160,10 +160,13 @@ describe("K-560 一覧の行の scope（チケットを置いたグループ）"
 
   it("K560-API-002 頭文字が無い（null）・空文字のグループは code が null（name と id は出る）", async () => {
     const w = await world();
-    const gNull = await group(w, "総務", null);
-    const gEmpty = await group(w, "法務", "");
+    // 番号の頭に頭文字が要るので、頭文字ありで作ってから頭文字を null・空に直す（作った後に頭文字を外したグループ）
+    const gNull = await group(w, "総務", "SM");
+    const gEmpty = await group(w, "法務", "HM");
     const a = await make(w, { scope: gNull });
     const b = await make(w, { scope: gEmpty });
+    await f.admin.query("update scopes set ticket_prefix = null where id = $1", [gNull]);
+    await f.admin.query("update scopes set ticket_prefix = '' where id = $1", [gEmpty]);
     const rows = (await listOk(w.me, "view=all")).data;
     expect(rows.find((x) => x["id"] === a.id)!["scope"]).toEqual({ id: gNull, name: "総務", code: null });
     expect(rows.find((x) => x["id"] === b.id)!["scope"]).toEqual({ id: gEmpty, name: "法務", code: null });
