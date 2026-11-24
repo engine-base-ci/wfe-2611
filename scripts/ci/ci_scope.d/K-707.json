@@ -6,7 +6,7 @@
     }
   ],
   "reads_ok": {
-    "07_qa/test-specs/errors.json": "試験の道具 settings-mock.ts が正本の文を読んで期待の字にする・K-707",
-    "scripts/ci/fidelity_compare.mjs": "試験の道具 f9-ws-match.ts がモックと本番の値の比べ方を読む・K-707"
+    "apps/web/tests/k/settings-mock.ts": "文言の正本 07_qa/test-specs/errors.json を読む（期待の字を実装からでなく正本から引く）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-707",
+    "apps/web/tests/k/f9-ws-match.ts": "比べ方の部品 scripts/ci/fidelity_compare.mjs を読み、モックの頁（/dev/mock/f9/set-*）を開く。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-707"
   }
 }
