@@ -2787,6 +2787,12 @@ K-470,探す：決定（見えるチケットの生きている決定・決め�
 - [ ] K-468 の試験（search-tickets.test.ts）・K-469 の試験（search-conversations.test.ts）が緑のまま
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-471,画面：探す欄（⌘K・種類の札・上下と Enter・空・探している間・探せなかった・スマホ）。差し込み口 useSearchSlot の先に本物の値と動きをつなぐ（K-67 の葉・8-B4）,タスク,K-67,未着手,実装,2026-11-27,F7・探す,"上の帯の探す欄（広い幅は ⌘K でも）で、チケット・決定・自分の会話（ナレッジは 0 件）をまとめて探す（D-127.4・D-128.33・D-151.8）。専用の画面は持たず、打つと探す箱が画面の上に重なって開く。K-460 が運んだ部品（`features/F7/search/` の `SearchPanel`・`SearchGroup`・`SearchHit`・`SearchKindTabs`・`HitMark`）に本物のデータと動きをつなぐ。つなぐ入口は K-599 の差し込み口 `useSearchSlot`・`SearchSlot`（`features/F7/search/search-slot.tsx`）で、この葉はそのファイルの中身だけを書く（外枠 `ticket-shell.tsx`・`components/k/shell.tsx` は K-599・K-466 の物・触らない）。
+
+見る口は `search`（K-468〜K-470・GET /api/v1/search）の 1 本。問い合わせは `q`（100 文字まで）・`kinds`（コンマ。この葉は使わない）・`limit`（種類ごとの上限 1〜5）。答えは `{ data: SearchHit[] }`（総数・続きなし）。`SearchHit` は `kind`（ticket・decision・conversation・knowledge）・`id`・`title`・`snippet`・`url` の 5 つ。","- [ ] 下の表の行（K471-UI-001〜018）が緑：`apps/web/tests/k/k471-search-panel.spec.ts`
+- [ ] 見た目の突き合わせ（モック f7-search-results の幅 1440・f7-search-mobile の幅 375）が緑（K471-UI-016）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-472,一覧の絞り込みの受け皿（12 欄を欄ごとの表にして 1 回で作り直す）と、担当者・段・種別・完了で絞る（listTickets・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-24,F7・毎日見る・探す・片付ける,"一覧の口 `listTickets`（GET /api/v1/tickets・K-92 が作った）の「まだ使えない」12 欄（kind_id・stage_id・assignee_id・due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）を、**欄ごとの表**にして受け皿を 1 回で作り直し、担当者（assignee_id）・段（stage_id）・種別（kind_id）で絞れるようにする。K-473・K-474 は、この葉が作る表に **1 行ずつ足すだけ**（query.ts と hooks.ts の持ち主はこの葉。K-473・K-474 はこの葉の後）。
 
 あわせて、一覧の「状態：完了以外」（下絵の List・D-151.20「完了のチケットは一覧の『完了以外』で隠せる」）を口で受けるため、12 欄の外に **`done`**（true＝完了だけ・false＝完了以外）を 1 つ足す（段 1 つ（stage_id）では「完了以外」が出せない）。

@@ -1681,6 +1681,14 @@
   },
   {
    "paths": [
+    "apps/web/tests/k/f7-shell-mock.ts"
+   ],
+   "tests": [
+    "apps/web/tests/k/k471-search-panel.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F7/list-filters.test.ts"
    ],
    "tests": [
@@ -2079,6 +2087,8 @@
   "apps/api/test/features/contract/k144.d/K-462.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/shell.test.ts": "速さの台帳の試験 apps/api/test/k237_perf_budget.test.ts を読んで、getShell を口の組に差してあるかを見る（K465-API-018）。読む物と使う試験は data_links で結ぶ・K-465",
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
+  "apps/web/tests/k/k471-search-panel.spec.ts": "口の差し替えの道具 apps/web/tests/k/f7-shell-mock.ts（K-466 が運ぶ）と list-mock.ts を読む。stage2-match.ts を通してモックの頁 /dev/mock/f7 を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-471",
+  "apps/web/features/F7/search/search-slot.tsx": "import() で同じ区画の search-live.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-471）",
   "apps/api/test/features/F7/saved-views.harness.ts": "この段の hooks のファイル apps/api/src/hooks/saved-views.ts と saved-views-edit.ts（K-476）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-475）",
   "apps/api/test/features/contract/k144.d/K-476.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-476）",
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
