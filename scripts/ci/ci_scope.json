@@ -2059,7 +2059,6 @@
     "05_flow/screen_api.py",
     "08_api/openapi.yaml",
     "08_api/endpoints.json",
-    "08_api/types.ts",
     "08_api/lint-mapping.json",
     "08_api/retired-endpoints.json",
     "08_api/phase1/03_分身の部屋.md",
@@ -2086,7 +2085,9 @@
     "04_design/canvas",
     "04_design/canvas-screens.json",
     "apps/web/app/(dev)/dev/mock/f1/mocks.tsx",
-    "scripts/ci/canvas_gate.py"
+    "scripts/ci/canvas_gate.py",
+    "apps/api/src/routes/rules.ts",
+    "apps/api/src/routes/work_types.ts"
    ],
    "tests": [
     "apps/api/test/features/F9/rules-work-types-retire.test.ts"

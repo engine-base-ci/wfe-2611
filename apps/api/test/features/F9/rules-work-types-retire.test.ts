@@ -1,4 +1,4 @@
-// K-711「決まり・業務の型の口 29 本を契約から外す」の単体の試験（契約と生成物と文書のファイル・口の道は本物の入口で 404 を見る）。
+// K-711「決まり・業務の型の口 29 本を契約から外す」の単体の試験（契約と作り手の出力と文書のファイル・口の道は本物の入口で 404 を見る）。
 // テストの名前の頭の行 ID（K711-API-…）は 11_tickets/K-711.md の行の表に 1 対 1 で結ぶ。
 // テストはチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 //
@@ -300,7 +300,7 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
       expect(flow.screens.find((x) => x.id === sid)?.release, sid).toBe("v2");
       expect(flow.deferred[sid] ?? "", `${sid} の送った理由`).toContain("D-152.20");
     }
-    expect(read("spec-dependencies.yaml")).toMatch(/- id: screen_count_v1\n(?:  .*\n)*?  expected_value: 35\n/);
+    expect(read("spec-dependencies.yaml")).toMatch(/- id: screen_count_v1\n(?: {2}.*\n)*? {2}expected_value: 35\n/);
   });
 
   it("K711-API-018 キャンバスの対応表の later（canvas_gate.py の CV4）：第 1 フェーズの画面・flow に無い画面・空の並びは 2 で終わり、今の対応表は 0", () => {
