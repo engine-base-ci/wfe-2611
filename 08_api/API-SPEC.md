@@ -244,7 +244,7 @@
 | EP-229 | PATCH | `/api/v1/ops/notices/:id` | 更新（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 422 413 429 403 403 503 |
 | EP-230 | POST | `/api/v1/ops/notices/:id/publish` | 作成・実行（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-231 | POST | `/api/v1/ops/notices/:id/updates` | 作成・実行（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-232 | GET | `/api/v1/ops/operations` | 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け） | A80 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
+| EP-232 | GET | `/api/v1/ops/operations` | 取得（ops）— 操作の版を見る（読むだけ） | A80 | 1 | ops |  | 401 403 422 429 403 403 503 |
 | EP-233 | DELETE | `/api/v1/ops/peeks/:id` | 削除（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops | C2 | 401 403 404 422 429 403 403 503 |
 | EP-234 | GET | `/api/v1/ops/plan_history` | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | A133 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
 | EP-235 | GET | `/api/v1/ops/plan_proposals` | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | A133 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
@@ -376,11 +376,22 @@
 ## 3. 画面 ↔ API カバレッジ
 
 - 画面 35 ／ OK 34 ／ 未カバー ['legal']
-- endpoint の無い行為（v1）[]
+- endpoint の無い行為（v1）['A138']
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1083 ／ 内部専用 278 ／ どの画面にも出ない 0
+- 検査したフィールド 1083 ／ 内部専用 278 ／ どの画面にも出ない 11
+  - ★ learned_procedures.duty_id
+  - ★ learned_procedures.target_service_id
+  - ★ learned_procedures.status_id
+  - ★ learned_procedures.run_count
+  - ★ learned_procedures.avg_ms
+  - ★ learned_procedures.fail_count
+  - ★ learned_procedures.last_verified_at
+  - ★ procedure_steps.procedure_id
+  - ★ procedure_steps.order_no
+  - ★ procedure_steps.intent_ja
+  - ★ procedure_steps.is_variable
 
 ## 5. 共通仕様
 

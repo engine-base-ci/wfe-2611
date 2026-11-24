@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:c649e1c94ea738eb
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:689868f0131ef036
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -450,8 +450,12 @@ export const NAV: NavData = {
     ],
     "ops-skills": [
       {
-        "label": "業務の型と操作",
-        "desc": "上げる → 機械の検査 → 版を出す"
+        "label": "操作",
+        "desc": "読むだけ。版はコードで出す"
+      },
+      {
+        "label": "ひな形",
+        "desc": "種別・状態・項目の版を出す"
       },
       {
         "label": "プラン",
@@ -1241,7 +1245,7 @@ export const NAV: NavData = {
       "roles": [
         "R6"
       ],
-      "purpose": "業務の型と操作を上げる（機械の検査 → 版を出す）。プランの値段と中身を版で持ち、変えるときは案を作り別の人が決める",
+      "purpose": "全部のワークスペースに効く物を版で持つ：操作（読むだけ・版はコードで出す）・ひな形（新しく入る会社が最初に使う既定の形。種別・状態・項目の版を出し、会社が手を付けていない所だけ「そのままにする／変える」を選ぶ）・プラン（値段と中身。変えるときは案を作り別の人が決める）",
       "primaryAction": "版を出す",
       "release": "v1"
     },

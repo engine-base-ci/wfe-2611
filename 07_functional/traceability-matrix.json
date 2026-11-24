@@ -1684,7 +1684,8 @@
    "screen_id": "ops-home",
    "screen_name": "運営：ワークスペースの一覧",
    "features": [
-    "F-016"
+    "F-016",
+    "F-026"
    ],
    "entities": [
     "E-081 plans",
@@ -2099,12 +2100,6 @@
    ],
    "entities": [
     "E-133 operations",
-    "E-095 skills",
-    "E-096 skill_versions",
-    "E-097 skill_test_runs",
-    "E-098 skill_attachments",
-    "E-025 learned_procedures",
-    "E-026 procedure_steps",
     "E-065 distributions",
     "E-081 plans",
     "E-082 plan_versions",
@@ -12207,24 +12202,14 @@
   {
    "entity_id": "E-025",
    "entity_name": "learned_procedures",
-   "used_by_screens": [
-    "ops-skills"
-   ],
-   "used_by_features": [
-    "F-016",
-    "F-020"
-   ]
+   "used_by_screens": [],
+   "used_by_features": []
   },
   {
    "entity_id": "E-026",
    "entity_name": "procedure_steps",
-   "used_by_screens": [
-    "ops-skills"
-   ],
-   "used_by_features": [
-    "F-016",
-    "F-020"
-   ]
+   "used_by_screens": [],
+   "used_by_features": []
   },
   {
    "entity_id": "E-027",
@@ -13531,7 +13516,6 @@
     "credentials",
     "clone-chat",
     "ai-activity",
-    "ops-skills",
     "tickets",
     "work-types",
     "requests"
@@ -13544,9 +13528,7 @@
     "F-010",
     "F-011",
     "F-013",
-    "F-016",
     "F-017",
-    "F-020",
     "F-021",
     "F-023",
     "F-024"
@@ -13557,7 +13539,6 @@
    "entity_name": "skill_versions",
    "used_by_screens": [
     "ai-activity",
-    "ops-skills",
     "tickets",
     "work-types"
    ],
@@ -13569,8 +13550,6 @@
     "F-010",
     "F-011",
     "F-013",
-    "F-016",
-    "F-020",
     "F-021",
     "F-023",
     "F-024"
@@ -13581,7 +13560,6 @@
    "entity_name": "skill_test_runs",
    "used_by_screens": [
     "ai-activity",
-    "ops-skills",
     "tickets",
     "work-types"
    ],
@@ -13593,8 +13571,6 @@
     "F-010",
     "F-011",
     "F-013",
-    "F-016",
-    "F-020",
     "F-021",
     "F-023",
     "F-024"
@@ -13605,7 +13581,6 @@
    "entity_name": "skill_attachments",
    "used_by_screens": [
     "ai-activity",
-    "ops-skills",
     "tickets",
     "work-types"
    ],
@@ -13617,8 +13592,6 @@
     "F-010",
     "F-011",
     "F-013",
-    "F-016",
-    "F-020",
     "F-021",
     "F-023",
     "F-024"
@@ -15473,8 +15446,6 @@
    "entities": [
     "E-001",
     "E-004",
-    "E-025",
-    "E-026",
     "E-039",
     "E-042",
     "E-043",
@@ -15506,10 +15477,6 @@
     "E-091",
     "E-093",
     "E-094",
-    "E-095",
-    "E-096",
-    "E-097",
-    "E-098",
     "E-101",
     "E-104",
     "E-105",
@@ -15650,7 +15617,7 @@
   },
   {
    "feature_id": "F-020",
-   "feature_name": "操作・業務の型・ひな形を作って、版を出して配りたい",
+   "feature_name": "ひな形とプランを版で出して配りたい（操作は版を見るだけ）",
    "screens": [
     "ops-catalog",
     "ops-skills"
@@ -15661,8 +15628,6 @@
     "E-007",
     "E-023",
     "E-024",
-    "E-025",
-    "E-026",
     "E-037",
     "E-065",
     "E-067",
@@ -15674,15 +15639,12 @@
     "E-083",
     "E-084",
     "E-085",
-    "E-095",
-    "E-096",
-    "E-097",
-    "E-098",
     "E-133",
     "E-134"
    ],
    "api_endpoints_draft": [
     "GET /api/ai_employees",
+    "GET /api/operations",
     "POST /api/operations"
    ]
   },
@@ -15968,6 +15930,7 @@
     "ops-billing",
     "ops-catalog",
     "ops-disclosure",
+    "ops-home",
     "ops-llm",
     "ops-notices",
     "ops-review",

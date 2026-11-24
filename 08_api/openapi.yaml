@@ -39321,15 +39321,14 @@ paths:
   /api/v1/ops/operations:
     get:
       operationId: listOperations
-      summary: 取得（ops）— 操作と業務の型を上げて版を出す（全社向け／会社向け）
+      summary: 取得（ops）— 操作の版を見る（読むだけ）
       tags:
       - operations
       x-acts:
       - A80
       x-screens:
       - ops-skills
-      x-choke-points:
-      - C4
+      x-choke-points: []
       x-source:
       - D-030.2
       - D-030.3
@@ -39343,9 +39342,10 @@ paths:
       - D-125.167
       - D-126.18
       - D-126.19
-      - D-126.23
       - D-126.3
-      - D-126.5
+      - D-156.15
+      - D-156.21
+      - D-156.7
       x-permission: ops:distribute
       x-permission-scope: 同上（第1フェーズは汎用のブラウザ操作 1 つ・D-126.19）
       x-step-up: false
