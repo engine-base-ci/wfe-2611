@@ -9,6 +9,7 @@
         "03_architecture/catalog.json",
         "03_architecture/catalog.md",
         "05_flow/screen_api.py",
+        "05_flow/screen_api.d/**",
         "11_tickets/K-59.md",
         "packages/contracts/src/registry.ts",
         "packages/contracts/src/ops.ts",
