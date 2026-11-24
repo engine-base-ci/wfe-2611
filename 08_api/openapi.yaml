@@ -14760,6 +14760,28 @@ components:
           type: array
           items:
             type: string
+        body:
+          type: object
+        fields:
+          type: array
+          items:
+            type: object
+        spec_count:
+          type: integer
+        spec_unchecked:
+          type: integer
+        no_spec_reason:
+          type: string
+          nullable: true
+        parent:
+          type: object
+          nullable: true
+        child_count:
+          type: integer
+        link_count:
+          type: integer
+        results:
+          type: object
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -14776,6 +14798,13 @@ components:
         is_builtin:
           type: boolean
         sections:
+          type: array
+          items:
+            type: object
+        body_template:
+          type: object
+          nullable: true
+        fields:
           type: array
           items:
             type: object

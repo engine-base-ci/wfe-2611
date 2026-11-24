@@ -10,7 +10,7 @@
 //     ③app.ticket_duplicate_apply（確認項目・つながり・子・派生元の線・知らせ・証跡）。元が見えない 404 E-DUP-001・子を写すと 3 段を超える 409 E-DUP-002（欄なし）。
 //     ② の断りは K-437 の振り分けのまま（何も書かれていない）。③ の途中で落ちたら取引ごと戻して 503 E-PAGE-003
 //   listTicketKinds：種別と、その種別の区画（必須か）を一緒に返す ／ listScopes：グループの一覧と、チケットを書けるグループ（meta.writable）
-//   getTicket：読むだけの詳細（属性・区画・種別・段・担当者） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
+//   getTicket：読むだけの詳細（属性・区画・種別・段・担当者。K-560 で本文 body・会社の項目 fields・確認項目の数・親・子とつながりの数・結果の場所） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
 // ログに題名と本文を出さない（共通の決まり）
 import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
@@ -99,7 +99,7 @@ interface TicketProgressInfo {
 /** 詳細に足す欄を読む 1 文（文の数を増やさない・K234-API-004）。列は関数ごとに 1 つ。
  *  欄を足す葉は、この文に列を 1 つ足し（例 app.ticket_handover_now($1) as h）、DetailExtras と detailExtras に鍵を 1 つ足す */
 const DETAIL_EXTRAS_SQL =
-  "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p, app.ticket_handover_current($1) as h, app.ticket_handover_kinds($1) as k";
+  "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p, app.ticket_handover_current($1) as h, app.ticket_handover_kinds($1) as k, app.ticket_read_adds($1) as f";
 interface DetailExtras {
   v: TicketBand | null;
   p: TicketProgressInfo | null;
@@ -107,6 +107,35 @@ interface DetailExtras {
   h: Record<string, unknown> | null;
   /** 見ている人が渡せる種類（K-405・pass・distribute・offer） */
   k: string[] | null;
+  /** 本文・会社の項目・確認項目の数・親・子とつながりの数・結果の場所（K-560・app.ticket_read_adds。見えなければ null） */
+  f: TicketReadAdds | null;
+}
+/** 詳細に足す読み（DB の app.ticket_read_adds の答え・K-560） */
+interface TicketReadAdds {
+  body?: unknown;
+  fields?: unknown[];
+  spec_count?: number;
+  spec_unchecked?: number;
+  no_spec_reason?: string | null;
+  parent?: unknown;
+  child_count?: number;
+  link_count?: number;
+  results?: Record<string, unknown>;
+}
+const EMPTY_BODY = { doc: { type: "doc", content: [] }, text: "", version: 0 };
+/** 詳細の答えのうち、app.ticket_read_adds から組む欄（K-560）。並びは DB の関数が決める（ここで切り詰め・並べ替えをしない） */
+function readAdds(f: TicketReadAdds | null | undefined): Row {
+  return {
+    body: f?.body ?? EMPTY_BODY,
+    fields: f?.fields ?? [],
+    spec_count: f?.spec_count ?? 0,
+    spec_unchecked: f?.spec_unchecked ?? 0,
+    no_spec_reason: f?.no_spec_reason ?? null,
+    parent: f?.parent ?? null,
+    child_count: f?.child_count ?? 0,
+    link_count: f?.link_count ?? 0,
+    results: f?.results ?? {},
+  };
 }
 /** 詳細の答えのうち、DETAIL_EXTRAS_SQL の列から組む欄（承認の帯・できること・完了・時間・保留の帯） */
 function detailExtras(x: DetailExtras | undefined, t: Row): Row {
@@ -126,6 +155,7 @@ function detailExtras(x: DetailExtras | undefined, t: Row): Row {
     // 渡しの今（帯の「→ 〇〇（返事待ち）」）と入口の出し分け（K-405）
     handover: x?.h ?? null,
     handover_kinds: x?.k ?? [],
+    ...readAdds(x?.f),
   };
 }
 
@@ -188,8 +218,21 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
     },
     listTicketKinds: {
       before: async (a: HookArgs) => {
-        const kinds = (await a.repo.table("ticket_kinds").list(a.ctx, { limit: LIST_MAX, orderBy: "position" })).filter(
-          (k) => !k["deleted_at"],
+        // 種別と、その種別で出す会社の項目のマスタ（app.ticket_field_master・K-560）を 1 文で読む（文の数を増やさない・K234-API-002）
+        const kinds = await withTenant(
+          appPool,
+          a.ctx,
+          async (cl) =>
+            (
+              await cl.query<Row>(
+                `select k.id, k.name, k.color, k.position, k.is_builtin, k.body_template, app.ticket_field_master(k.id) as fields
+                   from ticket_kinds k
+                  where k.tenant_id = app.tenant_id() and k.deleted_at is null
+                  order by k.position, k.id
+                  limit $1`,
+                [LIST_MAX],
+              )
+            ).rows,
         );
         const secs = (await a.repo.table("kind_sections").list(a.ctx, { limit: 2000, orderBy: "position" })).filter(
           (s) => !s["deleted_at"],
@@ -200,6 +243,9 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           color: k["color"] ?? null,
           position: k["position"],
           is_builtin: k["is_builtin"],
+          // 種別のひな形（本文に入れる文書の木か null）と会社の項目のマスタ（値なし・並び位置の順・K-560）
+          body_template: k["body_template"] ?? null,
+          fields: k["fields"] ?? [],
           sections: secs
             .filter((s) => s["kind_id"] === k["id"] && s["mode"] !== "hidden")
             .map((s) => ({
@@ -264,8 +310,9 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           body: {
             data: {
               ticket: t,
+              // 区画の並び（K-578 が外すまで残す）。本文の行（鍵 body）は答えの body に出すので並びから除く（K-560）
               sections: secs
-                .filter((s) => !s["deleted_at"])
+                .filter((s) => !s["deleted_at"] && s["section_key"] !== "body")
                 .map((s) => ({
                   key: s["section_key"],
                   label: label.get(s["section_key"]) ?? s["section_key"],

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a32cc14ce50e2003
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:787e4eeea61c45d2
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -398,8 +398,8 @@ export type BridgeClaim = { device_token?: string; device_id?: string; member_id
 export type BridgeReleaseLink = { url?: string; expires_at?: string };
 export type BridgeHeartbeat = { ok?: boolean; browser?: string | null; outdated?: boolean; device_id?: string };
 export type BridgeDevice = { id?: string; device_label?: string | null; state?: string; last_seen_at?: string | null; connected_at?: string; version?: string | null; health?: string[]; health_at?: string | null; browser?: string; revoke_reason?: string | null };
-export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null; completed?: Record<string, unknown> | null; time?: Record<string, unknown>; hold?: Record<string, unknown> | null; handover?: Record<string, unknown> | null; handover_kinds?: string[] };
-export type TicketKindChoice = { id?: string; name?: string; color?: string | null; position?: number; is_builtin?: boolean; sections?: string[] };
+export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null; completed?: Record<string, unknown> | null; time?: Record<string, unknown>; hold?: Record<string, unknown> | null; handover?: Record<string, unknown> | null; handover_kinds?: string[]; body?: Record<string, unknown>; fields?: string[]; spec_count?: number; spec_unchecked?: number; no_spec_reason?: string | null; parent?: Record<string, unknown> | null; child_count?: number; link_count?: number; results?: Record<string, unknown> };
+export type TicketKindChoice = { id?: string; name?: string; color?: string | null; position?: number; is_builtin?: boolean; sections?: string[]; body_template?: Record<string, unknown> | null; fields?: string[] };
 export type TicketDraft = { draft_id?: string; body?: Record<string, unknown> | null; saved_at?: string | null };
 export type BridgeJob = { job?: Record<string, unknown> | null; forbidden_domains?: string[]; next_ms?: number; outdated?: boolean };
 export type JobControl = { stop?: boolean; reason?: string | null; steers?: string[] };

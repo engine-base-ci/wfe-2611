@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a32cc14ce50e2003
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:787e4eeea61c45d2
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -4124,6 +4124,15 @@ export const TicketDetail = z.strictObject({
   hold: z.record(z.string(), z.unknown()).nullable().optional(),
   handover: z.record(z.string(), z.unknown()).nullable().optional(),
   handover_kinds: z.array(z.string()).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  fields: z.array(z.unknown()).optional(),
+  spec_count: z.number().int().optional(),
+  spec_unchecked: z.number().int().optional(),
+  no_spec_reason: z.string().nullable().optional(),
+  parent: z.record(z.string(), z.unknown()).nullable().optional(),
+  child_count: z.number().int().optional(),
+  link_count: z.number().int().optional(),
+  results: z.record(z.string(), z.unknown()).optional(),
 });
 export const TicketKindChoice = z.strictObject({
   id: z.string().optional(),
@@ -4132,6 +4141,8 @@ export const TicketKindChoice = z.strictObject({
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
   sections: z.array(z.unknown()).optional(),
+  body_template: z.record(z.string(), z.unknown()).nullable().optional(),
+  fields: z.array(z.unknown()).optional(),
 });
 export const TicketDraft = z.strictObject({
   draft_id: z.string().optional(),
