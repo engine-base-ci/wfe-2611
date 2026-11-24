@@ -136,13 +136,19 @@
   color: var(--k-on-surface-variant);
 }
 
-/* ---- 足：あとで と待っている印 ---- */
+/* ---- 待っている印（2 段目の下の行の中・足の帯には置かない） ---- */
 .k-pc-wait {
   display: inline-flex;
   align-items: center;
   gap: var(--k-c-pc-wait-gap);
   font-size: var(--k-c-pc-wait-text);
   color: var(--k-c-pc-wait-fg);
+}
+/* 待っている印の行：2 段目（コードの段）の「10 分で切れる…新しいコード」の下に 1 行（代表の答え answer=8d3ada64dcbd・K-374） */
+.k-pc-wait-line {
+  display: flex;
+  align-items: center;
+  margin: var(--k-c-pc-code-foot-margin);
 }
 .k-wait-dot {
   width: var(--k-c-pc-wait-dot-width);
