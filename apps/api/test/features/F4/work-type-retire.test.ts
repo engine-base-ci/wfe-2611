@@ -259,12 +259,17 @@ describe("K-582 業務の型を口と契約から外す", () => {
     expect(er).toMatch(/work_type_id[^\n]*凍結|凍結[^\n]*work_type_id/);
   });
 
-  it("K582-API-010 段 10 の表は触らない：skills の kind の check に work_type が残る（/work_types の道は段 10 の K-711 の持ち物なので見ない）", async () => {
-    const kinds = (
-      await f.admin.query<{ def: string }>(
-        "select pg_get_constraintdef(c.oid) as def from pg_constraint c where c.conrelid = 'public.skills'::regclass and c.contype = 'c'",
+  it("K582-API-010 段 10 の表は触らない：表 skills と列 kind_id（業務の型を kind で持つ所）が DB に残る（/work_types の道は段 10 の K-711 の持ち物なので見ない・kind_id は text で check を持たない）", async () => {
+    const reg = (await f.admin.query<{ t: string | null }>("select to_regclass('public.skills')::text as t")).rows[0]!;
+    expect(reg.t, "表 skills が在る").toBe("skills");
+    const col = (
+      await f.admin.query<{ data_type: string }>(
+        "select data_type from information_schema.columns where table_schema = 'public' and table_name = 'skills' and column_name = 'kind_id'",
       )
     ).rows;
-    expect(kinds.map((k) => k.def).join(" "), "skills の kind の check に work_type が残る").toContain("work_type");
+    expect(
+      col.map((c) => c.data_type),
+      "列 kind_id が在る",
+    ).toEqual(["text"]);
   });
 });
