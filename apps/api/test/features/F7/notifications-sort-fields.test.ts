@@ -7,17 +7,7 @@
 //   priority・parent（K-440）／estimate_minutes（K-583）／field:<項目の id>（K-564）の並び。K-461 の読み方は fields・url を params に通さず、
 //   params は message_id だけ。行はお知らせを置く（管理の接続で直に）ところから始め、書き手の確かめは書き手の葉の試験が持つ。
 import { describe, expect, it } from "vitest";
-import {
-  f,
-  member,
-  notice,
-  one,
-  pageOf,
-  ready,
-  setupNotify,
-  T,
-  ticket,
-} from "./notify.harness.js";
+import { f, member, notice, one, pageOf, ready, setupNotify, T, ticket } from "./notify.harness.js";
 
 setupNotify();
 
@@ -71,7 +61,20 @@ describe("K-602 項目が変わったお知らせの読み方", () => {
       });
       expect(item.actor).toEqual({ id: writer.id, name: expect.any(String) });
       expect(Object.keys(item).sort()).toEqual(
-        ["actor", "created_at", "href", "id", "kind", "number", "params", "read", "read_at", "tag", "ticket_id", "title"].sort(),
+        [
+          "actor",
+          "created_at",
+          "href",
+          "id",
+          "kind",
+          "number",
+          "params",
+          "read",
+          "read_at",
+          "tag",
+          "ticket_id",
+          "title",
+        ].sort(),
       );
     }
   });
@@ -91,7 +94,8 @@ describe("K-602 項目が変わったお知らせの読み方", () => {
     expect("fields" in item.params).toBe(false);
     expect("url" in item.params).toBe(false);
     const text = JSON.stringify(page);
-    for (const leak of [FIELD_ID, "field:", "estimate_minutes", '"priority"', '"parent"']) expect(text).not.toContain(leak);
+    for (const leak of [FIELD_ID, "field:", "estimate_minutes", '"priority"', '"parent"'])
+      expect(text).not.toContain(leak);
   });
 
   it("K602-API-003 見えないチケットの項目のお知らせは出ない（チケットの種類は今そのチケットが見えるときだけ）：権限の無いグループ・消したチケット。担当者でなければ見えるチケットの行だけ出る", async () => {
@@ -104,7 +108,11 @@ describe("K-602 項目が変わったお知らせの読み方", () => {
       [T.tenantId],
     );
     const hidden = await ticket({ assignee: other, scope: sc.id, title: "見えないチケット" });
-    const n1 = await notice(p, { kind: "ticket.sort_changed", payload: sortPayload(seen, ["priority"], "m-a"), ageMin: 2 });
+    const n1 = await notice(p, {
+      kind: "ticket.sort_changed",
+      payload: sortPayload(seen, ["priority"], "m-a"),
+      ageMin: 2,
+    });
     await notice(p, { kind: "ticket.sort_changed", payload: sortPayload(hidden, ["priority"], "m-b"), ageMin: 1 });
     expect((await pageOf(p)).data.map((x) => x.id)).toEqual([n1]);
     await f.admin.query("update tickets set deleted_at = now() where id = $1", [seen.id]);
