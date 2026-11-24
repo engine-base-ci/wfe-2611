@@ -5591,7 +5591,7 @@
   },
   {
    "id": "E-VAL-012",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5689,7 +5689,7 @@
   },
   {
    "id": "E-VAL-015",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -7069,6 +7069,404 @@
    "support_code": "VAL-046"
   },
   {
+   "id": "E-HND-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "上へ上げる（段 9 では作らない・kind escalate）で渡す・答える。種類の葉が入る前の種類",
+   "false_when": "引き継いでもらう・申し出る・配るで渡す（種類の葉が入った後）",
+   "message": "この渡し方は、まだ使えません",
+   "action": "別の渡し方を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "詳細の右の「担当者 ▾」を押して相手を選ぶ小窓を開く",
+    "steps": [
+     "渡し方に「上へ上げる」を送る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.1"
+   ]
+  },
+  {
+   "id": "E-HND-002",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "担当者でない人の「引き継いでもらう」・管理しない人の「配る」・何もできない人（閲覧のみ・取引先・止まっている人）の下見・答える人でない人の答え",
+   "false_when": "担当者が引き継いでもらう・グループを管理する人が配る・書ける人が申し出る・答える人が答える",
+   "message": "このチケットでは、この操作はできません",
+   "action": "担当者かグループを管理する人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "閲覧のみの人でログインし、同じグループのチケットの詳細を開く",
+    "steps": [
+     "右の「担当者 ▾」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.3",
+    "D-148.12",
+    "D-148.18"
+   ]
+  },
+  {
+   "id": "E-HND-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "AI が動いている・承認を待っているチケットを渡す・受ける",
+   "false_when": "AI の実行も承認待ちも無いチケットを渡す・受ける",
+   "message": "AI の実行（承認）が終わってから渡してください",
+   "action": "AI の実行か承認が終わるのを待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて動いている途中のチケットの詳細を開く",
+    "steps": [
+     "「担当者 ▾」から相手を選んで渡す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.6"
+   ]
+  },
+  {
+   "id": "E-HND-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "同じチケットに待っている渡しがある（グループ宛ては{名前}にグループの名前）",
+   "false_when": "そのチケットに待っている渡しが無い（前の渡しが決まった・取り消された）",
+   "message": "いま{名前}さんの返事を待っています。先にその渡しを取り消してください",
+   "action": "前の渡しを取り消してから渡し直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "佐藤さんに渡して返事を待っているチケットの詳細を開く",
+    "steps": [
+     "「担当者 ▾」から鈴木さんを選んで渡す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.20"
+   ]
+  },
+  {
+   "id": "E-HND-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "決まった渡しに答える（二度押し・取り消された後）・別の人にする（replaces）の渡しがもう決まっていた・取り消す・催促する・引き取るの相手がもう決まっていた",
+   "false_when": "待っている渡しに答える・取り消す・催促する",
+   "message": "この渡しはもう決まっています（受けた・断った・取り消された）",
+   "action": "画面を開き直して今の状態を見る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "受け箱で、もう受けた渡しの知らせを開く",
+    "steps": [
+     "「受ける」をもう一度押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.20",
+    "D-125.70"
+   ]
+  },
+  {
+   "id": "E-HND-006",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "止まっている・招待中の人を相手に選んだ",
+   "false_when": "今使える人を相手に選んだ",
+   "message": "{名前}さんは今は選べません（{訳}）。別の人を選んでください",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓を開く（止まっている人がいる会社）",
+    "steps": [
+     "止まっている人を選んで渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18"
+   ]
+  },
+  {
+   "id": "E-HND-007",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "理由・断る理由が空（空白・改行・制御文字だけも）",
+   "false_when": "理由を 1 字以上書いた",
+   "message": "理由を書いてください",
+   "action": "理由を書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓で相手を選ぶ",
+    "steps": [
+     "理由を空のまま「渡す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.2",
+    "D-130.1"
+   ]
+  },
+  {
+   "id": "E-HND-008",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "返事の期限が今より後でない",
+   "false_when": "返事の期限が今より後か、期限を付けない（既定は次の平日の 18:00）",
+   "message": "返事の期限は今より後にしてください",
+   "action": "返事の期限を今より後にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓で相手と理由を入れる",
+    "steps": [
+     "返事の期限に昨日を入れて渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.4"
+   ]
+  },
+  {
+   "id": "E-HND-009",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了したチケットを渡す（消したチケットは入口の行の確かめで 404）",
+   "false_when": "完了していないチケットを渡す",
+   "message": "完了した・消したチケットは渡せません",
+   "action": "開き直してから、別のチケットで渡す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "完了したチケットの詳細を開く",
+    "steps": [
+     "「担当者 ▾」から相手を選んで渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.6"
+   ]
+  },
+  {
+   "id": "E-HND-010",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "相手に自分を選んだ",
+   "false_when": "自分でない人を相手に選んだ",
+   "message": "自分には渡せません。別の人を選んでください",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓を開く",
+    "steps": [
+     "自分を相手にして渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.3"
+   ]
+  },
+  {
+   "id": "E-HND-011",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "一緒に切り替えるものの形が違う・決まりが「しない」の物を選んだ・相手がいるグループへ移すを選んだ・軸を選んだ",
+   "false_when": "決まりに合う切り替えだけを選んだ（選ばない・いつも の物は選ばなくてよい）",
+   "message": "一緒に切り替えるものの選び方が、ワークスペースの決まりと合いません",
+   "action": "切り替えるものを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ワークスペースの決まりで「子・孫」を「しない」にする",
+    "steps": [
+     "相手を選ぶ小窓で「子・孫も移す」を選んで渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.71",
+    "D-148.11",
+    "D-148.39"
+   ]
+  },
+  {
+   "id": "E-HND-012",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "渡す先のグループが無い・別の会社・消したグループ",
+   "false_when": "同じ会社の消していないグループを選んだ",
+   "message": "渡す先のグループが見つかりません。選び直してください",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループを管理する人で、相手を選ぶ小窓を開く",
+    "steps": [
+     "消したグループを選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.12"
+   ]
+  },
+  {
+   "id": "E-HND-013",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "引き継いでもらう・配るで、相手もグループも選んでいない",
+   "false_when": "相手かグループを選んだ",
+   "message": "渡す相手を選んでください",
+   "action": "相手を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓を開く",
+    "steps": [
+     "相手を選ばずに「渡す」を押す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.2"
+   ]
+  },
+  {
+   "id": "E-HND-014",
+   "class": "validation",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "相手が無い人・別の会社・消した・抜けた人",
+   "false_when": "同じ会社の今いる人を選んだ",
+   "message": "選んだ人が見つかりません。選び直してください",
+   "action": "相手を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "相手を選ぶ小窓を開く",
+    "steps": [
+     "抜けた人を相手にして渡す（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18"
+   ]
+  },
+  {
    "id": "E-INV-009",
    "class": "validation",
    "where": {
@@ -7186,6 +7584,122 @@
    "source": [
     "D-148.29",
     "D-148.31"
+   ]
+  },
+  {
+   "id": "E-INV-013",
+   "class": "validation",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待のリンクで新しく参加する人が、メールを空・空白だけ・メールの形でないまま送った",
+   "false_when": "メールで招いた招待（宛てのメールを使う）・ログイン中の人",
+   "message": "メールアドレスを入れてください",
+   "action": "メールアドレスを入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "招待のリンクを開き、名前とパスワードを入れ、メールを空かメールの形でない字にして参加を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-016",
+   "class": "conflict",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "宛てのメールが無い招待（リンクの招待）で、新しく参加する人がメールを送っていない",
+   "false_when": "メールで招いた招待（宛てのメールを使う）・ログイン中の人・メールを送った",
+   "message": "メールアドレスを入れてください",
+   "action": "メールアドレスを入れて、もう一度参加する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面（リンクの招待）",
+    "steps": [
+     "招待のリンクを開き、名前とパスワードだけでメールの欄を送らずに参加を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-014",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "確認のメールのリンクを、期限（24 時間）が過ぎてから押した",
+   "false_when": "期限の内に押した",
+   "message": "確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください",
+   "action": "招待のリンクから、もう一度参加する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "参加を押して確認のメールを受け取り、24 時間後にそのリンクを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-015",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "確認のメールのリンクを、一度押した後にもう一度押した",
+   "false_when": "まだ押していない確認のリンク",
+   "message": "この確認のリンクはもう使われています。ログインして入ってください",
+   "action": "ログインして入る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "確認のメールのリンクを押して参加した後、同じリンクをもう一度押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.51"
    ]
   },
   {
@@ -7385,6 +7899,232 @@
    "source": [
     "段 10 の代表の決め 2026-11-22"
    ]
+  },
+  {
+   "id": "E-VAL-028",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの開始日が、最終期限より後の日だった",
+   "false_when": "開始日が期限と同じ日か、それより前（開始は入れなくてもよい）",
+   "message": "開始日は期限より前の日にしてください",
+   "action": "開始日か期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "開始に期限より後の日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.34"
+   ],
+   "support_code": "VAL-028"
+  },
+  {
+   "id": "E-DUP-001",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+   "false_when": "元のチケットが見える（書く権限は要らない）",
+   "message": "複製の元のチケットが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+   "action": "元を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを 1 つ作って消す",
+    "steps": [
+     "消したチケットを元にして複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-128.115"
+   ],
+   "support_code": "DUP-001"
+  },
+  {
+   "id": "E-DUP-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "子チケットを写すと、親子が 3 段を超える（複製の親が 2 段目で、元に子がいる）",
+   "false_when": "子を写さない・写しても 3 段まで",
+   "message": "子チケットを写すと、親子が 3 段を超えます。子を写さないか、別の親を選んでください",
+   "action": "子を写さずに作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を持つチケットと、2 段目のチケット",
+    "steps": [
+     "2 段目のチケットを親にして、子を写して複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-125.50"
+   ],
+   "support_code": "DUP-002"
+  },
+  {
+   "id": "E-TKT-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケット自身を決めようとした（K-440。親を決める小窓か、口 PATCH /api/v1/tickets/:id の parent_ticket_id）",
+   "false_when": "親に、自分とは別のチケットを決めた",
+   "message": "自分自身は親にできません",
+   "action": "別のチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細",
+    "steps": [
+     "口に、そのチケット自身の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-001"
+  },
+  {
+   "id": "E-TKT-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケットの子・孫（下の段）を決めようとした＝親子が輪になる（K-440。同時に A の親を B・B の親を A にしたときの後の 1 本も）",
+   "false_when": "自分の下の段に無いチケットを親にした",
+   "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+   "action": "自分の下にないチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "親と子のチケット",
+    "steps": [
+     "親のチケットに、その子の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-002"
+  },
+  {
+   "id": "E-TKT-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親を決めると親子が 3 段を超える（親が 3 段目、または自分の下の段を数えて 3 段を超える・K-440）",
+   "false_when": "親子が 3 段までに収まる",
+   "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+   "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3 段の親子のチケット",
+    "steps": [
+     "3 段目のチケットを親にする口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-003"
+  },
+  {
+   "id": "E-TKT-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "今の自分の期限が親の期限より後のチケットに、その親を決めようとした（どちらかの期限が空なら対象外・親の期限より後の期限にする側は期限の口・K-440）",
+   "false_when": "自分の期限が親の期限と同じか前（または、どちらかの期限が空）",
+   "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+   "action": "期限を親の期限以前に直してから親を決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限が親より後のチケット",
+    "steps": [
+     "親の期限より後の期限のチケットに、その親を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-004"
   },
   {
    "id": "E-LNK-001",
@@ -8237,6 +8977,130 @@
     "D-125.62",
     "D-129.43"
    ]
+  },
+  {
+   "id": "E-FLD-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "チケットの種別に出ない会社の項目に値を入れようとした（K-564。項目に種別の行があって、このチケットの種別が入っていない。消した種別の行しか無い項目も同じ）",
+   "false_when": "全部の種別に出る項目、またはこのチケットの種別に出る項目に値を入れた",
+   "message": "この項目は、このチケットの種別では使えません",
+   "action": "項目の一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "種別が違う項目とチケット",
+    "steps": [
+     "その種別に出ない項目の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-001"
+  },
+  {
+   "id": "E-FLD-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "選択肢に無い値を入れようとした（1 つ選ぶ・複数選ぶ。別の項目の選択肢の id・マスタから外した選択肢も同じ・K-564）",
+   "false_when": "その項目の選択肢の id を送った",
+   "message": "選べない値が含まれています。選択肢から選び直してください",
+   "action": "選択肢から選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "選択肢のある項目とチケット",
+    "steps": [
+     "その項目に、知らない選択肢の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-002"
+  },
+  {
+   "id": "E-FLD-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "項目の型と合わない値を入れようとした（数に文字・日付に暦に無い日や別の書き方・チェックに文字・選ぶ型に数・K-564）",
+   "false_when": "項目の型どおりの値を送った",
+   "message": "この項目に入れられない形の値です",
+   "action": "値を入れ直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "数の項目とチケット",
+    "steps": [
+     "その項目に、数でない値を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-003"
+  },
+  {
+   "id": "E-FLD-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "必須の項目を空にしようとした（null・空の文字・空白だけ・空の並び。必須のチェックは false も同じ・K-564）",
+   "false_when": "必須でない項目を空にした、または必須の項目に値を入れた",
+   "message": "必須の項目は空にできません。値を入れてください",
+   "action": "値を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "必須の項目に値が入ったチケット",
+    "steps": [
+     "その項目に null を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-004"
   },
   {
    "id": "E-CONF-020",
