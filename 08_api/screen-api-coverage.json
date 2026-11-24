@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 366,
+  "total_apis": 369,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -713,6 +713,26 @@
     },
     {
      "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A20"
+    },
+    {
+     "role": "action",
      "endpoint": "POST /api/v1/conversations/:id/attachments",
      "act": "A90"
     },
@@ -810,6 +830,16 @@
      "role": "action",
      "endpoint": "POST /api/v1/learning_candidates/:id/exception-request",
      "act": "A131"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/adopt",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/adopt",
+     "act": "A20"
     }
    ],
    "transitions": [

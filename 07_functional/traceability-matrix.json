@@ -759,8 +759,10 @@
     "E-050 artifacts",
     "E-051 artifact_versions",
     "E-061 sessions",
+    "E-044 bridge_jobs",
+    "E-052 audit_events",
+    "E-046 bridge_job_events",
     "E-039 action_runs",
-    "E-120 reference_logs",
     "E-028 memories",
     "E-037 policies",
     "E-095 skills",
@@ -781,6 +783,10 @@
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/stop",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations/:id/messages",
+    "POST /api/ticket_draft_conversations/:id/messages",
     "POST /api/conversations/:id/attachments",
     "POST /api/conversations/:id/permissions/:pid",
     "POST /api/messages/:id/artifacts",
@@ -801,6 +807,8 @@
     "POST /api/learning_candidates/:id/dismiss",
     "POST /api/learning_candidates/:id/later",
     "POST /api/learning_candidates/:id/exception-request",
+    "POST /api/ticket_draft_conversations/:id/adopt",
+    "POST /api/ticket_draft_conversations/:id/adopt",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -5013,6 +5021,30 @@
      "path_draft": "/api/conversations/:id/stop"
     },
     {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
+    },
+    {
      "act": "A90",
      "role": "action",
      "method": "POST",
@@ -5131,6 +5163,18 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/learning_candidates/:id/exception-request"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt"
     },
     {
      "role": "transition",
@@ -12551,17 +12595,21 @@
    "used_by_screens": [
     "bridge-setup",
     "credentials",
+    "clone-chat",
     "member-detail",
     "knowledge",
     "portal"
    ],
    "used_by_features": [
+    "F-004",
     "F-005",
+    "F-006",
     "F-010",
     "F-011",
     "F-013",
     "F-017",
-    "F-022"
+    "F-022",
+    "F-024"
    ]
   },
   {
@@ -12574,10 +12622,15 @@
    "entity_id": "E-046",
    "entity_name": "bridge_job_events",
    "used_by_screens": [
-    "bridge-setup"
+    "bridge-setup",
+    "clone-chat"
    ],
    "used_by_features": [
-    "F-005"
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-013",
+    "F-024"
    ]
   },
   {
@@ -12697,6 +12750,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -14074,7 +14128,6 @@
    "entity_name": "reference_logs",
    "used_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -14705,6 +14758,8 @@
     "E-039",
     "E-042",
     "E-043",
+    "E-044",
+    "E-046",
     "E-048",
     "E-049",
     "E-050",
@@ -14886,6 +14941,8 @@
     "E-039",
     "E-040",
     "E-043",
+    "E-044",
+    "E-046",
     "E-047",
     "E-049",
     "E-050",
@@ -15336,6 +15393,7 @@
     "E-039",
     "E-043",
     "E-044",
+    "E-046",
     "E-049",
     "E-050",
     "E-051",
@@ -15861,6 +15919,8 @@
     "E-038",
     "E-039",
     "E-043",
+    "E-044",
+    "E-046",
     "E-049",
     "E-050",
     "E-051",

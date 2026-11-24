@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:8c23890fe861ef58
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:5374938873a74172
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -391,9 +391,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "editApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalEditInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalEdited",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -413,6 +413,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -435,7 +438,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "approver_member_id = app.user_id()"
+        "sql": "app.ticket_assignee_is_me(ticket_id)"
       }
     },
     "termsOpen": false,
@@ -4867,9 +4870,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "sendConversationMessage",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "ConversationSay",
     "success": 201,
-    "output": "Messages",
+    "output": "ConversationSaid",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -4891,6 +4894,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       502,
@@ -4988,9 +4994,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "stopConversation",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "ConversationStopInput",
     "success": 201,
-    "output": "Messages",
+    "output": "ConversationStopped",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5012,6 +5018,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -15081,6 +15088,190 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "POST",
+    "path": "/api/v1/ticket_draft_conversations",
+    "operationId": "startDraftConversation",
+    "table": "conversations",
+    "kind": "create",
+    "input": "DraftConversationStartInput",
+    "success": 201,
+    "output": "DraftConversationStarted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      503,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A20",
+      "A99"
+    ],
+    "screens": [
+      "clone-chat"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+    "operationId": "adoptDraftConversation",
+    "table": "conversations",
+    "kind": "create",
+    "input": "ConversationAdoptInput",
+    "success": 201,
+    "output": "ConversationAdopted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A20",
+      "A99"
+    ],
+    "screens": [
+      "clone-chat"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_draft_conversations/:id/messages",
+    "operationId": "sendDraftMessage",
+    "table": "messages",
+    "kind": "create",
+    "input": "DraftMessageInput",
+    "success": 201,
+    "output": "DraftMessageSent",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A20",
+      "A99"
+    ],
+    "screens": [
+      "clone-chat"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "PATCH",
     "path": "/api/v1/ticket_handovers/:id",
     "operationId": "answerTicketHandover",
@@ -16133,7 +16324,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "TicketAgentSession",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -16152,6 +16343,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       502,
       403,
@@ -16244,9 +16436,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "sendTicketAgentMessage",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "TicketAgentMessageInput",
     "success": 201,
-    "output": "Messages",
+    "output": "TicketAgentSent",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -16269,6 +16461,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      503,
       413,
       429,
       502,
@@ -19497,4 +19691,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "8c23890fe861ef58";
+export const OPENAPI_HASH = "5374938873a74172";

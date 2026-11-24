@@ -4944,6 +4944,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -4978,6 +4979,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5012,6 +5014,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5046,6 +5049,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5080,6 +5084,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5114,6 +5119,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5148,6 +5154,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -5182,6 +5189,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -11397,7 +11405,6 @@
    "field": "ticket_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11409,7 +11416,6 @@
    "field": "action_run_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11421,7 +11427,6 @@
    "field": "ref_type",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11433,7 +11438,6 @@
    "field": "ref_id",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11445,7 +11449,6 @@
    "field": "url",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11457,7 +11460,6 @@
    "field": "title",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -11469,7 +11471,6 @@
    "field": "seen_at",
    "consumed_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
