@@ -146,13 +146,20 @@ describe("K-326 本物の一覧", () => {
     expect(fuzz).toMatch(/"fuzz"/);
   });
 
-  it("K326-BIND-007 fuzz で外すのは今の 4 つだけで、理由は今のまま", async () => {
+  it("K326-BIND-007 fuzz で外すのは今の 5 つだけで、理由は今のまま（K-759 が流れの口 talkStreamHooks を足した）", async () => {
     const HOOK_MODULES = await modules();
     const skipped = HOOK_MODULES.filter((m) => typeof m.fuzz === "object" && "skip" in m.fuzz);
     expect(skipped.map((m) => m.name).sort()).toEqual(
-      ["authHooks", "consentTermsHooks", "signupHooks", "verifyEmailHooks"].sort(),
+      ["authHooks", "consentTermsHooks", "signupHooks", "talkStreamHooks", "verifyEmailHooks"].sort(),
     );
-    for (const m of skipped) expect((m.fuzz as { skip: string }).skip, m.name).toContain("偽のセッション");
+    for (const m of skipped) {
+      const why = (m.fuzz as { skip: string }).skip;
+      if (m.name === "talkStreamHooks") {
+        // 流れの口は的に知らせの接続が無く必ず 503・差すと開いたまま（K-759）。振る舞いは K-759 の試験が持つ
+        expect(why, m.name).toContain("流れの口");
+        expect(why, m.name).toContain("K-759 の試験");
+      } else expect(why, m.name).toContain("偽のセッション");
+    }
   });
 });
 

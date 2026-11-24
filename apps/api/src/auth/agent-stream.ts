@@ -3,9 +3,9 @@
 //   知らせの接続が無い・落ちたら 503／down を返し、画面は見に行く形に戻る（黙って止まらない・G-15）。
 //   ログインが切れたら流れを閉じる（G-14）。1 本の流れは 50 秒で区切り、画面がつなぎ直す（Vercel の関数の上限 60 秒より短く・build-vercel.mjs）
 import { Hono } from "hono";
-import { streamSSE } from "hono/streaming";
 import type { MemberHub } from "@kaname/db/listen";
 import type { createSessionResolver } from "@kaname/auth/resolver";
+import { openChangeStream } from "../features/F5/talk/stream.js";
 
 type Resolve = ReturnType<typeof createSessionResolver>;
 
@@ -41,81 +41,15 @@ export function agentStreamRoutes(d: AgentStreamDeps): Hono {
     if (!ses?.ctx.tenantId || !ses.ctx.userId)
       return c.json({ error: "unauthenticated", code: "UNAUTHENTICATED", message: "ログインしてください" }, 401);
     if (!d.hub) return unavailable(c);
-    const headers = c.req.raw.headers;
-    // 起こす合図（知らせ・落ちた・閉じた）。流れの中の 1 本の輪がこれを待つ
-    let dirty = false;
-    let down = false;
-    let wake: (() => void) | null = null;
-    const poke = () => {
-      const w = wake;
-      wake = null;
-      w?.();
-    };
-    let unsub: () => void;
-    try {
-      unsub = await d.hub.subscribe(ses.ctx.userId, {
-        change: () => {
-          dirty = true;
-          poke();
-        },
-        down: () => {
-          down = true;
-          poke();
-        },
-      });
-    } catch (e) {
-      console.error("[agent stream] 知らせの接続につながりません:", (e as Error).message);
-      return unavailable(c);
-    }
-    c.header("x-accel-buffering", "no");
-    return streamSSE(c, async (s) => {
-      let closed = false;
-      s.onAbort(() => {
-        closed = true;
-        poke();
-      });
-      const until = Date.now() + lifetimeMs;
-      let nextKeep = Date.now() + keepaliveMs;
-      try {
-        await s.writeSSE({ event: "ready", data: "" });
-        while (!closed) {
-          const now = Date.now();
-          const wait = Math.max(0, Math.min(until, nextKeep) - now);
-          if (!dirty && !down) {
-            await new Promise<void>((r) => {
-              wake = r;
-              setTimeout(() => poke(), wait);
-            });
-          }
-          if (closed) break;
-          if (down) {
-            await s.writeSSE({ event: "down", data: "" });
-            break;
-          }
-          if (dirty) {
-            // 同じ瞬間の書き込み（途中経過が続けて来る等）を 1 回の合図にまとめる
-            await s.sleep(settleMs);
-            dirty = false;
-            await s.writeSSE({ event: "change", data: "" });
-          }
-          if (Date.now() >= until) {
-            await s.writeSSE({ event: "end", data: "reconnect" });
-            break;
-          }
-          if (Date.now() >= nextKeep) {
-            nextKeep = Date.now() + keepaliveMs;
-            const still = await (d.fresh ?? d.resolve)(headers).catch(() => null);
-            if (!still?.ctx.userId || still.ctx.userId !== ses.ctx.userId) {
-              await s.writeSSE({ event: "end", data: "unauthenticated" });
-              break;
-            }
-            await s.write(": alive\n\n");
-          }
-        }
-      } finally {
-        unsub();
-      }
+    // 流しの輪は契約の口 streamConversation と同じ本体（features/F5/talk/stream.ts・K-759）
+    const res = await openChangeStream(c, {
+      hub: d.hub,
+      userId: ses.ctx.userId,
+      headers: c.req.raw.headers,
+      fresh: d.fresh ?? d.resolve,
+      timing: { keepaliveMs, lifetimeMs, settleMs },
     });
+    return res ?? unavailable(c);
   });
   return app;
 }

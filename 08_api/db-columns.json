@@ -1584,9 +1584,17 @@
     "type": "text",
     "nullable": true
    },
+   "talk_kind": {
+    "type": "text",
+    "nullable": false
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "title": {
     "type": "text",
