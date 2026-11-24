@@ -5630,6 +5630,7 @@
    "field": "member_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5657,6 +5658,7 @@
    "field": "kind_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5684,6 +5686,7 @@
    "field": "auth_session_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5711,6 +5714,7 @@
    "field": "device_label",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5738,6 +5742,7 @@
    "field": "ip_region",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5765,6 +5770,7 @@
    "field": "issued_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5792,6 +5798,7 @@
    "field": "last_seen_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5819,6 +5826,7 @@
    "field": "revoked_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5846,6 +5854,7 @@
    "field": "revoke_reason_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5873,6 +5882,7 @@
    "field": "device_token_hash",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5900,6 +5910,7 @@
    "field": "alive_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5927,6 +5938,7 @@
    "field": "bridge_version",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5954,6 +5966,7 @@
    "field": "machine_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -7356,6 +7369,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7385,6 +7399,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7414,6 +7429,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7443,6 +7459,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7479,6 +7496,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7508,6 +7526,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7537,6 +7556,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -7566,6 +7586,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -10941,6 +10962,15 @@
   },
   {
    "entity": "test_specs",
+   "field": "checked_basis",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
    "field": "source",
    "consumed_by_screens": [
     "tickets"
@@ -12701,6 +12731,76 @@
   {
    "entity": "ticket_handovers",
    "field": "decided_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "notify_managers",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "reminded_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "overdue_notified_at",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "switch_applied",
+   "consumed_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_handovers",
+   "field": "answered_by",
    "consumed_by_screens": [
     "approvals",
     "clone-chat",

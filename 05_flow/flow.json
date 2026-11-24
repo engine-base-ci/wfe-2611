@@ -1560,6 +1560,7 @@
      "id": "A36",
      "act": "人を招く（層・権限の束）",
      "roles": [
+      "R1",
       "R2"
      ],
      "jobs": [
@@ -1585,6 +1586,7 @@
      "id": "A61",
      "act": "メンバーの所属（兼務）・権限を決める",
      "roles": [
+      "R1",
       "R2"
      ],
      "jobs": [
@@ -1613,6 +1615,7 @@
      "id": "A62",
      "act": "抜ける人の依存を片付ける",
      "roles": [
+      "R1",
       "R2"
      ],
      "jobs": [
@@ -9621,6 +9624,7 @@
     "層"
    ],
    "roles": [
+    "R1",
     "R2"
    ],
    "route": "/members",
@@ -10595,6 +10599,7 @@
     "出来事"
    ],
    "roles": [
+    "R1",
     "R2"
    ],
    "route": "/members/:id",
@@ -11299,6 +11304,8 @@
     "work-types",
     "rules",
     "knowledge",
+    "members",
+    "member-detail",
     "layers",
     "masters",
     "audit",

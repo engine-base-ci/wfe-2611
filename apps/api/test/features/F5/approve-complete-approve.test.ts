@@ -315,7 +315,7 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
     const tm = await team("2 台持つ人");
     const pc2 = await pairMemberForTest(f.admin, tm.by.id, "2 台持つ人の 2 台目");
     // 別の PC が取る
-    const t1 = await ticket();
+    const t1 = await ticket({ body: true }); // K-578：prompt のチケットの中身は本文の行から組む（前の区画は読まない）
     const d1 = await delegated(t1, { by: tm }); // 作る段は 1 台目（tm.pc）が動かした
     expect((await approve(boss, d1.approvalId)).status).toBe(201);
     const run1 = (await runsOf(t1.id, "execute"))[0]!;

@@ -43,7 +43,7 @@ export interface World {
   root: string;
   me: Person;
   mate: Person;
-  task: { id: string; sections: { key: string; mode: string }[] };
+  task: { id: string };
   kinds: { id: string; name: string }[];
 }
 
@@ -68,7 +68,6 @@ export async function makeWorld(f: Fixture, prefix = "EG"): Promise<World> {
   const kinds = (await asJson(await f.req("GET", "/ticket_kinds", { headers: me.auth })))["data"] as {
     id: string;
     name: string;
-    sections: { key: string; mode: string }[];
   }[];
   return {
     tenantId: c.tenantId,
@@ -87,9 +86,7 @@ export async function make(
   o: { title?: string; by?: Person; assignee?: Person; scope?: string; parent?: string; due?: string } = {},
 ): Promise<{ id: string; number: string }> {
   const by = o.by ?? w.me;
-  const sections = Object.fromEntries(
-    w.task.sections.filter((s) => s.mode === "required").map((s) => [s.key, "書いた"]),
-  );
+  // 区画の入力は送らない（K-578：契約から外れて 422。本文は送らなければ空の本文）
   const r = await f.req("POST", "/tickets", {
     body: {
       scope_id: o.scope ?? w.root,
@@ -97,7 +94,6 @@ export async function make(
       title: o.title ?? "請求書を送る",
       assignee_member_id: (o.assignee ?? w.me).id,
       due_on: o.due ?? jst(3),
-      sections,
       ...(o.parent ? { parent_ticket_id: o.parent } : {}),
     },
     headers: by.auth,
