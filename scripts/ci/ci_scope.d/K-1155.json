@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k1155-required-label.spec.ts": "画面のコード apps/web/{components,features,app} の .tsx（＊だけを中身に持つ aria-hidden の span が残っていないか）と部品の CSS apps/web/components/k/k.css（.k-label[data-required]::after の規則）を字で読む。apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-1155"
+ }
+}

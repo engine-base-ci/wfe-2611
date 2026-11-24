@@ -24847,8 +24847,9 @@
    "depends_on": [],
    "acts": [],
    "screens": [],
-   "canvas": [],
-   "canvas_none": "見た目を 1px も変えない直し（＊を label の中の span から同じ label の ::after に移すだけ・字・色・左の間・行は同じ）。どの正の絵の組も替えない。同じ版で前の作りと写しを撮って 1 バイトも違わないことを試験で見る",
+   "canvas": [
+    "全部の組"
+   ],
    "apis": [],
    "affects": [
     "@kaname/web"
