@@ -3357,7 +3357,7 @@ K-711,決まり・上に回す決まり・業務の型の口 29 本を契約か�
 | 業務の型・作る側 | `listWorkTypes`・`getWorkType`・`createWorkType`・`copyWorkType`・`updateWorkTypeDraft`・`listWorkTypeVersions`・`tryWorkType`・`releaseWorkType`・`requestWorkTypeSpread`（/work_types） | 9 |
 | 業務の型・運営 | `listOpsWorkTypes`・`getOpsWorkType`・`uploadWorkTypePackage`・`getWorkTypeUpload`・`releaseOpsWorkType`・`rollbackOpsWorkType`（/ops/work_types・/ops/work_type_uploads） | 6 |
 
-**触らない物**：運営ひな形の 3 口（`makeKindTemplateFromTicket`・`listKindTemplateUpdates`・`applyKindTemplateUpdate`）・運営のひな形の口（`listOpsTemplates`・`getOpsTemplate`・`releaseOpsTemplate`）・`listHandoverRules`（渡すときの読む口。代表の決めで無くなった物に入っていない）。記憶・覚えたいこと・チケットの形・ナレッジの前の口は K-712・K-721・K-722 が外す。表（`policies`・`skills`・`skill_versions`・`skill_test_runs`）は消さず、凍結の印は K-722 が付ける。","- [ ] 下の表の 14 行（K711-API-001〜014）が緑：`apps/api/test/features/F9/rules-work-types-retire.test.ts`
+**触らない物**：運営ひな形の 3 口（`makeKindTemplateFromTicket`・`listKindTemplateUpdates`・`applyKindTemplateUpdate`）・運営のひな形の口（`listOpsTemplates`・`getOpsTemplate`・`releaseOpsTemplate`）・`listHandoverRules`（渡すときの読む口。代表の決めで無くなった物に入っていない）。記憶・覚えたいこと・チケットの形・ナレッジの前の口は K-712・K-721・K-722 が外す。表（`policies`・`skills`・`skill_versions`・`skill_test_runs`）は消さず、凍結の印は K-722 が付ける。","- [ ] 下の表の 18 行（K711-API-001〜018）が緑：`apps/api/test/features/F9/rules-work-types-retire.test.ts`
 - [ ] 外した 29 の操作 ID が `05_flow/screen_api.py` の全部の表（SCREEN_API・RESPONSES・QUERIES・PERMS）に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 29 本が消えている（作り手 `gen_ears_tests.mjs` が消す）
 - [ ] 運営ひな形の 3 口・運営のひな形の口・`listHandoverRules` が契約に残っている
 - [ ] 前からの試験は「前からの試験を替えた所」のとおりで緑（`contract_shape_test.py` の注の 1 行だけ替えた）

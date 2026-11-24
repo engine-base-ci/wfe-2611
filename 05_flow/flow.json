@@ -7421,7 +7421,7 @@
   "A131": {
    "id": "A131",
    "human": "効く範囲を選んでルールを書く",
-   "screen": "rules",
+   "screen": "clone-chat",
    "auto": "—",
    "backstage": "範囲ごとに保存。取引先のルールはその取引先のチケットだけに効く",
    "choke_points": [
@@ -8037,8 +8037,8 @@
    "masters"
   ],
   "A131": [
-   "rules",
-   "clone-chat"
+   "clone-chat",
+   "rules"
   ],
   "A119": [
    "work-types"

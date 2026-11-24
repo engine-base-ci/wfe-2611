@@ -5017,13 +5017,13 @@
      "act": "A131",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/policies",
+     "path_draft": "/api/conversations",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-037",
-      "E-055",
-      "E-002",
-      "E-142"
+      "E-043",
+      "E-049",
+      "E-006",
+      "E-004"
      ],
      "choke_points": [
       "C2"
@@ -5043,13 +5043,13 @@
      "act": "A131",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/conversations",
+     "path_draft": "/api/policies",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-043",
-      "E-049",
-      "E-006",
-      "E-004"
+      "E-037",
+      "E-055",
+      "E-002",
+      "E-142"
      ],
      "choke_points": [
       "C2"
@@ -6153,13 +6153,13 @@
      "act": "A131",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/policies",
+     "path_draft": "/api/conversations",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-037",
-      "E-055",
-      "E-002",
-      "E-142"
+      "E-043",
+      "E-049",
+      "E-006",
+      "E-004"
      ],
      "choke_points": [
       "C2"
@@ -6179,13 +6179,13 @@
      "act": "A131",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/conversations",
+     "path_draft": "/api/policies",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-043",
-      "E-049",
-      "E-006",
-      "E-004"
+      "E-037",
+      "E-055",
+      "E-002",
+      "E-142"
      ],
      "choke_points": [
       "C2"

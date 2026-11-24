@@ -64,7 +64,7 @@ class FlowTest(unittest.TestCase):
         self.assertEqual([x["label"] for x in sub["knowledge"]], ["ページ", "管理"])
         self.assertEqual([x["label"] for x in sub["masters"]], ["種別", "状態", "項目"])
 
-    def test_K727_FL_005_rules_worktypes_kept_until_k711(self) -> None:
+    def test_K727_FL_005_rules_worktypes_sent_by_k711(self) -> None:
         """画面 rules・work-types は K-711 が口と一緒に後のフェーズへ送った（口より先に送ると契約の口が黙って消える・D-152.22。
         送る回は口を全部外した K-711・PM の決め 2026-11-24）。画面は消さずに v2 で残る"""
         for sid in ("rules", "work-types"):
