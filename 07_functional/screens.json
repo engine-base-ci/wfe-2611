@@ -45417,6 +45417,58 @@
       "D-152.27",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A136",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/shares",
+     "table": "knowledge_shares",
+     "operation_id": "getKnowledgeShares",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-150",
+      "E-149"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "PUT",
+     "path_draft": "/api/knowledge/shares",
+     "table": "knowledge_shares",
+     "operation_id": "setKnowledgeShares",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-150",
+      "E-149"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -46627,6 +46679,58 @@
       "D-152.27",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A136",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge/shares",
+     "table": "knowledge_shares",
+     "operation_id": "getKnowledgeShares",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-150",
+      "E-149"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A136",
+     "role": "action",
+     "method": "PUT",
+     "path_draft": "/api/knowledge/shares",
+     "table": "knowledge_shares",
+     "operation_id": "setKnowledgeShares",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-150",
+      "E-149"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-152.2",
+      "D-152.6",
+      "D-152.7",
+      "D-152.13",
+      "D-152.26",
+      "D-152.27",
+      "D-125.167"
+     ]
     }
    ],
    "related_entities": [
@@ -46635,6 +46739,7 @@
     "E-123",
     "E-147",
     "E-149",
+    "E-150",
     "E-055",
     "E-002",
     "E-142",

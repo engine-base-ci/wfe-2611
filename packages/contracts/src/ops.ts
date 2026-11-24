@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:dbcfc700e477d9d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:187447ff8aa94b82
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -132,6 +132,8 @@ export interface Ops {
   declineKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   withdrawKnowledgeRequest: { params: { id: string }; query: never; body: never; data: T.KnowledgeRequestEnded };
   dismissKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDismissInput; data: T.KnowledgeRequestEnded };
+  getKnowledgeShares: { params: never; query: { "page_id"?: string | number; "folder_id"?: string | number }; body: never; data: T.KnowledgeShares };
+  setKnowledgeShares: { params: never; query: never; body: T.KnowledgeSharesInput; data: T.KnowledgeShares };
   findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };
   listKnowledgeVerifications: { params: never; query: { "mine"?: string | number; "soon"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeVerification[] };

@@ -8534,6 +8534,49 @@ components:
         decline_reason: *id786
         dismissed_at: *id787
       additionalProperties: false
+    KnowledgeShares:
+      type: object
+      properties:
+        target:
+          type: object
+        from_group_name:
+          type: string
+        groups:
+          type: array
+          items:
+            type: object
+      x-operation: setKnowledgeShares
+    KnowledgeSharesInput:
+      type: object
+      properties:
+        page_id:
+          type: string
+          format: uuid
+          nullable: true
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        group_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 50
+        message:
+          type: string
+          nullable: true
+          maxLength: 1000
+      additionalProperties: false
+      x-operation: setKnowledgeShares
+      required:
+      - group_ids
+      x-required-by: hooks
+      oneOf:
+      - required:
+        - page_id
+      - required:
+        - folder_id
     KnowledgeLimits:
       type: object
       properties:
@@ -27932,6 +27975,182 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/shares:
+    get:
+      operationId: getKnowledgeShares
+      summary: 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_shares
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: read
+      x-permission-scope: 元を書ける人（app.kpage_writable・app.kfolder_writable）か、共有を受けているグループのマネージャー（app.kn_share_view）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: page_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: folder_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeShares'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: setKnowledgeShares
+      summary: 置き換え（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
+      tags:
+      - knowledge_shares
+      x-acts:
+      - A136
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
+      x-permission: write
+      x-permission-scope: 元を書ける人は頼む・やめる・取り下げる。共有を受けているグループのマネージャーは自分のグループの分をやめるだけ（app.kn_share_set）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeSharesInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeShares'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-011／E-KNW-120／E-KNW-121／E-KNW-122
           content:
             application/json:
               schema:
