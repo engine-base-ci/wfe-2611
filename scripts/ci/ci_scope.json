@@ -1718,6 +1718,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/detail-more/more-menu.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k458-more-menu.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/notifications-*.ts",
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/notifications/**"
