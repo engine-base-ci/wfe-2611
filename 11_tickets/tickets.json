@@ -3197,8 +3197,7 @@
     "readNotification",
     "restoreTicket",
     "takeoverActionRun",
-    "updateSavedView",
-    "search"
+    "updateSavedView"
    ],
    "tests": [
     "apps/api/test/generated/delete_saved_views_id.test.ts",
