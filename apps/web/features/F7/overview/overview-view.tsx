@@ -27,7 +27,7 @@ export function OverviewView({ scopeId }: { scopeId: string | null }) {
   if (read.state === "error")
     return (
       <div className="k-list-body">
-        <ErrorState code={read.code} acts={read.code === PAGE_ERROR.notFound ? ["/tickets?view=all"] : [retry]} />
+        <ErrorState code={read.code} acts={read.code === PAGE_ERROR.notFound ? ["/tickets"] : [retry]} />
       </div>
     );
   const now = Date.now();
