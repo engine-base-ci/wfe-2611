@@ -7484,6 +7484,35 @@
    ]
   },
   {
+   "id": "E-NTF-010",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "notifications"
+   },
+   "when": "自分宛てで一覧に出る知らせでない（別の人・別の会社・もう無い・行き先のチケットが見えなくなった）",
+   "false_when": "自分宛ての一覧に出ている知らせ",
+   "message": "このお知らせは見つかりませんでした",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "鈴を押して知らせの一覧を開く",
+    "steps": [
+     "別の人宛ての知らせの id で PATCH /api/v1/notifications/:id を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.3"
+   ]
+  },
+  {
    "id": "E-SRC-001",
    "class": "validation",
    "where": {
@@ -8269,6 +8298,122 @@
    "source": [
     "D-125.62",
     "D-129.43"
+   ]
+  },
+  {
+   "id": "E-DEL-040",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消した本人でも、そのグループのマネージャー・管理者でもない人が、消したチケットを戻した",
+   "false_when": "消した本人か、そのグループのマネージャー・管理者が戻した",
+   "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+   "action": "消した人かマネージャーに頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "他の人が消したチケットを、書けるだけの人で開く",
+    "steps": [
+     "消したチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-041",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もう戻っている（消えていない）チケットを戻した・同時に別のタブが先に戻した",
+   "false_when": "消えているチケットを戻した",
+   "message": "このチケットはもう戻っています",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを消した直後の画面を 2 つのタブで開く",
+    "steps": [
+     "消した直後の「元に戻す」を 2 つのタブで同時に押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-042",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消してから 30 日を過ぎたチケットを戻した",
+   "false_when": "消してから 30 日以内のチケットを戻した",
+   "message": "消してから 30 日を過ぎているので、もう戻せません",
+   "action": "戻せないので、必要なら新しく作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "30 日より前に消したチケットがある状態にする",
+    "steps": [
+     "30 日を過ぎて消えたままのチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-128.116"
+   ]
+  },
+  {
+   "id": "E-DEL-043",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "親が消えている子を戻した",
+   "false_when": "親が消えていない子を戻した",
+   "message": "このチケットの親が消えています。先に親を戻してください",
+   "action": "親を先に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を消した後で、その親も消した状態にする",
+    "steps": [
+     "親を消した後に、先に消していた子の「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
    ]
   },
   {

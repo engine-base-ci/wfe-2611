@@ -18,6 +18,8 @@ export interface NoticePanelProps extends Pick<NoticeFilterProps, "people" | "pe
   placement?: "overlay" | "inline" | undefined;
   onMarkAll?: (() => void) | undefined;
   onOpenPast?: (() => void) | undefined;
+  /** 続きがあるか（false なら「過去のお知らせ」を押せない・既定は押せる） */
+  canOpenPast?: boolean | undefined;
   onOpen?: ((item: NoticeItem) => void) | undefined;
   onRetry?: (() => void) | undefined;
   loadingDelayMs?: number | undefined;
@@ -37,6 +39,7 @@ export function NoticePanel({
   placement = "overlay",
   onMarkAll,
   onOpenPast,
+  canOpenPast = true,
   onOpen,
   onRetry,
   loadingDelayMs,
@@ -74,7 +77,7 @@ export function NoticePanel({
           type="button"
           className="k-f7-notice-link"
           aria-expanded={past !== undefined}
-          disabled={past !== undefined}
+          disabled={past !== undefined || !canOpenPast}
           onClick={onOpenPast}
         >
           過去のお知らせ
