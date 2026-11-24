@@ -3249,3 +3249,20 @@ PM の決め（作り方）：
 - [ ] 替えた前からの試験（`ticket_order_gate_test.py` の K159-CI-013・014・015・028、`k643_merge_not_impl_test.py` の K643-CI-003、`k341_order_gate_speed_test.py` の K341-CI-003）が緑
 - [ ] 替えない前からの試験（`k210_gate_holes_test.py`・`ci_scope_test.py`・`ci_lean_test.py` と、上の 3 本の替えない行）が緑
 - [ ] チケットの範囲の CI が緑。K-711 の枝の G56 が ecc6788c6d で赤にならない（PM が確かめる）"
+K-1301,直し：見た目の突き合わせの組に「幅ごとの絵」（at・決定 ID と訳つき・消せない・今のチケットだけが書ける）を持てる形を入れ、絵 MobileList に見出しの帯と本文の箱の包みを足す（K-478 の案 A・PM の葉・W0。tickets-main の幅 375 の記録を書くのは K-478）,タスク,K-67,未着手,実装,2026-11-26,F7・CI,"キャンバスとの見た目の突き合わせの設定（`04_design/fidelity.json`）は、組ごとに絵（canvas）を 1 枚だけ持つ。弱めない検査 `scripts/ci/fidelity_config.py --base-ref`（CI の段 G69）は、入った組の canvas とセレクタを替えること・幅を外すことを赤にする。
+
+K-478（一覧の画面）の幅 375 は、正がキャンバス Main ではなくスマホの一覧の絵 MobileList とスマホの本文の組になった（PM の決め 2026-11-24・案 a・モックが正）。組 tickets-main は種類 page なので幅 375 を外せず、canvas も替えられない。K-478 の書く段（W10）がここで止まった（`.ticket-flow/out/K-478/W10-blocked.md`）。
+
+PM の決め（2026-11-24・案 A）：**この葉は「幅ごとの絵」を持てる形だけを入れる**。本物の組 tickets-main に幅 375 の記録を書くのは K-478（画面をスマホの本文に替えて値を合わせる葉。この葉が書くと、この葉 1 本の CI で k251 の組の行が赤になる・K-1300 の案 D と同じ訳）。
+
+黙って絵を替えられる道にはしない：
+
+- 組に `""at"": {""<幅>"": {""canvas"", ""pairs"": {<対の name>: {""canvas"", ""app""}}, ""ticket"", ""decision"", ""why""}}` を書ける。その幅だけ比べる絵とセレクタを替える。対の name・role・props と、組の canvas・app・state・widths・pairs は替えない（弱めない検査はそのまま効く）
+- 新しく足した（書き替えた）記録は、`ticket` が今のチケットのときだけ通る：md が在り、頭の欄 decisions: に `decision`・changes: に `04_design/fidelity.json` がちょうど同じ字で在り、md が分かれ目の版に無いかそこから変わっていて、stage が確認中・完了でない（K-1300 と同じ確かめ）
+- 記録は消せない・書き替えられない（分かれ目の版の組に在った記録は、組が残っているかぎり 1 字も変えずに在る）。同じ記録とみなす単位は「幅ごとの canvas・ticket・decision・why と、対ごとの値（pairs[name]）」。変えてよいのは対の集まりの分だけ：この版で組に足した対の値を pairs に足す・K-377 の記録（removed）の通った対を pairs から外す（PM の決め 2026-11-24・精査の指摘 1 の案 A）。組ごと無くなった組の at は見ない（組を消すことは今までの検査と K-1300 が見る）
+- 比べる道具は、組と幅から絵とセレクタを 1 つの関数 `groupAt`（`scripts/ci/fidelity_compare.mjs`）で解く。組の canvas を直に読む道具は、at の在る組を読まない（K1301-FA-009 が止める）
+
+あわせて、絵 MobileList に本番の見出しの帯（`header.k-list-head`）と本文の箱（`.k-list-body`）に当たる包みを、見た目を変えずに足す（作り手 `04_design/canvas_gen/mb.py`）。今の絵は見出しの行とタブ、絞りの札と並びが別々で、組の役 head・body に当たる箱が無い。","- [ ] 下の表の 19 行（K1301-FA-001〜019）が緑：`python3 scripts/ci/k1301_fidelity_at_test.py`・`node --test scripts/ci/k1301_fidelity_at.test.mjs`・`pnpm --filter @kaname/web exec playwright test tests/k/k1301-mobile-list-wrap.spec.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」の 29 本と、絵 MobileList を読む k254・k1113・k138）が緑。今の本物の設定（at は無い）は今までどおり通る
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-1301.txt` にこの葉の 2 つの命令が在り、作り手を流し直した CI の定義（生成物）に入っている
+- [ ] CI（このチケットの範囲）が緑"
