@@ -290,7 +290,8 @@ test("K450-UI-013 先に変えられた（409 E-SPEC-020・チェック／文を
   await editor(page).fill("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.reads).toBe(3);
-  // 入力を開いたままの行は字の代わりに入力が出る。読み直した最新（版 2）は、次に送る体の version で確かめる
+  // 入力を開いたままの行は字の代わりに入力が出る。行が口の最新になったことは箱の名前（行の文）で確かめる
+  await expect(boxOf(page, "別の人の文")).toHaveCount(1);
   await expect(editor(page)).toHaveValue("自分の文");
   await editor(page).press("Enter");
   await expect.poll(() => m.updates.length).toBe(3);
@@ -370,10 +371,15 @@ test("K450-UI-016 開いた後に完了が確定した（can_edit は true の�
   await editor(page).fill("直す");
   await editor(page).press("Enter");
   await expect.poll(() => m.updates.length).toBe(2);
-  await expect(lineOf(page, T[4]!)).toHaveCount(1);
+  await note(page, msg("E-SPEC-001"));
+  // 完了したので直せない：入力は閉じ、行の文は元のまま
+  await expect(editor(page)).toHaveCount(0);
+  await expect(boxOf(page, T[4]!)).toHaveCount(1);
+  expect(m.specs.find((s) => s.title === T[4])).toBeDefined();
   m.force.remove = [conflict("E-SPEC-001")];
   await rmBtn(page, T[3]!).click();
   await expect.poll(() => m.deletes.length).toBe(1);
+  await note(page, msg("E-SPEC-001"));
   await expect(lineOf(page, T[3]!)).toHaveCount(1);
   expect(m.specs).toHaveLength(5);
 });
@@ -549,7 +555,8 @@ const CTRL = ["width", "height", "font-size", "color", "background-color", "bord
 const SPEC_PAIRS: FidelityPair[] = [
   pair("li-text", ".k-f4d-specs .k-f4d-spec-text", ["font-size", "color", "line-height", "texts"]),
   pair("box", ".k-f4d-specs .k-f4d-spec-box", ["width", "height"]),
-  pair("remove", ".k-f4d-specs .k-f4d-spec-list button", CTRL),
+  pair("remove", '.k-f4d-specs .k-f4d-spec-list button[aria-label$="を外す"]', CTRL),
+  pair("text-btn", ".k-f4d-specs .k-f4d-spec-btn", [...CTRL, "line-height"]),
   pair("acts", ".k-f4d-specs .k-f4d-spec-acts button", CTRL),
   pair("hint", ".k-f4d-specs .k-f4d-hint", TXT),
 ];
