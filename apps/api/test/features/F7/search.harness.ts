@@ -33,7 +33,7 @@ export interface World {
   root: string;
   me: Person;
   mate: Person;
-  task: { id: string; sections: { key: string; mode: string }[] };
+  task: { id: string };
 }
 export interface SearchKit {
   f: Fixture;
@@ -59,7 +59,6 @@ export async function makeWorld(f: Fixture, prefix = "EG"): Promise<World> {
   const kinds = (await asJson(await f.req("GET", "/ticket_kinds", { headers: me.auth })))["data"] as {
     id: string;
     name: string;
-    sections: { key: string; mode: string }[];
   }[];
   return { tenantId: c.tenantId, root: c.rootScope, me, mate, task: kinds.find((k) => k.name === "タスク")! };
 }
@@ -72,9 +71,7 @@ export async function makeTicket(
 ): Promise<{ id: string; number: string; title: string }> {
   const by = o.by ?? w.me;
   const title = o.title ?? "請求書を送る";
-  const sections = Object.fromEntries(
-    w.task.sections.filter((s) => s.mode === "required").map((s) => [s.key, "書いた"]),
-  );
+  // 区画の入力は送らない（K-578：契約から外れて 422。本文は送らなければ空の本文）
   const jst = new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10);
   const r = await f.req("POST", "/tickets", {
     body: {
@@ -83,7 +80,6 @@ export async function makeTicket(
       title,
       assignee_member_id: (o.assignee ?? w.me).id,
       due_on: jst,
-      sections,
     },
     headers: by.auth,
   });

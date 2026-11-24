@@ -7,7 +7,7 @@
 //   api.ts は画面の試験のほとんどが読むので、ここでは変えない（変えると、チケットの範囲の CI が読んでいる試験を全部流す）
 import { randomBytes } from "node:crypto";
 import type { Page } from "@playwright/test";
-import { API, PW, addTestEntry, admin, api, sha256, uniqEmail } from "./api";
+import { API, PW, addTestEntry, admin, api, sha256, testIp, uniqEmail } from "./api";
 import type { Newcomer } from "./newcomer";
 import { testPc, type TestPc } from "./test-pc";
 
@@ -56,7 +56,20 @@ export interface TicketSections {
   todo: string;
 }
 
-/** チケットを口で 1 枚作る（種類「タスク」・担当は本人・期限は 3 日後）。作る画面は K-60・K-58 が持つ */
+/** 区画ごとの文字を、本文 1 枚の文書の木（段落）に組む（段落は行ごと。text は口が doc から作るのでここでは作らない）。
+ *  引数の形（区画の鍵 → 本文）は呼ぶ側の試験を替えないために残す。K-437 の口は body を受け、K-578 の後は sections を受けない */
+const bodyOf = (sections: TicketSections) => ({
+  doc: {
+    type: "doc",
+    content: [sections.purpose, sections.done, sections.todo]
+      .flatMap((x) => x.split("\n"))
+      .filter((x) => x !== "")
+      .map((x) => ({ type: "paragraph", content: [{ type: "text", text: x }] })),
+  },
+});
+
+/** チケットを口で 1 枚作る（種類「タスク」・担当は本人・期限は 3 日後）。作る画面は K-60・K-58 が持つ。
+ *  本文は 1 枚で送る（K-442 の準備：区画の入力は K-578 で口が受けなくなる） */
 export async function ticketOf(page: Page, me: Newcomer, title: string, sections: TicketSections): Promise<string> {
   const scope = await admin<{ s: string }>("select scope_id as s from members where id = $1", [me.memberId]);
   const kinds = await asPerson(page, me.token, "GET", "/ticket_kinds");
@@ -70,7 +83,7 @@ export async function ticketOf(page: Page, me: Newcomer, title: string, sections
     title,
     assignee_member_id: me.memberId,
     due_on: due,
-    sections,
+    body: bodyOf(sections),
   });
   if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Body | undefined)?.["id"]) as string | undefined;
@@ -89,7 +102,13 @@ export async function teammate(me: Newcomer, name = "同僚"): Promise<{ memberI
     [tenant[0]!.t, email, sha256(token), me.memberId],
   );
   // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
-  const r = await api<{ data: { token: string } }>(`/api/v1/auth/invitations/${token}/accept`, { name, password: PW });
+  const r = await api<{ data: { token: string } }>(
+    `/api/v1/auth/invitations/${token}/accept`,
+    { name, password: PW },
+    undefined,
+    "POST",
+    testIp(),
+  );
   if (r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
   const u = await admin<{ id: string; m: string }>(
     `select u.id, m.id as m from kaname_auth."user" u join members m on m.auth_user_id = u.id where u.email = $1`,

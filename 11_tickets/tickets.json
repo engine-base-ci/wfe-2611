@@ -3233,16 +3233,8 @@
    ],
    "split": "これから",
    "screens": [],
-   "apis": [
-    "answerTicketHandover",
-    "createTicketHandover",
-    "listHandoverRules"
-   ],
-   "tests": [
-    "apps/api/test/generated/get_handover_rules.test.ts",
-    "apps/api/test/generated/patch_ticket_handovers_id.test.ts",
-    "apps/api/test/generated/post_tickets_id_handovers.test.ts"
-   ],
+   "apis": [],
+   "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F8「渡す・配る」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -3437,28 +3429,28 @@
     "audit",
     "company-settings",
     "member-detail",
-    "members"
+    "invite-accept"
    ],
    "apis": [
     "copyNotificationSettings",
-    "createInvitationLink",
-    "createInvitations",
     "getMe",
     "getNotificationSettings",
-    "getWorkspaceMembers",
     "leaveWorkspace",
     "listMySessions",
-    "nudgeMember",
     "requestEmailChange",
-    "resendInvitation",
-    "revokeInvitation",
     "revokeMySession",
     "revokeOtherSessions",
     "updateMe",
-    "updateMemberRole",
     "updateNotificationSettings",
     "uploadAvatar",
-    "verifyEmailChange"
+    "verifyEmailChange",
+    "createInvitationLink",
+    "createInvitations",
+    "getWorkspaceMembers",
+    "nudgeMember",
+    "resendInvitation",
+    "revokeInvitation",
+    "updateMemberRole"
    ],
    "tests": [
     "apps/api/test/generated/delete_invitations_id.test.ts",
@@ -3474,7 +3466,6 @@
     "apps/api/test/generated/get_members_id.test.ts",
     "apps/api/test/generated/get_members_id_remove_preview.test.ts",
     "apps/api/test/generated/get_workspace.test.ts",
-    "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/patch_me.test.ts",
     "apps/api/test/generated/patch_me_notification_settings.test.ts",
     "apps/api/test/generated/patch_members_id_groups.test.ts",
@@ -3483,7 +3474,6 @@
     "apps/api/test/generated/patch_workspace.test.ts",
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
-    "apps/api/test/generated/post_invitations.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
     "apps/api/test/generated/post_me_email_change.test.ts",
@@ -3494,7 +3484,11 @@
     "apps/api/test/generated/post_members_id_resume.test.ts",
     "apps/api/test/generated/post_members_id_suspend.test.ts",
     "apps/api/test/generated/post_workspace_deletion.test.ts",
-    "apps/api/test/generated/post_workspace_logo.test.ts"
+    "apps/api/test/generated/post_workspace_logo.test.ts",
+    "apps/api/test/generated/post_invitations_link.test.ts",
+    "apps/web/tests/k/k423-invite-link-join.spec.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -20560,7 +20554,8 @@
    "choke_points": [],
    "choke_none": "読むだけ（DB の読む関数を作り直し、読む口を 1 本足す）。DB に書かず、知らせ・外のサービスを呼ばない",
    "tests": [
-    "apps/api/test/features/F8/handover-queue-read.test.ts"
+    "apps/api/test/features/F8/handover-queue-read.test.ts",
+    "apps/api/test/generated/get_tickets_id_handovers.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-405.ts"
@@ -22326,7 +22321,8 @@
     "apps/api/test/generated/post_tickets.test.ts"
    ],
    "carry": [
-    "apps/api/test/features/F4/ticket-duplicate.harness.ts"
+    "apps/api/test/features/F4/ticket-duplicate.harness.ts",
+    "apps/api/test/generated/post_tickets.test.ts"
    ],
    "depends_on": [
     "K-437",

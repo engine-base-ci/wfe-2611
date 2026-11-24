@@ -17,7 +17,7 @@
 //   getApproval        GET  /approvals/:id           → 200 { data: { approval, ticket, artifact_version: { version, text }, checks, check_summary, cautions, irreversible, can_decide, chain } }
 //   approveApproval    POST /approvals/:id/approve   ← {} → 201 { data: { id, decision, decided_at, status_id, ticket_id, run_id, pc: "live"|"asleep" } }
 //   returnApproval     POST /approvals/:id/return    ← { note } → 201（同じ形）
-//   completeTicket     POST /tickets/:id/complete    ← { todo_checked, todo_version, conditions_confirmed } → 201 { data: { ticket: { id, number, stage_key, completed_at, completed_by }, knowledge_candidates, skipped_reason } }
+//   completeTicket     POST /tickets/:id/complete    ← { conditions_confirmed }（K-578 の後。todo_checked・todo_version は契約に無く、送ると 422）→ 201 { data: { ticket: { id, number, stage_key, completed_at, completed_by }, knowledge_candidates, skipped_reason } }
 //   PC の口（K-62）：POST /bridge/jobs/take ← { protocol, idle, wait_sec }（頭 x-bridge-session）→ { data: { job: 仕事 | null, … } }・POST /bridge/jobs/:id/finish ← { state, result, reason, agent_session_id }
 //     K-62 の契約の形がこの道具（take・finish）と違えば、この 2 つの道具だけを K-62 の形に合わせる（作る役に戻す）。K63-API-011 の app.bridge_take_job($1) の直呼びも同じ（K-62 が引数を足していれば合わせる）
 // 試験が前提にする DB の形（このチケットの migration・番号は取り込む順の次の空き番号）：app.approval_decide・app.ticket_execute_expire・app.ticket_complete・
@@ -178,6 +178,9 @@ export async function ticket(
     todo?: string | null;
     parent?: string;
     due?: string | null;
+    /** true なら、本文の行（鍵 body）も置く（目的・完了の条件・実施事項の字を段落にした物）。AI に渡す中身（prompt）に字が入ることを見る試験が使う（K-578：前の区画は読まれない）。
+     *  完了の数え方の試験など、本文の行を自分で置く物は付けない（行は 1 つだけ） */
+    body?: boolean;
   } = {},
 ): Promise<Ticket> {
   const tenant = o.tenant ?? T.tenantId;
@@ -217,6 +220,25 @@ export async function ticket(
     await f.admin.query(
       "insert into ticket_section_versions (tenant_id, ticket_id, section_id, version, body) values ($1, $2, $3, 1, $4)",
       [tenant, t.id, s.id, JSON.stringify({ text })],
+    );
+  }
+  if (o.body === true) {
+    const lines = [
+      "月末の請求を出す",
+      "先方が請求書を受け取った",
+      ...(o.todo === undefined ? TODO : (o.todo ?? "")).split("\n").filter((x) => x !== ""),
+    ];
+    const body = {
+      doc: { type: "doc", content: lines.map((x) => ({ type: "paragraph", content: [{ type: "text", text: x }] })) },
+      text: lines.join("\n"),
+    };
+    const b = await one<{ id: string }>(
+      "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body, version) values ($1, $2, 'body', 0, $3, 1) returning id",
+      [tenant, t.id, JSON.stringify(body)],
+    );
+    await f.admin.query(
+      "insert into ticket_section_versions (tenant_id, ticket_id, section_id, version, body) values ($1, $2, $3, 1, $4)",
+      [tenant, t.id, b.id, JSON.stringify(body)],
     );
   }
   return { ...t, tenant, scope, assignee: o.assignee ?? boss };
@@ -337,9 +359,8 @@ export const todoVersion = async (ticketId: string) =>
       )
     )?.v ?? 0,
   );
-export const completeBody = async (t: Ticket, extra: Record<string, unknown> = {}) => ({
-  todo_checked: [0, 1],
-  todo_version: await todoVersion(t.id),
+/** 完了の体（K-578 の後は conditions_confirmed だけ。引数 t は呼び元の形を変えないために残す）。extra に todo_checked などを渡すと 422 になる */
+export const completeBody = async (_t: Ticket, extra: Record<string, unknown> = {}) => ({
   conditions_confirmed: true,
   ...extra,
 });

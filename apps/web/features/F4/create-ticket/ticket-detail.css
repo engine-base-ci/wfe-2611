@@ -226,6 +226,10 @@
   padding: var(--k-c-detail-doc-pad);
   box-sizing: border-box;
 }
+/* 本文の場所（下絵 v2 の BodyView・k-f4d-body-wrap）の中では、余白は外の箱が持つ（K-571） */
+.k-detail-body .k-detail-doc {
+  padding: 0;
+}
 .k-detail-doc .k-section .k-pre {
   margin: 0;
   line-height: var(--k-c-section-body-lh);
@@ -413,16 +417,6 @@
   color: var(--k-c-detail-avatar-fg);
   font-size: var(--k-c-detail-avatar-text);
   font-weight: var(--k-c-detail-avatar-fw);
-}
-.k-detail-toc {
-  display: flex;
-  flex-direction: column;
-}
-.k-detail-toc a {
-  display: flex;
-  align-items: center;
-  align-self: flex-start;
-  padding: 0;
 }
 .k-detail-panel .k62-runlog {
   font-size: var(--k-text-body-sm);
