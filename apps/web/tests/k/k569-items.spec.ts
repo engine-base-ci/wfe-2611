@@ -236,6 +236,10 @@ test("K569-UI-009 会社の項目が 0 件・読めない：0 件は用意して
 }) => {
   const m = await mockFields(page, { masters: { [KIND_A]: [] } });
   await openHost(page, { mode: "create" });
+  // 種別の口の答えを受けた後に見る（読み中は表が aria-busy=true で会社の項目の行を出さない）
+  await expect.poll(() => m.kindReads).toBe(1);
+  await expect(grid(page)).toHaveAttribute("aria-busy", "false");
+  await expect(page.getByRole("combobox", { name: "種別", exact: true })).toContainText("タスク");
   expect(await namesOf(page)).toEqual([...CORE, SPECS]);
   await expect(page.getByText("会社の項目を読めませんでした")).toHaveCount(0);
   await expect(grid(page).getByRole("alert")).toHaveCount(0);
@@ -302,11 +306,62 @@ test("K569-UI-012 優先度「高」：既定は中で理由の欄なし・高�
   await expect(grid(page).getByRole("textbox", { name: "高にする理由", exact: true })).toHaveCount(0);
   await choose(grid(page), page, "優先度", "高");
   await expect(pairOf(page, "高にする理由").locator(".k-f4d-req-mark")).toHaveCount(1);
+  const names = await namesOf(page);
+  expect(names[names.indexOf("優先度") + 1], "高にする理由は優先度の直ぐ後の行").toBe("高にする理由");
   await make(page).click();
   await expect(pairOf(page, "高にする理由")).toContainText("優先度を高にする理由を書いてください");
   expect(await sentFields(page)).toBeNull();
   await choose(grid(page), page, "優先度", "中");
   await expect(grid(page).getByRole("textbox", { name: "高にする理由", exact: true })).toHaveCount(0);
+});
+
+test("K569-UI-013 用意してある行の既定の中身：状態は選ぶ欄（未着手・作業中・既定は未着手）・開始日は日付の欄・予定時間と実績時間は説明つき（実績時間は読むだけで空）・親は親を決める入口・節目は title「まだ使えません」。状態・開始日・予定時間を変えても送る値は会社の項目の分だけ・予定時間の「abc」は「予定時間は数で入れてください」で止まる", async ({
+  page,
+}) => {
+  await mockFields(page, { masters: { [KIND_A]: [] } });
+  await openHost(page, { mode: "create" });
+  const stage = grid(page).getByRole("combobox", { name: "状態", exact: true });
+  await expect(stage).toContainText("未着手");
+  await stage.click();
+  await expect(page.getByRole("option")).toHaveText(["未着手", "作業中"]);
+  await page.getByRole("option", { name: "作業中", exact: true }).click();
+  await expect(box(page, "開始日")).toHaveAttribute("type", "date");
+  await expect(pairOf(page, "予定時間").locator(".k-desc")).toHaveText(
+    "このチケットにかかる見込みの時間です。例：1、0.25、36",
+  );
+  const actual = grid(page).getByRole("textbox", { name: "実績時間", exact: true });
+  await expect(actual).toHaveAttribute("readonly", "");
+  await expect(actual).toHaveValue("");
+  await expect(pairOf(page, "実績時間").locator(".k-desc")).toHaveText("かかった作業時間です");
+  await expect(pairOf(page, "親").getByRole("button")).toHaveCount(1);
+  await expect(grid(page).getByRole("combobox", { name: "節目", exact: true })).toHaveAttribute(
+    "title",
+    "まだ使えません",
+  );
+  await box(page, "開始日").fill("2026-12-01");
+  await box(page, "予定時間").fill("abc");
+  await make(page).click();
+  await expect(pairOf(page, "予定時間").locator(".k-err")).toHaveText("予定時間は数で入れてください");
+  expect(await sentFields(page)).toBeNull();
+  await box(page, "予定時間").fill("1.5");
+  await make(page).click();
+  await expect.poll(() => sentFields(page)).toEqual({});
+});
+
+test("K569-UI-014 説明の無い項目：説明が null のチェックは箱の名前が項目の名前・複数選ぶは説明の字（.k-f4d-hint）を出さず・文字の欄は .k-desc を出さない", async ({
+  page,
+}) => {
+  const bare = [
+    field(41, "確認済み", "check"),
+    field(42, "書類", "multi_select", { options: byName(MASTER_ALL, "送る書類").options }),
+    field(43, "メモ", "short_text"),
+  ];
+  await mockFields(page, { masters: { [KIND_A]: bare } });
+  await openHost(page, { mode: "create" });
+  await expect(check(page, "確認済み")).toBeVisible();
+  await expect(pairOf(page, "書類").locator(".k-f4d-hint")).toHaveCount(0);
+  await expect(grid(page).getByRole("group", { name: "書類", exact: true }).getByRole("checkbox")).toHaveCount(3);
+  await expect(pairOf(page, "メモ").locator(".k-desc")).toHaveCount(0);
 });
 
 test("K569-UI-025 幅ごとのはみ出し：幅 375・768・1440 の作る面（会社の項目 8 つ・誤りが全部出た形）で scrollWidth - clientWidth が 0・どの幅でも名前の列と入力の列が 2 列のまま重ならない", async ({
