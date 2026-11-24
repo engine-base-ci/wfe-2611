@@ -3387,6 +3387,19 @@ K-763,チケットの中で話す口（getTicketAgentSession・sendTicketAgentMe
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-768,まとめて承認の口（previewBulkApproval：先に件数・取り消せない件数・チェックの無い確認項目の件数を返す／bulkApprove：全部か選んだものを、1 件ずつ承認と同じ守りで承認し、通らなかった物は件数と行で返す。取り消せない物も対象）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・承認,"承認待ちの AI の成果物を、**まとめて承認**できるようにする（束 E・D-153.11＝代表の答え 9：作る。「まとめて（全部）」と「選んだもの」の 2 つ・取り消せない物も対象・件数と取り消せない旨と件数とチェックの無い確認項目の件数を出してから承認・1 件ずつの承認と同じ守りを 1 件ずつ通し、通らなかった物は件数と行で返す）。今は札・ボタンが押せない形で、2 つの口は契約だけ（501）。
+
+1. **確かめる** `previewBulkApproval`（POST /api/v1/approvals/bulk/preview・何も書かない）：体は任意の `approval_ids`（1〜50 個）。無ければ「自分が承認する承認待ちの成果物の全部」（古い順・50 件まで）。答えは **承認できる物 `eligible`（承認ごとの approval_id・ticket_id・number・title・irreversible・unchecked）・承認できない物 `excluded`（approval_id と理由）・件数 `count`・取り消せない件数 `irreversible_count`・チェックの無い確認項目の件数 `unchecked_count`**。画面の確かめの小窓の「AI の成果物 6 件をまとめて承認します」「取り消せない物が 3 件含まれます」「チェックの無い確認項目が 4 件あります」を作る元（下絵 `BulkConfirm`）。
+2. **承認する** `bulkApprove`（POST /api/v1/approvals/bulk）：体は `approval_ids`（1〜50 個・必須）。**古い物から順に 1 件ずつ**、1 件承認する口と同じ DB の関数 `app.approval_decide(承認, 'approve', null)` を呼ぶ（承認する人だけ・今の状態・書けるか・任せた人の AI が使えるかの守りは**その関数のまま**）。1 件ごとが別の取引なので、**一部が決まっていても通った物は承認される**（下絵 `bulk-partial`：「1 件は承認できませんでした：EG-127 … は、先にほかの人が決めていました。EG-128 は承認しました」）。答えは `updated`（承認できた物：approval_id・ticket_id・number・run_id・pc）と `skipped`（承認しなかった物：approval_id・number・title・理由）。
+3. **全部は「確かめで見た id」を渡して承認する**：画面は確かめの `eligible` の approval_id の並びをそのまま `bulkApprove` に渡す。**確かめの後に増えた承認待ちは、その回には入らない**（見ていない物を承認しない）。選んだものも同じ口（選んだ id を渡す）。
+4. **「取り消せる物だけ」の縛りは外した**（D-128.86・D-128.177 の「骨格では承認は全部取り消せない扱い」を変える代表の決め）：取り消せない物（`irreversible`）も対象。確かめの小窓がその件数を見せてから承認する。
+5. **チェックの無い確認項目が残っていても承認できる**（D-153.5）：件数を出すだけで止めない。確認項目のチェックには触らない。","- [ ] 下の表の 19 行（K768-API-001〜018・K768-DB-001）が緑：`apps/api/test/features/F5/approval-bulk.test.ts`（土台は K-63 の `approve-complete.harness.ts` と K-732 が持ち込む `approval-more.kit.ts`・変えない）
+- [ ] 契約の口 `previewBulkApproval`・`bulkApprove` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_bulk_preview.test.ts`・`post_approvals_bulk.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-768.json` の covers）
+- [ ] 共有の試験 k144 の葉のファイル（`k144.d/K-768.ts`・carry）が緑（体の例を足しただけ・uuid の行は無い）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration が空の DB に全部当たり、一覧 `migrations.generated.ts` が最新。もう 1 度当てても失敗しない
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-774,作る画面の会話の口（startDraftConversation・sendDraftMessage：チケットの無い会話を始める・言うたびに欄の今の中身と人が直した欄を付けて仕事を積む）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-08,F5・話す,"チケットを作る画面の右の AI との会話（D-153.17）の口を作る。人は欄に自分で書いてもよく、AI は**言うたびに、その時の欄の中身と人が直した欄を受け取ってから答える**。口は新しい（契約に無かったので `screen_api.py` に行を足す）。
 
 - `startDraftConversation`（POST /api/v1/ticket_draft_conversations・体は空の `{}` だけ。体なし・知らない項目は入口が 422。画面は空の体 `{}` を送る・K-758 の止める口と同じ）：チケットの無い会話を 1 つ始める（種類 `draft`・チケットに結ばない・人ごとに 50 まで：51 個目を始めるときは一番古い作る画面の会話を片付けてから始める）。会話の行・仕事は作らない
