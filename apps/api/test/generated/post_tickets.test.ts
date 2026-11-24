@@ -32,7 +32,7 @@ describe("POST /api/v1/tickets", () => {
     expect(readFileSync("apps/api/test/features/F4/create-ticket-defaults.test.ts", "utf8")).toContain("K437-API-017");
   });
   it("test_post_tickets_rejected_422", () => {
-    // UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない
+    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
     // 本物の試験：apps/api/test/features/F4/create-ticket.test.ts の「K60-API-008」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/create-ticket.test.ts", "utf8")).toContain("K60-API-008");
   });
