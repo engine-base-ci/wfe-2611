@@ -6,12 +6,29 @@ export interface SegItem {
   label: string;
 }
 
-/** 2〜4 つから 1 つを選ぶ（キャンバスの「自分だけ／グループの全員」「ふつう／詰める」）。選んでいるものに aria-pressed */
-export function Seg({ label, items, value }: { label: string; items: readonly SegItem[]; value: string }) {
+/** 2〜4 つから 1 つを選ぶ（キャンバスの「自分だけ／グループの全員」「ふつう／詰める」）。選んでいるものに aria-pressed。
+ *  onChange が無ければ読むだけ（今までどおり） */
+export function Seg({
+  label,
+  items,
+  value,
+  onChange,
+}: {
+  label: string;
+  items: readonly SegItem[];
+  value: string;
+  onChange?: (value: string) => void;
+}) {
   return (
     <div className="k-f7-saved-seg" role="group" aria-label={label}>
       {items.map((i) => (
-        <button key={i.value} type="button" className="k-f7-saved-seg-item" aria-pressed={i.value === value}>
+        <button
+          key={i.value}
+          type="button"
+          className="k-f7-saved-seg-item"
+          aria-pressed={i.value === value}
+          onClick={onChange ? () => onChange(i.value) : undefined}
+        >
           {i.label}
         </button>
       ))}
