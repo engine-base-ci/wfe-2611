@@ -2633,8 +2633,6 @@
    "tests": [
     "apps/api/test/generated/get_clones_me_activity.test.ts",
     "apps/api/test/generated/get_clones_me_growth.test.ts",
-    "apps/api/test/generated/post_approvals_bulk.test.ts",
-    "apps/api/test/generated/post_approvals_bulk_preview.test.ts",
     "apps/api/test/generated/post_tickets_id_dry_run.test.ts"
    ],
    "depends_on": [],
@@ -26618,7 +26616,9 @@
     "C2"
    ],
    "tests": [
-    "apps/api/test/features/F5/approval-bulk.test.ts"
+    "apps/api/test/features/F5/approval-bulk.test.ts",
+    "apps/api/test/generated/post_approvals_bulk.test.ts",
+    "apps/api/test/generated/post_approvals_bulk_preview.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-768.ts"
