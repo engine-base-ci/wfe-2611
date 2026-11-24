@@ -23,6 +23,8 @@ import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { me } from "@/lib/auth/ext";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
+import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
+import * as F7 from "@/features/F7/detail-slots";
 import { CheckTable } from "@/features/F5/approve-complete/check-table";
 import { useApprovalDetail } from "@/features/F5/approve-complete/decide";
 import { RunSteps } from "./run-steps";
@@ -48,6 +50,8 @@ interface Props {
   onRun: (runId: string) => Promise<void>;
   /** 段が変わっていた（承認待ち・完了）：チケットと実行を読み直す */
   onChanged: () => Promise<void>;
+  /** 差し込み口に渡す値（K-599・止まった箱ぜんたいの差し込み口 F7.StoppedHandSlot） */
+  slot: SlotTicket;
 }
 type Notice = { code: string; retryAfterSec?: number | null; link?: boolean } | null;
 
@@ -158,7 +162,7 @@ function RunBox({ run, delegate }: { run: RunView; delegate: ReactNode }) {
   );
 }
 
-export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
+export function DelegateBand({ ticket, run, onRun, onChanged, slot }: Props) {
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
@@ -171,7 +175,9 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   const awaiting = ticket.stageKey === "awaiting_approval";
   const closed = awaiting || ticket.stageKey === "done";
   const showButton = ticket.canDelegate && !active && !closed;
-  const showRun = making && !!run && !closed && (active || run.status === "stopped" || run.status === "cancelled");
+  const ended = run?.status === "stopped" || run?.status === "cancelled";
+  // 引き取った止まった実行（taken_over_at・K-485）は止まった箱を出さない（白い「AI に任せる」の箱が出る・K-599）
+  const showRun = making && !!run && !closed && !run.taken_over_at && (active || ended);
   const showMade = awaiting && !ticket.canDecide && ticket.hasAssignee;
   const approvalDetail = useApprovalDetail(showMade ? ticket.approvalId : null);
   // 任せる前の要約の名前：読めたらその名前、読めなかったら「自分」。読み終わるまでは要約を出さない
@@ -210,6 +216,11 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
     }
   };
 
+  /** 実行の一覧と今の実行を読み直してから、詳細を読み直す（止まった箱の差し込み口が書き込みの後に呼ぶ・K-599） */
+  const reload = async () => {
+    await qc.invalidateQueries({ queryKey: ["k62"] });
+    await onChanged();
+  };
   if (!showButton && !showRun && !showMade && !notice) return null;
   const stopped = showRun && !!run && !active;
   /** AI が動いている・承認待ちの間だけ data-busy（押している間の busy とは別・K-620） */
@@ -229,10 +240,17 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
       {notice ? <NoticeLine notice={notice} /> : null}
       {showRun && run && stopped ? (
         // 止まった帯の箱と確認の結果の表は 1 つの並び（間 14px・キャンバス StFailed）
-        <div className="k-check-stack">
-          <RunBox run={run} delegate={delegateButton} />
-          <CheckTable />
-        </div>
+        <F7.StoppedHandSlot
+          ticket={slot}
+          run={run}
+          delegate={{ run: () => void delegate(), busy, disabled: waitUntil !== null }}
+          onChanged={reload}
+        >
+          <div className="k-check-stack">
+            <RunBox run={run} delegate={delegateButton} />
+            <CheckTable />
+          </div>
+        </F7.StoppedHandSlot>
       ) : showRun && run ? (
         <RunBox run={run} delegate={delegateButton} />
       ) : null}

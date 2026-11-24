@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6a5a97b8f2abc9c1
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:bcb2b8211c2188f1
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -346,8 +346,12 @@ export type TicketBodyInput = { version: number; doc: Record<string, unknown> };
 export type TestSpecCreateInput = { title: string };
 export type TestSpecUpdateInput = { version: number; checked?: boolean; title?: string };
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
+export type NotificationReadInput = { read: boolean };
+export type NotificationReadAllInput = Record<string, never>;
 export type SavedViewInput = { name: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string };
+export type SavedViewUpdateInput = { name?: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string };
 export type ActionRunTakeoverInput = Record<string, never>;
+export type TicketRestoreInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
@@ -442,7 +446,7 @@ export type OpsWorkspaceRow = { id?: string; name?: string; admin?: Record<strin
 export type OpsWorkspace = { workspace?: Record<string, unknown>; pc?: Record<string, unknown>; runs?: Record<string, unknown>; stopped?: Record<string, unknown>; files?: Record<string, unknown>; stop_reasons?: string[]; recent?: string[]; info?: Record<string, unknown> };
 export type OpsWorkspaceMember = { name?: string; email?: string; role?: string; last_seen_at?: string; pc?: string; login?: string };
 export type OpsWorkspaceBilling = { plan?: Record<string, unknown>; usage?: Record<string, unknown>; payment_terms?: string; invoices?: string[] };
-export type Shell = { approvals_waiting?: number; notifications_unread?: number; groups?: string[]; pc?: Record<string, unknown>; setup_left?: number; banner?: Record<string, unknown>; workspace?: Record<string, unknown> };
+export type Shell = { member?: Record<string, unknown>; approvals_waiting?: number; notifications_unread?: number; groups?: string[]; pc?: Record<string, unknown>; setup_left?: number; banner?: Record<string, unknown>; workspace?: Record<string, unknown>; saved_views?: string[] | null };
 export type OpsShell = { inquiries_unassigned?: number; inquiries_mine?: number; invoices_overdue?: number; banner?: Record<string, unknown> };
 export type TicketShape = { kinds?: string[]; stages?: string[]; axes?: string[]; handover_rules?: string[]; limits?: Record<string, unknown>; template_updates?: number };
 export type TicketShapeChangePreview = { removed?: string[]; needs_move_to?: string[]; affected_tickets?: number; over_limits?: string[] };
@@ -474,8 +478,11 @@ export type TestSpecItem = { id?: string; title?: string; checked?: boolean; pos
 export type TicketLink = { id?: string; kind?: string; side?: string | null; other?: Record<string, unknown>; can_remove?: boolean; created_at?: string };
 export type TicketLinkDeleted = { id?: string };
 export type Notification = { id?: string; kind?: string; tag?: string; href?: string | null; ticket_id?: string | null; number?: string | null; title?: string | null; actor?: Record<string, unknown> | null; params?: Record<string, unknown>; read?: boolean; read_at?: string | null; created_at?: string };
+export type NotificationsRead = { read?: number };
 export type SavedView = { id?: string; name?: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string; member_id?: string; member_name?: string; mine?: boolean; can_edit?: boolean; created_at?: string; updated_at?: string };
+export type SavedViewDeleted = { id?: string };
 export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
+export type TicketRestored = { id?: string; restored_count?: number };
 export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
