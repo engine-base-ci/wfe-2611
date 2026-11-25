@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 373,
+  "api": 372,
   "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 292,
+  "errors": 291,
   "stack": 70,
   "env": 41
  },
@@ -5544,23 +5544,6 @@
    ]
   },
   {
-   "op": "listWorkTypeCandidates",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/work-type-candidates",
-   "what": "取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ）",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "bulkUpdateTickets",
    "method": "POST",
    "path": "/api/v1/tickets/bulk",
@@ -7152,8 +7135,7 @@
     "F9"
    ],
    "reads": [
-    "F12",
-    "F4"
+    "F12"
    ],
    "boundary": true
   },
