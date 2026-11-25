@@ -47,10 +47,15 @@ export function useApprovalDetail(id: string | null) {
   });
 }
 
-/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）」。口が返した値だけで作る（無い部分は出さない） */
-export function approvalSummary(d: ApprovalDetail): string {
-  const at = d.approval?.created_at ? jstStamp(d.approval.created_at) : "";
-  const parts = [at ? `成果物は ${at} に作成` : "", d.check_summary ? `確認 ${d.check_summary}` : ""];
+/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません） ・ 確認項目を使わない理由：…」。
+ *  口が返した値だけで作る（無い部分は出さない）。理由は詳細の読み getTicket の no_spec_reason（K-573・D-150.45）。承認の 1 件が読めない間も理由は出す */
+export function approvalSummary(d: ApprovalDetail | null | undefined, noSpecReason?: string | null): string {
+  const at = d?.approval?.created_at ? jstStamp(d.approval.created_at) : "";
+  const parts = [
+    at ? `成果物は ${at} に作成` : "",
+    d?.check_summary ? `確認 ${d.check_summary}` : "",
+    noSpecReason?.trim() ? `確認項目を使わない理由：${noSpecReason}` : "",
+  ];
   return parts.filter(Boolean).join(" ・ ");
 }
 interface Props {
@@ -63,6 +68,8 @@ interface Props {
   onStart: () => void;
   /** 小窓の頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
   target?: string;
+  /** 確認項目を使わない理由（getTicket の no_spec_reason・K-573）。無ければ要約に足さない */
+  noSpecReason?: string | null;
 }
 
 /** 確かめの小窓の主ボタン：2 回押しでも口は 1 回。答えが来たら（どの答えでも）小窓を閉じてから読み直す */
@@ -89,8 +96,9 @@ function useApprove({ approval, onChanged, onFailed, onStart }: Props) {
 }
 
 export function DecideBody(props: Props) {
-  const { approval, onChanged, onFailed, target } = props;
+  const { approval, onChanged, onFailed, target, noSpecReason } = props;
   const detail = useApprovalDetail(approval.id);
+  const summary = approvalSummary(detail.data, noSpecReason);
   const { busy, approve, confirming, setConfirming } = useApprove(props);
   const [returning, setReturning] = useState(false); // 差し戻しの小窓（K-181）
   const irreversible = approval.irreversible !== false;
@@ -111,12 +119,7 @@ export function DecideBody(props: Props) {
   );
   return (
     <div className="k63-decide">
-      <Band
-        tone="approval"
-        title={MSG.waitingMe}
-        {...(detail.data && approvalSummary(detail.data) ? { sub: approvalSummary(detail.data) } : {})}
-        acts={acts}
-      >
+      <Band tone="approval" title={MSG.waitingMe} {...(summary ? { sub: summary } : {})} acts={acts}>
         {approval.note ? <BandLine>{approval.note}</BandLine> : null}
         {cautionLines.map((c, i) => (
           <BandCaution key={i}>{c}</BandCaution>
