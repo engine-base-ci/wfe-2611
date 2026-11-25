@@ -10,7 +10,14 @@
 //   いまの場所と帯の題は出さない（題は本文の h1）。鈴は帯の 1 つだけで、本文の見出しの右には置かない。下のタブの「メニュー」の引き出しに自分のメニューは無い
 import { Menu as M } from "@base-ui/react/menu";
 import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, X, type LucideIcon } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
@@ -76,12 +83,14 @@ function useNarrow(): boolean {
 interface BellProps {
   notices?: number | undefined;
   onNotices?: (() => void) | undefined;
+  /** 知らせの箱が開いているか（あれば aria-expanded と aria-haspopup を付ける・K-599） */
+  expanded?: boolean | undefined;
 }
 
 /** ベルの数の上限：これを超えたら「99+」（読み上げは「99 件以上」・K-466） */
 const BELL_MAX = 99;
 
-function BellButton({ notices, onNotices }: BellProps) {
+function BellButton({ notices, onNotices, expanded }: BellProps) {
   const over = (notices ?? 0) > BELL_MAX;
   const shown = notices ? (over ? "99+" : String(notices)) : null;
   const label = notices ? (over ? "お知らせ（99 件以上）" : `お知らせ（${notices} 件）`) : "お知らせ";
@@ -90,6 +99,7 @@ function BellButton({ notices, onNotices }: BellProps) {
       type="button"
       className="k-icon-btn k-bell"
       aria-label={label}
+      {...(expanded !== undefined ? { "aria-expanded": expanded, "aria-haspopup": "dialog" as const } : {})}
       aria-disabled={onNotices ? undefined : true}
       title={onNotices ? undefined : "お知らせ（準備中）"}
       onClick={onNotices}
@@ -136,6 +146,20 @@ export interface ShellProps {
   onSearch?: (q: string) => void;
   /** 知らせを開く。無ければ鈴を使えない形（グレー・押しても何も開かない）で出す */
   onNotices?: () => void;
+  /** 知らせの箱が開いているか（渡せば鈴に aria-expanded・aria-haspopup="dialog"・K-599） */
+  bellExpanded?: boolean;
+  /** 左のメニューと引き出しの、グループの行の全部の下に置く物（保存した条件・K-599）。無ければ何も置かない */
+  belowGroups?: ReactNode;
+  /** 探す欄に入ったとき（広い幅は焦点・⌘K、スマホは虫眼鏡で欄が開いたとき・K-599） */
+  onSearchOpen?: () => void;
+  /** 探す欄に打つたび（K-599） */
+  onSearchInput?: (q: string) => void;
+  /** スマホの探す欄を閉じたとき（× と Esc・K-599） */
+  onSearchClose?: () => void;
+  /** 探す欄のキー（変換中でないときだけ。↑↓・Enter・Esc を箱が受ける・K-599） */
+  onSearchKeyDown?: (e: ReactKeyboardEvent<HTMLInputElement>) => void;
+  /** スマホで最初から探す欄を開いた形にする（下絵用・K-599） */
+  defaultSearching?: boolean;
   onSignOut?: () => void;
   /** 試験・見本で「作った画面」の一覧を替える */
   built?: readonly string[];
@@ -272,7 +296,7 @@ export function Shell(p: ShellProps) {
   const [panelOpen, setPanelOpen] = useState(true);
   const [sheet, setSheet] = useState(false);
   // スマホの帯：探すの虫眼鏡を押すと、帯の幅いっぱいに探す欄が開く
-  const [searching, setSearching] = useState(false);
+  const [searching, setSearching] = useState(p.defaultSearching === true);
   useEffect(() => {
     setRailed(readPref(NAV_KEY) ?? false);
     setPanelOpen(readPref(PANEL_KEY) ?? window.matchMedia("(min-width: 1180px)").matches);
@@ -281,11 +305,13 @@ export function Shell(p: ShellProps) {
   // スマホの帯の探す欄を開く：欄は開くまで描かれないので、開いた後の描き直しを待って焦点を入れる
   const openSearch = () => {
     setSearching(true);
+    p.onSearchOpen?.();
     requestAnimationFrame(() => searchBox.current?.focus());
   };
   // 閉じる（× と Esc）：欄も × も消えるので、焦点を虫眼鏡のボタンへ戻す（焦点を見失わせない）
   const closeSearch = () => {
     setSearching(false);
+    p.onSearchClose?.();
     requestAnimationFrame(() => searchOpen.current?.focus());
   };
   // ⌘K（Ctrl+K）で探す欄へ。スマホの帯では欄を開いてから焦点を入れる。探すが使えないあいだは何もしない
@@ -295,7 +321,7 @@ export function Shell(p: ShellProps) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (narrow) openSearch();
-        else searchBox.current?.focus();
+        else searchBox.current?.focus(); // 広い幅は欄の焦点（onFocus）で onSearchOpen を呼ぶ
       }
     };
     window.addEventListener("keydown", onKey);
@@ -389,6 +415,7 @@ export function Shell(p: ShellProps) {
           })}
         </>
       ) : null}
+      {p.belowGroups ?? null}
       <div className="k-nav-fill" />
       {nav.bottom.map((it) => (
         <NavLink key={it.key} it={it} />
@@ -473,10 +500,14 @@ export function Shell(p: ShellProps) {
                   placeholder="チケット・ナレッジ・決定を探す"
                   disabled={!canSearch}
                   aria-disabled={canSearch ? undefined : true}
+                  onChange={p.onSearchInput ? (e) => p.onSearchInput?.(e.currentTarget.value) : undefined}
+                  onFocus={p.onSearchOpen && !narrow ? () => p.onSearchOpen?.() : undefined}
                   onKeyDown={(e) => {
                     // スマホの帯で開いた欄は Esc でも閉じる（広い幅の欄は開け閉めが無いので何もしない）。
                     //   変換中（日本語を打っている途中）の Esc は変換をやめるためのキーなので閉じない（Safari は keyCode 229 で届く）
                     if (e.nativeEvent.isComposing || e.keyCode === 229) return;
+                    p.onSearchKeyDown?.(e);
+                    if (e.defaultPrevented) return;
                     if (e.key === "Escape" && searching) {
                       e.preventDefault();
                       closeSearch();
@@ -493,7 +524,7 @@ export function Shell(p: ShellProps) {
                 </button>
               ) : null}
             </form>
-            <BellButton notices={p.notices} onNotices={p.onNotices} />
+            <BellButton notices={p.notices} onNotices={p.onNotices} expanded={p.bellExpanded} />
             <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
             {p.panel ? (
               <button

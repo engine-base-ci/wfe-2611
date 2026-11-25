@@ -1,0 +1,338 @@
+/* 見え方（自分に関わるもの・概要）の部品（段 8・F7・切る段の下絵）。値は正本のトークン（--k-*）だけを読む。生の色・大きさ・余白・影を書かない。
+   @media の区切りの幅だけは CSS の決まりで生の値。形は features/F4/ticket-list の一覧（k-list-*）と同じ型：札・箱・表の頭は同じトークンを借りる */
+
+/* ---- 見え方のタブ：スマホはガントを出さない（キャンバス MobileList） ---- */
+@media (max-width: 767px) {
+  .k-list-view[data-phone="off"] {
+    display: none;
+  }
+}
+
+/* ---- 絞りの札（最近の更新の種類の札。自分に関わるものの札は features/F7/due） ---- */
+.k-f7-overview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-list-chips-gap);
+  margin: var(--k-c-list-chips-margin);
+}
+.k-f7-overview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  box-sizing: border-box;
+  height: var(--k-c-list-chip-height);
+  padding: var(--k-c-list-chip-pad);
+  border: var(--k-c-list-chip-border);
+  border-radius: var(--k-c-list-chip-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-c-list-chip-text);
+  font-weight: var(--k-c-list-chip-fw);
+  line-height: var(--k-c-list-chip-lh);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-f7-overview-chip:hover {
+  background: var(--k-select);
+}
+.k-f7-overview-chip[data-current] {
+  border-color: var(--k-primary);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f7-overview-chip[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- スマホの 1 件 1 行（キャンバス MobileList） ---- */
+.k-f7-overview-phone {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* スマホ：画面（上の帯と下のタブの間）を頭・札・並びで分け、縦に送れるのは並びだけ（頁全体は送れない） */
+.k-f7-overview-phone-list {
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 767px) {
+  .k-list-page:has(> .k-f7-overview-phone) {
+    display: flex;
+    flex-direction: column;
+    height: calc(var(--k-c-overview-phone-height) - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
+    overflow: hidden;
+  }
+  .k-list-page > .k-f7-overview-phone {
+    flex: 1;
+    min-height: 0;
+  }
+  .k-f7-overview-phone-chips {
+    flex: none;
+  }
+  .k-f7-overview-phone-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+.k-f7-overview-phone-chips {
+  display: flex;
+  gap: var(--k-c-list-chips-gap);
+  padding: var(--k-s-sm) var(--k-s-md);
+  overflow-x: auto;
+}
+.k-f7-overview-phone-section {
+  display: flex;
+  flex-direction: column;
+  background: var(--k-card);
+}
+.k-f7-overview-phone-label {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--k-c-list-section-height);
+  margin: 0;
+  padding: 0 var(--k-s-md);
+  background: var(--k-c-list-section-bg);
+  font-size: var(--k-c-list-section-text);
+  font-weight: var(--k-c-list-section-fw);
+}
+.k-f7-overview-mrow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-list-td-border-bottom);
+  color: var(--k-on-surface);
+  text-decoration: none;
+}
+.k-f7-overview-mrow-title {
+  font-weight: var(--k-c-list-th-fw);
+  overflow-wrap: anywhere;
+}
+.k-f7-overview-mrow-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-overview-mrow-stage {
+  padding: var(--k-c-list-tag-pad);
+  border-radius: var(--k-c-list-tag-radius);
+  background: var(--k-f7-tone-soft);
+  color: var(--k-f7-tone-ink);
+}
+.k-f7-overview-mrow-due[data-late] {
+  color: var(--k-error);
+  font-weight: var(--k-c-list-th-fw);
+}
+.k-f7-overview-mrow-due svg {
+  width: var(--k-c-list-late-icon-width);
+  height: var(--k-c-list-late-icon-height);
+  margin: var(--k-c-list-late-margin);
+  fill: currentColor;
+  vertical-align: var(--k-c-list-late-va);
+}
+
+/* ---- 概要の箱 ---- */
+.k-f7-overview-box {
+  box-sizing: border-box;
+  min-width: 0;
+  border: var(--k-c-list-box-border);
+  border-radius: var(--k-c-list-box-radius);
+  background: var(--k-c-list-box-bg);
+}
+.k-f7-overview-box[data-empty] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-overview-box-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: var(--k-c-list-box-title-pad);
+  border-bottom: var(--k-c-list-box-title-border-bottom);
+  font-size: var(--k-c-list-box-title-text);
+  font-weight: var(--k-c-list-box-title-fw);
+  line-height: var(--k-c-list-box-title-lh);
+}
+.k-f7-overview-box-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+.k-f7-overview-box-aside {
+  margin-left: auto;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body);
+}
+.k-f7-overview-box-title .k-f7-overview-chips {
+  margin: 0 0 0 auto;
+}
+.k-f7-overview-none {
+  margin: 0;
+  padding: var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  text-align: center;
+}
+
+/* ---- 最近の更新 ---- */
+.k-f7-overview-day-label {
+  margin: 0;
+  padding: var(--k-s-xs) var(--k-s-md);
+  background: var(--k-c-list-section-bg);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-c-list-section-fw);
+}
+.k-f7-overview-events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-overview-event {
+  display: flex;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-list-box-row-pad);
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+}
+.k-f7-overview-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(var(--k-c-list-avatar-width) + var(--k-s-sm));
+  height: calc(var(--k-c-list-avatar-height) + var(--k-s-sm));
+  border-radius: var(--k-r-full);
+  background: var(--k-f7-tone);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+}
+.k-f7-overview-event-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  overflow-wrap: anywhere;
+}
+.k-f7-overview-event-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+}
+.k-f7-overview-tag {
+  padding: var(--k-c-list-tag-pad);
+  border-radius: var(--k-c-list-tag-radius);
+  background: var(--k-f7-tone);
+  color: var(--k-on-primary);
+  font-size: var(--k-c-list-tag-text);
+  font-weight: var(--k-c-list-tag-fw);
+}
+.k-f7-overview-event-when {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 状態の内訳 ---- */
+.k-f7-overview-bar {
+  overflow: hidden;
+  height: calc(var(--k-s-sm) + var(--k-s-xs));
+  margin: var(--k-s-md) var(--k-s-md) var(--k-s-sm);
+  border-radius: var(--k-r-full);
+}
+/* 棒と進みの中身は svg（幅はデータで決まるので rect の属性で書く）。色は段の濃い色 */
+.k-f7-overview-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.k-f7-overview-bar rect,
+.k-f7-overview-meter rect {
+  fill: var(--k-f7-tone);
+}
+.k-f7-overview-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--k-s-xl) + var(--k-s-sm)), 1fr));
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md) var(--k-s-md);
+}
+.k-f7-overview-counts > div {
+  text-align: center;
+}
+.k-f7-overview-counts dt {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-overview-counts dd {
+  margin: var(--k-s-xs) 0 0;
+  padding: var(--k-s-xs) 0;
+  border-radius: var(--k-r-full);
+  background: var(--k-f7-tone);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 残りの量・分類ごと（空の枠） ---- */
+.k-f7-overview-frame {
+  height: calc(var(--k-s-xl) * 2);
+  margin: var(--k-s-md) var(--k-s-md) var(--k-s-sm);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-r-md);
+}
+.k-f7-overview-frame[data-short] {
+  height: calc(var(--k-s-xl) + var(--k-s-md));
+  margin-bottom: var(--k-s-md);
+}
+.k-f7-overview-legend {
+  display: flex;
+  gap: var(--k-s-md);
+  padding: 0 var(--k-s-md) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 節目 ---- */
+.k-f7-overview-milestones {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-overview-milestones > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  padding: var(--k-c-list-box-row-pad);
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+}
+.k-f7-overview-milestones > li:last-child {
+  border-bottom: 0;
+}
+.k-f7-overview-milestone-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-overview-meter {
+  overflow: hidden;
+  height: var(--k-c-list-progress-height);
+  border-radius: var(--k-c-list-progress-radius);
+  background: var(--k-c-list-progress-bg);
+}
+
+/* ---- 空 ---- */
+.k-f7-overview-empty {
+  padding: var(--k-c-list-body-pad);
+}
