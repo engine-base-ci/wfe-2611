@@ -2921,7 +2921,6 @@
     "PATCH /api/tickets/:id",
     "PATCH /api/tickets/:id",
     "GET /api/tickets/:id/kind-change-preview",
-    "GET /api/tickets/:id/work-type-candidates",
     "GET /api/tickets/:id/delete-preview",
     "DELETE /api/tickets/:id",
     "POST /api/tickets/:id/restore",
@@ -10703,12 +10702,6 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets/:id/kind-change-preview"
-    },
-    {
-     "act": "A130",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/work-type-candidates"
     },
     {
      "act": "A116",

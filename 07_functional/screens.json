@@ -37962,26 +37962,6 @@
      ]
     },
     {
-     "act": "A130",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/work-type-candidates",
-     "table": "skills",
-     "operation_id": "listWorkTypeCandidates",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-095",
-      "E-096"
-     ],
-     "choke_points": [
-      "C2"
-     ],
-     "source": [
-      "D-126.13",
-      "D-125.167"
-     ]
-    },
-    {
      "act": "A116",
      "role": "data_fetch",
      "method": "GET",
@@ -40129,26 +40109,6 @@
      "source": [
       "D-125.7",
       "D-125.98",
-      "D-125.167"
-     ]
-    },
-    {
-     "act": "A130",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets/:id/work-type-candidates",
-     "table": "skills",
-     "operation_id": "listWorkTypeCandidates",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-095",
-      "E-096"
-     ],
-     "choke_points": [
-      "C2"
-     ],
-     "source": [
-      "D-126.13",
       "D-125.167"
      ]
     },

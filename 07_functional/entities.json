@@ -10369,7 +10369,7 @@
     },
     {
      "name": "work_type_version",
-     "note": null
+     "note": "どちらも凍結・K-582・D-150.60：業務の型は物として無くした。口もコードも読まない・書かない。列と値は残す"
     },
     {
      "name": "hold_reason",

@@ -218,7 +218,7 @@ const notice = (page: Page) => page.locator('.k-detail-bands [role="alert"]');
 const itemTexts = async (page: Page) =>
   (await page.getByRole("menuitem").allTextContents()).map((t) => t.replace(/\s+/g, ""));
 const openAttr = async (page: Page) => {
-  await panel(page).getByRole("navigation", { name: "パネルのタブ" }).getByRole("button", { name: "項目" }).click();
+  await panel(page).getByRole("navigation", { name: "パネルのタブ" }).getByRole("button", { name: "属性" }).click();
   await expect(actual(page)).toBeVisible();
 };
 /** 段のメニューを開いて選ぶ。todo・doing・hold は札の鍵で、ほかは訳の字で引く */
