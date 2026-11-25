@@ -7,6 +7,8 @@
 import { Bot, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
+import * as F7 from "@/features/F7/detail-slots";
+import type { SlotTicket } from "./detail-slots";
 
 const DAY_MS = 86_400_000;
 const JST_MS = 9 * 3_600_000;
@@ -158,8 +160,8 @@ export function DetailMeta({
   );
 }
 
-/** 題名の行。me は見ている人の名前（読めるまで AI と話すは出さない） */
-export function DetailTitle({ title, me }: { title: string; me: string }) {
+/** 題名の行。me は見ている人の名前（読めるまで AI と話すは出さない）。ticket は「…」の差し込み口に渡す値（下絵では無い・K-599） */
+export function DetailTitle({ title, me, ticket }: { title: string; me: string; ticket?: SlotTicket }) {
   return (
     <header className="k-page-head">
       <div className="k-detail-title">
@@ -175,9 +177,11 @@ export function DetailTitle({ title, me }: { title: string; me: string }) {
             {`${me}のAI と話す`}
           </InertButton>
         ) : null}
-        <InertButton label="ほかの操作" className="k-detail-more">
-          …
-        </InertButton>
+        <F7.MoreMenuSlot {...(ticket ? { ticket } : {})}>
+          <InertButton label="ほかの操作" className="k-detail-more">
+            …
+          </InertButton>
+        </F7.MoreMenuSlot>
       </div>
     </header>
   );
