@@ -190,7 +190,7 @@ test("K228-UI-007 止まった・やめた（作る段）：赤い箱（role=ale
   expect(await colors(page, "AI に任せる")).toEqual([C.dangerBg, C.dangerLine, C.dangerText]);
   await expect(b.locator("h3")).toHaveText("山田のAI が止まりました");
   await expect(b).toContainText("先方の画面が開けませんでした");
-  await expect(b.getByRole("button", { name: "AI に任せる", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "AI に任せる", exact: true })).toBeEnabled(); // 題の行（K-573）。帯の中には無い
   for (const n of ["直し方を AI に伝える", "自分で直す"])
     await expectInert(page, b.getByRole("button", { name: n, exact: true }), n, writes);
   // やめた（cancelled）も同じ赤い箱と題
@@ -273,7 +273,7 @@ test("K228-UI-023 止まった（作る段）の帯の箱と確認の結果の�
   expect(bad).toEqual([]);
 });
 
-test("K228-UI-009 承認の後の実行が止まった：region「承認と実行」の赤い箱 1 つの中に、題「実行が止まりました」と理由の全文（5000 字を切らない）と「完了にする」", async ({
+test("K228-UI-009 承認の後の実行が止まった：region「承認と実行」の赤い箱 1 つの中に、題「実行が止まりました」と理由の全文（5000 字を切らない）と、題の行の「完了にする」", async ({
   page,
 }) => {
   const long = "先方の画面で確かめてください。".repeat(400).slice(0, 5000);
@@ -285,20 +285,20 @@ test("K228-UI-009 承認の後の実行が止まった：region「承認と実�
   const shown = await b.innerText();
   expect(shown.replace(/\s/g, "")).toContain(long);
   expect(shown).not.toContain("…");
-  await expect(b.getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toBeVisible(); // 題の行（K-572）。帯の中には無い
 });
 
-test("K228-UI-010 完了の確かめ：白い箱（線 #DDE2E9）・題「完了の条件を確かめて完了にしてください」#22345C・実施事項が 1 件以上あって全部済みなら要約「実施事項は全部終わりました」（残りがある・0 件なら出ない）・完了にする（primary・高さ 30）", async ({
+test("K228-UI-010 完了の確かめ：白い箱（線 #DDE2E9）・題「完了の条件を確かめて完了にしてください」#22345C・要約は出ない（区画が無くなった・K-572 が外す）・完了にする（primary・題の行に移った・K-572）", async ({
   page,
 }) => {
   await open(page, STATES["完了の確かめ"]!);
   expect(await colors(page, "承認と実行")).toEqual([WHITE, LINE, C.navy]);
   const b = boxIn(page, "承認と実行");
   await expect(b.locator("h3")).toHaveText(MSG.completeHint);
-  await expect(b.locator(".k-band-sub")).toHaveText("実施事項は全部終わりました");
-  const btn = b.getByRole("button", { name: "完了にする", exact: true });
+  await expect(b.locator(".k-band-sub")).toHaveCount(0);
+  const btn = page.getByRole("button", { name: "完了にする", exact: true });
   await expect(btn).toHaveAttribute("data-variant", "primary");
-  expect(Math.round((await box(btn)).height)).toBe(30);
+  await expect(b.getByRole("button")).toHaveCount(0); // 帯の箱はボタンを持たない
   await open(page, { stage: "doing", can_complete: true, todo: "- [x] 請求書を作る\n- 先方に送る" });
   await expect(boxIn(page, "承認と実行").locator(".k-band-sub")).toHaveCount(0);
   await open(page, { stage: "doing", can_complete: true, todo: "項目の無い本文" }); // 実施事項が 0 件なら「全部終わりました」と言わない
@@ -314,7 +314,7 @@ test("K228-UI-011 完了：緑の箱（#E8F5EC・線 #CDE8D5）・題は前か�
   await expect(bandOf(page).getByRole("button")).toHaveCount(0);
 });
 
-test("K228-UI-012 任せる前：白い箱・題「AI に任せる」#22345C・要約「高本のAI が実施事項を進め、確かめてから承認を待ちます」（見ている人の名前・読めなければ「自分のAI」）・AI に任せる（primary・高さ 30）", async ({
+test("K228-UI-012 任せる前：白い箱・題「AI に任せる」#22345C・要約「高本のAI が実施事項を進め、確かめてから承認を待ちます」（見ている人の名前・読めなければ「自分のAI」）・AI に任せる（primary・題の行に移った・K-573）", async ({
   page,
 }) => {
   await open(page, STATES["任せる前"]!);
@@ -322,9 +322,8 @@ test("K228-UI-012 任せる前：白い箱・題「AI に任せる」#22345C・�
   const b = boxIn(page, "AI に任せる");
   await expect(b.locator("h3")).toHaveText("AI に任せる");
   await expect(b.locator(".k-band-sub")).toHaveText("高本のAI が実施事項を進め、確かめてから承認を待ちます");
-  const btn = b.getByRole("button", { name: "AI に任せる", exact: true });
-  await expect(btn).toHaveAttribute("data-variant", "primary");
-  expect(Math.round((await box(btn)).height)).toBe(30);
+  const btn = page.getByRole("button", { name: "AI に任せる", exact: true });
+  await expect(btn).toHaveAttribute("data-variant", "primary"); // 帯の中か題の行かは K-573 の行（K573-UI-019）が見る
   // 見ている人の名前が読めない（/me が 500）なら「自分のAI が…」
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await mockApi(page, STATES["任せる前"]!);
@@ -387,7 +386,7 @@ test("K228-UI-016 押しすぎ（AI に任せるが 429）の知らせ：帯の 
       body: JSON.stringify({ error: "rate_limited", code: "RATE_LIMITED", retry_after_sec: 30 }),
     }),
   );
-  await k62Band(page).getByRole("button", { name: "AI に任せる", exact: true }).click();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
   const n = k62Band(page).locator(".k-band-notice");
   await expect(n).toHaveText("押しすぎです。30 秒たってから、もう一度押してください");
   expect(await cssOf(n, "background-color")).toBe(C.warnBg);

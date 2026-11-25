@@ -314,7 +314,7 @@ test("K229-UI-014 確かめの小窓の位置と幅：幅 1440 は幅 380・上�
   expect(Math.round(b.y)).toBe(60);
 });
 
-test("K229-UI-015 完了の小窓の型：題「完了にする」15px・700・頭と足の線・やめる（outlined）と 確かめて完了にする（紺・高さ 34）・幅 420・上から 60px・真ん中", async ({
+test("K229-UI-015 完了の小窓の型（K-572 で替えた）：題「完了にする」15px・700・頭と足の線・戻って付ける（outlined）と このまま完了にする（高さ 34）・幅 420・上から 60px・真ん中", async ({
   page,
 }) => {
   await mockApi(page, executedBand);
@@ -322,14 +322,14 @@ test("K229-UI-015 完了の小窓の型：題「完了にする」15px・700・�
   await openComplete(page);
   const d = dialog(page);
   await expectModalShape(d, "完了にする");
-  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["やめる", "確かめて完了にする"]);
+  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["戻って付ける", "このまま完了にする"]);
   const b = await box(d);
   expect(Math.round(b.width)).toBe(420);
   expect(Math.round(b.y)).toBe(60);
   expect(Math.abs(b.x - (1440 - 420) / 2)).toBeLessThanOrEqual(1);
 });
 
-test("K229-UI-016 完了の小窓の中身の区切り：頭に「EG-133 11 月分の請求書を送る」（12px・灰）、完了の条件の見出し（12px・500）と文、実施事項は線の枠（1px #DDE2E9・角丸 8）の中、その下に確かめのチェック", async ({
+test("K229-UI-016 完了の小窓の中身の区切り（K-572 で替えた）：頭に「EG-133 11 月分の請求書を送る」（12px・灰）、本文の未チェックの注意（題と「完了にしても止めません…」）とその下に ☐ 付きの行が並ぶ", async ({
   page,
 }) => {
   await mockApi(page, executedBand);
@@ -339,16 +339,14 @@ test("K229-UI-016 完了の小窓の中身の区切り：頭に「EG-133 11 月�
   const target = d.locator(".k-dialog-target");
   await expect(target).toHaveText("EG-133 11 月分の請求書を送る");
   expect(await cssOf(target, "font-size")).toBe("12px");
-  const cond = d.getByRole("region", { name: "完了の条件" });
-  expect(await cssOf(cond.locator(".k-label"), "font-size")).toBe("12px");
-  expect(await cssOf(cond.locator(".k-label"), "font-weight")).toBe("500");
-  await expect(cond).toContainText("先方が請求書を受け取った");
-  const fs = d.getByRole("group", { name: "実施事項" });
-  expect(await cssOf(fs, "border-top-color")).toBe(LINE);
-  expect(await cssOf(fs, "border-top-width")).toBe("1px");
-  expect(await cssOf(fs, "border-top-left-radius")).toBe("8px");
-  const conf = await box(d.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" }));
-  expect(conf.y).toBeGreaterThan((await box(fs)).y + (await box(fs)).height - 1);
+  const callout = d.getByText("本文に、チェックのないやることが 2 つ残っています", { exact: true });
+  await expect(callout).toBeVisible();
+  await expect(
+    d.getByText("完了にしても止めません。このままでよいかを決めてください。", { exact: true }),
+  ).toBeVisible();
+  const items = d.locator(".k-f4d-unchecked li");
+  await expect(items).toHaveText(["☐ 請求書を作る", "☐ 先方に送る"]);
+  expect((await box(items.first())).y).toBeGreaterThan((await box(callout)).y);
 });
 
 test("K229-UI-017 差し戻しの小窓の型：題「差し戻す」15px・頭の右上に ×（閉じる）が 1 つ・幅 420・やめる は outlined（白地・灰の線・黒字）・主ボタンは「差し戻す」・開くとフォーカスは「差し戻す理由」", async ({
