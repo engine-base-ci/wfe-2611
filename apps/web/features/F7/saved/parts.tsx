@@ -4,19 +4,25 @@ import { GripVertical } from "lucide-react";
 export interface SegItem {
   value: string;
   label: string;
+  /** 機能がまだ（グレーで押せない・Tab で止まらない・title に「準備中」・D-145.9） */
+  pending?: boolean;
 }
 
 /** 2〜4 つから 1 つを選ぶ（キャンバスの「自分だけ／グループの全員」「ふつう／詰める」）。選んでいるものに aria-pressed。
- *  onChange が無ければ読むだけ（今までどおり） */
+ *  onPick も onChange も無ければ読むだけ */
 export function Seg({
   label,
   items,
   value,
+  onPick,
   onChange,
 }: {
   label: string;
   items: readonly SegItem[];
   value: string;
+  /** 選んだとき（押せない項目では呼ばない） */
+  onPick?: (value: string) => void;
+  /** onPick と同じ（K-479 の保存の小窓が使う名前） */
   onChange?: (value: string) => void;
 }) {
   return (
@@ -27,7 +33,8 @@ export function Seg({
           type="button"
           className="k-f7-saved-seg-item"
           aria-pressed={i.value === value}
-          onClick={onChange ? () => onChange(i.value) : undefined}
+          onClick={i.pending || (!onPick && !onChange) ? undefined : () => (onPick ?? onChange)?.(i.value)}
+          {...(i.pending ? { "aria-disabled": true, tabIndex: -1, title: `${i.label}（準備中）` } : {})}
         >
           {i.label}
         </button>
@@ -81,6 +88,8 @@ export interface CheckItem {
   checked: boolean;
   /** 外せない（固定の札を出す） */
   fixed?: boolean;
+  /** 機能がまだ（グレーで押せない・title に「準備中」・D-145.9） */
+  pending?: boolean;
 }
 
 /** 見出しつきのチェックの並び。grip＝つかんで並べ替える取っ手を出す */
@@ -102,11 +111,14 @@ export function CheckList({
         {items.map((it) => (
           <li key={it.key} className="k-f7-saved-list-row">
             {grip ? <GripVertical size={14} className="k-f7-saved-grip" aria-hidden="true" /> : null}
-            <label className="k-f7-saved-check">
+            <label
+              className="k-f7-saved-check"
+              {...(it.pending ? { "aria-disabled": "true" as const, title: `${it.label}（準備中）` } : {})}
+            >
               <input
                 type="checkbox"
                 checked={it.checked}
-                disabled={it.fixed === true}
+                disabled={it.fixed === true || it.pending === true}
                 readOnly={onToggle === undefined}
                 onChange={(e) => onToggle?.(it.key, e.target.checked)}
               />

@@ -442,7 +442,29 @@
       "y"
      ]
     }
-   ]
+   ],
+   "at": {
+    "375": {
+     "canvas": "MobileList",
+     "pairs": {
+      "見出し": {
+       "canvas": "header.kn-mlist-head h1",
+       "app": ".k-page-head h1"
+      },
+      "見出しの帯": {
+       "canvas": "header.kn-mlist-head",
+       "app": ".k-list-head"
+      },
+      "本文の箱": {
+       "canvas": "div.kn-mlist-body",
+       "app": ".k-list-body"
+      }
+     },
+     "ticket": "K-478",
+     "decision": "D-143.5",
+     "why": "幅 767 以下の自分に関わるものはスマホの本文（1 件 1 行）で、正の絵はスマホの一覧 MobileList（PM の決め 2026-11-24・案 a・モックが正）"
+    }
+   }
   },
   {
    "id": "tickets-list",
