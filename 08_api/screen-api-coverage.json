@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 373,
+  "total_apis": 372,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2322,11 +2322,6 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/kind-change-preview",
      "act": "A103"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/work-type-candidates",
-     "act": "A130"
     },
     {
      "role": "data_fetch",
