@@ -53,7 +53,7 @@
 | E-036 | `triggers` | 5. 実行・統制 | scope_layered | 3 | D-010 |
 | E-037 | `policies` | 5. 実行・統制 | scope_layered | 3 | D-060 |
 | E-038 | `approvals` | 5. 実行・統制 | scope_layered | 4 | D-010 |
-| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 D-151.6 |
+| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
