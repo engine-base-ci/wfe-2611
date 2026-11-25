@@ -640,13 +640,11 @@
     "F9"
    ],
    "reads": [
-    "F12",
-    "F4"
+    "F12"
    ],
    "boundary": true,
    "lines": [
-    "F9→F12",
-    "F9→F4"
+    "F9→F12"
    ]
   },
   "status_incidents": {

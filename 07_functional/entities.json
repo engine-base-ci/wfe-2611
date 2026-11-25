@@ -10369,7 +10369,7 @@
     },
     {
      "name": "work_type_version",
-     "note": null
+     "note": "どちらも凍結・K-582・D-150.60：業務の型は物として無くした。口もコードも読まない・書かない。列と値は残す"
     },
     {
      "name": "hold_reason",
@@ -13603,6 +13603,152 @@
    ]
   },
   {
+   "id": "E-136",
+   "name": "ticket_handovers",
+   "table_name": "ticket_handovers",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "ticket_id",
+     "note": null
+    },
+    {
+     "name": "kind",
+     "note": "渡す・引き取りの申し出・配る・上へ上げる"
+    },
+    {
+     "name": "from_member_id",
+     "note": null
+    },
+    {
+     "name": "to_member_id",
+     "note": null
+    },
+    {
+     "name": "to_scope_id",
+     "note": null
+    },
+    {
+     "name": "reason",
+     "note": null
+    },
+    {
+     "name": "ask",
+     "note": null
+    },
+    {
+     "name": "reply_due",
+     "note": null
+    },
+    {
+     "name": "switch",
+     "note": "jsonb（一緒に切り替えるもの"
+    },
+    {
+     "name": "state",
+     "note": "返事待ち・受けた・断った・取り下げた"
+    },
+    {
+     "name": "decline_reason",
+     "note": null
+    },
+    {
+     "name": "decided_at",
+     "note": null
+    },
+    {
+     "name": "notify_managers",
+     "note": "上の層にも知らせる"
+    },
+    {
+     "name": "reminded_at",
+     "note": "催促した時刻"
+    },
+    {
+     "name": "overdue_notified_at",
+     "note": "期限切れを知らせた時刻"
+    },
+    {
+     "name": "switch_applied",
+     "note": "jsonb（実際に移した物"
+    },
+    {
+     "name": "answered_by",
+     "note": "答えた人"
+    }
+   ],
+   "relations": [],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ticket_handovers_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.ticket_visible(ticket_id) OR from_member_id = current_setting('app.user_id', true)::uuid OR to_member_id = current_setting('app.user_id', true)::uuid OR has_permission(current_setting('app.user_id', true)::uuid, 'ticket_handovers', to_scope_id, 'edit'))",
+     "rationale": "チケットを読める人・渡した人・受ける人・渡す先のグループのマネージャー",
+     "source": [
+      "D-128.115",
+      "D-073.1",
+      "D-128.88",
+      "D-125.70"
+     ]
+    },
+    {
+     "name": "ticket_handovers_create",
+     "operation": "insert",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND from_member_id = current_setting('app.user_id', true)::uuid AND app.ticket_writable(ticket_id)",
+     "rationale": "チケットに書ける人が、自分として渡す",
+     "source": [
+      "D-125.70"
+     ]
+    },
+    {
+     "name": "ticket_handovers_answer",
+     "operation": "update",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (to_member_id = current_setting('app.user_id', true)::uuid OR from_member_id = current_setting('app.user_id', true)::uuid OR has_permission(current_setting('app.user_id', true)::uuid, 'ticket_handovers', to_scope_id, 'edit'))",
+     "rationale": "受ける人が答える・渡した人が取り下げる・渡す先のグループのマネージャーが受ける人を決める",
+     "source": [
+      "D-125.70"
+     ]
+    },
+    {
+     "name": "ticket_handovers_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（D-125.70）。**`task_handovers` を置き換える。後ろの 5 列は K-401 が足す。待っている渡しは 1 つのチケットに 1 つ（D-148.20）：一意の索引は置かず、渡しの行を作る DB の関数がチケットの行を for update で取ってから数える（app.handover_gate）",
+   "status": "decided",
+   "decided_at": "2026-11-25",
+   "source": [
+    "D-125",
+    "D-125.70",
+    "D-128",
+    "D-148.20"
+   ]
+  },
+  {
    "id": "E-147",
    "name": "guest_groups",
    "table_name": "guest_groups",
@@ -13855,131 +14001,6 @@
     "D-125",
     "D-128",
     "D-155.41"
-   ]
-  },
-  {
-   "id": "E-136",
-   "name": "ticket_handovers",
-   "table_name": "ticket_handovers",
-   "section": "16. 第1フェーズの表",
-   "fields": [
-    {
-     "name": "<common>",
-     "note": null
-    },
-    {
-     "name": "ticket_id",
-     "note": null
-    },
-    {
-     "name": "kind",
-     "note": "渡す・引き取りの申し出・配る・上へ上げる"
-    },
-    {
-     "name": "from_member_id",
-     "note": null
-    },
-    {
-     "name": "to_member_id",
-     "note": null
-    },
-    {
-     "name": "to_scope_id",
-     "note": null
-    },
-    {
-     "name": "reason",
-     "note": null
-    },
-    {
-     "name": "ask",
-     "note": null
-    },
-    {
-     "name": "reply_due",
-     "note": null
-    },
-    {
-     "name": "switch",
-     "note": "jsonb（一緒に切り替えるもの"
-    },
-    {
-     "name": "state",
-     "note": "返事待ち・受けた・断った・取り下げた"
-    },
-    {
-     "name": "decline_reason",
-     "note": null
-    },
-    {
-     "name": "decided_at",
-     "note": null
-    }
-   ],
-   "relations": [],
-   "soft_delete": true,
-   "timestamps": true,
-   "tenant_field": "tenant_id",
-   "indexes": [],
-   "computed": [],
-   "tenant_isolation": {
-    "type": "account_scoped",
-    "column": "tenant_id",
-    "fk_table": "tenants"
-   },
-   "access_control_policies": [
-    {
-     "name": "ticket_handovers_read",
-     "operation": "select",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (app.ticket_visible(ticket_id) OR from_member_id = current_setting('app.user_id', true)::uuid OR to_member_id = current_setting('app.user_id', true)::uuid OR has_permission(current_setting('app.user_id', true)::uuid, 'ticket_handovers', to_scope_id, 'edit'))",
-     "rationale": "チケットを読める人・渡した人・受ける人・渡す先のグループのマネージャー",
-     "source": [
-      "D-128.115",
-      "D-073.1",
-      "D-128.88",
-      "D-125.70"
-     ]
-    },
-    {
-     "name": "ticket_handovers_create",
-     "operation": "insert",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND from_member_id = current_setting('app.user_id', true)::uuid AND app.ticket_writable(ticket_id)",
-     "rationale": "チケットに書ける人が、自分として渡す",
-     "source": [
-      "D-125.70"
-     ]
-    },
-    {
-     "name": "ticket_handovers_answer",
-     "operation": "update",
-     "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (to_member_id = current_setting('app.user_id', true)::uuid OR from_member_id = current_setting('app.user_id', true)::uuid OR has_permission(current_setting('app.user_id', true)::uuid, 'ticket_handovers', to_scope_id, 'edit'))",
-     "rationale": "受ける人が答える・渡した人が取り下げる・渡す先のグループのマネージャーが受ける人を決める",
-     "source": [
-      "D-125.70"
-     ]
-    },
-    {
-     "name": "ticket_handovers_ops_read_with_grant",
-     "operation": "select",
-     "role": "ops",
-     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_handovers.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
-     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
-     "source": [
-      "D-128.68"
-     ]
-    }
-   ],
-   "legacy_drift_notes": null,
-   "note": "**★新設（D-125.70）。**`task_handovers` を置き換える",
-   "status": "decided",
-   "decided_at": "2026-11-25",
-   "source": [
-    "D-125",
-    "D-125.70",
-    "D-128"
    ]
   },
   {
