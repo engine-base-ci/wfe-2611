@@ -1,9 +1,9 @@
 // はじめて（0 件）の本文（K-251・キャンバス OnHome）。あいさつは名前だけ（会社の名前は出さない・D-145.4）と、点線の空の箱。
 //   箱：＋ の札・「まだチケットはありません」・説明・書ける人だけ主「＋ チケットを作る」（作る面を開く）。
-//   従「分身と話して作る」と提案 3 つは、まだ使えないので出すが押せない（span・aria-disabled・グレー・D-145.2・D-145.9）
+//   従「分身と話して作る」は、まだ使えないので出すが押せない（span・aria-disabled・グレー・D-145.2・D-145.9）。
+//   おすすめ 3 つは HomeSuggest（K-453）：書ける人には押すと題名を入れて作る面を開く字・書けない人には押せない形
 import { Button } from "@/components/k";
-
-const SUGGEST = ["今月の請求書を送る", "問い合わせに返す", "見積を作る"] as const;
+import { HomeSuggest } from "../home/home-empty";
 
 export function ListEmpty({ name, canCreate, onCreate }: { name: string; canCreate: boolean; onCreate: () => void }) {
   return (
@@ -34,17 +34,7 @@ export function ListEmpty({ name, canCreate, onCreate }: { name: string; canCrea
             分身と話して作る
           </span>
         </div>
-        <p className="k-list-suggest">
-          はじめての 1 枚におすすめ：
-          {SUGGEST.map((t, i) => (
-            <span key={t}>
-              {i ? " ・ " : null}
-              <span className="k-list-off" aria-disabled="true" title={`${t}（準備中）`}>
-                {t}
-              </span>
-            </span>
-          ))}
-        </p>
+        <HomeSuggest canCreate={canCreate} onCreate={onCreate} />
       </section>
     </div>
   );
