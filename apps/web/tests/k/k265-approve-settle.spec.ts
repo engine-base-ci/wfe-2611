@@ -109,7 +109,7 @@ test("K265-UI-001 作る段が終わった読み直しの回で、作る段の�
 
   await page.clock.install(); // 3 秒ごとの読み直しは時計を進めて起こす（待ち時間に頼らない）
   await openTicket(page);
-  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
   await expect(k62Band(page).getByText(MAKING)).toBeVisible();
 
   // 作る段が終わり承認待ちになった。作る段の実行の 1 件の答えは握っておく（CI の遅い台で後から届く形）
