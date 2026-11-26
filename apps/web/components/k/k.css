@@ -463,6 +463,21 @@ textarea.k-input {
   background: var(--k-st-danger-container);
   color: var(--k-st-on-danger-container);
 }
+/* 知らせのボタン（「元に戻す」など・notify の action）。知らせの地の上の字の色をそのまま使う（濃い地に紺の字は読めない） */
+.k-toast-action {
+  flex: none;
+  margin-left: auto;
+  min-height: var(--k-c-list-target-height);
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-label-md);
+  text-decoration: underline;
+  cursor: pointer;
+}
 .k-toast-close {
   margin-left: auto;
   background: transparent;

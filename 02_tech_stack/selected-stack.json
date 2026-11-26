@@ -76,8 +76,8 @@
    "task_views": {
     "list": "TanStack Table",
     "kanban": "pragmatic-drag-and-drop（列＝状態 4 つ／担当／台帳の工程。列は増やさせない）",
-    "calendar": "未定（候補: FullCalendar MIT 版 / schedule-x / react-big-calendar）",
-    "timeline": "未定（候補: svar-gantt / frappe-gantt / vis-timeline）",
+    "calendar": "自前の格子（features/F7/calendar・外の部品は入れない・段 8 の切る段の決め・07_functional/段8-F7/カレンダーの部品.md）",
+    "timeline": "svar-gantt（@svar-ui/react-gantt・D-079・features/F7/gantt）",
     "state": "見え方とフィルタは URL に持つ（?view=）。データは 1 つ",
     "source": [
      "D-068"

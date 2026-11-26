@@ -21,6 +21,10 @@ export interface RunView {
   started_at: string | null;
   finished_at: string | null;
   checks: { state: string } | null;
+  /** 止まった理由の種類（K-485 が実行の記録に足す・古い答えには無い） */
+  reason_kind?: string | null;
+  /** 止まった実行を人が引き取った時刻（K-485 が足す・古い答えには無い） */
+  taken_over_at?: string | null;
 }
 /** 走っている（終わっていない）実行の状態 */
 export const ACTIVE = new Set(["queued", "running", "asking"]);
