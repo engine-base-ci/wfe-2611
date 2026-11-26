@@ -237,7 +237,8 @@ class Workflow(unittest.TestCase):
                     self.assertEqual(str((st.get("env") or {}).get("CI_LEAVES_INPUT", "")).replace(" ", ""), "${{inputs.leaves}}", job)
                     self.assertIn('--leaves "$CI_LEAVES_INPUT"', st["run"], job)
                     self.assertNotIn("${{", st["run"], job)
-        self.assertEqual(sorted(found), ["spec", "spec-2", "spec-3", "static"])
+        # spec-parts（K-1307）は spec と同じ分かれ目の段を持つ（置き場の変数 SPEC_SHARDS が 2 以上の回だけ流れる組）
+        self.assertEqual(sorted(found), ["spec", "spec-2", "spec-3", "spec-parts", "static"])
         self.assertIn("leaves", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
         cfg = yaml.safe_load((ROOT / "ticket-flow.yaml").read_text(encoding="utf-8"))
         self.assertEqual(cfg["ci"]["inputs"].get("leaves"), "leaves")
