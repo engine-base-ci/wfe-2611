@@ -670,6 +670,32 @@ def _full_plan(p: dict) -> dict:
             "unit_files": [], "coverage_args": []}
 
 
+LEAF = re.compile(r"K-\d+")
+
+
+def _full_py_tests(p: dict, repo: str, tickets_dir: str, leaves: str | None) -> None:
+    """全部の回（段の CI）でも、段の葉の tests: の .py を py_tests に出す（K-1305）。spec の組が junit_unittest.py で JUnit（spec-py.xml）に書き、
+    段の葉の .py の行が照らしに載る（チケットの回と同じ道）。段の葉は、取り込みの機械（ticket-flow の stageq）が渡す入力 leaves
+    （空白区切りの番号）だけで決める。木の形からは推し量らない（PM の決め 2026-11-26：重ねた葉を見分けられず、黙って葉が減る）。
+    入力が無い・番号の形でない語・葉の md が無い → errors（全部の回を止める）。葉の tests: が何にも当たらない → 理由（その葉の行だけが照らしで赤）"""
+    words = (leaves or "").split()
+    if not words:
+        p["errors"].append("全部の回の .py の試験：段の葉の一覧（入力 leaves）が無い（ticket-flow の stageq が渡す・全部の回は止める）")
+        return
+    py: set[str] = set()
+    for w in words:
+        if not LEAF.fullmatch(w):
+            p["errors"].append(f"全部の回の .py の試験：入力 leaves の「{w}」が葉の番号（K-<数字>）でない")
+            continue
+        if not os.path.isfile(os.path.join(tickets_dir, f"{w}.md")):
+            p["errors"].append(f"全部の回の .py の試験：入力 leaves の葉 {w} のチケットの md が無い")
+            continue
+        tt, miss = _ticket_tests(repo, tickets_dir, w)
+        py.update(t for t in tt if t.endswith(".py"))
+        p["reasons"] += [f"全部の回の .py の試験：{w} の tests: の {g} が何にも当たらない" for g in miss]
+    p["py_tests"] = sorted(py)
+
+
 def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     """重い検査（決まり gates：番号 → 関係するファイルの glob）のうち、流すもの（K-172）。全部の回は全部"""
     g = rules.get("gates") or {}
@@ -724,7 +750,7 @@ def with_web_selection(p: dict, sel: dict) -> dict:
 
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
-         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "") -> dict:
+         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "", leaves: str | None = None) -> dict:
     if scope == "ticket":
         scope = "auto"   # K-172：ticket-flow の入口の名前。絞り方は auto と同じ
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
@@ -742,6 +768,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                         + list(p.get("web_reasons") or []))
         p["gates"] = gates_for([c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old], rules, full=scope == "full")
         if scope == "full":
+            _full_py_tests(p, repo, tickets_dir, leaves)
             return _full_plan(p)
         stops = [(c, d) for c, d in full if c in STOP_KINDS]
         for c, d in stops:
@@ -1046,6 +1073,7 @@ def _decide(argv: list[str]) -> int:
     ap.add_argument("--head", default="HEAD")
     ap.add_argument("--scope", default="full")
     ap.add_argument("--ticket", default="")
+    ap.add_argument("--leaves", default="")   # 全部の回の段の葉（空白区切り・ticket-flow の stageq が渡す・K-1305）
     ap.add_argument("--rules", default=None)
     ap.add_argument("--tickets", default=None)
     ap.add_argument("--github-output", default=None)
@@ -1066,7 +1094,7 @@ def _decide(argv: list[str]) -> int:
             gw = [f for f in walk_files(repo, CODE_EXT) if match(f, rules["db"]["gateway"])]
             got = check_answer(lt(gw), gw) if gw else {}
             return sorted({t for v in got.values() for t in v} | set(db_tests_by_text(repo, rules)))
-    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket)
+    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket, leaves=a.leaves)
     red = bool(p["mismatches"] or p["errors"])
     out = _stop_plan(p) if red else p   # K-170：赤でも全部に倒さず、組を流さない
     if a.github_output:

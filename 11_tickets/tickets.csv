@@ -3455,3 +3455,43 @@ PM の決め（作り方）：
 - [ ] 替えた前からの試験（`ticket_order_gate_test.py` の K159-CI-013・014・015・028、`k643_merge_not_impl_test.py` の K643-CI-003、`k341_order_gate_speed_test.py` の K341-CI-003）が緑
 - [ ] 替えない前からの試験（`k210_gate_holes_test.py`・`ci_scope_test.py`・`ci_lean_test.py` と、上の 3 本の替えない行）が緑
 - [ ] チケットの範囲の CI が緑。K-711 の枝の G56 が ecc6788c6d で赤にならない（PM が確かめる）"
+K-1304,CI を速く：段の全部の CI の画面の試験の組（web）を、置き場の変数 WEB_SHARDS の数に分けて同時に流す（G48 を --shard で N 組・G59・G70・G73 を別の組・試験は 1 本も減らさず、記録と照らしは今と同じ 1 回）・変数が無ければ今と同じ 1 組・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"段の全部の CI（流す置き場 engine-base-ci/wfe-2611）の画面の試験の組（web）が 1 台で 90 分以上かかる。実測（段9）：取り出し〜部品 1 分・DB 10 秒・`playwright install --with-deps chromium` 2.5 分・API 5 秒・`build:test` 1.3 分・画面を立てる 2 秒、そのあと 1 台で順に G48（75 分以上）→ G59（約 3.7 分）→ G70（約 1.8 分）→ G73（約 10 秒）。
+
+代表の決め（2026-11-26・PM 経由）：**流す試験を 1 本も減らさず**、同じ試験を何台かに分けて同時に流し、段の CI を **10 分前後** にする。置き場の組織は今 Enterprise のお試しで GitHub の台を同時に多く使える。**今だけの設定**なので、分ける数は置き場の変数で持ち、変数が無いときは今と全く同じ動き（1 台）にする。
+
+PM の決め（作り方）：
+1. 分ける数は置き場の変数 `WEB_SHARDS`（無ければ 1）。static の組が env で受けて（命令の文字に入れない）`web_run.py shards` で `web_shards`（数）と `web_parts`（web の組の matrix の一覧）を出す。1 なら `[""all""]`、2 以上なら `[""g48-1""…""g48-N"", ""g59"", ""g70"", ""g73""]`（専用の段は ci_scope.json の web_select.gates から）。数でない・1〜40 の外は赤（黙って 1 にしない）
+2. web の組は matrix `part` で走る。**all の 1 組は今と全く同じ**（組の名前 web・段・命令・上げる物 ci-results と junit-web）。2 以上なら組ごとに自分の DB・API・画面を立て（準備の段は今のまま）、どの段を流すかは `web_run.py` が env `WEB_PART` で決める（G48・G59・G70・G73 の段の名前・if・命令は変えない。この組で流さない段は 0 で終わる）
+3. G48 の組 `g48-<i>` は、今と同じ試験の一覧（e2e:k。範囲の回は選んだ試験）に `--shard=<i>/<N> --reporter=list,blob --pass-with-no-tests` を付けて流し、blob の報告と終わりの番号を `web-part/` に残して `web-part-<組>` で上げる。G59・専用の段の組は今の命令で JUnit（junit/web-skeleton.xml など）を書き、同じく `web-part-<組>` で上げる
+4. 新しい組 `web-report`（needs: static・web。web が飛ばされたら飛ぶ・`WEB_SHARDS` が 1 か無ければ飛ぶ）が `web-part-*` を取り、`web_run.py g48-report` で、N 組の blob と終わりの番号がそろうかを見て、`playwright merge-reports --reporter=json,junit` で 1 つの報告（apps/web/pw-reports/k.json）と JUnit（junit/web.xml）にまとめ、**今と同じ** `ci_results.py record` と `op_gate.py` を 1 回流す。そろわない（落ちた組がある）なら何も作らず赤。どれかの組の試験が赤なら JUnit はまとめ、記録と照らしは流さず赤（今の 1 組で G48 が赤の回と同じ）。`ci-results` と `junit-web` を上げる
+5. junit の組は web-report も待つ（always()）。artifact「junit」にそろう JUnit のファイルの名前（web.xml・web-skeleton.xml・web-fidelity.xml・web-bridge.xml）と置き場は今と同じ
+6. 準備を縮める：GitHub の台だけ（`runner.environment == 'github-hosted'`）ブラウザの取り込み（~/.cache/ms-playwright）を actions/cache で使い回す。自分の台（VM）は像に残るので上げ下ろししない（K-172）。`playwright install --with-deps chromium` の命令は変えない（字体と apt の部品は今までどおり毎回そろう・K-641）。`build:test` は組ごとに作る（作った物を渡すと上げ下ろしの時間が作る時間と変わらず、組の準備が全部終わるまで試験を始められない）
+7. 見込み：分ける数 20 で、組 1 つの準備 約 4.5〜5 分＋G48 の 1 組 約 4 分（75 分÷20・一番重いファイル 3.4 分）＋web-report 約 1.5 分 ＝ 約 10 分。G59 の組は準備＋3.7 分で G48 の組より先に終わる。Playwright は分ける単位がファイル（fullyParallel: false）で、ファイルの数で均すので組の長さはばらつく。最初の回の実測で数を変える（変数だけで変わる）","- [ ] 下の表の行（K1304-CI-001〜012）が緑
+- [ ] 替えた前からの試験（`k258_web_defer_test.py` の K258-CI-005）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない 16 本）が緑
+- [ ] 段の全部の CI で、変数 WEB_SHARDS が無い回は web の組が 1 つで今と同じ段・同じ JUnit、20 の回は G48 が 20 組で流れ、まとめた JUnit（web.xml）の testcase の数が 1 組の回と同じ（PM が置き場で確かめる）"
+K-1305,CI を直す：段の全部の CI で毎回赤になるプロジェクト側の元 2 つ（全部の回でも段の葉（stageq が渡す入力 leaves）の .py の試験を JUnit に載せる・G64 が CI の置き場に無い控えの枝の sha を見て赤のとき、置き場に上げる枝を出して確かめる道具を足す）・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"代表の決め（2026-11-26・PM 経由）「完璧に直しましょう」。段の全部の CI（scope=full）で毎回赤になる、プロジェクト側の元を 2 つ直す。
+
+1. **全部の回で .py の試験が JUnit に載らない。** `scripts/ci/ci_scope.py` の全部の回は `_full_plan` で返り、`py_tests` が空のまま。spec の組の「チケットの Python の試験」の段は `junit/spec-py.xml` に `<testsuites />`（0 本）を書く（実測：段の回 45801811744・`CI_PY_TESTS: []`）。G65 の段では試験は流れるが JUnit に書かないので、.py の試験だけで確かめる葉（K-1304・K-1156）は段の CI で毎回「流れていない」になる
+2. **G64 が CI の置き場に無い sha を見て赤。** G64 の `ticket_process_test.py`（K146-CI-008）は、着手前の K-63・K-64 の突き合わせの表（`01_hearing/聞くこと_K-146.md` の「ファイル:行@sha」）の sha が git に在るかを見る。K-64 の 87970598 は控えの枝 k64-make にしか無く、置き場 engine-base-ci/wfe-2611 の写しに k64-make が無かった（ci・ci2 の置き場には在る）。赤の文は「控えの枝を消した？」で、どの枝を置き場に上げればよいかを言わない
+
+PM の決め（作り方）：
+1. 全部の回でも、段の葉の `tests:` のうち `.py` を `py_tests` に出す。**段の葉は、取り込みの機械（ticket-flow の stageq）が段の全部の CI に渡す入力 `leaves`（空白区切りの番号）だけで決める。** 木の形（取り込みのコミットの件名・親）から推し量らない・2 本立てにしない（PM の決め 2026-11-26 テスター Q 回 1：推し量りは重ねた葉を見分けられず、形の分からないコミットで黙って葉が減る）。ほかの段の葉の .py は入れない（その葉の段の CI が流す）。全部の回で入力 `leaves` が無い・空・番号（K-<数字>）の形でない語がある・名指しした葉のチケットの md が無い → errors にして**全部の回を止める**（組を流さず終わりの番号 1）。名指しした葉の `tests:` が何にも当たらない → 止めずに理由（その葉の行だけが記録に無く照らしで赤）。葉を出すのに base は使わない。チケットの回（scope=ticket）は `leaves` を見ず今と同じ
+2. CI の定義（作り手 `05_flow/build_testplan.py`・生成物 `v3-gate.yml`）の workflow_dispatch に入力 `leaves`（string・既定 ''）を足し、`ci_scope.py` を流す 4 つの段（static・spec・spec-2・spec-3）の env に `CI_LEAVES_INPUT: ${{ inputs.leaves }}`、run に `--leaves ""$CI_LEAVES_INPUT""`。`ticket-flow.yaml` の `ci.inputs` に `leaves: leaves`（ci.py は入力の名前を ci.inputs で引く）。スキル側（stageq の full_ci が fields に leaves を渡す・ci-contract・setup.py check）は別の担当が直す
+3. G64 は緩めない：着手前の間は sha とファイル:行の在りかまで見るのは今のまま。置き場が写しでも同じ中身を見る。直すのは「置き場に要る枝が分かる」こと：ページの「<K-番号> は枝 <枝> の <sha>」（控えの枝の宣言）を読む道具 `scripts/ci/prior_refs.py` を足し、無い sha の赤の文に枝の名前と上げ方を出す。着手前のチケットに宣言が無いのは赤。表の sha が宣言の sha と違い、取り出した木の履歴（HEAD の先祖・どの写しにも在る。K-64.md:48@38aee79b は本線の版）にも無いときは「宣言と違う」の赤（git に無くても、宣言の枝を上げても直らないので git push の文は出さない）。置き場の枝の先頭が手元に無いときは git fetch を案内する赤。確かめは `prior_refs.commit_problems` の 1 か所にし、K146-CI-008 はそれを呼ぶ
+4. G65 の中で `k425_decision_log_test.py` が赤で止まり後ろの .py の試験が走らない形（`&&` でつなぐ）は替えない：決まり（ai-driven-process §9「検査の繋ぎは && で」）どおりで、1 の直しで葉の .py の行は G65 と別の段（G64・G65 より前・`!cancelled()`）で JUnit に載るので、G65 が途中で止まっても照らしの行は落ちない（K1305-CI-007 で見る）。k425 の赤そのもの（決定ログの answer が答えの記録に無い 5 件）は別の元で、この葉では直さない","- [ ] 下の表の行（K1305-CI-001〜018）が緑
+- [ ] 運ぶ前からの試験（`ticket_process_test.py` の K146-CI-001〜009）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない物）が緑
+- [ ] **順**：K-1305 の入った木（この葉の段の枝）で段の全部の CI を流す前に、PM がスキル側の直し（stageq の full_ci が fields に `""leaves"": "" "".join(sorted(rows_by))` を渡す・ci-contract.md の入口に leaves・setup.py check が入力 leaves の無い workflow を赤にする）を入れる。入れないと、K-1305 自身の段の CI が範囲の段（static・spec・spec-2・spec-3）で全部止まる
+- [ ] **順**：K-1305 の段の全部の CI の前に、PM が主の作業場所の設定の ci.inputs に `leaves: leaves` を足す（stageq は主の作業場所の ci.inputs に leaves が在るときだけ leaves を渡す。本線の ticket-flow.yaml に入るのは K-1305 が本線に入った後なので、それまでは足りない）。2026-11-26 21:10 に PM が `.ticket-flow/local.yaml` で済ませた。本線の ticket-flow.yaml にも K-1305 で足す（流す版の workflow が leaves を受けるときだけ渡る）
+- [ ] 段の全部の CI の前に、PM が着手前のチケットの控えの枝を CI の置き場に上げる（`python3 scripts/ci/prior_refs.py check --remote <置き場>` が緑。wfe-2611＝ci3 の k64-make は 2026-11-26 20:35 に PM が上げた）。上げないと K1305-CI-011（本物の K146-CI-008）と G64 が置き場で赤
+- [ ] 段の全部の CI で、artifact junit の spec-py.xml に入力 leaves の葉の .py の行が出て、ほかの段の葉の .py は出ない（PM が置き場で確かめる）"
+K-1306,中間テスト 3（K-64）の古い期待を替える：完了で実施事項を全部「- [x]」の版にする期待を、完了で本文を書き換えない決め（D-150.42・K-566）に合わせて「元のまま」にする（K64-M3-01・04・07）・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・QA,"段の全部の CI の中間テスト（G59）で、`apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts` の K64-M3-01・04・07 が、完了の確かめ（`completeAll` の 197 行）「実施事項は全部済みの印の版になる」で赤。本線のままでも赤（段9 の CI でも同じ。run 45816366366 の web (g59)）。
+
+- 期待：`""- [x] 見積を作る\n- [x] 先方に送る""`
+- 受けた物：`""- 見積を作る\n- 先方に送る""`（チケットを作ったときの実施事項 `SECTIONS.todo` のまま）
+
+元：K-566（コミット 6877d1c29c「完了の口の直し：未チェックは数えて返すだけ・完了で本文を書き換えない」）が、代表の決め **D-150.42**（実施事項は本文の中に自由に書く・完了で未チェックが残っても止めない・answer=bc94ad5fd8fd）に合わせて、完了の関数 `app.ticket_complete` から実施事項を全部「- [x]」に書き換える処理を外した（K-566 の目的 2「完了で本文を書き換えない：実施事項の区画も本文の行も、完了の前後で版・字・doc が同じ」）。K-566 は前からの試験 `approve-complete-complete.test.ts` の 5 件は替えたが、同じ期待を持つ中間テスト 3（K-64）を替える物に入れていなかった。**製品の不具合ではなく、試験が古い**。","- [ ] 下の表の行 K1306-API-001 が緑（`apps/api/test/features/F5/k1306-complete-todo-versions.test.ts`・本物の DB と口・中間テスト 3 と同じ入力で、口の層で先に見る）
+- [ ] 替えた K-64 の行（K-64 の M3-01・04・07）が段の全部の CI の G59 で緑（試験の持ち主は K-64 のまま・carry:）
+- [ ] ほかの K64-M3 の行（02・03・05・06）は替えずに緑
+- [ ] K-64 のチケットの文（行の表・閉じ方の節・状態の表）から「完了で全部 `- [x]`」が消え、「元のまま（D-150.42）」になっている"
