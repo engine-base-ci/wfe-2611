@@ -4,9 +4,13 @@
 //   札の数は答えの meta.counts（K-474）。「AI に任せている」「自分が承認」の欄の名前 delegated・approving は K-473 が足す欄（札は完了を数えないので done=false も付ける）。
 //   口は網の手前で差し替える（tests/k/f7-list-mock.ts）。固定の待ちは使わない（答えと移り終わりを待つ）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
+import { groupAt } from "../../../../scripts/ci/fidelity_compare.mjs";
+import { routeCanvasFonts } from "../_lib/fidelity-states";
 import { countWrites, expectInert, overflowX, WIDTHS } from "./kit";
-import { gate, item, ok, open, rowsOf, table } from "./list-mock";
+import { CFG, ROOT, gate, item, ok, open, rowsOf, table } from "./list-mock";
 import { COUNTS, KIND_QA, ME, STAGE_DOING, SUZUKI, mockMine, queryOf, todayJst } from "./f7-list-mock";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
@@ -421,10 +425,7 @@ test("K478-UI-017 一覧のかんたん：分類・節目の選びは押せな�
     const it = box(page).locator('[aria-disabled="true"]', { hasText: t }).first();
     await expectInert(page, it, t, writes);
   }
-  // 「検索条件を保存」は K-479 が動かすまで押せない形のボタン
-  const save = box(page).getByRole("button", { name: "検索条件を保存", exact: true });
-  await expectInert(page, save, "検索条件を保存", writes);
-  await expect(save).toHaveAttribute("tabindex", "-1");
+  // 「検索条件を保存」（scope の無い一覧で押せない形）は K-479 の SaveViewButton の物で、K479-UI-024 が見る（持ち主を 1 つに）
   await box(page)
     .getByRole("group", { name: "状態", exact: true })
     .getByRole("button", { name: "完了以外", exact: true })
@@ -681,7 +682,9 @@ test("K478-UI-029 タブと数の札の間は 16px（自分に関わるもの・
   await expect(page.locator(".k-f7-overview-mrow").first()).toBeVisible();
   const list = page.locator(".k-f7-overview-phone-list");
   expect(await list.evaluate((e) => getComputedStyle(e).overflowY), "一覧の並びが縦に送れる").toBe("auto");
-  const page375 = await page.evaluate(() => document.documentElement.scrollHeight - document.documentElement.clientHeight);
+  const page375 = await page.evaluate(
+    () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  );
   expect(page375, "頁の全体は縦に送れない").toBeLessThanOrEqual(0);
   const chipsY = (await page.locator(".k-f7-overview-phone-chips").boundingBox())!.y;
   const barY = (await page.locator("header.k-bar").boundingBox())!.y;
@@ -839,4 +842,30 @@ test("K478-UI-028 「もっと見る」の続きの鍵が読めない（口が 4
   await expect(more).toBeEnabled();
   await more.click();
   await expect(rowsOf(page)).toHaveCount(4);
+});
+
+// ---------------------------------------------------------------- 幅 375 の正の絵（組 tickets-main の at・K-1301）
+test("K478-UI-030 幅 375 の tickets-main の正は絵 MobileList とスマホの本文（組の at の 375・ticket K-478・決定 D-143.5）：groupAt で解いた絵は MobileList、対 3 つ（見出し・見出しの帯・本文の箱）は絵の側が包み header.kn-mlist-head・div.kn-mlist-body（K-1301）で画面の側は組のまま。その絵で対の要素が 1 つずつ見える。幅 1440 は組のまま（Main）", async ({
+  browser,
+}) => {
+  const g = CFG.groups.find((x) => x.id === "tickets-main");
+  expect(g, "組 tickets-main が設定に無い").toBeTruthy();
+  const rec = g!.at?.["375"];
+  expect(rec, "tickets-main に幅 375 の記録（at）が無い").toBeTruthy();
+  expect([rec!.canvas, rec!.ticket, rec!.decision]).toEqual(["MobileList", "K-478", "D-143.5"]);
+  const m = groupAt(g!, 375);
+  expect(m.canvas).toBe("MobileList");
+  expect(Object.fromEntries(m.pairs.map((p) => [p.name, [p.canvas, p.app]]))).toEqual({
+    見出し: ["header.kn-mlist-head h1", ".k-page-head h1"],
+    見出しの帯: ["header.kn-mlist-head", ".k-list-head"],
+    本文の箱: ["div.kn-mlist-body", ".k-list-body"],
+  });
+  const wide = groupAt(g!, 1440);
+  expect(wide.canvas).toBe("Main");
+  expect(wide.pairs).toEqual(g!.pairs);
+  const page = await browser.newPage({ viewport: { width: 375, height: 1000 }, colorScheme: "light" });
+  await routeCanvasFonts(page);
+  await page.goto(pathToFileURL(join(ROOT, "04_design/canvas/MobileList.dc.html")).href);
+  for (const p of m.pairs) await expect(page.locator(p.canvas).filter({ visible: true }), p.name).toHaveCount(1);
+  await page.close();
 });

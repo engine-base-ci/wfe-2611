@@ -47,8 +47,8 @@ async function readStages(): Promise<StageItem[]> {
   }));
 }
 
-/** 人と種別の名前。読めないあいだ・読めなかったときは空（選びは「すべて」だけ） */
-export function useListNames(enabled: boolean): { people: readonly NameItem[]; kinds: readonly NameItem[] } {
+/** 人と種別の名前。読めないあいだ・読めなかったときは空（選びは「すべて」だけ）。enabled を省くと読む（K-479 の保存の小窓の呼び方） */
+export function useListNames(enabled = true): { people: readonly NameItem[]; kinds: readonly NameItem[] } {
   const people = useQuery({ queryKey: MEMBERS_KEY, queryFn: readMembers, enabled, ...ONCE });
   const kinds = useQuery({ queryKey: KINDS_KEY, queryFn: readKinds, enabled, ...ONCE });
   return { people: people.data ?? [], kinds: kinds.data ?? [] };

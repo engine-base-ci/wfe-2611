@@ -119,6 +119,18 @@
     min-height: 0;
     overflow-y: auto;
   }
+  /* 見出しの帯はスマホの一覧（キャンバス MobileList の header.kn-mlist-head・K-1301）の形：地の色は無く、見出しの行とタブの左右は 16px。
+     タブの上は 8px にして帯の下端（本文の箱の上端）を絵とそろえる（fidelity.json の組 tickets-main の at 375・K-478） */
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head {
+    background: transparent;
+  }
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head .k-list-head-row {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head .k-list-views {
+    padding: var(--k-s-sm) var(--k-s-md) 0;
+  }
 }
 .k-f7-overview-phone-chips {
   display: flex;
