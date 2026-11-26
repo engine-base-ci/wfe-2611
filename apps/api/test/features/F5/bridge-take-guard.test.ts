@@ -20,6 +20,7 @@ import {
   stageKeyOf,
   team,
   ticket,
+  NO_SPEC,
   runsOf,
   jobOf,
   messagesOf,
@@ -83,7 +84,10 @@ describe("K-189 PC が仕事を受け取る口：前の片付けが失敗した�
     const tm = await team("K189-001 の人");
     const chat = await chatJob(tm);
     const t = await ticket();
-    const d = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(tm.by) });
+    const d = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(tm.by),
+    });
     expect(d.status, await d.clone().text()).toBe(201);
     const make = String(((await json(d)).data as Record<string, unknown>)["job_id"]);
     await expireBroken(async () => {

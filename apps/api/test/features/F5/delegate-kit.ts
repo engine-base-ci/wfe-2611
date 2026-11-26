@@ -147,10 +147,18 @@ export async function makeKit(): Promise<Kit> {
         title: "見積を作る",
         assignee_member_id: (o.assignee ?? creator).id,
         due_on: jst(3),
-        sections: {
-          purpose: o.purpose ?? "先方に出す見積のたたき台を作る",
-          done: "金額と内訳がそろっている",
-          todo: "- 前回の見積を読む\n- 内訳を書く",
+        // 確認項目が 0 件だと「AI に任せる」が 409（E-CONF-020）になるので 1 件付けて作る（K-565）
+        specs: ["金額と内訳がそろっている"],
+        body: {
+          doc: {
+            type: "doc",
+            content: [
+              o.purpose ?? "先方に出す見積のたたき台を作る",
+              "金額と内訳がそろっている",
+              "前回の見積を読む",
+              "内訳を書く",
+            ].map((t) => ({ type: "paragraph", content: [{ type: "text", text: t }] })),
+          },
         },
       },
     });

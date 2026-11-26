@@ -1,7 +1,8 @@
-// K-566「完了の口の直し」のうち、実施事項の番号の入力 todo_checked・todo_version と前の区画の道を見る行（K566-API-006・007・009・014）。名前の頭の行 ID は 11_tickets/K-566.md の表と 1 対 1。
-//   K-566 が入ってから K-578 が契約と関数から外すまでの間の姿を見る（todo_* は契約に残るが中身は見ない・本文の行が無ければ前の実施事項の区画の「- 」の行を数える・関数は 4 引数）。
-//   K-578 がこのファイルごと消す（その後の姿は K578-API-015〜018）。ほかの行は complete-unchecked.test.ts（区画の道が在っても無くても同じ姿）。
-//   土台は approve-complete.harness.ts。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
+// K-578「口と契約から区画を外す」のうち、完了の口の行（K578-API-015〜017）。名前の頭の行 ID は 11_tickets/K-578.md の行の表と 1 対 1。
+//   完了の入力から todo_checked・todo_version を外した後の姿（送ると 422・本文の行が無ければ未チェックは 0・関数は 2 引数）を見る。
+//   区画の道が在る間の姿は、K-566 の complete-unchecked-legacy-sections.test.ts（K566-API-006・007・009・014）が見る（K-578 がそのファイルを消す）。
+//   土台は approve-complete.harness.ts（K-578 が completeBody を conditions_confirmed だけに替えた版）。
+//   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { describe, expect, it } from "vitest";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import {
@@ -59,69 +60,64 @@ async function completeAndCount(t: Ticket, extra: Record<string, unknown> = {}) 
   return ((await json(r)).data as { unchecked: { body: number; specs: number } }).unchecked;
 }
 
-describe("K-566 完了の口の直し：実施事項の番号の入力と前の区画の道（K-578 が外すまで）", () => {
-  it("K566-API-006 止めない：未チェックが残っていても、todo_checked が空・todo_version が古い・範囲の外の番号でも 201 で、E-VAL-022・E-CONF-017 は出ない", async () => {
-    for (const extra of [{ todo_checked: [] }, { todo_version: 0 }, { todo_checked: [-5, 99], todo_version: 7 }]) {
-      const t = await ticket();
-      await executed(t);
-      await putBody(t, docOf(taskList(task("未", false))));
-      await addSpec(t, "未の確認項目");
-      const r = await complete(boss, t.id, await completeBody(t, extra));
-      expect(r.status, JSON.stringify(extra) + (await r.clone().text())).toBe(201);
-      const text = JSON.stringify(await json(r));
-      expect(text).not.toContain("E-VAL-022");
-      expect(text).not.toContain("E-CONF-017");
-    }
-  });
-
-  it("K566-API-007 入力：todo_checked と todo_version を送らず conditions_confirmed だけで 201。形の誤り（文字の並び・文字の版）は 422 のまま", async () => {
-    const t = await ticket();
-    await executed(t);
-    const ok = await complete(boss, t.id, { conditions_confirmed: true });
-    expect(ok.status, await ok.clone().text()).toBe(201);
+describe("K-578 完了の口：区画の道が無い姿（本物の DB）", () => {
+  it("K578-API-015 入力：完了に todo_checked・todo_version を送ると、どんな値でも（空・範囲の外の番号・形の誤り・版）契約に無い欄なので 422・E-VAL-022 は出ない・段は変わらない。conditions_confirmed だけなら 201", async () => {
     const u = await ticket();
     await executed(u);
-    for (const bad of [{ todo_checked: ["a"] }, { todo_checked: "0,1" }, { todo_version: "1" }]) {
+    for (const bad of [
+      { todo_checked: [] },
+      { todo_checked: [0, 1, 5, -1] },
+      { todo_checked: ["a"] },
+      { todo_checked: "0,1" },
+      { todo_version: 1 },
+      { todo_version: "1" },
+    ]) {
       const r = await complete(boss, u.id, { conditions_confirmed: true, ...bad });
       expect(r.status, JSON.stringify(bad)).toBe(422);
+      expect(JSON.stringify(await json(r)), JSON.stringify(bad)).not.toContain("E-VAL-022");
     }
     expect(await stageKeyOf(u.id)).toBe("doing");
+    const ok = await complete(boss, u.id, { conditions_confirmed: true });
+    expect(ok.status, await ok.clone().text()).toBe(201);
+    expect(await stageKeyOf(u.id)).toBe("done");
   });
 
-  it("K566-API-009 本文の行が無い（前の形）：実施事項の区画の「- 」の行のうち「- [x]」でない行を数える（body 1）。区画は書き換えない", async () => {
+  it("K578-API-016 本文の行が無い（前の形・K-575 の移しで本文にならなかった物）：実施事項の区画は読まず、unchecked の body は 0。区画の版と字は書き換えない", async () => {
     const t = await ticket({ todo: "- 請求書を作る\n- [x] 先方に送る\n- [X] 控える\n説明の行" });
     await executed(t);
     const before = await one<{ version: number; text: string }>(
       "select version, body->>'text' as text from ticket_sections where ticket_id = $1 and section_key = 'todo'",
       [t.id],
     );
-    expect(await completeAndCount(t)).toEqual({ body: 1, specs: 0 });
+    expect(await completeAndCount(t)).toEqual({ body: 0, specs: 0 });
     expect(
       await one(
         "select version, body->>'text' as text from ticket_sections where ticket_id = $1 and section_key = 'todo'",
         [t.id],
       ),
     ).toEqual(before);
+    const withBody = await ticket({ todo: "- 区画の未 1\n- 区画の未 2" });
+    await executed(withBody);
+    await putBody(withBody, docOf(taskList(task("未", false)), taskList(task("済", true))));
+    await addSpec(withBody, "未の確認項目");
+    expect(await completeAndCount(withBody)).toEqual({ body: 1, specs: 1 });
   });
 
-  it("K566-API-014 DB の関数を直に呼ぶ（2 層目）：app.ticket_complete は前の引数（uuid・integer[]・integer・boolean）のまま答えに unchecked を持つ。app.ticket_body_unchecked は null・空の jsonb・文字を 0 と数え、入れ子を数える", async () => {
+  it("K578-API-017 DB の関数を直に呼ぶ（2 層目）：app.ticket_complete は (uuid, boolean) の 2 引数だけで、答えに unchecked を持つ。app.ticket_body_unchecked は null・空の jsonb・文字を 0 と数え、入れ子を数える", async () => {
     const t = await ticket();
     await executed(t);
     await putBody(t, docOf(taskList(task("未", false))));
     const ctx: TenantContext = { tenantId: T.tenantId, userId: boss.id, role: "member", stepUpAt: null };
     const out = await withTenant(f.pool, ctx, (cl) =>
-      cl.query<{ v: { unchecked?: { body: number; specs: number } } }>(
-        "select app.ticket_complete($1, null::integer[], null::integer, true) as v",
-        [t.id],
-      ),
+      cl.query<{ v: { unchecked?: { body: number; specs: number } } }>("select app.ticket_complete($1, true) as v", [
+        t.id,
+      ]),
     );
     expect(out.rows[0]!.v.unchecked).toEqual({ body: 1, specs: 0 });
     const sig = await f.admin.query<{ args: string }>(
       "select pg_get_function_identity_arguments(p.oid) as args from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'app' and p.proname = 'ticket_complete'",
     );
-    expect(sig.rows.map((x) => x.args)).toEqual([
-      "p_ticket uuid, p_todo_checked integer[], p_todo_version integer, p_confirmed boolean",
-    ]);
+    expect(sig.rows.map((x) => x.args)).toEqual(["p_ticket uuid, p_confirmed boolean"]);
     const cnt = async (j: unknown) =>
       Number(
         (await f.admin.query<{ n: number }>("select app.ticket_body_unchecked($1::jsonb) as n", [JSON.stringify(j)]))
