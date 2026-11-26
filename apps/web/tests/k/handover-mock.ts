@@ -63,6 +63,10 @@ export type Kind = "pass" | "offer" | "distribute";
 
 /** モックと同じ字の日付（返事の期限 11/23（月）18:00・決めた時刻 11/20 10:12・取り消し 11/20 11:40・日本時間） */
 export const DUE = "2026-11-23T09:00:00.000Z";
+/** 画面の時計（page.clock で止める・決めた時刻 AT と取り消し AT_WITHDRAWN の後、返事の期限 DUE の前の 11/20 12:00 日本時間）。
+ *  DUE は字をモックと同じにするため固定の日付のまま。止めないと、日が過ぎると下見の既定の期限 DUE が「今より前」になり、
+ *  小窓の手元の確かめ（E-HND-008）が口を送らない（段9 の全部の CI・2026-11-27）。画面は期限切れを口の overdue で決め、時計で決めない */
+export const NOW = "2026-11-20T03:00:00.000Z";
 export const DUE_PAST = "2026-11-19T09:00:00.000Z";
 export const AT = "2026-11-20T01:12:00.000Z";
 export const AT_WITHDRAWN = "2026-11-20T02:40:00.000Z";
@@ -287,7 +291,8 @@ export interface HMock {
   previewReads: number;
   /** 記録の読む口（listTicketHandovers）の回数。詳細を開いただけでは 0 のまま */
   listReads: number;
-  /** getTicket の回数（開き直し・押した後の読み直しを数える） */
+  /** getTicket の回数（開き直し・押した後の読み直しを数える）。網に出た GET /tickets/:id だけを数える
+   *  （土台の実行の一覧の答えも m.on.ticket を呼ぶので、on.ticket の中では数えない・段9 の全部の CI・2026-11-27） */
   ticketReads: number;
   /** 書く口の答えを止めておく。返した関数を呼ぶと答える（時間で待たない・2 回押しを見る） */
   hold: () => () => void;
@@ -327,6 +332,7 @@ export async function mockHandovers(
 ): Promise<{ api: Mock; h: HMock; setAssignee: (id: string | null) => void }> {
   const me = o.me ?? ME;
   const band: Band = o.band ?? { stage: "doing" };
+  await page.clock.setFixedTime(new Date(NOW));
   const api = await mockApi(page, band);
   let assignee = o.assignee === undefined ? ME : o.assignee;
   /** 受けた後など、getTicket の担当者を替える（次の読み直しから） */
@@ -334,7 +340,6 @@ export async function mockHandovers(
     assignee = id;
   };
   api.on.ticket = () => {
-    h.ticketReads++;
     const base = ticketOf(band) as unknown as { ticket: Record<string, unknown> } & Record<string, unknown>;
     return ok(
       withBand(band, {
@@ -419,19 +424,22 @@ export async function mockHandovers(
       },
     },
   };
-  const base = `/api/v1/tickets/${TICKET}`;
+  // 下見・渡しの口はどのチケットでも受ける（承認待ちのグループの行は別のチケット・K-415）。getTicket を数えるのは詳細のチケットだけ
+  const TK = /^\/api\/v1\/tickets\/[^/]+/;
+  const tk = (p: string, rest: string) => TK.test(p) && p.replace(TK, "") === rest;
   await page.route(API_RE, async (route: Route, req: Request) => {
     const p = new URL(req.url()).pathname;
     const m = req.method();
     const key = req.headers()["idempotency-key"];
     let reply: Reply | null = null;
-    if (m === "GET" && p === `${base}/handover-preview`) {
+    if (m === "GET" && p === `/api/v1/tickets/${TICKET}`) h.ticketReads++;
+    if (m === "GET" && tk(p, "/handover-preview")) {
       h.previewReads++;
-      reply = await h.on.preview(req);
-    } else if (m === "GET" && p === `${base}/handovers`) {
+      reply = selfIsMe(await h.on.preview(req), me);
+    } else if (m === "GET" && tk(p, "/handovers")) {
       h.listReads++;
       reply = await h.on.list(req);
-    } else if (m === "POST" && p === `${base}/handovers`) {
+    } else if (m === "POST" && tk(p, "/handovers")) {
       h.passes.push({ body: req.postDataJSON() as PassBody, key });
       await h.gate;
       reply = await h.on.pass(req);
@@ -469,6 +477,14 @@ export async function mockHandovers(
   return { api, h, setAssignee };
 }
 
+/** 下見の候補の「自分」の印は見ている人で決める（preview() の既定は高本が self。マネージャーの佐藤が見る形でも佐藤が自分になる・K-415） */
+function selfIsMe(r: Reply, me: string): Reply {
+  const b = r.body as ({ data?: { candidates?: Candidate[] } } & Record<string, unknown>) | null;
+  const d = b?.data;
+  if (!b || !d || !Array.isArray(d.candidates)) return r;
+  return { ...r, body: { ...b, data: { ...d, candidates: d.candidates.map((c) => ({ ...c, self: c.id === me })) } } };
+}
+
 /** 口の失敗の答え（正本の番号つき・{名前} の差し込みは details に入れる） */
 export const errReply = (status: number, code: string, detail: Record<string, unknown> = {}): Reply => ({
   status,
@@ -483,6 +499,10 @@ export async function openDetail(page: Page, width = 1440): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: TITLE })).toBeVisible();
   await expect(page.locator('#k-main [aria-busy="true"]')).toHaveCount(0);
 }
+
+/** 見た目の突き合わせ（matchMock）の前に頁を上端へ戻す。モックは巻いていない頁で読むが、幅 375 では下の方の「担当者 ▾」を押すと
+ *  頁が巻かれ、画面に重なる固定の小窓の y に巻いた分が足されてずれる（段9 の全部の CI・2026-11-27）。巻いていない要素の y は変わらない */
+export const toTop = (page: Page) => page.evaluate(() => window.scrollTo(0, 0));
 
 /** 詳細の題名の下の帯の区画（承認・実行の帯と同じ .k-detail-bands） */
 export const bandsOf = (page: Page) => page.locator(".k-detail-bands");
