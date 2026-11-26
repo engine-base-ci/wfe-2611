@@ -19,6 +19,38 @@ export interface HomeEmptyProps {
   onSuggest?: (title: string) => void;
 }
 
+const noop = (): void => undefined;
+
+export interface SuggestLineProps {
+  /** おすすめの題名（3 つ） */
+  suggestions: readonly string[];
+  /** おすすめを押したとき。無ければ（書けない人）押せない形（aria-disabled の span）で描く */
+  onSuggest?: (title: string) => void;
+}
+
+/** 「はじめての 1 枚におすすめ：」と 3 つを「 ・ 」でつないだ 1 行（K-453）。一覧の入れ物 HomeSuggest もこれを描く */
+export function SuggestLine({ suggestions, onSuggest }: SuggestLineProps) {
+  return (
+    <p className="k-list-suggest">
+      はじめての 1 枚におすすめ：
+      {suggestions.map((t, i) => (
+        <span key={t}>
+          {i ? " ・ " : null}
+          {onSuggest ? (
+            <button type="button" className="k-f4-home-suggest" onClick={() => onSuggest(t)}>
+              {t}
+            </button>
+          ) : (
+            <span className="k-list-off" aria-disabled="true" title={`${t}（準備中）`}>
+              {t}
+            </span>
+          )}
+        </span>
+      ))}
+    </p>
+  );
+}
+
 export function HomeEmpty({ name, canCreate, suggestions, onCreate, onSuggest }: HomeEmptyProps) {
   return (
     <div className="k-list-first">
@@ -48,17 +80,7 @@ export function HomeEmpty({ name, canCreate, suggestions, onCreate, onSuggest }:
             分身と話して作る
           </span>
         </div>
-        <p className="k-list-suggest">
-          はじめての 1 枚におすすめ：
-          {suggestions.map((t, i) => (
-            <span key={t}>
-              {i ? " ・ " : null}
-              <button type="button" className="k-f4-home-suggest" onClick={() => onSuggest?.(t)}>
-                {t}
-              </button>
-            </span>
-          ))}
-        </p>
+        <SuggestLine suggestions={suggestions} onSuggest={canCreate ? (onSuggest ?? noop) : undefined} />
       </section>
     </div>
   );

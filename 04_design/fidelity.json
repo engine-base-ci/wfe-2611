@@ -1,5 +1,25 @@
 {
  "_doc": "キャンバス（04_design/canvas/<canvas>.dc.html）と画面の見た目の突き合わせの組（K-216）。検査は scripts/ci/fidelity_config.py、比べ方は scripts/ci/fidelity_compare.mjs。組の種類（kind）ごとに要る役（role）、役ごとに要る値（props）は検査の表で決まる。app の {ticket} は画面を整える道具（apps/web/tests/_lib/fidelity-states.ts の state の鍵）が作ったチケットの id に置き換える。どの組も enrolled: false で始め、持ち主（owner）の画面のチケットが直したときに enrolled: true にして道具に鍵を足す。入れた組は消せない・戻せない・比べる値と幅を減らせない・セレクタを替えられない",
+ "removed_groups": [
+  {
+   "group": "tickets-new",
+   "ticket": "K-442",
+   "decision": "D-150.35",
+   "why": "正の絵がキャンバス Create から下絵 v2（/dev/mock/f4v2）に替わり、区画をやめた新しい並びの画面をキャンバスと比べなくなった"
+  },
+  {
+   "group": "tickets-new-sections",
+   "ticket": "K-442",
+   "decision": "D-150.35",
+   "why": "正の絵がキャンバス Create から下絵 v2（/dev/mock/f4v2）に替わり、区画をやめた新しい並びの画面をキャンバスと比べなくなった"
+  },
+  {
+   "group": "ticket-detail",
+   "ticket": "K-571",
+   "decision": "D-150.35",
+   "why": "正の絵がキャンバス TicketDetail から下絵 v2（/dev/mock/f4v2）に替わり、区画をやめた新しい並びの画面をキャンバスと比べなくなった"
+  }
+ ],
  "groups": [
   {
    "id": "signup",
@@ -493,243 +513,6 @@
      "role": "body",
      "canvas": "main > header + div",
      "app": ".k-list-body",
-     "props": [
-      "padding-top",
-      "padding-left",
-      "width",
-      "x",
-      "y"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "tickets-new",
-   "kind": "form",
-   "canvas": "Create",
-   "app": "/tickets?new=1",
-   "state": "tickets-new",
-   "widths": [
-    1440,
-    375
-   ],
-   "owner": "K-224",
-   "enrolled": true,
-   "pairs": [
-    {
-     "name": "見出し",
-     "role": "h1",
-     "canvas": "main header h1",
-     "app": ".k-page-head h1",
-     "props": [
-      "font-size",
-      "font-weight",
-      "line-height",
-      "color",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "見出しの帯",
-     "role": "head",
-     "canvas": "main header",
-     "app": ".k-page-head",
-     "props": [
-      "background-color",
-      "border-bottom-color",
-      "border-bottom-width",
-      "padding-top",
-      "padding-left",
-      "height",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "本文の箱",
-     "role": "body",
-     "canvas": "main > header + div",
-     "app": "section[aria-label=\"チケットを作る\"]",
-     "props": [
-      "padding-top",
-      "padding-left",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "入力欄",
-     "role": "input",
-     "canvas": "form section input[type=text]",
-     "app": "input[name=\"title\"]",
-     "props": [
-      "width",
-      "height",
-      "background-color",
-      "border-top-color",
-      "border-radius",
-      "font-size"
-     ]
-    },
-    {
-     "name": "主ボタン",
-     "role": "primary",
-     "canvas": "button[style*=\"padding: 0 18px\"]",
-     "app": ".k-create-foot button[type=\"submit\"]",
-     "props": [
-      "height",
-      "background-color",
-      "color",
-      "font-size",
-      "font-weight",
-      "border-radius",
-      "x",
-      "y"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "tickets-new-sections",
-   "kind": "form",
-   "canvas": "Create",
-   "app": "/tickets?new=1",
-   "state": "tickets-new-sections",
-   "widths": [
-    1440,
-    375
-   ],
-   "owner": "K-225",
-   "enrolled": true,
-   "pairs": [
-    {
-     "name": "見出し",
-     "role": "h1",
-     "canvas": "main header h1",
-     "app": ".k-page-head h1",
-     "props": [
-      "font-size",
-      "font-weight",
-      "line-height",
-      "color",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "見出しの帯",
-     "role": "head",
-     "canvas": "main header",
-     "app": ".k-page-head",
-     "props": [
-      "background-color",
-      "border-bottom-color",
-      "border-bottom-width",
-      "padding-top",
-      "padding-left",
-      "height",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "本文の箱",
-     "role": "body",
-     "canvas": "section[aria-label=\"本文\"]",
-     "app": "section[aria-label=\"本文\"]",
-     "props": [
-      "padding-top",
-      "padding-left",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "入力欄",
-     "role": "input",
-     "canvas": "form section input[type=text]",
-     "app": "input[name=\"title\"]",
-     "props": [
-      "width",
-      "height",
-      "background-color",
-      "border-top-color",
-      "border-radius",
-      "font-size"
-     ]
-    },
-    {
-     "name": "主ボタン",
-     "role": "primary",
-     "canvas": "button[style*=\"padding: 0 18px\"]",
-     "app": ".k-create-foot button[type=\"submit\"]",
-     "props": [
-      "height",
-      "background-color",
-      "color",
-      "font-size",
-      "font-weight",
-      "border-radius",
-      "x",
-      "y"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "ticket-detail",
-   "kind": "page",
-   "canvas": "TicketDetail",
-   "app": "/tickets/{ticket}",
-   "state": "ticket-detail",
-   "widths": [
-    1440,
-    375
-   ],
-   "owner": "K-226",
-   "enrolled": true,
-   "pairs": [
-    {
-     "name": "見出し",
-     "role": "h1",
-     "canvas": "main article h1",
-     "app": ".k-page-head h1",
-     "props": [
-      "font-size",
-      "font-weight",
-      "line-height",
-      "color",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "見出しの帯",
-     "role": "head",
-     "canvas": "main article > div:has(h1)",
-     "app": ".k-page-head",
-     "props": [
-      "background-color",
-      "border-bottom-color",
-      "border-bottom-width",
-      "padding-top",
-      "padding-left",
-      "height",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "本文の箱",
-     "role": "body",
-     "canvas": "main > div > div:first-child",
-     "app": ".k-page",
      "props": [
       "padding-top",
       "padding-left",

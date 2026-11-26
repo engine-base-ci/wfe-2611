@@ -21,10 +21,22 @@ export type DiffField = "本文" | "項目の変更";
 /** 読み上げとコピーの頭 */
 export const KIND_LABEL: Record<DiffKind, string> = { same: "同じ：", del: "削除：", add: "追加：" };
 
-/** 真ん中（前後の同じ行を外した残り）の最長共通部分。dp[i][j] は a[i..] と b[j..] の長さ */
+/**
+ * 真ん中の表のマスの上限（行数の積）。400 万マスで表は約 16MB（2 千行×2 千行が全部違うとき手元で約 50ms）。
+ *   本文の上限 1MB（2 万行前後）で直した所が多いと 4 億マス（約 1.6GB）になり頁が落ちるので、超えたら比べない
+ */
+export const MAX_DIFF_CELLS = 4_000_000;
+
+/** 真ん中（前後の同じ行を外した残り）の最長共通部分。dp[i][j] は a[i..] と b[j..] の長さ。
+ *   表が上限を超えるときは比べずに、削除を全部・追加を全部の順に並べる（落ちない形） */
 function middle(a: readonly string[], b: readonly string[]): DiffLine[] {
   const n = a.length;
   const m = b.length;
+  if ((n + 1) * (m + 1) > MAX_DIFF_CELLS)
+    return [
+      ...a.map((text): DiffLine => ({ kind: "del", text })),
+      ...b.map((text): DiffLine => ({ kind: "add", text })),
+    ];
   const dp: Uint32Array[] = Array.from({ length: n + 1 }, () => new Uint32Array(m + 1));
   for (let i = n - 1; i >= 0; i -= 1) {
     const row = dp[i]!;
