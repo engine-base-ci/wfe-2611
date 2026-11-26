@@ -1,1 +1,1 @@
-{"data_links": [{"paths": ["apps/web/features/F4/versions/", "apps/web/app/(work)/tickets/[id]/versions/"], "tests": ["apps/web/tests/k/k449-versions.spec.ts"]}], "reads_ok": {"apps/web/tests/k/versions-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-449）"}}
+{"data_links": [{"paths": ["apps/web/features/F4/versions/", "apps/web/app/(work)/tickets/[id]/versions/"], "tests": ["apps/web/tests/k/k449-versions.spec.ts"]}]}

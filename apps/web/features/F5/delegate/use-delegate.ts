@@ -7,6 +7,8 @@
 //      そうでなければ帯に知らせ（429 は待つ秒数の間押せない）。401 は入り直し（共通の扱い）
 //   流れの状態は頁の中の store（チケット id ごと）に置き、題の行のボタン（delegate-act.tsx）と帯（delegate-band.tsx の小窓と知らせ）が同じ物を読む。
 //   帯の props に無い値（確認項目を使わない理由・対象の行）は、題の行のボタンが詳細の答えから載せる（info）。更新は新しい値を作って入れ替える
+//   store は頁を離れても生きるので、画面に出ている間だけの物は出している部品が片付ける：帯が画面に無い間は知らせ・小窓・書きかけの理由を持たない
+//   （離れた後に届いた口の答えも捨てる）。info は載せたボタンが外れるときに消す。送っている間の busy と 429 の waitUntil だけは残す（押し直しを止める）
 import type { QueryClient } from "@tanstack/react-query";
 import { useCallback, useSyncExternalStore } from "react";
 import { errorCodeOf } from "@/components/k/error-of";
@@ -59,9 +61,14 @@ const IDLE: DelegateState = {
 const states = new Map<string, DelegateState>();
 const listeners = new Map<string, Set<() => void>>();
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
+/** 帯（DelegateBand）が画面に出ている数（チケット id ごと） */
+const shown = new Map<string, number>();
+/** 帯が画面に無い間は持たない物（知らせ・小窓・書きかけの理由） */
+const OFF_SCREEN = { dialog: false, reason: "", notice: null, dialogNotice: null } as const;
 const read = (id: string): DelegateState => states.get(id) ?? IDLE;
 function write(id: string, patch: Partial<DelegateState>): void {
-  states.set(id, { ...read(id), ...patch });
+  const next = { ...read(id), ...patch };
+  states.set(id, shown.has(id) ? next : { ...next, ...OFF_SCREEN });
   listeners.get(id)?.forEach((l) => l());
 }
 function subscribe(id: string, l: () => void): () => void {
@@ -173,11 +180,24 @@ function close(ticketId: string): void {
   write(ticketId, { dialog: false, reason: "", dialogNotice: null });
 }
 
-/** 題の行のボタンが詳細の答えから載せる値（変わったときだけ書く） */
-function publish(ticketId: string, info: DelegateInfo): void {
+/** 題の行のボタンが詳細の答えから載せる値（変わったときだけ書く）。返す関数はボタンが外れるときの片付け（載せた値を消す） */
+function publish(ticketId: string, info: DelegateInfo): () => void {
   const cur = read(ticketId).info;
-  if (cur.noSpecReason === info.noSpecReason && cur.target === info.target) return;
-  write(ticketId, { info });
+  if (cur.noSpecReason !== info.noSpecReason || cur.target !== info.target) write(ticketId, { info });
+  return () => {
+    if (read(ticketId).info !== NO_INFO) write(ticketId, { info: NO_INFO });
+  };
+}
+
+/** 帯が画面に出た。返す関数は帯が外れるときの片付け：最後の帯が外れたら知らせ・小窓・書きかけの理由を元に戻す */
+function show(ticketId: string): () => void {
+  shown.set(ticketId, (shown.get(ticketId) ?? 0) + 1);
+  return () => {
+    const left = (shown.get(ticketId) ?? 1) - 1;
+    if (left > 0) shown.set(ticketId, left);
+    else shown.delete(ticketId);
+    write(ticketId, {});
+  };
 }
 
 /** 流れの状態。題の行のボタンと帯が同じ store を読む */
@@ -196,5 +216,6 @@ export const delegateFlow = {
   go,
   close,
   publish,
+  show,
   setReason: (ticketId: string, reason: string): void => write(ticketId, { reason: clipReason(reason) }),
 };

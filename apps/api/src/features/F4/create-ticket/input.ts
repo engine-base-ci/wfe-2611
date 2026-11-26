@@ -4,7 +4,7 @@
 //   つなぐ相手 links（K-581）は形だけを確かめて value に載せる（無い・空なら鍵ごと載せない）。相手が選べるかは DB の app.ticket_link_add（K-441）
 //   複製（K-438）：duplicate_of（元の id・uuid）と copy（写す物の名前 6 つの並び・重複なし）を形だけ確かめて value に載せる。
 //     空文字・null・uuid でない字・知らない名前・重複は入口が先に 422 にするので、ここは二重の守り。duplicate_of が無いのに copy があれば 422（欄 copy）
-//   本文 body があれば body だけを使い sections は載せない／body が無く sections だけなら前の区画の道（K-578 まで）／どちらも無ければ空の本文
+//   本文は body だけ（送らなければ空の本文）。区画の入力 sections は契約に無い欄で、入口が先に 422 にする（K-578）
 import { isUuid } from "@kaname/contracts";
 import { isCopyName } from "./duplicate.js";
 import { checkBody, checkFields, checkLinks, checkSpecs } from "./payload.js";
@@ -82,18 +82,6 @@ export function checkCreate(
   const parent = input["parent_ticket_id"];
   if (parent !== undefined && parent !== "" && (typeof parent !== "string" || !UUID.test(parent)))
     d.push({ field: "parent_ticket_id", message: "親のチケットを選び直してください" });
-  const sections: Record<string, string> = {};
-  const hasBody = input["body"] !== undefined;
-  const rawSections = input["sections"] ?? {};
-  // 区画の形（名前・文字）は本文があっても契約どおり確かめる（K144-API-039）。本文があれば中身は捨てる（DB にも渡さない・K-561 の決め）
-  if (!rawSections || typeof rawSections !== "object" || Array.isArray(rawSections))
-    d.push({ field: "sections", message: "区画の形が違います" });
-  else
-    for (const [k, v] of Object.entries(rawSections as Record<string, unknown>)) {
-      if (!/^[a-z][a-z0-9_]{0,40}$/.test(k)) d.push({ field: `sections.${k}`, message: "区画の名前が違います" });
-      else if (typeof v !== "string") d.push({ field: `sections.${k}`, message: "区画は文字で書いてください" });
-      else if (!hasBody) sections[k] = v.trim(); // 区画の中身に上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
-    }
   const notify = input["notify_member_ids"] ?? [];
   if (
     !Array.isArray(notify) ||
@@ -108,10 +96,9 @@ export function checkCreate(
   const source = input["source_draft_id"];
   if (source !== undefined && source !== "" && (typeof source !== "string" || !UUID.test(source)))
     d.push({ field: "source_draft_id", message: "uuid" });
-  // 本文は sections だけで来た作り方（前の道）でないときに載せる。送らなければ空の本文
-  const useSections = !hasBody && input["sections"] !== undefined;
-  const bodyPart = useSections ? null : checkBody("body" in raw ? raw.body : input["body"]);
-  if (bodyPart && !bodyPart.ok) d.push(...bodyPart.details);
+  // 本文（送らなければ空の本文）
+  const bodyPart = checkBody("body" in raw ? raw.body : input["body"]);
+  if (!bodyPart.ok) d.push(...bodyPart.details);
   const fieldsPart = checkFields(input["fields"]);
   if (!fieldsPart.ok) d.push(...fieldsPart.details);
   const specsPart = checkSpecs("specs" in raw ? raw.specs : input["specs"]);
@@ -130,9 +117,7 @@ export function checkCreate(
       });
     else if (dup === undefined) d.push({ field: "copy", message: "写す物は複製の元と一緒に送ってください" });
   }
-  if (d.length || (bodyPart && !bodyPart.ok) || !fieldsPart.ok || !specsPart.ok || !linksPart.ok)
-    return { ok: false, details: d };
-  const bodyValue = bodyPart && bodyPart.ok ? bodyPart.value : null;
+  if (d.length || !bodyPart.ok || !fieldsPart.ok || !specsPart.ok || !linksPart.ok) return { ok: false, details: d };
   return {
     ok: true,
     value: {
@@ -146,7 +131,7 @@ export function checkCreate(
       priority_reason: reason || null,
       estimate_minutes: estimate,
       parent_ticket_id: parent || null,
-      ...(bodyValue ? { body: bodyValue } : { sections }),
+      body: bodyPart.value,
       fields: fieldsPart.value,
       specs: specsPart.value,
       ...(linksPart.value.length ? { links: linksPart.value } : {}),
