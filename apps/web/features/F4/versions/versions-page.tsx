@@ -60,9 +60,13 @@ export function VersionsPage({ id, of, from, to }: VersionsPageProps): ReactNode
               completed={t?.completed ?? false}
               sending={v.sending}
               restoreError={v.restoreError}
+              itemSending={v.itemSending}
+              itemError={v.itemError}
+              restoreNote={v.restoreNote}
               choose={v.choose}
               reload={v.reload}
               restore={() => void v.restore()}
+              restoreItems={() => void v.restoreItems()}
             />
           </>
         )}

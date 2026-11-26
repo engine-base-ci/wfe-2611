@@ -6,8 +6,11 @@
 //   戻す（本文だけ）：確かめの小窓を挟まず送る。current_version は一覧の今の版。失敗は戻すボタンの下の赤い箱（押し直せる）。
 //     409 E-SEC-004 は口の文そのまま＋一覧を読み直す／E-SEC-005 は詳細を読み直して戻すを押せない形に／401 は入り直しへ
 //   画面は役の名前で出し分けず、口の答え（meta.can_restore・completed）で出し分ける
+//   項目を戻す（K-579）：item-restore.ts の useItemRestore に任せる。書けるかは版の一覧の meta.can_restore（項目の変更の口には無い）。
+//     項目の変更から開いたときだけ、開くときに版の一覧を 1 回読んで覚える（開くときの口は getTicket・版の一覧の 2 本のまま）。
+//     戻した結果（restoreNote）と赤い箱は、比べる物・元・先を選び直すと消える（戻した後の選びの戻しと読み直しでは消えない）
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
 import { useNotify } from "@/components/k";
@@ -17,6 +20,7 @@ import { readTicket, ticketKey } from "@/features/F5/approve-complete/band";
 import { FORBIDDEN_TEXT } from "@/features/F4/items/use-field-save";
 import { diffLines, itemDiffLines, type DiffField, type DiffLine, type ItemDiffRow } from "./diff-lines";
 import { versionsHref } from "./versions-href";
+import { useItemRestore, type RestoreNote } from "./item-restore";
 
 const SCREEN = "tickets";
 export type Of = "body" | "items";
@@ -42,8 +46,8 @@ export interface View {
   readonly from: number | null;
   readonly to: number | null;
   readonly lines: readonly DiffLine[];
-  /** 見ている人が戻せるか（本文の口の meta.can_restore。項目の変更は K-576 まで false） */
-  readonly canRestore: boolean;
+  /** 見ている人が戻せるか（版の一覧の口の meta.can_restore。項目の変更も同じ値を使う・K-579）。null は答え待ちか読めなかった */
+  readonly canRestore: boolean | null;
 }
 export type Loaded =
   | { readonly state: "loading" }
@@ -138,6 +142,7 @@ async function readItems(id: string, s: Sel): Promise<View> {
     from: d["from"] === null || d["from"] === undefined ? null : Number(d["from"]),
     to: d["to"] === null || d["to"] === undefined ? null : Number(d["to"]),
     lines: itemDiffLines(rows),
+    // 項目の変更の口は can_restore を返さない。useVersions が版の一覧の答えで置き換える（K-579）
     canRestore: false,
   };
 }
@@ -159,9 +164,16 @@ export interface Versions {
   readonly sending: boolean;
   /** 戻すの失敗の文（戻すボタンの下の赤い箱） */
   readonly restoreError: string | null;
+  /** 項目を戻すを送っている間（K-579） */
+  readonly itemSending: boolean;
+  /** 項目を戻すの失敗の文（K-579） */
+  readonly itemError: string | null;
+  /** 項目を戻した結果（戻せなかった項目の並び・K-579） */
+  readonly restoreNote: RestoreNote | null;
   choose: (next: Sel) => void;
   reload: () => void;
   restore: () => Promise<void>;
+  restoreItems: () => Promise<void>;
 }
 
 export function useVersions(id: string, initial: Sel): Versions {
@@ -176,6 +188,9 @@ export function useVersions(id: string, initial: Sel): Versions {
   const busy = useRef(false);
   const seenNonce = useRef(0);
   const valid = isUuid(id);
+  // 書けるか（版の一覧の meta.can_restore）。項目の変更の戻すも同じ値で決める（K-579）
+  const [canEdit, setCanEdit] = useState<boolean | null>(null);
+  const openedOn = useRef(initial.of);
 
   const readHead = useCallback(
     () =>
@@ -214,6 +229,22 @@ export function useVersions(id: string, initial: Sel): Versions {
     void readHead();
   }, [id, valid, readHead]);
 
+  // 項目の変更から開いたときだけ、版の一覧を 1 回読んで書けるかを覚える（本文から開いたときは本文の読みが同じ口）
+  useEffect(() => {
+    if (!valid || !getToken() || openedOn.current !== "items") return;
+    qc.fetchQuery({
+      queryKey: ["k579", "can-restore", id],
+      queryFn: () => readBody(id, { of: "body", from: null, to: null }),
+      retry: false,
+      staleTime: 0,
+      gcTime: 0,
+    }).then(
+      (v) => setCanEdit((prev) => prev ?? v.canRestore),
+      // 読めなかったときは書けるかが分からないまま（null）。押せない形で title は付けない
+      () => undefined,
+    );
+  }, [qc, id, valid]);
+
   // 比べ方（と読み直しの合図）が変わるたびに、その口を 1 回読む
   useEffect(() => {
     if (!valid || !getToken()) return;
@@ -231,7 +262,9 @@ export function useVersions(id: string, initial: Sel): Versions {
       gcTime: 0,
     }).then(
       (view) => {
-        if (live) setLoaded({ state: "ok", view });
+        if (!live) return;
+        if (view.of === "body") setCanEdit(view.canRestore);
+        setLoaded({ state: "ok", view });
       },
       (e: unknown) => {
         if (!live) return;
@@ -246,10 +279,10 @@ export function useVersions(id: string, initial: Sel): Versions {
     };
   }, [qc, id, valid, sel, nonce]);
 
-  const choose = useCallback(
+  // 選びと URL を替える（赤い箱と並びは消さない）
+  const place = useCallback(
     (next: Sel) => {
       setSel(next);
-      setRestoreError(null);
       const href = versionsHref(id, {
         ...(next.of === "items" ? { of: "items" as const } : {}),
         ...(next.from !== null ? { from: next.from } : {}),
@@ -260,6 +293,41 @@ export function useVersions(id: string, initial: Sel): Versions {
     [id],
   );
   const reload = useCallback(() => setNonce((n) => n + 1), []);
+
+  // 項目の変更の今の見え方（書けるかは版の一覧の答え）
+  const shown = useMemo<Loaded>(
+    () =>
+      loaded.state === "ok" && loaded.view.of === "items"
+        ? // 版の一覧の答えが来る前と読めなかったときは null（押せない形で title なし）。押せるのは答えが true のときだけ
+          { state: "ok", view: { ...loaded.view, canRestore: canEdit } }
+        : loaded,
+    [loaded, canEdit],
+  );
+  const itemView = shown.state === "ok" && shown.view.of === "items" && sel.of === "items" ? shown.view : null;
+  const completed = ticket.state === "ok" && ticket.ticket.completed;
+  const rereadHead = useCallback(() => void readHead(), [readHead]);
+  const toLogin = useCallback(() => goLogin(id), [id]);
+  const items = useItemRestore({
+    id,
+    pointsTop: itemView ? Math.max(...itemView.versions.map((v) => v.n)) : null,
+    from: itemView?.from ?? null,
+    to: itemView?.to ?? null,
+    canRestore:
+      itemView !== null && canEdit === true && !completed && itemView.versions.length > 1 && itemView.lines.length > 0,
+    place,
+    reload,
+    readHead: rereadHead,
+    goLogin: toLogin,
+  });
+  const clearItems = items.clear;
+  const choose = useCallback(
+    (next: Sel) => {
+      place(next);
+      setRestoreError(null);
+      clearItems();
+    },
+    [place, clearItems],
+  );
 
   const restore = useCallback(async () => {
     if (busy.current || loaded.state !== "ok" || sel.of !== "body") return;
@@ -301,5 +369,18 @@ export function useVersions(id: string, initial: Sel): Versions {
     }
   }, [loaded, sel.of, id, notify, choose, reload, readHead]);
 
-  return { sel, ticket, loaded, sending, restoreError, choose, reload, restore };
+  return {
+    sel,
+    ticket,
+    loaded: shown,
+    sending,
+    restoreError,
+    itemSending: items.busy,
+    itemError: items.error,
+    restoreNote: items.restoreNote,
+    choose,
+    reload,
+    restore,
+    restoreItems: items.restore,
+  };
 }
