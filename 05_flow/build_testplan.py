@@ -177,15 +177,36 @@ UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が�
               '[ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }\n'
               f"python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report {UNIT_DIR}/merged.json\n")
 SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
-              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
-              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n          CI_LEAVES_INPUT: ${{ inputs.leaves }}\n"
+              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 # spec の段が自分で出す本線との分かれ目（static を待たないため。入力は static の G0 と同じ・値は env で渡す・K-143）
 SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"\n        id: scope\n'
-                   "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
-                   '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+                   "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n          CI_LEAVES_INPUT: ${{ inputs.leaves }}\n"
+                   '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base", "gates", "py_tests",
-                                          "web_g48", "web_g59", "web_gates", "web_tasks"))
+                                          "web_g48", "web_g59", "web_gates", "web_tasks")) + "".join(f"      {k}: ${{{{ steps.shards.outputs.{k} }}}}\n" for k in ("web_shards", "web_parts"))
+# 画面の試験の組の分け方（K-1304・今だけの設定）：置き場の変数 WEB_SHARDS（無ければ 1）の数に G48 を分け、G59・専用の段も別の組にして同時に流す。
+#   1（か無い）なら web の組は今と同じ 1 組（matrix の all）。値は env で渡し（run の命令の文字に入れない）、数でなければ赤
+SHARDS_STEP = ('      - name: "画面の試験の組の分け方（置き場の変数 WEB_SHARDS・無ければ 1＝今と同じ 1 組・K-1304）"\n        id: shards\n'
+               "        env:\n          WEB_SHARDS_VAR: ${{ vars.WEB_SHARDS }}\n"
+               '        run: python3 scripts/ci/web_run.py shards --github-output "$GITHUB_OUTPUT"\n')
+WEB_MATRIX = ("    strategy:\n      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）\n"
+              f"      matrix:\n        part: ${{{{ fromJSON({SO}.web_parts || '[\"all\"]') }}}}\n")
+# GitHub の台では、ブラウザの取り込みを回をまたいで使い回す（自分の台は像に残るので上げ下ろししない・K-172）。部品の apt は次の段がそろえる
+PW_CACHE = ("      - uses: actions/cache@v4   # GitHub の台だけ（K-1304）\n        if: ${{ runner.environment == 'github-hosted' }}\n"
+            "        with: { path: ~/.cache/ms-playwright, key: \"ms-playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}\" }\n")
+WEB_PART_UP = """      - uses: actions/upload-artifact@v4
+        # 分けた組の物（G48 の blob の報告と終わりの番号・G59 と専用の段の JUnit）。web-report の組が合わせる（K-1304）
+        if: ${{ always() && matrix.part != 'all' }}
+        with:
+          name: web-part-${{ matrix.part }}
+          path: |
+            web-part/
+            junit/
+          if-no-files-found: error
+          retention-days: 1
+"""
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
                f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
                "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
@@ -301,7 +322,11 @@ on:
         type: string
         default: ''
       base:
-        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        description: "比べる元（40 桁のコミット。チケットの回の範囲と、全部の回の migration の lint に使う）"
+        type: string
+        default: ''
+      leaves:
+        description: "段の葉の番号（空白区切り）。scope=full のとき ticket-flow の stageq が渡す。無い全部の回は止める（K-1305）"
         type: string
         default: ''
       target:
@@ -323,7 +348,7 @@ jobs:
   static:
     runs-on: {RUNS_ON}
 {SCOPE_OUTPUTS}    steps:
-{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
+{NODE}{SCOPE_STEP}{SHARDS_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
   database:
     runs-on: {RUNS_ON}
     needs: [static]
@@ -354,16 +379,21 @@ jobs:
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
   web:
+    name: ${{{{ matrix.part == 'all' && 'web' || format('web ({{0}})', matrix.part) }}}}
     runs-on: {RUNS_ON}
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
+    # 組は static の web_parts（K-1304）：WEB_SHARDS が 1 か無ければ all の 1 組（今と同じ）。2 以上なら G48 を分けた組・G59・専用の段の組が同時に走り、
+    #   組ごとに自分の DB・API・画面を立てる（準備は同じ）。どの段を流すかは web_run.py が WEB_PART で決める（段の名前・if は変えない）
     needs: [static]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
     #   入力が空の回（push・入力を渡さない回）は今までどおり流れる
     if: ${{{{ !cancelled() && {SO}.web == 'true' && inputs.web != 'defer' }}}}
-    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
+{WEB_MATRIX}    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
     #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
     # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）
     env:
+      WEB_PART: ${{{{ matrix.part }}}}
+      WEB_SHARDS: ${{{{ {SO}.web_shards || '1' }}}}
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
       # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
@@ -380,7 +410,7 @@ jobs:
       LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
       LEGAL_STORAGE_PROVIDER: 試験の置き場
     steps:
-{NODE}{DB_START}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
+{NODE}{DB_START}{PW_CACHE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
 {TOOLS_STEP}      - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
         run: |
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 番号 $port が使われている（手元の開発のサーバーなど）。止めてから流し直す"; exit 1; fi; done
@@ -408,18 +438,49 @@ jobs:
         run: pnpm --filter @kaname/bridge build
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'web')}      - uses: actions/upload-artifact@v4
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
-        if: ${{{{ !cancelled() }}}}
+        if: ${{{{ !cancelled() && matrix.part == 'all' }}}}
         with: {{ name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }}
-{junit_up("web")}      - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
+      - uses: actions/upload-artifact@v4
+        if: ${{{{ always() && matrix.part == 'all' }}}}
+        with: {{ name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }}
+{WEB_PART_UP}      - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
         if: always()
         run: |
           bash scripts/ci/kill_tree.sh "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"   # 孫以下（node・next-server）まで
           # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
-{DB_STOP}  junit:
+{DB_STOP}  web-report:
+    runs-on: {RUNS_ON}
+    # 分けて流した画面の試験を合わせる（K-1304）：G48 の blob を merge-reports で 1 つの報告（pw-reports/k.json）と JUnit（junit/web.xml）にし、
+    #   今と同じ記録（ci_results.py record）と照らし（op_gate.py）を 1 回。G59・専用の段の JUnit と合わせて junit-web・ci-results を上げる。
+    #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
+    needs: [static, web]
+    if: ${{{{ !cancelled() && needs.web.result != 'skipped' && fromJSON({SO}.web_shards || '1') > 1 }}}}
+    env:
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/web.xml
+      WEB_SHARDS: ${{{{ {SO}.web_shards }}}}
+    steps:
+{NODE}      - uses: actions/download-artifact@v4
+        with: {{ pattern: web-part-*, path: ., merge-multiple: true }}
+      - name: "分けて流した G48 を合わせ、記録して照らす（N 組の blob と終わりの番号がそろう・どれかが赤なら記録しない・K-1304）"
+        if: ${{{{ !cancelled() }}}}
+        env:
+          CI_FULL: ${{{{ {SO}.full }}}}
+          CI_WEB_SPECS: ${{{{ {SO}.web_g48 }}}}
+          CI_WEB_OTHER: ${{{{ {SO}.web_g59 }}}}
+          CI_WEB_TASKS: ${{{{ {SO}.web_tasks }}}}
+          CI_WEB_GATES: ${{{{ {SO}.web_gates }}}}
+        run: python3 scripts/ci/web_run.py g48-report
+      - uses: actions/upload-artifact@v4
+        if: ${{{{ !cancelled() }}}}
+        with: {{ name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {{ name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }}
+  junit:
     runs-on: {RUNS_ON}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
-    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, web]
+    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, web, web-report]
     if: always()
     steps:
       - uses: actions/upload-artifact/merge@v4

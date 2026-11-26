@@ -257,7 +257,7 @@ const STATES: Record<string, (page: Page, mk: MMock) => Promise<void>> = {
     await openDialog(page);
     await addMail(page, "kimura@engine-base.example");
     await page.locator(DLG).getByLabel("メール").fill("nakamura@engine-base.example");
-    await page.locator(DLG).getByLabel("ひとこと（任意）").fill("営業の問い合わせをいっしょに回してもらいます");
+    // 「ひとこと・リンクで招く」は既定で閉じる（チケットの行とモック inv-dialog も閉じたまま）。開かずに見えない欄へは書かない（段9 の全部の CI・2026-11-27）
   },
   "inv-error": async (page, mk) => {
     mk.on.invite = () => already(["suzuki@engine-base.example"]);
@@ -318,7 +318,10 @@ test("K420-UI-002 /members を開くと並びの口を 1 回だけ読む・左�
   const mk = await mockMembers(page);
   await openMembers(page, owner.token);
   expect(mk.reads).toBe(1);
-  const nav = page.getByRole("link", { name: "ワークスペースの管理" });
+  // 左のバー（メニュー）の項目だけを見る。頭の「いまの場所」のくずにも同じ字（準備中の role=link）があるので、くずは数えない
+  const nav = page
+    .getByRole("navigation", { name: "メニュー", exact: true })
+    .getByRole("link", { name: "ワークスペースの管理" });
   await expect(nav).toHaveAttribute("aria-current", "page");
   await expect(nav).not.toHaveAttribute("aria-disabled", "true");
 });
@@ -329,7 +332,12 @@ test("K420-UI-003 並び：グループごとに人が 1 人 1 行・状態の�
   const mk = await mockMembers(page);
   mk.invited = true;
   await openMembers(page, owner.token);
-  const sales = page.locator(".k-inv-group").filter({ hasText: "営業" });
+  // グループのカードはグループの名前で絞る（営業のカードにも注「受託開発も兼ねる」があり、字だけで絞ると 2 枚に当たる）
+  const group = (name: string) =>
+    page
+      .locator(".k-inv-group")
+      .filter({ has: page.locator(".k-inv-group-name", { hasText: new RegExp(`^${name}$`) }) });
+  const sales = group("営業");
   await expect(sales.locator(".k-inv-row")).toHaveCount(5);
   await expect(sales.locator(".k-inv-row").filter({ hasText: "高本 聖斗" })).toContainText("自分");
   await expect(sales.locator(".k-inv-row").filter({ hasText: "田中 美咲" })).toContainText("受託開発も兼ねる");
@@ -342,7 +350,7 @@ test("K420-UI-003 並び：グループごとに人が 1 人 1 行・状態の�
   await expect(sales.locator(".k-inv-row").filter({ hasText: "kimura@engine-base.example" })).toContainText(
     "招待中 ・ あと 7 日",
   );
-  const dev = page.locator(".k-inv-group").filter({ hasText: "受託開発" });
+  const dev = group("受託開発");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "佐藤 花子" })).toContainText("兼ねている");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "山口 健" }).locator(".k-inv-state")).toHaveText(
     "分身なし（見るだけ）",
@@ -831,11 +839,15 @@ test("K420-UI-022 キーボード：Tab で「＋ 招く」に届き Enter で�
   await inviteBtn(page).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(DLG).getByLabel("メール")).toBeFocused();
+  // 小窓の部品（base-ui）は最後から先頭へ回すとき、小窓の外の焦点の番（見えない span）を一度通って先頭へ送る。
+  //   押した直後の 1 回だけを読まず、焦点が落ち着くまで待って小窓の中かを見る（段9 の全部の CI・2026-11-27）
   for (let i = 0; i < 20; i++) {
     await page.keyboard.press("Tab");
-    expect(await page.evaluate((s) => !!document.activeElement?.closest(s), DLG), `Tab ${i + 1} 回目も小窓の中`).toBe(
-      true,
-    );
+    await expect
+      .poll(() => page.evaluate((s) => !!document.activeElement?.closest(s), DLG), {
+        message: `Tab ${i + 1} 回目も小窓の中`,
+      })
+      .toBe(true);
   }
 });
 
