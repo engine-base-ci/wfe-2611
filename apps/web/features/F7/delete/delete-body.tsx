@@ -8,6 +8,9 @@ import "./delete.css";
 /** 子・孫の扱い（D-125.62）：別の親へ移す・一緒に消す・親を外して単体にする */
 export type ChildChoice = "move" | "cascade" | "detach";
 
+/** 理由の上限（消す口 K-488 の上限と同じ 400 字） */
+export const REASON_MAX = 400;
+
 /** 消す前の下見（previewTicketDelete の答え＋P6 で足す 承認待ち・つながり・走っている実行の件数） */
 export interface DeletePreviewData {
   number: string;
@@ -75,6 +78,7 @@ export function DeleteBody({ data, choice, parent, reason, onReasonChange }: Del
         label="理由"
         hint="任意・記録に残る"
         value={reason}
+        maxLength={REASON_MAX}
         onChange={(e) => onReasonChange?.(e.target.value)}
       />
     </>

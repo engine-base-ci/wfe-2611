@@ -87,19 +87,25 @@ interface BellProps {
   expanded?: boolean | undefined;
 }
 
+/** ベルの数の上限：これを超えたら「99+」（読み上げは「99 件以上」・K-466） */
+const BELL_MAX = 99;
+
 function BellButton({ notices, onNotices, expanded }: BellProps) {
+  const over = (notices ?? 0) > BELL_MAX;
+  const shown = notices ? (over ? "99+" : String(notices)) : null;
+  const label = notices ? (over ? "お知らせ（99 件以上）" : `お知らせ（${notices} 件）`) : "お知らせ";
   return (
     <button
       type="button"
       className="k-icon-btn k-bell"
-      aria-label={notices ? `お知らせ（${notices} 件）` : "お知らせ"}
+      aria-label={label}
       {...(expanded !== undefined ? { "aria-expanded": expanded, "aria-haspopup": "dialog" as const } : {})}
       aria-disabled={onNotices ? undefined : true}
       title={onNotices ? undefined : "お知らせ（準備中）"}
       onClick={onNotices}
     >
       <Bell size={18} aria-hidden="true" />
-      {notices ? <b aria-hidden="true">{notices}</b> : null}
+      {shown ? <b aria-hidden="true">{shown}</b> : null}
     </button>
   );
 }
