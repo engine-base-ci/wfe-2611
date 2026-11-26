@@ -33,6 +33,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
+sys.path.insert(0, str(HERE))
+import prior_refs  # noqa: E402  控えの枝の版の確かめ（K-1305）
 
 CLEAN = """---
 id: K-901
@@ -185,7 +187,8 @@ class RepoTest(unittest.TestCase):
         """K146-CI-008 ④ K-63・K-64 の突き合わせの結果は、問いのページの表（チケット・ファイル:行@sha・チケットの行）にある。どちらのチケットも 1 行以上。
         そのチケットが着手前の間（stage が完了でない）は、sha が git に在るコミットで（git cat-file・無ければ赤）、ファイル:行 がその版に在る（行の数がそれ以上）。
         取り込み済み（stage: 完了）になったら、形（ファイル:行@sha・チケットの行が空でない）だけを見る（控えの枝は取り込みで消えてよい・PM の判断「K-146 精査回 3 #2」）。
-        チケットの md には書かない"""
+        着手前の間は、ページに「<K-番号> は枝 <枝> の <sha>」（控えの枝の宣言）があること（K-1305：無い sha の赤の文が、
+        CI の置き場に上げる枝の名前を出す。確かめは prior_refs.commit_problems の 1 か所）。チケットの md には書かない"""
         page = (ROOT / "01_hearing/聞くこと_K-146.md").read_text(encoding="utf-8")
         head, rows = None, []
         for ln in page.splitlines():
@@ -209,14 +212,8 @@ class RepoTest(unittest.TestCase):
                 m = re.fullmatch(r"`?([^`:@\s]+):(\d+)@([0-9a-f]{7,40})`?", loc)
                 self.assertTrue(m, f"{t}：ファイル:行@sha の形でない：{loc}")
                 self.assertTrue(trow.strip(), f"{t}：{loc} に結ぶチケットの行が空")
-                if done:
-                    continue   # 取り込み済み：形だけを見る（明示の分岐）
-                path, line, sha = m.group(1), int(m.group(2)), m.group(3)
-                ok = subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], cwd=ROOT, capture_output=True)
-                self.assertEqual(ok.returncode, 0, f"{t}（着手前）：{sha} が git に無い（控えの枝を消した？）")
-                body = subprocess.run(["git", "show", f"{sha}:{path}"], cwd=ROOT, capture_output=True, text=True)
-                self.assertEqual(body.returncode, 0, f"{t}（着手前）：{path} が {sha} に無い")
-                self.assertGreaterEqual(len(body.stdout.splitlines()), line, f"{t}（着手前）：{path}:{line} が {sha} に無い")
+            if not done:   # 着手前：宣言した控えの枝の版で、sha とファイル:行の在りかまで（取り込み済みは形だけ・明示の分岐）
+                self.assertEqual(prior_refs.commit_problems(ROOT, t, [loc for _, loc, _ in mine], prior_refs.declared(page)), [])
         for t in ("K-63", "K-64"):
             self.assertNotIn("## 先にある実装との突き合わせ", (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8"),
                              f"{t}.md には書かない（作る役が次の作るの段で写す）")
