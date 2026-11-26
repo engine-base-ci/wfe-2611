@@ -11,12 +11,15 @@ import { expect, type Browser, type Locator, type Page, type Request, type Route
 import {
   compareFonts,
   compareRows,
+  groupAt,
   loadedFonts,
   mismatches,
   readVals,
+  type FidelityAt,
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(HERE, "../../../..");
@@ -119,6 +122,7 @@ const QUIET = new Set([
   "/api/auth/get-session",
   "/api/auth-ext/me",
   "/api/v1/scopes",
+  "/api/v1/shell",
   "/api/v1/ticket_kinds",
   "/api/v1/members",
   "/api/v1/approvals/queue",
@@ -162,6 +166,18 @@ export async function mockList(page: Page, o: Partial<ListMock> = {}): Promise<L
       };
     else if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
+    // 外枠の口 getShell（K-466）。グループは前の scopes の答えと同じ（営業・EG・書けるか＝writable）。承認待ちの数は承認待ちの行の数。グループの口が失敗する試験は getShell の失敗として答える
+    else if (p === "/api/v1/shell" && m.scopesStatus !== 200)
+      r = { status: m.scopesStatus, body: { error: "server_error", code: "INTERNAL" } };
+    else if (p === "/api/v1/shell")
+      r = ok(
+        shellData({
+          approvals: m.approvals.length,
+          groups: [
+            { id: SALES, name: "営業", ticket_prefix: "EG", writable: m.writable.includes(SALES), open_count: 0 },
+          ],
+        }),
+      );
     else if (p === "/api/v1/scopes" && m.scopesStatus !== 200)
       r = { status: m.scopesStatus, body: { error: "server_error", code: "INTERNAL" } };
     else if (p === "/api/v1/scopes")
@@ -261,32 +277,36 @@ export interface Group {
   pairs: FidelityPair[];
   owner: string;
   enrolled: boolean;
+  /** 幅ごとの絵（K-1301）：その幅だけ比べる絵とセレクタを替える記録 */
+  at?: Record<string, FidelityAt>;
 }
 export const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
 
-/** 組が enrolled・持ち主・鍵が在ることを見てから、キャンバスと画面を同じ幅で描いて組の値と読み込んだ書体を比べる */
+/** 組が enrolled・持ち主・鍵が在ることを見てから、キャンバスと画面を同じ幅で描いて組の値と読み込んだ書体を比べる。
+ *  比べる絵とセレクタは groupAt(組, 幅) で解く（幅ごとの絵・組の at・K-1301。値と幅は組のまま・K-478 が替えた） */
 export async function compareGroup(browser: Browser, g: Group | undefined, owner: string, w: number) {
   expect(g, "組が設定に無い").toBeTruthy();
   expect(g!.enrolled, `${g!.id} が enrolled`).toBe(true);
   expect(g!.owner, g!.id).toBe(owner);
   expect(FIDELITY_STATES[g!.state], `${g!.id} の state ${g!.state}`).toBeTruthy();
+  const atW = groupAt(g!, w);
   const canvasPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
   await routeCanvasFonts(canvasPage);
-  await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
-  for (const p of g!.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
+  await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${atW.canvas}.dc.html`)).href);
+  for (const p of atW.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
   await canvasPage.evaluate(() => document.fonts.ready);
-  const canvasVals = await readVals(canvasPage, g!.pairs, "canvas");
+  const canvasVals = await readVals(canvasPage, atW.pairs, "canvas");
   const canvasFonts = await loadedFonts(canvasPage);
   await canvasPage.close();
   const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
   await appPage.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await FIDELITY_STATES[g!.state]!(appPage, g!.app);
-  for (const p of g!.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
+  for (const p of atW.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
   await appPage.evaluate(() => document.fonts.ready);
-  const appVals = await readVals(appPage, g!.pairs, "app");
+  const appVals = await readVals(appPage, atW.pairs, "app");
   const appFonts = await loadedFonts(appPage);
   await appPage.close();
-  const rows = [...compareRows(g!.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
+  const rows = [...compareRows(atW.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
   const bad = rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}：キャンバス ${r.canvas} ／ 画面 ${r.app}`);
   expect(mismatches(rows), bad.join("\n")).toBe(0);
 }

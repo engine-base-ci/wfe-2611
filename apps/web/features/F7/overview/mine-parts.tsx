@@ -52,15 +52,17 @@ export interface MobileMineBodyProps {
   chips: readonly MineChip[];
   /** 押している札の鍵（無ければ「すべて」の all） */
   current?: string;
+  /** 絞りの札を押したとき（K-478） */
+  onPick?: (key: string) => void;
   sections: readonly MobileSection[];
 }
 
 /** スマホの本文：絞りの札の行と、期限で区切った 1 行ずつの並び。縦に送れるのは並びの所だけ（頭のタブと札は止まったまま） */
-export function MobileMineBody({ chips, current = "all", sections }: MobileMineBodyProps) {
+export function MobileMineBody({ chips, current = "all", onPick, sections }: MobileMineBodyProps) {
   return (
     <div className="k-f7-overview-phone">
       <div className="k-f7-overview-phone-chips" role="group" aria-label="自分に関わるものの絞り込み">
-        <MineChips chips={chips} current={current} />
+        <MineChips chips={chips} current={current} {...(onPick ? { onPick } : {})} />
       </div>
       <div className="k-f7-overview-phone-list">
         {sections.map((s) => (

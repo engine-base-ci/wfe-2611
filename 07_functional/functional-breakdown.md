@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-23
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-26
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 145 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 148 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 74 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -151,6 +151,9 @@
 | E-132 | `passkeys` | 16. 第1フェーズの表 | none | 1 | D-125 D-125.137 D-128 D-128.119 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
+| E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 D-155.37 |
+| E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
+| E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
 | E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
@@ -202,7 +205,7 @@
 
 | ID | ロール | 画面数 | 制約 |
 |---|---|---|---|
-| R1 | 自分で全部回している人 | 57 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
+| R1 | 自分で全部回している人 | 59 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R2 | 数人の会社の代表 | 59 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R3 | 配られた仕事をする人 | 28 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R4 | 依頼を出す取引先の人 | 18 | 共有された範囲を見るだけ（書き込まない） |
@@ -214,7 +217,7 @@
 |---|---|---|---|---|---|---|---|
 | signup | アカウントを作る | A01 A96 | 2 | 1 | 6 | 7 | R1 R2 R3 R4 |
 | verify-email | メールを確認する | A02 | 5 | 3 | 4 | 9 | R1 R2 |
-| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 4 | 10 | R3 R4 |
+| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 6 | 11 | R3 R4 |
 | mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 15 | 10 | R1 R2 R3 R4 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 9 | R1 R2 |
 | login | ログインする | A13 | 3 | 3 | 10 | 12 | R1 R2 R3 R4 |
@@ -245,7 +248,7 @@
 | automation-repair | 覚え直させる | A32 | 1 | 0 | 1 | 2 | R1 R2 |
 | audit | 記録 | A33 A34 A38 A40 A66 | 6 | 45 | 49 | 9 | R1 R2 |
 | policies | ルール | A35 | 1 | 0 | 1 | 7 | R1 R2 R3 R4 |
-| members | メンバー | A36 | 7 | 46 | 53 | 10 | R2 |
+| members | メンバー | A36 | 7 | 46 | 53 | 10 | R1 R2 |
 | ai-staff | AI社員 | A37 | 1 | 0 | 1 | 10 | R1 R2 |
 | ai-staff-detail | AI社員の1体 | A46 A81 | 1 | 0 | 2 | 12 | R1 R2 |
 | security-brief | この製品でできること・できないこと | A39 | 1 | 0 | 1 | 5 | R1 R2 |
@@ -273,8 +276,8 @@
 | ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 57 | 27 | R6 |
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
-| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 93 | 44 | R1 R2 R3 R4 |
+| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R1 R2 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 95 | 44 | R1 R2 R3 R4 |
 | masters | 決まり | A118 A120 | 1 | 0 | 14 | 18 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |

@@ -5630,6 +5630,7 @@
    "field": "member_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5657,6 +5658,7 @@
    "field": "kind_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5684,6 +5686,7 @@
    "field": "auth_session_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5711,6 +5714,7 @@
    "field": "device_label",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5738,6 +5742,7 @@
    "field": "ip_region",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5765,6 +5770,7 @@
    "field": "issued_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5792,6 +5798,7 @@
    "field": "last_seen_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5819,6 +5826,7 @@
    "field": "revoked_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5846,6 +5854,7 @@
    "field": "revoke_reason_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5873,6 +5882,7 @@
    "field": "device_token_hash",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5900,6 +5910,7 @@
    "field": "alive_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5927,6 +5938,7 @@
    "field": "bridge_version",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5954,6 +5966,7 @@
    "field": "machine_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -12546,6 +12559,76 @@
    "reason": null
   },
   {
+   "entity": "guest_groups",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "name_key",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_groups",
+   "field": "request_scope_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "guest_group_members",
+   "field": "member_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "ticket_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
+   "entity": "ticket_guest_shares",
+   "field": "guest_group_id",
+   "consumed_by_screens": [],
+   "internal": false,
+   "reason": "★ どの画面にも出ない"
+  },
+  {
    "entity": "ticket_handovers",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -13702,5 +13785,13 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
- "unconsumed": []
+ "unconsumed": [
+  "guest_groups.name",
+  "guest_groups.name_key",
+  "guest_groups.request_scope_id",
+  "guest_group_members.guest_group_id",
+  "guest_group_members.member_id",
+  "ticket_guest_shares.ticket_id",
+  "ticket_guest_shares.guest_group_id"
+ ]
 }

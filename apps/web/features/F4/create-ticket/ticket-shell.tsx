@@ -1,22 +1,23 @@
 "use client";
-// チケットの画面の外枠（K-60・K-138）。キャンバスどおりの新しい外枠（components/k の Shell・D-143.1）に載せる。
-//   役と名前は前からある口（/api/auth-ext/me）を useMyRoles と同じ問い合わせ（鍵 ["me"]）で読む（契約の口 getMe は K-70）。
-//     読み中・失敗（401 など）・役の値が分からない（null・知らない値）あいだは役を渡さない：役の項目を出さない
-//   会社名は自分の情報の口の答えの workspace_name（口の側は K-253）。在れば頭文字と会社名、無ければどちらも出さない（D-145.16）
-//   外枠が読む口（グループ・承認待ちの数・PC）は 1 画面で 1 回ずつ。承認待ちの数は一覧の右の列と同じ問い合わせ（APPROVALS_KEY・K-235）。読み続けない・窓に戻っても読み直さない（G-16）。
-//     グループの口は作る面の選択肢と同じ問い合わせ（SCOPES_KEY）で分け合う。失敗したら、その部分を出さないだけ（本文は出す）
-//   本当の値が無い物（グループの件数・知らせの数）は出さない（D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）
-//   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
-//   PC の状態は、画面が自分で PC の一覧を読み続けるとき（PC をつなぐ・K-220）は画面の答えを受け取り、外枠は読まない（口を二重に呼ばない）
+// チケットの画面の外枠（K-60・K-138・K-466）。キャンバスどおりの新しい外枠（components/k の Shell・D-143.1）に載せる。
+//   外枠が読む口は getShell（GET /api/v1/shell・K-465）の 1 本だけ（D-151.7・P8・D-128.111）。前の 4 本（me・listScopes・listApprovalQueue・listMyDevices）は読まない。
+//     1 画面で 1 回：読み続けない・窓に戻っても読み直さない（G-16）。役・名前・会社・承認待ちの数・グループと件数・ベルの数・PC の印・書けるグループは全部この答えから
+//   getShell が失敗したとき（500・答えの形が違う・鍵が欠ける）は役が分からないので、役の項目・数・グループ・PC の印・作るボタン・会社の印を出さない（嘘の値を出さない）。
+//     本文は出す。自分で読み直さない。401 は call が入り直し（/login?next=）へ移す（K138-SH-021）
+//   グループの口（作る面の選択肢・一覧の見出し）は同じ問い合わせ（SCOPES_KEY = SHELL_KEY）の答えを使う（口を 2 つにしない）
+//   グループの件数・ベルの数は 0 のとき出さない（D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）。承認待ちの画面は自分で読んだ数を渡す（K138-SH-027）
+//   グループの行の行き先は差し込み口 groupHref（K-599・K-480 が本物にする）。null のあいだはグレーで押せない（D-145.18）
+//   PC の状態は、画面が自分で PC の一覧を読み続けるとき（PC をつなぐ・K-220）は画面の答えを受け取る
+//   障害の帯（答えの banner）は読まない（F12 が本文つきで描く・K-466 の決定）。保存した条件（任意の鍵 saved_views）は通すだけ（K-479 が読む）
+//   小さなお知らせの置き場（Toaster）は全体で 1 か所、ここに置く（useNotify を使う画面が全部これを使う）
 //   右の自分のAIのパネルは出さない（チケットは PC をつないでいなくても作れる・D-127.8）
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { Shell, type Crumb, type Group } from "@/components/k";
+import { Shell, Toaster, type Crumb, type Group } from "@/components/k";
 import * as F7 from "@/features/F7/shell-slots";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
-import { me } from "@/lib/auth/ext";
 import type { RoleId } from "@/lib/nav";
 import { THEME_COOKIE, parseTheme, type Theme } from "@/lib/theme";
 
@@ -41,20 +42,70 @@ export interface ScopeRow {
 }
 export interface Scopes {
   rows: ScopeRow[];
-  /** 書けるグループの id（口の meta.writable） */
+  /** 書けるグループの id */
   writable: string[];
 }
-/** グループの口の問い合わせの鍵（外枠と作る面の選択肢で分け合う） */
-export const SCOPES_KEY = ["k138-shell", "scopes"] as const;
 
-export async function readScopes(screen: string): Promise<Scopes> {
-  const r = await call("listScopes", { screenId: screen });
-  if (!r.ok) throw Object.assign(new Error(r.code), { result: r });
-  const writable = ((r.meta["writable"] as unknown[] | undefined) ?? []).map(String);
-  return { rows: r.data as unknown as ScopeRow[], writable };
+/** getShell の答えのグループ（K-465 の試験の形） */
+export interface ShellGroup {
+  id: string;
+  name: string;
+  ticket_prefix: string | null;
+  writable: boolean;
+  open_count: number;
 }
-/** 承認待ちの口の問い合わせの鍵（外枠の数と一覧の右の列「自分の承認を待っているもの」で分け合う・K-235）。
- *  1 本の問い合わせ（5 件）で、数は答えの meta.counts.total、行は答えの data から読む */
+/** getShell の答え（K-465 の試験 apps/api/test/features/F7/shell.test.ts の形。契約の型 Shell は鍵の中身を決めていないので、ここで形を決めて確かめる） */
+export interface ShellAnswer {
+  member: { id?: string; name: string | null; role_id: string | null };
+  workspace: { id?: string; name: string | null };
+  approvals_waiting: number;
+  notifications_unread: number;
+  groups: ShellGroup[];
+  pc: { connected: boolean; count?: number };
+  setup_left?: number;
+  banner?: unknown;
+  /** 任意の鍵（保存した条件・K-479 が読む）。外枠は読まない・形を確かめない */
+  saved_views?: unknown;
+}
+/** 外枠の問い合わせの答え：getShell の答えに、グループの口の前の形（rows・writable）を足す */
+export type ShellData = ShellAnswer & Scopes;
+
+/** 外枠の口の問い合わせの鍵（外枠と作る面の選択肢・一覧の見出しで分け合う） */
+export const SHELL_KEY = ["k138-shell", "shell"] as const;
+/** グループの問い合わせの鍵（名前を残す。中身は外枠と同じ問い合わせ） */
+export const SCOPES_KEY = SHELL_KEY;
+
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+const isGroup = (g: unknown): g is ShellGroup =>
+  isObj(g) && typeof g["id"] === "string" && typeof g["name"] === "string" && typeof g["open_count"] === "number";
+
+/** 答えの形を確かめる（鍵が欠ける・形が違う答えは読めない扱い。saved_views は見ない） */
+export function isShell(data: unknown): data is ShellAnswer {
+  if (!isObj(data)) return false;
+  return (
+    isObj(data["member"]) &&
+    isObj(data["workspace"]) &&
+    typeof data["approvals_waiting"] === "number" &&
+    typeof data["notifications_unread"] === "number" &&
+    Array.isArray(data["groups"]) &&
+    data["groups"].every(isGroup) &&
+    isObj(data["pc"])
+  );
+}
+
+export async function readShell(screen: string): Promise<ShellData> {
+  const r = await call("getShell", { screenId: screen });
+  if (!r.ok) throw Object.assign(new Error(r.code), { result: r });
+  const data: unknown = r.data;
+  if (!isShell(data)) throw new Error("shell-shape");
+  const rows: ScopeRow[] = data.groups.map((g) => ({ id: g.id, name: g.name, ticket_prefix: g.ticket_prefix }));
+  const writable = data.groups.filter((g) => g.writable).map((g) => g.id);
+  return { ...data, rows, writable };
+}
+/** グループを読む（名前を残す：作る面・一覧・詳細はこの名前で読む。答えは外枠と同じ問い合わせ） */
+export const readScopes = readShell;
+
+/** 承認待ちの口の問い合わせの鍵（一覧の右の列「自分の承認を待っているもの」だけが使う・K-235。外枠は読まない） */
 export const APPROVALS_KEY = ["k138-shell", "approvals"] as const;
 export const APPROVALS_LIMIT = 5;
 export interface ApprovalsAnswer {
@@ -74,14 +125,14 @@ export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
 
 export interface TicketShellProps {
   /** いま見ている画面（flow の screen id）。左のメニューの今いる項目になる */
-  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials";
+  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials" | "members";
   /** 上の帯のいまの場所 */
   crumbs: Crumb[];
   /** 左のメニューの数（まとまりの鍵 → 数）。承認待ちの画面は自分で読んだ数を渡す（外枠は二重に読まない） */
   counts?: Partial<Record<string, number>>;
   /** 作るボタンを押したとき（一覧の画面はその場で作る面を開く）。無ければ /tickets?new=1 へ移る。書けるグループが無い人には出さない */
   onCreate?: () => void;
-  /** 画面が読んだ PC の状態（true＝つながっている・null＝まだ読んでいる）。渡されたら外枠は PC の一覧を読まない（K-220） */
+  /** 画面が読んだ PC の状態（true＝つながっている・null＝まだ読んでいる）。渡されたら外枠は答えの pc を使わない（K-220） */
   bridgeConnected?: boolean | null;
   /** 左のバーを 56 に畳ませる（一覧で横に詳細を開いた 1024〜1279・K-252） */
   railed?: boolean;
@@ -94,36 +145,11 @@ function readTheme(): Theme {
   return parseTheme(hit?.slice(THEME_COOKIE.length + 1));
 }
 
-/** 自分の情報の口の答え（前からある口・会社名の欄は K-253 が足す） */
-type Me = Awaited<ReturnType<typeof me>> & { workspace_name?: string | null };
-
-function useShellData(screen: string, ownCount: boolean, ownBridge: boolean) {
-  const signedIn = typeof window !== "undefined" && Boolean(getToken());
-  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, ...ONCE });
-  const scopes = useQuery({
-    queryKey: SCOPES_KEY,
-    enabled: signedIn,
-    ...ONCE,
-    queryFn: () => readScopes(screen),
-  });
-  const waiting = useQuery({
-    queryKey: APPROVALS_KEY,
-    enabled: signedIn && !ownCount,
-    ...ONCE,
-    queryFn: () => readApprovals(screen),
-    select: (a: ApprovalsAnswer): number => a.total,
-  });
-  const devices = useQuery({
-    queryKey: ["k138-shell", "devices"],
-    enabled: signedIn && !ownBridge,
-    ...ONCE,
-    queryFn: async (): Promise<boolean> => {
-      const r = await call("listMyDevices", { screenId: screen });
-      if (!r.ok) throw new Error(r.code);
-      return (r.data as unknown as { state: string }[]).some((d) => d.state === "live");
-    },
-  });
-  return { who, scopes, waiting, devices };
+/** 外枠の口を 1 本だけ読む。ログイン前は呼ばない */
+function useShellData(screen: string) {
+  const signedIn = typeof window !== "undefined" && getToken() !== null;
+  const shell = useQuery({ queryKey: SHELL_KEY, queryFn: () => readShell(screen), enabled: signedIn, ...ONCE });
+  return { signedIn, shell };
 }
 
 /** グループの札の色（左のメニューの札と同じ色の順・グループの一覧の見出しの札にも使う） */
@@ -135,52 +161,63 @@ export const scopeTone = (rows: ScopeRow[], id: string): Group["tone"] =>
     ) % TONES.length
   ]!;
 
+/** getShell のグループ → 左のメニューの行（件数 0 は数を出さない・行き先は差し込み口 groupHref） */
+function toGroup(g: ShellGroup, i: number): Group {
+  const to = F7.groupHref(g.id);
+  return {
+    code: g.ticket_prefix || g.name.slice(0, 1),
+    name: g.name,
+    href: to ?? `/tickets?scope=${encodeURIComponent(g.id)}`,
+    tone: TONES[i % TONES.length]!,
+    pending: to === null,
+    ...(g.open_count > 0 ? { count: g.open_count } : {}),
+  };
+}
+
 export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected, railed, children }: TicketShellProps) {
   const ownCount = counts?.["approvals"] !== undefined;
   const ownBridge = bridgeConnected !== undefined;
-  const { who, scopes, waiting, devices } = useShellData(screen, ownCount, ownBridge);
-  // 段 8 の差し込み口（K-599・今は何も出さない）。ログイン済みの判定は useShellData と同じ確かめ（K-466 が寄せる）
-  const signedIn = typeof window !== "undefined" && getToken() !== null;
-  const notice = F7.useNoticeSlot({ unread: undefined, enabled: signedIn });
+  const { signedIn, shell } = useShellData(screen);
+  const data = shell.isSuccess ? shell.data : null;
+  // 段 8 の差し込み口（K-599）。ベルの数は getShell の値（押し方は K-467）
+  const notice = F7.useNoticeSlot({ unread: data?.notifications_unread, enabled: signedIn });
   const search = F7.useSearchSlot({ enabled: signedIn });
-  const mine = who.isSuccess ? (who.data as Me) : null;
   // 役は口が答え、値が分かるときだけ（読み中・失敗・知らない値は役なし＝役の項目を出さない）
-  const role = mine?.role_id ? ROLE_OF[mine.role_id] : undefined;
-  const name = mine?.display_name ?? "";
-  const company = mine?.workspace_name?.trim() ?? "";
-  const groups: Group[] = (scopes.data?.rows ?? []).map((s, i) => ({
-    code: s.ticket_prefix || s.name.slice(0, 1),
-    name: s.name,
-    href: `/tickets?scope=${encodeURIComponent(s.id)}`,
-    tone: TONES[i % TONES.length]!,
-    pending: true,
-  }));
-  const approvals = ownCount ? counts?.["approvals"] : waiting.data;
+  const roleId = data?.member.role_id;
+  const role = roleId ? ROLE_OF[roleId] : undefined;
+  const name = data?.member.name ?? "";
+  const company = data?.workspace.name?.trim() ?? "";
+  const groups: Group[] = (data?.groups ?? []).map(toGroup);
+  const approvals = ownCount ? counts?.["approvals"] : data?.approvals_waiting;
+  const notices = data && data.notifications_unread > 0 ? data.notifications_unread : undefined;
   const badges = { ...counts, ...(approvals !== undefined ? { approvals } : {}) };
-  const canCreate = (scopes.data?.writable.length ?? 0) > 0;
+  const canCreate = (data?.writable.length ?? 0) > 0;
   return (
-    <Shell
-      {...notice.shellProps}
-      {...search.shellProps}
-      belowGroups={<F7.SavedViewSlot enabled={signedIn} />}
-      {...(role ? { role } : {})}
-      screen={screen}
-      crumbs={crumbs}
-      workspace={{ name: company, initial: company.slice(0, 1) }}
-      member={{ name, initial: name.slice(0, 1) }}
-      groups={groups}
-      badges={badges}
-      bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
-      theme={readTheme()}
-      {...(railed ? { railed } : {})}
-      {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
-      onSignOut={() => {
-        void signOut().finally(() => window.location.assign("/login"));
-      }}
-    >
-      <div data-ticket-shell>{children}</div>
-      <F7.NoticeSlot slot={notice} />
-      <F7.SearchSlot slot={search} />
-    </Shell>
+    <Toaster>
+      <Shell
+        {...notice.shellProps}
+        {...search.shellProps}
+        belowGroups={<F7.SavedViewSlot enabled={signedIn} />}
+        {...(role ? { role } : {})}
+        screen={screen}
+        crumbs={crumbs}
+        workspace={{ name: company, initial: company.slice(0, 1) }}
+        member={{ name, initial: name.slice(0, 1) }}
+        groups={groups}
+        badges={badges}
+        {...(notices !== undefined ? { notices } : {})}
+        bridgeConnected={ownBridge ? bridgeConnected === true : data?.pc.connected === true}
+        theme={readTheme()}
+        {...(railed ? { railed } : {})}
+        {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
+        onSignOut={() => {
+          void signOut().finally(() => window.location.assign("/login"));
+        }}
+      >
+        <div data-ticket-shell>{children}</div>
+        <F7.NoticeSlot slot={notice} />
+        <F7.SearchSlot slot={search} />
+      </Shell>
+    </Toaster>
   );
 }

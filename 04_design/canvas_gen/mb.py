@@ -19,9 +19,9 @@ def tabbar(cur):
             out += '<a href="%s"%s style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; color: %s; text-decoration: none; %s">%s%s%s</a>' % (h, ' aria-current="page"' if on else "", NAVY if on else MUTED, "font-weight: 600" if on else "", SVG % ic, t, badge)
     return out + '</nav>'
 # 前は見出しの右に鈴（BELL）を置いた。D-147 で上の帯（MBAR）に移した
-_OLD_BELL = '<a href="MbNotify.dc.html" aria-label="知らせ（3 件）" style="margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; position: relative">' + SVG % '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path>' + '<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</span></a>'
+_OLD_BELL = '<a href="MbNotify.dc.html" aria-label="お知らせ（3 件）" style="margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; position: relative">' + SVG % '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path>' + '<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</span></a>'
 # スマホの上の帯（D-147・2026-11-18 代表の直し・answer=0a262be577b2）：画面の外枠（components/k/shell.tsx）の幅 767 以下と同じ。
-#   高さ 48px・左に会社の印と名前、右に 探す（虫眼鏡）・知らせ・自分のアイコン。いまの場所と題は出さない（題は本文の h1）。
+#   高さ 48px・左に会社の印と名前、右に 探す（虫眼鏡）・お知らせ・自分のアイコン。いまの場所と題は出さない（題は本文の h1）。
 #   知らせ（鈴）は上の帯だけに置き、本文の見出しの右には置かない（前の決め＝見出しの右の鈴 は D-147 で置き換えた）
 MBAR = ('<div class="kn-mbar" style="height: 48px; flex: none; background: #FFFFFF; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; box-sizing: border-box">'
         '<span aria-hidden="true" style="width: 24px; height: 24px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px; font-weight: 700">E</span>'
@@ -29,7 +29,7 @@ MBAR = ('<div class="kn-mbar" style="height: 48px; flex: none; background: #FFFF
         '<span style="display: flex; align-items: center">'
         '<button type="button" aria-label="探す" style="width: 44px; height: 44px; border: 0; background: transparent; color: #4A5563; display: grid; place-items: center; cursor: pointer">'
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></button>'
-        '<a href="MbNotify.dc.html" aria-label="知らせ（3 件）" style="position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; text-decoration: none">'
+        '<a href="MbNotify.dc.html" aria-label="お知らせ（3 件）" style="position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; text-decoration: none">'
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>'
         '<b style="position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; border-radius: 9999px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</b></a>'
         '<a href="TopMe.dc.html" aria-label="自分のメニュー" style="display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 4px; color: #4A5563; text-decoration: none">'
@@ -79,13 +79,13 @@ mrow = lambda ic, t, sub="", href="#", badge="": '<a href="%s" style="display: f
 grp = lambda code, bg, t, n: '<a href="MobileList.dc.html" style="display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-top: 1px solid #EDF0F4; text-decoration: none; color: #131B27"><span style="width: 26px; height: 26px; border-radius: 6px; background: %s; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">%s</span><span style="flex: 1; font-size: 14px">%s</span><span style="font-size: 12px; color: %s">%s</span></a>' % (bg, code, t, MUTED, n)
 phone("MbMenu.dc.html", "スマホ メニュー", H1("メニュー"),
   '<a href="TopOrg.dc.html" style="display: flex; gap: 10px; align-items: center; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; padding: 12px 14px; text-decoration: none; color: #131B27">' + icon("E", NAVY, 32) + '<span style="flex: 1"><b style="display: block">株式会社ENGINE BASE</b><span style="font-size: 11px; color: %s">管理者 ・ ワークスペースを切り替える</span></span><span style="color: #B8C0CC">›</span></a>' % MUTED
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' + mrow("本", "ナレッジ", "", "MbKnowledge.dc.html").replace("border-top: 1px solid #EDF0F4; ", "", 1) + mrow("取", "取引先", "届いた依頼 3", "MbClients.dc.html", pill("3", "#B45309", "#FFFFFF")) + mrow("高", "高本のAI の部屋", "知っていること・やったこと", "MbAI.dc.html") + '</div>'
+  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' + mrow("本", "ナレッジ", "", "MbKnowledge.dc.html").replace("border-top: 1px solid #EDF0F4; ", "", 1) + mrow("高", "高本のAI の部屋", "知っていること・やったこと", "MbAI.dc.html") + '</div>'
   + '<div style="font-size: 11px; color: %s; padding: 0 4px">グループ</div><div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' % MUTED + grp("EG", "#186F69", "営業", 18).replace("border-top: 1px solid #EDF0F4; ", "", 1) + grp("JD", "#6D4AA6", "受託開発", 42) + grp("KR", "#B45309", "経理", 9) + '</div>'
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' + mrow("設", "自分の設定", "ログイン・PC・知らせ", "MeProfile.dc.html").replace("border-top: 1px solid #EDF0F4; ", "", 1) + mrow("管", "ワークスペースの管理", "管理者だけ", "WsPeople.dc.html") + '</div>'
+  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' + mrow("設", "自分の設定", "ログイン・PC・お知らせ", "MeProfile.dc.html").replace("border-top: 1px solid #EDF0F4; ", "", 1) + mrow("管", "ワークスペースの管理", "管理者だけ", "WsPeople.dc.html") + '</div>'
   + '<div style="font-size: 12px; color: #166534; padding: 0 4px">● PC（MacBook）がつながっている</div>', "menu")
 # 6 知らせ
 nrow = lambda ini, bg, t, sub, tag, tc, unread=True: '<div style="display: flex; gap: 10px; padding: 12px 14px; border-top: 1px solid #EDF0F4; background: %s"><span style="width: 32px; height: 32px; flex: none; border-radius: 99px; background: %s; color: #FFFFFF; font-size: 12px; display: grid; place-items: center">%s</span><span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13px; line-height: 1.6">%s</span><span style="font-size: 11px; color: %s">%s</span></span><span style="align-self: flex-start; flex: none">%s</span></div>' % ("#FFFFFF" if unread else "#F7F8FA", bg, ini, t, MUTED, sub, pill(tag, *tc))
-phone("MbNotify.dc.html", "スマホ 知らせ", BACK("MobileList.dc.html", "知らせ") + '<a href="#" style="margin-left: auto; font-size: 12px">すべて既読</a>',
+phone("MbNotify.dc.html", "スマホ お知らせ", BACK("MobileList.dc.html", "お知らせ") + '<a href="#" style="margin-left: auto; font-size: 12px">すべて既読</a>',
   '<div style="display: flex; gap: 6px">' + chip("未読 3", True) + chip("すべて") + chip("@ 1") + '</div>'
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">'
   + nrow("AI", "#4A5563", "EG-128 の確認が終わり、あなたの承認を待っています", "4 時間前", "承認", ("#FCEBD5", "#7A4A05")).replace("border-top: 1px solid #EDF0F4; ", "", 1)
@@ -101,6 +101,56 @@ phone("MbTalk.dc.html", "スマホ やり取り", BACK("MobileDetail.dc.html", "
   + '<div style="font-size: 12px; color: %s; padding-left: 38px">高本のAI が請求書を作り、確認を流した ・ 通った</div>' % MUTED
   + msg("佐", "#186F69", "佐藤 花子", "10:41", "無償で合意済みなら外してOKです。今日中に出せると助かります", "期限：11/01 → 11/02|優先度：中 → 高"),
   None, '<div style="background: #FFFFFF; border-top: 1px solid #DDE2E9; padding: 8px 12px 16px; flex: none"><div style="display: flex; gap: 6px; margin-bottom: 6px; font-size: 12px"><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 2px 10px">状態 変えない ▾</span><span style="border: 1px solid #DDE2E9; border-radius: 99px; padding: 2px 10px">知らせる 佐藤・鈴木</span></div><div style="display: flex; gap: 8px; align-items: center"><span style="flex: 1; min-height: 40px; border: 1px solid #22345C; border-radius: 20px; padding: 8px 14px; font-size: 14px">了解です。外して今日中に送ります</span><span style="width: 40px; height: 40px; border-radius: 99px; background: #22345C; color: #FFFFFF; display: grid; place-items: center">↑</span></div></div>')
+# MobileList の包み（K-1301）：見出しの行とタブを見出しの帯 header.kn-mlist-head で、絞りの札と並びを本文の箱 div.kn-mlist-body で包む。
+#   本番の header.k-list-head・.k-list-body に当たる箱を、見た目を変えずに持たせる。タブの下の罫線だけを帯へ移す（帯の下端＝タブの下端）。
+#   包む要素はタグと style で探す（間の空白・改行は問わない）。包みが在れば何もしない（何度流しても 1 回だけ）
+ML_ROW = '<div style="display: flex; align-items: center; gap: 8px; padding: 14px 16px 6px">'
+ML_TABS = '<div role="tablist" style="display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid #DDE2E9; overflow-x: auto">'
+ML_TABS_BARE = '<div role="tablist" style="display: flex; gap: 2px; padding: 0 16px; overflow-x: auto">'
+ML_CHIPS = '<div style="display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto">'
+ML_ROWS = '<div style="flex: 1; overflow: auto; border-top: 1px solid #DDE2E9">'
+ML_HEAD = '<header class="kn-mlist-head" style="flex: none; border-bottom: 1px solid #DDE2E9">'
+ML_BODY = '<div class="kn-mlist-body" style="flex: 1; min-height: 0; display: flex; flex-direction: column">'
+
+
+def _div_end(s: str, start: int) -> int:
+    """start に在る <div の閉じ </div> の直後の位置（入れ子の div を数える）"""
+    depth, k = 0, start
+    while True:
+        o, c = s.find("<div", k), s.find("</div>", k)
+        if c == -1:
+            raise ValueError("MobileList の div が閉じていない")
+        if o != -1 and o < c:
+            depth, k = depth + 1, o + 4
+        else:
+            depth, k = depth - 1, c + 6
+            if depth == 0:
+                return k
+
+
+def _next(s: str, tag: str, start: int, what: str) -> int:
+    """start の後で、空白だけを挟んで次に来る tag の位置（間に別の要素があれば止める）"""
+    m = re.compile(r"\s*").match(s, start)
+    i = m.end()
+    if not s.startswith(tag, i):
+        raise ValueError(f"MobileList の{what}が見つからない（包めない）")
+    return i
+
+
+def wrap_mobile_list(s: str) -> str:
+    if 'class="kn-mlist-head"' in s or 'class="kn-mlist-body"' in s:
+        return s
+    row = s.index(ML_ROW)
+    tabs = _next(s, ML_TABS, _div_end(s, row), "タブ")
+    tabs_end = _div_end(s, tabs)
+    chips = _next(s, ML_CHIPS, tabs_end, "絞りの札")
+    rows_end = _div_end(s, _next(s, ML_ROWS, _div_end(s, chips), "並び"))
+    head = s[row:tabs] + ML_TABS_BARE + s[tabs + len(ML_TABS):tabs_end]
+    body = s[chips:rows_end]
+    return (s[:row] + ML_HEAD + "\n " + head + "\n </header>" + s[tabs_end:chips]
+            + ML_BODY + "\n " + body + "\n </div>" + s[rows_end:])
+
+
 # 既存の 2 枚の下のタブをつなぐ
 for n in ("MobileList", "MobileDetail"):
     f = P + n + ".dc.html"; s = open(f, encoding="utf-8").read()
@@ -109,7 +159,9 @@ for n in ("MobileList", "MobileDetail"):
     if 'class="kn-mbar"' not in s:
         i = s.index(">", s.index("<div", s.index("</helmet>"))) + 1
         s = s[:i] + "\n " + MBAR + s[i:]
-    s = re.sub(r'\n  <a href="StOverlay\.dc\.html" aria-label="知らせ（3 件）".*?</a>', "", s, count=1, flags=re.S)
+    s = re.sub(r'\n  <a href="StOverlay\.dc\.html" aria-label="お?知らせ（3 件）".*?</a>', "", s, count=1, flags=re.S)
+    if n == "MobileList":
+        s = wrap_mobile_list(s)
     open(f, "w", encoding="utf-8").write(s)
 
 # スマホ：ナレッジ

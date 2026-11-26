@@ -7,7 +7,9 @@
 //   数の札（K-474）：mine の 1 回目（cursor なし）だけ、答えの meta.counts（overdue・today・assigned・ai・approve）を同じ 1 文の中で数える（数だけの口は作らない・D-128.111）。
 //   数は自分に関わるものの全体（完了は数えない）で、q・scope_id・絞り込み・並び・limit では変わらない。「渡されたもの」は数えない（D-148.13）。
 //   絞り込み（K-472・K-473）：欄ごとの表 FILTERS（query.ts）が where の条件と値を足す。全部 AND・値は $9 から。
-//   見せる欄（fields・K-473）：付けた欄だけ select と 1 件の鍵に足す（FIELDS）。scope は自分に見えるグループだけ名前を出す。
+//   見せる欄（fields・K-473）：付けた欄だけ select と 1 件の鍵に足す（FIELDS）。
+//   scope（チケットを置いたグループ { id, name, code }・K-560）は fields に関わらずいつも付ける（fields=scope は付けても同じ鍵 1 つ）。
+//     自分に見えるグループだけ名前と頭文字を出し、担当・承認だけで見えるチケットの見えないグループは null（K-473 の守りのまま）。
 //   select は 1 本（関門 C2・withTenant の接続 1 本）。ログに題名と q を出さない
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -48,6 +50,8 @@ interface ListRow {
   updated_key: string;
   parent_ticket_id: string | null;
   depth: number;
+  /** チケットを置いたグループ（K-560・いつも付く。見えないグループは null） */
+  scope: { id: string; name: string; code: string | null } | null;
   /** 見せる欄（fields）で足した列（f_<名前>）。数の札（c_<名前>）は counts を取る文だけ（::int なので整数） */
   [extra: `f_${string}`]: unknown;
   c_overdue?: number;
@@ -75,15 +79,20 @@ function afterCursor(d: SortDef): string {
   const v1 = `${cursorVal(1)}::timestamptz`;
   return `(${d.expr} ${op} ${v0} or (${d.expr} = ${v0} and (t.updated_at < ${v1} or (t.updated_at = ${v1} and ${idAfter}))))`;
 }
-/** 見せる欄の select の式（鍵の名前 → 式）。scope は自分に見えるグループだけ（scopes の行の守りは会社の中の全員に読ませるので visible_scopes で絞る・見えなければ null） */
+/** チケットを置いたグループ { id, name, code }（K-560・いつも選ぶ）。自分に見えるグループだけ（scopes の行の守りは会社の中の全員に読ませるので
+ *  visible_scopes で絞る・見えなければ null）。code は頭文字 ticket_prefix（空文字・null はどちらも null） */
+const SCOPE_EXPR =
+  "(select jsonb_build_object('id', sc.id, 'name', sc.name, 'code', nullif(sc.ticket_prefix, '')) from scopes sc where sc.id = t.scope_id and sc.id = any(visible_scopes(app.user_id())))";
+/** 見せる欄の select の式（鍵の名前 → 式）。scope はいつも選ぶので、ここでは足さない（extraFields が外す） */
 const FIELDS: Readonly<Record<FieldKey, string>> = {
   start_on: "t.start_on::text",
   priority: "t.priority",
   estimate_minutes: "t.estimate_minutes",
   actual_minutes: "t.actual_minutes",
-  scope:
-    "(select jsonb_build_object('id', sc.id, 'name', sc.name) from scopes sc where sc.id = t.scope_id and sc.id = any(visible_scopes(app.user_id())))",
+  scope: SCOPE_EXPR,
 };
+/** fields のうち、いつも付ける scope を除いた物（同じ鍵を 2 つ選ばない） */
+const extraFields = (fields: readonly FieldKey[]): FieldKey[] => fields.filter((k) => k !== "scope");
 
 /** 自分に関わるもの（D-128.11・D-128.161）：担当者が自分か、自分が承認する決めていないもの。一覧（mine）と数の札が同じ物を使う（数だけ別に書かない） */
 const MINE_SQL = `(t.assignee_member_id = app.user_id() or ${APPROVING_SQL})`;
@@ -118,7 +127,9 @@ with recursive scope_down(id) as (
 ),${counts ? COUNTS_CTE : ""}
 page as (
   select t.id, t.number, t.title, t.kind_id, t.stage_id, t.assignee_member_id, t.delegated_to_clone, t.due_on,
-         ${d.expr} as sort_key, t.updated_at, t.parent_ticket_id${fields.map((k) => `,\n         ${FIELDS[k]} as f_${k}`).join("")}
+         ${d.expr} as sort_key, t.updated_at, t.parent_ticket_id, ${SCOPE_EXPR} as scope${extraFields(fields)
+           .map((k) => `,\n         ${FIELDS[k]} as f_${k}`)
+           .join("")}
     from tickets t
    where t.tenant_id = app.tenant_id()
      and t.deleted_at is null
@@ -142,7 +153,9 @@ select p.id, p.number, p.title, k.id as kind_id, k.name as kind_name, s.id as st
             select p.id, p.parent_ticket_id, 1
             union all
             select x.id, x.parent_ticket_id, up.n + 1 from tickets x join up on x.id = up.parent_id where up.n < 5
-          ) select 1 from up) a) as depth${fields.map((k) => `,\n       p.f_${k}`).join("")}${counts ? COUNT_COLS : ""}
+          ) select 1 from up) a) as depth, p.scope${extraFields(fields)
+            .map((k) => `,\n       p.f_${k}`)
+            .join("")}${counts ? COUNT_COLS : ""}
 ${
   counts
     ? `  from cnt c
@@ -194,7 +207,8 @@ const toItem = (r: ListRow, fields: readonly FieldKey[]) => ({
   updated_at: r.updated_at.toISOString(),
   parent_ticket_id: r.parent_ticket_id,
   depth: r.depth,
-  ...Object.fromEntries(fields.map((k) => [k, r[`f_${k}`] ?? null])),
+  scope: r.scope ?? null,
+  ...Object.fromEntries(extraFields(fields).map((k) => [k, r[`f_${k}`] ?? null])),
 });
 
 /** 数の札（数の行は ::int で整数）。数の行が無いのは起きない（集計は常に 1 行）が、無ければ 0 にせず落とす */

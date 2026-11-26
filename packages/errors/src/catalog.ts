@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。285 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。306 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3176,7 +3176,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-VAL-012": {
     "id": "E-VAL-012",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "期限は今日か、それより後の日にしてください",
     "action": "期限を入れ直す",
     "undo": false,
@@ -3232,7 +3232,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-VAL-015": {
     "id": "E-VAL-015",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "チケットの親子は 3 段までです。ほかの親を選んでください",
     "action": "親を選び直す",
     "undo": false,
@@ -4393,6 +4393,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "invite"
     }
   },
+  "E-INV-013": {
+    "id": "E-INV-013",
+    "cls": "validation",
+    "message": "メールアドレスを入れてください",
+    "action": "メールアドレスを入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-016": {
+    "id": "E-INV-016",
+    "cls": "conflict",
+    "message": "メールアドレスを入れてください",
+    "action": "メールアドレスを入れて、もう一度参加する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-016",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-014": {
+    "id": "E-INV-014",
+    "cls": "not_found",
+    "message": "確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください",
+    "action": "招待のリンクから、もう一度参加する",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-015": {
+    "id": "E-INV-015",
+    "cls": "not_found",
+    "message": "この確認のリンクはもう使われています。ログインして入ってください",
+    "action": "ログインして入る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
   "E-SEC-004": {
     "id": "E-SEC-004",
     "cls": "conflict",
@@ -4493,6 +4565,138 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-VAL-028": {
+    "id": "E-VAL-028",
+    "cls": "conflict",
+    "message": "開始日は期限より前の日にしてください",
+    "action": "開始日か期限を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-028",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
+    }
+  },
+  "E-DUP-001": {
+    "id": "E-DUP-001",
+    "cls": "not_found",
+    "message": "複製の元のチケットが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+    "action": "元を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUP-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "duplicate"
+    }
+  },
+  "E-DUP-002": {
+    "id": "E-DUP-002",
+    "cls": "conflict",
+    "message": "子チケットを写すと、親子が 3 段を超えます。子を写さないか、別の親を選んでください",
+    "action": "子を写さずに作る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUP-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "duplicate"
+    }
+  },
+  "E-TKT-001": {
+    "id": "E-TKT-001",
+    "cls": "conflict",
+    "message": "自分自身は親にできません",
+    "action": "別のチケットを親に選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-002": {
+    "id": "E-TKT-002",
+    "cls": "conflict",
+    "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+    "action": "自分の下にないチケットを親に選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-003": {
+    "id": "E-TKT-003",
+    "cls": "conflict",
+    "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+    "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-004": {
+    "id": "E-TKT-004",
+    "cls": "conflict",
+    "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+    "action": "期限を親の期限以前に直してから親を決める",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
     }
   },
   "E-LNK-001": {
@@ -4816,6 +5020,114 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "save"
     }
   },
+  "E-DUE-001": {
+    "id": "E-DUE-001",
+    "cls": "validation",
+    "message": "期限を変える理由を書いてください",
+    "action": "理由を書いてから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-002": {
+    "id": "E-DUE-002",
+    "cls": "validation",
+    "message": "理由は 200 文字までにしてください",
+    "action": "理由を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-005": {
+    "id": "E-DUE-005",
+    "cls": "conflict",
+    "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+    "action": "親の期限を先に延ばすか、親の期限までの日にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-006": {
+    "id": "E-DUE-006",
+    "cls": "conflict",
+    "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+    "action": "子の期限を先に変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-006",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-007": {
+    "id": "E-DUE-007",
+    "cls": "conflict",
+    "message": "完了したチケットの期限は変えられません",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-008": {
+    "id": "E-DUE-008",
+    "cls": "conflict",
+    "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-008",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
   "E-STP-001": {
     "id": "E-STP-001",
     "cls": "permission",
@@ -5114,6 +5426,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-FLD-001": {
+    "id": "E-FLD-001",
+    "cls": "conflict",
+    "message": "この項目は、このチケットの種別では使えません",
+    "action": "項目の一覧を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-002": {
+    "id": "E-FLD-002",
+    "cls": "conflict",
+    "message": "選べない値が含まれています。選択肢から選び直してください",
+    "action": "選択肢から選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-003": {
+    "id": "E-FLD-003",
+    "cls": "conflict",
+    "message": "この項目に入れられない形の値です",
+    "action": "値を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-004": {
+    "id": "E-FLD-004",
+    "cls": "conflict",
+    "message": "必須の項目は空にできません。値を入れてください",
+    "action": "値を入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
     }
   },
   "E-CONF-020": {
