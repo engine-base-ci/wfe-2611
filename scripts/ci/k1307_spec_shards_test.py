@@ -199,6 +199,24 @@ class RunPart(unittest.TestCase):
                 self.assertEqual(spec_run.run_part("g65-1", 2, g, last), 0)
                 self.assertEqual(spec_run.run_part("g65-2", 2, g, last), 4)
             self.assertEqual(sorted(p.stem for p in d.glob("*.ran")), ["a", "b", "c"], "赤の c の後ろの d は流れない（別の組の a・b は流れる）")
+        # junit/ の無い作業場所でも、junit/<名前> に書く命令が書ける（spec の組では前の段が作る置き場を、分けた組は g65 が流す前に作る）
+        with tempfile.TemporaryDirectory() as t:
+            d = pathlib.Path(t)
+            g = d / "g.d"
+            g.mkdir()
+            (d / "w.py").write_text("import pathlib\npathlib.Path('junit/w.xml').write_text('<testsuites/>')\n", encoding="utf-8")
+            (d / "z.py").write_text("pass\n", encoding="utf-8")
+            (g / "_base.txt").write_text(f"{sys.executable} {d / 'w.py'}\n{sys.executable} {d / 'z.py'}\n", encoding="utf-8")
+            last = f"{sys.executable} {d / 'z.py'}"
+            self.assertFalse((d / "junit").exists(), "（前提）junit/ は無い")
+            old = os.getcwd()
+            os.chdir(d)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(spec_run.run_part("g65-1", 2, g, last), 0, "junit/ が無くても赤にならない")
+            finally:
+                os.chdir(old)
+            self.assertTrue((d / "junit" / "w.xml").exists(), "junit/w.xml が書けた")
 
 
 class Workflow(unittest.TestCase):
@@ -250,17 +268,18 @@ class Workflow(unittest.TestCase):
         self.assertEqual(JOBS["spec-parts"]["steps"][-1].get("if"), "always()")
 
     def test_K1307_CI_010_static_step_and_outputs(self) -> None:
-        """K1307-CI-010 守り：static に id spec_shards の段が 1 つ（env は SPEC_SHARDS_VAR だけ・命令の文字に vars を入れない・if なし）と出力 2 つ。
+        """K1307-CI-010 守り：static に id spec_shards の段が 1 つ（env は SPEC_SHARDS_VAR だけ・命令の文字に vars を入れない・if は !cancelled()＝static の前の段が赤でも流れ、
+        spec と spec-parts が同じ数を見る）と出力 2 つ。
         spec の組は static の出力を見ず（static が赤でも流す・K-143）、自分の段 id spec_shards（同じ命令・if は !cancelled()）の出力で G57・G65 を決める"""
         hits = [s for s in JOBS["static"]["steps"] if s.get("id") == "spec_shards"]
         self.assertEqual(len(hits), 1)
         s = hits[0]
         self.assertEqual(s.get("env"), {"SPEC_SHARDS_VAR": "${{ vars.SPEC_SHARDS }}"})
         self.assertEqual(s["run"].strip(), 'python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"')
-        self.assertNotIn("if", s)
+        self.assertEqual(s.get("if"), "${{ !cancelled() }}", "static の前の段が赤でも流す（spec の組の自分の段と同じ数を出す）")
         own = [x for x in JOBS["spec"]["steps"] if x.get("id") == "spec_shards"]
         self.assertEqual(len(own), 1)
-        self.assertEqual((own[0].get("env"), own[0]["run"].strip(), own[0].get("if")), (s.get("env"), s["run"].strip(), "${{ !cancelled() }}"))
+        self.assertEqual((own[0].get("env"), own[0]["run"].strip(), own[0].get("if")), (s.get("env"), s["run"].strip(), s.get("if")))
         sids = [x.get("id") or x.get("name") for x in JOBS["spec"]["steps"]]
         self.assertLess(sids.index("spec_shards"), sids.index(str(step("spec", "G57 ")["name"])), "G57・G65 より前")
         for x in JOBS["spec"]["steps"]:
@@ -281,6 +300,11 @@ class Workflow(unittest.TestCase):
         self.assertEqual(u["if"], "${{ always() && hashFiles('junit/*.xml') != '' }}")
         self.assertEqual((u["with"]["name"], u["with"]["path"], u["with"]["if-no-files-found"]),
                          ("junit-spec-parts-${{ matrix.part }}", "junit/", "error"))
+        hook = [x for x in JOBS["spec-parts"]["steps"] if str(x.get("name", "")).startswith("準備の時間切れを見分ける")]
+        self.assertEqual(len(hook), 1, "K-193 の時間切れの見分けを spec-parts にも置く")
+        self.assertEqual((hook[0].get("if"), hook[0]["run"].strip()), ("${{ failure() }}", "python3 scripts/ci/hook_timeout.py note junit"))
+        names = [str(x.get("name") or x.get("uses")) for x in JOBS["spec-parts"]["steps"]]
+        self.assertLess(names.index(str(step("spec-parts", "G65.p ")["name"])), names.index(str(hook[0]["name"])), "G65.p の後")
         self.assertIn("spec-parts", JOBS["junit"]["needs"])
         self.assertIn("always()", str(JOBS["junit"]["if"]))
         node = [c for c in cmds() if "junit/spec-k216-mjs.xml" in c]
