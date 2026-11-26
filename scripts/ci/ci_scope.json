@@ -1596,6 +1596,29 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-versions.ts",
+    "apps/api/src/features/F4/versions/**",
+    "apps/api/src/hooks/ticket-body.ts",
+    "apps/api/src/features/F4/body/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-versions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-versions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_versions.test.ts",
+    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts",
+    "apps/api/test/generated/get_tickets_id_item_changes.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/test-specs-*.ts",
     "apps/api/src/features/F4/test-spec/**"
    ],
@@ -1669,6 +1692,15 @@
     "apps/api/test/generated/get_tickets_id_links.test.ts",
     "apps/api/test/generated/post_tickets_id_links.test.ts",
     "apps/api/test/generated/delete_ticket_links_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F4/specs/",
+    "apps/web/app/(dev)/dev/f4-specs/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k450-test-spec.spec.ts"
    ]
   },
   {
@@ -1953,6 +1985,14 @@
   },
   {
    "paths": [
+    "apps/web/features/F7/due/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k484-due-change.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/stopped.ts",
     "apps/api/src/features/F7/stopped/**"
    ],
@@ -2103,6 +2143,45 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/items/",
+    "apps/web/app/(dev)/dev/f4-items/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k569-items.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F4/create-ticket/ticket-detail.tsx",
+    "apps/web/features/F4/create-ticket/detail-panel.tsx",
+    "apps/web/features/F4/create-ticket/detail-head.tsx",
+    "apps/web/features/F4/create-ticket/detail-body.tsx",
+    "apps/web/features/F4/create-ticket/detail-entry-slots.tsx",
+    "apps/web/features/F4/duplicate/detail-entry.tsx",
+    "apps/web/features/F4/versions/versions-entry.tsx",
+    "apps/web/features/F4/body-edit/body-slot.tsx",
+    "apps/web/features/F4/parent/detail-row-slot.tsx",
+    "apps/web/features/F4/links/detail-entry.tsx",
+    "apps/web/features/F5/approve-complete/complete-act-slot.tsx",
+    "apps/web/features/F5/delegate/delegate-act-slot.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k571-detail-body.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F4/doc/editor/",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/",
+    "apps/web/features/F4/doc/doc.css",
+    "apps/web/features/F4/doc/extra.css"
+   ],
+   "tests": [
+    "apps/web/tests/k/k577-doc-view.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F4/ticket-estimate/**",
     "apps/api/src/features/ticket-update/**",
     "apps/api/src/hooks/ticket-update.ts",
@@ -2219,6 +2298,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/items/",
+    "apps/web/app/(dev)/dev/f4-items/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1153-item-edit.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "04_design/fidelity.json",
     "04_design/canvas/MobileList.dc.html",
     "04_design/canvas_gen/mb.py"
@@ -2253,7 +2341,7 @@
   "apps/web/tests/k/kit.ts": "画面の試験の汎用の道具。突き合わせの設定 04_design/fidelity.json とキャンバスの絵を読む・K-257",
   "apps/web/tests/k/k227-band-approval.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組 band-approval の持ち主と enrolled）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-227",
   "apps/web/tests/k/k228-bands.spec.ts": "07_qa/test-specs/k/delegate.md・approve-complete.md（操作要素の表）と 04_design/fidelity.json（6 組の持ち主と enrolled）・キャンバス（detail-kit.ts 経由）を読む。どれも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-228",
-  "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
+  "apps/web/tests/k/k226-ticket-detail.spec.ts": "台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226（突き合わせの組 ticket-detail は K-571 で外した）",
   "apps/web/tests/k/k316-login.spec.ts": "ログインの画面のファイル apps/web/features/F1/login/login-form.tsx を読む（部品の世代：views の部品と契約の口だけを使うか・K316-UI-019）。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-316",
   "apps/web/tests/k/k317-login-passkey.spec.ts": "lib/auth/session.tsx・lib/auth/client.ts・features/F1/login/login-form.tsx を読み（部品の世代・K317-UI-023）、list-mock.ts を通して 04_design/fidelity.json を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-317",
   "apps/web/tests/k/k318-security.spec.ts": "07_qa/test-specs/errors.json を読み（エラーの文）、app/(outside)/mfa-setup と features/F1/security のファイルを読む（部品の 2 段階の口を直に呼ばない・K318-UI-006）。stage2-match.ts を通してモックの頁を開き、scripts/ci/fidelity_compare.mjs を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-318",
@@ -2375,6 +2463,7 @@
   "apps/web/tests/k/k431-stage5-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f4v2/mocks.tsx・apps/web/app/(dev)/dev/mock/f4/mocks.tsx・F4 の部品の置き場（apps/web/features/F4 の doc・parent・due・duplicate・links・home・detail-more・create-ticket）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）を読み、scripts/ci/canvas_field_gate.py を子プロセスで流す（K-431）",
   "apps/api/test/features/F4/ticket-body.harness.ts": "入っている葉の hooks のファイル（ticket-body.ts・ticket-versions.ts）を動的 import で読む（最初の要求の前に 1 回・まだ入っていない葉の物は読まない）。読む物と使う試験は data_links で結ぶ・K-432",
   "apps/api/test/features/contract/k144.d/K-432.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-433.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/contract/k144.d/K-435.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-435",
@@ -2384,6 +2473,7 @@
   "apps/api/test/features/F4/ticket-sort.test.ts": "この葉が足す組の口 apps/api/src/hooks/ticket-update.ts（K-387 の hooks のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。また契約 08_api/openapi.yaml の updateTicket の入力の oneOf を readFileSync で読む（K440-API-002）。読む物と使う試験はどれも data_links で結ぶ・K-440",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
   "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
+  "apps/web/tests/k/test-spec-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-450）",
   "apps/web/tests/k/k460-stage8-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f7/（mocks.tsx・types.ts・states/*.tsx）・部品 apps/web/features/F7/（区画の .tsx・.css・overview/tones.css・gantt/gantt-inner.tsx・delete/undo-toast.tsx・delete.css）・お知らせ apps/web/components/k/notice.tsx と k.css・道の一覧 apps/web/lib/built-routes.ts・中間の試験の道具 apps/web/tests/_lib/f7-flow.ts と skeleton の中間の試験・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json・apps/web/package.json・02_tech_stack/selected-stack.json・07_functional/段8-F7/カレンダーの部品.md を読み、scripts/ci/design_gate.py を子プロセスで流す（K-460）",
   "apps/web/features/F7/gantt/gantt-chart.tsx": "next/dynamic の import() で同じ区画の gantt-inner.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-460）",
   "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
@@ -2400,6 +2490,7 @@
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
   "apps/api/test/features/contract/k144.d/K-477.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-477）",
   "apps/api/test/features/F7/due.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-483）",
+  "apps/web/tests/k/k484-due-change.spec.ts": "正本 07_qa/test-specs/errors.json を読み（文を番号で引く）、試験の道具 tests/k/due-mock.ts・kit.ts・list-mock.ts・stage2-match.ts とモックの置き場 apps/web/app/(dev)/dev/mock/f7/ を通して部品 apps/web/features/F7/due/（views.tsx・due-popover.tsx・due-mark.tsx・due.css）と見比べる（K-484）",
   "apps/api/test/features/contract/k144.d/K-485.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/web/tests/k/k486-stopped-band.spec.ts": "正本 07_qa/test-specs/errors.json を読み（番号から文を引く）、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/stopped/（views.tsx・stop-copy.ts・stopped.css）を共通の道具 stage2-match.ts の matchMock で開いて比べる（K-486）",
   "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
@@ -2411,6 +2502,9 @@
   "apps/api/test/features/F4/ticket-field-values.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-564",
   "apps/web/test/k567-doc-convert.test.ts": "写した部品の関数の頭（apps/web/features/F4/doc/editor/bar/ の use-mark-button.ts・use-undo-redo.ts・use-link-popover.ts）を字で読み、出どころと MIT の表示を確かめる（K567-UN-008）。読む置き場は data_links で結ぶ",
   "apps/web/features/F4/doc/editor/doc-editor.tsx": "編集の部品の本体 ./doc-editor-live を next/dynamic で遅く読む（同じ置き場の部品・ファイルは読まない）。置き場 apps/web/features/F4/doc/editor/ は data_links で結ぶ",
+  "apps/web/tests/k/items-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-569）",
+  "apps/web/tests/k/k571-detail-body.spec.ts": "詳細の画面のファイル（ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・detail-entry-slots.tsx）を readFileSync で読む（K571-UI-007・014）",
+  "apps/web/features/F4/doc/editor/doc-view-color.tsx": "色のある文書の読むだけの形の本体 ./doc-view-live を import() で遅く読む（同じ置き場の部品・ファイルは読まない）。置き場 apps/web/features/F4/doc/editor/ は data_links で結ぶ",
   "apps/api/test/features/F4/ticket-estimate.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ。また 08_api/openapi.yaml と packages/contracts/src/schemas.ts を readFileSync で読む（契約の updateTicket の入力に estimate_minutes が在ること・K583-API-017）・K-583",
   "apps/web/tests/k/k590-delete-restore.spec.ts": "正本 07_qa/test-specs/errors.json を文字で読み、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/delete/ を突き合わせの道具 stage2-match.ts で比べ、道具 delete-mock.ts・list-mock.ts・kit.ts・F5 の approve-complete.harness.ts を読む（K-590）",
   "apps/web/tests/k/delete-mock.ts": "前からの土台 tests/features/F5/approve-complete.harness.ts と list-mock.ts、scripts/ci/fidelity_compare.mjs の型を読む（K-590）",

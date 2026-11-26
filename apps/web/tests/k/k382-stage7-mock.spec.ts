@@ -346,7 +346,7 @@ test("K382-UI-008 本番の詳細（/tickets/<id>・幅 1440・作業中）は�
   await expect(stage).toHaveText("作業中");
   expect(await stage.evaluate((e) => e.tagName)).toBe("SPAN");
   const tabs = page.getByRole("navigation", { name: "パネルのタブ" });
-  await expect(tabs.getByRole("button")).toHaveText(["属性", "やり取り", "高本のAI"]);
+  await expect(tabs.getByRole("button")).toHaveText(["項目", "やり取り", "高本のAI"]);
   // やり取りのタブは在って名前が「やり取り」であることだけを見る（押せる形にするのは K-392・押せることは K392 の行と前からの K226-UI-008 が見る）
   await expect(tabs.getByRole("button", { name: "やり取り", exact: true })).toHaveCount(1);
   const actual = page

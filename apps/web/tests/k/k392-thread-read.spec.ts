@@ -142,7 +142,7 @@ test("K392-UI-003 タブ「やり取り」を押す：古い順に 日付の区�
   await expect(postOf(page, "佐藤 花子", "10:41").locator(".k-talk-changes li")).toHaveText(["状態：作業中 → 保留"]);
   // 並びは古い順：最後が佐藤（新しい物がいちばん下）
   await expect(articles(page).last()).toHaveAttribute("aria-label", "佐藤 花子 10:41");
-  await tabs(page).getByRole("button", { name: "属性", exact: true }).click();
+  await tabs(page).getByRole("button", { name: "項目", exact: true }).click();
   await expect(panel(page).getByRole("region", { name: "担当" })).toBeVisible();
   await expect(feed(page)).toHaveCount(0);
 });
@@ -159,7 +159,7 @@ test("K392-UI-004 新しい印：最後に開いた時刻より後のほかの�
   await expect(postOf(page, "佐藤 花子", "10:41").locator(".k-talk-new")).toHaveText("新しい");
   await expect(postOf(page, "鈴木 一郎", "10:20").locator(".k-talk-new")).toHaveCount(0);
   await expect(talkTab(page).locator(".k-talk-count")).toHaveText("1");
-  await tabs(page).getByRole("button", { name: "属性", exact: true }).click();
+  await tabs(page).getByRole("button", { name: "項目", exact: true }).click();
   await talkTab(page).click();
   await expect(feed(page)).toBeVisible();
   expect(t.seen, "1 回開いた画面では 1 回だけ").toBe(1);
