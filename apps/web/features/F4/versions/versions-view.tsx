@@ -2,9 +2,13 @@
 // 版と差分の本体（K-449）。見た目は下絵 v2 の VersionsView（features/F4/doc/detail-views.tsx）と同じ class（doc.css の k-f4d-*）。
 //   左：比べる物（本文・項目の変更）と版の一覧（幅 375 では一覧を出さない・doc.css）。右：比べる元と先・差分・戻す／コピー・注。
 //   戻すの押せる・押せないは口の答え（meta.can_restore）と、チケットの完了（getTicket の completed）で決める（役の名前で出し分けない）
+//   項目の変更の戻す（K-579）：押せる形にし、口 restoreTicketItems（item-restore.ts）につなぐ。戻せなかった項目の並びは本体の一番下
+//     （下絵 f4v2-versions-items-restored と同じ場所）に置き、戻した後の読み直しが失敗しても残す
 import type { ReactNode } from "react";
 import { Button, Loading, NoticeBox, Select, errorText, useNotify, type SelectOption } from "@/components/k";
 import { compareTitle, copyText, KIND_LABEL } from "./diff-lines";
+import type { RestoreNote } from "./item-restore";
+import { SkippedList } from "./item-restore-notes";
 import { FIELD_OF, type Loaded, type Of, type Sel, type Ver, type View } from "./use-versions";
 
 const CANT_RESTORE = "このチケットを直せる人だけが戻せます";
@@ -14,7 +18,7 @@ const ONLY: Record<Of, string> = {
   items: "版は 1 つだけです。項目を変えるたびに、版が増えます。",
 };
 const NO_DIFF = "変わった項目はありません";
-const COMPLETED = "E-SEC-005";
+const COMPLETED: Record<Of, string> = { body: "E-SEC-005", items: "E-ITM-001" };
 
 const WHEN = new Intl.DateTimeFormat("ja-JP", {
   timeZone: "Asia/Tokyo",
@@ -43,9 +47,16 @@ export interface VersionsViewProps {
   completed: boolean;
   sending: boolean;
   restoreError: string | null;
+  /** 項目を戻すを送っている間（K-579） */
+  itemSending: boolean;
+  /** 項目を戻すの失敗の文（K-579） */
+  itemError: string | null;
+  /** 項目を戻した結果（K-579） */
+  restoreNote: RestoreNote | null;
   choose: (next: Sel) => void;
   reload: () => void;
   restore: () => void;
+  restoreItems: () => void;
 }
 
 export function VersionsView(p: VersionsViewProps): ReactNode {
@@ -75,6 +86,7 @@ export function VersionsView(p: VersionsViewProps): ReactNode {
           <ReadFailed code={p.loaded.code} retry={p.loaded.retry} reload={p.reload} />
         ) : null}
         {view && view.of === p.sel.of ? <Compare {...p} view={view} /> : null}
+        {p.sel.of === "items" && p.restoreNote ? <SkippedList items={p.restoreNote.skipped} /> : null}
       </div>
     </div>
   );
@@ -129,10 +141,15 @@ function Compare(p: VersionsViewProps & { view: View }): ReactNode {
     .sort((a, b) => a.n - b.n)
     .map(optionOf);
   const body = view.of === "body";
-  const completed = body && p.completed;
-  // 押せない訳（title）。完了は title を付けず、注の場所に正本の文を出す
-  const why = !body || view.lines.length === 0 ? NOT_YET : !view.canRestore ? CANT_RESTORE : null;
-  const inert = why !== null || completed || p.sending;
+  const completed = p.completed;
+  const sending = body ? p.sending : p.itemSending;
+  const failure = body ? p.restoreError : p.itemError;
+  // 押せない訳（title）。完了は title を付けず、注の場所に正本の文を出す。項目の変更は差分が空なら title なしで押せない形（K-579）
+  const empty = view.lines.length === 0;
+  //   完了したチケットは版の一覧の can_restore も false なので、項目の変更では完了を先に見て title を付けない
+  //   書けない訳は口が「書けない」（false）と答えたときだけ。答え待ち・読めなかった（null）は押せない形で title なし
+  const why = body && empty ? NOT_YET : view.canRestore === false && (body || !completed) ? CANT_RESTORE : null;
+  const inert = why !== null || view.canRestore !== true || empty || completed || sending;
   const copy = () => {
     const text = copyText(field, from, to, view.lines);
     const done = () => notify("差分をコピーしました");
@@ -178,10 +195,12 @@ function Compare(p: VersionsViewProps & { view: View }): ReactNode {
         <Button
           variant="outlined"
           aria-disabled={inert || undefined}
-          aria-busy={p.sending || undefined}
-          {...(why && !p.sending ? { title: why } : {})}
+          aria-busy={sending || undefined}
+          {...(why && !sending ? { title: why } : {})}
           onClick={() => {
-            if (!inert) p.restore();
+            if (inert) return;
+            if (body) p.restore();
+            else p.restoreItems();
           }}
         >
           {`${field}を版 ${from} に戻す`}
@@ -190,9 +209,9 @@ function Compare(p: VersionsViewProps & { view: View }): ReactNode {
           この差分をコピー
         </Button>
       </div>
-      {p.restoreError && body ? <NoticeBox>{p.restoreError}</NoticeBox> : null}
+      {failure ? <NoticeBox>{failure}</NoticeBox> : null}
       {completed ? (
-        <p>{errorText(COMPLETED).entry.message}</p>
+        <p>{errorText(COMPLETED[view.of]).entry.message}</p>
       ) : (
         <p className="k-f4d-hint">{`戻すと、いまの版は消えずに新しい版（版 ${current + 1}）ができ、確認の結果が古くなります`}</p>
       )}

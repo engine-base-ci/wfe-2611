@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d9c2c25c206ffc7c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:4e04cba4441285c4
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -343,7 +343,6 @@ export interface Ops {
   markTicketTimelineSeen: { params: { id: string }; query: never; body: T.TicketTimelineSeenInput; data: T.TicketTimelineSeen };
   listTicketVersions: { params: { id: string }; query: { "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketVersionsView[] };
   restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.BodyRestoreInput; data: T.BodyRestored };
-  listWorkTypeCandidates: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Skills[] };
   bulkUpdateTickets: { params: never; query: never; body: T.TicketsInput; data: T.BulkResult };
   listWorkTypes: { params: never; query: { "origin"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Skills[] };
   createWorkType: { params: never; query: never; body: T.SkillsInput; data: T.Skills };

@@ -21,10 +21,18 @@ export interface DueSlotProps {
   error?: string;
 }
 
-/** 作るときにつなぐ相手（K-580 の create-links-model と同じ形） */
+/** つながりの種類（作る口の links の kind と同じ） */
+export type CreateLinkKind = "related" | "derived_from";
+
+/** 作る面で足した相手（K-580 の create-links-model が使う・下書きにも残す）。作る口へは種類と id だけを送る */
 export interface CreateLink {
-  kind: "related" | "derived_from";
-  other_ticket_id: string;
+  kind: CreateLinkKind;
+  /** 相手のチケットの id */
+  id: string;
+  /** 「EG-097」など（画面に出すだけ・送らない） */
+  number: string;
+  title: string;
+  stage?: { key: string | null; name: string };
 }
 
 /** つながり（K-580）：「＋ つながりを足す」 */

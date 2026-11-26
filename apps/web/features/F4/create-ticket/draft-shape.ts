@@ -1,7 +1,9 @@
 // 作る面の下書きの形と読み方（K-442・D-128.138）。純粋な関数だけ（@/ を読まない・単体の試験が直に読む）。
 //   本文は 1 枚の木と、触ったか・ひな形を消したか（create-body の BodyState）。会社の項目は 項目の id → 値・確認項目は文の並び。
+//   足したつながり links は create-links-model の読み方（形の違う行だけ捨てる・20 件まで・K-580）。
 //   古い形の鍵 sections（区画の入力）は読み捨てる（本文に入れない）。形の違う欄はその欄だけ捨て、残りは残す
 import type { Doc } from "@kaname/contracts";
+import { readDraftLinks, type CreateLink } from "../links/create-links-model";
 
 export type DraftFieldValue = string | number | boolean | string[] | null;
 
@@ -21,6 +23,8 @@ export interface DraftBody {
   fields?: Record<string, DraftFieldValue>;
   specs?: string[];
   notify_member_ids?: string[];
+  /** 作る面で足したつながり（K-580・作るとき作る口の links で張る） */
+  links?: CreateLink[];
 }
 
 type Raw = Record<string, unknown>;
@@ -61,5 +65,7 @@ export function readDraftBody(raw: unknown): DraftBody {
   if (fields) out["fields"] = fields;
   if (isStrList(raw["specs"])) out["specs"] = [...raw["specs"]];
   if (isStrList(raw["notify_member_ids"])) out["notify_member_ids"] = [...raw["notify_member_ids"]];
+  const links = readDraftLinks(raw["links"]);
+  if (links && links.length > 0) out["links"] = links;
   return out as DraftBody;
 }
