@@ -337,7 +337,7 @@ class PriorRefs(unittest.TestCase):
     def test_K1305_CI_015_table_sha_differs_from_declared(self) -> None:
         """K1305-CI-015 commit_problems：表の sha が宣言の sha と違い、取り出した木の履歴（HEAD の先祖）にも無い → 赤
         「K-64（着手前）：a.txt:1@<sha> の sha が宣言（枝 k64-make の <宣言の sha>）と違う（取り出した木の履歴にも無い）」。
-        違っても HEAD の先祖（本線の版）なら空（緑）。宣言と違う sha が git に無いときも違う方の文（git push の文は出さない）"""
+        違っても HEAD の先祖（本線の版）なら空（緑）、ただし行まで見る（a.txt:5@<old> は「a.txt:5 が <old> に無い」）。宣言と違う sha が git に無いときも違う方の文（git push の文は出さない）"""
         with tempfile.TemporaryDirectory() as d:
             repo = pathlib.Path(d)
             run_git(repo, "init", "-q", "-b", "main")
@@ -358,6 +358,7 @@ class PriorRefs(unittest.TestCase):
             self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{other}"], decl),
                              [f"K-64（着手前）：a.txt:1@{other} の sha が宣言（枝 k64-make の {dsha}）と違う（取り出した木の履歴にも無い）"])
             self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{old}", f"a.txt:2@{dsha}"], decl), [])
+            self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:5@{old}"], decl), [f"K-64（着手前）：a.txt:5 が {old} に無い"])   # 本線の版でも行まで見る
             gone = "deadbeef"   # 宣言と違い、しかも git に無い：違う方の文（宣言の枝を上げても直らないので git push の文は出さない）
             got = prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{gone}"], decl)
             self.assertEqual(got, [f"K-64（着手前）：a.txt:1@{gone} の sha が宣言（枝 k64-make の {dsha}）と違う（取り出した木の履歴にも無い）"])
