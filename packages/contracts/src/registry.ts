@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:5a7a43b9f6cbd470
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:5ad2a3ac6b30003a
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -18246,60 +18246,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "GET",
-    "path": "/api/v1/tickets/:id/work-type-candidates",
-    "operationId": "listWorkTypeCandidates",
-    "table": "skills",
-    "kind": "get",
-    "input": null,
-    "success": 200,
-    "output": "Skills",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id",
-      "scope_id"
-    ],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      404,
-      422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A130"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "true"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "POST",
     "path": "/api/v1/tickets/bulk",
     "operationId": "bulkUpdateTickets",
@@ -19952,4 +19898,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "5a7a43b9f6cbd470";
+export const OPENAPI_HASH = "5ad2a3ac6b30003a";

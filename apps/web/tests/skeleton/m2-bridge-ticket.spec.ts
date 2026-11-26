@@ -12,6 +12,7 @@ import { elapsePairingCodes, lastBeatAgo } from "../_lib/clock";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
 import { testPc, type TestPc } from "../_lib/test-pc";
+import { fillDue, writeBody } from "../k/create-mock";
 
 const box = new Mailbox();
 test.beforeAll(() => box.open());
@@ -79,10 +80,10 @@ async function createTicket(page: Page, me: Newcomer, title: string): Promise<st
   await page.getByRole("textbox", { name: "題名", exact: true }).fill(title);
   await page.getByRole("combobox", { name: "担当者" }).click();
   await page.getByRole("option", { name: me.name, exact: true }).click();
-  await page.getByRole("textbox", { name: "期限", exact: true }).fill(jst(3));
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill("中間テスト 2 の目的");
-  await page.getByRole("textbox", { name: "完了の条件", exact: true }).fill("中間テスト 2 の完了の条件");
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).fill("中間テスト 2 の実施事項");
+  // 期限：日付の欄でも小窓のボタンでも入れる（create-mock.ts の fillDue・K-431 が 1 か所だけ持つ）
+  await fillDue(page, jst(3));
+  // 本文：見たまま編集の欄に書く（create-mock.ts の writeBody・K-442 が持つ。本文は空でも作れるが、書いた字が詳細まで届くのを通しで見る）
+  await writeBody(page, "中間テスト 2 の本文");
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();

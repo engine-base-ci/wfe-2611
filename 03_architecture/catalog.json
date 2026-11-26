@@ -5,15 +5,15 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 374,
+  "api": 373,
   "api_built": 106,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 301,
-  "stack": 68,
+  "errors": 297,
+  "stack": 70,
   "env": 41
  },
  "api": [
@@ -5562,23 +5562,6 @@
    ]
   },
   {
-   "op": "listWorkTypeCandidates",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/work-type-candidates",
-   "what": "取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ）",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "skills"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "bulkUpdateTickets",
    "method": "POST",
    "path": "/api/v1/tickets/bulk",
@@ -6592,8 +6575,8 @@
   },
   {
    "table": "kind_sections",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "本文が 1 枚になり、区画の形（見出し・必須・並び）を使わない（K-578・D-150.35）。口は読まない・書かない・消さない。DB の関数 2 つ（app.ticket_tool_read・app.bridge_finish_job）がまだ引く。表と行の扱いは段 10 が決める",
    "writes": [
     "F4",
     "F9"
@@ -7170,8 +7153,7 @@
     "F9"
    ],
    "reads": [
-    "F12",
-    "F4"
+    "F12"
    ],
    "boundary": true
   },
@@ -7884,6 +7866,14 @@
    {
     "package": "remark-math",
     "for": "会話の書式（数式）"
+   },
+   {
+    "package": "remark-parse",
+    "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）"
+   },
+   {
+    "package": "unified",
+    "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）"
    },
    {
     "package": "resend",

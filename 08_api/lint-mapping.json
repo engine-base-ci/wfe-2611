@@ -3794,17 +3794,6 @@
    ]
   },
   {
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/work-type-candidates",
-   "implementation_path": "apps/api/src/routes/skills.ts::listWorkTypeCandidates",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A130"
-   ]
-  },
-  {
    "method": "POST",
    "path": "/api/v1/tickets/bulk",
    "implementation_path": "apps/api/src/routes/tickets.ts::bulkUpdateTickets",

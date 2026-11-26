@@ -1,37 +1,5 @@
-// 完了にする（K-183）の画面が読む形と、口と同じ数え方（口は K165 の app.ticket_complete）。
-//   実施事項の項目＝本文の「- 」で始まる行（字下げした行も 1 項目）。上から 0 で数える。済みは「- [x]」（大文字の X も）
-import type { Ops } from "@kaname/contracts";
-
-type TicketCompleteInput = Ops["completeTicket"]["body"];
-
-export interface TodoItem {
-  /** 項目の文（頭の「- 」と印を除く） */
-  text: string;
-  /** 本文でもう済み（- [x]）。小窓では入ったままで外せない */
-  done: boolean;
-}
-const ITEM = /^\s*- /;
-const DONE = /^\s*- \[[xX]\](\s|$)/;
-
-/** 実施事項の本文 → 項目の並び（並びの番号が口に送る番号） */
-export function todoItems(text: string): TodoItem[] {
-  return text
-    .split("\n")
-    .filter((line) => ITEM.test(line))
-    .map((line) => {
-      const done = DONE.test(line);
-      const rest = done ? line.replace(/^\s*- \[[xX]\]\s*/, "") : line.replace(/^\s*- (\[ ?\]\s*)?/, "");
-      return { text: rest.trimEnd(), done };
-    });
-}
-
-/** 口に送る番号（入っている項目の番号・済みの項目も入る）。
- *  生成の型（TicketCompleteInput.todo_checked）は並びの中身を string にしているが、口は 0 からの整数だけを受ける（文字だと 422）。
- *  型を偽るのはこの 1 か所だけ。契約の生成が number[] を出すようになったら、この言い換えを外す（K-183 の申し送り） */
-export function checkedNumbers(checked: boolean[]): TicketCompleteInput["todo_checked"] {
-  const numbers: number[] = checked.flatMap((on, i) => (on ? [i] : []));
-  return numbers as unknown as TicketCompleteInput["todo_checked"];
-}
+// 完了にする（K-183・K-572）の画面が読む形：完了した時刻と押した人の 1 行・口の 422 の明細。
+//   未チェックの数え方は unchecked.ts（口の app.ticket_body_unchecked と同じ定義・K-566）
 
 /** getTicket の答えの完了（K165 が足す）。by は押した人の表示名（引けなければ null） */
 export interface Completed {
