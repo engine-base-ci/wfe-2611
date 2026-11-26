@@ -8,18 +8,22 @@ export interface SegItem {
   pending?: boolean;
 }
 
-/** 2〜4 つから 1 つを選ぶ（キャンバスの「自分だけ／グループの全員」「ふつう／詰める」）。選んでいるものに aria-pressed */
+/** 2〜4 つから 1 つを選ぶ（キャンバスの「自分だけ／グループの全員」「ふつう／詰める」）。選んでいるものに aria-pressed。
+ *  onPick も onChange も無ければ読むだけ */
 export function Seg({
   label,
   items,
   value,
   onPick,
+  onChange,
 }: {
   label: string;
   items: readonly SegItem[];
   value: string;
   /** 選んだとき（押せない項目では呼ばない） */
   onPick?: (value: string) => void;
+  /** onPick と同じ（K-479 の保存の小窓が使う名前） */
+  onChange?: (value: string) => void;
 }) {
   return (
     <div className="k-f7-saved-seg" role="group" aria-label={label}>
@@ -29,7 +33,7 @@ export function Seg({
           type="button"
           className="k-f7-saved-seg-item"
           aria-pressed={i.value === value}
-          onClick={i.pending ? undefined : () => onPick?.(i.value)}
+          onClick={i.pending || (!onPick && !onChange) ? undefined : () => (onPick ?? onChange)?.(i.value)}
           {...(i.pending ? { "aria-disabled": true, tabIndex: -1, title: `${i.label}（準備中）` } : {})}
         >
           {i.label}

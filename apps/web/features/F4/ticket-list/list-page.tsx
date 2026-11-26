@@ -206,6 +206,8 @@ interface BodyProps {
 function ListBody({ view, scoped, data, side, onCreate, onQuery, extra, onExtra, counts }: BodyProps) {
   const { list } = data;
   const mine = view === "mine" && !scoped;
+  // 札や絞りの札で絞った 0 件は「条件に合う」の字（並びの sort は絞りに数えない・K478-UI-008）
+  const filtered = Object.keys(extra).some((k) => k !== "sort");
   // はじめて（OnHome）は会社にチケットが 1 枚も無いときだけ。自分に関わるものが 0 件でも会社に在れば Main の形で表を空にする
   const first = list.state === "ok" && list.first;
   const viewer = useViewer(true);
@@ -268,7 +270,9 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery, extra, onExtra,
           onMore={data.loadMore}
         />
         {list.rows.length === 0 ? (
-          <p className="k-list-none">{mine ? "自分に関わるチケットはありません" : "条件に合うチケットはありません"}</p>
+          <p className="k-list-none">
+            {mine && !filtered ? "自分に関わるチケットはありません" : "条件に合うチケットはありません"}
+          </p>
         ) : null}
       </div>
     );

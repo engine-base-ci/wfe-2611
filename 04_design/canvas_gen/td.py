@@ -46,7 +46,7 @@ AV = lambda c, bg: '<span style="width: 24px; height: 24px; flex: none; border-r
 open(P + 'TicketDetail.dc.html', 'w', encoding='utf-8').write(wire(BASE))
 # 1 … menu
 more = (mi("複製する", "⌘D").replace('href="#"', 'href="TdDuplicate.dc.html"') + mi("ほかのグループへ移す") + mi("種別を変える", "", sub="タスク → 依頼 など") + mi("ひな形にする", "", sub="この本文の形を次から使う")
-        + SEP + mi("リンクをコピー", "⌘L") + mi("PDF にする・印刷") + mi("版と差分を見る").replace('href="#"', 'href="TdVersions.dc.html"') + mi("実行の記録を見る").replace('href="#"', 'href="TdRunLog.dc.html"')
+        + SEP + mi("リンクをコピー", "⌘L") + mi("版と差分を見る").replace('href="#"', 'href="TdVersions.dc.html"') + mi("実行の記録を見る").replace('href="#"', 'href="TdRunLog.dc.html"')
         + SEP + mi("消す", "", True).replace('href="#"', 'href="TdDelete.dc.html"'))
 save("TdMore.dc.html", "ほかの操作", anchor_pop(BASE, MORE, more, 260))
 

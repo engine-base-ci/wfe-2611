@@ -297,6 +297,19 @@ select.k-f7-saved-pick {
   padding-top: var(--k-s-md);
   border-top: var(--k-c-dialog-actions-border-top);
 }
+/* 足の「検索条件を保存」（K-479 の SaveViewButton を渡す・data-variant を持たない button）：足のほかのボタン（線のある従ボタン・小）と同じ見た目 */
+.k-btn.k-f7-saved-cond-save {
+  min-height: calc(var(--k-c-button-outlined-height) - var(--k-s-xs));
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-c-button-outlined-fw);
+}
+.k-btn.k-f7-saved-cond-save:hover:not([aria-disabled="true"]) {
+  background: var(--k-select);
+}
 
 /* ---- 表示設定の箱（表の箱の頭の「表示設定」のすぐ下に開く。狭い幅は箱の幅に収める） ---- */
 .k-f7-saved-anchor {

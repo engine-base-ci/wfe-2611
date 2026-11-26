@@ -4,7 +4,7 @@
 //   行は 項目・言い方・値の選び（<select>）と × で外す。口が AND と 1 つの値だけなので、項目は 担当者・状態・種別・期限（分類は押せない）。
 //   「この条件で見る」で行を欄に直して（filter-params.ts の paramsOf）呼ぶ側へ渡す。誤りのある行は行の下に文を出し、渡さない。
 //   items（見本の行）だけを渡すと、見本の値をそのまま描く（モック）
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import {
   COND_FIELDS,
@@ -51,6 +51,8 @@ export interface ConditionBuilderProps {
   onApply?: (params: Record<string, string>) => void;
   /** 「かんたんに戻す」 */
   onBack?: () => void;
+  /** 足の「検索条件を保存」（一覧では K-479 の SaveViewButton を渡す。無ければ見本の押せない形のボタン） */
+  saveAction?: ReactNode;
 }
 
 interface Opt {
@@ -253,6 +255,7 @@ export function ConditionBuilder({
   onNeedStages,
   onApply,
   onBack,
+  saveAction,
 }: ConditionBuilderProps) {
   const s = useRows(onNeedStages);
   const apply = () => {
@@ -290,9 +293,11 @@ export function ConditionBuilder({
           かんたんに戻す
         </Button>
         <span className="k-f7-saved-cond-foot-acts">
-          <Button variant="outlined" size="sm" {...PENDING_PROPS} title="検索条件を保存（準備中）">
-            検索条件を保存
-          </Button>
+          {saveAction ?? (
+            <Button variant="outlined" size="sm" {...PENDING_PROPS} title="検索条件を保存（準備中）">
+              検索条件を保存
+            </Button>
+          )}
           <Button size="sm" onClick={apply}>
             この条件で見る
           </Button>

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b393ad0eb9dcec27
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:48e765078a461f2b
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -205,8 +205,8 @@ export interface Ops {
   listNotices: { params: never; query: { "kind"?: string | number; "unread"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Notices[] };
   markNoticeRead: { params: { id: string }; query: never; body: T.NoticeDeliveriesInput; data: T.NoticeDeliveries };
   listNotifications: { params: never; query: { "unread"?: string | number; "actor_member_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Notification[] };
-  readNotification: { params: { id: string }; query: never; body: T.NotificationsInput; data: T.Notifications };
-  readAllNotifications: { params: never; query: never; body: T.NotificationsInput; data: T.Notifications };
+  readNotification: { params: { id: string }; query: never; body: T.NotificationReadInput; data: T.Notification };
+  readAllNotifications: { params: never; query: never; body: T.NotificationReadAllInput; data: T.NotificationsRead };
   listOpsInquiries: { params: never; query: { "box"?: string | number; "kind"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Inquiries[] };
   getOpsInquiry: { params: { id: string }; query: never; body: never; data: T.OpsInquiryDetail };
   updateOpsInquiry: { params: { id: string }; query: never; body: T.InquiriesInput; data: T.Inquiries };
@@ -278,8 +278,8 @@ export interface Ops {
   checkRule: { params: never; query: never; body: T.PoliciesInput; data: T.RuleCheck };
   listSavedViews: { params: never; query: { "share"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.SavedView[] };
   createSavedView: { params: never; query: never; body: T.SavedViewInput; data: T.SavedView };
-  updateSavedView: { params: { id: string }; query: never; body: T.SavedViewsInput; data: T.SavedViews };
-  deleteSavedView: { params: { id: string }; query: never; body: never; data: T.SavedViews };
+  updateSavedView: { params: { id: string }; query: never; body: T.SavedViewUpdateInput; data: T.SavedView };
+  deleteSavedView: { params: { id: string }; query: never; body: never; data: T.SavedViewDeleted };
   listScopes: { params: never; query: { "layer_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Scopes[] };
   createScope: { params: never; query: never; body: T.ScopesInput; data: T.Scopes };
   updateScope: { params: { id: string }; query: never; body: T.ScopesInput; data: T.Scopes };
@@ -292,6 +292,8 @@ export interface Ops {
   listTicketFields: { params: never; query: { "kind_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketField[] };
   updateTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionUpdateInput; data: T.TicketDecisionChange };
   answerTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverAnswerInput; data: T.TicketHandoverAnswered };
+  remindTicketHandover: { params: { id: string }; query: never; body: T.HandoverRemindInput; data: T.HandoverReminded };
+  withdrawTicketHandover: { params: { id: string }; query: never; body: T.HandoverWithdrawInput; data: T.HandoverWithdrawn };
   createTicketImport: { params: never; query: never; body: T.TicketImportsInput; data: T.TicketImports };
   getTicketImport: { params: { id: string }; query: never; body: never; data: T.TicketImports };
   commitTicketImport: { params: { id: string }; query: never; body: T.TicketImportsInput; data: T.TicketImports };
@@ -333,7 +335,7 @@ export interface Ops {
   createTicketLink: { params: { id: string }; query: never; body: T.TicketLinkInput; data: T.TicketLink };
   createTicketMessage: { params: { id: string }; query: never; body: T.TicketMessageInput; data: T.TimelineItem };
   listTicketReferences: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ReferenceLogs[] };
-  restoreTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
+  restoreTicket: { params: { id: string }; query: never; body: T.TicketRestoreInput; data: T.TicketRestored };
   listTicketRuns: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActionRunView[] };
   listTestSpecs: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TestSpecItem[] };
   createTestSpec: { params: { id: string }; query: never; body: T.TestSpecCreateInput; data: T.TestSpecItem };
