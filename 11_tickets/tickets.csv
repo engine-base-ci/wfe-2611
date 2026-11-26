@@ -3249,6 +3249,21 @@ PM の決め（作り方）：
 - [ ] 替えた前からの試験（`ticket_order_gate_test.py` の K159-CI-013・014・015・028、`k643_merge_not_impl_test.py` の K643-CI-003、`k341_order_gate_speed_test.py` の K341-CI-003）が緑
 - [ ] 替えない前からの試験（`k210_gate_holes_test.py`・`ci_scope_test.py`・`ci_lean_test.py` と、上の 3 本の替えない行）が緑
 - [ ] チケットの範囲の CI が緑。K-711 の枝の G56 が ecc6788c6d で赤にならない（PM が確かめる）"
+K-1304,CI を速く：段の全部の CI の画面の試験の組（web）を、置き場の変数 WEB_SHARDS の数に分けて同時に流す（G48 を --shard で N 組・G59・G70・G73 を別の組・試験は 1 本も減らさず、記録と照らしは今と同じ 1 回）・変数が無ければ今と同じ 1 組・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"段の全部の CI（流す置き場 engine-base-ci/wfe-2611）の画面の試験の組（web）が 1 台で 90 分以上かかる。実測（段9）：取り出し〜部品 1 分・DB 10 秒・`playwright install --with-deps chromium` 2.5 分・API 5 秒・`build:test` 1.3 分・画面を立てる 2 秒、そのあと 1 台で順に G48（75 分以上）→ G59（約 3.7 分）→ G70（約 1.8 分）→ G73（約 10 秒）。
+
+代表の決め（2026-11-26・PM 経由）：**流す試験を 1 本も減らさず**、同じ試験を何台かに分けて同時に流し、段の CI を **10 分前後** にする。置き場の組織は今 Enterprise のお試しで GitHub の台を同時に多く使える。**今だけの設定**なので、分ける数は置き場の変数で持ち、変数が無いときは今と全く同じ動き（1 台）にする。
+
+PM の決め（作り方）：
+1. 分ける数は置き場の変数 `WEB_SHARDS`（無ければ 1）。static の組が env で受けて（命令の文字に入れない）`web_run.py shards` で `web_shards`（数）と `web_parts`（web の組の matrix の一覧）を出す。1 なら `[""all""]`、2 以上なら `[""g48-1""…""g48-N"", ""g59"", ""g70"", ""g73""]`（専用の段は ci_scope.json の web_select.gates から）。数でない・1〜40 の外は赤（黙って 1 にしない）
+2. web の組は matrix `part` で走る。**all の 1 組は今と全く同じ**（組の名前 web・段・命令・上げる物 ci-results と junit-web）。2 以上なら組ごとに自分の DB・API・画面を立て（準備の段は今のまま）、どの段を流すかは `web_run.py` が env `WEB_PART` で決める（G48・G59・G70・G73 の段の名前・if・命令は変えない。この組で流さない段は 0 で終わる）
+3. G48 の組 `g48-<i>` は、今と同じ試験の一覧（e2e:k。範囲の回は選んだ試験）に `--shard=<i>/<N> --reporter=list,blob --pass-with-no-tests` を付けて流し、blob の報告と終わりの番号を `web-part/` に残して `web-part-<組>` で上げる。G59・専用の段の組は今の命令で JUnit（junit/web-skeleton.xml など）を書き、同じく `web-part-<組>` で上げる
+4. 新しい組 `web-report`（needs: static・web。web が飛ばされたら飛ぶ・`WEB_SHARDS` が 1 か無ければ飛ぶ）が `web-part-*` を取り、`web_run.py g48-report` で、N 組の blob と終わりの番号がそろうかを見て、`playwright merge-reports --reporter=json,junit` で 1 つの報告（apps/web/pw-reports/k.json）と JUnit（junit/web.xml）にまとめ、**今と同じ** `ci_results.py record` と `op_gate.py` を 1 回流す。そろわない（落ちた組がある）なら何も作らず赤。どれかの組の試験が赤なら JUnit はまとめ、記録と照らしは流さず赤（今の 1 組で G48 が赤の回と同じ）。`ci-results` と `junit-web` を上げる
+5. junit の組は web-report も待つ（always()）。artifact「junit」にそろう JUnit のファイルの名前（web.xml・web-skeleton.xml・web-fidelity.xml・web-bridge.xml）と置き場は今と同じ
+6. 準備を縮める：GitHub の台だけ（`runner.environment == 'github-hosted'`）ブラウザの取り込み（~/.cache/ms-playwright）を actions/cache で使い回す。自分の台（VM）は像に残るので上げ下ろししない（K-172）。`playwright install --with-deps chromium` の命令は変えない（字体と apt の部品は今までどおり毎回そろう・K-641）。`build:test` は組ごとに作る（作った物を渡すと上げ下ろしの時間が作る時間と変わらず、組の準備が全部終わるまで試験を始められない）
+7. 見込み：分ける数 20 で、組 1 つの準備 約 4.5〜5 分＋G48 の 1 組 約 4 分（75 分÷20・一番重いファイル 3.4 分）＋web-report 約 1.5 分 ＝ 約 10 分。G59 の組は準備＋3.7 分で G48 の組より先に終わる。Playwright は分ける単位がファイル（fullyParallel: false）で、ファイルの数で均すので組の長さはばらつく。最初の回の実測で数を変える（変数だけで変わる）","- [ ] 下の表の行（K1304-CI-001〜012）が緑
+- [ ] 替えた前からの試験（`k258_web_defer_test.py` の K258-CI-005）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない 16 本）が緑
+- [ ] 段の全部の CI で、変数 WEB_SHARDS が無い回は web の組が 1 つで今と同じ段・同じ JUnit、20 の回は G48 が 20 組で流れ、まとめた JUnit（web.xml）の testcase の数が 1 組の回と同じ（PM が置き場で確かめる）"
 K-1305,CI を直す：段の全部の CI で毎回赤になるプロジェクト側の元 2 つ（全部の回でも段の葉（stageq が渡す入力 leaves）の .py の試験を JUnit に載せる・G64 が CI の置き場に無い控えの枝の sha を見て赤のとき、置き場に上げる枝を出して確かめる道具を足す）・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"代表の決め（2026-11-26・PM 経由）「完璧に直しましょう」。段の全部の CI（scope=full）で毎回赤になる、プロジェクト側の元を 2 つ直す。
 
 1. **全部の回で .py の試験が JUnit に載らない。** `scripts/ci/ci_scope.py` の全部の回は `_full_plan` で返り、`py_tests` が空のまま。spec の組の「チケットの Python の試験」の段は `junit/spec-py.xml` に `<testsuites />`（0 本）を書く（実測：段の回 45801811744・`CI_PY_TESTS: []`）。G65 の段では試験は流れるが JUnit に書かないので、.py の試験だけで確かめる葉（K-1304・K-1156）は段の CI で毎回「流れていない」になる
