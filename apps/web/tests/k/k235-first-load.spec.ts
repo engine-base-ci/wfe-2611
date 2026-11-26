@@ -80,14 +80,20 @@ async function firstLoad(
   return l;
 }
 
-test("K235-UI-001 一覧（/tickets）：答えの前に /me と一覧の口が出る・答えの後に出た口 0・同じ口 2 回 0・/me は 1 回", async ({
+test("K235-UI-001 一覧（/tickets）：答えの前に外枠の口（getShell）と /me と一覧の口が出る・答えの後に出た口 0・同じ口 2 回 0・/me と getShell は 1 回（K-466 で getShell を足した）", async ({
   page,
 }) => {
-  const l = await firstLoad(page, "/tickets", ["GET /api/auth-ext/me", "GET /api/v1/tickets"], "list");
+  const l = await firstLoad(
+    page,
+    "/tickets",
+    ["GET /api/v1/shell", "GET /api/auth-ext/me", "GET /api/v1/tickets"],
+    "list",
+  );
   const all = [...l.before, ...l.after];
   expect(l.after).toEqual([]);
   expect(dups(all)).toEqual([]);
   expect(all.filter((k) => path(k) === "/api/auth-ext/me")).toHaveLength(1);
+  expect(all.filter((k) => path(k) === "/api/v1/shell")).toHaveLength(1);
 });
 
 test("K235-UI-002 作る画面（/tickets?new=1）：答えの前に種別・人・書きかけ・/me が出る・答えの後に出た口 0・同じ口 2 回 0", async ({
@@ -96,14 +102,20 @@ test("K235-UI-002 作る画面（/tickets?new=1）：答えの前に種別・人
   const l = await firstLoad(
     page,
     "/tickets?new=1",
-    ["GET /api/auth-ext/me", "GET /api/v1/ticket_kinds", "GET /api/v1/members", "GET /api/v1/me/ticket-drafts"],
+    [
+      "GET /api/v1/shell",
+      "GET /api/auth-ext/me",
+      "GET /api/v1/ticket_kinds",
+      "GET /api/v1/members",
+      "GET /api/v1/me/ticket-drafts",
+    ],
     "create",
   );
   expect(l.after).toEqual([]);
   expect(dups([...l.before, ...l.after])).toEqual([]);
 });
 
-test("K235-UI-003 詳細（/tickets/:id）：答えの前に詳細と実行の一覧とやり取りの最初の 20 件（K-392）と /me が出る・答えの後に出た口 0・同じ口 2 回 0・口は 8 本以下（K-397 の決定の一覧を含む）", async ({
+test("K235-UI-003 詳細（/tickets/:id）：答えの前に詳細と実行の一覧とやり取りの最初の 20 件（K-392）と /me と外枠の口（getShell）が出る・答えの後に出た口 0・同じ口 2 回 0・口は 6 本以下（K-397 の決定の一覧を含む。K-466：外枠の口 4 本が getShell 1 本になった）", async ({
   page,
 }) => {
   const l = await firstLoad(
@@ -114,25 +126,26 @@ test("K235-UI-003 詳細（/tickets/:id）：答えの前に詳細と実行の�
       `GET /api/v1/tickets/${TICKET}/runs`,
       `GET /api/v1/tickets/${TICKET}/timeline`, // K-392：タブの読んでいない数を出すため、詳細の答えを待たずに同時に読む
       "GET /api/auth-ext/me",
+      "GET /api/v1/shell",
     ],
     "detail",
   );
   const all = [...l.before, ...l.after];
   expect(l.after).toEqual([]);
   expect(dups(all)).toEqual([]);
-  // K-392 がやり取りの読む口を 1 本（台帳 perf_budget.json は 7）・K-397 が決定の一覧の口を 1 本（台帳 8）足す。どちらも詳細と同時に出す（上の l.after が空）。
-  // 決定の一覧は K-397 の後だけ出るので目印には入れない。同じ試験を 2 つの葉の版で持たないため、上限は K-397 の分も含めて 8
-  expect(all.length, all.join("\n")).toBeLessThanOrEqual(8);
+  // 6 ＝ getShell・/me・詳細・実行の一覧・やり取り（K-392）・決定の一覧（K-397）。台帳 perf_budget.json の /tickets/:id も 6。
+  // 決定の一覧は K-397 の後だけ出るので目印には入れない（本線の形）。同じ試験を 2 つの葉の版で持たないため、上限は K-397 の分も含めて 6
+  expect(all.length, all.join("\n")).toBeLessThanOrEqual(6);
 });
 
-test("K235-UI-004 承認待ち（/approvals）：答えの前に承認待ちと /me が出る・答えの後に出た口 0・同じ口 2 回 0・口は 4 本以下", async ({
+test("K235-UI-004 承認待ち（/approvals）：答えの前に承認待ちと getShell が出る・答えの後に出た口 0・同じ口 2 回 0・口は 2 本以下（getShell と承認待ち。K-466：自分の口と外枠の 3 つの口が getShell 1 本になった）", async ({
   page,
 }) => {
-  const l = await firstLoad(page, "/approvals", ["GET /api/v1/approvals/queue", "GET /api/auth-ext/me"], "approvals");
+  const l = await firstLoad(page, "/approvals", ["GET /api/v1/approvals/queue", "GET /api/v1/shell"], "approvals");
   const all = [...l.before, ...l.after];
   expect(l.after).toEqual([]);
   expect(dups(all)).toEqual([]);
-  expect(all.length, all.join("\n")).toBeLessThanOrEqual(4);
+  expect(all.length, all.join("\n")).toBeLessThanOrEqual(2);
 });
 
 test("K235-UI-005 幅 768 で一覧の行の題名を押して詳細へ移る：URL が /tickets/<id>・/me とグループの口を呼び直さない（画面の中で移る）", async ({
@@ -150,7 +163,7 @@ test("K235-UI-005 幅 768 で一覧の行の題名を押して詳細へ移る：
   await expect(page.locator("header.k-page-head h1", { hasText: "チケット 1" })).toBeVisible();
   await page.waitForLoadState("networkidle");
   const later = [...l.before, ...l.after].slice(seen);
-  expect(later.filter((k) => ["/api/auth-ext/me", "/api/v1/scopes"].includes(path(k)))).toEqual([]);
+  expect(later.filter((k) => ["/api/auth-ext/me", "/api/v1/shell", "/api/v1/scopes"].includes(path(k)))).toEqual([]);
 });
 
 test("K235-UI-006 /me の口が 500：一覧の口は /me の答えを待たずに出る・/me は読み直さない（1 回）", async ({

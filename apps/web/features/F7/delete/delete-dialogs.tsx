@@ -16,6 +16,8 @@ interface Common {
   reason: string;
   /** 口が断った・失敗した（書いた中身は消さない） */
   notice?: string | undefined;
+  /** 箱の色：断り＝warn（既定）・送れない＝danger */
+  noticeTone?: "warn" | "danger" | undefined;
   busy?: boolean;
   onReasonChange?: ((v: string) => void) | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
@@ -55,6 +57,7 @@ export function DeletePreview({
   data,
   reason,
   notice,
+  noticeTone = "warn",
   busy = false,
   onReasonChange,
   onOpenChange,
@@ -71,7 +74,7 @@ export function DeletePreview({
       }
     >
       <div className="k-dialog-stack">
-        {notice ? <NoticeBox tone="warn">{notice}</NoticeBox> : null}
+        {notice ? <NoticeBox tone={noticeTone}>{notice}</NoticeBox> : null}
         <DeleteBody data={data} reason={reason} onReasonChange={onReasonChange} />
       </div>
     </Dialog>
@@ -105,6 +108,8 @@ export interface DeleteChildrenProps extends Common {
   parentField?: ReactNode;
   /** 移す先を選んでいないときの赤い字（親を探す欄の下） */
   parentError?: string | undefined;
+  /** 親を探す欄（parentField）で移す先を選んだか（parent を渡さないときに「消す」を押せる形にする） */
+  parentChosen?: boolean | undefined;
   onChoice?: ((c: ChildChoice) => void) | undefined;
 }
 
@@ -148,8 +153,10 @@ export function DeleteChildrenDialog({
   parent,
   parentField,
   parentError,
+  parentChosen = false,
   reason,
   notice,
+  noticeTone = "warn",
   busy = false,
   onChoice,
   onReasonChange,
@@ -157,7 +164,7 @@ export function DeleteChildrenDialog({
   onConfirm,
 }: DeleteChildrenProps) {
   const parentLabel = parent ? `${parent.number} ${parent.title}` : undefined;
-  const needParent = choice === "move" && !parent;
+  const needParent = choice === "move" && !parent && !parentChosen;
   return (
     <Dialog
       title="このチケットを消しますか"
@@ -174,7 +181,7 @@ export function DeleteChildrenDialog({
       }
     >
       <div className="k-dialog-stack">
-        {notice ? <NoticeBox tone="warn">{notice}</NoticeBox> : null}
+        {notice ? <NoticeBox tone={noticeTone}>{notice}</NoticeBox> : null}
         <Callout tone="info">
           {`このチケットには子チケット ${data.children} 件${data.grandchildren ? `・孫 ${data.grandchildren} 件` : ""}があります。どう扱うか選んでください`}
         </Callout>
@@ -197,6 +204,38 @@ export function DeleteChildrenDialog({
           </p>
         ) : null}
         <DeleteBody data={data} choice={choice} parent={parentLabel} reason={reason} onReasonChange={onReasonChange} />
+      </div>
+    </Dialog>
+  );
+}
+
+export interface DeleteRefusedProps {
+  open: boolean;
+  /** 対象の行（「EG-128 セイコー様へ…」） */
+  target: string;
+  /** 断りの文（正本の字） */
+  notice: string;
+  /** 消せない人＝warn・下見が読めない＝danger */
+  tone: "warn" | "danger";
+  onOpenChange?: ((open: boolean) => void) | undefined;
+}
+
+/** 下見の口が断った・読めなかったときの小窓（断りの箱と「やめる」だけ。一緒に起きること・理由・「消す」は出さない） */
+export function DeleteRefused({ open, target, notice, tone, onOpenChange }: DeleteRefusedProps) {
+  return (
+    <Dialog
+      title="このチケットを消しますか"
+      open={open}
+      onOpenChange={(o) => onOpenChange?.(o)}
+      target={target}
+      actions={
+        <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          やめる
+        </Button>
+      }
+    >
+      <div className="k-dialog-stack">
+        <NoticeBox tone={tone}>{notice}</NoticeBox>
       </div>
     </Dialog>
   );
