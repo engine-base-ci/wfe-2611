@@ -64,6 +64,16 @@
   background: var(--k-primary);
   color: var(--k-on-primary);
 }
+/* まだ使えない項目（区切りの札・チェックの行）：正本の使えない状態の薄さ */
+.k-f7-saved-seg-item[aria-disabled="true"],
+.k-f7-saved-check[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-saved-seg-item[aria-pressed="true"][aria-disabled="true"] {
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
 .k-f7-saved-pick {
   display: inline-flex;
   align-items: center;
@@ -83,6 +93,22 @@
 }
 .k-f7-saved-pick:hover {
   background: var(--k-select);
+}
+/* 条件の行の選び（<select>）。字は選びの中で切る */
+select.k-f7-saved-pick {
+  text-overflow: ellipsis;
+}
+/* 条件の行の誤り（行の下・口に飛ばさない） */
+.k-f7-saved-cond-error {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--k-error);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+/* 1 行の高さ「詰める」（<html data-list-density="tight">・K-478）：一覧の 1 行 36px から余白 1 段（8px）を引く。新しい値は足さない */
+[data-list-density="tight"] .k-list-table td {
+  height: calc(var(--k-c-list-td-height) - var(--k-s-sm));
 }
 .k-f7-saved-text-btn {
   padding: 0;
@@ -270,6 +296,19 @@
   justify-content: space-between;
   padding-top: var(--k-s-md);
   border-top: var(--k-c-dialog-actions-border-top);
+}
+/* 足の「検索条件を保存」（K-479 の SaveViewButton を渡す・data-variant を持たない button）：足のほかのボタン（線のある従ボタン・小）と同じ見た目 */
+.k-btn.k-f7-saved-cond-save {
+  min-height: calc(var(--k-c-button-outlined-height) - var(--k-s-xs));
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-c-button-outlined-fw);
+}
+.k-btn.k-f7-saved-cond-save:hover:not([aria-disabled="true"]) {
+  background: var(--k-select);
 }
 
 /* ---- 表示設定の箱（表の箱の頭の「表示設定」のすぐ下に開く。狭い幅は箱の幅に収める） ---- */
@@ -487,4 +526,25 @@
   border: var(--k-c-list-columns-border);
   border-radius: var(--k-c-list-columns-radius);
   background: var(--k-side-bg);
+}
+
+/* ---- 一覧の検索条件の箱の押せる札（K-478：かんたん／詳しく・状態・親子。形は ticket-list.css の .k-list-search-* のまま、押した形だけ足す） ---- */
+button.k-list-search-seg-item,
+button.k-list-search-chip {
+  font-family: inherit;
+  cursor: pointer;
+}
+button.k-list-search-seg-item {
+  border: 0;
+}
+.k-list-search-seg .k-list-search-seg-item[aria-pressed="false"] {
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
+.k-list-search-seg .k-list-search-seg-item[aria-pressed="true"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+button.k-list-search-seg-item + button.k-list-search-seg-item {
+  border-left: var(--k-c-list-search-seg-border);
 }

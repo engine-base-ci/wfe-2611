@@ -46,6 +46,19 @@ export interface FidelityArgs {
 export function parseArgs(argv: string[]): FidelityArgs;
 export function exitFor(rows: FidelityRow[], opts: { reportOnly: boolean }): 0 | 1;
 export function widthsFor(group: { id: string; widths: number[] }, width: number | undefined): number[];
+/** 幅ごとの絵の記録（組の at の 1 つの幅・K-1301）：その幅だけ比べる絵とセレクタを替える。替えたチケット・決定・訳を必ず書く */
+export interface FidelityAt {
+  canvas: string;
+  pairs: Record<string, { canvas: string; app: string }>;
+  ticket: string;
+  decision: string;
+  why: string;
+}
+/** 組と幅から、その幅で比べる絵とセレクタを解く（at[幅] が無ければ組のまま。組の幅に無い幅・対の欠け・知らない対は ArgError） */
+export function groupAt(
+  group: { id: string; canvas: string; widths: number[]; pairs: FidelityPair[]; at?: Record<string, FidelityAt> },
+  width: number,
+): { canvas: string; pairs: FidelityPair[] };
 export function defaultOutDir(id: string, width?: number): string;
 export function exitCode(rows: FidelityRow[], strict: boolean): 0 | 1;
 export function readVals(page: Page, pairs: FidelityPair[], side: "canvas" | "app"): Promise<FidelityVals[]>;

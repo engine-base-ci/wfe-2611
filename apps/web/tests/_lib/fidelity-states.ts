@@ -657,11 +657,13 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[data-state="empty"]')).toBeVisible();
     await expect(page.getByRole("region", { name: "はじめにやること" })).toBeVisible();
   },
-  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ
+  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ。767 以下は表と右の列を隠したスマホの本文の 1 件 1 行が見えるまでも待つ（K-478）
   "tickets-main": async (page, path) => {
     await shellApi(page, 3, { tickets: listRows() });
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
+    if ((page.viewportSize()?.width ?? 1440) <= 767)
+      await expect(page.locator(".k-f7-overview-phone .k-f7-overview-mrow").first()).toBeVisible();
   },
   // グループの一覧（K-252・キャンバス List）：営業で絞った 6 件。表の行が出るまで待つ
   "tickets-list": async (page, path) => {
