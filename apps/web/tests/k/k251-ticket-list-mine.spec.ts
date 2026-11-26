@@ -43,7 +43,7 @@ test("K251-UI-001 帯：白い帯の中に h1「チケット」18px・700 と「
   await expect(head(page).getByRole("button", { name: /チケットを作る/ })).toHaveCount(0);
 });
 
-test("K251-UI-002 見え方のタブ：自分に関わるもの（今いる）・概要・一覧・カレンダー・ガントの順。概要・カレンダー・ガントは押せない（title に準備中）", async ({
+test("K251-UI-002 見え方のタブ：自分に関わるもの（今いる）・概要・一覧・カレンダー・ガントの順。概要・カレンダー・ガントは、まだ作っていない間は押せない（aria-disabled・title に準備中）で、作った後は view=<名前> へのリンク（K-480・K-481・K-482 で 1 つずつ押せるようにする。どちらの形でも通る）", async ({
   page,
 }) => {
   await mockList(page);
@@ -53,8 +53,16 @@ test("K251-UI-002 見え方のタブ：自分に関わるもの（今いる）�
     .evaluateAll((els) => els.map((e) => e.textContent?.trim()));
   expect(names).toEqual(["自分に関わるもの", "概要", "一覧", "カレンダー", "ガント"]);
   await expect(views(page).getByRole("link", { name: "自分に関わるもの" })).toHaveAttribute("aria-current", "page");
-  for (const name of ["概要", "カレンダー", "ガント"]) {
-    await expect(views(page).getByRole("link", { name }), name).toHaveCount(0);
+  for (const [name, view] of [
+    ["概要", "overview"],
+    ["カレンダー", "calendar"],
+    ["ガント", "gantt"],
+  ] as const) {
+    const link = views(page).getByRole("link", { name, exact: true });
+    if ((await link.count()) > 0) {
+      await expect(link, name).toHaveAttribute("href", new RegExp(`view=${view}`));
+      continue;
+    }
     const it = views(page).locator('[aria-disabled="true"]', { hasText: name });
     await expect(it, name).toHaveCount(1);
     expect(await it.getAttribute("title"), name).toContain("準備中");
@@ -353,13 +361,13 @@ test("K251-UI-018 一覧（50 件）と 0 件の画面を 320・375・768・1024
   expect(bad).toEqual([]);
 });
 
-test("K251-UI-019 幅 375・1440：本文の押せるもの（タブ・行のリンク・もっと見る・絞る欄）は 24px 以上", async ({
+test("K251-UI-019 幅 375・1440：本文の押せるもの（タブ・行のリンク・もっと見る・絞る欄。幅 375 はスマホの本文の絞りの札と 1 件 1 行・K-478）は 24px 以上", async ({
   page,
 }) => {
   await mockList(page, { list: () => ok(items(50), { next_cursor: "c1" }) });
   for (const w of [375, 1440]) {
     await open(page, "/tickets", w);
-    await expect(rowsOf(page)).toHaveCount(50);
+    await expect(w <= 767 ? page.locator(".k-f7-overview-phone .k-f7-overview-mrow") : rowsOf(page)).toHaveCount(50);
     const small = await page.$$eval("#k-main a[href], #k-main button, #k-main input", (els) =>
       els
         .filter((e) => {
@@ -405,14 +413,14 @@ for (const id of ["tickets-first", "tickets-main"] as const) {
   }
 }
 
-test("K251-UI-022 0 件の画面の「分身と話して作る」と 3 つの提案は押せない：押しても・Enter でも移らず口も呼ばない・aria-disabled・グレー（D-145.2）", async ({
+test("K251-UI-022 0 件の画面の「分身と話して作る」は押せない：押しても・Enter でも移らず口も呼ばない・aria-disabled・グレー（D-145.2）。3 つの提案は書ける人には押せる物になった（K-453・D-150.18：K453-UI の行が見る）", async ({
   page,
 }) => {
   const m = await mockList(page, { list: () => ok([], { next_cursor: null }) });
   await open(page);
   const empty = page.locator('[data-state="empty"]');
   const before = page.url();
-  for (const t of ["分身と話して作る", "今月の請求書を送る", "問い合わせに返す", "見積を作る"]) {
+  for (const t of ["分身と話して作る"]) {
     const it = empty.locator('[aria-disabled="true"]', { hasText: t });
     await expect(it, t).toHaveCount(1);
     await expect(empty.getByRole("link", { name: t }), t).toHaveCount(0);
@@ -495,7 +503,7 @@ test("K251-UI-025 ログイン情報を預けるの横の「あとで」（キ�
   await expect(box.locator('[data-task="pc"]').getByRole("button", { name: "あとで" })).toHaveCount(0); // 任意でない項目は飛ばせない
 });
 
-test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：数の札 4 つと「自分に関わるもの」の件数は在るが数は空・絞りの札 5 つ・並び・条件を保存はグレーで押せない（D-145.9。表示設定は 032 で押せる）", async ({
+test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：数の札 4 つと「自分に関わるもの」の件数は在る・口が数を返さないあいだ（meta.counts が無い）は数は空・絞りの札は「すべて」「自分が担当」「AI に任せている」「自分が承認」が押せて「渡されたもの」だけグレーで押せない・並びは押せる（K-478 で押せるようにした。条件を保存は K-479 の試験が見る。表示設定は 032 で押せる）", async ({
   page,
 }) => {
   const m = await mockList(page);
@@ -504,24 +512,21 @@ test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：
   const cards = page.locator('[aria-label="数の札"]');
   const names = await cards
     .locator(":scope > *")
-    .evaluateAll((els) => els.map((e) => e.querySelector("[data-label]")?.textContent?.trim()));
+    .evaluateAll((els) => els.map((e) => e.querySelector("[class$='-label']")?.textContent?.trim()));
   expect(names).toEqual(["期限切れ", "今日まで", "自分が承認", "AI が動いている"]);
-  for (const v of await cards.locator("[data-value]").allInnerTexts()) expect(v.trim()).toBe("");
-  for (const c of await cards.locator(":scope > *").all()) await expectDisabled(page, c, "数の札");
+  for (const c of await cards.locator(":scope > *").all()) await expect(c).not.toHaveAttribute("aria-disabled", "true");
+  expect((await cards.innerText()).replace(/期限切れ|今日まで|自分が承認|AI が動いている/g, "").trim()).toBe("");
   const bar = page.locator('[aria-label="自分に関わるものの絞り込み"]');
   await expect(bar).toContainText("自分に関わるもの");
-  expect((await bar.locator("[data-value]").first().innerText()).trim()).toBe("");
-  for (const t of [
-    "すべて",
-    "自分が担当",
-    "AI に任せている",
-    "自分が承認",
+  const chips = page.getByRole("group", { name: "絞りの札", exact: true });
+  for (const t of ["すべて", "自分が担当", "AI に任せている", "自分が承認"])
+    await expect(chips.getByRole("button", { name: t, exact: true }), t).not.toHaveAttribute("aria-disabled", "true");
+  await expectDisabled(
+    page,
+    chips.locator('[aria-disabled="true"]', { hasText: "渡されたもの" }).first(),
     "渡されたもの",
-    "並び：期限の近い順",
-    "条件を保存",
-  ])
-    await expectDisabled(page, bar.locator('[aria-disabled="true"]', { hasText: t }).first(), t);
-  for (const v of await bar.locator("[data-chip] [data-value]").allInnerTexts()) expect(v.trim()).toBe("");
+  );
+  await expect(bar.getByRole("button", { name: /^並び：期限の近い順/ })).not.toHaveAttribute("aria-disabled", "true");
   expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
 });
 
@@ -587,7 +592,7 @@ test("K251-UI-029 はじめにやることの一覧・承認待ちの口が 500�
   await expect(ap).toContainText("読み込めませんでした");
 });
 
-test("K251-UI-030 幅 375：一番下までスクロールしても「もっと見る」と右の列の最後（いまは閉じる）は下のタブに隠れない", async ({
+test("K251-UI-030 幅 375：一番下までスクロールしても、一覧（?view=all）の「もっと見る」・自分に関わるもののスマホの本文の最後の 1 件（K-478：767 以下は表と右の列を隠し 1 件 1 行・頁は送らない）・はじめての右の列の最後（いまは閉じる）は下のタブに隠れない", async ({
   page,
 }) => {
   const hit = (l: Locator) =>
@@ -599,9 +604,16 @@ test("K251-UI-030 幅 375：一番下までスクロールしても「もっと�
       return at !== null && (at === e || e.contains(at));
     });
   await mockList(page, { list: () => ok(items(50), { next_cursor: "c1" }) });
-  await open(page, "/tickets", 375);
+  await open(page, "/tickets?view=all", 375);
   await expect(rowsOf(page)).toHaveCount(50);
   expect(await hit(page.getByRole("button", { name: "もっと見る" }))).toBe(true);
+  const mine = await page.context().newPage();
+  await mockList(mine, { list: () => ok(items(50), { next_cursor: "c1" }) });
+  await open(mine, "/tickets", 375);
+  const phoneRows = mine.locator(".k-f7-overview-phone .k-f7-overview-mrow");
+  await expect(phoneRows).toHaveCount(50);
+  await expect(mine.getByRole("button", { name: "もっと見る" })).toBeHidden();
+  expect(await hit(phoneRows.last())).toBe(true);
   const z = await page.context().newPage();
   await mockList(z, { list: () => ok([], { next_cursor: null }) });
   await open(z, "/tickets", 375);
@@ -752,7 +764,21 @@ for (const [label, saved, want] of [
 }
 
 for (const w of [320, 375]) {
-  test(`K251-UI-034 幅 ${w}：表示設定の箱を開いても横溢れ 0・箱の左右の端が画面の中`, async ({ page }) => {
+  test(`K251-UI-034 幅 ${w}：自分に関わるものはスマホの本文（K-478：767 以下は数の札・絞りの行・表・右の列を隠す）なので表示設定は出ず、横溢れ 0（一覧の表示設定の箱は K252-UI-017 が 320・375 で見る）`, async ({
+    page,
+  }) => {
+    await mockList(page);
+    await open(page, "/tickets", w);
+    await expect(page.locator(".k-f7-overview-phone .k-f7-overview-mrow")).toHaveCount(3);
+    await expect(page.getByRole("button", { name: "表示設定" })).toBeHidden();
+    expect(await overflowX(page)).toBe(0);
+  });
+}
+
+for (const w of [768]) {
+  test(`K251-UI-034 幅 ${w}（表示設定が出るいちばん狭い幅）：表示設定の箱を開いても横溢れ 0・箱の左右の端が画面の中`, async ({
+    page,
+  }) => {
     await mockList(page);
     await open(page, "/tickets", w);
     await expect(rowsOf(page)).toHaveCount(3);
@@ -875,7 +901,7 @@ test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ち�
   expect(mine).toBe(1);
 });
 
-test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べ、どれもグレーで押せない・口を呼ばない・箱に影がある（D-145.9）", async ({
+test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べる。使える項目（期限切れ・今日まで・自分が承認・AI が動いている・自分の承認を待っているもの・のAI のいま・最近のお知らせ・表の分け方の期限）は押せ、まだ使えない項目（今週まで・自分が担当・承認するものの動き・表の分け方の グループ・状態・入れるもの 3 つ）はグレーで押せない・口を呼ばない・箱に影がある（K-478 で使える項目を押せるようにした・D-145.9）", async ({
   page,
 }) => {
   const m = await mockList(page);
@@ -887,31 +913,36 @@ test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバ�
   expect(await box.evaluate((e) => getComputedStyle(e).boxShadow)).not.toBe("none");
   const side = page.locator("aside.k-list-side");
   const sideHeads = await side.getByRole("heading").allInnerTexts();
-  const cardNames = await page.locator('[aria-label="数の札"] [data-label]').allInnerTexts();
   const groups: [string, string[]][] = [
-    ["上の数字", ["期限切れ", "今日まで", "自分が承認", "AI が動いている", "今週まで"]],
+    ["上の数字（つかんで並べ替え）", ["期限切れ", "今日まで", "自分が承認", "AI が動いている", "今週まで"]],
     [
-      "右に出すもの",
+      "右に出すもの（つかんで並べ替え）",
       ["自分の承認を待っているもの", "高本のAI のいま", "最近のお知らせ", "自分が担当・承認するものの動き"],
     ],
     ["表の分け方", ["期限", "グループ", "状態"]],
     ["入れるもの", ["担当しているもの", "承認するもの・渡されたもの", "自分が担当・承認するもの"]],
   ];
+  const PENDING = new Set([
+    "今週まで",
+    "自分が担当・承認するものの動き",
+    "グループ",
+    "状態",
+    "担当しているもの",
+    "承認するもの・渡されたもの",
+    "自分が担当・承認するもの",
+  ]);
   for (const [title, names] of groups) {
-    const g = box.getByRole("group", { name: title });
+    const g = box.getByRole("group", { name: title, exact: true });
     await expect(g, title).toBeVisible();
-    await expect(g.locator('[aria-disabled="true"]'), title).toHaveCount(names.length);
-    for (const name of names) {
+    await expect(g.locator('[aria-disabled="true"]'), title).toHaveCount(names.filter((n) => PENDING.has(n)).length);
+    for (const name of names.filter((n) => PENDING.has(n))) {
       const it = g.locator('[aria-disabled="true"]', { hasText: name }).first();
       await expect(it, name).toHaveCount(1);
-      await expect(it.getByRole("checkbox"), name).toHaveCount(0);
-      await expect(it.getByRole("radio"), name).toHaveCount(0);
       await expectDisabled(page, it, name); // 押しても Enter でも URL が変わらない・グレー・リンクでない
     }
   }
-  // 押しても表の列・数の札・右の列は変わらない
+  // 押せない項目を押しても表の列・右の列は変わらない
   await expect(table(page).getByRole("columnheader")).toHaveText(COLUMNS);
-  expect(await page.locator('[aria-label="数の札"] [data-label]').allInnerTexts()).toEqual(cardNames);
   expect(await side.getByRole("heading").allInnerTexts()).toEqual(sideHeads);
   expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
 });

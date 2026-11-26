@@ -3,8 +3,10 @@
 //     はじめにやること：数は「済みか飛ばした数 ／ 使える項目の数」。使えない項目（パスキー）はグレーで押せず ✓ を出さない（D-145.11）。
 //     まだの項目は口の href へのリンク（PC は「つなぐ」・ログイン情報は「預ける」）、任意の項目は横に「あとで」（飛ばす・D-145.13・D-145.14）。
 //     「いまは閉じる」で箱を閉じる。閉じた・全部済んだ・読めないときは箱を出さない
-//   チケットが在る（キャンバス Main）：自分の承認を待っているもの（承認待ちの口の番号と題名）・〈名前〉のAI のいま・最近の知らせ（見出しだけで中身は空）
+//   チケットが在る（キャンバス Main）：自分の承認を待っているもの（承認待ちの口の番号と題名）・〈名前〉のAI のいま・最近のお知らせ（見出しだけで中身は空）。
+//     表示設定の「右に出すもの」で外した区画は描かない（自分だけ・このブラウザに覚える・features/F7/overview/use-mine-view.ts・K-478）
 import { errorText, PAGE_ERROR } from "@/components/k/error-of";
+import { useMineView, type SideKey } from "@/features/F7/overview/use-mine-view";
 import type { Approvals, SetupTask, SetupTasks } from "./use-ticket-list";
 
 /** はじめにやることの行の右の操作（まだの項目だけ） */
@@ -167,22 +169,37 @@ function ApprovalRows({ approvals }: { approvals: Approvals }) {
 /** 〈名前〉のAI のいま（名前が無いときは「AI のいま」） */
 export const aiNowTitle = (name: string): string => (name ? `${name}のAI のいま` : "AI のいま");
 
-export function MainSide({ name, approvals }: { name: string; approvals: Approvals }) {
+export interface MainSideProps {
+  name: string;
+  approvals: Approvals;
+  /** 描かない区画（渡さないときは、このブラウザに覚えた見え方） */
+  hidden?: readonly SideKey[];
+}
+
+export function MainSide({ name, approvals, hidden }: MainSideProps) {
+  const view = useMineView();
+  const off = new Set(hidden ?? view.hiddenSide);
   // 名前を読む前・読めないときは「AI のいま」（欠けた見出し「のAI のいま」にしない）
   const ai = aiNowTitle(name);
   return (
     <aside className="k-list-side" aria-label="自分に関わるものの右の列">
-      <section className="k-list-box" aria-labelledby="k-list-ap-title">
-        <BoxHead id="k-list-ap-title" title="自分の承認を待っているもの" more="すべて" />
-        <ApprovalRows approvals={approvals} />
-      </section>
-      {/* AI のいま・最近の知らせは、読む口ができるまで見出しだけ（中身は空・D-144.3） */}
-      <section className="k-list-box" aria-label={ai}>
-        <BoxHead id="k-list-ai-title" title={ai} more="分身の部屋へ" />
-      </section>
-      <section className="k-list-box" aria-labelledby="k-list-notes-title">
-        <BoxHead id="k-list-notes-title" title="最近の知らせ" />
-      </section>
+      {off.has("approvals") ? null : (
+        <section className="k-list-box" aria-labelledby="k-list-ap-title">
+          <BoxHead id="k-list-ap-title" title="自分の承認を待っているもの" more="すべて" />
+          <ApprovalRows approvals={approvals} />
+        </section>
+      )}
+      {/* AI のいま・最近のお知らせは、読む口ができるまで見出しだけ（中身は空・D-144.3） */}
+      {off.has("ai-now") ? null : (
+        <section className="k-list-box" aria-label={ai}>
+          <BoxHead id="k-list-ai-title" title={ai} more="分身の部屋へ" />
+        </section>
+      )}
+      {off.has("notices") ? null : (
+        <section className="k-list-box" aria-labelledby="k-list-notes-title">
+          <BoxHead id="k-list-notes-title" title="最近のお知らせ" />
+        </section>
+      )}
     </aside>
   );
 }
