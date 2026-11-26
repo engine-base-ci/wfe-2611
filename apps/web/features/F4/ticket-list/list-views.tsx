@@ -1,6 +1,7 @@
 // 見え方のタブ（K-251・キャンバス OnHome・Main の header nav）。自分に関わるもの・概要・一覧・カレンダー・ガントの 5 つ。
 //   今いるものに aria-current="page"。概要・カレンダー・ガントは区画が本物になるまで（F7 の viewReady が false）出すが押せない
 //   （span・aria-disabled・title に準備中・グレー・D-145.1）。本物になったらリンク（グループを選んでいれば scope を足す・K-600）
+//   タブは data-view を持つ。スマホ（767 以下）はガントのタブを出さない（ticket-list.css・K-482）
 import type { Route } from "next";
 import Link from "next/link";
 import { viewReady, type F7View } from "@/features/F7/list-slots";
@@ -36,6 +37,7 @@ export function ListViews({ view, scope = null }: { view: ListView; scope?: stri
           <Link
             key={t.label}
             className="k-list-view"
+            data-view={t.view}
             href={href as Route}
             aria-current={t.view === view ? "page" : undefined}
             scroll={false}
@@ -43,7 +45,13 @@ export function ListViews({ view, scope = null }: { view: ListView; scope?: stri
             {t.label}
           </Link>
         ) : (
-          <span key={t.label} className="k-list-view" aria-disabled="true" title={`${t.label}（準備中）`}>
+          <span
+            key={t.label}
+            className="k-list-view"
+            data-view={t.view}
+            aria-disabled="true"
+            title={`${t.label}（準備中）`}
+          >
             {t.label}
           </span>
         );
