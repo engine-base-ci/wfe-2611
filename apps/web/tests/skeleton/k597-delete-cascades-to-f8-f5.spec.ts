@@ -24,7 +24,7 @@ import {
 } from "../_lib/f7-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { asPerson, pairedPc, teammate, ticketOf } from "../_lib/prep";
+import { asPerson, pairedPc, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
