@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 373（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 288・部品 70・設定 41
+API 372（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 288・部品 70・設定 41
 
 ## 共通の処理
 
@@ -112,7 +112,7 @@ API 373（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `sessions` | skeleton | F1,F10,F3 |  | ○ |
 | `skill_test_runs` | skeleton | F9 |  |  |
 | `skill_versions` | skeleton | F12,F9 |  | ○ |
-| `skills` | skeleton | F9 | F12,F4 | ○ |
+| `skills` | skeleton | F9 | F12 | ○ |
 | `status_incidents` | skeleton | F12 | F1 | ○ |
 | `subscriptions` | skeleton | F12 |  |  |
 | `support_access_grants` | skeleton | F12 |  |  |
@@ -358,7 +358,6 @@ API 373（作った 105・後のフェーズの行為だけ 20）・前の道す
 | `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない） | F4 | 作った | K-59,K-433 |
 | `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-433 |
-| `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | K-59 |
 | `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | K-59 |
 | `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 作った | K-62 |
 | `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61 |

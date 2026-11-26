@@ -26,6 +26,11 @@ const fail = (status: number, error: string, code: string, extra: Record<string,
   body: { error, code, ...extra },
 });
 
+/** 凍結の列（業務の型・K-582・D-150.60）は答えに出さない。列は表に残るので、読んだ行から頭の字で外す（列の名前はコードに書かない・K582-API-007） */
+const FROZEN_PREFIX = "work_type_";
+const withoutFrozen = (t: Row): Row =>
+  Object.fromEntries(Object.entries(t).filter(([k]) => !k.startsWith(FROZEN_PREFIX)));
+
 /** DB の答えの言葉 → 404 E-PAGE-001 になるもの（選べない・見えない選び先・欄なし・在るかを漏らさない） */
 //   LINK_GONE（K-581）：つなぐ相手が無い・消した・見えない・別の会社
 const GONE = new Set(["KIND_GONE", "ASSIGNEE_GONE", "NOTIFY_GONE", "PARENT_NOT_FOUND", "LINK_GONE"]);
@@ -200,7 +205,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           return bare("E-PAGE-003", 503);
         }
         const row = await a.repo.table("tickets").get(a.ctx, String(r["id"]));
-        return { status: 201, body: { data: row ?? { id: r["id"], number: r["number"] } } };
+        return { status: 201, body: { data: row ? withoutFrozen(row) : { id: r["id"], number: r["number"] } } };
       },
     },
     listTicketKinds: {
@@ -280,7 +285,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           status: 200,
           body: {
             data: {
-              ticket: t,
+              ticket: withoutFrozen(t),
               kind: kind ? { id: kind["id"], name: kind["name"], color: kind["color"] ?? null } : null,
               stage: stage ? { id: stage["id"], key: stage["key"], name: stage["name"] } : null,
               assignee: assignee ? { id: assignee["id"], display_name: assignee["display_name"] } : null,

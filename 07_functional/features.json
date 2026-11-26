@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-24",
+  "created_at": "2026-11-25",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -521,7 +521,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-001",
     "D-001.5",
@@ -661,7 +661,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-026",
     "D-037",
@@ -751,7 +751,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-042",
     "D-053.3",
@@ -1828,7 +1828,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-002",
     "D-003.1",
@@ -1916,18 +1916,18 @@
    "job": "J2",
    "acts": [
     "A09",
-    "A130",
     "A104",
     "A57",
+    "A130",
     "A12",
     "A32",
     "A37"
    ],
    "happy_path": [
     "A09 Bridge を入れてつなぐ",
-    "A130 候補が複数のときだけ選ぶ。承認までは変えられる",
     "A104 「AI に任せる」を押す",
     "A57 理由ごとの直し方に沿って押す",
+    "A130 候補が複数のときだけ選ぶ。承認までは変えられる",
     "A12 本番に切り替える",
     "A32 何が変わったかを見せて覚え直させる",
     "A37 AI社員を増やす・人に託す"
@@ -2178,30 +2178,6 @@
      "rate_limit": "C1 の規則"
     },
     {
-     "act": "A130",
-     "role": "data_fetch",
-     "method": "GET",
-     "path_draft": "/api/tickets",
-     "auth": "session（会社・層・権限）",
-     "related_entities": [
-      "E-106",
-      "E-114",
-      "E-135",
-      "E-136"
-     ],
-     "choke_points": [
-      "C2"
-     ],
-     "source": [
-      "D-126.13",
-      "D-125.167"
-     ],
-     "inputs": "画面の入力（モック参照）",
-     "outputs_2xx": "更新後の対象",
-     "outputs_4xx": [],
-     "rate_limit": null
-    },
-    {
      "act": "A104",
      "role": "data_fetch",
      "method": "GET",
@@ -2254,6 +2230,30 @@
       "D-066.9",
       "D-068.7",
       "D-104.15"
+     ],
+     "inputs": "画面の入力（モック参照）",
+     "outputs_2xx": "更新後の対象",
+     "outputs_4xx": [],
+     "rate_limit": null
+    },
+    {
+     "act": "A130",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-114",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-126.13",
+      "D-150.60"
      ],
      "inputs": "画面の入力（モック参照）",
      "outputs_2xx": "更新後の対象",
@@ -2354,14 +2354,6 @@
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「Bridge を入れてつなぐ」したとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行う",
     "UNWANTED: IF 常駐アプリ（Bridge）がつながらない（未起動・古い版・トークン失効） THEN Kaname は「まだつながっていません。Bridge を開いたら、この画面が自分で気づきます」を出し、Bridge を開く／入れる（接続を確かめる を押してもよい）（E-CONN-001）",
     "UNWANTED: IF 常駐アプリを終了した直後（0〜90 秒）に指示を送る（切り替わりの瞬間） THEN Kaname は「切れています。いまは仕事を渡せません。言ったことは溜めておき、Bridge を開いたら続けます」を出し、Bridge を開く（接続を確かめる を押してもよい）（E-TO-003）",
-    "EVENT-DRIVEN: WHEN R1／R2／R3 が「候補が複数のときだけ選ぶ。承認までは変えられる」したとき THEN Kaname は「選んだ型と版をチケットに残す」を行う（自動側：本文から業務の型の候補を出す）",
-    "UNWANTED: IF 同じチケットにいま走っている実行（待っている・動いている・確認待ち）があるのに、もう一度・別のタブで「AI に任せる」を押した THEN Kaname は「このチケットはいま自分のAI が作っています。今の実行の様子を見てください」を出し、今の実行の様子を見る（E-CONF-013）",
-    "UNWANTED: IF 承認待ち・確認中・実行中・完了のチケットで「AI に任せる」を押した（開いている間に段が変わった） THEN Kaname は「いまの段のチケットは AI に任せられません（承認待ち・確認中・実行中・完了）。チケットの帯で次の一手を選んでください」を出し、承認の帯で決める（E-CONF-014）",
-    "UNWANTED: IF PC が「終わった」と言ったが、結果が空（空白だけ・欄が無い）だった THEN Kaname は「自分のAI が結果を返さずに終わりました。完了とは見なしていません」を出し、もう一度 AI に任せる／自分でやる（E-SIG-004）",
-    "UNWANTED: IF 担当者でない人・担当者のいないチケットで、止まった AI の仕事を「自分で直す」にしようとした THEN Kaname は「自分で直すにできるのは、このチケットの担当者だけです」を出し、担当者に頼む（E-STP-001）",
-    "UNWANTED: IF 承認待ち・完了のチケット、承認の後の実行、作り終えた実行で「自分で直す」にしようとした THEN Kaname は「いまは自分で直すに切り替えられません（承認待ち・完了のとき、または承認の後の実行です）」を出し、画面を読み直す（E-STP-002）",
-    "UNWANTED: IF 新しい実行がある古い止まりで「自分で直す」にしようとした THEN Kaname は「この実行はもう新しい実行に替わっています」を出し、画面を読み直す（E-STP-004）",
-    "UNWANTED: IF 確認項目が 1 つも無いチケットで、使わない理由を書かずに「AI に任せる」を押した THEN Kaname は「確認項目が 1 つもありません。確認項目を足すか、使わない理由を書いてから任せてください」を出し、確認項目を足す／理由を書く（E-CONF-020）",
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「「AI に任せる」を押す」したとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行う（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
     "UNWANTED: IF 同じチケットにいま走っている実行（待っている・動いている・確認待ち）があるのに、もう一度・別のタブで「AI に任せる」を押した THEN Kaname は「このチケットはいま自分のAI が作っています。今の実行の様子を見てください」を出し、今の実行の様子を見る（E-CONF-013）",
     "UNWANTED: IF 承認待ち・確認中・実行中・完了のチケットで「AI に任せる」を押した（開いている間に段が変わった） THEN Kaname は「いまの段のチケットは AI に任せられません（承認待ち・確認中・実行中・完了）。チケットの帯で次の一手を選んでください」を出し、承認の帯で決める（E-CONF-014）",
@@ -2373,6 +2365,14 @@
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「理由ごとの直し方に沿って押す」したとき THEN Kaname は「—」を行う",
     "UNWANTED: IF AI社員の実行が完了信号を出さずに終わった（exit 0 で空応答） THEN Kaname は「営業社員の実行が結果を返さずに終わりました。完了とは見なしていません」を出し、もう一度やらせる／動きを見る（E-SIG-001）",
     "UNWANTED: IF 長い実行がタイムアウトした（10 分）。ワーカーの打ち切りに加え、実行記録の期限で二重に守る THEN Kaname は「営業社員の実行が 10 分を超えたので止めました。途中までの結果は残っています」を出し、続きをやらせる／動きを見る（E-TO-004）",
+    "EVENT-DRIVEN: WHEN R1／R2／R3 が「候補が複数のときだけ選ぶ。承認までは変えられる」したとき THEN Kaname は「選んだ型と版をチケットに残す」を行う（自動側：本文から業務の型の候補を出す）",
+    "UNWANTED: IF 同じチケットにいま走っている実行（待っている・動いている・確認待ち）があるのに、もう一度・別のタブで「AI に任せる」を押した THEN Kaname は「このチケットはいま自分のAI が作っています。今の実行の様子を見てください」を出し、今の実行の様子を見る（E-CONF-013）",
+    "UNWANTED: IF 承認待ち・確認中・実行中・完了のチケットで「AI に任せる」を押した（開いている間に段が変わった） THEN Kaname は「いまの段のチケットは AI に任せられません（承認待ち・確認中・実行中・完了）。チケットの帯で次の一手を選んでください」を出し、承認の帯で決める（E-CONF-014）",
+    "UNWANTED: IF PC が「終わった」と言ったが、結果が空（空白だけ・欄が無い）だった THEN Kaname は「自分のAI が結果を返さずに終わりました。完了とは見なしていません」を出し、もう一度 AI に任せる／自分でやる（E-SIG-004）",
+    "UNWANTED: IF 担当者でない人・担当者のいないチケットで、止まった AI の仕事を「自分で直す」にしようとした THEN Kaname は「自分で直すにできるのは、このチケットの担当者だけです」を出し、担当者に頼む（E-STP-001）",
+    "UNWANTED: IF 承認待ち・完了のチケット、承認の後の実行、作り終えた実行で「自分で直す」にしようとした THEN Kaname は「いまは自分で直すに切り替えられません（承認待ち・完了のとき、または承認の後の実行です）」を出し、画面を読み直す（E-STP-002）",
+    "UNWANTED: IF 新しい実行がある古い止まりで「自分で直す」にしようとした THEN Kaname は「この実行はもう新しい実行に替わっています」を出し、画面を読み直す（E-STP-004）",
+    "UNWANTED: IF 確認項目が 1 つも無いチケットで、使わない理由を書かずに「AI に任せる」を押した THEN Kaname は「確認項目が 1 つもありません。確認項目を足すか、使わない理由を書いてから任せてください」を出し、確認項目を足す／理由を書く（E-CONF-020）",
     "EVENT-DRIVEN: WHEN R1／R2 が「本番に切り替える」したとき THEN Kaname は「会社モデルを確定、自動実行を有効化」を行う（自動側：自分のAIが未設定を洗い出して止める）",
     "UNWANTED: IF 本番に切り替えるとき、未設定（ログイン情報が無い担当業務・目標の無い AI社員）が残っている THEN Kaname は「本番に切り替える前に 2 つ足りません：経理社員の freee のログイン情報／営業社員の目標。埋めると切り替えられます」を出し、足りないものを埋める／その AI社員は止めたまま本番へ（E-DEP-004）",
     "EVENT-DRIVEN: WHEN R1／R2 が「何が変わったかを見せて覚え直させる」したとき THEN Kaname は「覚えた操作を版で更新」を行う（自動側：AIが画面を見て手順を作り直す）",
@@ -2382,7 +2382,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.7",
     "D-004",
@@ -2439,7 +2439,8 @@
     "D-126.1",
     "D-126.13",
     "D-126.15",
-    "D-126.18"
+    "D-126.18",
+    "D-150.60"
    ]
   },
   {
@@ -3034,7 +3035,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -3287,7 +3288,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-006.2",
     "D-010",
@@ -3605,7 +3606,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003",
     "D-003.1",
@@ -3798,7 +3799,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -4581,7 +4582,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -5066,7 +5067,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003",
     "D-003.1",
@@ -5510,7 +5511,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-010.7",
     "D-015",
@@ -6151,7 +6152,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.7",
     "D-010",
@@ -6286,7 +6287,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-030",
     "D-030.10",
@@ -6488,7 +6489,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-002",
     "D-002.2",
@@ -6976,7 +6977,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-002",
     "D-002.2",
@@ -7353,7 +7354,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -7515,7 +7516,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-030.6",
     "D-037",
@@ -7646,7 +7647,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -7840,7 +7841,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-026",
     "D-026.2",
@@ -8143,7 +8144,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-125.121",
     "D-125.123",
@@ -8284,7 +8285,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-125.121",
     "D-125.122",
@@ -8612,7 +8613,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-007",
     "D-012",
@@ -9057,7 +9058,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-003.9",
     "D-007",
@@ -9178,7 +9179,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-013",
     "D-014",
@@ -9423,7 +9424,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-010",
     "D-038",
@@ -9534,7 +9535,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-004",
     "D-007",
@@ -9611,7 +9612,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-029",
     "D-025",
@@ -9677,7 +9678,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-015",
     "D-044",
@@ -9775,7 +9776,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-012",
     "D-043",
@@ -9843,7 +9844,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-002",
     "D-004",
@@ -9910,7 +9911,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-24",
+   "decided_at": "2026-11-25",
    "source": [
     "D-017",
     "D-042",
