@@ -185,12 +185,25 @@ SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の�
                    '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base", "gates", "py_tests",
-                                          "web_g48", "web_g59", "web_gates", "web_tasks")) + "".join(f"      {k}: ${{{{ steps.shards.outputs.{k} }}}}\n" for k in ("web_shards", "web_parts"))
+                                          "web_g48", "web_g59", "web_gates", "web_tasks")) + "".join(f"      {k}: ${{{{ steps.shards.outputs.{k} }}}}\n" for k in ("web_shards", "web_parts")) \
+    + "".join(f"      {k}: ${{{{ steps.spec_shards.outputs.{k} }}}}\n" for k in ("spec_shards", "spec_parts"))
 # 画面の試験の組の分け方（K-1304・今だけの設定）：置き場の変数 WEB_SHARDS（無ければ 1）の数に G48 を分け、G59・専用の段も別の組にして同時に流す。
 #   1（か無い）なら web の組は今と同じ 1 組（matrix の all）。値は env で渡し（run の命令の文字に入れない）、数でなければ赤
 SHARDS_STEP = ('      - name: "画面の試験の組の分け方（置き場の変数 WEB_SHARDS・無ければ 1＝今と同じ 1 組・K-1304）"\n        id: shards\n'
                "        env:\n          WEB_SHARDS_VAR: ${{ vars.WEB_SHARDS }}\n"
                '        run: python3 scripts/ci/web_run.py shards --github-output "$GITHUB_OUTPUT"\n')
+# spec の重い段（G57・G65）の分け方（K-1307・今だけの設定）：置き場の変数 SPEC_SHARDS（無ければ 1）が 2 以上の回だけ、spec の組は G57・G65 を流さず、
+#   組 spec-parts（matrix）が G57 を 1 組・G65 の並びを SPEC_SHARDS の数に分けて流す。1（か無い）なら spec の組が今と全く同じに流す（spec-parts は飛ぶ）
+SPEC_SHARDS_STEP = ('      - name: "spec の重い段（G57・G65）の組の分け方（置き場の変数 SPEC_SHARDS・無ければ 1＝今と同じ spec の組・K-1307）"\n        id: spec_shards\n'
+                    "        if: ${{ !cancelled() }}\n        env:\n          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}\n"
+                    '        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"\n')
+# spec の組は static の出力を見ない（static が赤でも spec の段は流す・K-143）ので、同じ変数から自分の段で数を出す（入力は static と同じ）
+SPEC_OWN_SHARDS_STEP = ('      - name: "spec の重い段（G57・G65）の組の分け方（spec の組が自分で・static を待たない・K-1307）"\n        id: spec_shards\n'
+                        "        if: ${{ !cancelled() }}\n        env:\n          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}\n"
+                        '        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"\n')
+SPEC_SPLIT = {57, 65}   # SPEC_SHARDS が 2 以上の回は spec-parts の組で流す段
+SPEC_SPLIT_OWN = "fromJSON(steps.spec_shards.outputs.spec_shards || '1')"   # 出力が空（変数が読めず段が赤の回）は 1＝spec の組で流す
+SPEC_SPLIT_N = f"fromJSON({SO}.spec_shards || '1')"   # spec-parts が見る static の出力（空は 1＝spec-parts は飛ぶ）
 WEB_MATRIX = ("    strategy:\n      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）\n"
               f"      matrix:\n        part: ${{{{ fromJSON({SO}.web_parts || '[\"all\"]') }}}}\n")
 # GitHub の台では、ブラウザの取り込みを回をまたいで使い回す（自分の台は像に残るので上げ下ろししない・K-172）。部品の apt は次の段がそろえる
@@ -225,10 +238,11 @@ def yrun(script): return json.dumps(script, ensure_ascii=False) if re.search(r"[
 #   G27 は spec の「層の棚卸し」（static にも同じ番号の別の段がある）。database の組は static の出力、spec の組は自分の scope の段を見る
 HEAVY = {27: "spec", 36: "database", 38: "spec", 47: "spec", 56: "spec-2", 57: "spec", 62: "spec"}   # G56 は spec-2 の組（K-323）
 def gate_if(g):
+    split = f" && {SPEC_SPLIT_OWN} < 2" if g["job"] == "spec" and g["id"] in SPEC_SPLIT else ""   # 分ける回は spec-parts が流す（K-1307）
     if HEAVY.get(g["id"]) != g["job"]:
-        return "!cancelled()"
+        return "!cancelled()" + split
     src = "needs.static.outputs" if g["job"] == "database" else "steps.scope.outputs"
-    return f"!cancelled() && ({src}.full == 'true' || contains({src}.gates, ',{g['id']},'))"
+    return f"!cancelled(){split} && ({src}.full == 'true' || contains({src}.gates, ',{g['id']},'))"
 def step(g): return f'      - name: "G{g["id"]} {g["name"]}{" [CRITICAL]" if g["id"] in FG.get("kaname_critical_gates", []) else ""}"\n        if: ${{{{ {gate_if(g)} }}}}\n' + (f"        env:\n{g['env']}" if g.get("env") else "") + (f"        run: |\n" + "".join(f"          {l}\n" for l in g["script"].rstrip("\n").split("\n")) if "\n" in g["script"] else f"        run: {yrun(g['script'])}\n")   # 前の検査が赤でも次の検査を流す（赤を全部いっぺんに見る。job は赤のまま）
 # DB は組ごとに違う固定の番号を台に出す（K-47）。GitHub は組ごとに別の台なので番号は何でもよく、act は 1 台で組を同時に流し、
 #   組の容れ物を台の網に置く（DB には localhost:番号 でしかつながらず、割り当てた番号も渡さない）ので、組ごとに番号を分ける。
@@ -302,9 +316,43 @@ SPEC_MORE = "".join(f"""
     if: ${{{{ !cancelled() }}}}
     steps:
 {NODE}{DB_START}{SPEC_SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == job)}{DB_STOP}""" for job in SPEC_GROUPS[1:])
+# spec-parts（K-1307）：SPEC_SHARDS が 2 以上の回だけ。spec と同じ準備（部品・DB・本線との分かれ目）を組ごとに持ち、
+#   g57 の組は G57 を spec と同じ命令・同じ範囲の条件で、g65-<i> の組は G65 の並びの i 番目の組を spec_run.py で流す（1 つが赤ならその組の残りは流さない＝&& と同じ）。
+#   段の名前は G57.p・G65.p（分けた組の印・spec の G57・G65 と同じ番号の段を 2 つ数えない）。JUnit を書いた組（k216 の node の試験を持つ組）だけ junit-spec-parts-<組> を上げる
+G57 = next(g for g in ALL_GATES if g["id"] == 57 and g["job"] == "spec")
+G65 = next(g for g in ALL_GATES if g["id"] == 65 and g["job"] == "spec")
+SPEC_PARTS = f"""
+  spec-parts:
+    name: ${{{{ format('spec ({{0}})', matrix.part) }}}}
+    runs-on: {RUNS_ON}
+    # spec の重い段を分けた組（K-1307）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{{{ !cancelled() && {SPEC_SPLIT_N} > 1 }}}}
+    strategy:
+      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）
+      matrix:
+        part: ${{{{ fromJSON({SO}.spec_parts || '["off"]') }}}}
+    env:
+      SPEC_PART: ${{{{ matrix.part }}}}
+      SPEC_SHARDS: ${{{{ {SO}.spec_shards }}}}
+    steps:
+{NODE}{DB_START}{SPEC_SCOPE_STEP}      - name: "G57.p {G57['name']}（分けた組 g57・K-1307）"
+        if: ${{{{ !cancelled() && matrix.part == 'g57' && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}}}
+        run: {yrun(G57['script'])}
+      - name: "G65.p {G65['name']}（G65 の並びを SPEC_SHARDS の数に分けた 1 組・K-1307）"
+        if: ${{{{ !cancelled() && startsWith(matrix.part, 'g65-') }}}}
+        run: python3 scripts/ci/spec_run.py g65
+{hook_note()}      - uses: actions/upload-artifact@v4
+        if: ${{{{ always() && hashFiles('junit/*.xml') != '' }}}}
+        with:
+          name: junit-spec-parts-${{{{ matrix.part }}}}
+          path: junit/
+          if-no-files-found: error
+          retention-days: 7
+{DB_STOP}"""
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
-# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ spec-parts（置き場の変数 SPEC_SHARDS が 2 以上の回だけ G57 と G65 を分けて同時に・K-1307）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
 # G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
 #   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
@@ -348,7 +396,7 @@ jobs:
   static:
     runs-on: {RUNS_ON}
 {SCOPE_OUTPUTS}    steps:
-{NODE}{SCOPE_STEP}{SHARDS_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
+{NODE}{SCOPE_STEP}{SHARDS_STEP}{SPEC_SHARDS_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
   database:
     runs-on: {RUNS_ON}
     needs: [static]
@@ -369,7 +417,7 @@ jobs:
         env:
           CI_PY_TESTS: ${{{{ steps.scope.outputs.py_tests }}}}
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
-{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}{SPEC_MORE}
+{SPEC_OWN_SHARDS_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}{SPEC_MORE}{SPEC_PARTS}
   task-gate:
     runs-on: {RUNS_ON}
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
@@ -480,7 +528,7 @@ jobs:
   junit:
     runs-on: {RUNS_ON}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
-    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, web, web-report]
+    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, spec-parts, web, web-report]
     if: always()
     steps:
       - uses: actions/upload-artifact/merge@v4
