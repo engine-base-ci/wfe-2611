@@ -35,6 +35,7 @@ export const BUILT_ROUTES: readonly string[] = [
   "/dev/views",
   "/help",
   "/invite/:token",
+  "/invite/confirm/:token",
   "/legal/:kind",
   "/login",
   "/members",
