@@ -269,7 +269,7 @@ class PriorRefs(unittest.TestCase):
             prior_refs.declared(PAGE + "K-64 は枝 k64-other の 1234567 と突き合わせた。\n")
 
     def test_K1305_CI_009_commit_problems(self) -> None:
-        """K1305-CI-009 G64 の着手前の確かめ（commit_problems）：在る sha と行 → 空。無い sha → 宣言の枝の名前・git push・prior_refs.py check --remote を
+        """K1305-CI-009 G64 の着手前の確かめ（commit_problems）：在る sha と行 → 空。無い sha（宣言の sha）→ 宣言の枝の名前・git push・prior_refs.py check --remote を
         含む文。ファイルが無い・行が足りない → その文。宣言が無いチケット → 「枝 <枝> の <sha>」が無い文。形でない → 形の文"""
         with tempfile.TemporaryDirectory() as d:
             repo = pathlib.Path(d)
@@ -280,8 +280,8 @@ class PriorRefs(unittest.TestCase):
             sha = run_git(repo, "rev-parse", "--short=8", "HEAD")
             decl = {"K-64": ("k64-make", sha)}
             self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:3@{sha}"], decl), [])
-            gone = "deadbeef"
-            got = prior_refs.commit_problems(repo, "K-64", [f"a.txt:3@{gone}"], decl)
+            gone = "deadbeef"   # 宣言の sha そのものが git に無い（置き場に控えの枝が無い形）：宣言の枝を上げる文
+            got = prior_refs.commit_problems(repo, "K-64", [f"a.txt:3@{gone}"], {"K-64": ("k64-make", gone)})
             self.assertEqual(got, [prior_refs.missing_message("K-64", gone, "k64-make")])
             for part in ("deadbeef", "k64-make", "git push <置き場> k64-make", "prior_refs.py check --remote"):
                 self.assertIn(part, got[0])
