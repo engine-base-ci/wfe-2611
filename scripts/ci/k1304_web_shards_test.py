@@ -188,7 +188,7 @@ class ManyParts(unittest.TestCase):
 
     def test_K1304_CI_004_g48_shard_runs_only_its_slice(self) -> None:
         """K1304-CI-004 g48-<i> の組：G48 は e2e:k に --shard=<i>/<N>・blob だけを出す命令 1 つ（record・op_gate は流さない）。終わりの番号を web-part/g48-<i>.rc に残し、
-        赤ならその番号で終わる。G59・専用の段はこの組では命令 0 で 0"""
+        赤ならその番号で終わる。G59・専用の段はこの組では命令 0 で 0。範囲の回で G48 が選ばれなければ命令 0 で 0・印は none"""
         for rc in (0, 1):
             with self.subTest(rc), tempfile.TemporaryDirectory() as t:
                 d = pathlib.Path(t)
@@ -205,9 +205,16 @@ class ManyParts(unittest.TestCase):
             code, calls, _ = go(["g48"], {**FULL, "CI_FULL": "false", "CI_WEB_SPECS": '["apps/web/tests/k/a.spec.ts"]', "WEB_PART": "g48-1", "WEB_SHARDS": "3"}, pathlib.Path(t))
             self.assertEqual([c for c, _ in calls], [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", "tests/k/a.spec.ts",
                                                       "--shard=1/3", "--reporter=list,blob", "--pass-with-no-tests"]])
+        with tempfile.TemporaryDirectory() as t:   # 範囲の回で G48 が選ばれない（G59 だけ選ばれた）：命令 0 で 0、印 none を必ず残す（上げる物を空にしない）
+            d = pathlib.Path(t)
+            code, calls, _ = go(["g48"], {**FULL, "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_OTHER": '["apps/web/tests/skeleton/m1.spec.ts"]',
+                                          "WEB_PART": "g48-3", "WEB_SHARDS": "3"}, d)
+            self.assertEqual((code, calls), (0, []))
+            self.assertEqual((d / "web-part" / "g48-3.rc").read_text(encoding="utf-8").strip(), "none")
 
     def test_K1304_CI_005_other_parts_run_their_own_step_only(self) -> None:
-        """K1304-CI-005 g59 の組は G59 だけ・g70 は G70 だけ・g73 は G73 だけを今の命令で流し、G48 は命令 0。web-part の rc は書かない"""
+        """K1304-CI-005 g59 の組は G59 だけ・g70 は G70 だけ・g73 は G73 だけを今の命令で流し、G48 は命令 0。組の終わりの印 web-part/<組>.rc に番号（0・赤なら 1）を
+        必ず書き、ほかの組の印は書かない。範囲の回で自分の段が選ばれなければ命令 0 で 0・印は none（上げる物が空で組が赤にならない）"""
         for part in ["g59"] + [f"g{g}" for g in GATE_IDS]:
             with self.subTest(part), tempfile.TemporaryDirectory() as t:
                 d = pathlib.Path(t)
@@ -220,7 +227,22 @@ class ManyParts(unittest.TestCase):
                 self.assertEqual([k for k, v in ran.items() if v], [part])
                 self.assertEqual(ran[part][0][:6], ["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test"])
                 self.assertNotIn("--shard", " ".join(ran[part][0]))
-                self.assertFalse((d / "web-part").exists())
+                self.assertEqual(sorted(f.name for f in (d / "web-part").iterdir()), [f"{part}.rc"])
+                self.assertEqual((d / "web-part" / f"{part}.rc").read_text(encoding="utf-8").strip(), "0")
+            with self.subTest(part=part, rc=1), tempfile.TemporaryDirectory() as t:
+                d = pathlib.Path(t)
+                argv = ["g59"] if part == "g59" else ["gate", part[1:]]
+                code, _, _ = go(argv, {**FULL, "WEB_PART": part, "WEB_SHARDS": "4"}, d, rc=1)
+                self.assertEqual((code, (d / "web-part" / f"{part}.rc").read_text(encoding="utf-8").strip()), (1, "1"))
+            with self.subTest(part=part, selected="none"), tempfile.TemporaryDirectory() as t:
+                d = pathlib.Path(t)
+                other = "g70" if part != "g70" else "g73"
+                gates = {g: (["apps/web/tests/x.spec.ts"] if f"g{g}" == other else []) for g in GATE_IDS}
+                env = {**FULL, "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_OTHER": "[]", "CI_WEB_GATES": json.dumps(gates), "WEB_PART": part, "WEB_SHARDS": "4"}
+                argv = ["g59"] if part == "g59" else ["gate", part[1:]]
+                code, calls, _ = go(argv, env, d)
+                self.assertEqual((code, calls), (0, []))
+                self.assertEqual((d / "web-part" / f"{part}.rc").read_text(encoding="utf-8").strip(), "none")
 
     def test_K1304_CI_006_unknown_part_is_red(self) -> None:
         """K1304-CI-006 組の一覧に無い WEB_PART（分ける数の外の g48-5・gates・g48-x）や読めない WEB_SHARDS は、命令 0 で赤（黙って何も流さずに緑にしない）"""
@@ -294,64 +316,80 @@ class Report(unittest.TestCase):
             self.assertIn("★", text)
 
     def test_K1304_CI_009_merged_report_has_same_rows_as_one_part(self) -> None:
-        """K1304-CI-009 本物の Playwright：同じ試験を 1 組で流した報告と、--shard で 3 組に分けて blob を merge-reports でまとめた報告で、
-        JUnit の testcase（名前とファイル）の並びと数、JSON の行（ファイル・題・結果）の並びが 1 つも違わない"""
+        """K1304-CI-009 本物の Playwright・本物と同じ形の設定（testDir ./tests の下のディレクトリ・project chromium・describe の中の試験・fullyParallel: false）：
+        5 ファイル 15 行を 1 組で流した報告と、--shard で 3 組・7 組（ファイルより多く空の組ができる）に分けて blob を merge-reports でまとめた報告で、
+        blob は組の数だけ出て（空の組も 1 つ）、JUnit の testcase（名前・ファイル）、JSON の行（file・project・親の suite の題をつないだ題の道・結果）が 1 つも違わない"""
         self.assertTrue(PW.exists(), f"Playwright が入っていない（{PW}。CI の組は pnpm install で入る）")
         with tempfile.TemporaryDirectory() as t:
             d = pathlib.Path(t)
             (d / "node_modules").symlink_to(ROOT / "apps/web/node_modules")
-            (d / "t").mkdir()
             (d / "playwright.config.ts").write_text(
-                'import { defineConfig } from "@playwright/test";\n'
-                'export default defineConfig({ testDir: "./t", fullyParallel: false, workers: 1,\n'
-                '  reporter: [["list"], ["json", { outputFile: process.env["PW_REPORT"] ?? "r.json" }], ["junit", { outputFile: process.env["PW_JUNIT"] ?? "r.xml" }]] });\n',
-                encoding="utf-8")
-            for i in range(1, 6):
-                (d / "t" / f"a{i}.spec.ts").write_text(
-                    'import { test, expect } from "@playwright/test";\n'
-                    + "".join(f'test("K9-UI-{i}{j:02d} 行 {i}-{j}", async () => {{ expect({j}).toBe({j}); }});\n' for j in range(1, i + 1)),
-                    encoding="utf-8")
+                'import { defineConfig, devices } from "@playwright/test";\n'
+                'export default defineConfig({ testDir: "./tests", fullyParallel: false, workers: 1,\n'
+                '  reporter: [["list"], ["json", { outputFile: process.env["PW_REPORT"] ?? "r.json" }],\n'
+                '    ...(process.env["PLAYWRIGHT_JUNIT_OUTPUT_NAME"] ? [["junit", { outputFile: process.env["PLAYWRIGHT_JUNIT_OUTPUT_NAME"] }] as const] : [])],\n'
+                '  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }] });\n', encoding="utf-8")
+            files = ["k/a1.spec.ts", "k/a2.spec.ts", "features/F1/a3.spec.ts", "features/F2/a4.spec.ts", "a5.spec.ts"]
+            for i, rel in enumerate(files, 1):
+                f = d / "tests" / rel
+                f.parent.mkdir(parents=True, exist_ok=True)
+                body = "".join(f'  test("K9-UI-{i}{j:02d} 行 {i}-{j}", async () => {{ expect({j}).toBe({j}); }});\n' for j in range(1, i + 1))
+                f.write_text('import { test, expect } from "@playwright/test";\n'
+                             + (f'test.describe("K9-UI-{i}99 まとまり {i}", () => {{\n{body}}});\n' if i % 2 else body.replace("  test(", "test(")),
+                             encoding="utf-8")
             base = {k: v for k, v in os.environ.items() if not k.startswith(("PLAYWRIGHT_", "PW_", "CI"))}
-            one = subprocess.run([str(PW), "test"], cwd=d, env={**base, "PW_REPORT": "one.json", "PW_JUNIT": str(d / "one.xml")}, capture_output=True, text=True)
+            one = subprocess.run([str(PW), "test"], cwd=d, env={**base, "PW_REPORT": str(d / "one.json"), "PLAYWRIGHT_JUNIT_OUTPUT_NAME": str(d / "one.xml")},
+                                 capture_output=True, text=True)
             self.assertEqual(one.returncode, 0, one.stdout + one.stderr)
-            blobs = d / "all"
-            blobs.mkdir()
-            for i in range(1, 4):
-                part = d / f"b{i}"
-                r = subprocess.run([str(PW), "test", *web_run.shard_args(f"g48-{i}", 3)], cwd=d,
-                                   env={**base, "PLAYWRIGHT_BLOB_OUTPUT_DIR": str(part)}, capture_output=True, text=True)
-                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-                for z in part.glob("*.zip"):
-                    shutil.copy(z, blobs / z.name)
-            self.assertEqual(len(list(blobs.glob("*.zip"))), 3, "組ごとに 1 つの blob（名前が重ならない）")
-            m = subprocess.run([str(PW), "merge-reports", "--reporter=json,junit", str(blobs)], cwd=d,
-                               env={**base, "PLAYWRIGHT_JSON_OUTPUT_NAME": str(d / "m.json"), "PLAYWRIGHT_JUNIT_OUTPUT_NAME": str(d / "m.xml")},
-                               capture_output=True, text=True)
-            self.assertEqual(m.returncode, 0, m.stdout + m.stderr)
 
             def cases(f: pathlib.Path) -> list[tuple[str, str]]:
                 return sorted(re.findall(r'<testcase name="([^"]*)" classname="([^"]*)"', f.read_text(encoding="utf-8")))
 
             def rows(f: pathlib.Path) -> list[tuple]:
+                """record・op_gate と同じつなぎ方（親の suite の題 ＋ spec の題を空白で）の題の道と、file・project・結果"""
                 out: list[tuple] = []
 
-                def walk(s: dict) -> None:
+                def walk(s: dict, path: list[str], file: str) -> None:
+                    file = s.get("file") or file
                     for sp in s.get("specs", []):
-                        out.append((sp["file"], sp["title"], tuple(r["status"] for t in sp["tests"] for r in t["results"])))
+                        out.append((sp.get("file") or file, " ".join(path + [sp.get("title", "")]),
+                                    tuple((t.get("projectName"), tuple(r["status"] for r in t["results"])) for t in sp["tests"])))
                     for c in s.get("suites", []):
-                        walk(c)
+                        walk(c, path + [s.get("title", "")], file)
                 for s in json.loads(f.read_text(encoding="utf-8"))["suites"]:
-                    walk(s)
+                    walk(s, [], "")
                 return sorted(out)
+            want_rows = rows(d / "one.json")
             self.assertEqual(len(cases(d / "one.xml")), 15)
-            self.assertEqual(cases(d / "m.xml"), cases(d / "one.xml"))
-            self.assertEqual(rows(d / "m.json"), rows(d / "one.json"))
+            self.assertEqual(len(want_rows), 15)
+            self.assertIn("k/a1.spec.ts K9-UI-101 行 1-1", [r[1] for r in want_rows], "（前提）describe の中の試験は親の suite（ファイル）の題が題の道に入る")
+            self.assertIn("K9-UI-201 行 2-1", [r[1] for r in want_rows], "（前提）ファイルの直下の試験は題だけ")
+            self.assertEqual(sorted({r[0] for r in want_rows}), sorted(files), "（前提）file は testDir からの道")
+            for n in (3, 7):
+                with self.subTest(shards=n):
+                    blobs = d / f"all-{n}"
+                    blobs.mkdir()
+                    for i in range(1, n + 1):
+                        part = d / f"b{n}-{i}"
+                        r = subprocess.run([str(PW), "test", *web_run.shard_args(f"g48-{i}", n)], cwd=d,
+                                           env={**base, "PLAYWRIGHT_BLOB_OUTPUT_DIR": str(part)}, capture_output=True, text=True)
+                        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+                        for z in part.glob("*.zip"):
+                            shutil.copy(z, blobs / z.name)
+                    self.assertEqual(len(list(blobs.glob("*.zip"))), n, "組ごとに 1 つの blob（空の組も出す・名前が重ならない）")
+                    m = subprocess.run([str(PW), "merge-reports", "--reporter=json,junit", str(blobs)], cwd=d,
+                                       env={**base, "PLAYWRIGHT_JSON_OUTPUT_NAME": str(d / f"m{n}.json"), "PLAYWRIGHT_JUNIT_OUTPUT_NAME": str(d / f"m{n}.xml")},
+                                       capture_output=True, text=True)
+                    self.assertEqual(m.returncode, 0, m.stdout + m.stderr)
+                    self.assertEqual(cases(d / f"m{n}.xml"), cases(d / "one.xml"))
+                    self.assertEqual(rows(d / f"m{n}.json"), want_rows)
 
 
 class ManyWorkflow(unittest.TestCase):
     def test_K1304_CI_010_many_parts_workflow(self) -> None:
         """K1304-CI-010 4 組の回の CI の定義：web は g48-1〜4・g59・g70・g73 の 7 組（名前は web (<組>)）。どの組も ci-results・junit-* を上げず、
-        web-part-<組> を 1 つずつ（名前が重ならない・web-part/ と junit/）。web-report は web が赤でも走り、web が飛ばされたら飛ぶ"""
+        web-part-<組> を 1 つずつ（名前が重ならない・web-part/ と junit/ の 2 つ・中の道は作業場所からの道）。web-report は web が赤でも走り、web が飛ばされたら飛び、
+        web-part-* を作業場所の根（path が . か無い）に取る"""
         web = JOBS["web"]
         raw = json.dumps(web_run.parts(4, GATE_IDS))
         parts = ev(web["strategy"]["matrix"]["part"], web_ctx("all", "4", raw))
@@ -376,6 +414,7 @@ class ManyWorkflow(unittest.TestCase):
         self.assertEqual(rep["runs-on"], web["runs-on"])
         dl = [s for s in rep["steps"] if str(s.get("uses", "")).startswith("actions/download-artifact@")]
         self.assertEqual([(s["with"]["pattern"], s["with"].get("merge-multiple")) for s in dl], [("web-part-*", True)])
+        self.assertIn(dl[0]["with"].get("path", "."), (".", "./"), "作業場所の根に取る（junit/web-skeleton.xml などが junit/ に入る）")
         run = [s for s in rep["steps"] if "web_run.py g48-report" in str(s.get("run", ""))]
         self.assertEqual(len(run), 1)
         self.assertEqual(set(run[0]["env"]), {"CI_FULL", "CI_WEB_SPECS", "CI_WEB_OTHER", "CI_WEB_TASKS", "CI_WEB_GATES"})
