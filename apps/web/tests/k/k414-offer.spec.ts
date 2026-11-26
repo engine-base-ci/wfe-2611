@@ -108,18 +108,21 @@ const aiRow = () =>
   qrow("0193c5a0-0000-7000-8000-00000f841402", {
     ticket_number: "EG-128",
     title: "セイコー様へ 11月分の請求書を送る",
-    from_name: "佐藤のAI",
+    // 字はモックの AI_CARD と同じにする（作った人は「佐藤」で画面が「佐藤のAI が作成」と出す・中身の 1 行は note・K-412 の AI_ROW と同じ）
+    from_name: "佐藤",
     check_summary: "通過 3",
     due_on: "2026-11-24",
     decide_inline: true,
     irreversible: false,
     primary_action: "approve",
+    note: "1,716,000 円 ・ 送り先 山田様（CC 鈴木様）",
   });
 
 /** 申し出る人（鈴木・同じグループのメンバー・DB の handover_kinds は offer だけ）の詳細 */
 const AS_OFFERER: HOptions = { me: SUZUKI, role: "member", kinds: ["offer"], assignee: ME };
 /** 担当者（高本）の詳細・承認待ち（申し出が来ている） */
-const AS_ASSIGNEE: HOptions = { list: [offerAtAssignee()], queue: [offerRow(), aiRow()] };
+// 承認待ちの口は期限の順（D-128.36）に返す：AI の成果物（11/24）が申し出（並びの鍵はチケットの期限 11/27）より先（段9 の全部の CI・2026-11-27）
+const AS_ASSIGNEE: HOptions = { list: [offerAtAssignee()], queue: [aiRow(), offerRow()] };
 
 const ok = (data: unknown, status = 200): Reply => ({ status, body: { data } });
 interface Bodies {
@@ -158,7 +161,7 @@ function onOffer(h: HMock, setAssignee: (id: string | null) => void): Bodies {
 /** 承認待ちの行を、答えた後の読み直しで消す（土台の承認待ちの答えを差し替える） */
 function queueAfterAnswer(api: Awaited<ReturnType<typeof mockHandovers>>["api"], seen: Bodies) {
   api.on.queue = () => {
-    const rows = seen.answers.length ? [aiRow()] : [offerRow(), aiRow()];
+    const rows = seen.answers.length ? [aiRow()] : [aiRow(), offerRow()];
     return { status: 200, body: { data: rows, meta: { limit: 20, counts: { total: rows.length } } } };
   };
 }
@@ -477,7 +480,7 @@ test("K414-UI-019 時間の流れ：もう決まっていた（申し出が取�
     return errReply(409, E.decided);
   };
   api.on.queue = () => {
-    const rows = gone ? [aiRow()] : [offerRow(), aiRow()];
+    const rows = gone ? [aiRow()] : [aiRow(), offerRow()];
     return { status: 200, body: { data: rows, meta: { limit: 20, counts: { total: rows.length } } } };
   };
   await openQueue(page);
