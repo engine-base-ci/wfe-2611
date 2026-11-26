@@ -634,9 +634,16 @@ test("K415-UI-020 行の「人を決める」→ 相手を選ぶ小窓（1 行�
   onGroupRow(h);
   queueAfterClaim(api, h);
   await openQueue(page);
+  // 下見はその行のチケット（EG-140・G_TICKET）を読む。道具はどのチケットの下見も受けるので、道を試験の中で確かめる（精査 R1127）
+  const pv: string[] = [];
+  page.on("request", (r) => {
+    const p = new URL(r.url()).pathname;
+    if (r.method() === "GET" && p.endsWith("/handover-preview")) pv.push(p);
+  });
   await groupRowOf(page).getByRole("button", { name: "人を決める", exact: true }).click();
   const d = pick(page);
   await expect(d.locator(".k-hnd-intro")).toHaveText(T.assignIntro);
+  expect(pv, "下見はその行のチケットを 1 回").toEqual([`/api/v1/tickets/${G_TICKET}/handover-preview`]);
   await expect(d.getByRole("list", { name: "グループ", exact: true })).toHaveCount(0);
   await d.getByRole("button", { name: /^鈴木 一郎/ }).click();
   await expect(groupRowOf(page)).toHaveCount(0);
