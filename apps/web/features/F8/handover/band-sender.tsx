@@ -1,11 +1,10 @@
 "use client";
 // 渡した人の帯（sending・read-failed。渡し中・読めない）・K-411。値は getTicket の今の渡し（handover）だけ（口を足さない）。
-//   渡し中の帯のボタン（催促する・取り消す・別の人にする）は K-413 の物：SenderActions の空の形（押せない 3 つ）をそのまま出す。
+//   渡し中の帯とそのボタン（催促する・取り消す・別の人にする）は K-413 の band-sender-actions.tsx の SenderFollowBand が出す（口・確かめ・知らせもそこ）。
 //   読めない帯は「もう一度読む」で詳細を読み直す（getTicket 1 回・本文と子チケットはそのまま読める・D-148.38）
 import type { ReactNode } from "react";
 import { Button } from "@/components/k";
-import { SenderActions } from "./band-sender-actions";
-import { formatDue, surnameOf } from "./pass-dialog";
+import { SenderFollowBand } from "./band-sender-actions";
 import type { BandSectionProps, HandoverBandKey } from "./use-handovers";
 import { HandoverBand } from "./views";
 
@@ -26,13 +25,5 @@ export function BandSender({ handover, kind, ticket }: BandSectionProps): ReactN
       />
     );
   }
-  return (
-    <HandoverBand
-      kind="sending"
-      who={handover.to ? surnameOf(handover.to.display_name) : ""}
-      due={formatDue(handover.reply_due)}
-      reason={handover.reason}
-      acts={<SenderActions />}
-    />
-  );
+  return <SenderFollowBand handover={handover} kind="sending" ticket={ticket} />;
 }
