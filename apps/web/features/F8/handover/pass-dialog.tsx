@@ -76,6 +76,8 @@ export interface Preview {
   groups: PickGroup[];
   blocked: "closed" | "ai_running" | "approval" | "waiting" | null;
   waitingName: string | null;
+  /** 待っている渡しの id（別の人にする replaces の渡し自身は止まりに数えないため・K-413） */
+  waitingId: string | null;
   defaultReplyDue: string;
   rules: { target: string; mode: RuleMode }[];
   children: { mine: number; others: number };
@@ -146,6 +148,7 @@ export function readPreview(raw: unknown): Preview | null {
     groups,
     blocked,
     waitingName: surnameOrNull(str(waitTo?.["name"])) ?? str(waitScope?.["name"]),
+    waitingId: str(w?.["id"]),
     defaultReplyDue: str(o["default_reply_due"]) ?? "",
     rules,
     children: count(o["children"]),
@@ -280,8 +283,11 @@ export function PassFlow({ ticket, mode = "pass", open, onClose, onDone, replace
       const r = await call("previewTicketHandover", { params: { id: ticket.id }, screenId: "tickets" });
       if (gen.current !== mine) return;
       if (!r.ok) return r.status === 401 ? onClose() : failed(errorCodeOf(r));
-      const p = readPreview(r.data);
-      if (p === null) return failed(PAGE_ERROR.loadFailed);
+      const read0 = readPreview(r.data);
+      if (read0 === null) return failed(PAGE_ERROR.loadFailed);
+      // 別の人にする（replaces）：下見は今の渡しを waiting で返すが、その渡し自身は止まりに数えない（口も同じ・K-401 の handover_gate）
+      const p =
+        replaces && read0.blocked === "waiting" && read0.waitingId === replaces ? { ...read0, blocked: null } : read0;
       setPv(p);
       setValues((v) => ({ ...v, due: jstInputOf(p.defaultReplyDue) }));
       setPhase("pick");
