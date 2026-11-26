@@ -93,8 +93,8 @@ test("K484-UI-001 ▾ を押すと小窓が開く：期限を過ぎた詳細は�
   expect(await fieldsOf(page, "日付と時間")).toEqual({
     開始日: mdw("2026-10-30"),
     期限: `${mdw(OVERDUE)}1 日過ぎ`,
-    予定: "",
-    実績: "",
+    予定時間: "",
+    実績時間: "",
   });
   await expect(flame(page)).toHaveCount(1);
   expect(d.patches).toEqual([]);

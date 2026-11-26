@@ -21,6 +21,7 @@ import {
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
 import { codeWait } from "../../features/F3/connect-pc/code-wait";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -100,6 +101,8 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
     else if (p === "/api/v1/scopes") r = ok([], { limit: 200, writable: [] });
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [] })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: 0 }, cursor: null });
     else if (p === "/api/v1/bridge/devices")
       r = ok(

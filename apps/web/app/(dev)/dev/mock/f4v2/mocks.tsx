@@ -17,6 +17,10 @@ import {
 } from "@/features/F4/doc/detail-views";
 import "@/features/F4/create-ticket/create-ticket.css";
 import { renderMore } from "./more-mocks";
+import { SpecsItemV3 } from "@/features/F4/doc/detail-extra";
+
+/** 詳細のパネルの確認項目（作り直した形・文を押して直す） */
+const SPECS_V3 = <SpecsItemV3 mode="detail" lines={SPEC_DETAIL} compact />;
 
 export interface MockEntry {
   id: string;
@@ -93,6 +97,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
     specs: readonly SpecLine[] = SPEC_DETAIL,
     open = false,
     tab: "attr" | "talk" = "attr",
+    specsSlot?: ReactNode,
   ): ReactNode => (
     <DetailPage
       theme={theme}
@@ -101,6 +106,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       tab={tab}
       {...(dialog ? { dialog } : {})}
       {...(acts ? { acts } : {})}
+      {...(specsSlot ? { panel: { specsSlot } } : {})}
     >
       {writing ? <EditBand /> : null}
       <BodyView writing={writing}>
@@ -155,10 +161,11 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       return detail(<Results />);
     case "f4v2-detail-editing":
       return detail(undefined, undefined, true, <></>);
+    // 確認項目の行は作り直した形（文を押して直す・SpecsItemV3）。f4v2-spec-edit と同じ並び（K-450）
     case "f4v2-specs":
-      return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true);
+      return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true, "attr", SPECS_V3);
     case "f4v2-spec-add":
-      return detail(undefined, <SpecAddDialog />, false, undefined, SPEC_DETAIL, true);
+      return detail(undefined, <SpecAddDialog />, false, undefined, SPEC_DETAIL, true, "attr", SPECS_V3);
     case "f4v2-detail-thread":
       return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true, "talk");
     case "f4v2-complete":
