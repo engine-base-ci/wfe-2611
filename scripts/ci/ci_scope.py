@@ -670,6 +670,94 @@ def _full_plan(p: dict) -> dict:
             "unit_files": [], "coverage_args": []}
 
 
+DESK = re.compile(r"^K-\d+ docs: 段 \S+ の設計図を切る段の今の版に合わせる（段の全部の CI の前）$")
+
+
+def stage_leaves(repo: str, base: str, head: str) -> tuple[list[str], list[str], list[str]]:
+    """段の枝（head）に入れた葉の番号・葉に数えなかった番号・見分けられなかった理由（K-1305）。
+
+    段の枝の背骨を head から base（本線）までたどる。背骨のコミットの形は ticket-flow が作る 4 つだけ：
+      葉を段の枝に入れた取り込み「<葉> merge: 段の枝 <先頭> を取り込む」（1 番目の親＝葉の先頭・2 番目＝前の段の枝）
+      段の枝に本線を入れた取り込み「<段> merge: 段の枝 <本線> を取り込む」（1 番目の親＝前の段の枝）
+      段の設計図を合わせるコミット「<葉> docs: 段 <段> の設計図を…」（親 1 つ・葉に数えない）
+      早送りで入った葉の先頭（件名の頭が葉の番号）
+    葉の筋は、その葉の番号の件名が続く間だけ 1 番目の親をたどる（件名が別の番号になった所は、葉を始めた元＝依存の木か本線）。
+    葉の筋の中の「段の枝」との合わせ（作る人が git merge i/<段> した）の 2 番目の親は背骨に戻る。それ以外の合わせ
+    （本線に入っていない依存の木・依存の枝・本線）の 2 番目の親は、ほかの段の葉か本線の物なので数えない"""
+    inside = set(git(repo, "rev-list", f"{base}..{head}").stdout.decode().split())
+    info: dict[str, tuple[list[str], str]] = {}
+    for line in git(repo, "log", "--format=%H%x09%P%x09%s", f"{base}..{head}").stdout.decode("utf-8", "replace").splitlines():
+        sha, _, rest = line.partition("\t")
+        parents, _, subj = rest.partition("\t")
+        info[sha] = (parents.split(), subj)
+    leaves: list[str] = []
+    why: list[str] = []
+    seen: set[str] = set()
+    spine = [git(repo, "rev-parse", head).stdout.decode().strip()]
+
+    def tid_of(subj: str) -> str | None:
+        m = TICKET.match(subj)
+        return m.group(0) if m else None
+
+    def walk_leaf(cur: str, tid: str) -> None:
+        if tid not in leaves:
+            leaves.append(tid)
+        while cur in inside and cur not in seen and tid_of(info[cur][1]) == tid:
+            seen.add(cur)
+            ps, subj = info[cur]
+            if len(ps) >= 2 and "merge: 段の枝 " in subj:
+                spine.extend(ps[1:])
+            cur = ps[0] if ps else ""
+
+    while spine:
+        cur = spine.pop()
+        if cur not in inside or cur in seen:
+            continue
+        ps, subj = info[cur]
+        tid = tid_of(subj)
+        if len(ps) >= 2 and "merge: 段の枝 " in subj:
+            seen.add(cur)
+            if tid:
+                walk_leaf(ps[0], tid)
+                spine.extend(ps[1:])
+            else:
+                spine.append(ps[0])
+        elif len(ps) == 1 and DESK.match(subj):
+            seen.add(cur)
+            spine.append(ps[0])
+        elif tid:
+            walk_leaf(cur, tid)
+        else:
+            seen.add(cur)
+            why.append(f"全部の回の .py の試験：段の枝の形が分からない（{cur[:10]} {subj[:60]}）ので、その先の葉は数えない")
+    others = sorted({t for ps, subj in info.values() if len(ps) == 1 and (t := tid_of(subj)) and t not in leaves}, key=_num)
+    return sorted(leaves, key=_num), others, why
+
+
+def _full_py_tests(p: dict, repo: str, head: str, tickets_dir: str) -> None:
+    """全部の回（段の CI）でも、段の葉（stage_leaves：段の枝に入れた葉だけ）の tests: の .py を py_tests に出す（K-1305）。
+    spec の組が junit_unittest.py で JUnit（spec-py.xml）に書き、段の葉の .py の行が照らしに載る（チケットの回と同じ道）。
+    ほかの段の葉の .py は入れない（その葉の段の CI が流す・入れなかった番号は理由に出す）。比べる元が無い・葉の md が無い・葉の tests: が何にも当たらない回は、
+    止めずに理由に残す（全部の回を止めると組が 1 つも流れない。出せなかった葉の行は記録に無く、照らしで赤になる）"""
+    base = p.get("base") or ""
+    if not SHA.fullmatch(base):
+        p["reasons"].append("全部の回の .py の試験：比べる元が無いので段の葉を出せない（0 本）")
+        return
+    leaves, others, why = stage_leaves(repo, base, head)
+    p["reasons"] += why
+    if others:
+        p["reasons"].append(f"全部の回の .py の試験：段の葉でない（葉の枝の合わせから来た）番号は入れない：{'・'.join(others)}")
+    py: set[str] = set()
+    for tid in leaves:
+        if not os.path.isfile(os.path.join(tickets_dir, f"{tid}.md")):
+            p["reasons"].append(f"全部の回の .py の試験：段の葉 {tid} のチケットの md が無い")
+            continue
+        tt, miss = _ticket_tests(repo, tickets_dir, tid)
+        py.update(t for t in tt if t.endswith(".py"))
+        p["reasons"] += [f"全部の回の .py の試験：{tid} の tests: の {g} が何にも当たらない" for g in miss]
+    p["py_tests"] = sorted(py)
+
+
 def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     """重い検査（決まり gates：番号 → 関係するファイルの glob）のうち、流すもの（K-172）。全部の回は全部"""
     g = rules.get("gates") or {}
@@ -742,6 +830,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                         + list(p.get("web_reasons") or []))
         p["gates"] = gates_for([c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old], rules, full=scope == "full")
         if scope == "full":
+            _full_py_tests(p, repo, head, tickets_dir)
             return _full_plan(p)
         stops = [(c, d) for c, d in full if c in STOP_KINDS]
         for c, d in stops:
