@@ -179,7 +179,8 @@ test("K449-UI-005 入力：比べる元を選び直す。選べるのは先よ�
   await openVersions(page);
   await ready(page);
   await fromBox(page).click();
-  await expect(page.getByRole("option")).toHaveText([OPT_FROM(2), OPT_FROM(1)]);
+  // 選んである選択肢には印 ✓ が中に出る（Base UI の ItemIndicator）ので、字は終わりで見る
+  await expect(page.getByRole("option")).toHaveText([/版 2 ・ 鈴木 11\/21 10:05$/, /版 1 ・ 高本 11\/21 09:40$/]);
   await page.getByRole("option", { name: OPT_FROM(1), exact: true }).click();
   await expect(page).toHaveURL(/from=1/);
   await expect(page).toHaveURL(/to=3/);
@@ -212,7 +213,10 @@ test("K449-UI-006 入力：比べる先を選び直す。選べるのは元よ�
   await expect(restoreBtn(page, "本文", 1)).toBeVisible();
   await expect(page.getByText(HINT(4), { exact: true })).toBeVisible();
   await toBox(page).click();
-  await expect(page.getByRole("option")).toHaveText(["版 2 ・ 鈴木 11/21 10:05", "版 3（いま）・ 高本 11/21 10:42"]);
+  await expect(page.getByRole("option")).toHaveText([
+    /版 2 ・ 鈴木 11\/21 10:05$/,
+    /版 3（いま）・ 高本 11\/21 10:42$/,
+  ]);
   await page.getByRole("option", { name: "版 3（いま）・ 高本 11/21 10:42", exact: true }).click();
   await expect(page).toHaveURL(/to=3/);
   await expect.poll(() => m.lists.length).toBe(2);

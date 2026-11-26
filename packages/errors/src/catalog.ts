@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。292 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。288 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2787,25 +2787,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "return"
     }
   },
-  "E-VAL-022": {
-    "id": "E-VAL-022",
-    "cls": "validation",
-    "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
-    "action": "残っている実施事項を済ませてチェックする",
-    "undo": false,
-    "severity": "low",
-    "support_code": "VAL-022",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "complete"
-    }
-  },
   "E-VAL-023": {
     "id": "E-VAL-023",
     "cls": "validation",
@@ -2888,25 +2869,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "CONF-016",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "complete"
-    }
-  },
-  "E-CONF-017": {
-    "id": "E-CONF-017",
-    "cls": "conflict",
-    "message": "実施事項が変わりました。読み直してから完了にしてください",
-    "action": "読み直して、もう一度確かめる",
-    "undo": false,
-    "severity": "low",
-    "support_code": "CONF-017",
     "must_not": false,
     "layers": [
       "UI",
@@ -3186,44 +3148,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
-  "E-VAL-013": {
-    "id": "E-VAL-013",
-    "cls": "validation",
-    "message": "この区画は書かないと作れません",
-    "action": "区画を書く",
-    "undo": false,
-    "severity": "low",
-    "support_code": "VAL-013",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
-  "E-VAL-014": {
-    "id": "E-VAL-014",
-    "cls": "validation",
-    "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-    "action": "選び直す",
-    "undo": false,
-    "severity": "medium",
-    "support_code": "VAL-014",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
     ],
     "where": {
       "screen": "tickets",

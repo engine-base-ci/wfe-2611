@@ -4935,37 +4935,6 @@
    "support_code": "VAL-020"
   },
   {
-   "id": "E-VAL-022",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "complete"
-   },
-   "when": "完了にするとき、チェックの入っていない実施事項が残っている",
-   "false_when": "実施事項が全部チェック済み",
-   "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
-   "action": "残っている実施事項を済ませてチェックする",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
-    "steps": [
-     "実施事項を 1 つ残して完了にする"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.55"
-   ],
-   "support_code": "VAL-022"
-  },
-  {
    "id": "E-VAL-023",
    "class": "validation",
    "where": {
@@ -5117,39 +5086,6 @@
     "D-128.49"
    ],
    "support_code": "CONF-016"
-  },
-  {
-   "id": "E-CONF-017",
-   "class": "conflict",
-   "where": {
-    "screen": "tickets",
-    "state": "complete"
-   },
-   "when": "完了の小窓を開いた後に、実施事項が書き換わった",
-   "false_when": "開いてから実施事項が変わっていない",
-   "message": "実施事項が変わりました。読み直してから完了にしてください",
-   "action": "読み直して、もう一度確かめる",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
-    "steps": [
-     "完了の小窓を開く",
-     "別のタブで実施事項を書き換える",
-     "完了にする"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.55"
-   ],
-   "support_code": "CONF-017"
   },
   {
    "id": "E-CONF-018",
@@ -5618,74 +5554,6 @@
     "D-128.138"
    ],
    "support_code": "VAL-012"
-  },
-  {
-   "id": "E-VAL-013",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "種別の必須の区画（タスクなら目的・完了の条件・実施事項）が空のまま作ろうとした",
-   "false_when": "必須の区画が全部書いてある",
-   "message": "この区画は書かないと作れません",
-   "action": "区画を書く",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "目的を空のまま作る"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.51",
-    "D-125.53",
-    "D-128.117",
-    "D-128.138"
-   ],
-   "support_code": "VAL-013"
-  },
-  {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
   },
   {
    "id": "E-VAL-015",
