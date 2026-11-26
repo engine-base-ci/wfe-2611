@@ -314,11 +314,11 @@ test("K412-UI-013 カードの AI の成果物（幅 375）：承認する → �
   await asRecipient(page, { queue: [handoverRow(), AI_ROW, ...QUEUE()] });
   await openQueue(page, 375);
   await card(page, "セイコー様へ 11月分の請求書を送る").getByRole("button", { name: "承認する" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  // 前からの ApproveConfirm は題「承認します」とボタンだけ（番号・題名は出さない・この葉は approve-confirm.tsx を触らない）
-  await expect(page.getByRole("dialog")).toContainText("承認します");
+  // 前からの ApproveConfirm は AlertDialog（役は alertdialog）。題「承認します」とボタンだけ（番号・題名は出さない・この葉は approve-confirm.tsx を触らない）
+  const confirm = page.getByRole("alertdialog", { name: "承認します" });
+  await expect(confirm).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(confirm).toHaveCount(0);
   await card(page, "セイコー様へ 11月分の請求書を送る").getByRole("button", { name: "差し戻す" }).click();
   await expect(page.getByRole("dialog")).toContainText("差し戻す");
 });
