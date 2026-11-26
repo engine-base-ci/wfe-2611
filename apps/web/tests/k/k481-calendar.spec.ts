@@ -27,7 +27,7 @@ const TEXT = {
   forbidden: "この画面を見る権限がありません。",
 } as const;
 
-type Row = ReturnType<typeof item>;
+type Row = Omit<ReturnType<typeof item>, "due_on"> & { due_on: string | null };
 const t = (i: number, due: string | null, o: Record<string, unknown> = {}): Row =>
   item(i, { number: `EG-${i}`, title: `チケット ${i}`, due_on: due, ...o });
 // 月の格子に出る項目（1 日 2 件まで）は 17 個：モックの見本（f7-calendar）と同じ数にして、突き合わせの「当たった数」（項目・点）をそろえる。
@@ -350,6 +350,32 @@ test("K481-UI-009 口が断った・落ちた：409 E-DUE-005（親より後）�
   await d.getByRole("button", { name: "動かす", exact: true }).click();
   await expect(d.getByRole("alert")).toContainText(TEXT.stale);
   await expect.poll(() => c.month.length).toBe(reads + 1);
+});
+
+test("K481-UI-021 日を動かす で送ったら口が 404 E-PAGE-001（チケットが消された・見えなくなった）：editor が閉じ、小窓に role=alert は出ず、月の口がもう 1 回呼ばれ、読み直した月に無い EG-101 は小窓とセルから消える（EG-102 は残り小窓は開いたまま）", async ({
+  page,
+}) => {
+  const { c } = await setup(page);
+  await openCal(page);
+  await dateBtn(page, "11月2日（月）").click();
+  const d = dlg(page, "11/2（月）");
+  await moveBtn(d, "EG-101").click();
+  await d.getByLabel("動かす先", { exact: true }).fill("2026-11-09");
+  await reasonBox(d).fill("理由");
+  const reads = c.month.length;
+  c.next = () => {
+    c.rows = c.rows.filter((r) => r.number !== "EG-101");
+    return fail(404, "E-PAGE-001");
+  };
+  await d.getByRole("button", { name: "動かす", exact: true }).click();
+  await expect.poll(() => c.patches.length).toBe(1);
+  await expect.poll(() => c.month.length).toBe(reads + 1);
+  await expect(reasonBox(d)).toHaveCount(0);
+  await expect(d.getByRole("alert")).toHaveCount(0);
+  await expect(moveBtn(d, "EG-101")).toHaveCount(0);
+  await expect(moveBtn(d, "EG-102")).toBeVisible();
+  await expect(cellOf(page, "11月2日（月）").getByRole("link", { name: /EG-101/ })).toHaveCount(0);
+  expect(c.patches).toHaveLength(1);
 });
 
 test("K481-UI-010 二度押し：答えを止めた間に「動かす」を押し、口に 1 回届いたのを待ってから、ボタンが押せない（busy）のを見てもう 1 回押す：口は 1 回だけ。答えを返すと editor が閉じる", async ({

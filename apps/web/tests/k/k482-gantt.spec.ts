@@ -502,11 +502,18 @@ test("K482-UI-016 空と失敗：棒の行も期限なしも 0 件の最初の�
   await expect(page.locator(".wx-bar")).toHaveCount(0);
 });
 
-test("K482-UI-022 行の高さは 36px：隣り合う棒の行の間隔が 36・本体の高さは 18 行ほど（目盛り 28×2 段を引いて 36 で割ると 17 以上 19 以下）（幅 1440）", async ({ page }) => {
+test("K482-UI-022 行の高さは 36px：隣り合う棒の行の間隔が 36・本体の高さは 18 行ほど（目盛り 28×2 段を引いて 36 で割ると 17 以上 19 以下）（幅 1440）", async ({
+  page,
+}) => {
   await setup(page);
   await openGantt(page);
-  const tops = (await page.locator(".wx-bar").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)))).sort((x, y) => x - y);
-  const gaps = tops.slice(1).map((y, i) => y - tops[i]!).filter((g) => g > 0);
+  const tops = (
+    await page.locator(".wx-bar").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)))
+  ).sort((x, y) => x - y);
+  const gaps = tops
+    .slice(1)
+    .map((y, i) => y - tops[i]!)
+    .filter((g) => g > 0);
   expect(Math.min(...gaps), "隣り合う棒の行の間隔").toBe(36);
   const body = (await page.locator(".k-f7-gantt-body").boundingBox())!;
   const rows = (body.height - 28 * 2) / 36;

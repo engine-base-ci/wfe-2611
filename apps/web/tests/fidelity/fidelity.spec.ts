@@ -6,6 +6,7 @@
 //   待つのは組の要素が全部描かれるまで（決めた秒数で待たない）。比べ方は scripts/ci/fidelity_compare.mjs（K-216）。
 //   値の読み方（K-216 の申し送り）：見えない要素は「無い」・隠れた字は数えない・読み込み中（aria-busy）が消え 2 回読んで同じになるまで待つ・
 //   動き（animation・transition）を止める・値を先に読み写しは後・当たった数を毎回付ける。これを data: の頁で readVals と capture に当てる（012〜017）。
+//   幅ごとの絵（組の at・K-1301）：比べる絵とセレクタは groupAt(組, 幅) で解く（その幅だけ絵とセレクタを替える。値と幅は組のまま）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -15,9 +16,11 @@ import {
   capture,
   compareFonts,
   compareRows,
+  groupAt,
   loadedFonts,
   mismatches,
   readVals,
+  type FidelityAt,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
 
@@ -40,6 +43,8 @@ interface Group {
   enrolled: boolean;
   /** 読み込み中の画面の組（K-255）：aria-busy の代わりに状態の文が出るのを待って読む */
   busy?: boolean;
+  /** 幅ごとの絵（K-1301）：その幅だけ比べる絵とセレクタを替える */
+  at?: Record<string, FidelityAt>;
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -88,8 +93,10 @@ test("K238-VF-002 キャンバスを開いても外（fonts.googleapis.com・fon
   await context.close();
 });
 
-for (const g of ENROLLED) {
-  for (const w of g.widths) {
+for (const cfg of ENROLLED) {
+  for (const w of cfg.widths) {
+    // その幅で比べる絵（canvas）と対（pairs）。ほかの欄は組のまま
+    const g = { ...cfg, ...groupAt(cfg, w) };
     test(`K238-VF-003 ${g.id}（${g.canvas}）幅 ${w}：組の値と読み込んだ書体がキャンバスと同じ`, async ({ browser }) => {
       const canvasPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
       await routeCanvasFonts(canvasPage);

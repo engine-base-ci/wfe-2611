@@ -120,7 +120,7 @@ _cc_mat = ('<div class="artwrap">' + state(
        work=("6 つの操作 · 3分04秒", None)), "SOICO の見積書") +
   '<aside class="artifact" aria-label="横で開いた成果物"><div class="ah">' + ic("file") + '<b>SOICO_見積書_v2</b><span class="v">版 2 · 前の版に戻す</span></div>'
   '<div class="ab">' + h("御見積書", 2) + '<p>株式会社SOICO 御中</p>' + mtable(["項目","金額"], [["要件定義","480,000"],["実装","2,970,000"],["合計（税込）","3,795,000"]]) + '</div>'
-  '<div class="af">' + btn("PDF で落とす","o","download") + btn("Word","g") + btn("承認に出す（外に出すとき）","p","send") + '</div></aside></div>')
+  '<div class="af">' + btn("Word","g") + btn("承認に出す（外に出すとき）","p","send") + '</div></aside></div>')
 
 # ---- 成果物を直す・版を戻す（D-106）
 _cc_art = ('<div class="artwrap">' + state(
