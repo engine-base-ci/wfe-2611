@@ -2,13 +2,17 @@
 """K-1305 段の全部の CI で毎回赤になる、プロジェクト側の元を直す試験。行 ID（K1305-CI-…）は 11_tickets/K-1305.md の表に結ぶ。
 
 試験が決める形（実装の役が作る）:
-  scripts/ci/ci_scope.py   全部の回（scope=full）でも、段の葉（stage_leaves：段の枝の背骨と葉の筋だけ・ほかの段の葉は入れない）の tests: の .py を
-                           py_tests に出す（_full_py_tests）。比べる元が無い・葉の tests: が何にも当たらない回は止めずに理由に残す。
-                           チケットの回（scope=ticket）の動きは変えない
+  scripts/ci/ci_scope.py   全部の回（scope=full）でも、段の葉の tests: の .py を py_tests に出す。段の葉は取り込みの機械（ticket-flow の stageq）が渡す
+                           入力 leaves（空白区切りの番号）だけで決める（木の形から推し量らない）。plan(..., leaves=<文字>)・main の --leaves。
+                           leaves が無い・空・番号の形でない語・葉の md が無い → errors（全部の回は止める）。葉の tests: が何にも当たらない → 理由。
+                           チケットの回（scope=ticket）は leaves を見ず、今と同じ
+  05_flow/build_testplan.py（生成物 v3-gate.yml）workflow_dispatch の入力 leaves（string・既定 ''）。ci_scope.py を流す 4 つの段（static・spec・
+                           spec-2・spec-3）の env に CI_LEAVES_INPUT: ${{ inputs.leaves }}、run に --leaves "$CI_LEAVES_INPUT"
+  ticket-flow.yaml         ci.inputs に leaves: leaves（stageq が渡す名前とこの workflow の入力の名前の対応）
   scripts/ci/prior_refs.py 聞くことのページの「<K-番号> は枝 <枝> の <sha>」（控えの枝）を読む・確かめる
       declared(text) -> {チケット: (枝, sha)}（同じチケットに違う宣言が 2 つなら ValueError）
       missing_message(tid, sha, branch) -> 枝の名前・git push・prior_refs.py check --remote を含む赤の文
-      commit_problems(root, tid, locs, decl) -> [赤の文]（宣言が無い・sha が git に無い・sha が宣言と違い HEAD の先祖でもない・ファイル:行 がその版に無い）
+      commit_problems(root, tid, locs, decl) -> [赤の文]（宣言が無い・sha が git に無い・sha が宣言と違い HEAD の先祖でもない（git に無くても違う方の文）・ファイル:行 がその版に無い）
       python3 scripts/ci/prior_refs.py list|check --remote <置き場> [--root R]
   scripts/ci/ticket_process_test.py の K146-CI-008 は着手前の確かめを prior_refs.commit_problems で流す（見る中身は今と同じ＋宣言が在ること）
 使い方: python3 scripts/ci/k1305_full_py_junit_test.py
@@ -59,60 +63,46 @@ def tmd(tid: str, tests: list[str]) -> str:
     return f"---\nid: {tid}\naffects: []\nci_wide: [ci]\ntests: [{', '.join(tests)}]\n---\n"
 
 
-DESK_MSG = "{tid} docs: 段 段1 の設計図を切る段の今の版に合わせる（段の全部の CI の前）"
+NO_LEAVES = "全部の回の .py の試験：段の葉の一覧（入力 leaves）が無い（ticket-flow の stageq が渡す・全部の回は止める）"
+
+
+def no_vitest(files: list[str]) -> dict[str, list[str]]:
+    return {f: [] for f in files}
 
 
 class Leaves(cst.Base):
-    """本線（main）から段の枝を、ticket-flow と同じ形で組む：葉は本線から始め、段の枝に入れる取り込み
-    「<葉> merge: 段の枝 <先頭> を取り込む」（1 番目の親＝葉・2 番目＝前の段の枝）。段の設計図のコミット「<葉> docs: 段 段1 の…」"""
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.main = self.r.base
-        self.stage = self.r.base
+    """段の葉は、取り込みの機械（ticket-flow の stageq）が全部の回に渡す入力 leaves（空白区切りの番号）だけで決める。木の形からは推し量らない"""
 
     def g(self, *args: str) -> str:
         return cst.git(self.r.dir, *args)
 
-    def leaf(self, tid: str, py: str | None, text: str = PASS_ONLY, start: str | None = None, merges: tuple = ()) -> str:
-        """葉の枝：start（既定は本線）から、葉の試験のコミット 1 つ（py が tests: の .py）と、merges（(件名の続き, 合わせる版)）の取り込み"""
-        self.g("checkout", "-q", "--detach", start or self.main)
+    def leaf(self, tid: str, py: str | None, text: str = PASS_ONLY) -> str:
         files = {"11_tickets__" + f"{tid}.md": tmd(tid, [f"scripts/ci/{py}"] if py else [])}
         if py:
             files["scripts__ci__" + py] = text
-        self.r.commit(f"{tid} test: 試験", **files)
-        for msg, other in merges:
-            self.g("merge", "-q", "--no-ff", "-m", f"{tid} merge: {msg}", other)
-        return self.g("rev-parse", "HEAD")
+        return self.r.commit(f"{tid} test: 試験", **files)
 
-    def stage_in(self, tid: str, tip: str) -> None:
-        msg = f"{tid} merge: 段の枝 {self.stage[:8]} を取り込む"
-        if subprocess.run(["git", "-C", str(self.r.dir), "merge-base", "--is-ancestor", self.stage, tip]).returncode == 0:
-            self.stage = self.g("commit-tree", f"{tip}^{{tree}}", "-p", tip, "-p", self.stage, "-m", msg)
-        else:
-            self.g("checkout", "-q", "--detach", tip)
-            self.g("merge", "-q", "--no-ff", "-m", msg, self.stage)
-            self.stage = self.g("rev-parse", "HEAD")
+    def full(self, leaves: str | None, base: str | None = None) -> dict:
+        return ci_scope.plan(str(self.r.dir), self.r.base if base is None else base, "HEAD", "full", rules=cst.RULES,
+                             tickets_dir=str(self.r.dir / "11_tickets"), list_tests=no_vitest, db_tests=lambda: [], leaves=leaves)
 
-    def desk(self, tid: str) -> None:
-        self.g("checkout", "-q", "--detach", self.stage)
-        self.stage = self.r.commit(DESK_MSG.format(tid=tid), **{"01_hearing__設計図.md": "x\n"})
-
-    def full(self, base: str | None = None) -> dict:
-        return self.r.plan(scope="full", head=self.stage, base=self.main if base is None else base)
+    def main(self, *extra: str) -> tuple[int, dict]:
+        out, rules = self.r.dir / "gh_output.txt", self.r.dir / "rules.json"
+        rules.write_text(json.dumps(cst.RULES), encoding="utf-8")
+        rc = ci_scope.main(["--repo", str(self.r.dir), "--base", self.r.base, "--head", "HEAD", "--scope", "full", "--rules", str(rules),
+                            "--tickets", str(self.r.dir / "11_tickets"), "--no-vitest", "--github-output", str(out), *extra])
+        return rc, cst.parse_gh_output(out.read_text(encoding="utf-8"))
 
     def two_leaves(self) -> None:
-        self.stage_in("K-1", self.leaf("K-1", "a_test.py", PASS_FAIL))
-        self.stage_in("K-2", self.leaf("K-2", "b_test.py"))
+        self.leaf("K-1", "a_test.py", PASS_FAIL)
+        self.leaf("K-2", "b_test.py")
+        self.leaf("K-9", "c_test.py")   # 木に在るが段の葉ではない（入力に無い）
 
-    def test_K1305_CI_001_full_outputs_stage_leaf_py_tests(self) -> None:
-        """K1305-CI-001 全部の回：段の枝に入れた葉 2 本の tests: の .py だけが py_tests（並べた順）。段の設計図のコミット（件名 K-9 docs）は
-        葉を増やさない（K-9 の tests: の .py は入らない）。全部の回の形は今のまま・outputs の py_tests も同じ"""
-        self.r.commit("K-9 test: 本線の別の葉", **{"scripts__ci__c_test.py": PASS_ONLY, "11_tickets__K-9.md": tmd("K-9", ["scripts/ci/c_test.py"])})
-        self.main = self.stage = self.g("rev-parse", "HEAD")
+    def test_K1305_CI_001_full_outputs_input_leaves_py_tests(self) -> None:
+        """K1305-CI-001 全部の回・入力 leaves「K-1 K-2」：py_tests は K-1・K-2 の tests: の .py（並べた順）。木に在る K-9 の .py は入らない。
+        errors 空・全部の回の形は今のまま・outputs の py_tests も同じ"""
         self.two_leaves()
-        self.desk("K-9")
-        p = self.full()
+        p = self.full("K-1 K-2")
         self.assertEqual(p["mode"], "full")
         self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py", "scripts/ci/b_test.py"])
         self.assertEqual((p["unit_files"], p["unit_shards"], p["errors"]), ([], 6, []))
@@ -120,77 +110,43 @@ class Leaves(cst.Base):
         self.assertEqual(json.loads(out["py_tests"]), ["scripts/ci/a_test.py", "scripts/ci/b_test.py"])
         self.assertEqual(out["full"], "true")
 
-    def test_K1305_CI_002_other_stage_leaves_are_not_leaves(self) -> None:
-        """K1305-CI-002 全部の回：葉 K-2 が、本線に入っていないほかの段の葉 K-5 の上から始まり（K-2 の最初のコミットの親が K-5）、
-        依存の木 K-6 を「本線に入っていない依存の今の先頭を合わせた木」で合わせた → K-5・K-6 の .py は入らず、理由に
-        「段の葉でない（葉の枝の合わせから来た）番号は入れない：K-5・K-6」。段の枝に本線を入れた取り込み（件名 段1 merge）と本線の葉 K-3 も数えない"""
-        k5 = self.leaf("K-5", "e_test.py")
-        k6 = self.leaf("K-6", "f_test.py")
-        self.stage_in("K-1", self.leaf("K-1", "a_test.py"))
-        self.stage_in("K-2", self.leaf("K-2", "b_test.py", start=k5, merges=((f"本線に入っていない依存の今の先頭を合わせた木 {k6[:8]} を取り込む", k6),)))
-        self.g("checkout", "-q", "main")
-        self.r.commit("K-3 test: 本線に入った葉", **{"scripts__ci__c_test.py": PASS_ONLY, "11_tickets__K-3.md": tmd("K-3", ["scripts/ci/c_test.py"])})
-        self.main = self.g("rev-parse", "HEAD")
-        self.g("checkout", "-q", "--detach", self.stage)
-        self.g("merge", "-q", "--no-ff", "-m", f"段1 merge: 段の枝 {self.main[:8]} を取り込む", self.main)
-        self.stage = self.g("rev-parse", "HEAD")
-        p = self.full()
-        self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py", "scripts/ci/b_test.py"])
-        self.assertIn("全部の回の .py の試験：段の葉でない（葉の枝の合わせから来た）番号は入れない：K-5・K-6", p["reasons"])
-        self.assertEqual(p["errors"], [])
-
-    def test_K1305_CI_013_fast_forward_and_stage_merge_in_leaf(self) -> None:
-        """K1305-CI-013 全部の回：段の枝の先頭が早送りで入った葉 K-7 の先頭で、K-7 の筋の中に作る人の合わせ「K-7 merge: 段の枝 i/段1 を取り込む」
-        （2 番目の親＝段の枝）がある → K-7 と、その前に段の枝に入れた K-1・K-2 の .py が全部入る"""
-        self.two_leaves()
-        tip = self.leaf("K-7", "g_test.py", merges=(("段の枝 i/段1 を取り込む", self.stage),))
-        self.stage = tip
-        p = self.full()
-        self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py", "scripts/ci/b_test.py", "scripts/ci/g_test.py"])
-        self.assertFalse(any("入れない" in x or "分からない" in x for x in p["reasons"]), p["reasons"])
-
-    def test_K1305_CI_014_unknown_shape_is_reason(self) -> None:
-        """K1305-CI-014 全部の回：段の枝の先頭が件名に番号の無いコミット → py_tests は空・理由に「段の枝の形が分からない（<sha> …）ので、その先の葉は数えない」・
-        errors は空（止めない）"""
-        self.two_leaves()
-        self.g("checkout", "-q", "--detach", self.stage)
-        self.stage = self.r.commit("番号なしのコミット", **{"README.md": "y\n"})
-        p = self.full()
-        self.assertEqual(p["py_tests"], [])
-        self.assertTrue(any(x.startswith(f"全部の回の .py の試験：段の枝の形が分からない（{self.stage[:10]} 番号なしのコミット）ので、その先の葉は数えない")
-                            for x in p["reasons"]), p["reasons"])
-        self.assertEqual(p["errors"], [])
+    def test_K1305_CI_002_leaves_decide_not_tree_shape(self) -> None:
+        """K1305-CI-002 全部の回・重ねた葉（K-2 を K-5 の上から始めた木）：leaves「K-2」→ K-2 の .py だけ。leaves「K-2 K-5」→ 両方。木の形に依らず入力で決まる"""
+        self.leaf("K-5", "e_test.py")
+        self.leaf("K-2", "b_test.py")
+        self.assertEqual(self.full("K-2")["py_tests"], ["scripts/ci/b_test.py"])
+        self.assertEqual(self.full("K-2 K-5")["py_tests"], ["scripts/ci/b_test.py", "scripts/ci/e_test.py"])
+        self.assertEqual(self.full("K-2 K-5")["errors"], [])
 
     def test_K1305_CI_003_missing_glob_is_reason_not_stop(self) -> None:
-        """K1305-CI-003 全部の回：段の葉 K-2 の tests: の .py が何にも当たらない → K-1 の .py は出る・理由に「K-2 の tests: の … が何にも当たらない」・
-        errors は空で組は全部流れる（出せなかった行は記録に無く照らしで赤）"""
-        self.stage_in("K-1", self.leaf("K-1", "a_test.py"))
-        self.g("checkout", "-q", "--detach", self.main)
+        """K1305-CI-003 全部の回：入力の葉 K-2 の tests: の .py が何にも当たらない → K-1 の .py は出る・理由に「K-2 の tests: の … が何にも当たらない」・
+        errors は空で組は全部流れる（その葉の行だけが記録に無く照らしで赤）"""
+        self.leaf("K-1", "a_test.py")
         self.r.commit("K-2 test: 試験", **{"11_tickets__K-2.md": tmd("K-2", ["scripts/ci/nope_test.py"])})
-        self.stage_in("K-2", self.g("rev-parse", "HEAD"))
-        p = self.full()
+        p = self.full("K-1 K-2")
         self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py"])
         self.assertIn("全部の回の .py の試験：K-2 の tests: の scripts/ci/nope_test.py が何にも当たらない", p["reasons"])
         self.assertEqual(p["errors"], [])
         self.assertEqual(p["jobs"], {"unit": True, "database": True, "web": True})
 
-    def test_K1305_CI_004_full_without_base(self) -> None:
-        """K1305-CI-004 全部の回・比べる元が無い（空・40 桁の 0）→ py_tests は空・理由に「比べる元が無い」・全部の回のまま（止めない）"""
+    def test_K1305_CI_004_leaves_without_base(self) -> None:
+        """K1305-CI-004 全部の回・比べる元が空・40 桁の 0 でも、入力 leaves があれば py_tests が出て errors 空（葉を出すのに base は要らない）"""
         self.two_leaves()
         for base in ("", "0" * 40):
-            p = self.full(base=base)
+            p = self.full("K-1 K-2", base=base)
             self.assertEqual(p["mode"], "full", base)
-            self.assertEqual(p["py_tests"], [], base)
-            self.assertIn("全部の回の .py の試験：比べる元が無いので段の葉を出せない（0 本）", p["reasons"], base)
+            self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py", "scripts/ci/b_test.py"], base)
             self.assertEqual(p["errors"], [], base)
 
     def test_K1305_CI_005_ticket_scope_unchanged(self) -> None:
-        """K1305-CI-005 チケットの回は今と同じ：葉 1 本（K-1）の回は K-1 の tests: の .py だけ・理由に「全部の回」の行が無い。葉 2 本の回は今と同じく止める"""
+        """K1305-CI-005 チケットの回は今と同じで leaves を見ない：葉 1 本（K-1）の回に leaves「K-2」を渡しても K-1 の .py だけ・理由に「全部の回」が無い。
+        葉 2 本の回は今と同じく止める"""
         self.r.commit("K-1 test: 試験", **{"scripts__ci__a_test.py": PASS_FAIL, "11_tickets__K-1.md": tmd("K-1", ["scripts/ci/a_test.py"])})
-        p = self.r.plan(scope="ticket")
+        p = ci_scope.plan(str(self.r.dir), self.r.base, "HEAD", "ticket", rules=cst.RULES, tickets_dir=str(self.r.dir / "11_tickets"),
+                          list_tests=no_vitest, db_tests=lambda: [], leaves="K-2")
         self.assertEqual(p["mode"], "scoped")
         self.assertEqual(p["py_tests"], ["scripts/ci/a_test.py"])
-        self.assertFalse(any("全部の回" in x for x in p["reasons"]), p["reasons"])
+        self.assertFalse(any("全部の回" in x for x in p["reasons"] + p["errors"]), p["reasons"])
         self.r.commit("K-2 test: 試験", **{"scripts__ci__b_test.py": PASS_ONLY, "11_tickets__K-2.md": tmd("K-2", ["scripts/ci/b_test.py"])})
         p2 = self.r.plan(scope="ticket")
         self.assertEqual(p2["py_tests"], [])
@@ -200,8 +156,7 @@ class Leaves(cst.Base):
         """K1305-CI-006 全部の回の py_tests を、CI の段と同じ命令（junit_unittest.py --files-json）に渡す → JUnit に葉の行が pass／fail で出る
         （KX-CI-001 は pass・KX-CI-002 は failure・KY-CI-001 は pass の 3 個）・落ちた行があるので終わりの番号 1"""
         self.two_leaves()
-        out = ci_scope.outputs(self.full())
-        self.g("checkout", "-q", "--detach", self.stage)
+        out = ci_scope.outputs(self.full("K-1 K-2"))
         xml = self.r.dir / "junit" / "spec-py.xml"
         run = subprocess.run([sys.executable, str(HERE / "junit_unittest.py"), "--out", str(xml), "--files-json", out["py_tests"]],
                              cwd=self.r.dir, capture_output=True, text=True)
@@ -214,6 +169,37 @@ class Leaves(cst.Base):
                     by_row[row] = "failure" if c.find("failure") is not None or c.find("error") is not None else "pass"
         self.assertEqual(by_row, {"KX_CI_001": "pass", "KX_CI_002": "failure", "KY_CI_001": "pass"}, list(cases))
         self.assertEqual(len(cases), 3)
+
+    def test_K1305_CI_013_bad_words_stop(self) -> None:
+        """K1305-CI-013 全部の回・入力 leaves に葉の番号（K-<数字>）の形でない語（"K-1;x"・"k-1"）→ errors「入力 leaves の「<語>」が葉の番号（K-<数字>）でない」。
+        台本（main）は終わりの番号 1・outputs の full・unit・database・web が false（組を流さない）"""
+        self.two_leaves()
+        for w in ("K-1;x", "k-1"):
+            p = self.full(f"K-2 {w}")
+            self.assertIn(f"全部の回の .py の試験：入力 leaves の「{w}」が葉の番号（K-<数字>）でない", p["errors"], w)
+            rc, kv = self.main("--leaves", f"K-2 {w}")
+            self.assertEqual(rc, 1, w)
+            self.assertEqual((kv["full"], kv["unit"], kv["database"], kv["web"]), ("false", "false", "false", "false"), w)
+
+    def test_K1305_CI_014_no_leaves_stop(self) -> None:
+        """K1305-CI-014 全部の回・入力 leaves が空・空白だけ・無い（main に --leaves を渡さない）→ errors に止める文（NO_LEAVES）・
+        台本は終わりの番号 1・outputs の full・unit・database・web が false"""
+        self.two_leaves()
+        for leaves in (None, "", "  "):
+            self.assertIn(NO_LEAVES, self.full(leaves)["errors"], repr(leaves))
+        for extra in ((), ("--leaves", "")):
+            rc, kv = self.main(*extra)
+            self.assertEqual(rc, 1, extra)
+            self.assertEqual((kv["full"], kv["unit"], kv["database"], kv["web"]), ("false", "false", "false", "false"), extra)
+            self.assertIn(NO_LEAVES, json.loads(kv["reasons"]), extra)
+        rc, kv = self.main("--leaves", "K-1 K-2")
+        self.assertEqual((rc, kv["full"]), (0, "true"))
+
+    def test_K1305_CI_017_leaf_md_missing_stops(self) -> None:
+        """K1305-CI-017 全部の回・入力 leaves の葉 K-7 のチケットの md が木に無い → errors「入力 leaves の葉 K-7 のチケットの md が無い」・台本は終わりの番号 1"""
+        self.two_leaves()
+        self.assertIn("全部の回の .py の試験：入力 leaves の葉 K-7 のチケットの md が無い", self.full("K-1 K-7")["errors"])
+        self.assertEqual(self.main("--leaves", "K-1 K-7")[0], 1)
 
 
 class Workflow(unittest.TestCase):
@@ -235,6 +221,26 @@ class Workflow(unittest.TestCase):
         up = [x for x in st if "upload-artifact" in str(x.get("uses", "")) and (x.get("with") or {}).get("path") == "junit/"]
         self.assertEqual(len(up), 1)
         self.assertEqual(up[0].get("if"), "always()")
+
+    def test_K1305_CI_018_leaves_input_wired(self) -> None:
+        """K1305-CI-018 入力 leaves のつなぎ：workflow_dispatch の inputs に leaves（type string・default ''）。ci_scope.py --github-output を流す段は
+        static・spec・spec-2・spec-3 の 4 つで、どれも env に CI_LEAVES_INPUT: ${{ inputs.leaves }}・run に --leaves "$CI_LEAVES_INPUT"・run の文字に
+        ${{ を入れない。作り手 05_flow/build_testplan.py に leaves。ticket-flow.yaml の ci.inputs に leaves: leaves"""
+        on = WF.get("on", WF.get(True))
+        inp = on["workflow_dispatch"]["inputs"]["leaves"]
+        self.assertEqual((inp.get("type"), inp.get("default")), ("string", ""))
+        found = []
+        for job, body in WF["jobs"].items():
+            for st in body.get("steps", []):
+                if "scripts/ci/ci_scope.py" in st.get("run", "") and "--github-output" in st.get("run", ""):
+                    found.append(job)
+                    self.assertEqual(str((st.get("env") or {}).get("CI_LEAVES_INPUT", "")).replace(" ", ""), "${{inputs.leaves}}", job)
+                    self.assertIn('--leaves "$CI_LEAVES_INPUT"', st["run"], job)
+                    self.assertNotIn("${{", st["run"], job)
+        self.assertEqual(sorted(found), ["spec", "spec-2", "spec-3", "static"])
+        self.assertIn("leaves", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
+        cfg = yaml.safe_load((ROOT / "ticket-flow.yaml").read_text(encoding="utf-8"))
+        self.assertEqual(cfg["ci"]["inputs"].get("leaves"), "leaves")
 
     def test_K1305_CI_012_wired(self) -> None:
         """K1305-CI-012 CI へのつなぎ：scripts/ci/g65.d/K-1305.txt がこの試験の命令 1 行で、CI の定義の G65 の段に在る"""
@@ -331,7 +337,7 @@ class PriorRefs(unittest.TestCase):
     def test_K1305_CI_015_table_sha_differs_from_declared(self) -> None:
         """K1305-CI-015 commit_problems：表の sha が宣言の sha と違い、取り出した木の履歴（HEAD の先祖）にも無い → 赤
         「K-64（着手前）：a.txt:1@<sha> の sha が宣言（枝 k64-make の <宣言の sha>）と違う（取り出した木の履歴にも無い）」。
-        違っても HEAD の先祖（本線の版）なら空（緑）"""
+        違っても HEAD の先祖（本線の版）なら空（緑）。宣言と違う sha が git に無いときも違う方の文（git push の文は出さない）"""
         with tempfile.TemporaryDirectory() as d:
             repo = pathlib.Path(d)
             run_git(repo, "init", "-q", "-b", "main")
@@ -352,6 +358,10 @@ class PriorRefs(unittest.TestCase):
             self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{other}"], decl),
                              [f"K-64（着手前）：a.txt:1@{other} の sha が宣言（枝 k64-make の {dsha}）と違う（取り出した木の履歴にも無い）"])
             self.assertEqual(prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{old}", f"a.txt:2@{dsha}"], decl), [])
+            gone = "deadbeef"   # 宣言と違い、しかも git に無い：違う方の文（宣言の枝を上げても直らないので git push の文は出さない）
+            got = prior_refs.commit_problems(repo, "K-64", [f"a.txt:1@{gone}"], decl)
+            self.assertEqual(got, [f"K-64（着手前）：a.txt:1@{gone} の sha が宣言（枝 k64-make の {dsha}）と違う（取り出した木の履歴にも無い）"])
+            self.assertNotIn("git push", got[0])
 
     def test_K1305_CI_016_remote_tip_not_local(self) -> None:
         """K1305-CI-016 check --remote：置き場の枝の先頭が手元に無い（置き場に手元より新しいコミットがある）→ exit 1・
