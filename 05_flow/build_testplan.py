@@ -177,12 +177,12 @@ UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が�
               '[ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }\n'
               f"python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report {UNIT_DIR}/merged.json\n")
 SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
-              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
-              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n          CI_LEAVES_INPUT: ${{ inputs.leaves }}\n"
+              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 # spec の段が自分で出す本線との分かれ目（static を待たないため。入力は static の G0 と同じ・値は env で渡す・K-143）
 SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"\n        id: scope\n'
-                   "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
-                   '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+                   "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n          CI_LEAVES_INPUT: ${{ inputs.leaves }}\n"
+                   '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base", "gates", "py_tests",
                                           "web_g48", "web_g59", "web_gates", "web_tasks"))
@@ -301,7 +301,11 @@ on:
         type: string
         default: ''
       base:
-        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        description: "比べる元（40 桁のコミット。チケットの回の範囲と、全部の回の migration の lint に使う）"
+        type: string
+        default: ''
+      leaves:
+        description: "段の葉の番号（空白区切り）。scope=full のとき ticket-flow の stageq が渡す。無い全部の回は止める（K-1305）"
         type: string
         default: ''
       target:

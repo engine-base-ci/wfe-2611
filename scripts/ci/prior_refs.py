@@ -62,12 +62,13 @@ def commit_problems(root: Path, tid: str, locs: list[str], decl: dict[str, tuple
             bad.append(f"{tid}：ファイル:行@sha の形でない：{loc}")
             continue
         path, line, sha = m.group(1), int(m.group(2)), m.group(3)
-        if _git(root, "cat-file", "-e", f"{sha}^{{commit}}").returncode != 0:
-            bad.append(missing_message(tid, sha, branch))
-            continue
         same = sha.startswith(dsha) or dsha.startswith(sha)
         if not same and _git(root, "merge-base", "--is-ancestor", sha, "HEAD").returncode != 0:
+            # 宣言と違う sha：git に無くても、宣言の枝を上げて直る物でないので git push の文は出さない
             bad.append(f"{tid}（着手前）：{loc} の sha が宣言（枝 {branch} の {dsha}）と違う（取り出した木の履歴にも無い）")
+            continue
+        if _git(root, "cat-file", "-e", f"{sha}^{{commit}}").returncode != 0:
+            bad.append(missing_message(tid, sha, branch))
             continue
         body = _git(root, "show", f"{sha}:{path}")
         if body.returncode != 0:

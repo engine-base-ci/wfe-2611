@@ -18,7 +18,11 @@ on:
         type: string
         default: ''
       base:
-        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        description: "比べる元（40 桁のコミット。チケットの回の範囲と、全部の回の migration の lint に使う）"
+        type: string
+        default: ''
+      leaves:
+        description: "段の葉の番号（空白区切り）。scope=full のとき ticket-flow の stageq が渡す。無い全部の回は止める（K-1305）"
         type: string
         default: ''
       target:
@@ -72,7 +76,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G1 lint"
         if: ${{ !cancelled() }}
         run: pnpm lint
@@ -560,7 +565,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "チケットの Python の試験（tests: の .py を JUnit に・K-172）"
         if: ${{ !cancelled() }}
         env:
@@ -704,7 +710,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G56 取り込む順（depends_on の実装が先に枝にある・K-94）"
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',56,')) }}
         env:
@@ -745,7 +752,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G67 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214）"
         if: ${{ !cancelled() }}
         env:
