@@ -23,6 +23,9 @@ const world = async (label: string): Promise<World> => {
   const co = await h.company(label);
   const g1 = await h.group(co.tenantId, co.rootScope, "営業");
   const g2 = await h.group(co.tenantId, co.rootScope, "受託開発");
+  // チケットの番号はグループごとの続き番号＋頭の字で、会社の中で一意（0071・tickets の unique (tenant_id, number)）。
+  //   頭の字の無いグループは両方 T- になり、2 つのグループにチケットを作ると番号が重なるので、グループごとに頭の字を付ける
+  await h.admin.query("update scopes set ticket_prefix = case id when $1 then 'EG' else 'JD' end where id in ($1, $2)", [g1, g2]);
   return {
     co,
     g1,
@@ -290,7 +293,7 @@ describe("K-699 必ず守るのページを確認項目に入れる", () => {
     const w = await world("k699-008");
     await withPc(w, w.mem1);
     const t = await mkTicket(w, w.g1, w.mem1);
-    await pub(w.co.rootScope, w.boss, "あ".repeat(200), "x", { must: true });
+    await pub(w.co.rootScope, w.boss, "あ".repeat(200), "x", { must: true, summary: "長い題名のページ" }); // 説明は 200 字まで（knowledge_pages_summary_len）
     expect((await delegate(w.mem1, t)).ok).toBe(true);
     const title = (await live(t))[0]!.title;
     expect([...title].length).toBeLessThanOrEqual(200);
