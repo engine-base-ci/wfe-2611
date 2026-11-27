@@ -5,7 +5,6 @@ import type { Person } from "../fixture.js";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import {
   setupApproveComplete,
-  SKIPPED,
   CONF_STAGE,
   CONF_TODO_CHANGED,
   CONF_ALREADY,
@@ -58,8 +57,8 @@ describe("K-63 承認して完了する：完了（口・本物の DB）", () =>
     const r = await complete(boss, t.id, await completeBody(t));
     expect(r.status, await r.clone().text()).toBe(201);
     const data = (await json(r)).data as Record<string, unknown>;
-    expect(data["knowledge_candidates"]).toEqual([]);
-    expect(data["skipped_reason"]).toBe(SKIPPED);
+    expect(data["knowledge_candidates"]).toBeUndefined(); // K-766：ナレッジの候補は出さない（D-153.15）
+    expect(data["skipped_reason"]).toBeUndefined();
     expect(data["ticket"]).toMatchObject({ id: t.id, number: t.number, stage_key: "done", completed_by: boss.id });
     expect(await stageKeyOf(t.id)).toBe("done");
     const row = await one<{ completed_at: string | null; completed_by: string | null }>(
