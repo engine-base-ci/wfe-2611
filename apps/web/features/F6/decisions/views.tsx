@@ -5,7 +5,7 @@
 //   ⑱ 決めた人は既定が本人・ほかの人とひとことを選べる／⑲ 担当者と承認する人に知らせ、やり取りにも 1 行／⑳ 作るときに書いた字は上に残し、下に一覧
 //   取引先のルールにする（段 12）は押せない形（D-145.9）
 import type { ReactNode } from "react";
-import { Button, Callout, Confirm, Dialog, Select, TextArea, TextField } from "@/components/k";
+import { Button, Callout, Confirm, Dialog, Radio, RadioGroup, Select, TextArea, TextField } from "@/components/k";
 import "./decisions.css";
 
 export interface DecisionView {
@@ -140,15 +140,12 @@ export function DecisionDialog({
       <Select label="決めた人" name="decided_by" options={PEOPLE} defaultValue={by} />
       <TextField label="ひとこと" name="decided_note" defaultValue={byNote} placeholder="例：先方と合意" />
       <TextField label="理由" name="decision_reason" defaultValue={reason} />
-      <fieldset className="k-dec-scope">
-        <legend>どこまで効かせる</legend>
-        <label>
-          <input type="radio" name="decision_scope" defaultChecked /> このチケットだけ
-        </label>
-        <label aria-disabled="true" title="取引先の画面ができてから使えます">
-          <input type="radio" name="decision_scope" disabled /> 取引先のこれから（取引先のルールにする）
-        </label>
-      </fieldset>
+      <RadioGroup className="k-dec-scope" legend="どこまで効かせる" name="decision_scope" defaultValue="ticket">
+        <Radio value="ticket">このチケットだけ</Radio>
+        <Radio value="client" disabled title="取引先の画面ができてから使えます">
+          取引先のこれから（取引先のルールにする）
+        </Radio>
+      </RadioGroup>
       {from ? (
         <div className="k-dec-inert" aria-disabled="true">
           本文と食い違う所を AI が見つけて、直す案を出す（まだ使えません）

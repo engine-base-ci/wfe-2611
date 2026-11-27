@@ -23927,7 +23927,9 @@
     "apps/web/tests/_lib/choice-align.d.mts"
    ],
    "carry": [
-    "apps/web/tests/k/k256-verify-consent.spec.ts"
+    "apps/web/tests/k/k256-verify-consent.spec.ts",
+    "apps/web/tests/_lib/choice-align.mjs",
+    "apps/web/tests/_lib/choice-align.d.mts"
    ],
    "depends_on": [],
    "acts": [],

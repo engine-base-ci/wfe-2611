@@ -204,8 +204,11 @@ test("K256-UI-006 同意のチェック：label（13px）がチェックを包�
   const b = (await box.boundingBox())!;
   const t = await label.evaluate((e) => {
     const r = document.createRange();
-    const text = [...e.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim())!;
-    r.selectNodeContents(text);
+    // 字は label の中の最初の見えている字（K-642 の部品では字の span の中・直の子とは限らない）
+    const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    let text = walker.nextNode();
+    while (text && !text.textContent?.trim()) text = walker.nextNode();
+    r.selectNodeContents(text!);
     return r.getBoundingClientRect().left;
   });
   expect(Math.abs(t - (b.x + b.width) - 11), `見える間 ${t - (b.x + b.width)}`).toBeLessThanOrEqual(1);
