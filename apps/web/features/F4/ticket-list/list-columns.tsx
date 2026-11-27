@@ -92,9 +92,20 @@ export function useColumns(): Columns {
   return { visible, toggle, reset };
 }
 
-/** 表示設定（ボタンと、すぐ下に開く見え方の箱）。箱の中は「表に出す列」と、画面ごとの項目（extra）。
- *  Esc・押し直し・箱の外を押すと閉じ、閉じたらボタンに戻る。箱の位置の基準はボタンを包む要素（キャンバス MnView） */
-export function ColumnSettings({ columns, title, extra }: { columns: Columns; title: string; extra?: ReactNode }) {
+export interface ColumnSettingsProps {
+  columns: Columns;
+  title: string;
+  /** 画面ごとの項目（「表に出す列」の前に置く・自分に関わるものの見え方） */
+  extra?: ReactNode;
+  /** 画面ごとの項目（「表に出す列」の後に置く・一覧の見え方） */
+  after?: ReactNode;
+  /** 「はじめに戻す」で列のほかに戻すもの（自分に関わるものの見え方） */
+  onReset?: () => void;
+}
+
+/** 表示設定（ボタンと、すぐ下に開く見え方の箱）。箱の中は「表に出す列」と、画面ごとの項目（extra・after）。箱は 1 つで「はじめに戻す」も 1 つ。
+ *  Esc・押し直し・箱の外を押すと閉じ、閉じたらボタンに戻る。箱の位置の基準はボタンを包む要素（キャンバス MnView・F7 の .k-f7-saved-pop と同じ値） */
+export function ColumnSettings({ columns, title, extra, after, onReset }: ColumnSettingsProps) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const btn = useRef<HTMLButtonElement>(null);
@@ -133,10 +144,17 @@ export function ColumnSettings({ columns, title, extra }: { columns: Columns; ti
         表示設定
       </button>
       {open ? (
-        <div ref={box} id={id} className="k-list-columns" role="dialog" aria-label={title}>
+        <div ref={box} id={id} className="k-list-columns k-f7-saved-pop" role="dialog" aria-label={title}>
           <div className="k-list-columns-head">
             <b>{title}</b>
-            <button type="button" className="k-list-text-btn" onClick={columns.reset}>
+            <button
+              type="button"
+              className="k-list-text-btn"
+              onClick={() => {
+                columns.reset();
+                onReset?.();
+              }}
+            >
               はじめに戻す
             </button>
           </div>
@@ -159,6 +177,7 @@ export function ColumnSettings({ columns, title, extra }: { columns: Columns; ti
               ))}
             </ul>
           </div>
+          {after}
           <p className="k-list-columns-note">自分だけの見え方。このブラウザに覚える（番号と題名は外せない）</p>
         </div>
       ) : null}

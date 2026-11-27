@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Page, Request, Route } from "@playwright/test";
 import { expect, row, rowsOf, type SpecRow } from "../../_lib/row";
+import { shellData } from "../../k/shell-answer";
 
 export const SPEC = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -333,6 +334,11 @@ export async function mockApi(
     else if (post && p === "/api/v1/auth/step-up") {
       m.stepUps.push(req.postDataJSON() as Record<string, unknown>);
       reply = await m.on.stepUp(req);
+    } else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）。承認待ちの数は承認待ちの口の答えの数（役・名前は下の /me と同じ）
+      const q = await m.on.queue(req);
+      const total = Number((q.body as { meta?: { counts?: { total?: number } } }).meta?.counts?.total ?? 0);
+      reply = { status: 200, body: { data: shellData({ approvals: total }), meta: {} } };
     } else if (/\/me$/.test(p))
       // 役は role_id で読む（分からない役は外枠が項目を出さない・K-138）
       reply = {

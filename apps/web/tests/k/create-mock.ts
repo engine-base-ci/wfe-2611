@@ -2,6 +2,7 @@
 //   本人の Bridge（127.0.0.1:38617）に届かせない（網の手前で 404）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, type Page, type Request, type Route } from "@playwright/test";
+import { shellData } from "./shell-answer";
 
 export const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 export const ME = "11111111-0000-4000-8000-000000000001";
@@ -156,6 +157,9 @@ export async function mockCreate(page: Page, o: Partial<CreateMock> = {}): Promi
       };
     else if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
+    else if (p === "/api/v1/shell")
+      // 外枠は getShell 1 本（K-466）。作る面は営業が書ける
+      r = ok(shellData({ groups: [{ id: SCOPE, name: "営業", ticket_prefix: "EG", writable: true, open_count: 0 }] }));
     else if (p === "/api/v1/scopes")
       r = ok([{ id: SCOPE, name: "営業", tenant_id: WS, ticket_prefix: "EG" }], { limit: 200, writable: [SCOPE] });
     // 会社の項目のマスタは種別の口の答えの各種別の fields に入って来る（X6・K-560。作る面は listTicketFields を呼ばない）
