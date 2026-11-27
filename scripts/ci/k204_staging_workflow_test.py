@@ -26,6 +26,8 @@ CA_SHA256 = "80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5
 RUN = r"pnpm (-s )?e2e:staging\b"
 PERF = r"scripts/ci/staging_perf\.py"     # staging の速さの段（K-237）。住所の 2 つだけを持つ
 URL_NAMES = ["STAGING_BASE_URL", "STAGING_API_BASE"]
+# staging の試験だけの運営の人のパスキー（K-1101 の人の準備・K-1102）。渡すのは統合テストの段だけ（健康診断・速さの段には渡さない）
+OPS_PASSKEY_NAMES = ["STAGING_OPS_PASSKEY_ID", "STAGING_OPS_PASSKEY_KEY", "STAGING_OPS_PASSKEY_USER"]
 
 
 def text(name: str = "staging-e2e.yml") -> str:
@@ -85,8 +87,16 @@ class StagingWorkflow(unittest.TestCase):
                 self.assertEqual(sorted(env), sorted(URL_NAMES), "速さの段の env は住所の 2 つだけ")
             for name in URL_NAMES if i in perf else NAMES:
                 self.assertEqual(str(env.get(name, "")).replace(" ", ""), "${{secrets.%s}}" % name, f"{name} は同じ名前の secrets から")
+            ops = [n for n in OPS_PASSKEY_NAMES if n in env]
+            if i in find(RUN):  # 統合テストの段だけが運営のパスキーの 3 つも渡す（K-1102）
+                self.assertEqual(ops, OPS_PASSKEY_NAMES, "統合テストの段は運営のパスキーの 3 つを渡す")
+                for name in OPS_PASSKEY_NAMES:
+                    self.assertEqual(str(env.get(name, "")).replace(" ", ""), "${{secrets.%s}}" % name, f"{name} は同じ名前の secrets から")
+            else:
+                self.assertEqual(ops, [], "運営のパスキーは統合テストの段のほかに渡さない")
             self.assertNotIn("secrets", str(steps()[i].get("run", "")) + json.dumps(steps()[i].get("with") or {}), "secrets は env だけに書く")
-        self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text()))), sorted(NAMES), "読む secrets はこの 4 つだけ")
+        self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text()))), sorted(NAMES + OPS_PASSKEY_NAMES),
+                         "読む secrets はこの 7 つだけ（staging の 4 つと運営のパスキーの 3 つ）")
         self.assertNotRegex(text(), r"toJSON\(\s*secrets|secrets\s*\[|secrets:\s*inherit", "secrets をまとめて渡す・名前を作って読む形")
         self.assertNotRegex(text(), r"https?://[a-z0-9-]+\.(vercel\.app|supabase\.co)", "staging の住所を定義に書かない")
 

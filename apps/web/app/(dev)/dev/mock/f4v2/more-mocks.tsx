@@ -149,7 +149,12 @@ export function renderMore(id: string, theme: Theme): ReactNode | null {
     case "f4v2-spec-edit":
       return detail({ theme, open: true, panel: SPEC_EDIT_PANEL });
     case "f4v2-spec-add-error":
-      return detail({ theme, open: true, dialog: <SpecAddErrorDialog /> });
+      return detail({
+        theme,
+        open: true,
+        dialog: <SpecAddErrorDialog />,
+        panel: { specsSlot: <SpecsItemV3 mode="detail" lines={SPEC_DETAIL} compact /> },
+      });
     case "f4v2-detail-more":
       return detail({
         theme,

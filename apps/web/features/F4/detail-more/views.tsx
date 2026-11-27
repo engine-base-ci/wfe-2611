@@ -34,18 +34,21 @@ export interface MoreMenuProps {
   defaultOpen?: boolean;
   onDuplicate?: () => void;
   onVersions?: () => void;
+  /** 「消す」（段 8 の K-590 が渡す・K-458 が口を足した）。無ければ押せない形のまま */
+  onDelete?: () => void;
 }
 
 function Row({ item, handlers }: { item: Item; handlers: Record<string, (() => void) | undefined> }) {
+  const onSelect = handlers[item.key];
   const body = (
     <span className="k-f4-more-main">
       <span className={item.danger ? "k-f4-more-danger" : undefined}>{item.label}</span>
       {item.sub ? <small>{item.sub}</small> : null}
     </span>
   );
-  if (item.usable) {
+  if (item.usable || (item.key === "delete" && onSelect)) {
     return (
-      <MenuItem className="k-f4-more-item" onSelect={handlers[item.key]}>
+      <MenuItem className="k-f4-more-item" onSelect={onSelect}>
         {body}
       </MenuItem>
     );
@@ -58,8 +61,8 @@ function Row({ item, handlers }: { item: Item; handlers: Record<string, (() => v
 }
 
 /** 詳細の頭の「…」と、開いた一覧 */
-export function MoreMenu({ defaultOpen = false, onDuplicate, onVersions }: MoreMenuProps) {
-  const handlers = { duplicate: onDuplicate, versions: onVersions };
+export function MoreMenu({ defaultOpen = false, onDuplicate, onVersions, onDelete }: MoreMenuProps) {
+  const handlers = { duplicate: onDuplicate, versions: onVersions, delete: onDelete };
   return (
     <Menu defaultOpen={defaultOpen}>
       <MenuTrigger label="ほかの操作" className="k-f4-more-btn">

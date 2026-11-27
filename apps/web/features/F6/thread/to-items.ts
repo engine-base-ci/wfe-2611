@@ -1,6 +1,7 @@
 // 口の答え（やり取りの 1 行）を、部品 views.tsx が描く値に直す（K-392）。純粋な関数。時刻は日本時間に直す（ブラウザの時間帯に依らない）。
 //   答えの形の正は口の葉 K-383（listTicketTimeline）。名前は、書き込みの頭だけ正式な名前、ほかは呼ばれ方（無ければ正式な名前）。
 import { createElement as h, Fragment, type ReactNode } from "react";
+import { stage5ChangeText, type ChangeCtx } from "@/features/F4/thread-lines/change-text";
 import { Mention, type Person, type PostView, type ThreadItem, type Tone } from "./views";
 
 export interface Who {
@@ -139,8 +140,15 @@ const DECISION_NOTE: Record<string, string> = {
   cancel: "決定を取り消した",
 };
 
-/** 変更だけの行の文（名前は頭に 1 回・欄ごとの字を「・」でつなぐ。口の葉 K-387・K-388・K-390・K-391 が書く changes の形） */
-function changeParts(changes: readonly ChangeView[]): ReactNode[] {
+/** どの規則にも当たらない欄の見せる名前が無いときの字（欄の鍵は出さない・K-574） */
+const UNKNOWN_FIELD = "項目";
+
+/** 段 5 の欄の名前の引き先が無いとき（会社の項目は「会社の項目」の字になる） */
+const NO_CTX: ChangeCtx = { fieldName: () => null };
+
+/** 変更だけの行の文（名前は頭に 1 回・欄ごとの字を「・」でつなぐ。口の葉 K-387・K-388・K-390・K-391 が書く changes の形）。
+ *  段 5 の欄（確認項目・本文・会社の項目・固定の欄・項目を戻した）は K-574 の表が先に字を作り、当たらない欄だけ段 7 の字にする */
+function changeParts(changes: readonly ChangeView[], ctx: ChangeCtx): ReactNode[] {
   const by = new Map(changes.map((c) => [c.field, c]));
   const reason = by.get("hold_reason");
   const resume = by.get("resume_condition");
@@ -152,6 +160,11 @@ function changeParts(changes: readonly ChangeView[]): ReactNode[] {
   const parts: ReactNode[] = [];
   let holdDone = false;
   for (const c of changes) {
+    const stage5 = stage5ChangeText(c, ctx);
+    if (stage5 !== null) {
+      parts.push(stage5);
+      continue;
+    }
     if (c.field === STAGE_FIELD) {
       if (c.note === "開き直した") parts.push("開き直した");
       else if (holdAbsorbed) parts.push(`保留にした（${detail}）`);
@@ -164,7 +177,7 @@ function changeParts(changes: readonly ChangeView[]): ReactNode[] {
       parts.push(c.to === null ? "実績を空にした" : `実績を ${c.to} に変えた`);
     } else if (c.field === "decision") {
       parts.push(DECISION_NOTE[c.note ?? ""] ?? "決定を変えた");
-    } else parts.push(`${c.field}を変えた`);
+    } else parts.push(`${ctx.fieldName(c.field) ?? UNKNOWN_FIELD}を変更しました`); // 欄の鍵は画面に出さない（answer=b810843ec17b・K-574）
   }
   return parts;
 }
@@ -206,7 +219,7 @@ function postOf(it: TimelineItem, m: MessageView): PostView {
   };
 }
 
-function itemOf(it: TimelineItem, openRun?: (runId: string) => void): ThreadItem | null {
+function itemOf(it: TimelineItem, ctx: ChangeCtx, openRun?: (runId: string) => void): ThreadItem | null {
   const time = hhmm(it.at);
   switch (it.kind) {
     case "post":
@@ -221,7 +234,7 @@ function itemOf(it: TimelineItem, openRun?: (runId: string) => void): ThreadItem
           null,
           h("b", null, who ? callOf(who) : "AI"),
           " が",
-          joinParts(changeParts(it.changes ?? [])),
+          joinParts(changeParts(it.changes ?? [], ctx)),
         ),
         time,
       };
@@ -262,12 +275,17 @@ function itemOf(it: TimelineItem, openRun?: (runId: string) => void): ThreadItem
   }
 }
 
-/** 答え（古い順）を、日付の区切りを入れた並びに直す（古い順のまま。並びの逆は部品が持つ） */
-export function toItems(items: readonly TimelineItem[], openRun?: (runId: string) => void): ThreadItem[] {
+/** 答え（古い順）を、日付の区切りを入れた並びに直す（古い順のまま。並びの逆は部品が持つ）。
+ *  ctx は会社の項目の名前の引き先（詳細の答えの fields から makeChangeCtx で作る・K-574） */
+export function toItems(
+  items: readonly TimelineItem[],
+  openRun?: (runId: string) => void,
+  ctx: ChangeCtx = NO_CTX,
+): ThreadItem[] {
   const out: ThreadItem[] = [];
   let lastDay = "";
   for (const it of items) {
-    const row = itemOf(it, openRun);
+    const row = itemOf(it, ctx, openRun);
     if (!row) continue;
     const day = dayKey(it.at);
     if (day !== lastDay) {

@@ -218,7 +218,7 @@ const notice = (page: Page) => page.locator('.k-detail-bands [role="alert"]');
 const itemTexts = async (page: Page) =>
   (await page.getByRole("menuitem").allTextContents()).map((t) => t.replace(/\s+/g, ""));
 const openAttr = async (page: Page) => {
-  await panel(page).getByRole("navigation", { name: "パネルのタブ" }).getByRole("button", { name: "属性" }).click();
+  await panel(page).getByRole("navigation", { name: "パネルのタブ" }).getByRole("button", { name: "項目" }).click();
   await expect(actual(page)).toBeVisible();
 };
 /** 段のメニューを開いて選ぶ。todo・doing・hold は札の鍵で、ほかは訳の字で引く */
@@ -418,7 +418,7 @@ test('K395-UI-004 作業中で札を押す：項目は 未着手・作業中 ✓
   expect(p.patches).toEqual([{ stage_key: "todo" }]);
 });
 
-test("K395-UI-005 作業中で「完了 確かめて完了にする…」→ 今の完了の小窓（対象の行つき）で確かめて完了：updateTicket は呼ばず completeTicket が 1 回、札は「完了」・題名の下に「完了しました（…）」", async ({
+test("K395-UI-005 作業中で「完了 確かめて完了にする…」→ 完了の流れ（K-572）：本文に未チェックが残るので小窓「完了にする」（対象の行つき・未チェックの注意）が開き、「このまま完了にする」で完了：updateTicket は呼ばず completeTicket が 1 回、札は「完了」・題名の下に「完了しました（…）」", async ({
   page,
 }) => {
   const p = await progressApi(page, { stage: "doing" });
@@ -427,8 +427,8 @@ test("K395-UI-005 作業中で「完了 確かめて完了にする…」→ 今
   const dlg = page.getByRole("dialog", { name: "完了にする" });
   await expect(dlg).toBeVisible();
   await expect(dlg.locator(".k-dialog-target")).toHaveText("EG-133 11 月分の請求書を送る");
-  for (const box of await dlg.getByRole("checkbox").all()) await box.check();
-  await dlg.getByRole("button", { name: "確かめて完了にする" }).click();
+  await expect(dlg).toContainText("本文に、チェックのないやることが 2 つ残っています");
+  await dlg.getByRole("button", { name: "このまま完了にする" }).click();
   await expect(stagePart(page)).toHaveText("完了");
   await expect(page.locator(".k-detail-bands")).toContainText("完了しました（");
   expect(p.m.completes).toHaveLength(1);
@@ -822,7 +822,7 @@ test("K395-UI-022 手順 S1 の失敗 401：/login?next=%2Ftickets%2F<id> へ", 
   await expect(page).toHaveURL(new RegExp(`/login\\?next=%2Ftickets%2F${TICKET}$`));
 });
 
-test("K395-UI-023 手順 S4 の失敗：完了の小窓で 409（E-CONF-019・その間に保留にされた）→ 小窓は閉じ、知らせに正本の文・読み直すと札は「保留」", async ({
+test("K395-UI-023 手順 S4 の失敗：完了の小窓（K-572 の流れ）の「このまま完了にする」で 409（E-CONF-019・その間に保留にされた）→ 小窓は閉じ、知らせに正本の文・読み直すと札は「保留」", async ({
   page,
 }) => {
   const p = await progressApi(page, { stage: "doing" });
@@ -830,10 +830,9 @@ test("K395-UI-023 手順 S4 の失敗：完了の小窓で 409（E-CONF-019・�
   await pickStage(page, "確かめて完了にする");
   const dlg = page.getByRole("dialog", { name: "完了にする" });
   await expect(dlg).toBeVisible();
-  for (const box of await dlg.getByRole("checkbox").all()) await box.check();
   p.m.on.complete = () => ({ status: 409, body: { error: "conflict", code: "E-CONF-019", message: MSG.onlyDoing } });
   p.s = { stage: "hold" };
-  await dlg.getByRole("button", { name: "確かめて完了にする" }).click();
+  await dlg.getByRole("button", { name: "このまま完了にする" }).click();
   await expect(dlg).toHaveCount(0);
   await expect(page.getByText(MSG.onlyDoing).first()).toBeVisible();
   await expect(stagePart(page)).toHaveText("保留");

@@ -226,6 +226,11 @@ describe("値段の案（D-128.72）", () => {
     const m1 = await one("insert into ops_members (tenant_id) values ($1) returning id", [S.opsTenant]).catch(
       () => S.opsId,
     );
+    // 1 つのプランに開いた案は 1 つ（K-988 の部分の一意の索引）。案は消せないので、前の回の開いた案は消した印にしてから足す
+    await admin.query(
+      "update ops_plan_proposals set deleted_at = now() where plan_id = $1 and state in ('draft', 'waiting') and deleted_at is null",
+      [plan],
+    );
     const p1 = await one(
       "insert into ops_plan_proposals (tenant_id, plan_id, reason, proposed_by) values ($1, $2, '原価が上がった', $3) returning id",
       [S.opsTenant, plan, m1],

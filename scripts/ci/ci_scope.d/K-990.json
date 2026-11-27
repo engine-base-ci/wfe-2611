@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F12/ops/plans/decide.ts", "apps/api/src/hooks/ops-plans-decide.ts", "packages/db/migrations/20261128013000_ops_plans_decide.sql"],
+   "tests": ["apps/api/test/features/F12/ops-plans-decide.test.ts", "apps/api/test/features/F12/ops-plans-read.test.ts", "apps/api/test/features/F12/ops-plans-write.test.ts"]},
+  {"paths": ["05_flow/screen_api.d/K-990.py", "scripts/ci/contract_shape.d/K-990.py"],
+   "tests": ["apps/api/test/features/F12/ops-plans-decide.test.ts"]}
+ ]
+}

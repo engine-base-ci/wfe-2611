@@ -2,8 +2,8 @@
 // 子チケット・つながりの見た目（段 5・K-452・キャンバス TdLink。枝 c/段5 の下絵・部品先行）。口とはまだつながず、値と押したときの関数を props で受けて描くだけ。
 //   代表に聞くことのおすすめ：つながりは「関連」「派生元」の 2 つだけ（絵の提案文「これが終わったら始める」は使わない）。
 //   子チケットは「子チケットを作る」から（親の担当・期限を写せる）。つながりは今あるチケットを探して足す／外す（チケットは消えない）。
-import type { ChangeEvent, ReactNode } from "react";
-import { Badge, Button, Confirm, Dialog, Radio, Tabs, TextField, type BadgeTone } from "@/components/k";
+import type { ChangeEvent, ReactNode, Ref } from "react";
+import { Badge, Button, Confirm, Dialog, Tabs, TextField, type BadgeTone } from "@/components/k";
 import "./links.css";
 
 const noop = (): void => undefined;
@@ -215,6 +215,8 @@ export interface LinkAddDialogProps {
   notice?: ReactNode;
   /** 候補を読めなかった理由（探す欄・候補の下の赤い字。「候補を読み込めませんでした」など） */
   candidateError?: string;
+  /** まだ探していない（探す字が空）。候補の場所に何も出さない（既定 false・K-452） */
+  idle?: boolean;
   onKind?: (kind: AddLinkKind) => void;
   onQuery?: (query: string) => void;
   onSelect?: (number: string) => void;
@@ -222,6 +224,12 @@ export interface LinkAddDialogProps {
   onCancel?: () => void;
   /** 「子チケットを作る」（作る面を、親を決めて開く） */
   onCreateChild?: () => void;
+  /** detail＝詳細（既定・タブ 2 つ・主ボタン「つなぐ」）／create＝作る面（探す所だけ・まだ番号が無い・主ボタン「足す」・K-580） */
+  mode?: "detail" | "create";
+  /** 対象の字を替える（作る面の「作成中：<題名>」など）。無ければ ticket の番号と題名 */
+  targetLabel?: string;
+  /** 主ボタンの字（既定は「つなぐ」） */
+  confirmLabel?: string;
 }
 
 function Candidates({ p }: { p: LinkAddDialogProps }) {
@@ -232,6 +240,7 @@ function Candidates({ p }: { p: LinkAddDialogProps }) {
       </p>
     );
   }
+  if (p.idle) return null;
   if (p.candidates.length === 0) {
     return (
       <p className="k-f4-links-none" role="status">
@@ -268,10 +277,13 @@ function LinkPanel({ p }: { p: LinkAddDialogProps }) {
         <legend>つながりの種類</legend>
         <div className="k-f4-links-types">
           {(["related", "derived"] as const).map((k) => (
-            <Radio key={k} size="sm" name="link-kind" checked={p.kind === k} onChange={() => p.onKind?.(k)}>
-              {LINK_KIND_LABEL[k]}
-              <small>{LINK_KIND_HELP[k]}</small>
-            </Radio>
+            <label key={k} className="k-dialog-check">
+              <input type="radio" name="link-kind" checked={p.kind === k} onChange={() => p.onKind?.(k)} />
+              <span>
+                {LINK_KIND_LABEL[k]}
+                <small>{LINK_KIND_HELP[k]}</small>
+              </span>
+            </label>
           ))}
         </div>
       </fieldset>
@@ -302,7 +314,7 @@ function ChildPanel({ onCreateChild }: { onCreateChild?: (() => void) | undefine
   );
 }
 
-/** つながりを足す小窓（今あるチケットとつなぐ／子チケットを作る） */
+/** つながりを足す小窓（今あるチケットとつなぐ／子チケットを作る。作る面は探す所だけ） */
 export function LinkAddDialog(p: LinkAddDialogProps) {
   return (
     <Dialog
@@ -311,28 +323,35 @@ export function LinkAddDialog(p: LinkAddDialogProps) {
       onOpenChange={(o) => {
         if (!o) p.onCancel?.();
       }}
-      target={`${p.ticket.number} ${p.ticket.title}`}
+      target={p.targetLabel ?? `${p.ticket.number} ${p.ticket.title}`}
       actions={
         <>
           <Button variant="outlined" disabled={p.busy} onClick={p.onCancel}>
             やめる
           </Button>
           <Button loading={p.busy} disabled={p.selected === null} onClick={p.onSubmit}>
-            つなぐ
+            {p.confirmLabel ?? "つなぐ"}
           </Button>
         </>
       }
     >
       {p.notice ? <div className="k-f4-links-dialog-notice">{p.notice}</div> : null}
-      <div className="k-f4-links-tabs">
-        <Tabs
-          label="つなぎ方"
-          items={[
-            { value: "link", label: "今あるチケットとつなぐ", panel: <LinkPanel p={p} /> },
-            { value: "child", label: "子チケットを作る", panel: <ChildPanel onCreateChild={p.onCreateChild} /> },
-          ]}
-        />
-      </div>
+      {p.mode === "create" ? (
+        <>
+          <p className="k-f4-links-note">今あるチケットとつなぐ</p>
+          <LinkPanel p={p} />
+        </>
+      ) : (
+        <div className="k-f4-links-tabs">
+          <Tabs
+            label="つなぎ方"
+            items={[
+              { value: "link", label: "今あるチケットとつなぐ", panel: <LinkPanel p={p} /> },
+              { value: "child", label: "子チケットを作る", panel: <ChildPanel onCreateChild={p.onCreateChild} /> },
+            ]}
+          />
+        </div>
+      )}
     </Dialog>
   );
 }
@@ -366,5 +385,82 @@ export function UnlinkConfirm({
     >
       {notice}
     </Confirm>
+  );
+}
+
+/** 作る面で足した相手の 1 行（番号はリンクにしない：まだ作っていない作る面から移らない） */
+export interface ChosenLinkRow {
+  kind: AddLinkKind;
+  /** 相手のチケットの id */
+  id: string;
+  number: string;
+  title: string;
+  stage: string;
+  stageTone: StageTone;
+}
+
+export interface CreateLinkListProps {
+  rows: readonly ChosenLinkRow[];
+  /** 上限に達した（「＋ つながりを足す」を押せない形にしてヒントを替える） */
+  full?: boolean;
+  /** 上限のときのヒント */
+  fullHint?: string;
+  /** 作る口を送っている間（足す・外すを押せない形に） */
+  busy?: boolean;
+  /** 「＋ つながりを足す」のボタン（小窓を閉じた後に焦点を戻す先） */
+  addRef?: Ref<HTMLButtonElement>;
+  onAdd?: () => void;
+  onRemove?: (kind: AddLinkKind, id: string) => void;
+}
+
+const ADD_HINT = "関連・派生元のチケットを足します";
+
+/** 作る面の「＋ つながりを足す」と、足した相手の並び（派生元が関連より前・K-580） */
+export function CreateLinkList({
+  rows,
+  full = false,
+  fullHint,
+  busy = false,
+  addRef,
+  onAdd,
+  onRemove,
+}: CreateLinkListProps) {
+  const locked = full || busy;
+  return (
+    <div className="k-f4d-chosen-wrap">
+      <button
+        ref={addRef}
+        type="button"
+        className="k-f4d-addlink"
+        {...(locked ? { "aria-disabled": true } : {})}
+        onClick={(e) => {
+          if (locked) return e.preventDefault();
+          onAdd?.();
+        }}
+      >
+        ＋ つながりを足す<span className="k-f4d-hint">{full && fullHint ? fullHint : ADD_HINT}</span>
+      </button>
+      {rows.length === 0 ? null : (
+        <ul className="k-f4d-chosen" aria-label="足したつながり">
+          {rows.map((r) => (
+            <li key={`${r.kind}:${r.id}`} className="k-f4d-chosen-row">
+              <span className="k-f4d-chosen-kind">{LINK_KIND_LABEL[r.kind]}</span>
+              <b className="k-f4d-chosen-no">{r.number}</b>
+              <span className="k-f4d-chosen-title">{r.title}</span>
+              {r.stage ? <Badge tone={TONE[r.stageTone]}>{r.stage}</Badge> : null}
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                aria-label={`${r.number} とのつながりを外す`}
+                onClick={() => onRemove?.(r.kind, r.id)}
+              >
+                外す
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

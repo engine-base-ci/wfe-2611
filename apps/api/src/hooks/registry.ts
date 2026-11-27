@@ -8,10 +8,16 @@ import type { Repository } from "@kaname/db/repository";
 import type { ActionGateway } from "@kaname/actions";
 import type { ObjectStore } from "@kaname/storage";
 import type { SecretsGateway } from "@kaname/secrets";
+import type { MailAttachment } from "@kaname/notify/resend";
 import type { Hook } from "../contract/deps.js";
 
-/** メールの送出（関門 C6 の 1 か所・server.ts が署名と返信先を付けて作る） */
-export type HookMailer = (m: { to: string; subject: string; text: string }) => Promise<void>;
+/** メールの送出（関門 C6 の 1 か所・server.ts が署名と返信先を付けて作る）。attachments は任意（K-1109・請求書の PDF） */
+export type HookMailer = (m: {
+  to: string;
+  subject: string;
+  text: string;
+  attachments?: MailAttachment[];
+}) => Promise<void>;
 
 /** 工場に渡す材料。本物のサーバーと fuzz の的がそれぞれ作る */
 export interface HookDeps {

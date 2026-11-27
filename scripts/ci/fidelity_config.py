@@ -26,6 +26,16 @@
   ・記録は消せない・書き替えられない：--base-ref の版に在った記録は、今の版にも 1 字も変えずに在る（無ければ赤）。前に入った記録は残っていること
     だけを見て、もう何も通さない（赤から外す力を持つのは、この版で新しく足して確かめの通った記録だけ）
   ・--no-base の回は記録の形だけを見る（弱めない検査を流さない回なので、記録が何かを通すことも無い）
+組ごと外した記録（設定の頭の "removed_groups"・K-1300）：入れた組を、組ごと外せる、ただ 1 つの道（正の絵がキャンバスから別の物に替わったときなど）
+  "removed_groups": [{"group": 組の id, "ticket": 外すチケット, "decision": 決定の番号, "why": 訳}]
+  ・通すのは「記録に書いた組を、組ごと消す」ことだけ。ほかの組を消す・弱める、記録の組を残したまま値や幅を減らす、は記録が在っても赤
+  ・記録の形は removed と同じ決まり（並び・上の 4 つの欄だけ・空でない文字・制御の字なし・why 10 字以上・decision の形）・同じ組は 1 つだけ
+  ・この版で新しく足した記録の確かめ（--base-ref の回）：11_tickets/<ticket>.md が在り、頭の欄 decisions: に decision が、changes: に
+    04_design/fidelity.json がちょうど同じ字で在る／ticket は今のチケット（md が --base-ref の版に無いか、その版から字が変わっていて、
+    stage が確認中・完了でない。前に終わったチケットの名を借りて外せない）／group は --base-ref の版の設定に在る組で、今の設定に無い（書いただけは赤）
+  ・記録は消せない・書き替えられない（removed と同じ）。赤から外す力を持つのは、この版で新しく足して確かめの通った記録だけ
+  ・記録の在る組は、段 1 の組に挙がっていても設定に無くてよい：--base-ref の回は、この版で確かめの通った記録の組と、分かれ目の設定にも
+    無かった記録の組だけ（前に入った記録は、足し直した組をもう一度外さない）。--no-base の回は形の正しい記録の組
 幅ごとの絵（組の "at"・K-1301）：組を残したまま、ある幅だけ比べる絵とセレクタを替える、ただ 1 つの道。黙って絵を替える道ではない
   "at": {"<幅>": {"canvas": 絵, "pairs": {<対の name>: {"canvas": セレクタ, "app": セレクタ}}, "ticket": 替えたチケット, "decision": 決定の番号, "why": 訳}}
   ・比べる道具は組と幅から groupAt（fidelity_compare.mjs）で解く。組の canvas・app・state・widths・pairs と対の name・role・props は替えない（弱めない検査はそのまま効く）
@@ -232,7 +242,7 @@ def load_groups(text: str, where: str) -> tuple[list[dict], list[str]]:
     return groups, []
 
 
-def check_shape(root: pathlib.Path, groups: list[Any], required: list[str]) -> list[str]:
+def check_shape(root: pathlib.Path, groups: list[Any], required: list[str], gone: frozenset[str] = frozenset()) -> list[str]:
     states_path = root / STATES
     states = states_path.read_text(encoding="utf-8") if states_path.is_file() else ""
     errs: list[str] = []
@@ -245,7 +255,7 @@ def check_shape(root: pathlib.Path, groups: list[Any], required: list[str]) -> l
                 errs.append(f"{gid}：id が重なる")
             seen.add(gid)
     for gid in required:
-        if gid not in seen:
+        if gid not in seen and gid not in gone:   # gone：組ごと外した記録の組（K-1300）
             errs.append(f"段 1 の組 {gid} が {CONFIG} に無い")
     return errs
 
@@ -277,8 +287,8 @@ def base_groups(root: pathlib.Path, ref: str) -> tuple[list[dict] | None, list[s
     return load_groups(text, f"{ref}:{CONFIG}")
 
 
-def base_removed(root: pathlib.Path, ref: str) -> list[Any]:
-    """分かれ目の版の設定に在った、外した対の記録（版や設定が読めない・removed が無いなら空。読めない赤は base_groups が出す）"""
+def base_removed(root: pathlib.Path, ref: str, key: str = "removed") -> list[Any]:
+    """分かれ目の版の設定に在った記録の並び key（版や設定が読めない・並びが無いなら空。読めない赤は base_groups が出す）"""
     _, text, _ = _base_text(root, ref)
     if text is None:
         return []
@@ -286,7 +296,7 @@ def base_removed(root: pathlib.Path, ref: str) -> list[Any]:
         data = json.loads(text)
     except json.JSONDecodeError:
         return []
-    removed = data.get("removed") if isinstance(data, dict) else None
+    removed = data.get(key) if isinstance(data, dict) else None
     return removed if isinstance(removed, list) else []
 
 
@@ -396,6 +406,12 @@ def _measures(g: dict) -> set[tuple[str, str, int]]:
 
 
 REMOVED_KEYS = ("group", "pair", "ticket", "decision", "why", "gone")
+REMOVED_GROUP_KEYS = ("group", "ticket", "decision", "why")
+# 記録の並びごとの (欄, 重なりの鍵, 名前, 重なりの赤の文)。形の決まりは 1 つ（load_removed）を共に使う
+RECORDS: dict[str, tuple[tuple[str, ...], tuple[str, ...], str, str]] = {
+    "removed": (REMOVED_KEYS, ("group", "pair"), "外した対の記録", "同じ組と対の記録が 2 つ在る（1 つの対に書ける記録は 1 つ）"),
+    "removed_groups": (REMOVED_GROUP_KEYS, ("group",), "組ごと外した記録", "同じ組の記録が 2 つ在る（1 つの組に書ける記録は 1 つ）"),
+}
 WHY_MIN = 10
 DECISION_RE = re.compile(r"D-\d+(\.\d+)?")
 SCREEN_DIR = "apps/web/app/"
@@ -407,44 +423,47 @@ def _plain(v: Any) -> bool:
     return _str(v) and not any(unicodedata.category(ch) in ("Cc", "Cs") for ch in v)
 
 
-def _removed_where(i: int, e: Any) -> str:
-    if isinstance(e, dict) and _plain(e.get("group")) and _plain(e.get("pair")):
-        return f"removed[{i}]（{e['group']}・{e['pair']}）"
-    return f"removed[{i}]"
+def _removed_where(i: int, e: Any, key: str = "removed") -> str:
+    ident = RECORDS[key][1]
+    if isinstance(e, dict) and all(_plain(e.get(k)) for k in ident):
+        return f"{key}[{i}]（{'・'.join(e[k] for k in ident)}）"
+    return f"{key}[{i}]"
 
 
-def load_removed(text: str) -> tuple[list[tuple[int, dict]], list[str]]:
-    """設定の頭の、外した対の記録（removed）。無ければ空。(形の正しい記録と removed の中の番号, 形の赤) を返す"""
+def load_removed(text: str, key: str = "removed") -> tuple[list[tuple[int, dict]], list[str]]:
+    """設定の頭の記録の並び（removed：外した対の記録・removed_groups：組ごと外した記録）。無ければ空。
+    (形の正しい記録と並びの中の番号, 形の赤) を返す"""
+    keys, ident, label, dup = RECORDS[key]
     try:
         data = json.loads(text)
     except json.JSONDecodeError:
         return [], []   # 読めない赤は load_groups が出す
-    if not isinstance(data, dict) or "removed" not in data:
+    if not isinstance(data, dict) or key not in data:
         return [], []
-    removed = data["removed"]
+    removed = data[key]
     if not isinstance(removed, list):
-        return [], [f"{CONFIG} の removed（外した対の記録）が並びでない"]
+        return [], [f"{CONFIG} の {key}（{label}）が並びでない"]
     good: list[tuple[int, dict]] = []
     errs: list[str] = []
-    seen: set[tuple[str, str]] = set()
+    seen: set[tuple[str, ...]] = set()
     for i, e in enumerate(removed):
-        where = _removed_where(i, e)
+        where = _removed_where(i, e, key)
         if not isinstance(e, dict):
             errs.append(f"{where}：記録が表でない")
             continue
-        bad = [f"{where}：欄 {k} が無い" for k in REMOVED_KEYS if k not in e]
-        bad += [f"{where}：知らない欄 {k!r}（書けるのは {'・'.join(REMOVED_KEYS)}）" for k in e if k not in REMOVED_KEYS]
-        bad += [f"{where}：欄 {k} が空でない文字でない" for k in REMOVED_KEYS if k in e and not _str(e[k])]
-        bad += [f"{where}：欄 {k} に制御の字（改行・NUL など）か壊れた字が在る" for k in REMOVED_KEYS if _str(e.get(k)) and not _plain(e[k])]
+        bad = [f"{where}：欄 {k} が無い" for k in keys if k not in e]
+        bad += [f"{where}：知らない欄 {k!r}（書けるのは {'・'.join(keys)}）" for k in e if k not in keys]
+        bad += [f"{where}：欄 {k} が空でない文字でない" for k in keys if k in e and not _str(e[k])]
+        bad += [f"{where}：欄 {k} に制御の字（改行・NUL など）か壊れた字が在る" for k in keys if _str(e.get(k)) and not _plain(e[k])]
         if _plain(e.get("why")) and len("".join(e["why"].split())) < WHY_MIN:
             bad.append(f"{where}：why（訳）が {WHY_MIN} 字に足りない")
         if _plain(e.get("decision")) and not DECISION_RE.fullmatch(e["decision"]):
             bad.append(f"{where}：decision {e['decision']!r} が決定の番号の形（D-<数> か D-<数>.<数>）でない")
         if not bad:
-            key = (e["group"], e["pair"])
-            if key in seen:
-                bad.append(f"{where}：同じ組と対の記録が 2 つ在る（1 つの対に書ける記録は 1 つ）")
-            seen.add(key)
+            ikey = tuple(e[k] for k in ident)
+            if ikey in seen:
+                bad.append(f"{where}：{dup}")
+            seen.add(ikey)
         if bad:
             errs += bad
         else:
@@ -582,6 +601,62 @@ def check_at_shape(root: pathlib.Path, gid: str, g: dict) -> list[str]:
     return errs
 
 
+def _md_is_current(root: pathlib.Path, ref: str, rel: str, md: pathlib.Path) -> bool:
+    """チケットの md が分かれ目の版に無いか、その版から字が変わっている（今のチケットが書いた md）"""
+    if _git(root, "cat-file", "-e", f"{ref}:{rel}").returncode != 0:
+        return True
+    r = _git(root, "show", f"{ref}:{rel}")
+    return r.returncode != 0 or r.stdout != md.read_text(encoding="utf-8")
+
+
+def _group_ticket_errors(root: pathlib.Path, ref: str, e: dict) -> list[str]:
+    """組を外すチケットの md：在る・decisions: に decision・changes: に設定（ちょうど同じ字）・今のチケット（分かれ目から変わった md・stage が済みでない）"""
+    tid = e["ticket"]
+    rel = f"11_tickets/{tid}.md"
+    md = root / rel
+    if "/" in tid or "\\" in tid or not md.is_file():
+        return [f"チケット {rel} が無い"]
+    errs: list[str] = []
+    if e["decision"] not in _head_list(md, "decisions"):
+        errs.append(f"チケット {tid} の頭の欄 decisions: に {e['decision']} が無い")
+    if CONFIG not in _head_list(md, "changes"):
+        errs.append(f"チケット {tid} の頭の欄 changes: に {CONFIG} が無い（設定を直すチケットではない）")
+    if not _md_is_current(root, ref, rel, md):
+        errs.append(f"チケット {tid} の md が分かれ目の版 {ref} から変わっていない（今のチケットではない）")
+    stage = _stage(md)
+    if stage in DONE_STAGES:
+        errs.append(f"チケット {tid} の stage が {stage}（済んだチケットの名では外せない）")
+    return errs
+
+
+def check_removed_groups(root: pathlib.Path, ref: str, records: list[tuple[int, dict]], before: list[Any],
+                         base: list[dict], cur: list[Any]) -> tuple[frozenset[str], list[str]]:
+    """組ごと外した記録の確かめ（K-1300）。(赤から外してよい組の id, 赤) を返す。
+    前に入った記録は、残っていることだけを見て何も通さない。通す力を持つのは、この版で新しく足して確かめが全部通った記録だけ"""
+    errs: list[str] = []
+    entries = [e for _, e in records]
+    for i, b in enumerate(before):
+        if b not in entries:
+            errs.append(f"分かれ目の版に在った記録 {_removed_where(i, b, 'removed_groups')} が、今の版に同じ字で残っていない（記録は消せない・書き替えられない）")
+    base_ids = {g["id"] for g in base if isinstance(g, dict) and _str(g.get("id"))}
+    cur_ids = {g["id"] for g in cur if isinstance(g, dict) and _str(g.get("id"))}
+    passed: set[str] = set()
+    for i, e in records:
+        if e in before:
+            continue
+        bad = _group_ticket_errors(root, ref, e)
+        if e["group"] not in base_ids:
+            bad.append(f"組 {e['group']} が分かれ目の版の設定に無い")
+        if e["group"] in cur_ids:
+            bad.append(f"組 {e['group']} が今の設定にまだ在る（記録を書いただけで外していない）")
+        if bad:
+            where = _removed_where(i, e, "removed_groups")
+            errs += [f"{where}：{x}" for x in bad]
+        else:
+            passed.add(e["group"])
+    return frozenset(passed), errs
+
+
 def _at_ticket_errors(root: pathlib.Path, ref: str, e: dict) -> list[str]:
     """新しく足した幅ごとの絵の記録のチケット：今のチケットか（md が在る・決定と設定が頭の欄に在る・分かれ目から変わった・終わっていない）"""
     tid = e["ticket"]
@@ -643,9 +718,11 @@ def check_at(root: pathlib.Path, ref: str, base: list[dict], cur: list[Any],
     return errs
 
 
-def check_ratchet(base: list[dict], cur: list[Any], waived: frozenset[tuple[str, str]] = frozenset()) -> list[str]:
+def check_ratchet(base: list[dict], cur: list[Any], waived: frozenset[tuple[str, str]] = frozenset(),
+                  gone: frozenset[str] = frozenset()) -> list[str]:
     """分かれ目で enrolled だった組は、消せない・戻せない・比べるもの（値の name×値×幅）を減らせない・セレクタを替えられない。
-    waived（確かめの通った、外した対の記録の（組, 対））の対を対ごと外した分だけは赤にしない"""
+    waived（確かめの通った、外した対の記録の（組, 対））の対を対ごと外した分だけは赤にしない。
+    gone（確かめの通った、組ごと外した記録の組）を組ごと消したときだけは赤にしない（組が残っていれば今までどおり見る）"""
     now = {g.get("id"): g for g in cur if isinstance(g, dict)}
     errs: list[str] = []
     for b in base:
@@ -654,7 +731,8 @@ def check_ratchet(base: list[dict], cur: list[Any], waived: frozenset[tuple[str,
         gid = b.get("id")
         g = now.get(gid)
         if g is None:
-            errs.append(f"{gid}：分かれ目で入っていた組が消えた")
+            if gid not in gone:   # 記録つきで組ごと外した（K-1300）
+                errs.append(f"{gid}：分かれ目で入っていた組が消えた")
             continue
         if g.get("enrolled") is not True:
             errs.append(f"{gid}：分かれ目で入っていた組を enrolled: false に戻した")
@@ -685,19 +763,29 @@ def run(root: pathlib.Path, required: list[str], base_ref: str | None, no_base: 
     groups, errs = load_groups(text, CONFIG)
     if errs:
         return errs
-    errs = check_shape(root, groups, required)
     removed, rerrs = load_removed(text)
-    errs += rerrs
+    rgroups, gerrs = load_removed(text, "removed_groups")
+    errs: list[str] = []
+    gone: frozenset[str] = frozenset()
+    later: list[str] = []
     if base_ref:
         base, berrs = base_groups(root, base_ref)
-        errs += berrs
+        later += berrs
         if base is not None:
             waived, werrs = check_removed(root, base_ref, removed, base_removed(root, base_ref), base, groups)
-            errs += werrs
-            errs += check_ratchet(base, groups, waived)
-            errs += check_at(root, base_ref, base, groups, waived)
-    elif not no_base:
-        errs.append("比べ方の指定が無い（--base-ref <版> か --no-base）")
+            before_g = base_removed(root, base_ref, "removed_groups")
+            gone, gwerrs = check_removed_groups(root, base_ref, rgroups, before_g, base, groups)
+            base_ids = {g.get("id") for g in base if isinstance(g, dict)}
+            # 前に入った記録の組は、分かれ目の設定にも無かった（外れたまま）ときだけ段 1 の「無い」から外す
+            kept_off = frozenset(e["group"] for _, e in rgroups if e in before_g and e["group"] not in base_ids)
+            later += werrs + gwerrs + check_ratchet(base, groups, waived, gone)
+            later += check_at(root, base_ref, base, groups, waived)
+            gone = gone | kept_off
+    elif no_base:
+        gone = frozenset(e["group"] for _, e in rgroups)   # 形だけを見る回：形の正しい記録の組
+    else:
+        later.append("比べ方の指定が無い（--base-ref <版> か --no-base）")
+    errs = check_shape(root, groups, required, gone) + rerrs + gerrs + later
     return errs
 
 
@@ -730,6 +818,9 @@ def selftest() -> int:
     assert check_ratchet(base, [dict(base[0], pairs=[dict(good, app="body")])])
     assert check_ratchet(base, [])
     assert check_ratchet([dict(base[0], state="s1")], [dict(base[0], state="s2")])
+    # K-1300：記録の確かめの通った組だけ、組ごと消しても赤にしない（組が残れば今までどおり）・段 1 の組の「無い」も外れる
+    assert check_ratchet(base, [], gone=frozenset({"g"})) == []
+    assert check_ratchet(base, [dict(base[0], widths=[])], gone=frozenset({"g"}))
     assert sorted(set(REQUIRED)) == sorted(REQUIRED) and len(REQUIRED) == 21
     print("fidelity_config：自己試験 OK")
     return 0

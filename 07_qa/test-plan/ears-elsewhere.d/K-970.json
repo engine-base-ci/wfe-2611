@@ -1,0 +1,57 @@
+{
+ "ops": {
+  "stopWorkspace": {
+   "file": "apps/api/test/features/F12/ops-stop.test.ts",
+   "reason": "今の止める印・止める日・本人確認の取り直しで答えが変わり、管理者へお知らせと運営の記録を書く。種では作れない（K-970）",
+   "covers": {
+    "test_post_ops_workspaces_id_stop_ok": "K970-API-001",
+    "test_post_ops_workspaces_id_stop_shape": "K970-API-001",
+    "test_post_ops_workspaces_id_stop_not_found": "K970-API-012",
+    "test_post_ops_workspaces_id_stop_rejected_401": "K970-API-012",
+    "test_post_ops_workspaces_id_stop_rejected_403": "K970-API-012",
+    "test_post_ops_workspaces_id_stop_rejected_422": "K970-API-008",
+    "test_post_ops_workspaces_id_stop_rejected_422_2": "K970-API-008",
+    "test_post_ops_workspaces_id_stop_rate_limited": "K970-API-017",
+    "test_post_ops_workspaces_id_stop_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_stop_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_workspaces_id_stop_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  },
+  "resumeWorkspace": {
+   "file": "apps/api/test/features/F12/ops-stop.test.ts",
+   "reason": "止める印の有無で答えが変わり、運営の記録を書く。種では作れない（K-970）",
+   "covers": {
+    "test_post_ops_workspaces_id_resume_ok": "K970-API-014",
+    "test_post_ops_workspaces_id_resume_shape": "K970-API-014",
+    "test_post_ops_workspaces_id_resume_not_found": "K970-API-012",
+    "test_post_ops_workspaces_id_resume_rejected_401": "K970-API-012",
+    "test_post_ops_workspaces_id_resume_rejected_403": "K970-API-012",
+    "test_post_ops_workspaces_id_resume_rejected_422": "K970-API-016",
+    "test_post_ops_workspaces_id_resume_rejected_422_2": "K970-API-016",
+    "test_post_ops_workspaces_id_resume_rate_limited": {
+     "file": "apps/api/test/features/F12/ops-stop.test.ts",
+     "mark": "K970-API-017"
+    },
+    "test_post_ops_workspaces_id_resume_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_resume_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_workspaces_id_resume_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  }
+ }
+}

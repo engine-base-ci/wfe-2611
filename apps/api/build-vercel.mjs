@@ -10,7 +10,7 @@
 import { build } from "esbuild";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 
 /** 関数の上限（秒）。Bridge の待ち受け（最長 20 秒・D-097.4）より十分長く */
 const MAX_DURATION_SEC = 60;
@@ -75,6 +75,11 @@ const r = await build({
   logLevel: "warning",
   metafile: true,
 });
+// 請求書の PDF の字の書体（K-1013・@kaname/billing）は実行時に読むので、1 本の横の assets に写す（許諾の文も一緒に）
+mkdirSync(join(fn, "assets"), { recursive: true });
+for (const f of ["NotoSansJP-Regular.ttf", "OFL.txt"]) {
+  copyFileSync(join(here, "../../packages/billing/assets", f), join(fn, "assets", f));
+}
 writeFileSync(
   join(fn, ".vc-config.json"),
   JSON.stringify(

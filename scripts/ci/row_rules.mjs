@@ -11,8 +11,6 @@ export const ROW_WORDS = ["self", "read", "write", "assignee", "approver", "reci
 
 /** path の :id が指す表（path の :id の前の段）。段の名前が表の名前と違うものだけ書く */
 export const ID_TABLE = {
-  "/api/v1/work_types": "skills",
-  "/api/v1/rules": "policies",
   "/api/v1/bridge/devices": "sessions",
   "/api/v1/me/sessions": "sessions",
   "/api/v1/me/workspaces": "tenant_memberships",
@@ -34,6 +32,15 @@ export const ROW_EXEMPT_FIELDS = {
   },
   revokeMySession: {
     id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
+  },
+  updateKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  deleteKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  markNoticeRead: {
+    id: "運営のお知らせの行は運営だけが読める（行の守り notices_ops_all）ので、入口が行の守りの中で :id を読むと会社の人にはどのお知らせも無い（404・NOT_FOUND）になる。見える（届け先・出したか・管理者だけ）は口が DB の関数 app.member_notice_read（app.notice_for_member → app.notice_for_tenant の 1 か所）で決め、見えなければ 404 E-PAGE-001・何も書かない（K-954）",
   },
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
@@ -88,7 +95,8 @@ export const RULES = {
   read: {},
   write: {
     tickets: `app.ticket_writable(id)`,
-    knowledge_pages: `app.kpage_writable(id)`,
+    // 消したページは入口を通し、口が deleted_at is null つきの読みで 404 にする（入口で 403 にすると「消した → 404」が口に届かない・K-675）
+    knowledge_pages: `(deleted_at is not null or app.kpage_writable(id))`,
     // 残りは 07_functional/entities.json の update の条件をそのまま使う（RLS と同じ式）
   },
   assignee: {
@@ -118,8 +126,6 @@ export const OP_RULES = {
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人・担当者・マネージャー
   stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
-  // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
-  copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
   //   ワークスペースの物を別の管理者が直す・消すので持ち主で絞らない。edit の判定（403・E-CRED-007）と、消した物・失効しただけの物の 404 は
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）

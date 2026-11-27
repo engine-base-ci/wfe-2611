@@ -5,18 +5,17 @@
 //     つなぐ相手が無い・見えないは 404 E-PAGE-001・相手に書けないは 403（欄なし）。
 //     断り：選べない選び先（種別・担当者・知らせる人・親・項目の id）は 404 E-PAGE-001／親子が 3 段を超える 409 E-VAL-015／期限が今日より前 409 E-VAL-012／
 //     開始が期限より後 409 E-VAL-028／会社の項目の 409 E-FLD-001〜004（どれも欄・details・detail を付けない＝在るかを漏らさない）。422 は契約に書ける形の誤りだけ（欄つき）。
-//     sections だけで来た作り方（前の道）の必須の区画が空は 422 E-VAL-013（K-578 まで）。DB が落ちたら口の中で 503 E-PAGE-003（何も残らない・D-136.1）
+//     区画の入力（sections）は契約に無い欄で、入口が 422 にする（K-578）。DB が落ちたら口の中で 503 E-PAGE-003（何も残らない・D-136.1）
 //   複製（K-438・A129）：duplicate_of があれば同じ取引で ①app.ticket_duplicate_read（元を止めて材料を読む）→ ②app.ticket_create（材料から組んだ体）→
 //     ③app.ticket_duplicate_apply（確認項目・つながり・子・派生元の線・知らせ・証跡）。元が見えない 404 E-DUP-001・子を写すと 3 段を超える 409 E-DUP-002（欄なし）。
 //     ② の断りは K-437 の振り分けのまま（何も書かれていない）。③ の途中で落ちたら取引ごと戻して 503 E-PAGE-003
-//   listTicketKinds：種別と、その種別の区画（必須か）を一緒に返す ／ listScopes：グループの一覧と、チケットを書けるグループ（meta.writable）
-//   getTicket：読むだけの詳細（属性・区画・種別・段・担当者。K-560 で本文 body・会社の項目 fields・確認項目の数・親・子とつながりの数・結果の場所） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
+//   listTicketKinds：種別と、種別のひな形・会社の項目のマスタを返す（区画は返さない・K-578） ／ listScopes：グループの一覧と、チケットを書けるグループ（meta.writable）
+//   getTicket：読むだけの詳細（属性・種別・段・担当者。区画は返さない・K-578。K-560 で本文 body・会社の項目 fields・確認項目の数・親・子とつながりの数・結果の場所） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
 // ログに題名と本文を出さない（共通の決まり）
 import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Row } from "@kaname/db/repository";
-import { KanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { bare, FIELD_CODES } from "../ticket-fields/errors.js";
 import { buildDuplicate, type CopyName, type DuplicateRead } from "./duplicate.js";
@@ -26,6 +25,11 @@ const fail = (status: number, error: string, code: string, extra: Record<string,
   status,
   body: { error, code, ...extra },
 });
+
+/** 凍結の列（業務の型・K-582・D-150.60）は答えに出さない。列は表に残るので、読んだ行から頭の字で外す（列の名前はコードに書かない・K582-API-007） */
+const FROZEN_PREFIX = "work_type_";
+const withoutFrozen = (t: Row): Row =>
+  Object.fromEntries(Object.entries(t).filter(([k]) => !k.startsWith(FROZEN_PREFIX)));
 
 /** DB の答えの言葉 → 404 E-PAGE-001 になるもの（選べない・見えない選び先・欄なし・在るかを漏らさない） */
 //   LINK_GONE（K-581）：つなぐ相手が無い・消した・見えない・別の会社
@@ -64,18 +68,6 @@ function refusal(r: Record<string, unknown>): HookReply {
     return fail(422, "validation_failed", "VALIDATION_ERROR", {
       details: [{ field, message: code === "BODY_INVALID" ? "本文の形が違います" : "確認項目の文を確かめてください" }],
     });
-  }
-  if (code === "SECTION_REQUIRED") {
-    const keys = (r["detail"] as string[] | undefined) ?? [];
-    const e = new KanameError("E-VAL-013");
-    return {
-      status: 422,
-      body: {
-        ...e.toJSON(),
-        field: "sections",
-        details: keys.map((k) => ({ field: `sections.${k}`, message: e.entry.message })),
-      },
-    };
   }
   throw new Error(`app.ticket_create の知らない答え（${code}）`);
 }
@@ -248,7 +240,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           return bare("E-PAGE-003", 503);
         }
         const row = await a.repo.table("tickets").get(a.ctx, String(r["id"]));
-        return { status: 201, body: { data: row ?? { id: r["id"], number: r["number"] } } };
+        return { status: 201, body: { data: row ? withoutFrozen(row) : { id: r["id"], number: r["number"] } } };
       },
     },
     listTicketKinds: {
@@ -269,9 +261,6 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
               )
             ).rows,
         );
-        const secs = (await a.repo.table("kind_sections").list(a.ctx, { limit: 2000, orderBy: "position" })).filter(
-          (s) => !s["deleted_at"],
-        );
         const data = kinds.map((k) => ({
           id: k["id"],
           name: k["name"],
@@ -281,16 +270,6 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           // 種別のひな形（本文に入れる文書の木か null）と会社の項目のマスタ（値なし・並び位置の順・K-560）
           body_template: k["body_template"] ?? null,
           fields: k["fields"] ?? [],
-          sections: secs
-            .filter((s) => s["kind_id"] === k["id"] && s["mode"] !== "hidden")
-            .map((s) => ({
-              key: s["section_key"],
-              label: s["label"],
-              mode: s["mode"],
-              position: s["position"],
-              content_type: s["content_type"],
-              hint: s["hint"] ?? null,
-            })),
         }));
         return { status: 200, body: { data, meta: { limit: data.length } } };
       },
@@ -330,9 +309,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
       before: async (a: HookArgs) => {
         const t = await a.repo.table("tickets").get(a.ctx, a.id!);
         if (!t || t["deleted_at"]) return fail(404, "not_found", "NOT_FOUND");
-        const [secs, kindSecs, kind, stage, assignee] = await Promise.all([
-          a.repo.table("ticket_sections").list(a.ctx, { where: { ticket_id: a.id }, limit: 100, orderBy: "position" }),
-          a.repo.table("kind_sections").list(a.ctx, { where: { kind_id: t["kind_id"] }, limit: 100 }),
+        const [kind, stage, assignee] = await Promise.all([
           a.repo.table("ticket_kinds").get(a.ctx, String(t["kind_id"])),
           a.repo.table("ticket_stages").get(a.ctx, String(t["stage_id"])),
           t["assignee_member_id"] ? a.repo.table("members").get(a.ctx, String(t["assignee_member_id"])) : null,
@@ -346,21 +323,11 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           a.ctx,
           async (cl) => (await cl.query<DetailExtras>(DETAIL_EXTRAS_SQL, [a.id])).rows[0],
         );
-        const label = new Map(kindSecs.map((s: Row) => [s["section_key"], s["label"]]));
         return {
           status: 200,
           body: {
             data: {
-              ticket: t,
-              // 区画の並び（K-578 が外すまで残す）。本文の行（鍵 body）は答えの body に出すので並びから除く（K-560）
-              sections: secs
-                .filter((s) => !s["deleted_at"] && s["section_key"] !== "body")
-                .map((s) => ({
-                  key: s["section_key"],
-                  label: label.get(s["section_key"]) ?? s["section_key"],
-                  body: s["body"],
-                  version: s["version"],
-                })),
+              ticket: withoutFrozen(t),
               kind: kind ? { id: kind["id"], name: kind["name"], color: kind["color"] ?? null } : null,
               stage: stage ? { id: stage["id"], key: stage["key"], name: stage["name"] } : null,
               assignee: assignee ? { id: assignee["id"], display_name: assignee["display_name"] } : null,

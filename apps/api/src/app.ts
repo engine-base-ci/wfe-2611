@@ -175,11 +175,15 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     ? async (c) => {
         const r = await opts.resolve!(c.req.raw.headers);
         if (!r) return null;
-        // 抜けた人の答え（memberLeft）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
+        // 抜けた人の答え（memberLeft）と止めた会社の答え（tenantStopped・K-1012）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
         const mfaPending = r.mfaPending === true; // 付けるまで進めないの印（K-321・入口 op.ts が止める）
-        return r.memberLeft === undefined
-          ? { ctx: r.ctx, termsPending: r.termsPending, mfaPending }
-          : { ctx: r.ctx, termsPending: r.termsPending, mfaPending, memberLeft: r.memberLeft };
+        return {
+          ctx: r.ctx,
+          termsPending: r.termsPending,
+          mfaPending,
+          ...(r.memberLeft === undefined ? {} : { memberLeft: r.memberLeft }),
+          ...(r.tenantStopped === undefined ? {} : { tenantStopped: r.tenantStopped }),
+        };
       }
     : legacy
       ? async (c) => {

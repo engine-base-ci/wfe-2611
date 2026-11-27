@@ -8,7 +8,6 @@
 import { expect, type Page, type Route } from "@playwright/test";
 import { shellData } from "../k/shell-answer";
 import { TICKET, executedBand, jst, mockApi, qrow, type Band } from "../features/F5/approve-complete.harness";
-import { mockCreate } from "../k/create-mock";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -290,7 +289,8 @@ const CANVAS_TODO = [
 async function openBandModal(page: Page, path: string, button: string, title: string, done = false): Promise<void> {
   await (done ? mockApi(page, { ...executedBand, todo: CANVAS_TODO }) : mockApi(page));
   await page.goto(path.replace("{ticket}", TICKET));
-  await page.getByRole("region", { name: "承認と実行" }).getByRole("button", { name: button, exact: true }).click();
+  // 「完了にする」は題の行（K-572）・「承認して送る」などは帯の中。名前はどちらも画面に 1 つだけなので、頁全体で探す
+  await page.getByRole("button", { name: button, exact: true }).click();
   await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
 }
 
@@ -706,19 +706,6 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
   },
-  // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
-  "tickets-new": async (page, path) => {
-    await shellApi(page, 3);
-    await page.goto(path);
-    await expect(page.locator('input[name="title"]')).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
-  // 作る面の本文の箱の区画（K-225・キャンバス Create の本文の箱）：種別はタスク（区画 4 つ）・下書きなし。区画の見出しが出るまで待つ。
-  //   種別の区画は作る画面の試験の差し替え（tests/k/create-mock.ts）の口で出す（外枠の差し替えの種別は空）
-  "tickets-new-sections": async (page, path) => {
-    await mockCreate(page);
-    await page.goto(path);
-    await expect(page.locator('section[aria-label="本文"] .k-create-doc h2').first()).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
+  // 作る面（組 tickets-new・tickets-new-sections）は K-442 が組ごと外した（2026-11-24：作る面は新しい並びになり、キャンバス Create と比べない。
+  //   正の絵は下絵 v2 /dev/mock/f4v2・D-150.35）。詳細の組 ticket-detail は K-571 が外す。状態 ticket-detail と detailApi は k1100 の試験が詳細を開くのに使うので残す
 };

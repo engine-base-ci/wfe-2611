@@ -83,7 +83,7 @@ describe("K-388 開き直す（完了 → 作業中）", () => {
     expect(d["can"]).toMatchObject({ complete: true, progress: true });
     expect(d["hold"]).toBeNull();
     const c = await f.req("POST", `/tickets/${t.id}/complete`, {
-      body: { todo_checked: [], todo_version: 0, conditions_confirmed: true },
+      body: { conditions_confirmed: true }, // K-578：完了の入力は確かめ印だけ（todo_* は契約に無く 422）
       headers: boss.auth,
     });
     expect(c.status, await c.clone().text()).toBe(201);

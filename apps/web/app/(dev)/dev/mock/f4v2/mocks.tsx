@@ -17,6 +17,10 @@ import {
 } from "@/features/F4/doc/detail-views";
 import "@/features/F4/create-ticket/create-ticket.css";
 import { renderMore } from "./more-mocks";
+import { SpecsItemV3 } from "@/features/F4/doc/detail-extra";
+
+/** 詳細のパネルの確認項目（作り直した形・文を押して直す） */
+const SPECS_V3 = <SpecsItemV3 mode="detail" lines={SPEC_DETAIL} compact />;
 
 export interface MockEntry {
   id: string;
@@ -49,8 +53,8 @@ export const MOCKS: readonly MockEntry[] = [
   { id: "f4v2-create-head", screen: "tickets", label: "作る面：頭（作り方・下書きの保存の状態・下書きのまま閉じる）", ticket: "K-442", leaf: "K-442" },
   { id: "f4v2-create-group", screen: "tickets", label: "作る面：グループの欄（書けるグループが 2 つ以上の人）", ticket: "K-442", leaf: "K-442" },
   { id: "f4v2-create-missing-types", screen: "tickets", label: "作る面：必須が空の型ごとの誤りの文（7 つの型）", ticket: "K-569", leaf: "K-569" },
-  { id: "f4v2-detail-item-edit", screen: "tickets", label: "詳細：会社の項目の値をその場で直している", ticket: "K-569", leaf: "K-569" },
-  { id: "f4v2-detail-item-error", screen: "tickets", label: "詳細：会社の項目を直して断られた（空・選び直し）", ticket: "K-569", leaf: "K-569" },
+  { id: "f4v2-detail-item-edit", screen: "tickets", label: "詳細：会社の項目の値をその場で直している", ticket: "K-1153", leaf: "K-1153" },
+  { id: "f4v2-detail-item-error", screen: "tickets", label: "詳細：会社の項目を直して断られた（空・選び直し）", ticket: "K-1153", leaf: "K-1153" },
   { id: "f4v2-spec-edit", screen: "tickets", label: "詳細：確認項目の文をその場で直している（チェックの付いた行は直せない）", ticket: "K-450", leaf: "K-450" },
   { id: "f4v2-spec-add-error", screen: "tickets", label: "確認項目を足す小窓：書かずに足した", ticket: "K-450", leaf: "K-450" },
   { id: "f4v2-create-specs", screen: "tickets", label: "作る面：確認項目のチェックの箱は押せない形", ticket: "K-450", leaf: "K-450" },
@@ -93,6 +97,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
     specs: readonly SpecLine[] = SPEC_DETAIL,
     open = false,
     tab: "attr" | "talk" = "attr",
+    specsSlot?: ReactNode,
   ): ReactNode => (
     <DetailPage
       theme={theme}
@@ -101,6 +106,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       tab={tab}
       {...(dialog ? { dialog } : {})}
       {...(acts ? { acts } : {})}
+      {...(specsSlot ? { panel: { specsSlot } } : {})}
     >
       {writing ? <EditBand /> : null}
       <BodyView writing={writing}>
@@ -155,10 +161,11 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       return detail(<Results />);
     case "f4v2-detail-editing":
       return detail(undefined, undefined, true, <></>);
+    // 確認項目の行は作り直した形（文を押して直す・SpecsItemV3）。f4v2-spec-edit と同じ並び（K-450）
     case "f4v2-specs":
-      return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true);
+      return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true, "attr", SPECS_V3);
     case "f4v2-spec-add":
-      return detail(undefined, <SpecAddDialog />, false, undefined, SPEC_DETAIL, true);
+      return detail(undefined, <SpecAddDialog />, false, undefined, SPEC_DETAIL, true, "attr", SPECS_V3);
     case "f4v2-detail-thread":
       return detail(undefined, undefined, false, undefined, SPEC_DETAIL, true, "talk");
     case "f4v2-complete":

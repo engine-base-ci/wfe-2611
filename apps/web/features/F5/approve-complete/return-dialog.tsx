@@ -6,7 +6,7 @@
 //   どこを直すか・次は誰が直すか・覚えさせる候補は仕組みがまだ無いので、出したまま押せない（D-145.9・input そのものを薄く）。
 //   覚えさせる候補はキャンバスでは印ありだが、仕組みが無いのに印を付けると「覚えさせる」と読めるので印なし。送る体は { note } だけ
 import { useEffect, useId, useRef, useState } from "react";
-import { Button, Checkbox, Dialog, Radio, RadioGroup } from "@/components/k";
+import { Button, Dialog } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { catalogMessage } from "./message";
 
@@ -127,17 +127,21 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
             </span>
           ) : null}
         </label>
-        <RadioGroup className="k-dialog-group" legend="次は誰が直すか" name="k229-who" value="ai" disabled size="sm">
-          <Radio value="ai" aria-disabled="true" readOnly>
-            AI に直させて、確認からやり直す
-          </Radio>
-          <Radio value="self" aria-disabled="true" readOnly>
-            自分で直す
-          </Radio>
-        </RadioGroup>
-        <Checkbox size="sm" disabled aria-disabled="true" readOnly>
-          この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）
-        </Checkbox>
+        <fieldset className="k-dialog-group">
+          <legend>次は誰が直すか</legend>
+          <label className="k-dialog-check">
+            <input type="radio" name="k229-who" checked disabled aria-disabled="true" readOnly />
+            <span>AI に直させて、確認からやり直す</span>
+          </label>
+          <label className="k-dialog-check">
+            <input type="radio" name="k229-who" disabled aria-disabled="true" readOnly />
+            <span>自分で直す</span>
+          </label>
+        </fieldset>
+        <label className="k-dialog-check">
+          <input type="checkbox" disabled aria-disabled="true" readOnly />
+          <span>この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）</span>
+        </label>
       </div>
     </Dialog>
   );

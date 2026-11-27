@@ -13,6 +13,8 @@ import { useMyRoles } from "@/lib/auth/role";
 import { StepUp } from "@/features/F1/security/step-up";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { WsHead, WsSub } from "@/features/F10/invite/views";
+import { PlanRow } from "@/features/F12/billing/plan-row";
+import { usePlans } from "@/features/F12/billing/use-plans";
 import { SettingsPage } from "./settings";
 import { useCancelDeletion } from "./delete-flow";
 import { SETTINGS_DIALOGS, openable, useOpenDialog } from "./settings-dialogs";
@@ -76,6 +78,8 @@ export function SettingsScreen() {
   const { roles } = useMyRoles();
   const blocked = roles?.includes(NO_SETTINGS_ROLE) ?? false;
   const q = useSettings(roles !== undefined && !blocked);
+  // プランの読み（K-962）を設定の読みと同時に始める（同じ鍵を PlanRow が読む・閲覧のみの役では呼ばない）
+  usePlans(roles !== undefined && !blocked);
   const patch = usePatchSettings();
   const dialogs = useOpenDialog();
   const [denied, setDenied] = useState(false);
@@ -194,9 +198,9 @@ export function SettingsScreen() {
 
   const canDelete = openable("delete") && data.access.delete_workspace;
   const Dialog = dialogs.open ? SETTINGS_DIALOGS[dialogs.open] : undefined;
-  // K-962（段 13）がここに planRow を渡す
-  const planRow: ReactNode = null;
   const company = data.workspace.name;
+  // プランと支払いの 1 行と小窓（K-962・段 13）
+  const planRow: ReactNode = <PlanRow workspace={company} />;
   const deleting = deletingOf(data);
   return (
     <Frame>

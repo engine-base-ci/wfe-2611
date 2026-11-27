@@ -43,7 +43,7 @@ export function Mention({ children }: { children: ReactNode }) {
   return <span className="k-talk-mention">{children}</span>;
 }
 
-/** 右のパネルのタブ（属性・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 まで押せない形 */
+/** 右のパネルのタブ（項目・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 まで押せない形 */
 export function TalkTabs({
   active,
   count,
@@ -59,7 +59,7 @@ export function TalkTabs({
   return (
     <nav aria-label="パネルのタブ" className="k-detail-tabs">
       <button type="button" aria-current={active === "attr" ? "page" : undefined} onClick={() => onTab?.("attr")}>
-        属性
+        項目
       </button>
       <button type="button" aria-current={active === "talk" ? "page" : undefined} onClick={() => onTab?.("talk")}>
         やり取り

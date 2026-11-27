@@ -2013,17 +2013,6 @@
   },
   {
    "paths": [
-    "04_design/DESIGN-kaname.md",
-    "04_design/gen_tokens.py",
-    "scripts/ci/design_gate.py",
-    "design-gate.json"
-   ],
-   "tests": [
-    "apps/web/tests/k/k642-choice.spec.ts"
-   ]
-  },
-  {
-   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -2219,8 +2208,6 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
-  "apps/web/tests/k/k642-choice.spec.ts": "画面の apps/web の app・components・features の .tsx（丸・四角を直に書いていないか）・部品 apps/web/components/k の choice.tsx・index.ts・k.css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md・開発用の置き場 apps/web/app/(dev)/dev/mock のフォルダ・04_design/fidelity.json を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-642）",
-  "apps/web/tests/_lib/choice-align.mjs": "測る関数だけ。読みの印に当たるのは JSDoc の型 import(\"@playwright/test\") で、ファイル・子プロセス・動的 import は使わない（K-642）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
   "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
  },

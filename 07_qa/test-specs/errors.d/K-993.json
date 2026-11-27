@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-025",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "oq-template-update"
+   },
+   "when": "会社の管理者が、ひな形の新しい版を「変える」か「そのままにする」で選ぶとき、その版はもう選んだか届いていない（同時に 2 回選んだ後の 1 つも）",
+   "false_when": "届いていて、まだ選んでいない版を選ぶ",
+   "message": "もう選びました",
+   "action": "新しい版が届いたら、またここに出ます",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で チケットの設定 を開き、ひな形の新しい版が届いた会社にしておく",
+    "steps": [
+     "「変える」を押した後、同じ版をもう一度選ぶ（直に API）"
+    ],
+    "needs": "運営がひな形の新しい版を出しておく"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20"
+   ]
+  }
+ ]
+}

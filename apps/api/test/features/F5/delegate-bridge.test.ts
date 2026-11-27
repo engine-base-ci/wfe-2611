@@ -145,12 +145,12 @@ describe("K-62 AI に任せる：PC が取る・様子を返す・終わる（PC
 
   it("K62-API-029 待っている × PC が取る：受け取った PC（bridge_jobs.taken_session_id）をその PC のセッションにする（D-128.163）。渡す中身はチケットから組み、許可は「聞く」", async () => {
     const { p, pc } = await fresh("受け取る人");
-    const { d, job } = await started(p, pc, "取引先 A への見積を作る");
+    const { d, job } = await started(p, pc, "先方 A への見積を作る");
     expect(
       (await k.q("select taken_session_id from bridge_jobs where id = $1", [d.job_id]))[0]!["taken_session_id"],
     ).toBe(pc.sessionId);
     expect(job).toMatchObject({ kind: "ticket", permission_mode: "manual", conversation_id: null });
-    expect(String(job["prompt"])).toContain("取引先 A への見積を作る"); // 目的
+    expect(String(job["prompt"])).toContain("先方 A への見積を作る"); // 目的
     expect(String(job["prompt"])).toContain("金額と内訳がそろっている"); // 完了の条件
     expect(String(job["prompt"])).toContain("前回の見積を読む"); // 実施事項
     expect(job["ticket_id"]).toBeTruthy();
@@ -1107,7 +1107,7 @@ describe("K-62 AI に任せる：回 2 の確かめで出た守りと形（契�
 
   it("K62-API-071 チケットの仕事の結果は本人の書いたまま成果物に残す（空白・空行・「[[覚える: …]]」も消さない）。個人の記憶には書かない（会話の仕事だけの後処理・D-105.1 はチケットの仕事に効かない）", async () => {
     const { p, pc } = await fresh("書いたまま残す人");
-    const raw = "  見積\n\n\n\n  1 行目 [[覚える: 取引先Aは値引き不可]] \n";
+    const raw = "  見積\n\n\n\n  1 行目 [[覚える: 先方Aは値引き不可]] \n";
     const { t, d } = await started(p, pc);
     expect(await data(await k.finish(pc, d.job_id, { state: "done", result: raw }))).toMatchObject({
       outcome: "awaiting_approval",
@@ -1211,20 +1211,24 @@ describe("K-62 AI に任せる：回 2 の確かめで出た守りと形（契�
 });
 
 describe("K-62 AI に任せる：記録の要約の大きさ（G-16・D-129.46）", () => {
-  it("K62-API-076 区画・やり取り・決定・実行の記録が長いチケット：区画は切らずに全文が入る。要約だけを上限で切る（書き込みは新しい 10 件・1 件 400 字、決定は新しい 20 件、前の実行の記録は新しい 10 件・1 件 200 字。古いものから落ちる）。区画の後ろに足した要約は 8000 字まで", async () => {
+  it("K62-API-076 区画・やり取り・決定・実行の記録が長いチケット：本文は切らずに全文が入る（K-578 の後は本文 1 枚。前の区画は読まない）。要約だけを上限で切る（書き込みは新しい 10 件・1 件 400 字、決定は新しい 20 件、前の実行の記録は新しい 10 件・1 件 200 字。古いものから落ちる）。本文の後ろに足した要約は 8000 字まで", async () => {
     const { p, pc } = await fresh("長いやり取りの人");
     const t = await k.ticket(p);
     const nn = (i: number) => String(i).padStart(2, "0");
-    // 区画 5 つを 19000 字近くにする（頭と末尾に印）
-    const keys = ["purpose", "done", "constraints", "counterpart", "todo"];
-    const bodies = Object.fromEntries(keys.map((key) => [key, `区画頭-${key} ${"え".repeat(18_950)} 区画末-${key}`]));
-    for (const key of keys)
-      await k.f.admin.query(
-        `insert into ticket_sections (tenant_id, ticket_id, section_key, body) values ($1, $2, $3, jsonb_build_object('text', $4::text))
-         on conflict (ticket_id, section_key) do update set body = excluded.body`,
-        [k.T.tenantId, t, key, bodies[key]],
-      );
-    // 記録の無いときの中身（区画だけ）。要約はこの後ろに足す
+    // 本文 1 枚（鍵 body）を 95000 字近くにする（頭と末尾に印）。前の区画の行は読まれない（K-578）ので、入らない印の区画を 1 つ置く
+    const longText = `本文頭 ${"え".repeat(94_800)} 本文末`;
+    await k.f.admin.query(
+      `update ticket_sections set body = jsonb_build_object(
+         'doc', jsonb_build_object('type', 'doc', 'content', jsonb_build_array(jsonb_build_object('type', 'paragraph', 'content', jsonb_build_array(jsonb_build_object('type', 'text', 'text', $2::text))))),
+         'text', $2::text)
+       where ticket_id = $1 and section_key = 'body'`,
+      [t, longText],
+    );
+    await k.f.admin.query(
+      "insert into ticket_sections (tenant_id, ticket_id, section_key, position, body) values ($1, $2, 'purpose', 10, jsonb_build_object('text', '読まれない前の区画の字')) on conflict (ticket_id, section_key) do nothing",
+      [k.T.tenantId, t],
+    );
+    // 記録の無いときの中身（本文だけ）。要約はこの後ろに足す
     const base = (await k.q<{ v: { prompt: string } }>("select app.ticket_job_context($1) as v", [t]))[0]!.v.prompt;
     // 前の作る実行 12 件（止まった理由は 262 字：200 字を越えた所に末尾の印）
     for (let i = 1; i <= 12; i++) {
@@ -1247,8 +1251,9 @@ describe("K-62 AI に任せる：記録の要約の大きさ（G-16・D-129.46�
     const job = await k.takeJob(pc);
     expect(job.job_id).toBe(d.job_id);
     const prompt = String(job["prompt"]);
-    // 区画は切らずに全文
-    for (const key of keys) expect(prompt, `区画 ${key} は全文`).toContain(bodies[key]);
+    // 本文は切らずに全文・前の区画の字は入らない
+    expect(prompt, "本文は全文").toContain(longText);
+    expect(prompt, "前の区画は読まない").not.toContain("読まれない前の区画の字");
     // 書き込み
     for (let i = 16; i <= 25; i++) expect(prompt, `新しい書き込み ${nn(i)} は入る`).toContain(`書き込み-${nn(i)}`);
     for (let i = 1; i <= 15; i++) expect(prompt, `古い書き込み ${nn(i)} は落ちる`).not.toContain(`書き込み-${nn(i)}`);
@@ -1263,7 +1268,7 @@ describe("K-62 AI に任せる：記録の要約の大きさ（G-16・D-129.46�
     // 古い順に並べる
     expect(prompt.indexOf("書き込み-16")).toBeLessThan(prompt.indexOf("書き込み-25"));
     expect(prompt.indexOf("実行-03")).toBeLessThan(prompt.indexOf("実行-12"));
-    // 区画の後ろに足した要約は 8000 字まで（区画だけのときより伸びた分）
+    // 本文の後ろに足した要約は 8000 字まで（本文だけのときより伸びた分）
     const added = prompt.length - base.length;
     expect(added, "要約が入る").toBeGreaterThan(0);
     expect(added, "要約は 8000 字まで").toBeLessThanOrEqual(8_000);

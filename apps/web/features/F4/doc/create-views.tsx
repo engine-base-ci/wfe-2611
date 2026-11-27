@@ -2,7 +2,7 @@
 // 作る面に足した状態の部品（段 5・K-442・K-569・K-580）：頭（作り方・保存の状態・下書きのまま閉じる）・グループの欄・
 //   必須の型ごとの誤り・足したつながりの並びと相手を選ぶ小窓。見た目だけ（値は props・口は呼ばない）
 import type { ReactNode } from "react";
-import { Badge, Button, Checkbox, Dialog, Radio, Select, TextArea, TextField } from "@/components/k";
+import { Badge, Button, Dialog, Select, TextArea, TextField } from "@/components/k";
 import { Pair } from "./views";
 import "@/features/F4/links/links.css";
 import "./extra.css";
@@ -126,14 +126,18 @@ export function RequiredTypes() {
         <fieldset className="k-f4d-multi">
           <legend className="k-f4d-sr">送る書類</legend>
           {["請求書", "明細", "納品書"].map((d) => (
-            <Checkbox key={d}>{d}</Checkbox>
+            <label key={d}>
+              <input type="checkbox" /> {d}
+            </label>
           ))}
           <p className="k-err" role="alert">{`送る書類${NEED.pick}`}</p>
         </fieldset>
       </Pair>
       <Pair name="原本の郵送" required>
         <div className="k-f4d-reqrow">
-          <Checkbox>原本を郵送する</Checkbox>
+          <label className="k-f4d-check">
+            <input type="checkbox" /> 原本を郵送する
+          </label>
           <p className="k-err" role="alert">{`原本の郵送${NEED.check}`}</p>
         </div>
       </Pair>
@@ -223,10 +227,13 @@ export function CreateLinkAddDialog({ title }: { title: string }): ReactNode {
           <legend>つながりの種類</legend>
           <div className="k-f4-links-types">
             {KINDS.map((x) => (
-              <Radio key={x.k} size="sm" name="link-kind" defaultChecked={x.k === "related"}>
-                {x.label}
-                <small>{x.help}</small>
-              </Radio>
+              <label key={x.k} className="k-dialog-check">
+                <input type="radio" name="link-kind" defaultChecked={x.k === "related"} />
+                <span>
+                  {x.label}
+                  <small>{x.help}</small>
+                </span>
+              </label>
             ))}
           </div>
         </fieldset>
