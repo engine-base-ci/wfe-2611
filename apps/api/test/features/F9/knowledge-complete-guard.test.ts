@@ -34,12 +34,7 @@ const doComplete = (who: Person, ticket: string, confirmed = true): Promise<Resu
     h.pool,
     who.ctx,
     async (cl) =>
-      (
-        await cl.query<{ v: Result }>("select app.ticket_complete($1, $2) as v", [
-          ticket,
-          confirmed,
-        ])
-      ).rows[0]!.v,
+      (await cl.query<{ v: Result }>("select app.ticket_complete($1, $2) as v", [ticket, confirmed])).rows[0]!.v,
   );
 const stageKey = async (t: string): Promise<string> =>
   (

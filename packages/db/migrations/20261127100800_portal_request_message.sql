@@ -18,7 +18,8 @@ begin
   if not app.guest_ok() then
     raise exception 'ゲストでない' using errcode = '42501';
   end if;
-  if p_body is null or btrim(p_body, E' \t\r\n　') = '' or length(p_body) > 10000 or strpos(p_body, chr(0)) > 0 then
+  -- NUL は Postgres の text に入らない（chr(0) は呼ぶだけで 54000 になる）。NUL を含む体は口（checkMessage）と入口が 422 にする
+  if p_body is null or btrim(p_body, E' \t\r\n　') = '' or length(p_body) > 10000 then
     raise exception '本文の形' using errcode = '22023';
   end if;
 

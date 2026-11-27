@@ -291,7 +291,7 @@ end $$;
 revoke all on function app.invitation_preview2(text, text) from public;
 grant execute on function app.invitation_preview2(text, text) to kaname_app;
 
--- ⑨ メンバーの並び（20261121091900 のまま・ゲストを人にも招待中にも人数にも入れない 2 か所だけ足した）
+-- ⑨ メンバーの並び（20261126000800（K-808）の版・ゲストを人にも招待中にも人数にも入れない 2 か所だけ足した。統合の枝で K-808 の「最後に使った日」の 2 つの鍵を写した）
 create or replace function app.workspace_members() returns jsonb
 language plpgsql stable security definer set search_path = public, app, pg_temp as $$
 declare
@@ -341,7 +341,7 @@ begin
                         where sm2.member_id = p.id and sm2.deleted_at is null and sm2.scope_id <> p.primary_scope),
                       '[]'::jsonb)
            else '[]'::jsonb end as other_groups,
-           ps.seen
+           ps.seen, lu.used
       from seat st
       join people p on p.id = st.member_id
       join tree g on g.id = st.scope_id
@@ -349,6 +349,10 @@ begin
         select max(s.last_seen_at) as seen from sessions s
          where s.member_id = p.id and s.kind_id = 'bridge' and s.deleted_at is null
       ) ps on true
+      left join lateral (
+        select max(s.last_seen_at) as used from sessions s
+         where s.member_id = p.id and s.kind_id = 'web' and s.deleted_at is null
+      ) lu on true
   ),
   inv as (
     select i.id, i.email, i.scope_id, i.role_id as role, i.expires_at,
@@ -373,7 +377,10 @@ begin
                        else 'away' end,
             'pc_days_away', case when r.role not in ('viewer', 'requester') and r.seen is not null
                                       and r.seen <= now() - interval '1 day'
-                                 then floor(extract(epoch from (now() - r.seen)) / 86400)::int end
+                                 then floor(extract(epoch from (now() - r.seen)) / 86400)::int end,
+            'last_used_at', r.used,
+            'last_used_days', case when r.used is null then null
+                                   else floor(extract(epoch from (now() - r.used)) / 86400)::int end
           ) order by r.display_name, r.member_id)
           from seats r where r.scope_id = g.id), '[]'::jsonb)
       ) order by g.depth, g.created_at, g.id)
