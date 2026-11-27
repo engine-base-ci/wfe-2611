@@ -29,13 +29,17 @@ RESPONSES = {
 _FORBIDDEN = {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"}, "errors": [],
               "trigger": "会社のメンバーとして使えない人（停止された人・外された人）",
               "ears_form": "UNWANTED: IF 停止された人が作る画面の会話を始める・言うなら、Kaname は 403 を返し、何も作らない"}
+_NO_CREATE = {"status": 403, "code": "E-TALK-062", "body": {"error": "forbidden", "code": "E-TALK-062"}, "errors": ["E-TALK-062"],
+              "trigger": "チケットを作る権限が無い人（どのグループにも tickets の edit が無い）",
+              "ears_form": "UNWANTED: IF チケットを作る権限が無い人が作る画面の会話を始める・言うなら、Kaname は 403 と E-TALK-062 を返し、何も作らない"}
 _DOWN = {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "作る画面の会話を始める・言う DB の関数が落ちた（使えない・例外・証跡が書けない・文脈が組めない）",
          "ears_form": "UNWANTED: IF 作る画面の会話を始める・言う DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も変えない"}
 ERRORS_4XX = {
-    "startDraftConversation": [dict(_FORBIDDEN), dict(_DOWN)],
+    "startDraftConversation": [dict(_FORBIDDEN), dict(_NO_CREATE), dict(_DOWN)],
     "sendDraftMessage": [
         dict(_FORBIDDEN),
+        dict(_NO_CREATE),
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "自分の会話でない（同じグループの別の人・別の会社）・無い・消した会話（欄も details も付けない）",
          "ears_form": "UNWANTED: IF 自分の会話でないか無い会話に言うなら、Kaname は 404 を返し、在るかを漏らさず何も変えない"},

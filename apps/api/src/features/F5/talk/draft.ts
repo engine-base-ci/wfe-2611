@@ -5,6 +5,7 @@
 //     app.draft_talk_say を 1 回呼ぶ＝人の言葉の行（options.passed＝人が直した欄）・待っている仕事・証跡が 1 つの取引（関門 C2）。
 //     仕事の頭の文脈（欄の今の中身・人が直した欄は上書きしない・案は draft_propose で出す）は DB の関数が組む。
 //   自分の会話でない・無い・消した会話は入口（行の守り・持ち主だけ）が先に 404。DB の関数の判定は 2 層目で、口も同じ体の 404。
+//   チケットを作る権限が無い人（関数の no_create）は始める・言うの両方で 403・E-TALK-062（K-782・D-153.35）。
 //   関数が落ちたら 503・E-PAGE-003。ログに言った字・欄の中身を出さない（口の名前と例外の種類だけ）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -40,6 +41,8 @@ const REFUSED: Record<string, string> = { no_pc: "E-TALK-060", kind_mismatch: "E
 const len = (s: string): number => [...s].length;
 const notFound = (): HookReply => ({ status: 404, body: { error: "not_found", code: "NOT_FOUND" } });
 const forbidden = (): HookReply => ({ status: 403, body: { error: "forbidden", code: "FORBIDDEN" } });
+/** チケットを作る権限が無い（関数の no_create・K-782） */
+const noCreate = (): HookReply => ({ status: 403, body: kanameError("E-TALK-062").toJSON() });
 const invalid = (details: Issue[]): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details },
@@ -103,6 +106,7 @@ export function checkDraftSay(body: Row): { ok: true; value: DraftSay } | { ok: 
 function refusal(error: string): HookReply {
   if (error === "not_found") return notFound();
   if (error === "not_member") return forbidden();
+  if (error === "no_create") return noCreate();
   if (error === "text_empty") return invalid([{ field: "text", message: "言うことを書いてください" }]);
   if (error === "draft_invalid") return invalid([{ field: "draft", message: "欄の今の中身の形が違います" }]);
   const code = REFUSED[error];
@@ -129,7 +133,10 @@ export function draftTalkHooks(pool: pg.Pool): Record<string, Hook> {
       before: async (a) => {
         const v = await call(a, "startDraftConversation", "select app.draft_talk_start() as v", []);
         if (v === "down" || !v) return unavailable();
-        if (typeof v["error"] === "string") return v["error"] === "not_member" ? forbidden() : unavailable();
+        if (typeof v["error"] === "string") {
+          if (v["error"] === "not_member") return forbidden();
+          return v["error"] === "no_create" ? noCreate() : unavailable();
+        }
         return { status: 201, body: { data: { id: v["conversation_id"] } } };
       },
     },
