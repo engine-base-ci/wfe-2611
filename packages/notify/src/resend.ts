@@ -2,6 +2,15 @@
 import { Resend } from "resend";
 import type { Channel, NotifyEvent, Transport } from "./index.js";
 
+/** メールに付けるファイル（K-1109・請求書の PDF など） */
+export interface MailAttachment {
+  filename: string;
+  content: Uint8Array;
+  contentType: string;
+}
+/** 付けるファイルの合計の上限（Resend の上限 40MB より手前で止める） */
+export const MAIL_ATTACH_MAX = 10 * 1024 * 1024;
+
 export interface MailLike {
   send(msg: {
     from: string;
@@ -10,11 +19,27 @@ export interface MailLike {
     text: string;
     /** 返信したときの宛先（差出人とは別に持てる・D-096.5） */
     replyTo?: string;
+    /** 付けるファイル（任意・無い・空なら付けない） */
+    attachments?: MailAttachment[];
   }): Promise<{ error: { message: string } | null }>;
 }
 export function resendMail(apiKey: string): MailLike {
   const r = new Resend(apiKey);
-  return { send: async (m) => ({ error: (await r.emails.send(m)).error ?? null }) };
+  return {
+    send: async ({ attachments, ...m }) => {
+      if (!attachments || attachments.length === 0) {
+        return { error: (await r.emails.send(m)).error ?? null };
+      }
+      const total = attachments.reduce((n, a) => n + a.content.byteLength, 0);
+      if (total > MAIL_ATTACH_MAX) throw new Error("添付が大きすぎる");
+      const files = attachments.map((a) => ({
+        filename: a.filename,
+        content: Buffer.from(a.content),
+        contentType: a.contentType,
+      }));
+      return { error: (await r.emails.send({ ...m, attachments: files })).error ?? null };
+    },
+  };
 }
 /** email は Resend、それ以外（inapp／push／chat）は inbox（通知の表）に書く側へ委ねる */
 export function resendTransport(

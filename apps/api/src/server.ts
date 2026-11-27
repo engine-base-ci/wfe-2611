@@ -10,7 +10,7 @@ import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolv
 import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
 import { HOOK_MODULES } from "./hooks/all.generated.js";
-import { buildHooks } from "./hooks/registry.js";
+import { buildHooks, type HookMailer } from "./hooks/registry.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { edgeRequest } from "./edge.js";
@@ -57,8 +57,9 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const inner = o.mail ?? (config.resendApiKey ? resendMail(config.resendApiKey) : null);
   const mail = inner ? signedMail(inner, config.operator, config.mailReplyTo) : null;
   // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
-  const mailer = mail
-    ? async (m: { to: string; subject: string; text: string }) => {
+  // 添付（K-1109・請求書の PDF）はそのまま渡す。ログにファイルの名前と中身は出さない
+  const mailer: HookMailer | undefined = mail
+    ? async (m) => {
         // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
         try {
           // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
@@ -70,7 +71,13 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
             return;
           }
           // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
-          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text }); // 署名と返信先は signedMail が付ける
+          const r = await mail.send({
+            from: config.mailFrom,
+            to: m.to,
+            subject: m.subject,
+            text: m.text,
+            ...(m.attachments?.length ? { attachments: m.attachments } : {}),
+          }); // 署名と返信先は signedMail が付ける
           if (r.error) throw new Error(r.error.message);
           console.log(`[mail] 送った → ${mailTag(m.to)}（${m.subject}）`);
         } catch (e) {
