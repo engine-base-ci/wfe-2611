@@ -10,8 +10,8 @@ import { defineHooks } from "./registry.js";
 
 export function opsPlansDecideHooks(d: OpsPlanDecideDeps): Record<string, Hook> {
   return {
-    decidePlanProposal: { before: createDecidePlanProposal(d) },
-    returnPlanProposal: { before: createReturnPlanProposal(d) },
+    decidePlanProposal: { before: createDecidePlanProposal(d), contractAtEntry: true },
+    returnPlanProposal: { before: createReturnPlanProposal(d), contractAtEntry: true },
   };
 }
 

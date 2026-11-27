@@ -6,7 +6,11 @@ import { defineHooks, type HookDeps } from "./registry.js";
 
 export function inquiryUploadHooks(d: HookDeps): Record<string, Hook> {
   return {
-    uploadInquiryAttachment: inquiryUploadHook({ appPool: d.appPool, objects: d.objects, baseUrl: d.config.baseUrl }),
+    // 種類と大きさの値の外は入口の 422（契約の形・K950-API-002）
+    uploadInquiryAttachment: {
+      ...inquiryUploadHook({ appPool: d.appPool, objects: d.objects, baseUrl: d.config.baseUrl }),
+      contractAtEntry: true,
+    },
   };
 }
 

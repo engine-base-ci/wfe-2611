@@ -12,7 +12,7 @@ export function opsInvoiceTemplateHooks(
     // 読む（保存していない間は設定の値・版 0）
     getOpsInvoiceTemplate: { before: getOpsInvoiceTemplate(deps) },
     // 直す（版で取り合いを止める・同じ値なら書かない・運営の記録）
-    updateOpsInvoiceTemplate: { before: updateOpsInvoiceTemplate(deps) },
+    updateOpsInvoiceTemplate: { before: updateOpsInvoiceTemplate(deps), contractAtEntry: true },
   };
 }
 

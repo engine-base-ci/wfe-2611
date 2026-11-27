@@ -6,8 +6,8 @@ import { defineHooks, type HookDeps } from "./registry.js";
 
 export function opsStopHooks(d: HookDeps): Record<string, Hook> {
   return {
-    stopWorkspace: { before: createStopWorkspace(d.appPool) },
-    resumeWorkspace: { before: createResumeWorkspace(d.appPool) },
+    stopWorkspace: { before: createStopWorkspace(d.appPool), contractAtEntry: true },
+    resumeWorkspace: { before: createResumeWorkspace(d.appPool), contractAtEntry: true },
   };
 }
 

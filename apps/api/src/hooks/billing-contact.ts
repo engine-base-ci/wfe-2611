@@ -6,7 +6,7 @@ import { defineHooks, type HookDeps } from "./registry.js";
 export function billingContactHooks(d: Pick<HookDeps, "appPool">): Record<string, Hook> {
   return {
     // 請求先を書き、管理者全員に画面のお知らせと記録（関数 1 回・1 取引・メールは送らない）
-    updateBillingContact: { before: updateBillingContact(d.appPool) },
+    updateBillingContact: { before: updateBillingContact(d.appPool), contractAtEntry: true },
   };
 }
 

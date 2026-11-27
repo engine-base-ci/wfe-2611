@@ -6,7 +6,7 @@ import { defineHooks, type HookDeps } from "./registry.js";
 
 export function inquiryCreateHooks(d: HookDeps): Record<string, Hook> {
   return {
-    createInquiry: { before: createCreateInquiry(d.appPool) },
+    createInquiry: { before: createCreateInquiry(d.appPool), contractAtEntry: true },
   };
 }
 

@@ -14,7 +14,7 @@ export function opsNoticesPublishHooks(d: HookDeps): Record<string, Hook> {
         ...(d.mailer ? { mailer: d.mailer } : {}),
       }),
     },
-    sendWorkspaceNotice: { before: createSendWorkspaceNotice(d.appPool) },
+    sendWorkspaceNotice: { before: createSendWorkspaceNotice(d.appPool), contractAtEntry: true },
   };
 }
 

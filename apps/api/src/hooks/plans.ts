@@ -7,7 +7,7 @@ import { defineHooks, type HookDeps } from "./registry.js";
 export function plansHooks(d: HookDeps): Record<string, Hook> {
   return {
     listWorkspacePlans: { before: createListWorkspacePlans(d.appPool) },
-    changePlan: { before: createChangePlan(d.appPool) },
+    changePlan: { before: createChangePlan(d.appPool), contractAtEntry: true },
   };
 }
 

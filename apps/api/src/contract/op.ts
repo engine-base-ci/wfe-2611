@@ -4,8 +4,8 @@
 //   冪等の比べは欄ごとの中身（ファイルは中身の sha256）。multipart を持たない口の道は今のまま
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
-import { ENDPOINTS, inputRulesOk, isUuid, queryIssues, type EndpointDef } from "@kaname/contracts";
-import { INPUT_RULES, QUERY_RULES, SCHEMAS } from "@kaname/contracts/schemas";
+import { ENDPOINTS, isUuid, queryIssues, shapeIssues, type EndpointDef } from "@kaname/contracts";
+import { INPUT_SHAPES, QUERY_RULES, REQUIRED_BY_HOOKS, SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps, Hook, HookArgs, HookReply } from "./deps.js";
@@ -382,8 +382,9 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
       return err(c, 501, "not_implemented", "NOT_IMPLEMENTED", { message: "契約にある口だが、まだ作っていない" });
     // 4) 入力
-    //    問い合わせ：契約に無い名前・契約の値の形（候補・字の形・値の範囲）に合わない値は 422（D-129.42）
-    const badQuery = queryIssues(QUERY_RULES[operationId], c.req.query());
+    //    契約の形を入口に任せた口（contractAtEntry）：契約に無い問い合わせの名前・値の形に合わない問い合わせは 422（D-129.42）
+    const atEntry = deps.hooks[operationId]?.contractAtEntry === true;
+    const badQuery = atEntry ? queryIssues(QUERY_RULES[operationId], c.req.query()) : [];
     if (badQuery.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badQuery });
     //    道の id は 3.0 で正式な uuid と確かめ済み（:id は契約で format: uuid）
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
@@ -436,11 +437,14 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
           details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: issueMessage(i) })),
         });
       input = parsed.data as Row;
-      // 形全体の決まり（契約の oneOf・anyOf・allOf・not・K-355）も入口で確かめる（D-129.42）。欄ごとの形は zod が先に見た
-      if (def.input && !inputRulesOk(INPUT_RULES[def.input], input))
-        return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
-          details: [{ field: "body", message: "欄の組み合わせが契約の決まりに合わない" }],
-        });
+      // 契約の形を入口に任せた口（contractAtEntry）：必須の欄（x-required-by: hooks）・欄ごとの形・形全体の決まりに合わなければ 422
+      if (def.input && atEntry) {
+        const missing = (REQUIRED_BY_HOOKS[def.input] ?? []).filter((k) => input[k] === undefined || input[k] === null);
+        const details = missing.length
+          ? missing.map((k) => ({ field: k, message: "必須" }))
+          : shapeIssues(INPUT_SHAPES[def.input], input);
+        if (details.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details });
+      }
     }
     let list: { where: Row; limit: number; offset: number; orderBy?: string } | null = null;
     if (def.kind === "list") {

@@ -6,7 +6,7 @@ import { defineHooks } from "./registry.js";
 
 export function opsInvoicePaymentsHooks(d: OpsInvoicePaymentsDeps): Record<string, Hook> {
   return {
-    recordPayment: { before: createRecordPayment(d) },
+    recordPayment: { before: createRecordPayment(d), contractAtEntry: true },
   };
 }
 

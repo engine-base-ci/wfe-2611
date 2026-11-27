@@ -6,7 +6,7 @@ import { defineHooks, type HookDeps } from "./registry.js";
 
 export function opsNoticesWriteHooks(d: HookDeps): Record<string, Hook> {
   return {
-    createOpsNotice: { before: createCreateOpsNotice(d.appPool) },
+    createOpsNotice: { before: createCreateOpsNotice(d.appPool), contractAtEntry: true },
     updateOpsNotice: { before: createUpdateOpsNotice(d.appPool) },
   };
 }

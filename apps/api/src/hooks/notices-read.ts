@@ -7,7 +7,7 @@ import { defineHooks } from "./registry.js";
 
 export function noticesReadHooks(d: { appPool: Parameters<typeof createListNotices>[0] }): Record<string, Hook> {
   return {
-    listNotices: { before: createListNotices(d.appPool) },
+    listNotices: { before: createListNotices(d.appPool), contractAtEntry: true },
     markNoticeRead: { before: createMarkNoticeRead(d.appPool) },
   };
 }

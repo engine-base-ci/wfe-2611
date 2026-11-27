@@ -1,5 +1,6 @@
-// 形全体の決まり（契約の入力の形の oneOf・anyOf・allOf・not・K-355 の INPUT_RULES）を入口で確かめる（D-129.42・PM の決め 2026-11-28）。
-//   中身は schemas.ts の INPUT_RULES（contract.mjs gen が契約から写す）。zod が欄ごとの形を確かめた後の体に当てる。
+// 契約の入力の形（欄ごとの候補・字の形・字数・値の範囲と、形全体の決まり oneOf・anyOf・allOf・not）と問い合わせの形を入口で確かめる
+//   （D-129.42・PM の決め 2026-11-28）。中身は schemas.ts の INPUT_SHAPES・QUERY_RULES（contract.mjs gen が契約から写す）。
+//   当てるのは口が contractAtEntry を立てたときだけ（ほかの口は値で断る欄を口の番号で答える・K-144 ㉓）。
 //   読む言葉：properties・required・not・allOf・anyOf・oneOf・enum・const・type・pattern・minLength・maxLength・minimum・maximum・
 //   minItems・maxItems・contains・items。ほかの言葉は確かめない（契約の作り手 build_api.py は oneOf／anyOf／allOf／not だけを書く）
 type Schema = Record<string, unknown>;
@@ -53,9 +54,24 @@ export function matches(s: unknown, v: unknown): boolean {
   return true;
 }
 
-/** 形全体の決まり（INPUT_RULES の 1 つ）に体が合うか */
-export const inputRulesOk = (rule: Schema | undefined, body: unknown): boolean =>
-  rule === undefined || matches(rule, body);
+/** 体を入力の形（INPUT_SHAPES の 1 つ）で確かめ、合わない欄を返す。欄ごとの形は欄の名前で、形全体の決まりは body で返す */
+export function shapeIssues(
+  shape: Schema | undefined,
+  body: Record<string, unknown>,
+): { field: string; message: string }[] {
+  if (shape === undefined) return [];
+  const out: { field: string; message: string }[] = [];
+  const props = isObj(shape["properties"]) ? shape["properties"] : {};
+  for (const [k, v] of Object.entries(body))
+    if (k in props && v !== undefined && !matches(props[k], v))
+      out.push({ field: k, message: "契約の値の形に合わない" });
+  if (out.length) return out;
+  const whole = Object.fromEntries(
+    ["allOf", "anyOf", "oneOf", "not"].filter((k) => k in shape).map((k) => [k, shape[k]]),
+  );
+  if (!matches(whole, body)) out.push({ field: "body", message: "欄の組み合わせが契約の決まりに合わない" });
+  return out;
+}
 
 /** 問い合わせの値（字）を形の型に寄せる。数の形でない字はそのまま（形が断る） */
 const coerce = (s: unknown, v: string): unknown => {

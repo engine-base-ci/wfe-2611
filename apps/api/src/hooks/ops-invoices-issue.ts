@@ -13,6 +13,7 @@ export function opsInvoicesIssueHooks(d: HookDeps): Record<string, Hook> {
         config: d.config,
         mailer: d.mailer,
       }),
+      contractAtEntry: true, // month が無いときは入口の 422（K981-API-014）
     },
   };
 }

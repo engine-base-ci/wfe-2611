@@ -16,7 +16,7 @@ export function opsWorkspaceBillingHooks(
     // 1 社のプラン・人数・支払い条件・請求書（読むだけ・関数 1 回・1 取引）
     getOpsWorkspaceBilling: { before: getOpsWorkspaceBilling(deps) },
     // 頼まれたときに代わりにプランを変える（関数 1 回・1 取引・運営と会社の記録）
-    changeOpsWorkspacePlan: { before: changeOpsWorkspacePlan(deps) },
+    changeOpsWorkspacePlan: { before: changeOpsWorkspacePlan(deps), contractAtEntry: true },
   };
 }
 
