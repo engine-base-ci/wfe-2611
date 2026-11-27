@@ -198,6 +198,12 @@ export interface GroupDialogProps {
   onCancel?: () => void;
   /** 答えを待つ間（「足す」を押せない） */
   busy?: boolean;
+  /** 層 ▾ の「層の名前と並びを直す」を選んだ（K-806） */
+  onEditLayers?: () => void;
+  /** 「保存する」を押せない（直す小窓で何も変えていない・K-806） */
+  saveDisabled?: boolean;
+  /** マネージャーが 2 人以上のとき、選ばない 2 人目以降の数（「ほか N 人」・K-806） */
+  managerMore?: number;
 }
 
 /** グループを足す・直す小窓。名前と短い名前を横に・層・マネージャー・メンバー（足すだけ）・色の段 */
@@ -225,6 +231,9 @@ export function GroupDialog({
   onSubmit,
   onCancel,
   busy,
+  onEditLayers,
+  saveDisabled,
+  managerMore,
 }: GroupDialogProps) {
   const add = mode === "add";
   const live = Boolean(onSubmit);
@@ -258,7 +267,7 @@ export function GroupDialog({
           <Button variant="outlined" onClick={onCancel}>
             やめる
           </Button>
-          <Button onClick={onSubmit} disabled={live ? Boolean(busy) : undefined}>
+          <Button onClick={onSubmit} disabled={live ? Boolean(busy) || Boolean(saveDisabled) : undefined}>
             {add ? "足す" : "保存する"}
           </Button>
         </>
@@ -301,11 +310,12 @@ export function GroupDialog({
           value={newLayer !== undefined ? ADD_LAYER : live ? values.layer || null : values.layer}
           description="層の守ること・やり方・承認の決まりが、このグループにも効く"
           disabled={!add}
-          {...(onLayer || onNewLayer
+          {...(onLayer || onNewLayer || onEditLayers
             ? {
                 onValueChange: (v: string | null) => {
                   if (v === ADD_LAYER) onNewLayer?.("");
-                  else if (v && v !== EDIT_LAYERS) onLayer?.(v);
+                  else if (v === EDIT_LAYERS) onEditLayers?.();
+                  else if (v) onLayer?.(v);
                 },
               }
             : {})}
@@ -327,6 +337,7 @@ export function GroupDialog({
           options={managerOptions}
           value={values.manager || null}
           placeholder="選ぶ"
+          {...(managerMore ? { description: `ほか ${managerMore} 人` } : {})}
           {...(onManager ? { onValueChange: (v: string | null) => onManager(v) } : {})}
         />
         {add ? (
@@ -349,14 +360,48 @@ export function GroupDialog({
 }
 
 export interface OrderRow {
+  /** 口のグループの id（入れ物がつなぐとき・行の鍵。無ければ短い名前・モック） */
+  id?: string;
   code: string;
   name: string;
-  tone: "teal" | "plum" | "amber" | "indigo";
+  tone: GroupTone;
   count: number;
 }
 
+/** 小窓の足（やめる・保存する）。入れ物がつなぐときだけ押す関数と状態を渡す（K-806） */
+export interface DialogActs {
+  onSave?: () => void;
+  onCancel?: () => void;
+  busy?: boolean;
+  /** 何も変えていない（保存するを押せない） */
+  saveDisabled?: boolean;
+  /** 口が断ったとき（小窓の上の赤い箱） */
+  notice?: string;
+}
+
+function Acts({ onSave, onCancel, busy, saveDisabled }: DialogActs) {
+  const live = Boolean(onSave);
+  return (
+    <>
+      <Button variant="outlined" onClick={onCancel}>
+        やめる
+      </Button>
+      <Button onClick={onSave} disabled={live ? Boolean(busy) || Boolean(saveDisabled) : undefined}>
+        保存する
+      </Button>
+    </>
+  );
+}
+const closeWith = (onCancel?: () => void) =>
+  onCancel ? { onOpenChange: (o: boolean) => (o ? undefined : onCancel()) } : {};
+
 /** グループの並びを替える小窓（仮）。上へ・下へのボタンで 1 つずつ動かす */
-export function ReorderDialog({ open, rows }: { open: boolean; rows: readonly OrderRow[] }) {
+export function ReorderDialog({
+  open,
+  rows,
+  onMove,
+  ...acts
+}: { open: boolean; rows: readonly OrderRow[]; onMove?: (i: number, by: -1 | 1) => void } & DialogActs) {
   const last = rows.length - 1;
   return (
     <Dialog
@@ -364,26 +409,35 @@ export function ReorderDialog({ open, rows }: { open: boolean; rows: readonly Or
       subtitle="左のメニューとメンバーの画面の並びが変わる"
       size="form"
       open={open}
-      actions={
-        <>
-          <Button variant="outlined">やめる</Button>
-          <Button>保存する</Button>
-        </>
-      }
+      {...closeWith(acts.onCancel)}
+      actions={<Acts {...acts} />}
     >
+      {acts.notice ? <NoticeBox>{acts.notice}</NoticeBox> : null}
       <ul className="k-f10m-order">
         {rows.map((r, i) => (
-          <li key={r.code} className="k-f10m-order-row">
+          <li key={r.id ?? r.code} className="k-f10m-order-row">
             <GripVertical size={16} aria-hidden="true" />
             <span className="k-inv-code" data-tone={r.tone} aria-hidden="true">
               {r.code}
             </span>
             <span className="k-f10m-order-name">{r.name}</span>
             <span className="k-inv-sub">{`${r.count} 人`}</span>
-            <Button variant="ghost" size="sm" disabled={i === 0} aria-label={`${r.name}を上へ`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={i === 0}
+              aria-label={`${r.name}を上へ`}
+              onClick={onMove ? () => onMove(i, -1) : undefined}
+            >
               <ChevronUp size={16} aria-hidden="true" />
             </Button>
-            <Button variant="ghost" size="sm" disabled={i === last} aria-label={`${r.name}を下へ`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={i === last}
+              aria-label={`${r.name}を下へ`}
+              onClick={onMove ? () => onMove(i, 1) : undefined}
+            >
               <ChevronDown size={16} aria-hidden="true" />
             </Button>
           </li>
@@ -397,10 +451,28 @@ export interface LayerRow {
   name: string;
   /** その層にあるグループの数 */
   groups: number;
+  /** 読み上げの名前に使う、口の今の名前（欄を直しても変えない・K-806。無ければ name） */
+  label?: string;
+  /** その層の欄の下の誤り（空・40 字・E-GRP-019） */
+  error?: string;
 }
 
 /** 層の名前と並びを直す小窓（仮）。名前は欄で直し、並びは上へ・下へ。層を消すことはここではしない */
-export function LayersDialog({ open, rows }: { open: boolean; rows: readonly LayerRow[] }) {
+export function LayersDialog({
+  open,
+  rows,
+  onName,
+  onMove,
+  onAddLayer,
+  ...acts
+}: {
+  open: boolean;
+  rows: readonly LayerRow[];
+  onName?: (i: number, v: string) => void;
+  onMove?: (i: number, by: -1 | 1) => void;
+  /** 「＋ 層を足す」（足す小窓の新しい層の欄へ戻る・K-806） */
+  onAddLayer?: () => void;
+} & DialogActs) {
   const last = rows.length - 1;
   return (
     <Dialog
@@ -408,34 +480,54 @@ export function LayersDialog({ open, rows }: { open: boolean; rows: readonly Lay
       subtitle="層の守ること・やり方・承認の決まりは、層ごとに決めている"
       size="form"
       open={open}
-      actions={
-        <>
-          <Button variant="outlined">やめる</Button>
-          <Button>保存する</Button>
-        </>
-      }
+      {...closeWith(acts.onCancel)}
+      actions={<Acts {...acts} />}
     >
       <div className="k-dialog-stack">
+        {acts.notice ? <NoticeBox>{acts.notice}</NoticeBox> : null}
         <ul className="k-f10m-order">
-          {rows.map((r, i) => (
-            <li key={r.name} className="k-f10m-order-row">
-              <input
-                className="k-input k-f10m-layer-input"
-                value={r.name}
-                readOnly
-                aria-label={`層の名前（${r.name}）`}
-              />
-              <span className="k-inv-sub">{`${r.groups} グループ`}</span>
-              <Button variant="ghost" size="sm" disabled={i === 0} aria-label={`${r.name}を上へ`}>
-                <ChevronUp size={16} aria-hidden="true" />
-              </Button>
-              <Button variant="ghost" size="sm" disabled={i === last} aria-label={`${r.name}を下へ`}>
-                <ChevronDown size={16} aria-hidden="true" />
-              </Button>
-            </li>
-          ))}
+          {rows.map((r, i) => {
+            const label = r.label ?? r.name;
+            return (
+              <li key={label} className="k-f10m-order-row">
+                <input
+                  className="k-input k-f10m-layer-input"
+                  value={r.name}
+                  readOnly={!onName}
+                  onChange={onName ? (e) => onName(i, e.target.value) : undefined}
+                  aria-label={`層の名前（${label}）`}
+                  aria-invalid={r.error ? true : undefined}
+                  aria-describedby={r.error ? `layer-err-${i}` : undefined}
+                />
+                <span className="k-inv-sub">{`${r.groups} グループ`}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={i === 0}
+                  aria-label={`${r.name}を上へ`}
+                  onClick={onMove ? () => onMove(i, -1) : undefined}
+                >
+                  <ChevronUp size={16} aria-hidden="true" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={i === last}
+                  aria-label={`${r.name}を下へ`}
+                  onClick={onMove ? () => onMove(i, 1) : undefined}
+                >
+                  <ChevronDown size={16} aria-hidden="true" />
+                </Button>
+                {r.error ? (
+                  <span id={`layer-err-${i}`} className="k-err">
+                    {r.error}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
-        <Button variant="outlined" size="sm" className="k-inv-link-btn">
+        <Button variant="outlined" size="sm" className="k-inv-link-btn" onClick={onAddLayer}>
           ＋ 層を足す
         </Button>
         <p className="k-f10m-note">層を消すことは、ここではできません</p>

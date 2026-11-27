@@ -75,9 +75,11 @@ interface GroupCardProps {
   pending: readonly PendingButton[];
   acts?: RowActs | undefined;
   inv?: InviteActs | undefined;
+  /** 見出しの「直す」（K-806） */
+  onEdit?: (() => void) | undefined;
 }
 
-function GroupCard({ d, open, menu, onToggle, emptyText, pending, acts, inv = {} }: GroupCardProps) {
+function GroupCard({ d, open, menu, onToggle, emptyText, pending, acts, inv = {}, onEdit }: GroupCardProps) {
   const invited = d.rows.filter((r) => r.invitedLeft).length;
   const people = d.rows.length - invited;
   const gid = groupKey(d);
@@ -101,7 +103,13 @@ function GroupCard({ d, open, menu, onToggle, emptyText, pending, acts, inv = {}
           <span className="k-inv-sub">{`${people} 人${invited ? ` ＋ 招待中 ${invited}` : ""}`}</span>
           <span className="k-inv-sub k-f10m-manager">{`マネージャー：${d.manager}`}</span>
         </button>
-        <Button variant="ghost" size="sm" aria-label={`${d.name}を直す`} {...inertIf(pending.includes("editGroup"))}>
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label={`${d.name}を直す`}
+          {...inertIf(pending.includes("editGroup"))}
+          onClick={pending.includes("editGroup") ? undefined : onEdit}
+        >
           直す
         </Button>
         <Button
@@ -195,6 +203,10 @@ export interface MembersPageProps {
   onAddGroup?: () => void;
   /** 「＋ グループ」を押せない形にする（並びが読めない間・K-805） */
   addGroupDisabled?: boolean;
+  /** グループの見出しの「直す」（グループの鍵 groupKey・K-806） */
+  onEditGroup?: (key: string) => void;
+  /** 頭の「並びを替える」（K-806） */
+  onReorder?: () => void;
 }
 
 /** メンバーの画面の本文（上の 1 行・グループの並び） */
@@ -213,6 +225,8 @@ export function MembersPage({
   failure,
   onAddGroup,
   addGroupDisabled,
+  onEditGroup,
+  onReorder,
   ...inv
 }: MembersPageProps) {
   return (
@@ -229,7 +243,11 @@ export function MembersPage({
           >
             ＋ グループ
           </Button>
-          <Button variant="outlined" {...inertIf(disabledButtons.includes("reorder"))}>
+          <Button
+            variant="outlined"
+            {...inertIf(disabledButtons.includes("reorder"))}
+            onClick={disabledButtons.includes("reorder") ? undefined : onReorder}
+          >
             並びを替える
           </Button>
           <Button
@@ -263,6 +281,7 @@ export function MembersPage({
                 pending={disabledButtons}
                 acts={rowActs}
                 inv={inv}
+                onEdit={onEditGroup ? () => onEditGroup(groupKey(d)) : undefined}
               />
             ))}
             <p className="k-inv-sub">
