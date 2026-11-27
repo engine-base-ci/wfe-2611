@@ -120,14 +120,3 @@ phone("MbKnowledge.dc.html", "スマホ ナレッジ", H1("ナレッジ"),
   + '<div style="display: flex; gap: 6px">' + chip("最近見た", True) + chip("自分が持ち主") + chip("確かめ期限 2") + '</div>'
   + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">' + kp("請求のルール", "ワークスペース全体 ・ 請求 ・ 版 4").replace("border-top: 1px solid #EDF0F4; ", "", 1) + kp("取引先ごとの宛名の決め方", "請求 ・ 版 2") + kp("経理の月次の流れ", "ワークスペース全体 ・ 版 5", pill("確かめ期限", "#FCEBD5", "#7A4A05")) + kp("営業の進め方", "営業 ・ 版 3") + '</div>'
   + '<div style="font-size: 12px; color: %s">スマホでは読む・探す・確かめる まで。書く・直すは PC で（ページを開くと同じ作りが縦に並ぶ）</div>' % MUTED, "menu")
-# スマホ：取引先
-cr = lambda m, bg, n, sub_, right: '<a href="CuPage.dc.html" style="display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-top: 1px solid #EDF0F4; text-decoration: none; color: #131B27"><span style="width: 32px; height: 32px; flex: none; border-radius: 8px; background: %s; color: #FFFFFF; display: grid; place-items: center; font-weight: 700; font-size: 13px">%s</span><span style="flex: 1; min-width: 0"><b style="font-weight: 500; display: block">%s</b><span style="font-size: 12px; color: %s">%s</span></span>%s</a>' % (bg, m, n, MUTED, sub_, right)
-phone("MbClients.dc.html", "スマホ 取引先", H1("取引先"),
-  '<a href="CuRequests.dc.html" style="display: flex; gap: 10px; align-items: center; background: #FFF8EE; border: 1px solid #F1D9A8; border-radius: 12px; padding: 12px 14px; text-decoration: none; color: #131B27"><b style="flex: 1; font-weight: 600">届いた依頼 3 件</b><span style="font-size: 12px; color: #7A4A05">さばく ›</span></a>'
-  + '<div style="display: flex; gap: 6px">' + chip("すべて 6", True) + chip("自分が担当 3") + chip("検収待ち 2") + '</div>'
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 12px; overflow: hidden">'
-  + cr("セ", "#186F69", "セイコー株式会社", "動いている 4 ・ 今日 10:20", pill("依頼 1", "#FCEBD5", "#7A4A05")).replace("border-top: 1px solid #EDF0F4; ", "", 1)
-  + cr("京", "#6D4AA6", "京蟻システム株式会社", "動いている 7 ・ 昨日", pill("依頼 2", "#FCEBD5", "#7A4A05"))
-  + cr("ミ", "#B45309", "合同会社ミナト", "動いている 1 ・ 10/30", pill("検収待ち 1"))
-  + cr("ソ", "#2F4B7C", "株式会社ソラ", "動いている 2 ・ 10/28", "") + '</div>'
-  + '<div style="font-size: 12px; color: %s">スマホでは いま・依頼をさばく・検収を頼む まで。取引先を足す・決まりを直すは PC で</div>' % MUTED, "menu")

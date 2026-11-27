@@ -176,14 +176,14 @@ REQ_INLINE = re.compile(r'(<label style="display: flex; flex-direction: column;[
 def req_inline(s):
     return REQ_INLINE.sub(r"\1<span>\2 \3</span>", s)
 def section(f):
-    ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
+    ED = {"EdRule": "ai", "EdMemory": "ai", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
     if f.startswith("Approvals"): return "approvals"
     if f.startswith("Room") or f.startswith("AiChat"): return "ai"
     if f.startswith("Ws"): return "company"
     if f.startswith("Me"): return "none"
     if f.startswith("Kn"): return "knowledge"
-    if f.startswith("Cu") and f != "CuReview.dc.html": return "clients"
+    if f.startswith("Cu"): return "clients"
     return "tickets"
 for path in sorted(glob.glob(P + "*.dc.html")):
     f = os.path.basename(path)
