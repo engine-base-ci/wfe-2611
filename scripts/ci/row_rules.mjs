@@ -134,6 +134,9 @@ export const OP_RULES = {
   // 動いている AI の実行を止める：入口は「その実行が見える」だけ。担当者かの判定（403・E-RUN-001）と、消した・無い（404）は
   //   DB の関数 app.run_stop と口（features/F5/stop/run-stop.ts）が持つ（K-731・K-485 の takeoverActionRun と同じ作り）
   stopActionRun: `true`,
+  // 試し打ち：入口は見えるだけ。担当者かの判定（403）・状態（409）・消した・無い（404）は
+  //   DB の関数 app.ticket_dry_run と口（features/F5/more/dry-run.ts）が持つ（K-746・K-731 の stopActionRun と同じ作り）
+  dryRunTicket: `true`,
   // まとめて承認：入口は見えるだけ。承認する人か・今の状態・書けるかの判定は DB の関数 app.approval_decide が 1 件ずつ持つ。
   //   まとめて承認は 1 件ずつの守りと同じ（K-768・D-153.11）。確かめの読み（app.approval_bulk_scan）も自分が承認する物だけを数える
   previewBulkApproval: `true`,

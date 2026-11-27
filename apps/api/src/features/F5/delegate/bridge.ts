@@ -46,7 +46,7 @@ type TakenJob = {
   kind: "chat" | "login_check" | "ticket";
   credential_id: string | null;
   ticket_id: string | null;
-  phase: "make" | "execute" | null;
+  phase: "make" | "execute" | "dry_run" | null;
 };
 
 export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
@@ -78,7 +78,6 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     }
   };
 
-  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
   /** 会話の仕事の会話の種類（K-737：Bridge が作る画面の会話の仕事にだけ draft_propose を見せる）。会話でない仕事は null。
    *   主キーの読み 1 回（消されていても読む）。会話の表は本人の行だけ見える（RLS）ので、その PC の人の文脈で読む */
   const talkKindOf = async (ctx: HookArgs["ctx"], job: TakenJob): Promise<string | null> => {
@@ -90,12 +89,15 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     );
     return r.rows[0]?.talk_kind ?? null;
   };
+
+  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3）。
+   *   試し打ち（phase dry_run・K-746）には道具の鍵を出さない：確認項目を変えない仕事なので、spec_check・guard_report を PC の AI に並べない */
   const withExtras = async (ctx: HookArgs["ctx"], sid: string, job: TakenJob) => {
     const memories = job.conversation_id
       ? ((await one<unknown>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id])) ?? [])
       : [];
-    const tool_token =
-      job.conversation_id || job.kind === "ticket" ? await issueToolToken(pool, sid, job.job_id) : null;
+    const wantsTools = (job.conversation_id || job.kind === "ticket") && job.phase !== "dry_run";
+    const tool_token = wantsTools ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
       (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
     const talk_kind = await talkKindOf(ctx, job);

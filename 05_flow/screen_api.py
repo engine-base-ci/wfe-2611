@@ -924,9 +924,9 @@ NOT_NULL_ANSWERS = {
     "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
     # K-62：実行の 1 件は、任せる関数（phase make）と K-63 の承認の関数（phase execute）が ticket_id・phase を必ず入れた行だけを返す（action_runs の列は会話の実行のために null 可）
     "getActionRun.ticket_id": "チケットの実行だけを読む口。任せる関数と承認の関数が ticket_id を必ず入れる（action_runs.ticket_id は会話の実行のために null 可）",
-    "getActionRun.phase": "チケットの実行だけを読む口。任せる関数が make・承認の関数が execute を必ず入れる（action_runs.phase は会話の実行のために null 可）",
+    "getActionRun.phase": "チケットの実行だけを読む口。任せる関数が make・承認の関数が execute・試し打ちの関数が dry_run（試し打ち）を必ず入れ、make・execute・dry_run のどれか（action_runs.phase は会話の実行のために null 可）",
     "listTicketRuns.ticket_id": "チケットの実行の一覧。どの行も ticket_id を持つ（action_runs.ticket_id は会話の実行のために null 可）",
-    "listTicketRuns.phase": "チケットの実行の一覧。どの行も make か execute を持つ（action_runs.phase は会話の実行のために null 可）",
+    "listTicketRuns.phase": "チケットの実行の一覧。どの行も make・execute・dry_run（試し打ち）のどれかを持つ（action_runs.phase は会話の実行のために null 可）",
 }
 # 類 E（K-144 ⑯・回 9）：口が「無い」ことで 422 にする入力の欄（必須の欄）。契約の入力の形の required と x-required-by: hooks になる
 #   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
@@ -1057,7 +1057,7 @@ RESPONSES = {
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
     "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
-    "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string", "unchecked": "object"}),
+    "completeTicket": ("TicketCompletion", {"ticket": "object", "unchecked": "object"}),  # K-766：ナレッジの候補は外した（D-153.15）
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
     "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string", "handover_kind": "string?", "reply_due": "string?", "carry_children": "integer?", "to_scope_name": "string?", "ticket_scope_name": "string?"}),   # K-161：期限なし・聞き直しでない行は due_on・note が null。K-405：渡しの行は kind handover・AI の成果物の行は handover_kind・reply_due・carry_children・to_scope_name・ticket_scope_name が null
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
