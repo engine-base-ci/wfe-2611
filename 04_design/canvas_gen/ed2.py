@@ -18,7 +18,7 @@ mm = re.search(r'<a href="[^"]*" style="font-size: 12px; margin-bottom: 8px">親
 pop = ('<span style="position: relative; display: inline-block"><a href="#" style="font-size: 12px; margin-bottom: 8px; background: #DCE4F2; border-radius: 4px; padding: 0 4px">親チケットを決める</a><div role="dialog" style="%s; top: 24px; left: 0; width: 420px">' % POP
   + '<input value="保守" style="width: 100%; box-sizing: border-box; height: 32px; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13px; margin-bottom: 6px">'
   + res("EG-124", "【親】セイコー様 保守契約の更新", "営業", "作業中", True) + res("EG-097", "セイコー様 保守契約の見積", "営業", "完了") + res("JD-150", "京蟻 保守運用（年間）", "受託開発", "作業中")
-  + '<div style="border-top: 1px solid #EDF0F4; margin-top: 6px; padding: 8px 6px 2px; font-size: 12px; display: flex; flex-direction: column; gap: 4px"><span style="color: %s">親にすると、親の期限（11/15）より後にはできない。親の進みにこの子が数えられる</span><span>%s</span></div></div></span>' % (MUTED, check("親の担当・取引先・節目を写す", True).replace("padding: 4px 0", "padding: 0")))
+  + '<div style="border-top: 1px solid #EDF0F4; margin-top: 6px; padding: 8px 6px 2px; font-size: 12px; display: flex; flex-direction: column; gap: 4px"><span style="color: %s">親にすると、親の期限（11/15）より後にはできない。親の進みにこの子が数えられる</span><span>%s</span></div></div></span>' % (MUTED, check("親の担当・節目を写す", True).replace("padding: 4px 0", "padding: 0")))
 save("EdParent.dc.html", "親チケットを決める", C[:a] + pop + C[a + alen:])
 # 3 分身に覚えさせる
 s = modal(L("RoomMemory"), mhead("高本のAI に覚えさせる", "RoomMemory.dc.html", icon("憶", "#6D4AA6", 28), "好み・事実・実例。短く 1 つずつ")

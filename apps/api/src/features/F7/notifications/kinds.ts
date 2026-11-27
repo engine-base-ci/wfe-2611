@@ -32,6 +32,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 段 8（K-464・K-463）
   "ticket.stopped": ticketKind("stopped"),
   "approval.requested": ticketKind("approval"),
+  // 段 12（K-881・20261127094100）：チケットを見せる相手に足したグループのゲストへの知らせ。社内の鈴ではチケットが社内の人として見えるときだけ出るので、ゲスト宛てのこの行は社内の鈴に出ない（先方の場所での出し方は先方の場所の葉が持つ）
+  "ticket.guest_shared": ticketKind("write"),
   // 段 9（K-402・K-408・K-409・K-410・K-406）：受ける？の札
   "handover.requested": ticketKind("handover"),
   "handover.offered": ticketKind("handover"),

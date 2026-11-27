@@ -15,6 +15,7 @@ import type { RunView } from "@/features/F5/delegate/use-run";
 import { InertButton, daysOver, mmddWeek } from "./detail-head";
 import type { SlotTicket } from "./detail-slots";
 import type { ScopeRow } from "./ticket-shell";
+import { GuestShareSection } from "@/features/F11/share/share-section";
 
 export interface PanelTicket {
   scope_id?: string | null;
@@ -141,6 +142,8 @@ export function DetailPanel(p: DetailPanelProps) {
           </a>
         ))}
       </nav>
+      {/* 「ゲストに見せる」の区画（F11・K-905）：区の後・実行の記録の前（answer=9096d8002961） */}
+      <GuestShareSection ticket={p.slot} />
       <RunLatest runs={p.runs} />
     </div>
   );

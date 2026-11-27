@@ -280,3 +280,52 @@
 .k-inv-link-btn {
   justify-self: start;
 }
+.k-inv-note-err {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-error);
+}
+
+/* ---- K-874（段 12）メンバー／ゲストのタブ（見出しの帯の下）・下絵 /dev/mock/f11 の stage9/invite.css から ---- */
+.k-inv-tabs {
+  display: flex;
+  gap: var(--k-s-md);
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-inv-tab {
+  padding: var(--k-s-sm) var(--k-s-xs);
+  border-bottom: var(--k-c-detail-tab-border-bottom);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body);
+  text-decoration: none;
+}
+.k-inv-tab[aria-current="page"] {
+  border-bottom: var(--k-c-list-view-border-bottom);
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+
+/* 767 以下で第 2 ナビのボタンが画面の端から sm しか離れていなかった（崩れの検査の端の余白・md） */
+@media (max-width: 767px) {
+  .k-me-sub:has(.k-inv-sub-trigger) {
+    padding-inline: var(--k-s-md);
+  }
+}
+
+/* ゲストの行（招待中を除く）はスマホでも「⋯」（止める・戻す・外す）を出す。ゲストには開く詳細の頁が無いため（代表の答え answer=03b52b9684c4）。
+   役割の札（どの行も「ゲスト」）はスマホでは出さず、止めている状態は名前とメールの下の 2 行目に出す */
+@media (max-width: 767px) {
+  .k-inv-row[data-guest] {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .k-inv-row[data-guest] .k-inv-role-cell {
+    display: none;
+  }
+  .k-inv-row[data-guest] .k-inv-more {
+    display: inline-flex;
+  }
+  .k-inv-row[data-guest] .k-inv-state:not(:empty) {
+    display: inline-flex;
+    grid-row: 2;
+    grid-column: 2 / -1;
+  }
+}

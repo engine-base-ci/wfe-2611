@@ -22,11 +22,11 @@ const LEAF_NAME = /^K-([1-9]\d*)\.ts$/;
 /** 葉でないが置いてよい物：葉の形の型（土台）と説明。読み込まない */
 const NOT_A_LEAF = /^(?:_base\.ts|README\.md)$/;
 const KEYS: readonly string[] = ["setup", "UUID_PARAM_CASES", "BODIES", "tests"];
-const ROW_ID = /^K144-API-\d{3}$/;
+const ROW_ID = /^K144-API-\d{3,4}$/;
 /** 字のまま書いた入口の uuid の行（契約の形の検査 scripts/ci/contract_shape_test.py の K144-SHAPE-017 と同じ拾い方） */
-const ROW_IN_TEXT = /\["(K144-API-\d{3})",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]/g;
+const ROW_IN_TEXT = /\["(K144-API-\d{3,4})",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]/g;
 /** 行 ID の字（入口の uuid の行と、試験の題の頭）。二重引用符で始まる字だけを拾う */
-const ID_IN_TEXT = /"(K144-API-\d{3})(?!\d)/g;
+const ID_IN_TEXT = /"(K144-API-\d{3,4})(?!\d)/g;
 const BODY = "本体";
 
 interface Loaded {
@@ -71,7 +71,7 @@ const leafNames = (dir: string): string[] => {
   return names.sort((a, b) => numberOf(a) - numberOf(b));
 };
 
-/** ③ 入口の uuid の行の形：4 つの字（行 ID は K144-API-<3 けた>・3 つ目は path か query） */
+/** ③ 入口の uuid の行の形：4 つの字（行 ID は K144-API-<3 か 4 けた>・3 つ目は path か query） */
 const isRow = (r: unknown): r is K144UuidCase =>
   Array.isArray(r) &&
   r.length === 4 &&
@@ -100,7 +100,7 @@ const shapeOf = (name: string, mod: Bag): K144Leaf => {
     const bad = rows.filter((r) => !isRow(r));
     if (bad.length > 0)
       stop(
-        `入口の uuid の行の形が違う：${bad.map((r) => JSON.stringify(r)).join("・")}（["K144-API-<3 けた>", "<口>", "path" か "query", "<値の名前>"]）`,
+        `入口の uuid の行の形が違う：${bad.map((r) => JSON.stringify(r)).join("・")}（["K144-API-<3 か 4 けた>", "<口>", "path" か "query", "<値の名前>"]）`,
       );
   }
   return leaf as K144Leaf;

@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/client-requests-decline.ts", "apps/api/src/features/F11/requests/**"],
+   "tests": ["apps/api/test/features/F11/client-requests-decline.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"]}
+ ]
+}

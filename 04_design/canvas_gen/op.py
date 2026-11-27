@@ -181,7 +181,7 @@ body = (ttl("お知らせ", "全部のワークスペースか、選んだワー
       [KIND["障害"], '<a href="OpNotice.dc.html" style="color: #131B27">分身の実行が遅れています</a>', "全部", dot("原因が分かった ・ 11/02 09:40〜", RED), "高本"],
       [KIND["メンテ"], '<a href="OpNoticeNew.dc.html" style="color: #131B27">11/10（月）2:00〜3:00 メンテナンス</a>', "全部", dot("予定 ・ 11/03 10:00 に出す", AMBER), "高本"],
       [KIND["リリース"], "チケットにスレッドができました", "全部", dot("出した 10/28"), "高本"],
-      [KIND["リリース"], "取引先の場所を足しました", "チーム・ビジネス（仮）", dot("出した 10/14"), "佐野"],
+      [KIND["リリース"], "ゲストのグループを足しました", "チーム・ビジネス（仮）", dot("出した 10/14"), "佐野"],
       [KIND["リリース"], "ナレッジの取り込み（Obsidian・Notion）", "全部", '<span style="color: #8A94A3">下書き</span>', "佐野"]])
   + '<div style="font-size: 12px; color: %s">顧客には「困ったとき・お知らせ」の一覧に出る。障害とメンテは上の帯にも出て、メンテ中はメンテナンス中の画面になる。メールは、使えなくなるメンテのときだけ各ワークスペースの管理者に届く</div>' % MUTED)
 NL = page("OpNotices.dc.html", "運営 お知らせ", [("お知らせ", "")], body)
@@ -347,7 +347,7 @@ nt = lambda k, t, w, b_: '<div style="display: flex; gap: 12px; padding: 12px 16
 body = (ttl("困ったとき・お知らせ", "", btn("問い合わせる", "p", "EdInquiry.dc.html"))
   + '<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start"><div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px"><b>お知らせ</b>'
   + '<div style="%s; overflow: hidden">' % WHITE + nt("障害", "分身の実行が遅れています", "11/02 10:20", "原因が分かった ・ 送る順番の仕組みを入れ替えています。データは消えていません")
-  + nt("メンテ", "11/10（月）2:00〜3:00 メンテナンス", "11/03", "この間は使えません。承認したものは終わってから動きます") + nt("リリース", "チケットにスレッドができました", "10/28", "チケットごとに人と話して調整できます") + nt("リリース", "取引先の場所を足しました", "10/14", "先方の人を招いて、依頼と検収をやり取りできます") + '</div></div>'
+  + nt("メンテ", "11/10（月）2:00〜3:00 メンテナンス", "11/03", "この間は使えません。承認したものは終わってから動きます") + nt("リリース", "チケットにスレッドができました", "10/28", "チケットごとに人と話して調整できます") + nt("リリース", "ゲストのグループを足しました", "10/14", "ゲストを招いて、依頼とチケットのやり取りができます") + '</div></div>'
   + '<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
   + card('<b>いまの稼働状況</b>' + "".join('<div style="display: flex; padding: 8px 0; border-top: 1px solid #EDF0F4; margin-top: 6px"><span style="flex: 1">%s</span>%s</div>' % (a, b) for a, b in [("画面", dot("ふつう")), ("分身の実行", dot("遅れている", RED)), ("PC とのつながり", dot("ふつう"))]))
   + card('<b>自分の問い合わせ</b>' + "".join('<a href="MeInquiry.dc.html" style="display: flex; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid #EDF0F4; margin-top: 6px; color: #131B27; text-decoration: none"><span style="flex: 1">%s<span style="display: block; font-size: 11px; color: %s">%s</span></span>%s</a>' % (a, MUTED, b, c) for a, b, c in [("PC をつけているのに実行待ちのまま", "11/02 ・ 運営から返事あり", pill("返事あり", "#DCE4F2", NAVY)), ("ナレッジの取り込みの形式", "10/20", pill("済み"))]))

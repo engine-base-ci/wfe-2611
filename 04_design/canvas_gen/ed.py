@@ -14,7 +14,7 @@ def main():
     s = modal(L("RoomKnows"), mhead("守ることを直す", "RoomKnows.dc.html", icon("宛", "#186F69", 28), "取引先：セイコー ・ 版 2 ・ 10/28 高本が作った ・ 3 回効いた")
       + mbody('<div>' + lab("守ること") + '<textarea style="width: 100%; box-sizing: border-box; min-height: 60px; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 13px">宛名は経理部 山田様、CC に営業の鈴木様と、1 月からは経理部 佐野様も入れる</textarea></div>'
       + '<div>' + lab("どこで効かせる") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + radio("自分の仕事すべて", "どのチケットでも") + radio("取引先", "セイコー株式会社", True) + radio("種別", "請求・見積など") + '</div></div>'
-      + '<div>' + lab("分身の点検") + OKB("ほかの守ることとぶつからない") + '<div style="height: 6px"></div>' + WARNB("取引先の人に「佐野 様」がまだいない。先方の人に足すと、宛先に使える（<a href=\"CuShare.dc.html\">先方の人へ</a>）") + '</div>'
+      + '<div>' + lab("分身の点検") + OKB("ほかの守ることとぶつからない") + '<div style="height: 6px"></div>' + WARNB("取引先の人に「佐野 様」がまだいない。先方の人に足すと、宛先に使える（<a href=\"CuRequests.dc.html\">先方の人へ</a>）") + '</div>'
       + NOTE("直すと版 3 になり、これから分身が読むものから効く。前の版は「効いた記録」から見られる"))
       + mfoot(btn("消す", "d"), btn("止める（一時的に効かせない）"), btn("やめる", "", "RoomKnows.dc.html"), btn("直す", "p", "RoomKnows.dc.html")), 600, "守ることを直す")
     save("EdRule.dc.html", "守ることを直す", s)
@@ -25,27 +25,6 @@ def main():
     b = s.index("</div>", a) + 6
     s = s[:a] + '<div><textarea style="width: 100%; box-sizing: border-box; min-height: 70px; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 13px">メールの書き出しは「お世話になっております」。社外の初めての相手には「はじめてご連絡いたします」</textarea><div style="display: flex; gap: 6px; justify-content: flex-end; margin-top: 6px">' + btn("やめる", "", "RoomMemory.dc.html") + btn("直す", "p", "RoomMemory.dc.html") + '</div><div style="font-size: 11px; color: %s; margin-top: 4px">直したら、分身は次から新しい書き方で覚えている</div></div>' % MUTED + s[b:]
     save("EdMemory.dc.html", "覚えていることを直す", s)
-
-    # 3 取引先を足す
-    s = modal(L("CuList"), mhead("取引先を足す", "CuList.dc.html")
-      + mbody('<div>' + lab("取引先の名前") + field("株式会社ハルカ") + '</div>'
-      + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("担当") + field(av("高", "#6B5B99", 20) + " 高本（自分） ▾") + '</div><div>' + lab("担当グループ", "（いくつでも）") + '<div style="border: 1px solid #DDE2E9; border-radius: 6px; min-height: 34px; padding: 4px 8px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap">' + pill("営業 ×", "#E3F1EF", "#186F69") + '<span style="font-size: 12px; color: #4A5563">＋</span></div></div></div>'
-      + '<div>' + lab("社内で見える人") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + radio("ワークスペースの全員", "ワークスペースの既定", True) + radio("担当グループの人だけ", "鍵のしるしが付く") + '</div></div>'
-      + '<div>' + lab("先方のメールのドメイン", "（任意）") + field("haruka.example") + '<div style="font-size: 11px; color: %s; margin-top: 4px">先方の人を足すとき、このドメインのメールならこの取引先に当てる。分身がチケットやメールを読むときも取引先の案を出す（Kaname がメールを受け取るわけではない）</div></div>' % MUTED
-      + '<div style="display: flex; gap: 8px; align-items: center; background: #F3F6FC; border: 1px solid #C9D6EE; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + icon("AI", NAVY, 22) + '<span>分身の案：これまでのチケットに「ハルカ」が 2 件ある（EG-088・EG-101）。この取引先につなぐ</span>' + check("", True).replace("padding: 4px 0", "padding: 0") + '</div>')
-      + mfoot(btn("やめる", "", "CuList.dc.html"), btn("足して先方の人を招く", "", "EdContact.dc.html"), btn("足す", "p", "CuPage.dc.html")), 600, "取引先を足す")
-    save("EdClient.dc.html", "取引先を足す", s)
-
-    # 4 先方の人を招く・直す
-    s = modal(L("CuShare"), mhead("先方の人を招く", "CuShare.dc.html", "", "セイコー株式会社 ・ 招いた人は「クライアントの場所」に入れる")
-      + mbody('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("名前") + field("佐野 恵 様") + '</div><div>' + lab("部署") + field("経理部") + '</div></div>'
-      + '<div>' + lab("メール") + field("sano@seiko.example") + '</div>'
-      + '<div>' + lab("役割") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + radio("依頼できる", "依頼を出し、見せた仕事と成果物を見て、検収に答える", True) + radio("見るだけ", "見せた仕事を見るだけ") + '</div></div>'
-      + '<div>' + lab("分身が宛先に使うとき", "（取引先の決まりにつながる）") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("請求の宛先", True) + chip("CC") + chip("使わない") + '</div></div>'
-      + '<div style="display: flex; flex-direction: column">' + check("招待のメールを送る（7 日で切れる）", True) + check("いまは招かず、宛先としてだけ登録する", False, "クライアントの場所には入れない") + '</div>'
-      + NOTE("同じ取引先の人は互いの依頼が見える。社内のチケットやメモは見えない"))
-      + mfoot(btn("やめる", "", "CuShare.dc.html"), btn("招く", "p", "CuShare.dc.html")), 580, "先方の人を招く")
-    save("EdContact.dc.html", "先方の人を招く", s)
 
     # 5 メンバーの ⋯
     W = L("WsPeople")

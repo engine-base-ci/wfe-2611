@@ -1,0 +1,20 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/portal-read.ts",
+    "apps/api/src/features/F11/portal/home.ts",
+    "apps/api/src/features/F11/portal/ticket.ts",
+    "apps/api/src/features/F11/portal/notices.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/portal-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F11/portal-world.ts": "口の振る舞いの hooks のファイルを動的 import で読む（先方の場所の口の葉 K-906〜K-910 の試験が共に使う道具）。読む物と使う試験は data_links で結ぶ・K-906",
+  "apps/api/test/features/contract/k144.d/K-906.ts": "同じ hooks のファイルを動的 import で読む。同上・K-906"
+ }
+}

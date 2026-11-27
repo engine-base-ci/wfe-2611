@@ -40,12 +40,32 @@ interface TicketProgressInfo {
 }
 /** 詳細に足す欄を読む 1 文（文の数を増やさない・K234-API-004）。列は関数ごとに 1 つ。
  *  欄を足す葉は、この文に列を 1 つ足し（例 app.ticket_handover_now($1) as h）、DetailExtras と detailExtras に鍵を 1 つ足す */
-const DETAIL_EXTRAS_SQL = "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p";
+const DETAIL_EXTRAS_SQL =
+  "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p, app.ticket_guest_share_state($1) as g";
+/** 見せる相手（DB の app.ticket_guest_share_state の答え・K-881）。詳細に載せるのは shared の id と名前と can_change だけ（K-905） */
+interface TicketGuestShareState {
+  shared?: { guest_group_id?: unknown; name?: unknown }[];
+  can_change?: boolean;
+}
 interface DetailExtras {
   v: TicketBand | null;
   p: TicketProgressInfo | null;
+  g: TicketGuestShareState | null;
 }
-/** 詳細の答えのうち、DETAIL_EXTRAS_SQL の列から組む欄（承認の帯・できること・完了・時間・保留の帯） */
+/** 詳細の guest_share（K-905）：summary・choices は載せない（小窓を開いたときに listTicketGuestShares で読む）。無ければ見せていない・変えられない */
+function guestShareOf(g: TicketGuestShareState | null): {
+  shared: { guest_group_id: string; name: string }[];
+  can_change: boolean;
+} {
+  const shared = Array.isArray(g?.shared) ? g.shared : [];
+  return {
+    shared: shared
+      .filter((x) => typeof x?.guest_group_id === "string" && typeof x?.name === "string")
+      .map((x) => ({ guest_group_id: String(x.guest_group_id), name: String(x.name) })),
+    can_change: g?.can_change === true,
+  };
+}
+/** 詳細の答えのうち、DETAIL_EXTRAS_SQL の列から組む欄（承認の帯・できること・完了・時間・保留の帯・見せる相手） */
 function detailExtras(x: DetailExtras | undefined, t: Row): Row {
   const band = x?.v ?? null;
   const p = x?.p ?? null;
@@ -60,6 +80,7 @@ function detailExtras(x: DetailExtras | undefined, t: Row): Row {
       ai_minutes: p?.ai_minutes ?? 0,
     },
     hold: p?.hold ?? null,
+    guest_share: guestShareOf(x?.g ?? null),
   };
 }
 
@@ -176,6 +197,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
         // 承認の帯（K-162・D-128.178）：決まっていない成果物の承認待ち 1 つ（呼んだ人が決められるか）。読むだけ。
         //   完了（K-165）：呼んだ人が完了にできるか（can.complete）と、完了の時刻と押した人の名前（completed）
         //   進める（K-387）：段を変えられるか（can.progress）・実績を入れられるか（can.actual）・AI の分の時間・保留の帯。帯と同じ 1 文で読む
+        //   見せる相手（K-905）：見せているゲストのグループの id と名前・変えられるか（guest_share）。同じ 1 文の列（文は増やさない）
         const extras = await withTenant(
           appPool,
           a.ctx,

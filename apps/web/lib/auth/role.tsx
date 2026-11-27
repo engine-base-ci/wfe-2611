@@ -17,19 +17,33 @@ const ROLE_OF: Record<string, string[]> = {
   staff: ["R3"],
   viewer: ["R4"],
   ops: ["R6"],
+  // ゲスト（招いた外の人・D-155.35）はどの社内の役割にも入れない。知らない role_id のように管理者へ倒さない
+  requester: [],
 };
 
-export function useMyRoles(): { roles: string[] | undefined } {
+/** ゲストの役割の id と、ゲストの場所（入口と「この権限では見えない」の戻る先・K-877） */
+export const GUEST_ROLE = "requester";
+export const GUEST_HOME = "/portal";
+
+/** 自分のこと（/me）の role_id。入っていなければ null・まだ分からなければ undefined。問い合わせは useMyRoles と同じ ["me"] を使う */
+export function useMyRoleId(): { roleId: string | null | undefined } {
   const { session } = useSession();
   const q = useQuery({ queryKey: ["me"], queryFn: me, enabled: session != null, retry: false });
-  if (session === undefined || (session != null && q.isPending)) return { roles: undefined };
-  if (session === null) return { roles: [] };
-  return { roles: ROLE_OF[q.data?.role_id ?? "owner"] ?? ["R1", "R2"] };
+  if (session === undefined || (session != null && q.isPending)) return { roleId: undefined };
+  if (session === null) return { roleId: null };
+  return { roleId: q.data?.role_id ?? "owner" };
+}
+
+export function useMyRoles(): { roles: string[] | undefined; isGuest: boolean } {
+  const { roleId } = useMyRoleId();
+  if (roleId === undefined) return { roles: undefined, isGuest: false };
+  if (roleId === null) return { roles: [], isGuest: false };
+  return { roles: ROLE_OF[roleId] ?? ["R1", "R2"], isGuest: roleId === GUEST_ROLE };
 }
 
 /** その画面を見られる役割のときだけ中身を出す。見られないなら理由と導線 */
 export function RequireRole({ screen, children }: { screen: ScreenId; children: ReactNode }) {
-  const { roles } = useMyRoles();
+  const { roles, isGuest } = useMyRoles();
   const allowed = NAV.screens[screen]?.roles ?? [];
   if (roles === undefined) return <p className="p-8 text-[13.5px] text-[var(--on-sv)]">確かめています</p>;
   if (allowed.length && !roles.some((r) => allowed.includes(r)))
@@ -39,7 +53,10 @@ export function RequireRole({ screen, children }: { screen: ScreenId; children: 
         <p className="mt-2 text-[14px] leading-[1.8]">
           この画面は「{NAV.screens[screen]?.name}」です。いまの権限では開けません。見える画面へ戻ります。
         </p>
-        <Link href={pendingRoute(FALLBACKS.forbidden.back, "T-U-13")} className="mt-6 inline-flex">
+        <Link
+          href={isGuest ? pendingRoute(GUEST_HOME, "K-911") : pendingRoute(FALLBACKS.forbidden.back, "T-U-13")}
+          className="mt-6 inline-flex"
+        >
           <Button>見える画面へ</Button>
         </Link>
       </main>

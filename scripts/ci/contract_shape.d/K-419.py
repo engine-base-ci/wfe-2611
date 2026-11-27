@@ -2,15 +2,15 @@
 # apps/api/src/features/F10/invite/create.ts（emails・scope_id・role_key は無ければ 422。message は無くてよい）
 import invite_patterns as _IP  # 宛ての pattern（scripts/ci/invite_patterns.py・口は apps/api/src/features/F10/invite/patterns.ts と同じ字・K419-API-024 が照らす）
 REQUIRED_INPUTS = {
-    "createInvitations": {"emails", "scope_id", "role_key"},
+    "createInvitations": {"emails", "role_key"},   # scope_id は役割で分ける（requester は持てない・K-876 の INPUT_RULES は screen_api.d だけに書く）
 }
 NO_REQUIRED_INPUTS = {}
 PATH_PATTERNS = {}
-# 役割は決まった 4 つ・ひとこと 500 文字まで（宛ての数の上限 50 は口が E-INV-012 で断るので契約には書かない）
+# 役割は決まった 4 つとゲストの requester（K-876）・ひとこと 500 文字まで（宛ての数の上限 50 は口が E-INV-012 で断るので契約には書かない）
 VALUE_RANGES = {
     "createInvitations": {
         "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "maxLength": _IP.EMAIL_MAX_LENGTH, "pattern": _IP.EMAIL}},
-        "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
+        "role_key": {"enum": ["member", "manager", "viewer", "admin", "requester"]},
         "message": {"maxLength": 500},
     },
 }

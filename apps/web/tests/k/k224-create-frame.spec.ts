@@ -392,14 +392,14 @@ test("K224-UI-024 ファイルを置く枠：在るが使えない。ファイ�
   expect(m.creates).toHaveLength(0);
 });
 
-test("K224-UI-025 振り分けのまだ使えない欄（AI に任せる・業務の型・予定・分類・節目・取引先）：在るが押せない・値は空・グレー（D-145.9）", async ({
+test("K224-UI-025 振り分けのまだ使えない欄（AI に任せる・業務の型・予定・分類・節目。「取引先」の欄は段 12 の決めで無くした・K-905）：在るが押せない・値は空・グレー（D-145.9）", async ({
   page,
 }) => {
   await mockCreate(page);
   await openCreate(page);
   await loaded(page);
   const sec = page.getByRole("region", { name: "振り分け" });
-  for (const name of ["AI に任せる", "業務の型", "予定", "分類", "節目", "取引先"]) {
+  for (const name of ["AI に任せる", "業務の型", "予定", "分類", "節目"]) {
     const field = sec.getByRole("combobox", { name });
     await expect(field, name).toHaveCount(1);
     await expect(field, name).toHaveAttribute("aria-disabled", "true");

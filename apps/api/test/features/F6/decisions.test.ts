@@ -8,9 +8,7 @@ import {
   VAL_TEXT,
   VAL_DECIDER,
   VAL_SOURCE,
-  VAL_NOT_YET,
   DECISION_KIND,
-  CLIENT_RULE_LATER,
   f,
   T,
   O,
@@ -247,15 +245,14 @@ describe("K-390 決定を足す", () => {
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K390-API-011 どこまで効かせる：取引先のルール（client_rule）は 409 E-CONF-037「取引先の画面ができてから使えます」・このチケット（ticket）は 201・ほかの値は 422", async () => {
+  it("K390-API-011 どこまで効かせる：取引先のルール（client_rule）は選べなくなった（ゲストのグループに替わった・D-155.35）。client_rule もほかの値（everywhere）も 422・何も書かない。ticket か送らないは 201", async () => {
     const t = await ticket();
     const before = await snapshot(t.id);
-    const r = await add(boss, t.id, { text: "請求書は PDF", promoted_to: "client_rule" });
-    expect(r.status).toBe(409);
-    const j = await json(r);
-    expect(j["code"]).toBe(VAL_NOT_YET);
-    expect(j.details).toEqual([{ field: "promoted_to", message: CLIENT_RULE_LATER }]);
-    expect((await add(boss, t.id, { text: "請求書は PDF", promoted_to: "everywhere" })).status).toBe(422);
+    for (const promoted_to of ["client_rule", "everywhere"]) {
+      const r = await add(boss, t.id, { text: "請求書は PDF", promoted_to });
+      expect(r.status, promoted_to).toBe(422);
+      expect((await json(r))["code"], promoted_to).not.toBe("E-CONF-037");
+    }
     expect(await snapshot(t.id)).toEqual(before);
     expect(
       (await created(await add(boss, t.id, { text: "請求書は PDF", promoted_to: "ticket" }))).decision["promoted_to"],
