@@ -3,6 +3,7 @@
 //   札（?kind=ran|made|stopped）と期間（?period=month|quarter）は道に残す（すべて・この 1 週間は付けない・知らない値は既定に戻し口に送らない）。
 //   続きは meta.cursor を cursor で渡す無限の読み（1 回 50 件＝口の既定）。この期間の数は meta.summary（札で絞っても口の答えのまま・waiting は出さない）。
 //   401 は call が入り直しへ送る。書き出しは作らない（D-153.33）
+import type { Route } from "next";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
@@ -69,7 +70,7 @@ function useDoneParams() {
     if (p === DEFAULT_PERIOD) q.delete("period");
     else q.set("period", p);
     const s = q.toString();
-    router.replace(s ? `${path}?${s}` : path, { scroll: false });
+    router.replace((s ? `${path}?${s}` : path) as Route, { scroll: false });
   };
   return { kind, period, write };
 }

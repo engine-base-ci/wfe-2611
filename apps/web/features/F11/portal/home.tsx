@@ -2,6 +2,7 @@
 // ゲストの場所の最初の画面（キャンバス CpHome）：依頼と見せてもらったチケットの 2 つ（2026-11-23 代表の決め answer=6ba09f587792）。値は見本を受け取って描くだけ。
 //   読み込み中・読めない・空は同じ箱の中で出す。字：キャンバスのまま、無い所は仮
 //   本物の値は props で渡す（K-911・渡さなければ見本のまま）。部品は口を呼ばない
+import type { Route } from "next";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Badge, Button, Callout, ErrorState, Loading, PAGE_ERROR } from "@/components/k";
@@ -73,7 +74,7 @@ function Row({ item }: { item: RequestItem }) {
     </>
   );
   return item.href ? (
-    <Link className="k-f11p-row k-f11p-row-link" href={item.href}>
+    <Link className="k-f11p-row k-f11p-row-link" href={item.href as Route}>
       {inner}
     </Link>
   ) : (
@@ -136,7 +137,7 @@ export function HomeBody({
               </p>
             ) : (
               works.map((w) => (
-                <Link key={w.id ?? w.title} className="k-f11p-row k-f11p-row-link" href={w.href}>
+                <Link key={w.id ?? w.title} className="k-f11p-row k-f11p-row-link" href={w.href as Route}>
                   <span className="k-f11p-row-main">
                     <span>{w.title}</span>
                     <span className="k-f11p-row-meta">{w.meta}</span>

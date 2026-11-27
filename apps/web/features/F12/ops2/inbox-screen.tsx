@@ -2,6 +2,7 @@
 // 運営の受信箱の画面（/ops/support・K-976）。URL の箱・種類・開いた 1 件を読み → 外枠の答え（caps・箱の数）と一覧・1 件の口を読み → 部品に値と押したときの関数を渡す。
 //   箱・種類・1 件は URL に持つ（router.push で戻るが効く）。問い合わせ（inquiry）を持たない人は口を呼ばず見る権限がない形。
 //   右の様子は開いた 1 件の、開いていなければ一覧の 1 行目のワークスペース（下絵 oq-inbox と同じ形）
+import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
@@ -90,7 +91,7 @@ export function InboxScreen() {
   if (list.isError || !list.data) return <Failed onRetry={() => void list.refetch()} />;
 
   const now = new Date();
-  const go = (next: InboxQuery) => router.push(`${pathname ?? HOME}${inboxSearch(next)}`);
+  const go = (next: InboxQuery) => router.push(`${pathname ?? HOME}${inboxSearch(next)}` as Route);
   const boxes: InboxChip[] = BOXES.map((b) => ({
     label: BOX_LABEL[b],
     on: q.box === b,

@@ -9,6 +9,7 @@
 //     止める日が先の stop の帯 → 帯（× なし・問い合わせる）。止めた後 → ServiceGate が止められた画面（/notices・/inquiry は通す）。
 //     peek の帯：運営の側（閉じる id あり）は外枠の上に PeekBar と枠・顧客の側は帯の並びに 1 本（閉じられない）。
 //     残りの分は 1 分ごとに描き直し、期限を過ぎたら稼働状況を 1 回だけ読み直す（帯が消える）
+import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
@@ -132,7 +133,9 @@ export function ServiceBands({ screen }: { screen: string }) {
   if (!picked && !soon && !shownPeek) return null;
   return (
     <div className="k-uh-bands" data-screen={screen}>
-      {soon ? <StopSoonBand day={soon.day} reason={soon.reason} onAsk={() => router.push(askHref(path))} /> : null}
+      {soon ? (
+        <StopSoonBand day={soon.day} reason={soon.reason} onAsk={() => router.push(askHref(path) as Route)} />
+      ) : null}
       {shownPeek ? <CustomerPeekBand reason={shownPeek.reason} rest={shownPeek.rest} /> : null}
       {picked ? <PickedRow picked={picked} onClosed={(id) => setClosed((prev) => new Set([...prev, id]))} /> : null}
     </div>
@@ -170,7 +173,7 @@ function BandRow({ band, others, onClose }: { band: BandIn; others: number; onCl
   const v = bandView(band, notice);
   const href = v.href;
   const acts = {
-    onMore: href ? () => router.push(href) : null,
+    onMore: href ? () => router.push(href as Route) : null,
     onClose,
     closable: band.closable,
     others,
@@ -265,5 +268,7 @@ function GateView({
 function StoppedGate({ since, reason, path }: { since: string; reason: string; path: string }) {
   const router = useRouter();
   const contact = useOpsContact();
-  return <StoppedView since={since} reason={reason} contact={contact} onAsk={() => router.push(askHref(path))} />;
+  return (
+    <StoppedView since={since} reason={reason} contact={contact} onAsk={() => router.push(askHref(path) as Route)} />
+  );
 }

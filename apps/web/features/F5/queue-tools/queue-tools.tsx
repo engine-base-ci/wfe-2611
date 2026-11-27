@@ -3,6 +3,7 @@
 //   押した札と並べ替えは道（?kind=…&sort=…）に残す。既定（すべて・期限の近い順）は道に何も付けない。決まった値でない道の値は既定として読む（口に送らない）。
 //   札の数は口の meta.counts（total・artifact・handover・絞っても全体の数）。一覧の問い合わせの頁が持つ counts を問い合わせの入れ物から読む（口を増やさない）。
 //   文は全部文字として出す。生の色・大きさは書かない（more.css・approve.css の形を使う）
+import type { Route } from "next";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -62,7 +63,7 @@ export function useQueueParams(): QueueParams {
       if (value) next.set(name, value);
       else next.delete(name);
       const s = next.toString();
-      router.replace(s ? `${pathname}?${s}` : pathname, { scroll: false });
+      router.replace((s ? `${pathname}?${s}` : pathname) as Route, { scroll: false });
     },
     [sp, router, pathname],
   );
