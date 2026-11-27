@@ -41,7 +41,7 @@ interface TicketProgressInfo {
 /** 詳細に足す欄を読む 1 文（文の数を増やさない・K234-API-004）。列は関数ごとに 1 つ。
  *  欄を足す葉は、この文に列を 1 つ足し（例 app.ticket_handover_now($1) as h）、DetailExtras と detailExtras に鍵を 1 つ足す */
 const DETAIL_EXTRAS_SQL =
-  "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p, app.ticket_guest_share_state($1) as g";
+  "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p, app.ticket_guest_share_state($1) as g, app.ticket_handover_current($1) as h, app.ticket_handover_kinds($1) as k";
 /** 見せる相手（DB の app.ticket_guest_share_state の答え・K-881）。詳細に載せるのは shared の id と名前と can_change だけ（K-905） */
 interface TicketGuestShareState {
   shared?: { guest_group_id?: unknown; name?: unknown }[];
@@ -51,6 +51,10 @@ interface DetailExtras {
   v: TicketBand | null;
   p: TicketProgressInfo | null;
   g: TicketGuestShareState | null;
+  /** 今の渡し（K-405・待っている 1 件か一番新しい 1 件・無ければ null。形は listTicketHandovers の 1 件と同じ） */
+  h: Record<string, unknown> | null;
+  /** 見ている人が渡せる種類（K-405・pass・distribute・offer） */
+  k: string[] | null;
 }
 /** 詳細の guest_share（K-905）：summary・choices は載せない（小窓を開いたときに listTicketGuestShares で読む）。無ければ見せていない・変えられない */
 function guestShareOf(g: TicketGuestShareState | null): {
@@ -81,6 +85,9 @@ function detailExtras(x: DetailExtras | undefined, t: Row): Row {
     },
     hold: p?.hold ?? null,
     guest_share: guestShareOf(x?.g ?? null),
+    // 渡しの今（帯の「→ 〇〇（返事待ち）」）と入口の出し分け（K-405）
+    handover: x?.h ?? null,
+    handover_kinds: x?.k ?? [],
   };
 }
 
