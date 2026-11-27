@@ -34,7 +34,9 @@ const list = async (who: Who = w.admin) => {
   const r = await t.call(who, "GET", "/workspace/plans");
   return { r, b: await t.json(r) };
 };
-const change = async (who: Who, body: unknown, stepUpAgoSec: number | undefined = STEP) => {
+const change = async (who: Who, body: unknown, ...opt: [stepUpAgoSec?: number]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const stepUpAgoSec = opt.length ? opt[0] : STEP;
   const r = await t.call(who, "POST", "/workspace/plan", body, stepUpAgoSec === undefined ? {} : { stepUpAgoSec });
   return { r, b: await t.json(r) };
 };

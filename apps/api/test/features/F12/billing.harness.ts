@@ -7,7 +7,6 @@
 //   葉の hooks のファイルは最初の要求のときに 1 回だけ読む（準備で読まない・answer=8f745003d023）。
 //   hooks の材料は appPool・repo・objects・config（baseUrl と billing）。請求書・入金・契約の行は、運営の葉（K-981・K-982）が入るまで DB に直に置く。
 //   作った会社・行は名前の頭（run）で見分け、afterAll で消す
-import { afterAll } from "vitest";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -22,7 +21,7 @@ import { createApp } from "../../../src/app.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
-import { makeFixture, nextIp, type Fixture } from "../fixture.js";
+import { afterClose, makeFixture, nextIp, type Fixture } from "../fixture.js";
 
 const HOOKS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "src", "hooks");
 const OPS_TENANT = "00000000-0000-4000-8000-000000000001";
@@ -166,7 +165,7 @@ export async function startBilling(prefix: string, hookFiles: readonly string[])
     contract: { hooks, limits },
   });
   const tenants: string[] = [];
-  afterAll(async () => {
+  afterClose(async () => {
     if (!tenants.length) return;
     const t = [tenants];
     await f.admin.query("delete from notifications where tenant_id = any($1::uuid[])", t);

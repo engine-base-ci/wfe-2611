@@ -65,7 +65,9 @@ const inquiry = async (w: World, title = "プランを上げたい") =>
     "insert into inquiries (tenant_id, opened_by_member_id, title, topic_key, state, last_message_at) values ($1, $2, $3, 'billing', 'open', now()) returning id",
     [w.tenantId, w.admin.id, title],
   ))!.id;
-const change = async (wsId: string, body: unknown, who: Who = money, step: number | undefined = STEP) => {
+const change = async (wsId: string, body: unknown, who: Who = money, ...opt: [step?: number]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const step = opt.length ? opt[0] : STEP;
   const r = await b.call(
     who,
     "POST",

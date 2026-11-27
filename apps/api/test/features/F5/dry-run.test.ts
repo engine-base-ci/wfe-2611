@@ -113,6 +113,7 @@ async function running(t: Ticket, d: Delegated) {
   expect(job?.id).toBe(s.job_id);
   return s;
 }
+/** PC の終わりの知らせ。PC（apps/bridge の loop.ts）は続きの id・理由の無い欄を送らない（契約 BridgeFinishInput は null を受けない） */
 const finishDry = (d: Delegated, jobId: string, b: Parameters<typeof finish>[2]) => finish(d.pc, jobId, b);
 /** 何も書かれていないこと（承認の行・実行・仕事・やり取り・証跡・段） */
 const unchanged = async (t: Ticket, before: Awaited<ReturnType<typeof snapshot>>) =>
@@ -143,7 +144,7 @@ describe("K-746 試し打ちを始める：状態 × 入口 × 利用者の状�
       state_id: "queued",
       member_id: d.by.id, // 動かすのは任せた人の AI・その人の PC（承認の後の実行と同じ・D-128.176）
       permission_mode: "auto",
-      agent_session_id: null, // 作る段の会話に書き足さない
+      // agent_session_id は送らない（作る段の会話に書き足さない・契約は null を受けない＝ PC は欄ごと送らない）
       resume_session_id: null,
     });
     // 承認待ちはそのまま
@@ -176,13 +177,15 @@ describe("K-746 試し打ちを始める：状態 × 入口 × 利用者の状�
     ); // 確認項目が 1 件ある（作る段の prompt なら「チェックを付けてから終わる」の指示が付く物）
     const s = await started(boss, t);
     const p = String((await jobRow(s.job_id))["prompt"]);
+    // 土台の ticket() の答え（Ticket）は題名を持たない。チケットの行から読む
+    const title = (await one<{ title: string }>("select title from tickets where id = $1", [t.id])).title;
     expect(p).toContain("試し打ち");
     expect(p).toContain(BOSS_MAIL);
     expect(p).not.toContain("delegator-k746@example.com");
     expect(p).toContain("本来の宛先");
     expect(p).toContain(STOP_MARK);
-    expect(p.indexOf("試し打ち")).toBeLessThan(p.indexOf(t.title)); // 試し打ちの指示がチケットの中身より前（頭）
-    expect(p).toContain(t.title); // チケットの中身（app.ticket_job_context）は後ろに続く
+    expect(p.indexOf("試し打ち")).toBeLessThan(p.indexOf(title)); // 試し打ちの指示がチケットの中身より前（頭）
+    expect(p).toContain(title); // チケットの中身（app.ticket_job_context）は後ろに続く
     expect(p).toContain("成果物");
     expect(p).not.toContain("承認されました"); // 承認の後の実行の足し書きは付けない
     // 試し打ちは確認項目を変えない仕事：チェックを付ける指示も道具の名前も入らない（付けたチェックは外せない・D-153.19）
@@ -223,7 +226,7 @@ describe("K-746 試し打ちを始める：状態 × 入口 × 利用者の状�
   it("K746-API-004 何回でも試せる：結末（届いた・止まった）の後にもう一度押すと新しい試し打ちが積まれ、承認待ちは 1 つのまま。2 つの実行の記録が残る", async () => {
     const { t, d } = await pending();
     const first = await running(t, d);
-    await finishDry(d, first.job_id, { state: "done", result: "あなた宛てに送りました", agent_session_id: null });
+    await finishDry(d, first.job_id, { state: "done", result: "あなた宛てに送りました" });
     const second = await started(boss, t);
     expect(second.run_id).not.toBe(first.run_id);
     await lastSeen(d.pc.sid, 1);
@@ -348,7 +351,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     const result = `${"あ".repeat(250)}`;
     const v0 = await artifactVersion(t.id);
     const r = await req("POST", `/bridge/jobs/${s.job_id}/finish`, {
-      body: { state: "done", result, reason: null, agent_session_id: null },
+      body: { state: "done", result },
       headers: { "x-bridge-session": d.pc.token },
     });
     expect(r.status, await r.clone().text()).toBe(201);
@@ -376,7 +379,6 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     await finishDry(d, s.job_id, {
       state: "done",
       result: `${STOP_MARK}\n応募フォームは宛先を差し替えられません`,
-      agent_session_id: null,
     });
     expect((await dryRuns(t.id))[0]).toMatchObject({
       status_id: "stopped",
@@ -391,23 +393,23 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     const s2 = await started(boss, t);
     await lastSeen(d.pc.sid, 1);
     await take(d.pc);
-    await finishDry(d, s2.job_id, { state: "done", result: `  ${STOP_MARK}  `, agent_session_id: null });
+    await finishDry(d, s2.job_id, { state: "done", result: `  ${STOP_MARK}  ` });
     expect((await dryRuns(t.id)).at(-1)).toMatchObject({ status_id: "stopped", error_summary: MSG_MARK_DEFAULT });
   });
 
   it("K746-API-013 PC が止まった・やめた：stopped は理由のとおり（空なら決めた文）・cancelled は実行も cancelled。どれも承認待ちは変わらず、もう一度試せる", async () => {
     const { t, d } = await pending();
     const a = await running(t, d);
-    await finishDry(d, a.job_id, { state: "stopped", reason: "ブラウザが開けませんでした", agent_session_id: null });
+    await finishDry(d, a.job_id, { state: "stopped", reason: "ブラウザが開けませんでした" });
     expect((await dryRuns(t.id)).at(-1)).toMatchObject({
       status_id: "stopped",
       error_summary: "ブラウザが開けませんでした",
     });
     const b = await running(t, d);
-    await finishDry(d, b.job_id, { state: "stopped", reason: "  ", agent_session_id: null });
+    await finishDry(d, b.job_id, { state: "stopped", reason: "  " });
     expect((await dryRuns(t.id)).at(-1)).toMatchObject({ status_id: "stopped", error_summary: MSG_NO_REASON });
     const c = await running(t, d);
-    await finishDry(d, c.job_id, { state: "cancelled", reason: null, agent_session_id: null });
+    await finishDry(d, c.job_id, { state: "cancelled" });
     expect((await dryRuns(t.id)).at(-1)).toMatchObject({ status_id: "cancelled", error_summary: MSG_CANCELLED });
     expect(await jobRow(c.job_id)).toMatchObject({ state_id: "cancelled" });
     expect(await stageKeyOf(t.id)).toBe("awaiting_approval");
@@ -420,7 +422,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     const { t, d } = await pending();
     for (const result of ["", " \n\t　"]) {
       const s = await running(t, d);
-      await finishDry(d, s.job_id, { state: "done", result, agent_session_id: null });
+      await finishDry(d, s.job_id, { state: "done", result });
       expect((await dryRuns(t.id)).at(-1)).toMatchObject({ status_id: "stopped", error_summary: MSG_EMPTY });
     }
     expect(await lines(t.id, "あなた宛てに送りました")).toHaveLength(0);
@@ -431,7 +433,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     const { t, d } = await pending();
     const s = await running(t, d);
     const big = "宛".repeat(200_000);
-    await finishDry(d, s.job_id, { state: "done", result: big, agent_session_id: null });
+    await finishDry(d, s.job_id, { state: "done", result: big });
     expect(String((await jobRow(s.job_id))["result"])).toHaveLength(200_000);
     const l = (await lines(t.id, "あなた宛てに送りました"))[0]!;
     expect(l.body.length).toBeLessThan(400);
@@ -446,7 +448,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     expect(await stageKeyOf(t.id)).toBe("running");
     const ap = await approvalRow(d.approvalId);
     const execRun = (await runsOf(t.id, "execute")).at(-1)!;
-    await finishDry(d, s.job_id, { state: "done", result: "あなた宛てに送りました", agent_session_id: null });
+    await finishDry(d, s.job_id, { state: "done", result: "あなた宛てに送りました" });
     expect(await stageKeyOf(t.id)).toBe("running");
     expect(await flag(t.id)).toBe(true);
     expect(await approvalRow(d.approvalId)).toEqual(ap);
@@ -460,7 +462,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     const s = await running(t, d);
     await f.admin.query("update tickets set deleted_at = now() where id = $1", [t.id]);
     const r = await req("POST", `/bridge/jobs/${s.job_id}/finish`, {
-      body: { state: "done", result: "送りました", reason: null, agent_session_id: null },
+      body: { state: "done", result: "送りました" },
       headers: { "x-bridge-session": d.pc.token },
     });
     expect(r.status, await r.clone().text()).toBe(201);
@@ -504,10 +506,10 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
   it("K746-API-020 二重に届いた「終わった」（操作の揺れ）：同じ仕事に 2 回目の結果が届いても、やり取りは増えず実行は変わらない", async () => {
     const { t, d } = await pending();
     const s = await running(t, d);
-    await finishDry(d, s.job_id, { state: "done", result: "送りました", agent_session_id: null });
+    await finishDry(d, s.job_id, { state: "done", result: "送りました" });
     const before = await snapshot(t);
     const r = await req("POST", `/bridge/jobs/${s.job_id}/finish`, {
-      body: { state: "done", result: "もう一度送りました", reason: null, agent_session_id: null },
+      body: { state: "done", result: "もう一度送りました" },
       headers: { "x-bridge-session": d.pc.token },
     });
     expect(r.status).toBeLessThan(500);
@@ -539,7 +541,7 @@ describe("K746-API-011〜 試し打ちの結末（app.dry_run_job_end と引き�
     expect(await artifactVersion(t.id)).toBe(v0);
     expect(await lines(t.id, "AI を止めました")).toHaveLength(2); // 止めた回数だけ 1 つずつ
     // 止めた後に届く「終わった」でも、段・旗・承認は動かない
-    await finishDry(d, s.job_id, { state: "done", result: "届いた", agent_session_id: null });
+    await finishDry(d, s.job_id, { state: "done", result: "届いた" });
     expect(await stageKeyOf(t.id)).toBe("awaiting_approval");
     expect(await flag(t.id)).toBe(true);
   });

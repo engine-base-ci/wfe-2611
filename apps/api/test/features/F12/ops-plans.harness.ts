@@ -7,8 +7,7 @@
 //       開いた案を置くときは、そのプランの前の開いた案を消した印にする（1 つのプランに開いた案は 1 つ・K-988）
 //     ・restorePlans：試験がプランの行（値段・今の版）や版の行を変えたら、afterAll で元に戻す（共用の DB・G-10）
 //   案の行は消せない（0076 の revoke delete）ので、afterAll では管理者の接続で消す
-import { afterAll } from "vitest";
-import type { Person } from "../fixture.js";
+import { afterClose, type Person } from "../fixture.js";
 import { OPS_TENANT, PLANS, type PlanKey } from "./ops-ws.harness.js";
 import { startOpsAct, STEP, type OpsAct } from "./ops-act.harness.js";
 
@@ -93,7 +92,7 @@ export async function startOpsPlans(prefix: string, hookFiles: readonly string[]
   const versions = await t.f.admin.query<{ id: string }>("select id from plan_versions");
   const before = new Set(versions.rows.map((r) => r.id));
   const made: string[] = [];
-  afterAll(async () => {
+  afterClose(async () => {
     for (const r of snap.rows)
       await t.f.admin.query("update plans set price_monthly = $2, current_version = $3, limits = $4 where id = $1", [
         r.id,

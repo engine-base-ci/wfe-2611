@@ -22,8 +22,11 @@ beforeAll(async () => {
 });
 afterAll(async () => t?.close());
 
-const release = (who: Person | null, id: string, body: unknown, step: number | undefined = STEP) =>
-  t.act(who, "POST", `${TEMPLATES}/${id}/versions`, body, step === undefined ? {} : { stepUpAgoSec: step });
+const release = (who: Person | null, id: string, body: unknown, ...opt: [step?: number]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const step = opt.length ? opt[0] : STEP;
+  return t.act(who, "POST", `${TEMPLATES}/${id}/versions`, body, step === undefined ? {} : { stepUpAgoSec: step });
+};
 /** 今の種別の中身から、会議の色だけを変えた中身 */
 const meetingRecolored = async (): Promise<{ id: string; items: Item[] }> => {
   const d = await t.dist("kind");
