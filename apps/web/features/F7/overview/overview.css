@@ -57,7 +57,50 @@
   display: flex;
   flex-direction: column;
 }
+/* 本番の自分に関わるもの（K-478）：スマホの本文は表の箱の中に置く（差し込み口 MineChipsSlot）。幅 768 以上は出さない */
+@media (min-width: 768px) {
+  .k-list-panel > .k-f7-overview-phone {
+    display: none;
+  }
+}
 @media (max-width: 767px) {
+  /* 幅 767 以下は数の札・絞りの行・表・右の列を隠し、スマホの本文（絞りの札と 1 件 1 行）だけを、モックと同じ置き方で描く */
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) {
+    display: flex;
+    flex-direction: column;
+    height: calc(var(--k-c-overview-phone-height) - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
+    overflow: hidden;
+  }
+  .k-list-body:has(> .k-list-main > .k-list-panel > .k-f7-overview-phone) {
+    flex: 1;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    min-height: 0;
+    padding: 0;
+  }
+  .k-list-body:has(> .k-list-main > .k-list-panel > .k-f7-overview-phone) > :not(.k-list-main),
+  .k-list-main:has(> .k-list-panel > .k-f7-overview-phone) > :not(.k-list-panel),
+  .k-list-panel > .k-f7-overview-phone ~ :not(.k-list-none),
+  .k-list-panel:has(> .k-f7-overview-phone) > .k-list-filter {
+    display: none;
+  }
+  .k-list-main:has(> .k-list-panel > .k-f7-overview-phone) {
+    gap: 0;
+    min-height: 0;
+  }
+  .k-list-panel:has(> .k-f7-overview-phone) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .k-list-panel > .k-f7-overview-phone {
+    flex: 1;
+    min-height: 0;
+  }
   .k-list-page:has(> .k-f7-overview-phone) {
     display: flex;
     flex-direction: column;
@@ -75,6 +118,18 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+  }
+  /* 見出しの帯はスマホの一覧（キャンバス MobileList の header.kn-mlist-head・K-1301）の形：地の色は無く、見出しの行とタブの左右は 16px。
+     タブの上は 8px にして帯の下端（本文の箱の上端）を絵とそろえる（fidelity.json の組 tickets-main の at 375・K-478） */
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head {
+    background: transparent;
+  }
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head .k-list-head-row {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-list-page:has(> .k-list-body .k-list-panel > .k-f7-overview-phone) > header.k-list-head .k-list-views {
+    padding: var(--k-s-sm) var(--k-s-md) 0;
   }
 }
 .k-f7-overview-phone-chips {
