@@ -2,7 +2,7 @@
 //   置き場の幅が 720 以上なら共通の表（components/k の Table）、それより狭いと行を縦の組（1 行 1 枚）にする（スマホは必ず組）。表を縮めて字を 1 字ずつ折らない。
 //   組の頭は「title」の列（無ければ最初の列）、ボタンだけの列は「action」で組の下に置き、残りは「見出し：値」で並べる
 import type { ReactNode } from "react";
-import { Table, type Column } from "@/components/k";
+import { Table, type Column, type TableProps } from "@/components/k";
 import "./resp-table.css";
 
 export type RespColumn<R> = Column<R> & {
@@ -21,9 +21,11 @@ export interface RespTableProps<R> {
   rowKey: (row: R) => string;
   /** 列の多い表は "wide"：置き場が 1024 未満でも組にする（既定は 720 未満で組） */
   stack?: "wide";
+  /** 行（表の行と組の 1 枚）に付ける data-* の印（例：data-invalid）。渡さなければ付けない */
+  rowAttrs?: TableProps<R>["rowAttrs"];
 }
 
-export function RespTable<R>({ caption, columns, rows, rowKey, stack }: RespTableProps<R>) {
+export function RespTable<R>({ caption, columns, rows, rowKey, stack, rowAttrs }: RespTableProps<R>) {
   const title = columns.find((c) => c.card === "title") ?? columns[0];
   const rest = columns.filter((c) => c !== title && c.card !== "hide" && c.card !== "action");
   const acts = columns.filter((c) => c.card === "action");
@@ -37,11 +39,12 @@ export function RespTable<R>({ caption, columns, rows, rowKey, stack }: RespTabl
           )}
           rows={rows}
           rowKey={rowKey}
+          {...(rowAttrs ? { rowAttrs } : {})}
         />
       </div>
       <ul className="k-f12-rt-cards" aria-label={caption}>
         {rows.map((r) => (
-          <li key={rowKey(r)} className="k-f12-rt-card">
+          <li key={rowKey(r)} className="k-f12-rt-card" {...(rowAttrs?.(r) ?? {})}>
             {title ? <div className="k-f12-rt-head">{title.cell(r)}</div> : null}
             {rest.length > 0 ? (
               <dl className="k-f12-rt-list">

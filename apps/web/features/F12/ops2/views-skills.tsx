@@ -4,7 +4,7 @@
 //   会社が手を付けていない所だけ「こう変わります」と知らせる（代表の答え 2026-11-23・D-156.20）。業務の型は描かない（段 10 の決め）
 //   本番（K-994）は任意の props で値と行き先を渡す。渡さない呼び方（モック）は下絵の見た目のまま
 import { Fingerprint, Plus } from "lucide-react";
-import { Band, Button, Confirm, PageBody, PageHeader } from "@/components/k";
+import { Band, Button, Dialog, PageBody, PageHeader } from "@/components/k";
 import { Bullets, Card, Note, StatusBadge } from "@/features/F12/ops/ops-parts";
 import { SkillsNav, type SkillsTab } from "./views-plans";
 import "@/features/F12/ops/ops.css";
@@ -97,10 +97,13 @@ export function TemplatesPage({
   rows = TEMPLATES,
   newHref,
   nav,
+  status,
 }: {
   rows?: readonly TemplateRow[];
   newHref?: (row: TemplateRow) => string;
   nav?: SkillsHrefs;
+  /** 新しい版を出した後の知らせ（role=status・K-1111） */
+  status?: string | null;
 } = {}) {
   return (
     <PageBody labelledBy="oq-templates-title">
@@ -115,6 +118,11 @@ export function TemplatesPage({
         }
       />
       <div className="k-op-body">
+        {status ? (
+          <p role="status" className="k-op-note-text">
+            {status}
+          </p>
+        ) : null}
         <SkillsNav on="templates" {...(nav ? { hrefs: nav } : {})} />
         <RespTable caption="ひな形の一覧" columns={columns(newHref)} rows={[...rows]} rowKey={(r) => r.id} />
         <Card title="新しい版を出すと">
@@ -134,33 +142,92 @@ export function TemplatesPage({
   );
 }
 
-/** ひな形の新しい版を出す確かめ（会社に知らせる） */
-export function TemplateReleaseConfirm({ onClose, onConfirm }: { onClose?: () => void; onConfirm?: () => void }) {
+/** 断りの赤い箱（もう一度を持つ物は［もう一度］つき） */
+export interface TemplateAlert {
+  text: string;
+  retry?: () => void;
+}
+function AlertBox({ alert }: { alert: TemplateAlert }) {
   return (
-    <Confirm
-      open
-      onOpenChange={(o) => !o && onClose?.()}
-      onConfirm={() => onConfirm?.()}
-      tone="primary"
-      confirmLabel="本人確認をして出す"
-      title="ひな形「種別」の新しい版（v4）を出す"
-      description="使っているワークスペース 48 か所のうち、既定のまま使っている 31 か所の管理者に鈴で知らせます"
+    <div role="alert" className="k-op-alert">
+      {alert.text}
+      {alert.retry ? (
+        <>
+          {" "}
+          <Button size="sm" variant="outlined" onClick={alert.retry}>
+            もう一度
+          </Button>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+export interface TemplateReleaseConfirmProps {
+  open?: boolean;
+  /** ひな形の名前（種別・状態・項目） */
+  name?: string;
+  /** 出す版の番号 */
+  version?: number;
+  /** 使っているワークスペースの数 */
+  using?: number;
+  /** そのうち既定のまま使っている（鈴で知らせる）数 */
+  offered?: number;
+  error?: TemplateAlert | null;
+  busy?: boolean;
+  onClose?: () => void;
+  onConfirm?: () => void;
+}
+
+/** ひな形の新しい版を出す確かめ（会社に知らせる）。値を渡さない呼び方（モック）は下絵の値 */
+export function TemplateReleaseConfirm({
+  open = true,
+  name = "種別",
+  version = 4,
+  using = 48,
+  offered = 31,
+  error,
+  busy = false,
+  onClose,
+  onConfirm,
+}: TemplateReleaseConfirmProps) {
+  const close = () => {
+    if (!busy) onClose?.();
+  };
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => (o ? undefined : close())}
+      size="confirm"
+      title={`ひな形「${name}」の新しい版（v${version}）を出す`}
+      description={`使っているワークスペース ${using} か所のうち、既定のまま使っている ${offered} か所の管理者に鈴で知らせます`}
+      actions={
+        <>
+          <Button variant="outlined" onClick={close} disabled={busy}>
+            やめる
+          </Button>
+          <Button loading={busy} onClick={() => (busy ? undefined : onConfirm?.())}>
+            本人確認をして出す
+          </Button>
+        </>
+      }
     >
       <div className="k-op-form">
         <Bullets
           label="出すと起きること"
           items={[
-            "新しく入るワークスペースは、すぐ v4 で始まる",
+            `新しく入るワークスペースは、すぐ v${version} で始まる`,
             "既定のまま使っているワークスペースの管理者に、鈴で「ひな形がこう変わります」と知らせる。「そのままにする」か「変える」を選ぶ",
-            "既定から変えたワークスペース 17 か所には知らせない（そのまま残る）",
+            `既定から変えたワークスペース ${Math.max(using - offered, 0)} か所には知らせない（そのまま残る）`,
           ]}
         />
         <Note>
           <Fingerprint size={14} aria-hidden="true" />{" "}
           出す前に本人確認を取り直します（パスキー）。出した人・時刻・版は運営の記録に残ります
         </Note>
+        {error ? <AlertBox alert={error} /> : null}
       </div>
-    </Confirm>
+    </Dialog>
   );
 }
 
@@ -276,106 +343,225 @@ export function TemplateUpdatePage() {
   );
 }
 
-interface EditRow {
+/** 直す頁の 1 行（部ごとに使う欄だけ） */
+export interface EditRow {
   id: string;
   name: string;
-  color: string;
-  body: string;
+  /** 色の名前（種別・状態） */
+  color?: string;
+  /** 本文のひな形の要約（種別）・説明（項目） */
+  body?: string;
+  /** 種類（項目） */
+  type?: string;
+  /** 必須（項目） */
+  required?: boolean;
   /** 今の版から変えた所（無ければ今の版のまま） */
   change?: "足した" | "直した" | "消す";
+  /** 出す口が合わないと断った 1 つ（行に data-invalid） */
+  invalid?: boolean;
 }
 const EDIT_ROWS: readonly EditRow[] = [
-  { id: "task", name: "タスク", color: "青", body: "やること・期限・確かめること" },
-  { id: "qa", name: "QA", color: "緑", body: "確かめる所・再現の手順・期待", change: "直した" },
-  { id: "issue", name: "課題", color: "橙", body: "困っていること・影響・次の手", change: "直した" },
-  { id: "meeting", name: "会議", color: "灰", body: "議題・決めたこと・議事録のリンク", change: "直した" },
-  { id: "memo", name: "メモ", color: "灰", body: "書いておくこと", change: "消す" },
-  { id: "estimate", name: "見積", color: "紫", body: "範囲・金額・期限", change: "足した" },
+  { id: "task", name: "タスク", color: "青緑", body: "やること・期限・確かめること" },
+  { id: "qa", name: "QA", color: "藤", body: "確かめる所・再現の手順・期待", change: "直した" },
+  { id: "issue", name: "課題", color: "黄土", body: "困っていること・影響・次の手", change: "直した" },
+  { id: "meeting", name: "会議", color: "藍", body: "議題・決めたこと・議事録のリンク", change: "直した" },
+  { id: "memo", name: "メモ", color: "若草", body: "書いておくこと", change: "消す" },
+  { id: "estimate", name: "見積", color: "葡萄", body: "範囲・金額・期限", change: "足した" },
+];
+const EDIT_DIFF: readonly string[] = [
+  "足す：種別「見積」",
+  "直す：種別「QA」「課題」「会議」",
+  "消す：種別「メモ」（使っているワークスペースの「メモ」はそのまま残る）",
 ];
 const CHANGE_TONE = { 足した: "success", 直した: "progress", 消す: "danger" } as const;
 
-/** 直す頁の 1 行：名前・色・本文のひな形・変えた所・直す／消す（消す行は取り消す） */
-const EDIT_COLS: RespColumn<EditRow>[] = [
-  {
-    key: "name",
-    header: "種別",
-    cell: (r) => (
-      <span className="k-op-name">
-        <b>{r.name}</b>
-        <span>{r.body}</span>
-      </span>
-    ),
-  },
-  { key: "color", header: "色", nowrap: true, cell: (r) => r.color },
-  {
-    key: "change",
-    header: "今の版から",
-    nowrap: true,
-    cell: (r) =>
-      r.change ? (
-        <StatusBadge tone={CHANGE_TONE[r.change]}>{r.change}</StatusBadge>
-      ) : (
-        <StatusBadge tone="neutral">そのまま</StatusBadge>
-      ),
-  },
-  {
-    key: "act",
-    header: <span className="sr-only">操作</span>,
-    card: "action",
-    cell: (r) => (
-      <span className="k-oq-acts">
-        <Button size="sm" variant="outlined" aria-label={`${r.name} を直す`}>
-          直す
-        </Button>
-        {r.change === "消す" ? (
-          <Button size="sm" variant="ghost" aria-label={`${r.name} を消すのを取り消す`}>
-            取り消す
-          </Button>
-        ) : (
-          <Button size="sm" variant="ghost" aria-label={`${r.name} を消す`}>
-            消す
-          </Button>
-        )}
-      </span>
-    ),
-  },
-];
+export type EditPart = "kind" | "state" | "field";
+const PART_HEAD: Record<EditPart, { title: string; aside: string }> = {
+  kind: { title: "種別", aside: "名前・色・本文のひな形" },
+  state: { title: "状態", aside: "名前・色" },
+  field: { title: "項目", aside: "名前・種類・必須・説明" },
+};
+interface EditActs {
+  onEdit?: ((row: EditRow) => void) | undefined;
+  onDelete?: ((row: EditRow) => void) | undefined;
+  onUndo?: ((row: EditRow) => void) | undefined;
+  busy?: boolean | undefined;
+}
 
-/** ひな形の新しい版の中身を直す頁：今の版（v3）を写して直す（種別・状態・項目を足す・直す・消す）。出すときに出す確かめ（D-156.55） */
-export function TemplateEditPage() {
+/** 直す頁の 1 行：名前（種別は本文のひな形・項目は説明）・色か種類と必須・変えた所・直す／消す（消す行は取り消す） */
+function editCols(part: EditPart, a: EditActs): RespColumn<EditRow>[] {
+  const name: RespColumn<EditRow> = {
+    key: "name",
+    header: PART_HEAD[part].title,
+    cell: (r) =>
+      r.body ? (
+        <span className="k-op-name">
+          <b>{r.name}</b>
+          <span>{r.body}</span>
+        </span>
+      ) : (
+        <span className="k-op-name">
+          <b>{r.name}</b>
+        </span>
+      ),
+  };
+  const mid: RespColumn<EditRow>[] =
+    part === "field"
+      ? [
+          { key: "type", header: "種類", nowrap: true, cell: (r) => r.type ?? "—" },
+          { key: "required", header: "必須", nowrap: true, cell: (r) => (r.required ? "必須" : "—") },
+        ]
+      : [{ key: "color", header: "色", nowrap: true, cell: (r) => r.color ?? "—" }];
+  return [
+    name,
+    ...mid,
+    {
+      key: "change",
+      header: "今の版から",
+      nowrap: true,
+      cell: (r) =>
+        r.change ? (
+          <StatusBadge tone={CHANGE_TONE[r.change]}>{r.change}</StatusBadge>
+        ) : (
+          <StatusBadge tone="neutral">そのまま</StatusBadge>
+        ),
+    },
+    {
+      key: "act",
+      header: <span className="sr-only">操作</span>,
+      card: "action",
+      cell: (r) => (
+        <span className="k-oq-acts">
+          <Button
+            size="sm"
+            variant="outlined"
+            aria-label={`${r.name} を直す`}
+            disabled={a.busy}
+            {...(a.onEdit ? { onClick: () => a.onEdit?.(r) } : {})}
+          >
+            直す
+          </Button>
+          {r.change === "消す" ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              aria-label={`${r.name} を消すのを取り消す`}
+              disabled={a.busy}
+              {...(a.onUndo ? { onClick: () => a.onUndo?.(r) } : {})}
+            >
+              取り消す
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              aria-label={`${r.name} を消す`}
+              disabled={a.busy}
+              {...(a.onDelete ? { onClick: () => a.onDelete?.(r) } : {})}
+            >
+              消す
+            </Button>
+          )}
+        </span>
+      ),
+    },
+  ];
+}
+
+export interface TemplateEditPageProps extends EditActs {
+  /** ひな形の名前（種別・状態・項目） */
+  name?: string;
+  /** 今の版の番号（出すのは次の版） */
+  version?: number;
+  /** 副題（下書きの有る無し） */
+  sub?: string;
+  /** 部（表の列が替わる） */
+  part?: EditPart;
+  rows?: readonly EditRow[];
+  /** 今の版との差の字（0〜3 行） */
+  diff?: readonly string[];
+  onAdd?: () => void;
+  onDraft?: () => void;
+  onRelease?: () => void;
+  /** 出せるか（差が 0 の間は押せない形） */
+  canRelease?: boolean;
+  /** 頁の上の赤い箱（下書きが読めない・落ちた） */
+  error?: TemplateAlert | null;
+  /** 配るものの中の本番の行き先 */
+  nav?: SkillsHrefs;
+}
+
+/** ひな形の新しい版の中身を直す頁：今の版（v3）を写して直す（種別・状態・項目を足す・直す・消す）。出すときに出す確かめ（D-156.55）。
+ *  値を渡さない呼び方（モック）は下絵の値 */
+export function TemplateEditPage({
+  name = "種別",
+  version = 3,
+  sub = "今の版 v3 を写して直しています ・ 下書き ・ 佐野 ・ 11/05 14:20 に保存",
+  part = "kind",
+  rows = EDIT_ROWS,
+  diff = EDIT_DIFF,
+  onAdd,
+  onDraft,
+  onRelease,
+  canRelease = true,
+  error,
+  nav,
+  ...acts
+}: TemplateEditPageProps) {
+  const next = version + 1;
+  const head = PART_HEAD[part];
   return (
     <PageBody labelledBy="oq-template-edit-title">
       <PageHeader
         id="oq-template-edit-title"
-        title="ひな形「種別」の新しい版（v4）"
-        sub="今の版 v3 を写して直しています ・ 下書き ・ 佐野 ・ 11/05 14:20 に保存"
+        title={`ひな形「${name}」の新しい版（v${next}）`}
+        sub={sub}
         actions={
           <>
-            <Button variant="outlined">下書きにする</Button>
-            <Button icon={<Fingerprint size={14} />}>v4 を出す</Button>
+            <Button variant="outlined" disabled={acts.busy} {...(onDraft ? { onClick: onDraft } : {})}>
+              下書きにする
+            </Button>
+            <Button
+              icon={<Fingerprint size={14} />}
+              loading={acts.busy}
+              {...(canRelease ? {} : { "aria-disabled": "true" as const, title: "今の版から変えると出せます" })}
+              {...(onRelease ? { onClick: () => (canRelease ? onRelease() : undefined) } : {})}
+            >
+              v{next} を出す
+            </Button>
           </>
         }
       />
       <div className="k-op-body">
-        <SkillsNav on="templates" />
-        <Card title="種別" aside="名前・色・本文のひな形">
-          <RespTable caption="新しい版の種別" columns={EDIT_COLS} rows={[...EDIT_ROWS]} rowKey={(r) => r.id} />
+        {error ? <AlertBox alert={error} /> : null}
+        <SkillsNav on="templates" {...(nav ? { hrefs: nav } : {})} />
+        <Card title={head.title} aside={head.aside}>
+          <RespTable
+            caption={`新しい版の${head.title}`}
+            columns={editCols(part, acts)}
+            rows={[...rows]}
+            rowKey={(r) => r.id}
+            rowAttrs={(r) => ({ "data-invalid": r.invalid ? "true" : undefined })}
+          />
           <div className="k-oq-acts">
-            <Button size="sm" variant="outlined" icon={<Plus size={14} />}>
-              種別を足す
+            <Button
+              size="sm"
+              variant="outlined"
+              icon={<Plus size={14} />}
+              disabled={acts.busy}
+              {...(onAdd ? { onClick: onAdd } : {})}
+            >
+              {head.title}を足す
             </Button>
           </div>
         </Card>
-        <Card title="今の版 v3 との差">
-          <Bullets
-            label="今の版 v3 との差"
-            items={[
-              "足す：種別「見積」",
-              "直す：種別「QA」「課題」「会議」の本文のひな形",
-              "消す：種別「メモ」（使っているワークスペースの「メモ」はそのまま残る）",
-            ]}
-          />
-          <Note>出すまでは顧客に何も届きません。今の版 v3 はそのまま残り、前の版に戻せます</Note>
+        <Card title={`今の版 v${version} との差`}>
+          {diff.length ? (
+            <Bullets label={`今の版 v${version} との差`} items={diff} />
+          ) : (
+            <Note>まだ今の版から変えていません</Note>
+          )}
+          <Note>{`出すまでは顧客に何も届きません。今の版 v${version} はそのまま残り、前の版に戻せます`}</Note>
         </Card>
       </div>
     </PageBody>

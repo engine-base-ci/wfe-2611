@@ -171,7 +171,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }): ReactNode
           screen="ops-skills"
           crumbs={[{ label: "配るもの", href: "/dev/mock/f12-ops2/oq-plans" }, { label: "ひな形" }]}
         >
-          <TemplatesPage />
+          <TemplatesPage newHref={() => "/dev/mock/f12-ops2/op-template-edit"} />
         </Ops>
       );
     case "oq-template-release":
