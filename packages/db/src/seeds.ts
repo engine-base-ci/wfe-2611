@@ -4,6 +4,25 @@ import type { Seeded } from "./matrix.js";
 import { seedGenericRows } from "./seed_generic.js";
 
 export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
+  // 運営の会社の製品の既定（migration が置くプラン 3 つ・ひな形の配るもの 3 つと版・K-958・K-992）は truncate の cascade で消えるので、
+  //   写しを取って入れ直す（消えたままだと、同じ DB で後に流れる試験のプランを引く準備・会社の種まきが落ちる・統合の枝の CI）
+  const KEEP_OPS: readonly [string, string][] = [
+    ["plans", "tenant_id = app.ops_tenant_id()"],
+    ["plan_versions", "plan_id in (select id from plans where tenant_id = app.ops_tenant_id())"],
+    ["distributions", "tenant_id = app.ops_tenant_id()"],
+    [
+      "distribution_versions",
+      "distribution_id in (select id from distributions where tenant_id = app.ops_tenant_id())",
+    ],
+  ];
+  for (const [t] of KEEP_OPS)
+    await c.query(
+      `create temp table if not exists "keep_${t}" on commit preserve rows as select * from "${t}" where false`,
+    );
+  for (const [t, where] of KEEP_OPS) {
+    await c.query(`delete from "keep_${t}"`);
+    await c.query(`insert into "keep_${t}" select * from "${t}" where ${where}`);
+  }
   // 証跡は行の DELETE を許さないが TRUNCATE は行トリガを通らない（テストの種の入れ替えだけに使う）。運営テナントは入れ直す
   await c.query(
     "truncate audit_events, ops_audit_events, security_events, export_jobs, permissions, support_access_grants, members, scopes, layers, tenants cascade",
@@ -11,6 +30,8 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   await c.query(
     "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
   );
+  await c.query("update keep_distribution_versions set released_by = null"); // 人は truncate で消えた
+  for (const [t] of KEEP_OPS) await c.query(`insert into "${t}" select * from "keep_${t}" on conflict do nothing`);
   // truncate は terms_versions（運営のテナントに結ぶ）も消す。版が 1 つも無い状態は作らない（D-128.137）ので、種の第 1 版を入れ直す（migration 0088 と同じ関数）
   await c.query("select app.seed_first_terms()");
   for (const m of ["member_kinds", "target_kinds", "abilities"])

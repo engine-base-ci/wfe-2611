@@ -33,6 +33,7 @@ import {
   snapshot,
   team,
   breakWritable,
+  NO_SPEC,
 } from "./approve-complete.harness.js";
 import { loadHook, stopApproval } from "./approval-more.kit.js";
 
@@ -93,7 +94,7 @@ describe("K-732 承認待ちを止める：状態 × 入口 × 利用者の状�
     const d = await delegated(t);
     expect((await stopApproval(boss, d.approvalId)).status).toBe(201);
     // 任せ直すのは PC をつないだ任せた人（d.by）。担当者 boss は土台で PC をつないでいないので E-CONN-001 になる（K-63 の試験と同じ形）
-    const again = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(d.by) });
+    const again = await req("POST", `/tickets/${t.id}/delegate`, { body: { no_spec_reason: NO_SPEC }, headers: auth(d.by) });
     expect(again.status, await again.clone().text()).toBe(201);
     expect(await flag(t.id)).toBe(true);
     expect(await approvalRow(d.approvalId)).toMatchObject({ decision: "stop" });

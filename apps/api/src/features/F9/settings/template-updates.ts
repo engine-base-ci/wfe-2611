@@ -76,9 +76,20 @@ export function createListKindTemplateUpdates(d: TemplateUpdatesDeps): (a: HookA
 export function createApplyKindTemplateUpdate(d: TemplateUpdatesDeps): (a: HookArgs) => Promise<HookReply> {
   return async (a) => {
     const op = "applyKindTemplateUpdate";
+    // 体の形：choice は change か keep だけ（契約の enum。zod は欄の候補を見ないので口が断る・何も変えない）
+    const choice = a.input["choice"];
+    if (choice !== "change" && choice !== "keep")
+      return {
+        status: 422,
+        body: {
+          error: "validation_failed",
+          code: "VALIDATION_ERROR",
+          details: [{ field: "choice", message: "change か keep" }],
+        },
+      };
     let r: Body | undefined;
     try {
-      r = await call(d, a, "select app.kind_template_apply($1::uuid, $2) as r", [a.id, a.input["choice"]]);
+      r = await call(d, a, "select app.kind_template_apply($1::uuid, $2) as r", [a.id, choice]);
     } catch (e) {
       return failed(e, op);
     }

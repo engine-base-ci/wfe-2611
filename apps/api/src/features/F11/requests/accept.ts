@@ -22,7 +22,11 @@ const badField = (field: string, message: string): HookReply => ({
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
 });
 /** 正本の番号の断り（欄・details を付けない＝在るかを漏らさない） */
-const plain = (status: number, code: string): HookReply => ({ status, body: kanameError(code).toJSON() });
+const plain = (status: number, code: string): HookReply => {
+  const body: Record<string, unknown> = { ...kanameError(code).toJSON() }; // detail（空の {}）も付けない
+  delete body["detail"];
+  return { status, body };
+};
 const forbidden = (field?: string): HookReply => ({
   status: 403,
   body: { error: "forbidden", code: "FORBIDDEN", ...(field ? { field } : {}) },
@@ -53,15 +57,31 @@ function thrown(e: unknown): HookReply {
 function refusedCreate(v: Answer): HookReply {
   const field = typeof v.field === "string" ? v.field : "body";
   if (v.status === 403) return forbidden(field);
-  const e = kanameError("E-VAL-014").toJSON();
-  return { status: 422, body: { ...e, field, details: [{ field, message: e.message }] } };
+  // 選べない担当・種別・本文の形は 422（欄つき）。番号は入口の形の誤りと同じ VALIDATION_ERROR（前に使っていた E-VAL-014 は K-437 が正本から外した）
+  return {
+    status: 422,
+    body: {
+      error: "validation_failed",
+      code: "VALIDATION_ERROR",
+      field,
+      details: [{ field, message: "選び直してください" }],
+    },
+  };
 }
 
 /** 体（入口が strict と形を確かめた後）→ 関数に渡す jsonb。日付と空の題だけはここで見る */
 function readBody(
   input: Record<string, unknown>,
 ): { ok: true; value: Record<string, unknown> } | { ok: false; reply: HookReply } {
+  // 必須の欄と値域（VALUE_RANGES）は口が断る（入口の zod は欄を optional のまま・上限を置かない作り・scripts/ci/contract.mjs）
+  if (typeof input["assignee_member_id"] !== "string")
+    return { ok: false, reply: badField("assignee_member_id", "担当を選んでください") };
   if (!isDate(input["due_on"])) return { ok: false, reply: badField("due_on", "日付で入れてください") };
+  if (typeof input["scope_id"] !== "string")
+    return { ok: false, reply: badField("scope_id", "グループを選んでください") };
+  const ids = input["guest_group_ids"];
+  if (Array.isArray(ids) && (ids.length < 1 || ids.length > 20))
+    return { ok: false, reply: badField("guest_group_ids", "1〜20 個") };
   const value: Record<string, unknown> = {
     assignee_member_id: input["assignee_member_id"],
     due_on: input["due_on"],
@@ -70,6 +90,7 @@ function readBody(
   if (input["title"] !== undefined) {
     const title = typeof input["title"] === "string" ? input["title"].trim() : "";
     if (!title) return { ok: false, reply: badField("title", "題名を入れてください") };
+    if ([...title].length > 200) return { ok: false, reply: badField("title", "200 字まで") };
     value["title"] = title;
   }
   if (typeof input["body"] === "string") value["body"] = input["body"].trim();
