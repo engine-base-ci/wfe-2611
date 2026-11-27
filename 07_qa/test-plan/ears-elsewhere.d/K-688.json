@@ -1,0 +1,81 @@
+{
+ "ops": {
+  "listKnowledgeApprovals": {
+   "file": "apps/api/test/features/F9/knowledge-approvals.test.ts",
+   "reason": "承認待ちの一覧は役（管理者・マネージャー）と先の棚で答えが変わる。生成の試験の偽のセッションでは棚も所属も頼みも作れない（K-688）",
+   "covers": {
+    "test_get_knowledge_approvals_ok": "K688-API-001",
+    "test_get_knowledge_approvals_shape": "K688-API-001",
+    "test_get_knowledge_approvals_rejected_401": "K688-API-024",
+    "test_get_knowledge_approvals_rejected_403": "K688-API-002",
+    "test_get_knowledge_approvals_rate_limited": "K688-API-025",
+    "test_get_knowledge_approvals_rejected_422": "K688-API-026",
+    "test_get_knowledge_approvals_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_knowledge_approvals_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_knowledge_approvals_session_unresolved_2": "読む口の DB の失敗は入口の共通の 503（K144-API-032 が受ける）。この口に固有の 503 の作りは無い（取引 1 つ・読むだけ）"
+   }
+  },
+  "approveKnowledgeRequest": {
+   "file": "apps/api/test/features/F9/knowledge-approvals.test.ts",
+   "reason": "承認できるかは承認する人・頼みの状態・頼んだ人の所属で変わる。生成の試験の偽のセッションでは頼みを作れない（K-688）",
+   "covers": {
+    "test_post_knowledge_requests_id_approve_ok": "K688-API-005",
+    "test_post_knowledge_requests_id_approve_shape": "K688-API-005",
+    "test_post_knowledge_requests_id_approve_rejected_401": "K688-API-024",
+    "test_post_knowledge_requests_id_approve_rejected_403": "K688-API-009",
+    "test_post_knowledge_requests_id_approve_not_found": "K688-API-009",
+    "test_post_knowledge_requests_id_approve_conflict": "K688-API-010",
+    "test_post_knowledge_requests_id_approve_rejected_422": "K688-API-013",
+    "test_post_knowledge_requests_id_approve_rate_limited": "K688-API-025",
+    "test_post_knowledge_requests_id_approve_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_requests_id_approve_session_unresolved": "K688-API-020",
+    "test_post_knowledge_requests_id_approve_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_requests_id_approve_conflict_2": "K688-API-011"
+   },
+   "na": {
+    "test_post_knowledge_requests_id_approve_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は空）",
+    "test_post_knowledge_requests_id_approve_conflict_3": "E-KNW-103 は頼んだあとにフォルダが別の棚へ付け替わったときの引き金の印（KNW_FOLDER_SHELF）を言い換えるだけ。付け替えは画面からは起きず、同じ番号の作りは K-687 の K687-API-004 が受ける"
+   }
+  },
+  "declineKnowledgeRequest": {
+   "file": "apps/api/test/features/F9/knowledge-approvals.test.ts",
+   "reason": "断れるかは承認する人・頼みの状態・理由の形で変わる。生成の試験の偽のセッションでは頼みを作れない（K-688）",
+   "covers": {
+    "test_post_knowledge_requests_id_decline_ok": "K688-API-012",
+    "test_post_knowledge_requests_id_decline_shape": "K688-API-012",
+    "test_post_knowledge_requests_id_decline_rejected_401": "K688-API-024",
+    "test_post_knowledge_requests_id_decline_rejected_403": "K688-API-014",
+    "test_post_knowledge_requests_id_decline_not_found": "K688-API-014",
+    "test_post_knowledge_requests_id_decline_conflict": "K688-API-014",
+    "test_post_knowledge_requests_id_decline_rejected_422": "K688-API-013",
+    "test_post_knowledge_requests_id_decline_rate_limited": "K688-API-025",
+    "test_post_knowledge_requests_id_decline_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_requests_id_decline_session_unresolved": "K688-API-020",
+    "test_post_knowledge_requests_id_decline_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_knowledge_requests_id_decline_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 1 欄）"
+   }
+  }
+ }
+}

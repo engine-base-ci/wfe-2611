@@ -308,6 +308,7 @@
     "pc-fix": ".k-pc-fix",
     "f4d-sample-ink": ".k-f4d-sample-ink",
     "f4d-sample-mark": ".k-f4d-sample-mark",
+    "f9s-pill": ".k-f9s-pill",
     "pc-more": ".k-pc-more",
     "pc-usage": ".k-pc-card.k-pc-usage",
     "pc-bar": ".k-pc-bar",
@@ -336,6 +337,18 @@
     "sec-summary-warn": ".k-sec-summary[data-tone=\"warn\"]"
   },
   "component_exempt": [
+    {
+      "part": "f9s-swatch-ring",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。選んだ色の見本の輪郭とその離しを、.k-f9s-swatch:has(input:checked) の outline・outline-offset が var(--k-c-f9s-…) で読む。D5 が比べる性質（border・width など素の性質）に無いので比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f9s-swatch-ring-gap",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。選んだ色の見本の輪郭とその離しを、.k-f9s-swatch:has(input:checked) の outline・outline-offset が var(--k-c-f9s-…) で読む。D5 が比べる性質（border・width など素の性質）に無いので比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "kn-pane",
+      "reason": "ナレッジの画面（features/F9/knowledge/knowledge.css の .k-f9-wrap・.k-f9-tree）。値は上の帯 shell-bar の高さを引く calc の中で使い（min-height・height）、D5 が素の値で比べられない。CSS はこのトークンだけを読む（K-670）"
+    },
     {
       "part": "card",
       "reason": "components/k にカードの部品のクラスがまだ無い。作る時はまだ決まっていない"

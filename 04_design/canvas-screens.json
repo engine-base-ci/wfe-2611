@@ -157,11 +157,6 @@
    "EdClient",
    "EdContact"
   ],
-  "rules": [
-   "RoomKnows",
-   "RoomAddRule",
-   "EdRule"
-  ],
   "signup": [
    "AuthSignup",
    "AuthChecking"
@@ -222,10 +217,6 @@
    "AuthVerifyUsed",
    "AuthVerifyLoading"
   ],
-  "work-types": [
-   "RoomWays",
-   "RoomType"
-  ],
   "legal": [
    "LegalPage"
   ]
@@ -258,6 +249,18 @@
    "TnNew",
    "TopOrg",
    "UiDisabled"
+  ]
+ },
+ "later": {
+  "_doc": "後のフェーズへ送った画面（flow.json の release v2）の絵。消さずに残す（画面を戻すときの正）。CV4 は、ここの画面が第1フェーズに無いことと、絵が 2 か所に入っていないことを見る（K-711）",
+  "rules": [
+   "RoomKnows",
+   "RoomAddRule",
+   "EdRule"
+  ],
+  "work-types": [
+   "RoomWays",
+   "RoomType"
   ]
  }
 }

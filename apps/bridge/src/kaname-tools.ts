@@ -49,6 +49,16 @@ export const TOOL_DEFS: ToolDef[] = [
     },
   },
   {
+    name: "knowledge_open",
+    description:
+      "ナレッジの目次に並んだページを、ページの id を渡して開いて読む。必ず守るページ以外は、要るときにこれで開く（K-718）",
+    inputSchema: {
+      type: "object",
+      properties: { page_id: s("ページの id（ナレッジの目次にある id）") },
+      required: ["page_id"],
+    },
+  },
+  {
     name: "draft_read",
     description: "いまのたたき台（会社の目標・台帳・担当業務とAI社員）を読む。置く前・直す前に見る",
     inputSchema: { type: "object", properties: {} },
@@ -149,19 +159,23 @@ export const TOOL_DEFS: ToolDef[] = [
     },
   },
 ];
-/** 仕事の種類（K-62）。チケットの仕事はチケットの道具、会話の仕事は会話の道具 */
+/** 仕事の種類（K-62）。チケットの仕事はチケットの道具と knowledge_open、会話の仕事は会話の道具（knowledge_open を含む・K-718） */
 export type ToolJobKind = "ticket" | "chat" | "login_check";
 /** 会話の種類（K-737）：draft＝作る画面の会話 */
 export type ToolTalkKind = "clone" | "ticket" | "draft";
 /** 仕事の段（K-746）：dry_run＝試し打ち（確認項目を変えない仕事） */
 export type ToolJobPhase = "make" | "execute" | "dry_run";
-const TICKET_TOOL_NAMES = ["ticket_read", "spec_check", "guard_report"];
+const TICKET_TOOL_NAMES = ["ticket_read", "spec_check", "guard_report", "knowledge_open"];
 const DRAFT_TOOL_NAMES = ["draft_propose"];
 const pick = (list: readonly string[]) => TOOL_DEFS.filter((t) => list.includes(t.name));
 /** その仕事の種類で自分のAI に見せる道具（呼べない道具は見せない・K62-BRG-012）。手元の口の 403 が 2 層目 */
 export function toolDefsFor(kind: ToolJobKind | null | undefined): ToolDef[] {
   if (kind === "ticket") return pick(TICKET_TOOL_NAMES);
   if (kind === "login_check") return [];
+  // 会話の仕事はチケットだけの道具と作る画面の道具を除く（knowledge_open は残す・K-718）
+  return TOOL_DEFS.filter(
+    (t) => !(TICKET_TOOL_NAMES.includes(t.name) && t.name !== "knowledge_open") && !DRAFT_TOOL_NAMES.includes(t.name),
+  );
   return TOOL_DEFS.filter((t) => !TICKET_TOOL_NAMES.includes(t.name) && !DRAFT_TOOL_NAMES.includes(t.name));
 }
 /** 仕事ごとの出し分け（K-737）：作る画面の会話は draft_propose だけ・試し打ちは ticket_read だけ（付けた印を外せない spec_check・
@@ -217,6 +231,8 @@ async function call(id, name, input) {
       signal: AbortSignal.timeout(20000),
     });
     const j = await r.json().catch(() => ({}));
+    // ナレッジのページが無い・見えない（404）は訳を書かずに同じ 1 文だけ（K-698 の「同じ答え」を AI に届く所まで守る・K-718）
+    if (!r.ok && name === "knowledge_open" && r.status === 404) return reply(id, text("そのページは見つかりません", true));
     if (!r.ok) {
       const own = failText(name, r.status, j);
       if (own) return reply(id, text(own, true));

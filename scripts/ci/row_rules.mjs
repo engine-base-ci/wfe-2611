@@ -14,8 +14,6 @@ export const ID_TABLE = {
   "/api/v1/bridge/devices": "sessions",
   "/api/v1/me/sessions": "sessions",
   "/api/v1/me/workspaces": "tenant_memberships",
-  "/api/v1/knowledge/proposals": "knowledge_page_versions",
-  "/api/v1/knowledge_imports": "imports",
   "/api/v1/exports": "export_jobs",
   "/api/v1/ticket_draft_conversations": "conversations",
 };
@@ -28,17 +26,29 @@ export const ROW_EXEMPT = {
 /** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
  *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
 export const ROW_EXEMPT_FIELDS = {
-  switchWorkspace: {
-    id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
+  withdrawKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
   },
-  revokeMySession: {
-    id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
+  dismissKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  approveKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  declineKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
   },
   updateKnowledgeFolder: {
     id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
   },
   deleteKnowledgeFolder: {
     id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  switchWorkspace: {
+    id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
+  },
+  revokeMySession: {
+    id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
   },
   markNoticeRead: {
     id: "運営のお知らせの行は運営だけが読める（行の守り notices_ops_all）ので、入口が行の守りの中で :id を読むと会社の人にはどのお知らせも無い（404・NOT_FOUND）になる。見える（届け先・出したか・管理者だけ）は口が DB の関数 app.member_notice_read（app.notice_for_member → app.notice_for_tenant の 1 か所）で決め、見えなければ 404 E-PAGE-001・何も書かない（K-954）",
@@ -78,9 +88,7 @@ export const RULES = {
     credentials: `owner_member_id = ${ME}`,
     export_jobs: `requested_by = ${ME}`,
     inquiries: `opened_by_member_id = ${ME}`,
-    learning_candidates: `owner_member_id = ${ME}`,
     tenant_memberships: `member_id = ${ME}`,
-    memories: `owner_member_id = ${ME}`,
     // 会話の中の発言から作る：自分の会話の発言だけ
     messages: `exists (select 1 from conversations c where c.id = conversation_id and c.owner_member_id = ${ME})`,
     notifications: `member_id = ${ME}`,

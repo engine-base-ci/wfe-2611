@@ -146,7 +146,8 @@ export interface TicketShellProps {
     | "requests"
     | "notices"
     | "billing"
-    | "masters";
+    | "masters"
+    | "knowledge";
   /** 上の帯のいまの場所 */
   crumbs: Crumb[];
   /** 左のメニューの数（まとまりの鍵 → 数）。承認待ちの画面は自分で読んだ数を渡す（外枠は二重に読まない） */

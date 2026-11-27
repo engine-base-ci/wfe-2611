@@ -2,6 +2,8 @@
 //   答えの形の正は口の葉 K-383（listTicketTimeline）。名前は、書き込みの頭だけ正式な名前、ほかは呼ばれ方（無ければ正式な名前）。
 import { createElement as h, Fragment, type ReactNode } from "react";
 import { stage5ChangeText, type ChangeCtx } from "@/features/F4/thread-lines/change-text";
+import { knowledgeRowOf } from "@/features/F9/knowledge/ticket-rows";
+import { isExpanded } from "@/features/F9/knowledge/ticket-rows-shape";
 import { Mention, type Person, type PostView, type ThreadItem, type Tone } from "./views";
 
 export interface Who {
@@ -219,12 +221,21 @@ function postOf(it: TimelineItem, m: MessageView): PostView {
   };
 }
 
-function itemOf(it: TimelineItem, ctx: ChangeCtx, openRun?: (runId: string) => void): ThreadItem | null {
+/** 答えの並びの中の位置（ナレッジの守る物の行を広げるか畳むかを決める・K-702） */
+interface At {
+  index: number;
+  length: number;
+}
+
+function itemOf(it: TimelineItem, ctx: ChangeCtx, at: At, openRun?: (runId: string) => void): ThreadItem | null {
   const time = hhmm(it.at);
   switch (it.kind) {
     case "post":
       return it.message ? { kind: "post", post: postOf(it, it.message) } : null;
     case "change": {
+      // ナレッジの 3 つの行（守る物・開いたページ・守れていなかった決まり）は段 10 の部品が作る（K-702）
+      const knowledge = knowledgeRowOf(it.changes, { time, expanded: isExpanded(at.index, at.length) });
+      if (knowledge) return knowledge;
       const who = it.actor;
       return {
         kind: "line",
@@ -284,8 +295,8 @@ export function toItems(
 ): ThreadItem[] {
   const out: ThreadItem[] = [];
   let lastDay = "";
-  for (const it of items) {
-    const row = itemOf(it, ctx, openRun);
+  for (const [index, it] of items.entries()) {
+    const row = itemOf(it, ctx, { index, length: items.length }, openRun);
     if (!row) continue;
     const day = dayKey(it.at);
     if (day !== lastDay) {

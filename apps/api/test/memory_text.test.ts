@@ -1,6 +1,6 @@
-// 記憶の文を作る・読む（D-105）。DB に触らない部分
+// 記憶の文を読む（D-105）。DB に触らない部分。K-712：毎朝のまとめに渡す文を組む関数は、まとめを押す旧い道ごと外したので、その試験も外した
 import { describe, expect, it } from "vitest";
-import { digestPrompt, parseDigest, takeRemember } from "../src/auth/memory.js";
+import { parseDigest, takeRemember } from "../src/auth/memory.js";
 
 describe("takeRemember（D-105.1）", () => {
   it("印を抜き出して返事から消す。全角のコロンも読む。空の印は数えない", () => {
@@ -33,35 +33,5 @@ describe("parseDigest（D-105.4）", () => {
     });
     expect(parseDigest("書き忘れました")).toBeNull();
     expect(parseDigest('{"foo":1}')).toBeNull();
-  });
-});
-
-describe("digestPrompt（D-105.3）", () => {
-  it("会話・承認・いまの記憶（id つき）・上げ先の層を入れ、一人の会社には上げる候補を空にするよう伝える", () => {
-    const p = digestPrompt(
-      {
-        conversations: [
-          {
-            id: "c",
-            title: "京蟻",
-            messages: [
-              { who: "me", text: "窓口は鈴木さん" },
-              { who: "ai", text: "承知" },
-            ],
-          },
-        ],
-        approvals: [{ status: "approved", note: "税込で", at: "" }],
-        memories: [{ id: "m-1", kind: "preference", title: "単価", body: "55,000 円" }],
-        scopes: [{ id: "s-1", name: "会社" }],
-        solo: true,
-      },
-      "2026-09-26",
-      "2026-09-26",
-    );
-    expect(p).toContain("本人：窓口は鈴木さん");
-    expect(p).toContain("OK にした：税込で");
-    expect(p).toContain("[m-1]");
-    expect(p).toContain("[s-1] 会社");
-    expect(p).toContain("propose は空にする");
   });
 });

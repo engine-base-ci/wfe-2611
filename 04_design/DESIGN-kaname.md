@@ -468,6 +468,8 @@ components:
     width: "30px"
   shell-bar:            # 外枠の上の帯の高さ（K-138・shell.css の .k-bar）。幅 767 以下も同じ高さで出す（D-147）。上に貼り付く物はこの下に置く（K-226）
     height: "48px"
+  kn-pane:              # ナレッジの画面の面（左の木と右のページを並べる面・features/F9/knowledge/knowledge.css の .k-f9-wrap・.k-f9-tree）の高さ。画面の高さちょうどで、上の帯 shell-bar を引いた残りを木とページが使う（K-670）
+    height: "100dvh"
   shell-bar-tool:       # スマホ（幅 767 以下）の上の帯の道具（探す・探すを閉じる・知らせ・右のパネルの開け閉め）の押せる大きさ。指で押せる 44px（D-147・shell.css の 767 以下の .k-bar-tools .k-icon-btn）
     width: "44px"
     height: "44px"
@@ -1497,6 +1499,13 @@ components:
     textColor: "{state.progress}"
   f4d-sample-mark:      # 下絵の本文の見本の背景の色（同上。正本の注意の淡い面から選ぶ）
     backgroundColor: "{state.warning-container}"
+  # 段 10 の下絵 v2（features/F9/settings の settings.css・K-672）の値。CSS は var(--k-c-f9s-…) だけを読む
+  f9s-pill:             # 種別・状態の札の行の高さ（本文の 1.6 より 0.2 広い 1.8）
+    lineHeight: 1.8
+  f9s-swatch-ring:      # 選んだ色の見本の輪郭（2px・primary）。outline に当てる
+    border: "2px solid {colors.primary}"
+  f9s-swatch-ring-gap:  # 選んだ色の見本の輪郭の離し（outline-offset 2px）
+    width: "2px"
   notice-panel:         # ベルから重なって開くお知らせの箱の幅（段 8・f7-bell-*・420）
     width: "420px"
   search-panel:         # 探す箱の幅と上端（段 8・f7-search-*・幅 580・帯の下に重ねる上端 144）

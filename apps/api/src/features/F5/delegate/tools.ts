@@ -2,6 +2,7 @@
 //   道具の鍵（take で渡す・DB にはハッシュだけ）と PC の印の両方が要る。その仕事を受け取った PC から・その仕事の間だけ・押した人の会社と権限の中だけ（D-110）。
 //   道具は仕事の種類で分ける：チケットの仕事は ticket_read と guard_report（K-738）と spec_check（K-736）だけ・会話の仕事は会話の道具（agent-tools.ts の TOOLS）だけ（K62-API-051）。
 //   会話の仕事はさらに会話の種類で分ける：作る画面の会話（talk_kind draft）の仕事は draft_propose（K-775）だけ。
+//   ページを開く knowledge_open（K-698）はどちらの仕事にも出す（ログインの試しには出さない）。
 //   書く・読むのは関門 C2 の関数（app.bridge_tool_job・app.ticket_tool_read・TOOLS の関数）。証跡は関数の中で残す
 import type pg from "pg";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
@@ -10,8 +11,11 @@ import { rawBody } from "./bridge.js";
 import { parseDraftProposeInput, runDraftPropose } from "../talk/draft-propose.js";
 import { parseGuardReportInput, runGuardReport } from "./guard-report.js";
 import { parseSpecCheckInput, runSpecCheck } from "./spec-check.js";
+import { parseOpenInput, runKnowledgeOpen } from "../../F9/knowledge/ai/open.js";
 
-export const TICKET_TOOLS = ["ticket_read", "guard_report", "spec_check"] as const;
+/** どちらの仕事にも出す道具（K-698） */
+export const KNOWLEDGE_TOOLS = ["knowledge_open"] as const;
+export const TICKET_TOOLS = ["ticket_read", "guard_report", "spec_check", ...KNOWLEDGE_TOOLS] as const;
 export const DRAFT_TOOLS = ["draft_propose"] as const;
 const ALL_TOOLS = new Set<string>([...TICKET_TOOLS, ...DRAFT_TOOLS, ...Object.keys(TOOLS)]);
 const TOKEN_HEADER = "x-kaname-tool-token";
@@ -37,7 +41,8 @@ interface ToolJob {
 export function toolsFor(job: Pick<ToolJob, "kind" | "conversation_id" | "talk_kind">): readonly string[] {
   if (job.kind === "ticket") return TICKET_TOOLS;
   if (!job.conversation_id) return [];
-  return job.talk_kind === "draft" ? DRAFT_TOOLS : Object.keys(TOOLS);
+  // 作る画面の会話は draft_propose だけ（K-775）。ほかの会話は会話の道具と knowledge_open（K-698）
+  return job.talk_kind === "draft" ? DRAFT_TOOLS : [...Object.keys(TOOLS), ...KNOWLEDGE_TOOLS];
 }
 
 export function toolHooks(pool: pg.Pool): Record<string, Hook> {
@@ -78,6 +83,19 @@ export function toolHooks(pool: pg.Pool): Record<string, Hook> {
           ).rows[0]?.v;
           if (!v) return forbidden("このチケットはもう読めません");
           return { status: 201, body: { data: { result: v } } };
+        }
+        if (name === "knowledge_open") {
+          // DB でも鍵のハッシュと受け取った PC を見る（2 層目）。見えない・無いは 404・DB の例外は 503（K-698）
+          const b = await rawBody(a);
+          const input = b["input"] && typeof b["input"] === "object" ? (b["input"] as Record<string, unknown>) : {};
+          const parsed = parseOpenInput(input);
+          if (!parsed.ok) return parsed.reply;
+          return runKnowledgeOpen(pool, {
+            job: job.job_id,
+            tokenHash: hashToolToken(token),
+            session: sid,
+            page: parsed.page_id,
+          });
         }
         const b = await rawBody(a);
         const input = b["input"] && typeof b["input"] === "object" ? (b["input"] as Record<string, unknown>) : {};

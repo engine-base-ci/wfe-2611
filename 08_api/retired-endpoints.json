@@ -345,18 +345,6 @@
   },
   {
    "method": "GET",
-   "path": "/api/v1/tickets/{id}/work-type-candidates",
-   "decision": "D-150.60",
-   "reason": "業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。チケットの側の候補の口は要らない（K-582）"
-  },
-  {
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "decision": "D-150.46",
-   "reason": "分類の軸は会社が足す項目の「1 つ選ぶ」にまとめた。軸を読む口は listTicketFields に置き換えた（K-563 が外した口の記録・K-582 で足す）"
-  },
-  {
-   "method": "GET",
    "path": "/api/v1/rules",
    "decision": "D-152.20",
    "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（listRules・K-711）"
@@ -530,22 +518,226 @@
    "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（rollbackOpsWorkType・K-711）"
   },
   {
-   "method": "POST",
-   "path": "/api/v1/ops/workspaces/export",
-   "decision": "D-156.13",
-   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsWorkspaces・K-948）"
+   "method": "GET",
+   "path": "/api/v1/memories",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（listMemories・K-712）"
   },
   {
    "method": "POST",
-   "path": "/api/v1/ops/invoices/export",
-   "decision": "D-156.13",
-   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsInvoices・K-948）"
+   "path": "/api/v1/memories",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（createMemory・K-712）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/memories/{id}",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（updateMemory・K-712）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/memories/{id}",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（deleteMemory・K-712）"
   },
   {
    "method": "POST",
-   "path": "/api/v1/ticket_kinds/{id}/template-from-ticket",
-   "decision": "D-156.20",
-   "reason": "チケットからひな形を作る口は外す（代表の言い直し）"
+   "path": "/api/v1/memories/{id}/promote",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（promoteMemoryToRule・K-712）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clones/me/knows/counts",
+   "decision": "D-152.20",
+   "reason": "知っていることの数は、数える物（決まり・やり方・記憶・覚えたいこと）が無くなった（代表の決め 1・8）（countKnows・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/learning_candidates",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（listLearningCandidates・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/accept",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（acceptLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/dismiss",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（dismissLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/later",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（postponeLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/exception-request",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）。決まりの例外の頼みも決まりと一緒に無くした（requestRuleException・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/workspace/ticket-shape",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（getTicketShape・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/workspace/ticket-shape/preview",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（previewTicketShapeChange・K-721）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/workspace/ticket-shape",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（saveTicketShape・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/home",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeHome・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgePages・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/ask",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（askKnowledge・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/ask/feedback",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（sendKnowledgeAnswerFeedback・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/attachments",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（uploadKnowledgeAttachment・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/versions/{v}/restore",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（restoreKnowledgeVersion・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/markdown",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（exportKnowledgeMarkdown・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/usage",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeUsage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/links",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeLinks・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/links",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（linkKnowledgeMention・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/link-targets",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（searchKnowledgeLinkTargets・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/messages",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgeMessages・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/messages",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（postKnowledgeMessage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/verifications",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgeVerifications・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/verify",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（verifyKnowledgePage・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/archive",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（archiveKnowledgePage・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/unarchive",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（unarchiveKnowledgePage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/proposals",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（listKnowledgeProposals・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/proposals/{id}/accept",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（acceptKnowledgeProposal・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/proposals/{id}/decline",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（declineKnowledgeProposal・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_imports",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（createKnowledgeImport・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_imports/{id}",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（getKnowledgeImport・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_imports/{id}/commit",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（commitKnowledgeImport・K-722）"
   },
   {
    "method": "GET",
@@ -642,6 +834,36 @@
    "path": "/api/v1/portal/acceptances/{id}/answer",
    "decision": "D-155.44",
    "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（answerAcceptance・K-924・K-926 から前へ移した）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tickets/{id}/work-type-candidates",
+   "decision": "D-150.60",
+   "reason": "業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。チケットの側の候補の口は要らない（K-582）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/class_axes",
+   "decision": "D-150.46",
+   "reason": "分類の軸は会社が足す項目の「1 つ選ぶ」にまとめた。軸を読む口は listTicketFields に置き換えた（K-563 が外した口の記録・K-582 で足す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/workspaces/export",
+   "decision": "D-156.13",
+   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsWorkspaces・K-948）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/invoices/export",
+   "decision": "D-156.13",
+   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsInvoices・K-948）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_kinds/{id}/template-from-ticket",
+   "decision": "D-156.20",
+   "reason": "チケットからひな形を作る口は外す（代表の言い直し）"
   }
  ]
 }

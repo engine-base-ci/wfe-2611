@@ -172,6 +172,7 @@ export function label(tool: string): string {
     spec_check: "確認項目にチェックを付けています",
     guard_report: "守れていなかった決まりを知らせています",
     draft_propose: "チケットの案を出しています",
+    knowledge_open: "ナレッジを開いています",
     draft_read: "たたき台を読んでいます",
     goal_set: "たたき台に目標を置いています",
     goal_remove: "目標を外しています",

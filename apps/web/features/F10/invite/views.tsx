@@ -8,9 +8,10 @@
 //   並べ方（代表の直し 2026-11-20）：PC は本文の幅いっぱいのグループのカードに 1 人 1 行（丸いアイコン・名前とメール・役割・状態・操作）。
 //     スマホは 1 人 1 行（丸いアイコン・名前とメール・役割の札）。小窓はメールを入れる欄・入れたメールの並び・グループと役割を段に分ける
 import type { ReactNode, SyntheticEvent } from "react";
-import { ClipboardList, Settings, ShieldCheck, Users, X, type LucideIcon } from "lucide-react";
+import { ClipboardList, Settings, SlidersHorizontal, Users, X, type LucideIcon } from "lucide-react";
 import { Badge, Button, Callout, Dialog, Menu, MenuItem, MenuPopup, MenuTrigger, NoticeBox } from "@/components/k";
 import "@/components/k/me-sub.css";
+import { BUILT_ROUTES } from "@/lib/built-routes";
 import { GuestGroupField, type GuestGroupOption } from "./guest-group-views";
 import "./invite.css";
 
@@ -36,38 +37,65 @@ export function WsHead({ name, initial }: { name: string; initial: string }) {
   );
 }
 
+/** 第 2 ナビの項目のキー */
+export type WsSubKey = "members" | "rules" | "log" | "settings";
 interface SubItem {
-  key: string;
+  key: WsSubKey;
   label: string;
   icon: LucideIcon;
-  count?: number;
+  /** 押せる形のときの道（log・settings は仮。# で始まる道はこの画面の中） */
+  href: string;
 }
-const WS_ITEMS: SubItem[] = [
-  { key: "members", label: "メンバー", icon: Users },
-  { key: "rules", label: "決まり", icon: ShieldCheck },
+const WS_ITEMS: readonly SubItem[] = [
+  { key: "members", label: "メンバー", icon: Users, href: "#members" },
+  { key: "rules", label: "チケットの設定", icon: SlidersHorizontal, href: "/workspace/ticket-settings" },
   { key: "log", label: "記録", icon: ClipboardList, href: "/audit" },
   { key: "settings", label: "設定", icon: Settings, href: "/settings/company" },
 ];
 
-/** ワークスペースの管理の第 2 ナビ（自分の設定の第 2 ナビ MeSub と同じ形・クラス。メンバーのほかは F9・F10 の残りなので押せない） */
-export function WsSub({ members }: { members: number }) {
+/** 項目ごとの上書き（字・アイコン・道）。無い所は WS_ITEMS のまま */
+export type WsSubItemOverrides = Partial<Record<WsSubKey, { label?: string; icon?: LucideIcon; href?: string }>>;
+
+export interface WsSubProps {
+  /** メンバーの数。無ければ数の札を出さない */
+  members?: number;
+  /** いま開いている項目（既定 members） */
+  active?: WsSubKey;
+  /** 押せる項目（既定：この画面の中の道か、道の一覧 BUILT_ROUTES に在る項目。ほかは準備中） */
+  enabled?: readonly WsSubKey[];
+  /** 項目の字・アイコン・道の上書き */
+  items?: WsSubItemOverrides;
+}
+
+/** 既定で押せる項目：この画面の中の道（#）か、もうある画面の道（BUILT_ROUTES）の項目（K-710） */
+const DEFAULT_ENABLED: readonly WsSubKey[] = WS_ITEMS.filter(
+  (it) => it.href.startsWith("#") || BUILT_ROUTES.includes(it.href),
+).map((it) => it.key);
+
+/** ワークスペースの管理の第 2 ナビ（自分の設定の第 2 ナビ MeSub と同じ形・クラス。既定はもうある画面の項目だけ押せる・ほかは F9・F10 の残りなので押せない） */
+export function WsSub({ members, active = "members", enabled = DEFAULT_ENABLED, items = {} }: WsSubProps) {
+  const list = WS_ITEMS.map((it) => ({ ...it, ...items[it.key] }));
+  const current = list.find((it) => it.key === active) ?? list[0];
   return (
     <aside aria-label="ワークスペースの管理の中" className="k-me-sub">
       <div className="k-me-sub-m">
         <Menu>
-          <MenuTrigger className="k-btn k-inv-sub-trigger" label="ワークスペースの管理 › メンバー（管理の中を選ぶ）">
-            ワークスペースの管理 › メンバー ▾
+          <MenuTrigger
+            className="k-btn k-inv-sub-trigger"
+            label={`ワークスペースの管理 › ${current?.label ?? ""}（管理の中を選ぶ）`}
+          >
+            ワークスペースの管理 › {current?.label} ▾
           </MenuTrigger>
           <MenuPopup align="start" className="k-inv-sub-menu">
-            {WS_ITEMS.map((it) => (
-              <MenuItem key={it.key} className="k-select-item" disabled={it.key !== "members"}>
+            {list.map((it) => (
+              <MenuItem key={it.key} className="k-select-item" disabled={!enabled.includes(it.key)}>
                 {it.label}
               </MenuItem>
             ))}
           </MenuPopup>
         </Menu>
       </div>
-      {WS_ITEMS.map((it) => {
+      {list.map((it) => {
         const Icon = it.icon;
         const body = (
           <>
@@ -75,11 +103,17 @@ export function WsSub({ members }: { members: number }) {
               <Icon size={16} aria-hidden="true" />
             </span>
             <span className="k-me-sub-t">{it.label}</span>
-            {it.key === "members" ? <span className="k-inv-sub-count">{members}</span> : null}
+            {it.key === "members" && members !== undefined ? <span className="k-inv-sub-count">{members}</span> : null}
           </>
         );
-        return it.key === "members" ? (
-          <a key={it.key} className="k-me-sub-i" href="#members" aria-current="page" title={it.label}>
+        return enabled.includes(it.key) ? (
+          <a
+            key={it.key}
+            className="k-me-sub-i"
+            href={it.href}
+            aria-current={it.key === active ? "page" : undefined}
+            title={it.label}
+          >
             {body}
           </a>
         ) : (
@@ -130,7 +164,7 @@ export interface MemberGroup {
 /** ゲストの人の行の「⋯」の項目（K-931）：入っている人は 止める・外す、止めている人は 戻す・外す */
 export type GuestRowAct = "suspend" | "resume" | "remove";
 
-function Person({
+export function Person({
   r,
   guest = false,
   menuOpen = false,

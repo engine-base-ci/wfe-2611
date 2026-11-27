@@ -18,7 +18,6 @@ import {
   expectBadId,
   jobsOf,
   newJob,
-  newMemory,
   post,
   ready,
   req,
@@ -28,16 +27,9 @@ beforeAll(bootK145, 60_000);
 afterAll(closeK145);
 
 describe("K-145 D-135.4：形違いの id を黙って捨てる所も 422（D-129.42）", () => {
-  it("K145-API-002（続き）say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id が形違いなら 422・その欄。仕事は増えない。null は「無し」で通す", async () => {
+  it("K145-API-002（続き）say・steer の attachment_ids の要素・quote.message_id が形違いなら 422・その欄。仕事は増えない。null は「無し」で通す", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
-    const mem = await newMemory(r);
-    const proposal = (
-      await admin.query<{ id: string }>(
-        "insert into memory_proposals (tenant_id, scope_id, memory_id, target_scope_id, proposer_member_id, state_id) values ($1, $2, $3, $2, $4, 'draft') returning id",
-        [r.tenant, r.scope, mem, r.member],
-      )
-    ).rows[0]!.id;
     const jobs = await jobsOf(r.member);
     const cases: [string, string, string, (bad: string) => unknown][] = [
       ["POST", "/agent/say", "attachment_ids", (bad) => ({ text: "x", attachment_ids: [bad] })],
@@ -48,7 +40,6 @@ describe("K-145 D-135.4：形違いの id を黙って捨てる所も 422（D-12
         "attachment_ids",
         (bad) => ({ job_id: job.job_id, text: "直して", attachment_ids: [bad] }),
       ],
-      ["POST", `/agent/memory/proposals/${proposal}/send`, "target_scope_id", (bad) => ({ target_scope_id: bad })],
     ];
     for (const [method, path, field, body] of cases)
       for (const bad of BAD_IDS)

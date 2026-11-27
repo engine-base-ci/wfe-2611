@@ -1,7 +1,7 @@
-// 記憶（D-105・T-B-21・T-B-22）を本物の Postgres（RLS あり）で通す。
+// 記憶（D-105・T-B-21）を本物の Postgres（RLS あり）で通す。
 //   「覚えて」はその場で個人の記憶に入り、会話に「覚えました」が出る（記憶に残さない会話では入れない）
-//   毎朝のまとめ：溜まった日数と会話 → 押すと Bridge に会話の無い仕事 → 答え（JSON）で 覚えた／まとめた／上げる候補／捨てた → その場で戻す・拾い直す
-//   上の層へ：本人が送る → 確認者（層で承認できる人・いなければ上・最後は代表）→ OK で上の層の記憶に・食い違いは束で片方を差し戻す
+//   K-712：毎朝のまとめ・上の層へ上げる候補・記憶を直す／消す旧い道は代表の決め 8（記憶は物として無くす）で外したので、
+//   この試験のその部分（describe 2 つ）も外した。「覚えて」の印が記憶に入る所は K-712 の範囲の外（別の葉）なのでそのまま残す
 import { beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";
 import { mkdtempSync } from "node:fs";
@@ -20,11 +20,9 @@ import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
-import { createInvitation } from "@kaname/auth/invitations";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
-import { joinByInvitation } from "./invite_join.js";
 import { invitationHooks } from "../src/hooks/invitations.js";
-import { pairForTest, pairMemberForTest } from "./bridge_pair.js";
+import { pairForTest } from "./bridge_pair.js";
 import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
 import { withDevice } from "../src/middleware/tenant.js";
 import { delegateHooks } from "../src/hooks/delegate.js";
@@ -126,63 +124,6 @@ async function ready() {
     .member_id as string;
   return { H, B, member };
 }
-async function pairBridge(member: string) {
-  const bp = await pairMemberForTest(admin, member);
-  return { "x-bridge-session": bp.token };
-}
-/** 同じ会社に担当者を 1 人招く（招待を受ける → ログインの鍵） */
-async function invite(bossMember: string) {
-  const t = (await admin.query("select tenant_id from members where id = $1", [bossMember])).rows[0]
-    .tenant_id as string;
-  const repo = await createRepository(createPool({ databaseUrl: APP_URL, max: 1 }));
-  const inv = await createInvitation(
-    repo,
-    { tenantId: t, userId: bossMember, role: "member" },
-    { email: `${uniq()}@example.com`, roleId: "staff" },
-  );
-  // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
-  const ac = await joinByInvitation(app, admin, inv.token, `担当 ${uniq().slice(-4)}`, PW);
-  const H = { authorization: `Bearer ${ac.token}` };
-  return { H, B: await pairBridge(ac.member_id), member: ac.member_id };
-}
-/** 会話を 1 本作り、昨日のことにする（まとめは昨日までを読む） */
-async function talkedYesterday(H: Record<string, string>, B: Record<string, string>, text: string, reply: string) {
-  const s = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text }, H));
-  await post("/bridge/take", { protocol: 5 }, B);
-  await post("/bridge/finish", { job_id: s.job_id, state: "done", result: reply }, B);
-  await admin.query("update messages set created_at = created_at - interval '1 day' where conversation_id = $1", [
-    s.conversation_id,
-  ]);
-  return s.conversation_id;
-}
-type Digest = {
-  pending: { days: number; conversations: number } | null;
-  running: { id: string } | null;
-  last: {
-    id: string;
-    result: {
-      remembered: { memory_id: string; title: string }[];
-      merged: { memory_id: string; before: { id: string }[] }[];
-      propose: { proposal_id: string; target_scope_id: string }[];
-      discarded: { text: string }[];
-      reason?: string;
-    };
-  } | null;
-  upper: { title: string; scope: string }[];
-  solo: boolean;
-  proposals: { proposal_id: string; state: string; reviewer: string | null }[];
-};
-const fence = (o: unknown) => `整理しました。\n\n\`\`\`json\n${JSON.stringify(o)}\n\`\`\``;
-async function runDigest(H: Record<string, string>, B: Record<string, string>, answer: string) {
-  const st = await json<{ digest_id: string }>(post("/agent/memory/digest", {}, H));
-  const t = await json<{ job_id: string; prompt: string; conversation_id: string | null } | null>(
-    post("/bridge/take", { protocol: 5 }, B),
-  );
-  expect(t?.conversation_id, "会話の画面には出さない仕事").toBeNull();
-  await post("/bridge/finish", { job_id: t!.job_id, state: "done", result: answer }, B);
-  return { digest: st.digest_id, prompt: t!.prompt };
-}
-
 describe("「覚えて」はその場で（D-105.1）", () => {
   it("印は返事から消え、個人の記憶に入り、会話に「覚えました」が出る。記憶に残さない会話では入れない", async () => {
     const { H, B, member } = await ready();
@@ -217,197 +158,5 @@ describe("「覚えて」はその場で（D-105.1）", () => {
     expect(
       (await admin.query("select count(*)::int as n from memories where body = '残さない会話の話'")).rows[0].n,
     ).toBe(0);
-  });
-});
-
-describe("毎朝のまとめ（D-105.2〜D-105.5）", () => {
-  it("溜まった分を出し、押すと会話の無い仕事になる。答えで 覚えた／まとめた／捨てた が入り、戻す・拾い直すができる。一人の会社には上げる候補を出さない", async () => {
-    const { H, B, member } = await ready();
-    const empty = await json<Digest>(req("GET", "/agent/memory/digest", undefined, H));
-    expect(empty.pending).toBeNull();
-    expect((await post("/agent/memory/digest", {}, H)).status, "まとめる会話が無ければ 409").toBe(409);
-    await talkedYesterday(H, B, "京蟻の窓口は鈴木さん", "承知しました");
-    const incog = await json<{ conversation_id: string }>(post("/agent/conversations", { incognito: true }, H));
-    const x = await json<{ job_id: string }>(
-      post("/agent/say", { text: "社外秘の話", conversation_id: incog.conversation_id }, H),
-    );
-    await post("/bridge/take", { protocol: 5 }, B);
-    await post("/bridge/finish", { job_id: x.job_id, state: "done", result: "了解" }, B);
-    await admin.query("update messages set created_at = created_at - interval '1 day' where conversation_id = $1", [
-      incog.conversation_id,
-    ]);
-    const old = (
-      await admin.query(
-        "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) select tenant_id, scope_id, 'preference', id, '単価', '1 人日 55,000 円' from members where id = $1 returning id",
-        [member],
-      )
-    ).rows[0].id as string;
-    const st = await json<Digest>(req("GET", "/agent/memory/digest", undefined, H));
-    expect(st.pending).toMatchObject({ days: 1, conversations: 1 }); // 記憶に残さない会話は数えない
-    expect(st.solo).toBe(true);
-    const { digest, prompt } = await runDigest(
-      H,
-      B,
-      fence({
-        remembered: [{ title: "京蟻の窓口", body: "京蟻の窓口は経理の鈴木さん", kind: "preference", source: "京蟻" }],
-        merged: [{ memory_ids: [old], title: "単価", body: "1 人日 60,000 円（9 月から）", kind: "preference" }],
-        propose: [
-          {
-            title: "着手金",
-            body: "着手金は契約時に 3 割",
-            kind: "rule",
-            target_scope_id: "00000000-0000-0000-0000-000000000000",
-          },
-        ],
-        discarded: [{ text: "明日 10 時に電話", why: "予定" }],
-      }),
-    );
-    expect(prompt).toContain("京蟻の窓口は鈴木さん");
-    expect(prompt).not.toContain("社外秘の話");
-    expect(prompt).toContain(old);
-    const done = await json<Digest>(req("GET", "/agent/memory/digest", undefined, H));
-    expect(done.pending).toBeNull();
-    expect(done.last?.result.remembered.map((r) => r.title)).toEqual(["京蟻の窓口"]);
-    expect(done.last?.result.merged[0]!.before.map((b) => b.id)).toEqual([old]);
-    expect(done.last?.result.propose, "一人の会社には上げる候補を出さない").toEqual([]);
-    expect(done.last?.result.discarded.map((d) => d.text)).toEqual(["明日 10 時に電話"]);
-    expect(
-      (await admin.query("select superseded_by is not null as s from memories where id = $1", [old])).rows[0].s,
-    ).toBe(true);
-    // まとめを戻す → 前の記憶が戻る
-    expect(
-      (await post(`/agent/memory/digest/${digest}/undo`, { memory_id: done.last!.result.merged[0]!.memory_id }, H))
-        .status,
-    ).toBe(200);
-    expect(
-      (await admin.query("select superseded_by from memories where id = $1", [old])).rows[0].superseded_by,
-    ).toBeNull();
-    // 捨てたものを拾い直す
-    expect((await post(`/agent/memory/digest/${digest}/pick`, { index: 0 }, H)).status).toBe(201);
-    expect(
-      (
-        await admin.query(
-          "select count(*)::int as n from memories where owner_member_id = $1 and body = '明日 10 時に電話' and deleted_at is null",
-          [member],
-        )
-      ).rows[0].n,
-    ).toBe(1);
-    // 直す・消す（自分の記憶だけ）
-    const rid = done.last!.result.remembered[0]!.memory_id;
-    expect((await req("PATCH", `/agent/memory/${rid}`, { body: "京蟻の窓口は経理の鈴木様" }, H)).status).toBe(200);
-    const other = await ready();
-    expect(
-      (await req("PATCH", `/agent/memory/${rid}`, { body: "乗っ取り" }, other.H)).status,
-      "他人の記憶は直せない",
-    ).toBe(404);
-    expect((await req("DELETE", `/agent/memory/${rid}`, undefined, H)).status).toBe(200);
-  });
-  it("PC が閉じていたら始めたことにせず、溜まっている量も減らさない（E-MEM-001）", async () => {
-    const { H, B } = await ready();
-    await talkedYesterday(H, B, "何か", "はい");
-    await admin.query(
-      "update sessions set last_seen_at = now() - interval '10 minutes', issued_at = now() - interval '10 minutes' where device_token_hash = encode(sha256(convert_to($1, 'UTF8')), 'hex')",
-      [B["x-bridge-session"]],
-    );
-    const r = await post("/agent/memory/digest", {}, H);
-    expect(r.status).toBe(409);
-    expect((await r.json()) as { code: string; message: string }).toMatchObject({
-      code: "E-MEM-001",
-      message: expect.stringContaining("PC が閉じている"),
-    });
-    expect((await json<Digest>(req("GET", "/agent/memory/digest", undefined, H))).pending).toMatchObject({
-      days: 1,
-      conversations: 1,
-    });
-  });
-  it("答えが決まった形でなければ「うまくいかなかった」にし、理由を残す（黙って空にしない）", async () => {
-    const { H, B } = await ready();
-    await talkedYesterday(H, B, "何か", "はい");
-    await runDigest(H, B, "JSON を書き忘れました");
-    const st = await json<Digest>(req("GET", "/agent/memory/digest", undefined, H));
-    expect(st.last).toBeNull();
-    const row = (
-      await admin.query(
-        "select state_id, result->>'reason' as reason from memory_digests order by created_at desc limit 1",
-      )
-    ).rows[0];
-    expect(row.state_id).toBe("failed");
-    expect(row.reason).toContain("決まった形");
-    expect(st.pending, "失敗したら溜まった分はそのまま").not.toBeNull();
-  });
-});
-
-describe("上の層へ上げる候補と確認待ち（D-105.6・D-105.9）", () => {
-  it("担当者が送る → 代表が確認者 → OK で会社の記憶になり、送った人の個人の記憶は置き換わる。食い違いは束で、片方を選ぶと他は差し戻し", async () => {
-    const boss = await ready();
-    const root = (await admin.query("select scope_id from members where id = $1", [boss.member])).rows[0]
-      .scope_id as string;
-    const a = await invite(boss.member);
-    const b = await invite(boss.member);
-    for (const [who, body] of [
-      [a, "月末締め"],
-      [b, "20 日締め"],
-    ] as const) {
-      await talkedYesterday(who.H, who.B, "請求の締め日", "はい");
-      await runDigest(
-        who.H,
-        who.B,
-        fence({
-          remembered: [],
-          merged: [],
-          discarded: [],
-          propose: [{ title: "請求の締め日", body, kind: "rule", target_scope_id: root, why: "会社の決まり" }],
-        }),
-      );
-      const st = await json<Digest>(req("GET", "/agent/memory/digest", undefined, who.H));
-      expect(st.solo).toBe(false);
-      const p = st.last!.result.propose[0]!;
-      expect(p.target_scope_id).toBe(root);
-      const sent = await json<{ reviewer_member_id: string }>(
-        post(`/agent/memory/proposals/${p.proposal_id}/send`, {}, who.H),
-      );
-      expect(sent.reviewer_member_id, "確認者は会社の層で承認できる人（代表）").toBe(boss.member);
-    }
-    expect((await post(`/agent/memory/proposals/00000000-0000-0000-0000-000000000000/send`, {}, a.H)).status).toBe(404);
-    const reviews = await json<
-      { proposal_id: string; body: string; conflict_group_id: string | null; proposer: string }[]
-    >(req("GET", "/agent/memory/reviews", undefined, boss.H));
-    expect(reviews.map((r) => r.body).sort()).toEqual(["20 日締め", "月末締め"]);
-    expect(new Set(reviews.map((r) => r.conflict_group_id)).size, "食い違いは 1 つの束").toBe(1);
-    expect(reviews[0]!.conflict_group_id).not.toBeNull();
-    expect(
-      (await json<unknown[]>(req("GET", "/agent/memory/reviews", undefined, a.H))).length,
-      "確認者でない人には出ない",
-    ).toBe(0);
-    const pick = reviews.find((r) => r.body === "月末締め")!;
-    expect(
-      (await post(`/agent/memory/proposals/${pick.proposal_id}/decide`, { accept: true }, a.H)).status,
-      "確認者でない人は決められない",
-    ).toBe(404);
-    expect((await post(`/agent/memory/proposals/${pick.proposal_id}/decide`, { accept: true }, boss.H)).status).toBe(
-      200,
-    );
-    const up = await admin.query(
-      "select owner_member_id, scope_id, body, approved_by from memories where source_type_id = 'proposal' and source_ref_id = $1",
-      [pick.proposal_id],
-    );
-    expect(up.rows[0]).toEqual({ owner_member_id: null, scope_id: root, body: "月末締め", approved_by: boss.member });
-    const mineA = await json<Digest>(req("GET", "/agent/memory/digest", undefined, a.H));
-    expect(mineA.proposals[0]).toMatchObject({ state: "accepted" });
-    const mineB = await json<Digest>(req("GET", "/agent/memory/digest", undefined, b.H));
-    expect(mineB.proposals[0], "束の他方は差し戻し（個人の記憶のまま）").toMatchObject({ state: "returned" });
-    expect(
-      mineB.upper.map((u) => u.title),
-      "上の層で変わったこととして見える",
-    ).toContain("請求の締め日");
-    expect(await json<unknown[]>(req("GET", "/agent/memory/reviews", undefined, boss.H))).toEqual([]);
-    // 効く（D-105.7・D-105.8）：会話の仕事を取ると、上の層の決まりが本人の記憶より先に、強い順で渡る
-    await post("/agent/say", { text: "締め日はいつ？" }, b.H);
-    const t = await json<{ memories: { kind: string; scope: string; personal: boolean; body: string }[] }>(
-      post("/bridge/take", { protocol: 5 }, b.B),
-    );
-    const bodies = t.memories.map((m) => `${m.personal ? "本人" : "上"}:${m.body}`);
-    expect(bodies[0], "上の層の決まりがいちばん強い").toBe("上:月末締め");
-    expect(bodies, "差し戻された本人の案は本人の記憶として残る").toContain("本人:20 日締め");
   });
 });

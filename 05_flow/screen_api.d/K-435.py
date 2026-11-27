@@ -24,11 +24,11 @@ INPUT_RULES = {
 
 UNEXPRESSIBLE_422 = {}   # 決まりは全部契約に書いた（検査の例外は足さない）
 
-# 答えの行は K-434 と同じ SpecItem（鍵ちょうど 6）。直す・付け外すは直した後の姿（version は直した後の版）・外すは外す前の姿
+# 答えの行は K-434 と同じ SpecItem（鍵ちょうど 7・source_page は K-726 が足した出どころのページ { id, title } か null）。直す・付け外すは直した後の姿（version は直した後の版）・外すは外す前の姿
 _ITEM = {"id": "uuid", "title": "string", "checked": "boolean", "position": "integer", "source": "string", "version": "integer"}
 RESPONSES = {
-    "updateTestSpec": ("TestSpecItem", dict(_ITEM)),
-    "deleteTestSpec": ("TestSpecItem", dict(_ITEM)),
+    "updateTestSpec": ("TestSpecItem", {**_ITEM, "source_page": "object?"}),
+    "deleteTestSpec": ("TestSpecItem", {**_ITEM, "source_page": "object?"}),
 }
 
 # 直す：書けない人（入口の 403）・見えない／無い／消した／別の会社／消されたチケット（404・欄も details も付けない）・完了した（409・E-SPEC-001）・

@@ -1,6 +1,6 @@
 // 自分のAIとの会話の口（D-104・D-105・T-B-15〜T-B-22）。/api/auth-ext の下に付く（ext.ts から route する）。
 //   画面の口：会話の一覧・新しく話す・名前／星／記憶に残さない・消す・見た・止める・止めずに直す・許可の答え（3 択＋一言・問い合わせ）・
-//            「いつも許可」の一覧と取り消し・許可の既定・使用量・資料を付ける・記憶の毎朝のまとめ・上げる候補
+//            「いつも許可」の一覧と取り消し・許可の既定・使用量・資料を付ける
 //   Bridge の口：書きながらの返事（partial）・止めずに直す一言（steers）・資料の署名 URL の受け口（files）・答え（answer2）
 //   会話の写し・取り戻す先・資料の取り寄せは契約の口へ移した（K-760・K-761・K-765）
 // 判定は DB の関数（security definer）の中。読む側で生の select をすると行レベルの制御に弾かれ、例外にならず 0 件になる
@@ -9,9 +9,8 @@ import { createDeviceResolver } from "@kaname/auth/resolver";
 import type pg from "pg";
 import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
-import { digestPrompt, type DigestSource } from "./memory.js";
 import { artifactRoutes } from "./artifacts.js";
-import { deleteConversation, editMemory, newConversation, setConversation } from "./agent-ops.js";
+import { deleteConversation, newConversation, setConversation } from "./agent-ops.js";
 import { badId, idList, idOf, idOrNull, isBridgeKeyShape, queryId } from "./ids.js";
 
 type Resolve = (h: Headers) => Promise<{ ctx: TenantContext } | null>;
@@ -310,150 +309,6 @@ export function agentRoutes(d: AgentDeps): Hono {
     ]);
     if (!r?.id) return NO(c);
     return c.json({ data: { id: r.id, name, mime: f.type || "application/octet-stream", size: put.value.size } }, 201);
-  });
-
-  // ---- 記憶の毎朝のまとめ（D-105.2〜D-105.5）：いまの状態・始める・結果をその場で直す
-  app.get("/agent/memory/digest", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const s = await q1<{ v: unknown }>("select app.agent_digest_status($1) as v", [ctx.userId]);
-    const mine = await q1<{ v: unknown }>("select app.agent_my_proposals($1) as v", [ctx.userId]);
-    const scopes = await q1<{ v: unknown }>("select app.agent_scope_chain($1) as v", [ctx.userId]);
-    return c.json({
-      data: { ...((s?.v as Record<string, unknown>) ?? {}), proposals: mine?.v ?? [], scopes: scopes?.v ?? [] },
-    });
-  });
-  app.post("/agent/memory/digest", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const s = (
-      await q1<{
-        v: {
-          pending: { from_on: string; to_on: string; conversations: number } | null;
-          running: { id: string } | null;
-        } | null;
-      }>("select app.agent_digest_status($1) as v", [ctx.userId])
-    )?.v;
-    if (s?.running) return c.json({ data: { digest_id: s.running.id, already: true } });
-    if (!s?.pending)
-      return bad(c, 409, "NOTHING_TO_DIGEST", "まとめる会話がありません（昨日までの分はまとめ終わっています）");
-    const src = (
-      await q1<{ v: DigestSource }>("select app.agent_digest_source($1, $2, $3) as v", [
-        ctx.userId,
-        s.pending.from_on,
-        s.pending.to_on,
-      ])
-    )?.v;
-    if (!src) return NO(c);
-    const prompt = digestPrompt(src, s.pending.from_on, s.pending.to_on);
-    const r = await q1<{ id: string | null }>("select app.agent_digest_start($1, $2, $3, $4, $5) as id", [
-      ctx.userId,
-      s.pending.from_on,
-      s.pending.to_on,
-      s.pending.conversations,
-      prompt,
-    ]);
-    if (!r?.id)
-      return bad(
-        c,
-        409,
-        "E-MEM-001",
-        "あなたの PC が閉じているので、まとめを始められません。PC を起こしてから、もう一度押してください。溜まっている分は消えません",
-      );
-    return c.json({ data: { digest_id: r.id } }, 201);
-  });
-  app.post("/agent/memory/digest/:id/undo", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { memory_id?: unknown };
-    const mem = idOrNull(b.memory_id);
-    if (mem === false) return badId(c, "memory_id");
-    if (!mem) return bad(c, 422, "VALIDATION_FAILED", "まとめと記憶の id が要ります");
-    const r = await q1<{ ok: boolean }>("select app.agent_digest_undo_merge($1, $2, $3) as ok", [ctx.userId, id, mem]);
-    if (!r?.ok) return bad(c, 404, "NOT_FOUND", "戻せるまとめが見つかりません");
-    return c.json({ data: { ok: true } });
-  });
-  app.post("/agent/memory/digest/:id/pick", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { index?: unknown };
-    if (!Number.isInteger(b.index) || (b.index as number) < 0)
-      return bad(c, 422, "VALIDATION_FAILED", "まとめの id と何番目か が要ります");
-    const r = await q1<{ id: string | null }>("select app.agent_digest_pick($1, $2, $3) as id", [
-      ctx.userId,
-      id,
-      b.index,
-    ]);
-    if (!r?.id) return bad(c, 404, "NOT_FOUND", "拾い直すものが見つかりません");
-    return c.json({ data: { memory_id: r.id } }, 201);
-  });
-  app.patch("/agent/memory/:id", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { title?: unknown; body?: unknown };
-    const body = typeof b.body === "string" ? b.body.trim() : "";
-    if (!body) return bad(c, 422, "VALIDATION_FAILED", "覚えることが空です", { field: "body" });
-    if (!(await editMemory(d.appPool, ctx.userId!, id, line(b.title) || null, body)))
-      return bad(c, 404, "MEMORY_NOT_FOUND", "直せる記憶が見つかりません（自分の記憶だけ直せます）");
-    return c.json({ data: { ok: true } });
-  });
-  app.delete("/agent/memory/:id", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const r = await q1<{ ok: boolean }>("select app.agent_memory_delete($1, $2) as ok", [ctx.userId, id]);
-    if (!r?.ok) return bad(c, 404, "MEMORY_NOT_FOUND", "消せる記憶が見つかりません（自分の記憶だけ消せます）");
-    return c.json({ data: { ok: true } });
-  });
-
-  // ---- 上の層へ上げる候補と確認待ち（D-105.6・D-105.9）
-  app.post("/agent/memory/proposals/:id/send", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { target_scope_id?: unknown };
-    const target = idOrNull(b.target_scope_id);
-    if (target === false) return badId(c, "target_scope_id");
-    const r = await q1<{ v: unknown }>("select app.agent_proposal_send($1, $2, $3) as v", [ctx.userId, id, target]);
-    if (!r?.v)
-      return bad(c, 404, "PROPOSAL_NOT_FOUND", "送れる候補が見つかりません（上げ先は自分の層か、その上の層だけ）");
-    return c.json({ data: r.v });
-  });
-  app.get("/agent/memory/reviews", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const r = await q1<{ v: unknown }>("select app.agent_memory_reviews($1) as v", [ctx.userId]);
-    return c.json({ data: r?.v ?? [] });
-  });
-  app.post("/agent/memory/proposals/:id/decide", async (c) => {
-    const ctx = await me(c);
-    if (!ctx) return NO(c);
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { accept?: unknown; body?: unknown };
-    if (typeof b.accept !== "boolean") return bad(c, 422, "VALIDATION_FAILED", "OK か差し戻すか が要ります");
-    const r = await q1<{ ok: boolean }>("select app.agent_proposal_decide($1, $2, $3, $4) as ok", [
-      ctx.userId,
-      id,
-      b.accept,
-      typeof b.body === "string" ? b.body : null,
-    ]);
-    if (!r?.ok)
-      return bad(
-        c,
-        404,
-        "PROPOSAL_NOT_FOUND",
-        "確認する候補が見つかりません（もう決まったか、あなたが確認者ではありません）",
-      );
-    return c.json({ data: { ok: true } });
   });
 
   // ---- Bridge の口

@@ -122,17 +122,6 @@ SCREEN_API = {
         ("POST", "/messages/:id/artifacts", "A95", "artifacts", "createArtifactFromMessage", ["artifact_versions"]),
         ("PATCH", "/artifacts/:id", "A95", "artifacts", "updateArtifact", ["artifact_versions"]),
         ("POST", "/artifact_versions/:id/restore", "A95", "artifact_versions", "restoreArtifactVersion", ["artifacts"]),
-        ("GET", "/clones/me/knows/counts", "A30", "memories", "countKnows", ["policies", "skills", "learning_candidates"]),
-        ("GET", "/memories", "A30", "memories", "listMemories", []),
-        ("POST", "/memories", "A30", "memories", "createMemory", ["learning_candidates"]),
-        ("PATCH", "/memories/:id", "A30", "memories", "updateMemory", []),
-        ("DELETE", "/memories/:id", "A30", "memories", "deleteMemory", []),
-        ("POST", "/memories/:id/promote", "A30|A131", "policies", "promoteMemoryToRule", ["memories"]),
-        ("GET", "/learning_candidates", "A30|A93", "learning_candidates", "listLearningCandidates", []),
-        ("POST", "/learning_candidates/:id/accept", "A30|A93", "learning_candidates", "acceptLearningCandidate", ["memories", "policies", "skills"]),
-        ("POST", "/learning_candidates/:id/dismiss", "A30|A93", "learning_candidates", "dismissLearningCandidate", []),
-        ("POST", "/learning_candidates/:id/later", "A30", "learning_candidates", "postponeLearningCandidate", []),
-        ("POST", "/learning_candidates/:id/exception-request", "A131", "approvals", "requestRuleException", ["learning_candidates", "policies", "notifications"]),
     ],
     "ai-activity": [
         ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals", "action_runs", "sessions"]),
@@ -281,9 +270,6 @@ SCREEN_API = {
     ],
     "masters": [
         # チケットの形（種別と区画・作業の段・分類の軸・担当を渡すとき・D-128.95）
-        ("GET", "/workspace/ticket-shape", "A118", "ticket_kinds", "getTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules"]),
-        ("POST", "/workspace/ticket-shape/preview", "A118", "ticket_kinds", "previewTicketShapeChange", ["tickets", "ticket_class_values"]),
-        ("PATCH", "/workspace/ticket-shape", "A118", "ticket_kinds", "saveTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules", "tickets", "ticket_class_values", "ticket_messages", "distributions", "audit_events"]),
         ("GET", "/ticket_kinds/template-updates", "A120", "tenant_distributions", "listKindTemplateUpdates", ["distributions"]),
         ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "tenant_distributions", "applyKindTemplateUpdate", ["ticket_kinds", "ticket_stages", "custom_fields", "audit_events"]),
     ],
@@ -329,12 +315,8 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- ナレッジ（08_api/phase1/09_ナレッジ.md）
     "knowledge": [
-        # ホーム・置き場・探す
-        ("GET", "/knowledge/home", "A114", "knowledge_pages", "getKnowledgeHome", ["knowledge_page_versions", "reference_logs"]),
+        # 置き場（木）
         ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["knowledge_folders", "scopes"]),
-        ("GET", "/knowledge_pages", "A114", "knowledge_pages", "listKnowledgePages", ["reference_logs", "members"]),
-        ("POST", "/knowledge/ask", "A114", "knowledge_pages", "askKnowledge", ["bridge_jobs", "policies", "clients"]),
-        ("POST", "/knowledge/ask/feedback", "A114", "knowledge_page_versions", "sendKnowledgeAnswerFeedback", []),
         # 1 ページ・書く・下書き・公開
         ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_folders", "reference_logs"]),
         ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "knowledge_folders"]),
@@ -342,31 +324,7 @@ SCREEN_API = {
         ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_page_versions"]),
         ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", ["knowledge_page_versions"]),
         ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_page_versions"]),
-        ("POST", "/knowledge_pages/:id/attachments", "A114", "attachments", "uploadKnowledgeAttachment", []),
         ("GET", "/knowledge_pages/:id/versions", "A114", "knowledge_page_versions", "listKnowledgeVersions", []),
-        ("POST", "/knowledge_pages/:id/versions/:v/restore", "A114", "knowledge_page_versions", "restoreKnowledgeVersion", ["knowledge_pages"]),
-        ("GET", "/knowledge_pages/:id/markdown", "A114", "knowledge_pages", "exportKnowledgeMarkdown", []),
-        # 使われ方・つながり・やり取り
-        ("GET", "/knowledge_pages/:id/usage", "A137", "reference_logs", "getKnowledgeUsage", ["tickets", "action_runs"]),
-        ("GET", "/knowledge_pages/:id/links", "A114", "knowledge_links", "getKnowledgeLinks", ["policies", "clients", "tickets"]),
-        ("POST", "/knowledge_pages/:id/links", "A114", "knowledge_links", "linkKnowledgeMention", ["knowledge_page_versions"]),
-        ("GET", "/knowledge/link-targets", "A114", "knowledge_pages", "searchKnowledgeLinkTargets", ["clients", "policies"]),
-        ("GET", "/knowledge_pages/:id/messages", "A114", "messages", "listKnowledgeMessages", []),
-        ("POST", "/knowledge_pages/:id/messages", "A114", "messages", "postKnowledgeMessage", ["notifications"]),
-        # 確かめる・しまう
-        ("GET", "/knowledge/verifications", "A114", "knowledge_pages", "listKnowledgeVerifications", ["reference_logs", "bridge_jobs"]),
-        ("POST", "/knowledge_pages/:id/verify", "A114", "knowledge_pages", "verifyKnowledgePage", []),
-        ("POST", "/knowledge_pages/:id/archive", "A114", "knowledge_pages", "archiveKnowledgePage", ["knowledge_links"]),
-        ("POST", "/knowledge_pages/:id/unarchive", "A114", "knowledge_pages", "unarchiveKnowledgePage", []),
-        # 直す案（チケットの完了から）
-        # K-727：A136（上げる・承認する・断る）と A137（AI が読んだ記録）の口は、新しい持ち主の葉（K-687〜K-689・K-685／K-698）が入るまで前からの口に結ぶ。外すのは K-711
-        ("GET", "/knowledge/proposals", "A136", "knowledge_page_versions", "listKnowledgeProposals", ["tickets"]),
-        ("POST", "/knowledge/proposals/:id/accept", "A136", "knowledge_page_versions", "acceptKnowledgeProposal", ["knowledge_pages", "notifications"]),
-        ("POST", "/knowledge/proposals/:id/decline", "A136", "knowledge_page_versions", "declineKnowledgeProposal", []),
-        # 取り込む
-        ("POST", "/knowledge_imports", "A114", "imports", "createKnowledgeImport", ["attachments"]),
-        ("GET", "/knowledge_imports/:id", "A114", "imports", "getKnowledgeImport", []),
-        ("POST", "/knowledge_imports/:id/commit", "A114", "imports", "commitKnowledgeImport", ["knowledge_pages", "knowledge_page_versions", "knowledge_links"]),
     ],
     # ---------------------------------------------------------------- 運営の残り（08_api/phase1/10_運営と困ったとき.md）
     "ops-home": [
@@ -639,6 +597,9 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-024"],
          "trigger": "終わっていない子がある（E-VAL-024・欄 children に子ごと。チェックの箱・確認項目の未チェックでは止めない・K-566）",
          "ears_form": "UNWANTED: IF 終わっていない子があるなら、Kaname は 422 と子ごとの理由（E-VAL-024）を返し、何も書かない"},
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-KNW-240", "detail": {"left": []}}, "errors": ["E-KNW-240"],
+         "trigger": "必ず守るから入った確認項目（今も必ず守るで生きているページの行）にチェックの付いていない物がある（E-KNW-240・detail.left に残りの行の id・文・ページの id・題名。人が足した確認項目では止めない・K-701）",
+         "ears_form": "UNWANTED: IF 必ず守るから入った確認項目にチェックの付いていない物があるなら、Kaname は 409 と残りの行の一覧（E-KNW-240）を返し、何も書かない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-023"],
          "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・本文に知らない欄（todo_checked・todo_version を含む）",
          "ears_form": "UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない"},
@@ -901,7 +862,6 @@ REQUIRED_INPUTS = {
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
     "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
     "createTicket": ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"],   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
-    "updateMemory": ["body"],                                            # apps/api/src/hooks/agent.ts:63（覚えることが空です）
     "reportJobProgress": ["kind"],                                       # apps/api/src/features/F5/delegate/bridge.ts（kind が無い・決まった値でないは 422・K62-API-032）
     "finishBridgeJob": ["state"],                                        # apps/api/src/features/F5/delegate/bridge.ts（state が無い・done／stopped／cancelled 以外は 422・K62-API-032）
 }
@@ -910,7 +870,7 @@ PATH_PATTERNS = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（ほかの英小文字だけは 422）・202〜204（ほかは目録の名前か 404）
     "downloadBridgeRelease": {"name": r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$"},
     # apps/api/src/features/F5/delegate/tools.ts（道具の名前は ticket_read と会話の道具 8 つだけ。それ以外は 422・K62-API-032）
-    "callKanameTool": {"name": "^(?:ticket_read|guard_report|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$"},
+    "callKanameTool": {"name": "^(?:ticket_read|guard_report|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember|knowledge_open)$"},
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
@@ -955,8 +915,6 @@ VALUE_RANGES = {
     },
     "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # K-565：app.ticket_delegate が最後の砦（REASON_INVALID）
     "updateConversation": {"title": {"pattern": "\\S", "nullable": False}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
-    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
-    "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
         "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品 better-auth の z.email() の形を前後の空白で挟んだ物（口も z.email() で見る・K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},
@@ -1015,7 +973,6 @@ RESPONSES = {
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
     "getCloneNow": ("CloneNow", {"pc": "object", "current": "object?", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
     "getCloneGrowth": ("CloneGrowth", {"assigned": "integer", "pass_rate": "integer?", "pass_rate_last_week": "integer?", "work_seconds": "integer"}),   # 育ち具合は数 3 つだけ（D-153.13・K-754）
-    "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
     "listCloneActivity": ("CloneActivity", {"id": "uuid", "at": "string", "kind": "string", "ticket_id": "uuid", "ticket_number": "string", "title": "string", "result": "string", "detail": "object"}),   # 自分の分身が終えた実行（K-754）
     # 型の後ろの ? は null を許す（申し込みが無い・期限が無いときは null）
     "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
@@ -1042,7 +999,6 @@ RESPONSES = {
     # 会話と記憶の口（K-144 ㉒）：表の行ではなく、口（apps/api/src/hooks/agent.ts）が返すとおりの形
     "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),
     "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),
-    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
     # K-308：端末の一覧（sessions）と安全の記録（recent_events）は F10 の口に回した。mfa_pending は付けるまで進めない印（D-128.141）。backup_codes_left は部品が読めないとき null（K308-API-013）
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer?", "mfa_pending": "boolean"}),
     # K-311：secret は認証アプリに手で入れる鍵の文字（この答えの 1 回だけ）。期限は設けない（PM が決めた作り方 2026-11-17）
@@ -1069,7 +1025,7 @@ RESPONSES = {
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
     "getTicket": ("TicketDetail", {"ticket": "object", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "guest_share": "object", "handover": "object?", "handover_kinds": "string[]", "body": "object", "fields": "array", "spec_count": "integer", "spec_unchecked": "integer", "no_spec_reason": "string?", "parent": "object?", "child_count": "integer", "link_count": "integer", "results": "object"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。guest_share（見せているゲストのグループ shared の id と名前・見ている人が変えられるか can_change）は K-905。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405。body（本文 { doc, text, version }・行が無ければ空の本文で版 0）・fields（その種別で出す会社の項目と値）・spec_count と spec_unchecked（確認項目の数と未チェックの数）・no_spec_reason・parent（見える親は鍵 6・見えない親は番号だけ・無ければ null）・child_count（見える直接の子）・link_count・results（成果物・決定ログ・申し送りが在るときだけ鍵が出る）は K-560
-    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "body_template": "object?", "fields": "array"}),   # 区画 sections は K-578 が外した。body_template（種別のひな形）と fields（その種別で出す会社の項目のマスタ・値なし・TicketField の鍵 7）は K-560
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "body_template": "object?", "fields": "array", "color_key": "string?"}),   # 区画 sections は K-578 が外した。body_template（種別のひな形）と fields（その種別で出す会社の項目のマスタ・値なし・TicketField の鍵 7）は K-560。color_key（見分けの色 8 つの鍵）は K-704
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
     # K-62：仕事は行の中身をそのまま job に（無ければ null）。古い Bridge には渡さず outdated（E-CONN-012）
@@ -1106,16 +1062,8 @@ RESPONSES = {
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array", "can_write": "boolean"}),
     "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
-    "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"company_name": "string", "company_nodes": "array", "groups": "array", "my_nodes": "array", "can_write": "object", "admin_counts": "object?", "truncated": "boolean"}),   # K-675（土台 3.1）
-    "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
     "getKnowledgePage": ("KnowledgePageDetail", {"id": "uuid", "title": "string", "desc": "string", "state": "string", "must": "boolean", "must_blocked": "string?", "place": "object", "acts": "string[]", "body": "object?", "draft": "object?", "request": "object?", "copied_from": "object?", "shared_from": "object?", "raise_to": "object?", "foot": "object"}),   # K-675（土台 3.1）
-    "getKnowledgeUsage": ("KnowledgeUsage", {"reads_3m": "integer", "returns": "integer", "recent_tickets": "array", "hot_sections": "array"}),
-    "getKnowledgeLinks": ("KnowledgeLinks", {"nodes": "array", "edges": "array", "unlinked_mentions": "array"}),
-    "searchKnowledgeLinkTargets": ("KnowledgeLinkTarget", {"kind": "string", "id": "string", "title": "string", "place": "string"}),
-    "listKnowledgeVerifications": ("KnowledgeVerification", {"page_id": "string", "title": "string", "place": "string", "owner_member_id": "string", "due_on": "string", "interval": "string", "ai_check": "string", "suggested_action": "string", "newer_page_id": "string"}),
-    "exportKnowledgeMarkdown": ("SignedUrl", {"url": "string", "expires_at": "string"}),
-    "getKnowledgeImport": ("KnowledgeImportPreview", {"source": "string", "pages": "integer", "folders": "integer", "links": "integer", "topics": "integer", "images": "integer", "mapping": "object", "warnings": "array"}),
     # K-1006：1 行は数と種類だけ（中身を返さない・D-156.3）。members は { count, limit }・pc は { connected, total } か null・attention は { kind, label_value } の並び（kind は overdue・stuck・pc・D-156.24・D-156.72）
     #   billing_state は unpaid・paid・overdue か null・state は active・stopped・closing
     "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "uuid", "name": "string", "admin_name": "string", "plan_name": "string?", "members": "object", "pc": "object?", "runs_month": "integer?", "attention": "array", "billing_state": "string?", "state": "string", "state_since": "string"}),
@@ -1129,8 +1077,6 @@ RESPONSES = {
     # K-1006：上の数をここに寄せる（D-156.4）。operator は { member_id, caps }・inbox は { unassigned, mine, waiting, later }・invoices は { overdue_count, overdue_amount } か null（お金を持たない人）
     #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
     "getOpsShell": ("OpsShell", {"operator": "object", "inbox": "object", "invoices": "object?", "workspaces": "object", "runs_month": "object", "pwned": "object"}),
-    "getTicketShape": ("TicketShape", {"kinds": "array", "stages": "array", "axes": "array", "handover_rules": "array", "limits": "object", "template_updates": "integer"}),
-    "previewTicketShapeChange": ("TicketShapeChangePreview", {"removed": "array", "needs_move_to": "array", "affected_tickets": "integer", "over_limits": "array"}),
     # 受信箱の 1 件（K-948・D-156.5）：一覧の 1 行の 10 欄と、やり取り（返事と社内メモ）・付いてきた画面の情報・右のワークスペースの様子
     "getOpsInquiry": ("OpsInquiryDetail", {"id": "uuid", "title": "string", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
                                            "owner": "object?", "later_until": "string?", "created_at": "string", "last_message_at": "string?",
@@ -1173,8 +1119,6 @@ QUERIES = {
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
     "listConversations": [],   # 探す（q）・星（starred）は作らない（D-153.16・K-757）。cursor と limit はいつも付く
-    "listMemories": ["kind", "since"],
-    "listLearningCandidates": ["trigger", "target"],
     "listCloneActivity": ["kind", "from", "to"],
     "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
@@ -1184,10 +1128,6 @@ QUERIES = {
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],   # q はことばで探す（K-850・1〜100 字。値域は screen_api.d/K-823.py の QUERY_RANGES）
     "listScopes": ["layer_id"],
     "listClientRequests": ["state"],
-    "listKnowledgePages": ["scope_id", "parent_id", "topic", "owner_id", "state", "sort"],
-    "searchKnowledgeLinkTargets": ["q"],
-    "listKnowledgeVerifications": ["mine", "soon"],
-    "listKnowledgeProposals": ["mine"],
     "listOpsWorkspaces": ["q", "view", "plan", "sort"],
     "listOpsInquiries": ["box", "topic"],   # 箱と何について（K-948・D-156.5）。並びは受けない（LIST_DETAILS）
     "listOpsNotices": ["kind", "state"],
@@ -1297,17 +1237,6 @@ PERMS = {
     "updateArtifact": ("self", "書き出した本人。チケットに付いた成果物はそのチケットに書ける人", False),
     "restoreArtifactVersion": ("self", "同上", False),
     "getShell": ("self", "本人の数だけ（自分・会社・承認待ち・未読の知らせ・見えるグループの件数・PC のつながり・はじめにやることの残り・障害の帯・保存した検索条件）", False),
-    "countKnows": ("self", "自分の分身が知っていること（自分・使える取引先・層・ワークスペースの決まりを含む）", False),
-    "listMemories": ("self", "自分の記憶だけ", False),
-    "createMemory": ("self", "自分の記憶だけ", False),
-    "updateMemory": ("self", "自分の記憶だけ", False),
-    "deleteMemory": ("self", "自分の記憶だけ", False),
-    "promoteMemoryToRule": ("self", "自分の守ることにするだけ。ぶつかりは点検し、上の決まりとぶつかるときは例外の申請へ", False),
-    "listLearningCandidates": ("self", "自分の分身の覚えたいこと。層に上がってきたものはその層のマネージャー", False),
-    "acceptLearningCandidate": ("self", "自分のものは本人。層・ワークスペースに入れるのはマネージャー・管理者（D-125.110）", False),
-    "dismissLearningCandidate": ("self", "同上", False),
-    "postponeLearningCandidate": ("self", "本人", False),
-    "requestRuleException": ("self", "本人が申請する。OK するのは管理者かその層のマネージャー（承認待ち・D-128.89）", False),
     # やったこと
     "getCloneNow": ("self", "自分の分身だけ", False),
     "getCloneGrowth": ("self", "自分の分身だけ", False),
@@ -1420,9 +1349,6 @@ PERMS = {
     "updateScope": ("admin", "同上", False),
     "createLayer": ("admin", "同上", False),
     "updateLayer": ("admin", "同上", False),
-    "getTicketShape": ("read", "ワークスペースのメンバー（種別と区画・作業の段・分類の軸・渡すときの決まりと上限）", False),
-    "previewTicketShapeChange": ("admin", "決まりを直せる人（消すもの・移し先が要るもの・当たるチケットの数を見るだけ）", False),
-    "saveTicketShape": ("admin", "決まりを直せる人（既定は管理者・D-125.66）。「この形にする」で種別・区画・段・軸・渡すときをまとめて保存。消すものは移し先が必須（D-125.69）。上限 種別 10・段 8・足す軸 5・区画 20。仕組みの段は変えられない。これから作るチケットから効く（D-128.111）", False),
     "listKindTemplateUpdates": ("admin", "同上", False),
     "applyKindTemplateUpdate": ("admin", "同上（取り込むかは管理者が選ぶ・D-125.72）", False),
     "listHandoverRules": ("read", "ワークスペースのメンバー（渡すときに読む）", False),
@@ -1454,37 +1380,14 @@ PERMS = {
     "uploadPortalAttachment": ("client", "ゲスト。ファイルは大きさと種類を検査してから置く（関門 C4）。依頼に付くまでは本人の下書き", False),
     "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
-    "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
     "getKnowledgeTree": ("self", "社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）", False),
-    "listKnowledgePages": ("read", "同上。しまったページは書ける人だけ", False),
-    "askKnowledge": ("read", "見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）", False),
-    "sendKnowledgeAnswerFeedback": ("read", "答えを見た本人。「いいえ」は持ち主への直す案になる", False),
     "getKnowledgePage": ("read", "見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675", False),
     "createKnowledgePage": ("write", "社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）", False),
     "updateKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675", False),
     "saveKnowledgeDraft": ("write", "そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675", False),
     "discardKnowledgeDraft": ("write", "そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675", False),
     "publishKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675", False),
-    "uploadKnowledgeAttachment": ("write", "同上。ファイルは検査してから置く（関門 C4）", False),
     "listKnowledgeVersions": ("read", "見えるページだけ（行の守り）。公開した版を新しい順に・K-675", False),
-    "restoreKnowledgeVersion": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）", False),
-    "exportKnowledgeMarkdown": ("read", "見られるページだけ（期限つきの署名 URL）", False),
-    "getKnowledgeUsage": ("read", "見られるページだけ。読んだチケットは見られるものだけ出す", False),
-    "getKnowledgeLinks": ("read", "同上。つながりの先も見られるものだけ", False),
-    "linkKnowledgeMention": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）", False),
-    "searchKnowledgeLinkTargets": ("read", "見られるページ・決まり・取引先だけ", False),
-    "listKnowledgeMessages": ("read", "見られるページだけ", False),
-    "postKnowledgeMessage": ("read", "見られる人なら書ける（閲覧のみも質問できる）", False),
-    "listKnowledgeVerifications": ("read", "見られるページだけ。分身の点検は持ち主の PC がつながっているときに作る", False),
-    "verifyKnowledgePage": ("write", "持ち主と、その置き場のマネージャー・管理者", False),
-    "archiveKnowledgePage": ("write", "同上。しまうと探しても出ず分身も読まない。版と記録は残り戻せる", False),
-    "unarchiveKnowledgePage": ("write", "同上", False),
-    "listKnowledgeProposals": ("read", "見られるページへの案だけ", False),
-    "acceptKnowledgeProposal": ("write", "持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る", False),
-    "declineKnowledgeProposal": ("write", "同上（理由を残す）", False),
-    "createKnowledgeImport": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（取り込む先の置き場に書ける人）。ファイルは検査してから読む（関門 C4）", False),
-    "getKnowledgeImport": ("write", "取り込んだ本人", False),
-    "commitKnowledgeImport": ("write", "取り込んだ本人。既定は下書きで入れる（持ち主が公開するまで分身は読まない）", False),
     # 運営の残り（運営の人で、そのできることを持つ人だけ・D-128.70。ops:any は運営の人なら誰でも）
     "getOpsShell": ("ops:any", "運営の人なら誰でも（左のメニューの数だけ。お金の数はお金を持つ人にだけ出す）", False),
     "listOpsWorkspaces": ("ops:any", "運営の人なら誰でも。数と種類だけで中身（チケット・会話）は出さない", False),

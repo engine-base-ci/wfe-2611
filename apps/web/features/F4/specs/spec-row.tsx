@@ -6,6 +6,7 @@
 //   押せない形（D-145.9）：在る・aria-disabled・薄さは正本の CSS・押しても Enter でも何も起きない
 import { useEffect, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { Button, TextField } from "@/components/k";
+import { SpecFromOf } from "@/features/F9/knowledge/spec-from";
 import type { EditResult } from "./use-test-specs";
 import { TEXT, titleProblem, trimTitle } from "./spec-text";
 
@@ -14,6 +15,8 @@ export interface SpecLineView {
   checked: boolean;
   /** 出どころ（manual・knowledge・ai）。作る面は無い */
   source?: string;
+  /** 必ず守るから入った行の出どころのページ（K-726・印は F9 の部品が出す） */
+  source_page?: { id: string; title: string } | null;
 }
 export interface SpecRowProps {
   line: SpecLineView;
@@ -149,6 +152,7 @@ export function SpecRow({
           {line.title}
         </button>
       )}
+      <SpecFromOf line={line} />
       <Button
         variant="ghost"
         size="sm"

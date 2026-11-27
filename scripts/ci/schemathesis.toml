@@ -87,6 +87,13 @@ checks.ensure_resource_availability.enabled = false
 include-operation-id = "listCloneActivity"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
 
+# K-679：下書きを保存する口の本文（doc）は、エディタの文書の形（一番外の type が doc・知っている節と印だけ・入れ子の決まり）を口の確かめ（validateDoc）が見て、
+#   外れたら 422（欄 doc）で断る。入れ子の木の決まりは契約の形（object）では書き切れないので、この口に限って「形どおりの入力」を 422 で断るのを
+#   受け付けとして数えない（ST202 にしない・K-161 と同じ形・PM の決め 2026-11-23）。確かめ方はゆるめない（断ることは knowledge-draft.test.ts が見る）
+[[operations]]
+include-operation-id = "saveKnowledgeDraft"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
 # K-424（G36 の回 45185794809 の ST202 2 件）：チケットを作る口の区画（sections）・会社の項目（fields）と、直す口の会社の項目（fields）の欄の名前の決まり
 #   （区画は英小文字で始まる 41 字まで・項目は uuid）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422・05_flow/screen_api.d/K-424.py）。
 #   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない・K-475 と同じ）

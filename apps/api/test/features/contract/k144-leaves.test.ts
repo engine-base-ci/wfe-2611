@@ -114,7 +114,6 @@ const BODY_ROWS: readonly K144UuidCase[] = [
   ["K144-API-022", "getTicket", "path", "id"],
   ["K144-API-023", "updateConversation", "path", "id"],
   ["K144-API-024", "deleteConversation", "path", "id"],
-  ["K144-API-025", "updateMemory", "path", "id"],
   ["K144-API-026", "listMembers", "query", "scope_id"],
   ["K144-API-027", "listScopes", "query", "layer_id"],
   ["K144-API-028", "listAuditEvents", "query", "member_id"],
@@ -137,7 +136,6 @@ const BODY_ROWS: readonly K144UuidCase[] = [
 ];
 const BODY_BODIES = [
   "updateConversation",
-  "updateMemory",
   "reportJobProgress",
   "finishBridgeJob",
   "returnApproval",

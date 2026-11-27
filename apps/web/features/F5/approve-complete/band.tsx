@@ -30,10 +30,12 @@ import { me } from "@/lib/auth/ext";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
 import { ExecuteQueuedSlot, StopRunActSlot, TicketNotice } from "@/features/F5/more/slots";
 import { useNotice, useTrail } from "@/features/F5/more/trail";
+import { CompleteBlockedDialog } from "@/features/F9/knowledge/ticket-views";
 import { CompleteDialog } from "./complete-dialog";
 import { completedLine, type Completed } from "./complete-model";
 import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
+import { docOf, useComplete } from "./use-complete";
 import { SweepFailedBand } from "./sweep-failed";
 import { docOf, useComplete } from "./use-complete";
 
@@ -155,7 +157,6 @@ const assigneeIdOf = (assignee: unknown): string | null =>
   assignee !== null && typeof assignee === "object" && typeof (assignee as { id?: unknown }).id === "string"
     ? (assignee as { id: string }).id
     : null;
-
 export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKnown, onTicket, onChanged }: Props<T>) {
   usePolledTicket(ticketId, isActive(run), onTicket);
   const meId = useMeId();
@@ -257,11 +258,13 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   })();
 
   const dialogOpen = c.state.dialog && complete;
+  // 必ず守るから入った確認項目にチェックの無い行：止める小窓（spec-guard-shape の行・K-703）
+  const blocked = complete ? c.state.blocked : null;
   const shownNotice = notice ?? c.state.notice;
   /** 知らせと帯の下の 1 行は、承認待ちの箱（DecideBody）を出している間だけこの帯が描く（ほかは K-62 の帯・2 回描かない） */
   const ownsTrail = !!approval?.can_decide && ticket.stage?.key !== "done";
   const hasMore = ownsTrail && (moreNotice !== null || trail.length > 0);
-  if (!body && !shownNotice && !dialogOpen && !hasMore) return null;
+  if (!body && !shownNotice && !dialogOpen && !hasMore && !blocked) return null;
   return (
     <section aria-label={BAND_LABEL} className="k62-band k-section" data-busy={busy ? "" : undefined}>
       {shownNotice ? <NoticeBox>{shownNotice}</NoticeBox> : null}
@@ -277,6 +280,9 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
           onBack={back}
           onGo={() => void c.go()}
         />
+      ) : null}
+      {blocked ? (
+        <CompleteBlockedDialog {...(target ? { target } : {})} left={blocked} onClose={back} onBack={back} />
       ) : null}
     </section>
   );

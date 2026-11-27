@@ -15,6 +15,8 @@ export interface SpecRowData {
   position: number;
   source: string;
   version: number;
+  /** 必ず守るから入った行の出どころのページ（今も必ず守るで生きている行だけ・K-726）。前の答えには無い */
+  source_page?: { id: string; title: string } | null;
 }
 export type ListState = "idle" | "loading" | "ok" | "error";
 /** 足した結果：通った／欄の下の字（422）／小窓の上の赤い箱 */
@@ -27,9 +29,19 @@ const SCREEN = "tickets";
 const RELOAD_CODES = new Set(["E-SPEC-020", "E-SPEC-021", "E-SPEC-022"]);
 const needsReload = (r: CallErr): boolean => r.status === 404 || (r.status === 409 && RELOAD_CODES.has(r.code));
 
+/** 出どころのページ（id と題名が文字のときだけ）。鍵が無い前の答えは鍵を付けない（K-703） */
+function sourcePageOf(o: Record<string, unknown>): Pick<SpecRowData, "source_page"> {
+  if (!("source_page" in o)) return {};
+  const p = o["source_page"] as { id?: unknown; title?: unknown } | null;
+  return {
+    source_page: p && typeof p.id === "string" && typeof p.title === "string" ? { id: p.id, title: p.title } : null,
+  };
+}
+
 function toRow(v: unknown): SpecRowData {
   const o = (v ?? {}) as Partial<SpecRowData>;
   return {
+    ...sourcePageOf(o as Record<string, unknown>),
     id: String(o.id ?? ""),
     title: String(o.title ?? ""),
     checked: o.checked === true,

@@ -3259,6 +3259,52 @@
     "nullable": false
    }
   },
+  "knowledge_breaches": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "test_spec_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
   "knowledge_folders": {
    "created_at": {
     "type": "timestamp with time zone",
@@ -3311,6 +3357,74 @@
    "updated_by": {
     "type": "uuid",
     "nullable": true
+   }
+  },
+  "knowledge_shares": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "request_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "shared_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_limits": {
+   "must_max": {
+    "type": "integer",
+    "nullable": false
+   },
+   "shelf": {
+    "type": "text",
+    "nullable": false
    }
   },
   "knowledge_links": {
@@ -5924,6 +6038,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "bridge_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -5939,6 +6057,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "ref_id": {
     "type": "uuid",
@@ -5958,7 +6080,7 @@
    },
    "ticket_id": {
     "type": "uuid",
-    "nullable": false
+    "nullable": true
    },
    "title": {
     "type": "text",
@@ -7997,6 +8119,10 @@
     "nullable": true
    },
    "color": {
+    "type": "text",
+    "nullable": true
+   },
+   "color_key": {
     "type": "text",
     "nullable": true
    },

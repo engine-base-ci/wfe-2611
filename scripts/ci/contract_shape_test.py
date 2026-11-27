@@ -69,7 +69,6 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい
     "saveMyTicketDraft": {"draft_id"},                 # apps/api/src/features/F4/create-ticket/hooks.ts:170
     "createTicket": {"title", "scope_id", "kind_id", "assignee_member_id", "due_on"},   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
-    "updateMemory": {"body"},                          # apps/api/src/hooks/agent.ts:63（覚えることが空です）。作る createMemory は {} で 201
     "reportJobProgress": {"kind"},                     # apps/api/src/features/F5/delegate/bridge.ts（kind が無い・決まった値でないは 422・K62-API-032）
     "finishBridgeJob": {"state"},                      # apps/api/src/features/F5/delegate/bridge.ts（state が無い・3 つ以外は 422・K62-API-032）
 }
@@ -81,7 +80,6 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "resendSignupEmail": "体は空の形。申し込みの印は頭 x-signup-token で受ける（D-128.142）",
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
-    "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
     "delegateTicket": "使わない理由 no_spec_reason は無くてよい（K-565）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
@@ -94,7 +92,7 @@ PATH_PATTERNS: dict[tuple[str, str], str] = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（それ以外の英小文字だけの名前は 422）・202〜204（ほかは目録の名前か 404）
     ("downloadBridgeRelease", "name"): r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$",
     # apps/api/src/features/F5/delegate/tools.ts:40（ticket_read と会話の道具 8 つ以外は 422・K-62）
-    ("callKanameTool", "name"): r"^(?:ticket_read|guard_report|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$",
+    ("callKanameTool", "name"): r"^(?:ticket_read|guard_report|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember|knowledge_open)$",
 }
 
 # 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。
@@ -124,8 +122,6 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
         "code": {"maxLength": 32, "pattern": f"^[{CODE_SEP}]*(?:[{CODE_CHAR}][{CODE_SEP}]*){{6}}$"},
     },
     "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts:42〜43（改行を空白にして前後を落とし、空は 422）
-    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
-    "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
         "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品の z.email() の形を前後の空白で挟んだ物（K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},
@@ -157,7 +153,6 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
 AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
     "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),   # hooks/agent.ts:37
     "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),             # hooks/agent.ts:50
-    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),                          # hooks/agent.ts:66
 }
 
 # チケットごとのファイル（contract_shape.d/K-xxx.py）の分を足す（K-325）。足せるのはこの 6 つの表だけ（OA・SCHEMAS などの読んだ値は足させない）
@@ -447,7 +442,7 @@ class ContractShapeTest(unittest.TestCase):
         return out
 
     def test_K144_SHAPE_015_every_id_path_value_and_query_is_uuid(self) -> None:
-        """回 2 の差し戻し（R1 #5）：道の値（:id だけでなく :qid・:pid・:mid）と問い合わせの *_id（listClientRequests・listRules の client_id、listScopes の layer_id、
+        """回 2 の差し戻し（R1 #5）：道の値（:id だけでなく :qid・:pid・:mid）と問い合わせの *_id（listClientRequests の client_id、listScopes の layer_id、
         listAuditEvents の member_id・ticket_id、listCredentials の tenant_id など）も、契約に format: uuid（*_ids は uuid の並び）。作り手の決まりで全部の口に"""
         params = self._id_params()
         names = {(i, n) for _o, i, n, _s in params}
@@ -788,13 +783,13 @@ class ContractShapeTest(unittest.TestCase):
         self.assertTrue(cases, "REQUIRED_CASES を読めない")
         diff = sorted(f"{o}: 試験 {sorted(fs)} ／ 表 {sorted(REQUIRED_INPUTS.get(o, set()))}" for o, fs in cases.items() if fs != REQUIRED_INPUTS.get(o, set()))
         self.assertEqual(diff, [], "本物の DB の試験の必須の欄が、この表と合わない")
-        for o in ("claimPairingCode", "saveMyTicketDraft", "createTicket", "updateMemory", "createPairingCode", "createConversation", "updateConversation", "createMemory"):
+        for o in ("claimPairingCode", "saveMyTicketDraft", "createTicket", "createPairingCode", "createConversation", "updateConversation"):
             self.assertIn(o, cases, f"REQUIRED_CASES に {o} が無い（試験の土台で動かせる口は全部本物で確かめる）")
 
     def test_K144_SHAPE_021_required_inputs_keep_the_behaviours_error_and_own_shape(self) -> None:
         """必須の欄を書いた入力の形は x-required-by: hooks を持ち、入口の zod（packages/contracts/src/schemas.ts）ではその欄を .optional() のままにする
         （無いときの答えは口の振る舞いの正本のエラーのまま：登録 E-VAL-004・確認 E-PAGE-006・同意 E-VAL-019。入口が先に VALIDATION_ERROR にしない）。
-        型（08_api/types.ts）は必須の欄に ? が付かない。2 つの口が分け合う形（MemoriesInput）は、必須の違う口（updateMemory）に自分の形を持たせる"""
+        型（08_api/types.ts）は必須の欄に ? が付かない。2 つの口が分け合う形は、必須の違う口に自分の形を持たせる（K-712 で記憶の口を外したので、見本の組は残っていない）"""
         bodies = self._bodies()
         for op_id, fields in sorted(REQUIRED_INPUTS.items()):
             name = bodies[op_id]
@@ -809,10 +804,6 @@ class ContractShapeTest(unittest.TestCase):
                 self.assertRegex(t.group(1), rf"(?:^\s*|;\s*){k}: ", f"types.ts の {name}.{k} に ? が付いている")  # type: ignore[union-attr]
             sharers = sorted(o for o, n in bodies.items() if n == name and o != op_id)
             self.assertEqual([o for o in sharers if REQUIRED_INPUTS.get(o, set()) != fields], [], f"{name} を必須の違う口と分け合っている")
-        self.assertNotEqual(bodies["updateMemory"], bodies["createMemory"], "updateMemory が createMemory と同じ入力の形のまま（必須が違う）")
-        self.assertEqual(SCHEMAS[bodies["updateMemory"]]["properties"].keys(), SCHEMAS[bodies["createMemory"]]["properties"].keys(), "updateMemory の形の欄の名前は createMemory と同じ（受ける欄を変えない・値域は口ごと＝K144-SHAPE-023）")
-        self.assertIs(SCHEMAS[bodies["updateMemory"]].get("additionalProperties"), False)
-        self.assertNotIn("required", SCHEMAS[bodies["createMemory"]])
 
     # ---- 道の値の値域（類 F・回 9・Q5 回 8 追加-2）
     def test_K144_SHAPE_022_path_values_the_behaviour_rejects_carry_a_range(self) -> None:
@@ -956,14 +947,13 @@ class ContractShapeTest(unittest.TestCase):
         self.assertEqual(SCHEMAS[bodies["updateConversation"]]["properties"].keys(), SCHEMAS[bodies["createConversation"]]["properties"].keys())
         self.assertNotIn("pattern", SCHEMAS[bodies["createConversation"]]["properties"]["title"], "createConversation の title に値域（口は読まない）")
         self.assertNotIn("pattern", SCHEMAS["Conversations"]["properties"]["title"], "答えの形に値域が入った（入力の欄を写さずに書き換えた）")
-        self.assertNotEqual(SCHEMAS["Memories"]["properties"]["confidence"].get("pattern"), VALUE_RANGES["createMemory"]["confidence"]["pattern"], "答えの形に入力の値域が入った（入力の欄を写さずに書き換えた）")
         wrong = []
         for op_id, field, v, ok in self._range_cases():
             sc = SCHEMAS[bodies[op_id]]["properties"][field]
             if self._fits(v, sc) != ok:
                 wrong.append(f"{op_id}.{field}={str(v)[:40]!r}: 契約は{'合う' if self._fits(v, sc) else '合わない'}・口は{'受ける' if ok else '断る'}")
         self.assertEqual(wrong, [], "契約の値域の判定が、口の答え（RANGE_CASES）と合わない")
-        self.assertEqual(sorted({o for o, *_ in self._range_cases()}), ["claimPairingCode", "createMemory", "createTicket", "updateConversation", "updateMemory"])
+        self.assertEqual(sorted({o for o, *_ in self._range_cases()}), ["claimPairingCode", "createTicket", "updateConversation"])
 
     def test_K144_SHAPE_024_unexpressible_rejections_are_explained_in_the_422(self) -> None:
         """契約に書けない値の決まり（今日より前の期限・外部キーの在りか・条件つき など）は、口の振る舞いのまま 422。
@@ -1110,8 +1100,16 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/approve-complete/queue.ts": [("rows.slice(0, limit)", "DB から limit+1 件取った行を、続きの有無を見た後に limit 件に戻す（入力でない）")],
         # K-351：預けたログイン情報の一覧（DB から上限 +1 件取った行を、上限を超えたかを見た後に上限の件数に戻す）
         "apps/api/src/features/F3/credentials/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
+        # K-677：ページの版の一覧（DB から VERSIONS_MAX+1 件取った行を、超えたかを見た後に VERSIONS_MAX 件に戻す・入力でない）
+        "apps/api/src/features/F9/knowledge/versions.ts": [("rows.slice(0, VERSIONS_MAX)", "DB から VERSIONS_MAX+1 件取った版の行を、超えたかを見た後に 200 件に戻す（入力でない）")],
         # K-92：チケットの一覧も同じ形（DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す）
         "apps/api/src/features/F4/ticket-list/hooks.ts": [("const page = rows.slice(0, q.limit);", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
+        # K-686：似たページを探す口（読むだけ・書かない）。本文は比べるための頭 500 字だけを関数に渡す（保存しない）。答えは上位 3 件
+        "apps/api/src/features/F9/knowledge/similar.ts": [("slice(0, BODY_HEAD)", "似ているかを比べるためだけに本文の頭 500 字を渡す（チケットの決め・どこにも書かない・入力を黙って切って残すのではない）"),
+                                                         ("rows.slice(0, SIMILAR_LIMIT)", "DB の関数が返した似ている順の行を、上位 3 件に戻す（入力でない）")],
+        # K-676：ナレッジの木（DB から TREE_MAX+1 件取ったフォルダとページを、超えたかを見た後に TREE_MAX 件に戻す・入力でない）
+        "apps/api/src/features/F9/knowledge/tree.ts": [("allFolders.slice(0, TREE_MAX)", "DB から TREE_MAX+1 件取ったフォルダの行を、超えたかを見た後に TREE_MAX 件に戻す（入力でない）"),
+                                                        ("allPages.slice(0, TREE_MAX - folders.length)", "DB から取ったページの行を、フォルダと合わせて TREE_MAX 件に戻す（入力でない）")],
         # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
@@ -1137,11 +1135,11 @@ class ContractShapeTest(unittest.TestCase):
         return body
 
     def test_K144_SHAPE_027_free_text_is_not_silently_cut_and_has_no_undecided_limit(self) -> None:
-        """D-130.3・D-130.4：区画の 20,000 字・下書きの 180,000 バイトの上限を外し、記憶の本文と題・会話の名前を黙って切らない（上限も置かない）。守りは送る量 1MB だけ。
+        """D-130.3・D-130.4：区画の 20,000 字・下書きの 180,000 バイトの上限を外し、会話の名前を黙って切らない（上限も置かない）。守りは送る量 1MB だけ。
         (1) 契約の口の振る舞い（hooks と features）の `.slice(0, …)` は SLICE_ALLOWED（理由つき）にあるものだけ
         (2) 作る口に区画と下書きの上限（SECTION_MAX・DRAFT_MAX_BYTES・バイト数の比べ）が無い
-        (3) 効いている（MIGRATIONS の順で最後の）app.agent_memory_edit・app.agent_conversation_set が本文と名前を left( で切らない
-            （記憶の題が無いときに本文の頭 80 字から題を作るのは、書いたものを消さないので残してよい）
+        (3) 効いている（MIGRATIONS の順で最後の）app.agent_conversation_set が名前を left( で切らない
+            （K-712 で記憶を直す口と app.agent_memory_edit を外したので、記憶の本文と題の分は見ない）
         (4) app.ticket_drafts の大きさの決まり（ticket_drafts_body_check：pg_column_size(body) <= 200000）を、0090 より後の migration が外す
         本物の DB で長い区画・下書き・記憶・会話の名前が一字も欠けずに残るかは K144-API-043"""
         bad = []
@@ -1160,14 +1158,6 @@ class ContractShapeTest(unittest.TestCase):
         ct = "".join((ROOT / "apps/api/src/features/F4/create-ticket" / n).read_text(encoding="utf-8") for n in ("input.ts", "hooks.ts"))
         for word in ("SECTION_MAX", "DRAFT_MAX_BYTES", "byteLength"):
             self.assertNotIn(word, ct, f"作る口に区画・下書きの上限 {word} が残っている（D-130.3）")
-        mem = self._last_function("app.agent_memory_edit")
-        set_line = re.search(r"update memories set (.*?)\n\s*where", mem, re.S)
-        self.assertIsNotNone(set_line, "app.agent_memory_edit の update が読めない")
-        sets = set_line.group(1)  # type: ignore[union-attr]
-        body_expr = re.search(r"\bbody = (.*?)(?:, updated_by\b|\n|$)", sets)
-        self.assertIsNotNone(body_expr, "app.agent_memory_edit が body を書いていない")
-        self.assertNotIn("left(", body_expr.group(1), "app.agent_memory_edit が記憶の本文を left( で切っている（D-130.4）")  # type: ignore[union-attr]
-        self.assertNotRegex(sets, r"\btitle = left\(", "app.agent_memory_edit が記憶の題を left( で切っている（D-130.4）")
         conv = self._last_function("app.agent_conversation_set")
         title_line = re.search(r"\btitle = (case .*?end),", conv, re.S)
         self.assertIsNotNone(title_line, "app.agent_conversation_set の title が読めない")

@@ -151,6 +151,18 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
     which === "A" ? b.scopeRootA : which === "B" ? b.scopeRootB : b.opsScope;
   const whichOf = (tenant: string): "A" | "B" | "ops" =>
     tenant === b.tenantA ? "A" : tenant === b.tenantB ? "B" : "ops";
+  /** 本文の形を DB の check（app.ticket_body_valid）が守る jsonb の列（K-674）。既定の {} では入らない */
+  const DOC_BODY_COLS = new Set(["knowledge_page_versions.body"]);
+  const EMPTY_DOC_BODY = JSON.stringify({ doc: { type: "doc", content: [] }, text: "" });
+  /**
+   * INSERT の見本だけに当てる値（K-674）。ナレッジは権限の束を使わず棚で書ける人が決まる（会社＝管理者・グループ＝マネージャー・自分＝本人）。
+   * 種の代表は管理者ではないので、「権限あり・自分の範囲」は自分の棚に書く形にする。版は下書きだけを足せる（kind の既定は published）
+   */
+  const INSERT_AS: Record<string, Record<string, unknown>> = {
+    knowledge_pages: { is_personal: true, folder_id: null }, // 種のフォルダは会社の棚（フォルダと同じ棚の引き金に当たる）
+    knowledge_folders: { is_personal: true },
+    knowledge_page_versions: { kind: "draft" },
+  };
   const defaultOf = (x: Col): unknown => {
     if (x.type === "boolean") return false;
     if (["smallint", "integer", "bigint", "numeric", "real", "double precision"].includes(x.type)) return 1;
@@ -185,6 +197,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       else if (x.col === "scope_id" && fk) row[x.col] = scopeOf(which);
       // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・K-6）。種では結ばない
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
+      // 上げる頼み（kind の候補の先頭 raise）はページだけを指す（check knowledge_requests_target：raise はフォルダを持たない・K-687）
+      else if (t === "knowledge_requests" && x.col === "folder_id") row[x.col] = null;
       // ゲストのグループに入れるのは役割 requester の人だけ（引き金 app.guest_same_tenant・K-876）。代表ではなく先に作ったゲストを使う
       else if (t === "guest_group_members" && x.col === "member_id")
         row[x.col] = guestPool.get(tenant)?.shift() ?? bossOf(which);
@@ -207,6 +221,9 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
         row[x.col] = v;
       } else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
       else if (x.col === "version") row[x.col] = fresh ? Math.floor(Math.random() * 1e6) + 2 : 1;
+      else if (DOC_BODY_COLS.has(`${t}.${x.col}`))
+        // 本文の形を DB が守る列（既定の {} は守りに通らない）：空の文書 {doc, text}
+        row[x.col] = EMPTY_DOC_BODY;
       else if (!x.nullable && x.def === null)
         // 新しく足す行の文字の列は重ならない値にする（例：チケットごとに区画の名前は 1 つ）
         row[x.col] = allowed.get(`${t}.${x.col}`) ?? (fresh && x.type === "text" ? `seed-${rnd()}` : defaultOf(x));
@@ -319,7 +336,12 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       seeded2.set(`${t}:${b.tenantA}`, await insertRow(t, build(t, "A", true)));
       seeded2.set(`${t}:${b.tenantB}`, await insertRow(t, build(t, "B", true)));
     }
-    out[t] = { visible: idA, hiddenLayer: null, other: idB, insert: (tenant) => build(t, whichOf(tenant), true) };
+    out[t] = {
+      visible: idA,
+      hiddenLayer: null,
+      other: idB,
+      insert: (tenant) => ({ ...build(t, whichOf(tenant), true), ...(INSERT_AS[t] ?? {}) }),
+    };
   }
   return out;
 }

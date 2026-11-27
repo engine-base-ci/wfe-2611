@@ -154,7 +154,9 @@ export type ThreadItem =
   | { kind: "post"; post: PostView }
   | { kind: "editing"; post: PostView; text: string }
   | { kind: "line"; who: Person; text: ReactNode; time: string }
-  | { kind: "run"; title: ReactNode; meta: string; result: string; onOpen?: () => void };
+  | { kind: "run"; title: ReactNode; meta: string; result: string; onOpen?: () => void }
+  /** 段 10 などが作った 1 行をそのまま描く（K-702） */
+  | { kind: "node"; node: ReactNode };
 
 function PostMenu({ menu, open }: { menu: "own" | "manager"; open?: boolean }) {
   return (
@@ -484,6 +486,8 @@ export function ThreadList({
               return <Line key={i} who={it.who} text={it.text} time={it.time} />;
             case "run":
               return <RunCard key={i} title={it.title} meta={it.meta} result={it.result} onOpen={it.onOpen} />;
+            case "node":
+              return <Fragment key={i}>{it.node}</Fragment>;
           }
         })}
         {order === "desc" ? more : null}

@@ -12,6 +12,9 @@ if (databaseUrl) process.env["DATABASE_URL"] = databaseUrl; // globalSetup（DB 
 export default defineConfig({
   // 画面（apps/web）の「@/〜」は apps/web の中を指す（tsconfig の paths と同じ）。@kaname/〜 は workspace のまま
   resolve: { alias: [{ find: /^@\//, replacement: fileURLToPath(new URL("./apps/web/", import.meta.url)) }] },
+  // 画面の .tsx は Next と同じ自動の JSX（import React なし）。既定の古い形だと、単体の試験が .tsx を読んだとき
+  //   上の階で JSX を作る部品（components/k/shell.tsx など）が「React is not defined」で落ちる（K-691）
+  esbuild: { jsx: "automatic" },
   test: {
     include: [
       "packages/*/src/**/*.test.ts",

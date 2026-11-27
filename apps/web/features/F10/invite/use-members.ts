@@ -15,6 +15,8 @@ export interface Person {
   name: string;
   email: string;
   role: string;
+  /** そのグループでの役（scope_memberships.role・無ければ null・K-710 のマネージャーの行） */
+  group_role?: string | null;
   primary?: boolean;
   other_groups?: string[];
   self?: boolean;
@@ -92,7 +94,8 @@ function noteOf(p: Person): string | undefined {
   return parts.length ? parts.join("・") : undefined;
 }
 
-const toRow = (p: Person): MemberRow => {
+/** 人の行（状態の字・注）を作る（K-420。K-710 が外から読めるように export） */
+export const toRow = (p: Person): MemberRow => {
   const note = noteOf(p);
   return {
     id: p.id,
