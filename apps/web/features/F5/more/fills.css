@@ -14,3 +14,15 @@
   overflow-y: auto;
   z-index: var(--k-c-popup-layer-z);
 }
+
+/* 並べ替えはスマホでは出さない（K-749 の行 K749-UI-014。下絵の札の行も同じ）。承認待ちの頁が必ず読むここに置く */
+@media (max-width: 767px) {
+  .k-more-sortwrap {
+    display: none;
+  }
+}
+
+/* 下絵の置き場（/dev/mock/f5 の続けて裁く）：層は画面に固定して重なるので、置き場そのものに小さな高さを持たせて「見える」に数える（K730-UI-001） */
+.k-more-focus-stage {
+  min-height: var(--k-s-xs);
+}

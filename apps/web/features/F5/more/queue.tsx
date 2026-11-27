@@ -15,6 +15,8 @@ import "@/features/F5/approve-complete/approve.css";
 import "@/features/F5/delegate/delegate.css";
 import "./more.css";
 import "@/features/F5/history/history.css";
+// 続けて裁くは画面全体の層（K-752 の行「全画面の層」・D-153.12）。本番と同じ重なりの決まりを下絵も読む
+import "./fills.css";
 
 const INERT = { "aria-disabled": true, tabIndex: -1, title: "まだ使えません" } as const;
 const GAP = "　";
@@ -458,72 +460,78 @@ const Key = ({ k }: { k: string }) => <kbd className="k-more-key">{k}</kbd>;
 
 export function FocusView({ confirmNote }: { confirmNote?: string }) {
   return (
-    <div className="k-more-focus">
-      <header className="k-more-focus-head">
-        <h1>続けて裁く</h1>
-        <p className="k-more-focus-pos">2 / 9 件</p>
-        <Button className="k-more-focus-exit" variant="outlined" size="sm">
-          ‹ 一覧に戻る
-        </Button>
-      </header>
-      <main className="k-more-focus-main">
-        <section className="k-more-focus-card" aria-label="いま決めるもの">
-          <h2>EG-128 セイコー様へ 11 月分の請求書を送る</h2>
-          <p className="k-more-focus-meta">
-            高本のAI ・ 期限 11/01（1 日過ぎ） ・ 承認するとメールを送る（取り消せない）
+    <div className="k-more-focus-stage">
+      <div className="k-more-focus k-more-focus-layer">
+        <header className="k-more-focus-head">
+          <h1>続けて裁く</h1>
+          <p className="k-more-focus-pos">2 / 9 件</p>
+          <Button className="k-more-focus-exit" variant="outlined" size="sm">
+            ‹ 一覧に戻る
+          </Button>
+        </header>
+        <main className="k-more-focus-main">
+          <section className="k-more-focus-card" aria-label="いま決めるもの">
+            <h2>EG-128 セイコー様へ 11 月分の請求書を送る</h2>
+            <p className="k-more-focus-meta">
+              高本のAI ・ 期限 11/01（1 日過ぎ） ・ 承認するとメールを送る（取り消せない）
+            </p>
+            <ChecksTable rows={FOCUS_ROWS} />
+            <ArtifactCardMore version={1} />
+            {confirmNote ? <p className="k-more-focus-meta">{confirmNote}</p> : null}
+          </section>
+          <p className="k-more-focus-keys">{`キー：${KEYS}`}</p>
+        </main>
+        <footer className="k-more-focus-foot">
+          <Button variant="outlined" className="k-more-f-skip">
+            飛ばす
+            <Key k="S" />
+          </Button>
+          <Button variant="outlined" className="k-more-f-stop">
+            止める
+          </Button>
+          <Button variant="outlined" className="k-more-f-return">
+            差し戻す
+            <Key k="R" />
+          </Button>
+          <Button variant="outlined" className="k-more-f-edit">
+            自分で直す
+            <Key k="E" />
+          </Button>
+          <Button className="k-more-focus-main-act">
+            承認して送る → 次へ
+            <Key k="A" />
+          </Button>
+          <p className="k-more-focus-next">
+            次：KR-031 入金の照合（10 月分）を記録する ・ EG-127 発注ナビ 応募文を出す
           </p>
-          <ChecksTable rows={FOCUS_ROWS} />
-          <ArtifactCardMore version={1} />
-          {confirmNote ? <p className="k-more-focus-meta">{confirmNote}</p> : null}
-        </section>
-        <p className="k-more-focus-keys">{`キー：${KEYS}`}</p>
-      </main>
-      <footer className="k-more-focus-foot">
-        <Button variant="outlined" className="k-more-f-skip">
-          飛ばす
-          <Key k="S" />
-        </Button>
-        <Button variant="outlined" className="k-more-f-stop">
-          止める
-        </Button>
-        <Button variant="outlined" className="k-more-f-return">
-          差し戻す
-          <Key k="R" />
-        </Button>
-        <Button variant="outlined" className="k-more-f-edit">
-          自分で直す
-          <Key k="E" />
-        </Button>
-        <Button className="k-more-focus-main-act">
-          承認して送る → 次へ
-          <Key k="A" />
-        </Button>
-        <p className="k-more-focus-next">次：KR-031 入金の照合（10 月分）を記録する ・ EG-127 発注ナビ 応募文を出す</p>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }
 
 export function FocusDone() {
   return (
-    <div className="k-more-focus">
-      <header className="k-more-focus-head">
-        <h1>続けて裁く</h1>
-        <p className="k-more-focus-pos">9 / 9 件</p>
-      </header>
-      <main className="k-more-focus-done">
-        <h2>決め終わりました</h2>
-        <ul className="k-more-tally" aria-label="結果">
-          <li>承認 5 件</li>
-          <li>差し戻し 2 件</li>
-          <li>飛ばした 2 件</li>
-        </ul>
-        <p className="k-more-focus-meta">飛ばした 2 件は、承認待ちに残っています</p>
-        <Button>承認待ちに戻る</Button>
-      </main>
-      <footer className="k-more-focus-foot">
-        <p className="k-more-focus-next">決めた物は、承認待ちの［決めた履歴］で見られます</p>
-      </footer>
+    <div className="k-more-focus-stage">
+      <div className="k-more-focus k-more-focus-layer">
+        <header className="k-more-focus-head">
+          <h1>続けて裁く</h1>
+          <p className="k-more-focus-pos">9 / 9 件</p>
+        </header>
+        <main className="k-more-focus-done">
+          <h2>決め終わりました</h2>
+          <ul className="k-more-tally" aria-label="結果">
+            <li>承認 5 件</li>
+            <li>差し戻し 2 件</li>
+            <li>飛ばした 2 件</li>
+          </ul>
+          <p className="k-more-focus-meta">飛ばした 2 件は、承認待ちに残っています</p>
+          <Button>承認待ちに戻る</Button>
+        </main>
+        <footer className="k-more-focus-foot">
+          <p className="k-more-focus-next">決めた物は、承認待ちの［決めた履歴］で見られます</p>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -309,20 +309,22 @@ const F_PAIRS: FidelityPair[] = [
 test("K749-UI-015 画面：下絵との突き合わせ（queue-filter-all・queue-filter-sort・queue-filter-picked・queue-filter-empty）。幅 375・768・1440 で札・並べ替えのボタンと箱・0 件の空の形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いて、狭い幅のモックと 1440 の本番を比べていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>][] = [
     [
       "queue-filter-all",
-      async (p) => {
+      async (p, w) => {
         await mockQueue(p);
-        await openQueue(p, 1440);
+        await openQueue(p, w);
       },
     ],
     [
       "queue-filter-sort",
-      async (p) => {
+      async (p, w) => {
         await mockQueue(p);
-        await openQueue(p, 1440);
-        await sortBtn(p).click();
+        await openQueue(p, w);
+        // スマホは並べ替えを出さない（K749-UI-014）。下絵も同じに隠れる
+        if (w >= 768) await sortBtn(p).click();
       },
     ],
     [
@@ -350,7 +352,8 @@ test("K749-UI-015 画面：下絵との突き合わせ（queue-filter-all・queu
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
+          await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
         },
         { base: "/dev/mock/f5", pairs: F_PAIRS, blur: true },
       );

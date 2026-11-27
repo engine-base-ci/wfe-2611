@@ -34,6 +34,8 @@ function ignored(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
   if (target.closest(TYPING)) return true;
   const dialog = target.closest(DIALOG);
+  // 閉じかけの小窓（やめるを押した直後・焦点が層に戻る前）の中のキーは層のキーとして受ける（K752-UI-004：押した直後の A が消えていた）
+  if (dialog?.matches("[data-closed], [data-ending-style]")) return false;
   return dialog !== null && !dialog.hasAttribute(FOCUS_LAYER_ATTR);
 }
 

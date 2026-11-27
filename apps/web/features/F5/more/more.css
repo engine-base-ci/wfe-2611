@@ -214,6 +214,10 @@
   min-height: 100%;
   background: var(--k-page);
   color: var(--k-on-surface);
+  /* 画面全体の層は外枠（.k-root）の外にも出るので、字の決まりを層が自分で持つ（下絵と本番で同じ字・K752-UI-016〜018） */
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
 }
 .k-more-focus-head {
   display: flex;

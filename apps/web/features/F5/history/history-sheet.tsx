@@ -335,7 +335,10 @@ function HistoryDays({ rows }: { rows: HistoryRow[] }) {
         onConfirm={() => {
           if (undoing) void withdraw(undoing);
         }}
-      />
+      >
+        {/* スマホでは下から出す（下絵 history-undo-confirm・more.css の印） */}
+        <i className="k-more-sheetmark" hidden aria-hidden="true" />
+      </Confirm>
     </>
   );
 }

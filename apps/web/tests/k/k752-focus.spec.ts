@@ -483,7 +483,19 @@ const FOCUS_PAIRS: FidelityPair[] = [
 // 注：下絵の 1 件の字（EG-128 セイコー様…・2 / 9 件・期限と承認の後の動き・次の 2 件）は下絵の固定の値で、試験の承認待ちの土台（EG-133 見積を出す・3 件）と違う。
 //   字（h2・pos・meta・next・tally の texts）と、中身の長さで変わる 1 件の箱の高さ（card の height）・その下の keys の y は比べず、箱・字の大きさ・色・位置を比べる
 //   （下絵は確認の表 4 行と長い成果物・土台は確認の表なしと短い成果物。確認の表は K-740 の物）
-const SKIP = ["h2:texts", "pos:texts", "meta:texts", "next:texts", "tally:texts", "card:height", "keys:y"];
+//   幅 375 では h2 の字の長さで h2 が 1 行か 2 行になり、その下の meta の y も変わるので meta の y も比べない（2026-11-28・ほかの幅と x・字の形は比べる）
+//   幅 375 の確かめの小窓は下に貼り付く形（下絵と同じ）で、上端の y は中身（注意の行・確認の表）の長さで変わるので比べない（幅・x は比べる）
+const SKIP = [
+  "h2:texts",
+  "pos:texts",
+  "meta:texts",
+  "next:texts",
+  "tally:texts",
+  "card:height",
+  "keys:y",
+  "meta:y",
+  "dialog:y",
+];
 async function match(browser: Browser, id: string, drive: (pg: Page, w: number) => Promise<void>) {
   const bad: string[] = [];
   for (const w of MATCH_WIDTHS) {

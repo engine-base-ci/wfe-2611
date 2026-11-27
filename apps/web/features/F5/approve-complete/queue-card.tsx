@@ -15,7 +15,7 @@ import { formatMoment, targetOfRow, useAnswerCall } from "@/features/F8/handover
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { rowHandoverKindOf, type HandoverKind } from "@/features/F8/handover/use-handovers";
 import { QueueCardMobile, type QueueCardView } from "@/features/F8/handover/views";
-import { QueueBulkSlot, QueueCheckCellSlot, QueueToolsSlot } from "@/features/F5/more/slots";
+import { QueueBulkSlot, QueueCheckCellSlot, QueueHistorySlot, QueueToolsSlot } from "@/features/F5/more/slots";
 import { queueKey, type QueueRow } from "./queue";
 import type { RowActs } from "./queue-table";
 
@@ -266,7 +266,17 @@ export function QueueCards({ rows, total, acts }: { rows: QueueRow[]; total: num
   if (!narrow) return null;
   return (
     <section className="k-hnd-mq" aria-label="承認待ちの一覧（スマホ）">
-      <QueueToolsSlot total={total} layout="card" />
+      {/* スマホも表と同じ道具の行（札・並べ替え・まとめて承認・決めた履歴）。下絵 queue-filter-*・history-*・bulk-* の 375 のとおり（K-749・K-751・K-769 の決め D-153.* が K-412 より新しい） */}
+      <QueueToolsSlot
+        total={total}
+        layout="card"
+        end={
+          <>
+            <QueueBulkSlot part="tool" total={total} />
+            <QueueHistorySlot where="tools" />
+          </>
+        }
+      />
       <LayoutContext.Provider value="card">
         <ul className="k-hnd-mcards">
           {rows.map((r) => (

@@ -344,9 +344,11 @@ test("K751-UI-014 画面：「決めた履歴」で Enter → 板の中に焦点
   page,
 }) => {
   const h = await mockHistory(page);
+  const full = h.m.on.queue;
   for (const w of WIDTHS) {
-    if (w === 375)
-      h.m.on.queue = () => ({ status: 200, body: { data: [], meta: { limit: 20, counts: { total: 0 } } } });
+    // 375 だけ空の画面から開く。ほかの幅は並びのある形に戻す（前は 375 の空のまま 768・1440 を開いていた）
+    h.m.on.queue =
+      w === 375 ? () => ({ status: 200, body: { data: [], meta: { limit: 20, counts: { total: 0 } } } }) : full;
     await openQueue(page, w);
     const btn =
       w === 375
@@ -385,30 +387,31 @@ const H_PAIRS: FidelityPair[] = [
 test("K751-UI-015 画面：下絵との突き合わせ（history-list・history-empty・history-undo-confirm・history-undo-late）。幅 375・768・1440 で板・札・日の見出し・行・注記・小窓・画面の上の知らせの形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>, FidelityPair[]][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>, FidelityPair[]][] = [
     [
       "history-list",
-      async (p) => {
+      async (p, w) => {
         await mockHistory(p);
-        await openQueue(p, 1440);
+        await openQueue(p, w);
         await openSheet(p);
       },
       H_PAIRS,
     ],
     [
       "history-empty",
-      async (p) => {
+      async (p, w) => {
         await mockHistory(p, { rows: [] });
-        await openQueue(p, 1440);
+        await openQueue(p, w);
         await openSheet(p);
       },
       H_PAIRS,
     ],
     [
       "history-undo-confirm",
-      async (p) => {
+      async (p, w) => {
         await mockHistory(p);
-        await openQueue(p, 1440);
+        await openQueue(p, w);
         await openSheet(p);
         await undoRow(p).getByRole("button", { name: "取り消す", exact: true }).click();
       },
@@ -416,9 +419,9 @@ test("K751-UI-015 画面：下絵との突き合わせ（history-list・history-
     ],
     [
       "history-undo-late",
-      async (p) => {
+      async (p, w) => {
         const h = await mockHistory(p);
-        await openQueue(p, 1440);
+        await openQueue(p, w);
         await openSheet(p);
         h.w.next.push(refuse(409, "E-APR-010"));
         await undoRow(p).getByRole("button", { name: "取り消す", exact: true }).click();
@@ -436,7 +439,8 @@ test("K751-UI-015 画面：下絵との突き合わせ（history-list・history-
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
+          await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
         },
         { base: "/dev/mock/f5", pairs, blur: true },
       );

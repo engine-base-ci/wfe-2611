@@ -88,7 +88,11 @@ export function StopApprovalAct(props: StopApprovalActProps) {
   const { open, setOpen, busy, stop } = useStopApproval(props);
   return (
     <>
-      <Button variant="outlined" onClick={() => setOpen(true)}>
+      <Button
+        variant="outlined"
+        {...(props.className ? { className: props.className } : {})}
+        onClick={() => setOpen(true)}
+      >
         {STOP_APPROVAL_MSG.confirm}
       </Button>
       <Confirm

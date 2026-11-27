@@ -24,9 +24,20 @@ interface Props {
   onConfirm: () => void;
   /** 承認の id（段 6 の差し込み口に渡す・K-730）。無くても今のまま */
   approvalId?: string;
+  /** スマホでは下から出す（続けて裁くの下絵 focus-confirm・more.css の印 k-more-sheetmark）。既定は今のまま */
+  sheet?: boolean;
 }
 
-export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, busy, onConfirm, approvalId }: Props) {
+export function ApproveConfirm({
+  open,
+  onOpenChange,
+  irreversible,
+  cautions,
+  busy,
+  onConfirm,
+  approvalId,
+  sheet,
+}: Props) {
   const [seen, setSeen] = useState(false);
   // 見たことを持ち越さない：開くたびに印を外す
   useEffect(() => {
@@ -47,6 +58,7 @@ export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, bus
         if (!mustSee) onConfirm();
       }}
     >
+      {sheet ? <i className="k-more-sheetmark" hidden aria-hidden="true" /> : null}
       <ApproveChecksSlot {...(approvalId ? { approvalId } : {})} />
       {irreversible ? (
         <label className="k-dialog-check">

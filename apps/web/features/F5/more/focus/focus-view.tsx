@@ -249,6 +249,7 @@ function FocusRun({ rows, onClose }: { rows: readonly QueueRow[]; onClose: () =>
         {decision === null ? (
           <StopApprovalActSlot
             approval={{ id: cur.id, can_decide: true, irreversible }}
+            className="k-more-f-stop"
             ticketId={cur.ticket_id}
             target={label(cur)}
             onChanged={async () => run.decide(cur.id, "stopped")}
@@ -290,6 +291,7 @@ function FocusRun({ rows, onClose }: { rows: readonly QueueRow[]; onClose: () =>
         busy={busy}
         onConfirm={() => void approve()}
         approvalId={cur.id}
+        sheet
       />
       {sub === "return" ? (
         <ReturnDialog

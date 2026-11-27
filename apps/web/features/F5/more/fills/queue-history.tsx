@@ -13,13 +13,18 @@ import "@/features/F5/more/fills.css";
 
 /** 頁の中に置かれた先の数（0 になったら板と知らせを戻す。道具の行と空の画面の入れ替わりでは戻さない） */
 let mounted = 0;
+/** 板を描く先は、押した入口の 1 つだけ（PC の表の道具の行とスマホのカードの道具の行が同時に在るので、両方が描くと板が 2 枚になる） */
+let opener: symbol | null = null;
 
 export function QueueHistoryFill({ where }: QueueHistoryProps): ReactNode {
   const btn = useRef<HTMLButtonElement>(null);
+  const me = useRef(Symbol("history")).current;
+  useHistoryShared(); // 開け閉めのたびに、どの入口が板を描くかを描き直す
   useEffect(() => {
     mounted += 1;
     return () => {
       mounted -= 1;
+      if (opener === me) opener = null;
       setTimeout(() => {
         if (mounted === 0) resetHistory();
       }, 0);
@@ -31,12 +36,15 @@ export function QueueHistoryFill({ where }: QueueHistoryProps): ReactNode {
         ref={btn}
         variant="outlined"
         {...(where === "tools" ? { size: "sm" as const } : {})}
-        onClick={() => openHistory(true)}
+        onClick={() => {
+          opener = me;
+          openHistory(true);
+        }}
       >
         決めた履歴
       </Button>
-      <HistorySheet finalFocus={btn} />
-      <HistoryNotice anchor={btn} />
+      {opener === me ? <HistorySheet finalFocus={btn} /> : null}
+      {opener === me ? <HistoryNotice anchor={btn} /> : null}
     </>
   );
 }

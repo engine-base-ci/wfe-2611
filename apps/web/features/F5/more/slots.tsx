@@ -37,6 +37,8 @@ export interface RunStoppedProps {
 }
 export interface StopApprovalActProps {
   approval: BandApproval;
+  /** 押す物の見た目のクラス（続けて裁くの足の並び k-more-f-stop など）。無ければ今のまま */
+  className?: string;
   ticketId?: string;
   target?: string;
   onChanged: () => Promise<void>;
