@@ -1,5 +1,5 @@
 "use client";
-// チケットを作る画面の「左に欄・右に AI との会話」（K-767・K-777）。人は欄に自分で書いてもよく、AI の案は右の会話のカードから欄に入れる。
+// チケットを作る画面の「左に欄・右に AI との会話」（K-767・K-777）。CreateChat の動き（onText・onSend・onStop・onStarter・onBack・locked）は K-767 が足した任意の props。人は欄に自分で書いてもよく、AI の案は右の会話のカードから欄に入れる。
 //   左の欄の並びと字は段 5 の作る面と同じ（種別・題名・本文・つながり・項目・確認項目・ファイル・知らせる人）。値を受け取って描くだけ。
 //   AI は人が書いた・直した欄の中身を毎回受け取ってから答える（会話の人の言葉の上に「…を AI に渡しました」の印）。
 //   スマホ（767 以下）：欄と会話は別の画面。頭の［AI と話して作る］で会話が全画面で出る（mview＝form は欄・chat は会話）
@@ -233,12 +233,26 @@ export function CreateFormView({
 
 export interface ChatSideProps {
   entries: readonly Entry[];
-  composer: { text?: string; mode?: ComposerMode };
+  composer: ComposerProps;
   /** 話せない・止まった などの帯（書く欄の上） */
   notice?: ReactNode;
   /** 空のとき出す案内と例 */
   starters?: readonly string[];
   noPc?: boolean;
+}
+type ComposerProps = Parameters<typeof ChatComposer>[0];
+
+/** 動きの任意の props（K-767・渡さなければ今の見た目のまま＝下絵） */
+export interface ChatActs {
+  onText?: (text: string) => void;
+  onSend?: () => void;
+  onStop?: () => void;
+  /** 話しかける例を押した（その字で言う） */
+  onStarter?: (text: string) => void;
+  /** 「‹」（欄へ戻る・スマホ） */
+  onBack?: () => void;
+  /** 作る権限が無い（D-153.35）：例と書く欄を押せない形 */
+  locked?: boolean;
 }
 
 /** 右の会話。頭に「高本のAI と話して作る」・案は左の欄に入る旨の 1 行・会話・書く欄 */
@@ -249,11 +263,23 @@ export function CreateChat({
   notice,
   starters,
   noPc = false,
-}: ChatSideProps & { name: string }) {
+  onText,
+  onSend,
+  onStop,
+  onStarter,
+  onBack,
+  locked = false,
+}: ChatSideProps & ChatActs & { name: string }) {
+  const off = noPc || locked;
+  const acts = {
+    ...(onText ? { onText } : {}),
+    ...(onSend ? { onSend } : {}),
+    ...(onStop ? { onStop } : {}),
+  };
   return (
     <section className="k-room-cc" aria-label="AI との会話">
       <div className="k-room-chat-bar k-room-cc-bar">
-        <button type="button" className="k-room-back" aria-label="欄へ戻る">
+        <button type="button" className="k-room-back" aria-label="欄へ戻る" onClick={onBack}>
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <div className="k-room-chat-title">
@@ -282,7 +308,7 @@ export function CreateChat({
               <ul className="k-room-starters" aria-label="話しかける例">
                 {starters.map((s) => (
                   <li key={s}>
-                    <button type="button" disabled={noPc}>
+                    <button type="button" disabled={off} onClick={onStarter ? () => onStarter(s) : undefined}>
                       {s}
                     </button>
                   </li>
@@ -297,9 +323,10 @@ export function CreateChat({
       {notice}
       <ChatComposer
         {...composer}
-        mode={noPc ? "no-pc" : (composer.mode ?? "idle")}
+        {...acts}
+        mode={off ? "no-pc" : (composer.mode ?? "idle")}
         placeholder="何を作りたいか話す"
-        offPlaceholder="PC をつなぐと話せます"
+        offPlaceholder={locked ? "" : "PC をつなぐと話せます"}
       />
     </section>
   );

@@ -28,7 +28,7 @@
   overflow: hidden;
 }
 /* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
-.k-create-how > span {
+.k-create-how > :is(span, button) {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -42,10 +42,16 @@
   background: var(--k-card);
   color: var(--k-on-surface-variant);
 }
-.k-create-how > span[aria-current="true"] {
+.k-create-how > :is(span, button)[aria-current="true"] {
   flex: none;
   background: var(--k-primary);
   color: var(--k-on-primary);
+}
+/* 押せる作り方（K-767）：ボタンの既定の枠と書体を外し、span と同じに描く（色は上の 2 つの決まりのまま） */
+.k-create-how > button {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
 }
 .k-create-how > span[aria-disabled="true"] {
   opacity: var(--k-c-button-disabled-opacity);
