@@ -5,11 +5,13 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { forbidden, unavailable } from "./reply.js";
+import { forbidden, invalid, unavailable } from "./reply.js";
 import { placeText } from "./shape.js";
 import { BODY_HEAD, SIMILAR_MIN } from "./similar.js";
 
 const CAN_SQL = "select app.kn_can_approve() as ok";
+/** 一覧の件数の上限（契約の LIST_DETAILS["listKnowledgeApprovals"].limit_max と同じ。入口は 1〜200 の整数だけを見るので、ここで 50 を断る） */
+const APPROVALS_LIMIT_MAX = 50;
 // 行ごとに似たページの上位 1 件（頼まれたページ自身は除く）。本文は頭 BODY_HEAD 字だけを比べるために渡す
 const ROWS_SQL = `select r.id, r.kind, r.from_name, r.from_shelf_name, r.to_shelf_name, r.title, r.summary, r.message,
        r.requested_at, r.body, s.id as similar_id, s.title as similar_title, s.shelf_name as similar_shelf, s.folders as similar_folders
@@ -71,6 +73,9 @@ async function run(cl: pg.PoolClient): Promise<HookReply> {
 
 export function createListKnowledgeApprovals(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs): Promise<HookReply> => {
+    const limit = a.c.req.query("limit");
+    if (limit !== undefined && limit !== "" && Number(limit) > APPROVALS_LIMIT_MAX)
+      return invalid("limit", `1〜${APPROVALS_LIMIT_MAX}`);
     try {
       return await withTenant(appPool, a.ctx, (cl) => run(cl));
     } catch (e) {

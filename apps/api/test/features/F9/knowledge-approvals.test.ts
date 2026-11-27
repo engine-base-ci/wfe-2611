@@ -230,7 +230,12 @@ describe("K-688 承認待ちを読む・承認する・断る", () => {
       title: "経費の精算の決まり",
       summary: "経費の精算の流れと上限",
     });
-    const b = await personalReq(w, w.mem1, { title: "全く別の話題 ZZZ", summary: "関係のない内容 QQQ" });
+    // 似ている度合いは題名と説明・本文の頭の大きい方（K-691 の app.kn_similar）。本文の既定（「本文」）は全部のページで同じなので、別の話題は本文も変える
+    const b = await personalReq(w, w.mem1, {
+      title: "全く別の話題 ZZZ",
+      summary: "関係のない内容 QQQ",
+      text: "まったく関係のない段取り XYZ",
+    });
     const rows = await items(w.mgr1);
     const byId = (id: string) => rows.find((x) => x["id"] === id)!;
     expect(byId(a.id)["similar"]).toEqual({ page_id: upper, title: "経費の精算の決まり", place: "営業 › 経理" });
