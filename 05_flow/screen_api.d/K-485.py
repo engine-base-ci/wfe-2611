@@ -1,5 +1,5 @@
 # K-485 止まった AI の仕事から「自分で直す」口（takeoverActionRun）
-# 体は空（どの欄も無い・strict なので知らない欄は 422）。答えは実行の 1 件（getActionRun・listTicketRuns と同じ ActionRunView の 16 欄）
+# 体は空（どの欄も無い・strict なので知らない欄は 422）。答えは実行の 1 件（getActionRun・listTicketRuns と同じ ActionRunView の 17 欄）
 INPUTS = {
     "takeoverActionRun": ("ActionRunTakeoverInput", {}),
 }
@@ -7,7 +7,7 @@ INPUTS = {
 RESPONSES = {
     "takeoverActionRun": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                             "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                            "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?",
+                                            "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "sweep_failed_at": "string?",
                                             "reason_kind": "string?", "checks": "object"}),
 }
 
