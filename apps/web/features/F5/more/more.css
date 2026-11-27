@@ -1,0 +1,828 @@
+/* 段 6 の core（止める・取り下げる・確認の表・自分で直す・差し戻し・試し打ち・承認待ちの残り・続けて裁く）の下絵の部品。
+   値は正本 DESIGN-kaname.md のトークン（--k-*）だけ。帯・小窓・札・表は components/k と approve.css の物を使い回し、ここは足りない所だけ */
+
+/* ---- 確認の表（K-740）：数だけ「4 ／ 5 済み」と、行は チェック＋文 だけ。だれが・いつ・根拠はやり取りの行（.k-more-log）。表の枠は k-check-table を使い回す ---- */
+.k-more-checks {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-more-edited,
+.k-more-sum {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-more-edited {
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-checks td {
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-approvals-td-border-bottom);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  vertical-align: top;
+}
+.k-more-checks td:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-more-mark {
+  display: inline-block;
+  margin-right: var(--k-s-xs);
+  color: var(--k-neutral-strong);
+}
+.k-more-mark[data-on] {
+  color: var(--k-st-success);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-log {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-more-log h3 {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-dash {
+  color: var(--k-neutral);
+}
+.k-more-reason {
+  margin: 0;
+  padding: var(--k-c-check-empty-pad);
+  color: var(--k-c-check-empty-fg);
+  font-size: var(--k-c-check-empty-text);
+  line-height: var(--k-c-check-empty-lh);
+}
+
+/* ---- 帯のすぐ下に残る 1 行（止めた・取り下げた・使わなかった・試し打ち） ---- */
+.k-more-trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-trail time {
+  font-variant-numeric: tabular-nums;
+}
+.k-more-stack {
+  display: grid;
+  gap: var(--k-c-detail-bands-gap);
+  min-width: 0;
+}
+
+/* ---- 自分で直す面（K-743）：成果物のカードの代わりに出る枠 ---- */
+.k-more-edit {
+  display: grid;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  padding: var(--k-c-artifact-card-pad);
+  border: var(--k-c-artifact-card-border);
+  border-radius: var(--k-c-artifact-card-radius);
+  background: var(--k-c-artifact-card-bg);
+}
+.k-more-edit h3 {
+  margin: 0;
+  font-size: var(--k-text-h3);
+  line-height: var(--k-lh-h3);
+  font-weight: var(--k-fw-h3);
+}
+.k-more-edit textarea.k-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--k-c-dialog-textarea-height);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-more-edit-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-more-edit-acts .k-more-edit-note {
+  flex: 1 1 0;
+  min-width: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 小窓の中の足し物（承認の確かめ・試し打ち） ---- */
+.k-more-pending {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+}
+.k-more-pending p {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-detail {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 承認待ち：道具の行の足し物・並べ替えの箱 ---- */
+.k-more-sortwrap {
+  position: relative;
+}
+.k-more-sortbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-c-approvals-acts-text);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-more-pop {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  right: 0;
+  display: grid;
+  min-width: 100%;
+  margin: var(--k-s-xs) 0 0;
+  padding: var(--k-s-xs);
+  list-style: none;
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  box-shadow: var(--k-c-dialog-shadow);
+}
+.k-more-pop li {
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  font-size: var(--k-c-approvals-acts-text);
+  white-space: nowrap;
+}
+.k-more-pop li[aria-selected="true"] {
+  background: var(--k-select);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-count {
+  margin-left: var(--k-s-xs);
+  font-variant-numeric: tabular-nums;
+}
+/* 絞り込みの札：字と枠の上下の間を spacing.xs 以上に（正本の高さ 26px の札は字の行 20px で 3px しか空かない） */
+.k-ap-chips .k-ap-chip {
+  padding-block: var(--k-s-xs);
+}
+/* 題名の枡（題名＋下の小さい説明の 2 行）：枡の上下の間を spacing.xs に */
+.k-ap-table td.k-ap-title {
+  padding-block: var(--k-s-xs);
+}
+/* 詳細の頭：段の札と下の行の押し物の間を spacing.sm 以上に（F4 の頭は 6px・段 5 に申し送り・段 12 と同じ直し） */
+.k-detail-meta.k-f5-meta {
+  padding-bottom: var(--k-s-xs);
+}
+.k-ap-chip[aria-disabled="true"] .k-more-count {
+  opacity: 1;
+}
+
+/* ---- 決めた履歴の板（K-751）：右から出る板。板の枠は k62-run-sheet を使い回す ---- */
+.k-more-hist {
+  display: grid;
+  align-content: start;
+  gap: var(--k-s-md);
+}
+.k62-run-sheet .k-more-hist-head .k62-run-chips {
+  padding: 0;
+  border-bottom: 0;
+}
+.k-more-hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  justify-content: space-between;
+  padding: var(--k-c-dialog-body-pad);
+  border-bottom: var(--k-c-dialog-head-border-bottom);
+}
+.k-more-day {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-hist-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-more-hist-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0;
+  border-bottom: var(--k-c-approvals-td-border-bottom);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-hist-row time {
+  font-variant-numeric: tabular-nums;
+  color: var(--k-on-surface-variant);
+}
+.k-more-hist-title {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-more-hist-title b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-hist-sub {
+  color: var(--k-on-surface-variant);
+}
+.k-more-hist-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 続けて裁く（K-752）：1 件ずつ全画面 ---- */
+.k-more-focus {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100%;
+  background: var(--k-page);
+  color: var(--k-on-surface);
+}
+.k-more-focus-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm) var(--k-s-md);
+  padding: var(--k-s-md) var(--k-s-lg);
+  background: var(--k-card);
+  border-bottom: var(--k-c-dialog-head-border-bottom);
+}
+.k-more-focus-head h1 {
+  margin: 0;
+  font-size: var(--k-text-page-title);
+  line-height: var(--k-lh-page-title);
+  font-weight: var(--k-fw-page-title);
+}
+.k-more-focus-pos {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body);
+  font-variant-numeric: tabular-nums;
+}
+.k-more-focus-head .k-more-focus-exit {
+  margin-left: auto;
+}
+.k-more-focus-main {
+  display: grid;
+  align-content: start;
+  gap: var(--k-s-md);
+  min-width: 0;
+  padding: var(--k-s-lg);
+}
+.k-more-focus-card {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+  padding: var(--k-s-md);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-c-approvals-card-radius);
+  background: var(--k-c-approvals-card-bg);
+}
+.k-more-focus-card h2 {
+  margin: 0;
+  font-size: var(--k-text-section-title);
+  line-height: var(--k-lh-section-title);
+  font-weight: var(--k-fw-h2);
+  overflow-wrap: anywhere;
+}
+.k-more-focus-meta {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-focus-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-md) var(--k-s-lg);
+  background: var(--k-card);
+  border-top: var(--k-c-dialog-actions-border-top);
+}
+.k-more-focus-foot .k-more-focus-main-act {
+  margin-left: auto;
+}
+.k-more-focus-next {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-more-key {
+  display: inline-block;
+  margin-left: var(--k-s-xs);
+  padding: 0 var(--k-s-xs);
+  border: var(--k-c-approvals-chip-border);
+  border-radius: var(--k-r-sm);
+  font-family: var(--k-font-code);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-focus-keys {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-focus-done {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-xl) var(--k-s-lg);
+  text-align: center;
+}
+.k-more-focus-done h2 {
+  margin: 0;
+  font-size: var(--k-text-h2);
+  line-height: var(--k-lh-h2);
+  font-weight: var(--k-fw-h2);
+}
+.k-more-tally {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-body);
+}
+.k-more-tally li {
+  padding: var(--k-s-xs) var(--k-s-md);
+  border-radius: var(--k-r-full);
+  background: var(--k-select);
+}
+
+/* ---- まとめて承認の板（押せない形・K-730 の差し込み先の 1 状態） ---- */
+.k-more-inert-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 丸い選択・四角い選択（Choice）：印の中心を字の 1 行目の中心にそろえる（ずれ 1px 以下）。印は字と同じ大きさ（1em）で、上の余白を行の高さから出す ---- */
+.k-dialog-check.k-more-choice {
+  align-items: flex-start;
+}
+.k-dialog-check.k-more-choice > input {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--k-c-dialog-check-text);
+  height: var(--k-c-dialog-check-text);
+  margin: calc((var(--k-c-dialog-check-lh) * var(--k-c-dialog-check-text) - var(--k-c-dialog-check-text)) / 2) 0 0;
+}
+.k-dialog-check.k-more-choice > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-more-pick {
+  width: var(--k-text-body-sm);
+  height: var(--k-text-body-sm);
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- まとめて承認（K-769）：選んだ N 件の帯 ---- */
+.k-more-bulkbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-c-approvals-card-radius);
+  background: var(--k-select);
+}
+/* 置き場ごとの帯（PC＝表の上・スマホ＝カードの後ろ）は幅で片方だけを出す */
+.k-more-bulkbar[data-at="mobile"] {
+  display: none;
+}
+.k-more-bulkbar p {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  font-weight: var(--k-fw-label-md);
+}
+
+/* =====================================================================================================
+   スマホ（幅 767 以下・キャンバス MbApprovals・MbApproveOne・MobileDetail）：PC の並びを縮めず、形を替える。
+   承認待ち＝表をやめてカード／詳細＝一覧から入る別の画面（頭に「‹」）・帯のボタンは主を 1 段目・ほかを次の段に等分／
+   確認の表＝1 件を縦の組／小窓＝下から／続けて裁く＝1 件ずつ全画面・押す所は下に貼り付く
+   ===================================================================================================== */
+
+/* 768 以上では出さない物（スマホだけの部品） */
+.k-more-mq,
+.k-more-mnext,
+.k-more-back {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* ---- 詳細：頭の「‹」で一覧へ戻る ---- */
+  .k-more-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--k-s-xs);
+    padding: var(--k-s-sm) var(--k-s-md) 0;
+    color: var(--k-primary);
+    font-size: var(--k-text-body);
+    text-decoration: none;
+  }
+
+  /* 本文の道具の帯：スマホには道具を出さず、版の説明の 1 行だけ（キャンバス MobileDetail に道具の帯は無い） */
+  .k-more-detail > .k-doc-tools {
+    position: static;
+    padding-top: var(--k-s-xs);
+    padding-bottom: var(--k-s-xs);
+  }
+  .k-more-detail > .k-doc-tools > button {
+    display: none;
+  }
+  .k-more-detail > .k-doc-tools .k-doc-tools-note {
+    margin-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--k-s-xs) var(--k-s-sm);
+  }
+
+  /* ---- 帯：主ボタンを 1 段目に全幅・ほかは次の段に等分 ---- */
+  .k-more-stack .k-band-acts {
+    flex: 1 1 100%;
+    margin-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--k-s-sm);
+  }
+  .k-more-stack .k-band-acts > .k-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-left: var(--k-s-xs);
+    padding-right: var(--k-s-xs);
+  }
+  .k-more-stack .k-band-acts > .k-btn[data-variant="primary"],
+  .k-more-stack .k-band-acts > .k-btn[data-variant="danger"] {
+    flex: 1 1 100%;
+    order: -1;
+  }
+
+  /* ---- 成果物のカード：字の箱を全幅・ボタンは 2 列 ---- */
+  .k-more-stack .k-artifact-card .k-artifact-head,
+  .k-more-focus-card .k-artifact-card .k-artifact-head {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+  .k-more-stack .k-artifact-card .k-artifact-info,
+  .k-more-focus-card .k-artifact-card .k-artifact-info {
+    flex: 1 1 100%;
+  }
+  .k-more-stack .k-artifact-card .k-artifact-acts,
+  .k-more-focus-card .k-artifact-card .k-artifact-acts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--k-s-sm);
+  }
+  .k-more-stack .k-artifact-card .k-artifact-acts .k-btn,
+  .k-more-focus-card .k-artifact-card .k-artifact-acts .k-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ---- 自分で直す面：保存・やめるは等分、説明は次の行 ---- */
+  .k-more-edit-acts > .k-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+  }
+  .k-more-edit-acts .k-more-edit-note {
+    flex: 1 1 100%;
+    order: 1;
+  }
+
+  /* ---- 確認の表：1 列（チェック＋文）なので、そのまま折り返す ---- */
+  .k-more-checks .k-check-table {
+    overflow-x: visible;
+  }
+
+  /* ---- 承認待ち：札は 1 段で横に流し、その下に並べ替えと決めた履歴。表はカードに替える ---- */
+  .k-more-qcard.k-ap-card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .k-more-qcard .k-ap-tools {
+    display: grid;
+    gap: var(--k-s-sm);
+    padding: 0 0 var(--k-s-sm);
+    border-bottom: 0;
+  }
+  .k-more-qcard .k-ap-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .k-more-qcard .k-ap-chips .k-ap-chip {
+    flex: none;
+  }
+  .k-more-qcard .k-ap-tools-end {
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--k-s-sm);
+  }
+  .k-more-qcard .k-more-pop {
+    left: 0;
+    right: auto;
+  }
+  .k-more-qtable,
+  .k-more-qnote {
+    display: none;
+  }
+  .k-page-head.k-ap-head > .k-btn.k-ap-next {
+    display: none;
+  }
+  .k-more-mq {
+    display: grid;
+    gap: var(--k-s-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .k-more-mcard {
+    display: grid;
+    gap: var(--k-s-xs);
+    min-width: 0;
+    padding: var(--k-s-md);
+    border: var(--k-c-card-border);
+    border-radius: var(--k-r-card);
+    background: var(--k-card);
+  }
+  .k-more-mcard[data-alert] {
+    border-color: var(--k-error);
+  }
+  .k-more-mcard-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--k-s-xs) var(--k-s-sm);
+    color: var(--k-on-surface-variant);
+    font-size: var(--k-text-body-sm);
+    line-height: var(--k-lh-body-sm);
+  }
+  .k-more-mcard-num {
+    padding: 0 var(--k-s-sm);
+    border-radius: var(--k-r-sm);
+    background: var(--k-surface-variant);
+    color: var(--k-on-surface);
+  }
+  .k-more-mcard-who {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .k-more-mcard-title {
+    color: var(--k-on-surface);
+    font-size: var(--k-text-body-md);
+    font-weight: var(--k-fw-h3);
+    line-height: var(--k-lh-body);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .k-more-mcard-sub,
+  .k-more-mcard-open,
+  .k-more-mcard-due {
+    margin: 0;
+    font-size: var(--k-text-body-sm);
+    line-height: var(--k-lh-body-sm);
+    overflow-wrap: anywhere;
+  }
+  .k-more-mcard-sub,
+  .k-more-mcard-due,
+  .k-more-mcard-open {
+    color: var(--k-on-surface-variant);
+  }
+  .k-more-mcard-due[data-late] {
+    color: var(--k-error);
+  }
+  .k-more-mcard-open[data-open] {
+    color: var(--k-st-on-warning-container);
+  }
+  .k-more-mcard-acts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--k-s-sm);
+    margin-top: var(--k-s-sm);
+  }
+  .k-more-mcard-acts > .k-btn {
+    justify-content: center;
+    min-width: 0;
+  }
+  .k-more-mnext {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* ---- 決めた履歴：全画面の板の中を 1 件 1 枚のカードに ---- */
+  .k-more-hist-head {
+    flex-wrap: nowrap;
+    gap: var(--k-s-sm);
+  }
+  .k62-run-sheet .k-more-hist-head .k62-run-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .k-more-hist-head .k-ap-sort {
+    flex: none;
+    white-space: nowrap;
+  }
+  .k-more-hist-list {
+    gap: var(--k-s-sm);
+  }
+  .k-more-hist-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--k-s-sm) var(--k-s-md);
+    border: var(--k-c-card-border);
+    border-radius: var(--k-r-card);
+    background: var(--k-card);
+  }
+  .k-more-hist-row > time {
+    grid-column: 1 / -1;
+  }
+
+  /* ---- 小窓は下から出す（印のある小窓だけ）。足のボタンは等分 ---- */
+  .k-dialog[data-size]:has(.k-more-sheetmark) {
+    top: auto;
+    bottom: 0;
+    /* 画面の左右の端から spacing.md 離して浮かせる（端に付けない） */
+    margin: 0 auto var(--k-s-md);
+    width: calc(100% - var(--k-s-md) * 2);
+    max-width: calc(100% - var(--k-s-md) * 2);
+    border-radius: var(--k-r-lg);
+  }
+  .k-dialog:has(.k-more-sheetmark) .k-dialog-actions > .k-btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  /* ---- 続けて裁く：1 件ずつ全画面。キーの案内は出さず、押す所は下に貼り付ける ---- */
+  .k-more-focus-head {
+    flex-wrap: nowrap;
+    gap: var(--k-s-sm);
+    padding: var(--k-s-sm) var(--k-s-md);
+  }
+  .k-more-focus-head h1 {
+    font-size: var(--k-text-body-md);
+    line-height: var(--k-lh-body);
+  }
+  .k-more-focus-head .k-more-focus-exit {
+    order: -1;
+    margin-left: 0;
+  }
+  .k-more-focus-pos {
+    margin-left: auto;
+    font-size: var(--k-text-body-sm);
+  }
+  .k-more-focus-main {
+    padding: var(--k-s-md);
+  }
+  .k-more-focus-keys,
+  .k-more-focus-foot .k-more-key,
+  .k-more-focus-foot .k-more-focus-next {
+    display: none;
+  }
+  .k-more-focus-foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--k-s-sm);
+    padding: var(--k-s-sm) var(--k-s-md);
+  }
+  .k-more-focus-foot > .k-btn {
+    min-width: 0;
+    justify-content: center;
+  }
+  .k-more-focus-foot .k-more-f-skip {
+    order: 1;
+  }
+  .k-more-focus-foot .k-more-f-edit {
+    order: 2;
+  }
+  .k-more-focus-foot .k-more-f-stop {
+    order: 3;
+  }
+  .k-more-focus-foot .k-more-f-return {
+    order: 4;
+  }
+  .k-more-focus-foot .k-more-focus-main-act {
+    order: 5;
+    grid-column: span 2;
+    margin-left: 0;
+  }
+  .k-more-focus-done {
+    padding: var(--k-s-lg) var(--k-s-md);
+  }
+
+  /* ---- まとめて承認：選んだ N 件の帯はカードの後ろに置き、画面の下（下のタブの上）に貼り付く（answer=0050b3906ae6）。表の上の［まとめて承認（全部）］は札の下の行に残す ---- */
+  .k-more-bulkbar[data-at="table"] {
+    display: none;
+  }
+  .k-more-bulkbar[data-at="mobile"] {
+    display: flex;
+    position: sticky;
+    bottom: calc(var(--k-c-shell-tabs-height) + var(--k-s-sm));
+    z-index: 2;
+    flex-wrap: nowrap;
+    background: var(--k-card);
+    box-shadow: var(--k-c-dialog-shadow);
+  }
+  .k-more-mcard-pick {
+    flex: none;
+  }
+}
+
+/* 成果物のカードの押し物：折り返したときの上下の間を spacing.sm に（正本の 6px は折り返すと押し物どうしがくっつく） */
+.k-artifact-acts {
+  gap: var(--k-s-sm);
+}
+
+/* 小窓の組（次は誰が直すか）：組の名前を枠の線の上に載せず、枠の中の 1 行目に置く（枠と字がくっつかない） */
+.k-dialog-group > legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--k-s-xs);
+  padding: 0;
+}
+.k-dialog-group > legend + * {
+  clear: both;
+}
+
+/* 空のときの見出しと説明：狭い幅で最後の 1〜2 字だけが次の行に落ちないよう、行の長さをそろえて折る */
+.k-state[data-state="empty"] :is(h1, h2, h3, p) {
+  text-wrap: balance;
+  /* 日本語は文節の切れ目で折る（語の途中で折らない） */
+  word-break: auto-phrase;
+}
+
+/* チケットの題：「…」で切らずに折り返して全文を出す（どの幅でも） */
+.k-root .k-detail-card > .k-page-head .k-detail-title > h1,
+.k-detail-card > .k-page-head h1 {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+
+/* 本文（自由な 1 枚の文書）の段落：道具の帯から spacing.md 離し、段落の間も spacing.md */
+.k-detail-doc > .k-pre {
+  margin: var(--k-s-md) 0 0;
+  line-height: var(--k-c-section-body-lh);
+}

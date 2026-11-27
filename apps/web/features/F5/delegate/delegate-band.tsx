@@ -6,7 +6,7 @@
 //         AI と話す と 止める は在るが押せない（D-145.9）
 //       任せました（queued）… 淡い橙の箱・題「〈名〉のAI に任せました。」・要約は PC が受け取る／起きるのを待っています・AI と話す は押せない
 //       止まった（stopped・cancelled）… 赤い箱（role=alert）・題「〈名〉のAI が止まりました」・理由の全文・
-//         直し方を AI に伝える と 自分で直す は押せない。箱の下に確認の結果の表
+//         自分で直す は押せない（［直し方を AI に伝える］は置かない・代表の決め answer=4d049789b537）。箱の下に確認の結果の表
 //     任せる前（任せられる・走っている実行なし）… 白い箱・題「AI に任せる」・要約「〈見ている人〉のAI が実施事項を進め、確かめてから承認を待ちます」
 //     承認待ち … 承認する人でない人にだけ「成果物ができました。承認待ちです」の橙の箱（承認する人には K-63 の承認の帯）。
 //       要約は確認の 12px の字（札にしない）と、確認項目を使わない理由（あれば・K-573）・ボタンなし。担当者がいなければ出さない（K-63 の帯がその文の箱を出す・箱は 1 つ・K-227）
@@ -16,7 +16,7 @@
 //   帯の section の印 data-busy（K-620）：AI が動いている（作る段の queued・running・asking）か承認待ちの間だけ付ける。
 //   任せる前の箱・止まった箱（stopped・cancelled）・知らせだけのときは付けない。題名の下の帯の順の器（F4 の detail-slots.ts・
 //   属性の名前は両方の注に書く）がこの印の付いた帯だけを「承認・実行の帯」と数え、渡し・保留の帯に譲らせる。帯の section は状態が替わっても同じ要素のまま
-//   段 6 の画面の葉の差し込み口（K-730・features/F5/more/slots.tsx）：［AI と話す］［直し方を AI に伝える］＝TalkActSlot・［止める］＝StopRunActSlot・
+//   段 6 の画面の葉の差し込み口（K-730・features/F5/more/slots.tsx）：［AI と話す］＝TalkActSlot・［止める］＝StopRunActSlot・
 //   止まった赤い箱＝RunStoppedSlot・その下の確認の結果の表＝ChecksSlot。帯の上の知らせ（TicketNotice）・帯の下の 1 行（TicketTrail）・
 //   作業中に戻した後の箱（useBand）は trail.ts の store を読む。知らせと 1 行は承認の帯が承認待ちの箱を出している間は承認の帯が描く（2 回描かない）
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く
@@ -165,12 +165,7 @@ function RunBox({ run, ticketId, onChanged }: { run: RunView; ticketId: string; 
           tone="danger"
           role="alert"
           title={`${nameOf(run)} が止まりました`}
-          acts={
-            <>
-              <TalkActSlot ticketId={ticketId} run={run} kind="fix" />
-              <InertButton>自分で直す</InertButton>
-            </>
-          }
+          acts={<InertButton>自分で直す</InertButton>}
         >
           {run.stopped_reason ? <BandLine>{run.stopped_reason}</BandLine> : null}
         </Band>
@@ -249,12 +244,7 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
           tone="plain"
           title={backBand.title}
           {...(backBand.sub ? { sub: backBand.sub } : {})}
-          acts={
-            <>
-              <TalkActSlot ticketId={ticket.id} run={run} kind="fix" />
-              <InertButton>自分で直す</InertButton>
-            </>
-          }
+          acts={<InertButton>自分で直す</InertButton>}
         />
       ) : canDelegate && !showRun ? (
         <Band tone="plain" title={MSG.before} {...(viewer ? { sub: `${viewer}${MSG.beforeSub}` } : {})} />

@@ -17,7 +17,7 @@ import {
 } from "@/features/F5/room/overview";
 import { CreateTalk, EMPTY_VALUES, type CreateValues } from "@/features/F5/room/create-talk";
 import { TalkBody, TalkNotice } from "@/features/F5/room/talk";
-import { AiPanel, RunningBandTalk, StoppedBandTalk } from "@/features/F5/room/ticket-talk";
+import { AiPanel, RunningBandTalk } from "@/features/F5/room/ticket-talk";
 import type { Theme } from "@/lib/theme";
 import type { MockGroup } from "../types";
 import {
@@ -341,21 +341,6 @@ function view(id: string, theme: Theme): ReactNode {
           ps="PS2"
           band={<RunningBandTalk name={ME} sub="開始 10:42 ・ 3 分" line="見積の金額を確かめています" />}
           panel={<AiPanel ticket="EG-128" entries={PANEL_PROGRESS} composer={{}} />}
-        />
-      );
-    case "tk-talk-band-stopped":
-      return (
-        <TicketFrame
-          theme={theme}
-          ps="PS2"
-          band={<StoppedBandTalk name={ME} reason="先方の宛名が本文に無く、請求書を作れませんでした" />}
-          panel={
-            <AiPanel
-              ticket="EG-128"
-              entries={[]}
-              composer={{ text: "宛名は経理部 山田様です。この宛名で作り直してください" }}
-            />
-          }
         />
       );
     case "tk-talk-pc-none":

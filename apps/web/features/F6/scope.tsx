@@ -4,7 +4,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 
-export type PanelTab = "attr" | "talk";
+export type PanelTab = "attr" | "talk" | "ai";
 
 interface ScopeValue {
   tab: PanelTab;

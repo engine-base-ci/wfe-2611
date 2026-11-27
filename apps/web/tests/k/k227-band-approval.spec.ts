@@ -101,14 +101,13 @@ test("K227-UI-003 帯のボタン：承認して送る（紺・高さ 32）・�
   expect(Math.abs(b.x - (a.x + a.width) - 6)).toBeLessThanOrEqual(1);
 });
 
-test("K227-UI-004 K63-UI-077 K63-UI-078 まだ使えない「自分で直す」「止める」：在る・aria-disabled・薄さ 0.55・押しても Enter でも口を呼ばず小窓も開かない", async ({
+test("K227-UI-004 K63-UI-077 K63-UI-078 「自分で直す」「止める」：帯の箱に在る（段 6 の画面の葉が本物にする差し込み口の場所なので、在ることだけを見る・K-730）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await mockApi(page);
   await openTicketSettled(page);
   for (const n of ["自分で直す", "止める"])
-    await expectInert(page, statusBox(page).getByRole("button", { name: n, exact: true }), n, writes);
+    await expect(statusBox(page).getByRole("button", { name: n, exact: true })).toBeVisible();
 });
 
 test("K227-UI-005 幅 375：ボタンは題と要約の下に折り返し、帯の箱はカードの中に収まり、横溢れ 0", async ({ page }) => {
@@ -124,7 +123,7 @@ test("K227-UI-005 幅 375：ボタンは題と要約の下に折り返し、帯�
   expect(await overflowX(page)).toBe(0);
 });
 
-test("K227-UI-006 K63-UI-079 K63-UI-080 K63-UI-081 K63-UI-082 成果物は帯の箱の外のカード（白・線 #DDE2E9・角丸 8）：中身の字・「成果物の版 1」・大きく見る（押せる）・データを見る・試し打ち（自分宛）・先方に確かめてもらう（押せない）", async ({
+test("K227-UI-006 K63-UI-079 K63-UI-080 K63-UI-081 K63-UI-082 成果物は帯の箱の外のカード（白・線 #DDE2E9・角丸 8）：中身の字・「成果物の版 1」・大きく見る（押せる）・データを見る・先方に確かめてもらう（押せない）・試し打ち（自分宛）（在る（段 6 の画面の葉が本物にする差し込み口の場所なので、在ることだけを見る・K-730））", async ({
   page,
 }) => {
   const writes = countWrites(page);
@@ -141,8 +140,9 @@ test("K227-UI-006 K63-UI-079 K63-UI-080 K63-UI-081 K63-UI-082 成果物は帯の
   await expect(c).toContainText("11 月分の請求書をお送りします。");
   await expect(c).toContainText("成果物の版 1");
   await expect(c.getByRole("button", { name: "大きく見る" })).toBeEnabled();
-  for (const n of ["データを見る", "試し打ち（自分宛）", "先方に確かめてもらう"])
+  for (const n of ["データを見る", "先方に確かめてもらう"])
     await expectInert(page, c.getByRole("button", { name: n, exact: true }), n, writes);
+  await expect(c.getByRole("button", { name: "試し打ち（自分宛）", exact: true })).toBeVisible();
 });
 
 test("K227-UI-007 「大きく見る」：小窓「成果物」に成果物の全文が改行を残して出る。Esc で閉じ、書く口は呼ばれない", async ({

@@ -26,14 +26,24 @@ row(R["K63-UI-051"], async (page) => {
   await openTicket(page);
   await expect(bandOf(page).getByText(MSG.runningAsleep)).toBeVisible();
   await expect(bandOf(page).getByText("実行中", { exact: true })).toHaveCount(0);
-  await expect(bandOf(page).getByRole("button")).toHaveCount(0);
+  // 「止める」は段 6 の K-734 の差し込み口（K-730）。それ以外のボタンは無い
+  await expect(
+    bandOf(page)
+      .getByRole("button")
+      .filter({ hasNotText: /^止める$/ }),
+  ).toHaveCount(0);
   await expect(k62Band(page)).toHaveCount(0);
 });
 row(R["K63-UI-052"], async (page) => {
   await mockApi(page, { stage: "running", run: { phase: "execute", status: "asking", pc: "live" } });
   await openTicket(page);
   await expect(bandOf(page).getByText(MSG.asking)).toBeVisible();
-  await expect(bandOf(page).getByRole("button")).toHaveCount(0);
+  // 「止める」は段 6 の K-734 の差し込み口（K-730）。それ以外のボタンは無い
+  await expect(
+    bandOf(page)
+      .getByRole("button")
+      .filter({ hasNotText: /^止める$/ }),
+  ).toHaveCount(0);
   await expect(k62Band(page)).toHaveCount(0);
 });
 row(R["K63-UI-053"], async (page) => {

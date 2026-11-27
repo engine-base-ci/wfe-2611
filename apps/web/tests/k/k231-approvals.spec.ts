@@ -16,9 +16,7 @@ import {
   WHITE,
   WIDTHS,
   box,
-  countWrites,
   cssOf,
-  expectInert,
   fidelityCompareTests,
   fidelityConfigTest,
   firstCharLeft,
@@ -54,10 +52,9 @@ test("K231-UI-001 見出しの帯：白・下に 1px #DDE2E9・余白 12px 24px�
   await expect(page.locator("h1")).toHaveCount(1);
 });
 
-test("K231-UI-002 K63-UI-088 見出しの帯の主ボタン「続けて裁く（3 件）」：紺の形で「あなたが決めるもの 3 件」のすぐ右（間 8px 前後）に在るが押せない（aria-disabled・薄さ 0.55・押しても移らず口も呼ばない）", async ({
+test("K231-UI-002 K63-UI-088 見出しの帯の主ボタン「続けて裁く（3 件）」：紺の形で「あなたが決めるもの 3 件」のすぐ右（間 8px 前後）に在る（押した後は段 6 の K-752 の差し込み口・K-730）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await mockApi(page);
   await openQueue(page);
   const b = head(page).getByRole("button", { name: "続けて裁く（3 件）" });
@@ -65,7 +62,7 @@ test("K231-UI-002 K63-UI-088 見出しの帯の主ボタン「続けて裁く（
   const sub = await box(head(page).locator(".k-page-sub"));
   const bb = await box(b);
   expect(Math.abs(bb.x - (sub.x + sub.width) - 8)).toBeLessThanOrEqual(4); // 右の端に寄せない（キャンバスは数のすぐ右）
-  await expectInert(page, b, "続けて裁く", writes);
+  await expect(b).toBeVisible();
 });
 
 test("K231-UI-003 カードは 1 つ（白・線 #DDE2E9・角丸 8）に、道具の行と表が 1 つ。期限ごとに表やカードを分けない", async ({
@@ -82,31 +79,18 @@ test("K231-UI-003 カードは 1 つ（白・線 #DDE2E9・角丸 8）に、道�
   await expect(page.locator("#k-main caption")).toHaveCount(0);
 });
 
-test("K231-UI-004 K63-UI-089 K63-UI-090 K63-UI-091 K63-UI-092 K63-UI-093 K63-UI-094 K63-UI-095 K63-UI-096 K63-UI-097 道具の行：絞り込みの札（すべて 3 は今いる・ほかの 6 つは押せない）・「期限の近い順 ▾」・選んだものをまとめて承認 と 決めた履歴（押せない）", async ({
+test("K231-UI-004 K63-UI-089 K63-UI-090 K63-UI-091 K63-UI-092 K63-UI-093 K63-UI-094 K63-UI-095 K63-UI-096 K63-UI-097 道具の行：絞り込みの札（すべて 3 は今いる・AI の成果物・渡された が在る）・並べ替え・決めた履歴が在る（札の数と押した後・並べ替えの字・まとめて承認のボタンの字は段 6 の K-749・K-751・K-769 の差し込み口・K-730）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await mockApi(page);
   await openQueue(page);
   const tools = card(page).locator(".k-ap-tools");
   const chips = tools.getByRole("group", { name: "絞り込み" }).getByRole("button");
-  await expect(chips).toHaveText([
-    "すべて 3",
-    "AI の成果物",
-    "上位の承認",
-    "渡された",
-    "判断を仰がれた",
-    "決まりの例外",
-    "やり方を広げる",
-  ]);
+  await expect(chips.nth(0)).toHaveText(/^すべて\s*3$/); // 数の字の形（間の空白）は段 6 の K-749 の札
   await expect(chips.nth(0)).toHaveAttribute("aria-pressed", "true");
-  for (let i = 1; i < 7; i++) {
-    const n = (await chips.nth(i).innerText()).trim();
-    await expectInert(page, chips.nth(i), n, writes);
-  }
-  await expect(tools).toContainText("期限の近い順 ▾");
-  for (const n of ["選んだものをまとめて承認", "決めた履歴"])
-    await expectInert(page, tools.getByRole("button", { name: n }), n, writes);
+  for (const n of ["AI の成果物", "渡された"]) await expect(chips.filter({ hasText: n })).toHaveCount(1);
+  await expect(tools).toContainText("期限の近い順");
+  await expect(tools.getByRole("button", { name: "決めた履歴" })).toBeVisible(); // まとめて承認のボタンの字は段 6 の K-769
 });
 
 test("K231-UI-005 K63-UI-098 表の列：選ぶ・決めること・種別・番号・題名・誰から・確認・期限・その場で決める。見出しの「まとめて選べるものをすべて選ぶ」は押せない", async ({
@@ -209,17 +193,13 @@ test("K231-UI-010 行のボタン：左に「差し戻す」（白地・線・�
   );
 });
 
-test("K231-UI-011 K63-UI-099 選ぶの列：取り消せる行は押せないチェック（まとめて承認に入れる）・取り消せない行は「—」（1 件ずつ決める）", async ({
+test("K231-UI-011 K63-UI-099 選ぶの列：取り消せる行「見積を出す」の頭の列に四角「まとめて承認に入れる」が在る（取り消せない行の形と押した後は段 6 の K-769 の差し込み口・K-730）", async ({
   page,
 }) => {
   await mockApi(page);
   await openQueue(page);
-  const pick = rowOf(page, "見積を出す").getByRole("checkbox", { name: "まとめて承認に入れる" });
-  await expect(pick).toBeDisabled();
-  const dash = rowOf(page, "11 月分の請求書を送る").locator("td").first();
-  await expect(dash).toHaveText("—");
-  await expect(dash.locator('[title="1 件ずつ決める"]')).toHaveCount(1);
-  await expect(rowOf(page, "11 月分の請求書を送る").getByRole("checkbox")).toHaveCount(0);
+  const pick = rowOf(page, "見積を出す").locator("td").first().getByRole("checkbox");
+  await expect(pick).toHaveCount(1);
 });
 
 test("K231-UI-012 下の注記：「— は 1 件ずつ中身を見て決めるもの（取り消せない操作・あなたが見る項目がある）。押すとチケットの詳細の承認の帯へ」（12px）", async ({
@@ -234,10 +214,9 @@ test("K231-UI-012 下の注記：「— は 1 件ずつ中身を見て決める�
   expect(await cssOf(note, "font-size")).toBe("12px");
 });
 
-test("K231-UI-013 空：見出しの横は「あなたが決めるもの 0 件」で続けて裁くは無い。本文は空の箱（点線・角丸 12）に ✓・「いま決めるものはありません」・説明・決めた履歴（押せない）", async ({
+test("K231-UI-013 空：見出しの横は「あなたが決めるもの 0 件」で続けて裁くは無い。本文は空の箱（点線・角丸 12）に ✓・「いま決めるものはありません」・説明・決めた履歴（在る・押した後は段 6 の K-751 の差し込み口・K-730）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await empty(page);
   await openQueue(page);
   await expect(head(page).locator(".k-page-sub")).toHaveText("あなたが決めるもの 0 件");
@@ -250,20 +229,25 @@ test("K231-UI-013 空：見出しの横は「あなたが決めるもの 0 件�
   expect((await box(mark)).y).toBeLessThan((await box(e.getByRole("heading"))).y); // ✓ は見出しの上（キャンバスの並び）
   expect(await cssOf(e, "border-top-style")).toBe("dashed");
   expect(await cssOf(e, "border-top-left-radius")).toBe("12px");
-  await expectInert(page, e.getByRole("button", { name: "決めた履歴" }), "決めた履歴", writes);
+  await expect(e.getByRole("button", { name: "決めた履歴" })).toBeVisible();
   await expect(card(page)).toHaveCount(0);
 });
 
-test("K231-UI-014 幅 375：表はカードの中で横に送れ（カードの外にはみ出さない）、頁の横溢れ 0・見出しの 1 文字目が画面の中", async ({
+test("K231-UI-014 幅 375：表のカードは出さず、1 件 1 枚のカード（.k-hnd-mcard・K-412・D-148.26）を縦に並べる。カードは画面の中、頁の横溢れ 0・見出しの 1 文字目が画面の中", async ({
   page,
 }) => {
+  // K-412 が切る段で替えた（2026-11-20・代表の直し：スマホの承認待ちは表を横に送らず 1 件 1 枚のカード。前は「表はカードの中で横に送れる」）
   await mockApi(page);
   await openQueue(page, 375);
-  const c = await box(card(page));
-  expect(c.x + c.width).toBeLessThanOrEqual(375);
+  await expect(card(page)).toBeHidden();
+  const cards = page.locator("#k-main .k-hnd-mcard");
+  await expect(cards).toHaveCount(QUEUE().length);
+  for (let i = 0; i < (await cards.count()); i++) {
+    const c = await box(cards.nth(i));
+    expect(c.x).toBeGreaterThanOrEqual(0);
+    expect(c.x + c.width).toBeLessThanOrEqual(375);
+  }
   expect(await overflowX(page)).toBe(0);
-  const scroller = card(page).locator("table").locator("xpath=..");
-  expect(await cssOf(scroller, "overflow-x")).toBe("auto");
   expect(await firstCharLeft(head(page).locator("h1"))).toBeGreaterThanOrEqual(0);
 });
 

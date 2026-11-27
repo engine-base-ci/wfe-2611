@@ -4,10 +4,11 @@
 //   代表の答え（2026-11-20）：⑧ 読める人は書ける（閲覧のみも書く欄が出る・段は変えられない）／⑨ 知らせる人の欄を残す（最初から担当者と承認する人・候補は見られる人だけ）／
 //   ⑬「新しい」の印とタブの数を出す／⑩ 直した印／⑪ 消した跡の 1 行／⑫ ☆ は数を出す／⑭ 完了したチケットにも書ける／⑮ 小さな決めは勧めのとおり
 //   まだの物（担当 ▾・📎）は隠さず、押せない形で出す（D-145.9）
-import { Bot, Paperclip } from "lucide-react";
+import { Paperclip } from "lucide-react";
 import { Fragment, type ChangeEvent, type KeyboardEvent, type ReactNode, type Ref } from "react";
 import { Button, Callout, Confirm, Menu, MenuItem, MenuPopup, MenuTrigger, TextArea, TextField } from "@/components/k";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
+import { TicketAiTabButtonSlot } from "@/features/F5/more/slots";
 import { STAGES, StageTag, type StageView } from "@/features/F6/progress/views";
 import "./thread.css";
 
@@ -43,18 +44,18 @@ export function Mention({ children }: { children: ReactNode }) {
   return <span className="k-talk-mention">{children}</span>;
 }
 
-/** 右のパネルのタブ（属性・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 まで押せない形 */
+/** 右のパネルのタブ（属性・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 の差し込み口（K-730・K-764 が本物にする） */
 export function TalkTabs({
   active,
   count,
   me,
   onTab,
 }: {
-  active: "attr" | "talk";
+  active: "attr" | "talk" | "ai";
   count?: number;
   me: string;
   /** タブを押したとき（無ければ見た目だけ） */
-  onTab?: (tab: "attr" | "talk") => void;
+  onTab?: (tab: "attr" | "talk" | "ai") => void;
 }) {
   return (
     <nav aria-label="パネルのタブ" className="k-detail-tabs">
@@ -70,10 +71,7 @@ export function TalkTabs({
         ) : null}
       </button>
       {me ? (
-        <button type="button" aria-disabled="true" tabIndex={-1} title="まだ使えません">
-          <Bot size={14} aria-hidden="true" />
-          {`${me}のAI`}
-        </button>
+        <TicketAiTabButtonSlot me={me} active={active === "ai"} {...(onTab ? { onTab: () => onTab("ai") } : {})} />
       ) : null}
     </nav>
   );
