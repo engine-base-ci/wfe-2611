@@ -256,7 +256,7 @@ describe("K-687 上の棚に上げる", () => {
     const p = await mine(w.mem3, { title: "企画のやり方" });
     const r = await raise(w.mem3, p, { group_id: w.g3 });
     expect(r.status).toBe(409);
-    expect(await codeOf(r)).toBe("E-KNW-102");
+    expect(await codeOf(r.clone())).toBe("E-KNW-102"); // 体は下でもう 1 度読むので写しで読む
     expect(((await r.json()) as Json)["detail"]).toBeUndefined();
     expect((await requestRows(h, w)).length).toBe(0);
     expect(await allNotices(h, w)).toBe(0);

@@ -6,9 +6,8 @@ import type { PagePartCtx, RaiseTo } from "./types.js";
 
 const MAIN_GROUP_SQL = `select s.id from members m join scopes s on s.id = m.scope_id
  where m.id = $1 and m.tenant_id = app.tenant_id() and s.parent_id is not null and s.deleted_at is null`;
-const TARGET_SQL = `select app.kn_shelf_name($1, false) as name,
-       coalesce((select array_agg(m.display_name order by m.display_name collate "C", m.id)
-                   from members m where m.id in (select app.kn_approvers_of($1)) and m.id <> $2), '{}') as names`;
+// 承認する人の名前は security definer の関数で読む（人の行の守りは見えるグループの人だけを通し、会社の管理者が見えないことがある・統合の枝で直した）
+const TARGET_SQL = "select app.kn_shelf_name($1, false) as name, app.kn_approver_names($1, $2) as names";
 
 /** 上げる先の scope（上げられないページは null） */
 async function targetOf(p: PagePartCtx): Promise<{ scope: string; shelf: "group" | "company" } | null> {
