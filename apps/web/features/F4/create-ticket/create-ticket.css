@@ -264,3 +264,12 @@
   width: 0 !important;
   height: 0 !important;
 }
+
+/* 作る面の器（会話の枠の中・K-777）。並びは中の form（k-f4d-page）が持つ */
+.k-create-wrap {
+  display: block;
+}
+/* AI の案を当てた項目名（後ろに印 FieldMark が付く・K-777）。字は項目名の決まりのまま */
+.k-create-marked {
+  font: inherit;
+}

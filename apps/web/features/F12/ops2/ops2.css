@@ -216,3 +216,8 @@
   max-width: 100%;
   overflow-x: auto;
 }
+
+/* 受信箱の右の列（問い合わせてきた会社の様子）の器。並びは中の Card が持つ（K-976） */
+.k-ops2-side {
+  min-width: 0;
+}

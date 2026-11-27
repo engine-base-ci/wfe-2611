@@ -128,7 +128,7 @@ const SIDE_SAMPLE: InboxSide = {
 /** 右：問い合わせてきたワークスペースの様子（数と種類だけ） */
 function WsSide({ side }: { side: InboxSide }) {
   return (
-    <div className="k-card">
+    <div className="k-ops2-side">
       <Card title={side.title} aside={side.aside}>
         <Facts
           rows={side.rows.map(([k, v]) =>

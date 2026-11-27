@@ -38,3 +38,8 @@
     margin-left: calc(var(--k-s-md) + var(--k-s-sm));
   }
 }
+
+/* グループに人がいないときの一文（字は k-inv-sub のまま・K-707） */
+.k-f9m-empty {
+  display: block;
+}

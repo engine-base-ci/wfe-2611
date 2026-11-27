@@ -142,16 +142,10 @@ test("K380-SL-003 差し込み口は前からのファイルに入っている�
   const want: [string, string[]][] = [
     [
       `${F4}/ticket-detail.tsx`,
-      [
-        "F6.DetailScope",
-        "F8.DetailScope",
-        "F6.StageSlot",
-        "F6.TitleSlot",
-        "F8.HandoverBandSlot",
-        "F6.HoldBandSlot",
-        "F6.SectionSlot",
-      ],
+      ["F6.DetailScope", "F8.DetailScope", "F6.StageSlot", "F6.TitleSlot", "F8.HandoverBandSlot", "F6.HoldBandSlot"],
     ],
+    // 本文の場所と区画は K-571 が detail-body.tsx に切り出した（ticket-detail.tsx が DetailBodyArea で呼ぶ）
+    [`${F4}/detail-body.tsx`, ["F6.SectionSlot"]],
     [`${F4}/detail-panel.tsx`, ["F6.PanelTabsSlot", "F6.EstimateSlot", "F6.ActualTimeSlot", "F8.AssigneeSlot"]],
     ["features/F5/approve-complete/queue-table.tsx", ["F8.QueueRowSlot"]],
   ];

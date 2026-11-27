@@ -9,6 +9,15 @@
     "apps/api/test/features/F11/client-requests-draft-result.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F11/client-requests-draft-result.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_jobs_id_client_request_draft.test.ts"
+   ]
   }
  ],
  "reads_ok": {

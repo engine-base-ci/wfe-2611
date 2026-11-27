@@ -29,5 +29,8 @@
     "apps/api/test/features/F12/ops-invoices-pdf.test.ts"
    ]
   }
- ]
+ ],
+ "reads_ok": {
+  "packages/billing/src/invoice-pdf.ts": "請求書の PDF に埋める書体のファイルを readFile で読む（部品の中の決まったファイル）・K-1013"
+ }
 }

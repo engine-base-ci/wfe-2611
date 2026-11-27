@@ -828,3 +828,20 @@
   margin: var(--k-s-md) 0 0;
   line-height: var(--k-c-section-body-lh);
 }
+
+/* 統合の枝の直し（2026-11-28・D8／class_gate）：前は style 属性で書いていた 3 つ。値は同じ */
+/* 束ねて選ぶ帯の知らせを、帯の並びの 1 つ目に置く（K-748） */
+.k-more-bulk-note {
+  order: -1;
+}
+/* 置き場そのものは並びに加わらない（Callout が本文の並びの 1 つ目になる・K-750） */
+.k-more-contents {
+  display: contents;
+}
+/* 集中して裁く面の重なり（画面全体に重ね、中を縦に送る・K-753） */
+.k-more-focus-layer {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  z-index: var(--k-c-popup-layer-z);
+}

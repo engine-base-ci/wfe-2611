@@ -546,7 +546,7 @@ erDiagram
 | 台帳の定義 | `ledger_definitions` `ledger_fields` `ledger_stages` | |
 | レコード | `ledger_records` | |
 | 段階 | `ledger_stages` | |
-| チケット | `tickets` `ticket_class_values` `ticket_links` `ticket_handovers` `saved_views` `ticket_imports` | 本文は `ticket_sections`（D-125.27・D-127.1）。つながり・渡す・保存した検索条件・CSV の取り込み（D-128.80・D-128.83） |
+| チケット | `tickets` `ticket_class_values` `ticket_links` `ticket_handovers` `saved_views` `ticket_imports` `acceptances` | 本文は `ticket_sections`（D-125.27・D-127.1）。つながり・渡す・保存した検索条件・CSV の取り込み（D-128.80・D-128.83）。`acceptances` は凍結（K-883・検収を作らない・D-155.44） |
 | 一日の計画 | `daily_plans` | |
 | 承認 | `approvals` | 4 つのボタン・差し戻しの理由・本人確認（D-125.103）。第1フェーズで足す列は §16 の注記 |
 | 差し戻し | `approvals` `messages` | 差し戻し＝`approvals.status_id = returned` ＋ 理由の `messages` |
@@ -573,8 +573,8 @@ erDiagram
 | 通知 | `notifications` `notification_preferences` `notification_settings` `notice_deliveries` | 第1フェーズは受け箱とメールのまとめ（D-128.92） |
 | プラン | `plans` `plan_versions` `subscriptions` `usage_meters` `plan_change_requests` `ops_plan_proposals` | 値段を変える案と決めた記録は `ops_plan_proposals`（D-128.72） |
 | 問い合わせ | `inquiries` `conversations` | |
-| お知らせ | `notices` `notice_deliveries` `status_incidents` | |
-| 請求 | `invoices` `payments` | 段階 1 は請求書払い |
+| お知らせ | `notices` `notice_deliveries` `status_incidents` `notice_updates` | |
+| 請求 | `invoices` `payments` `ops_invoice_templates` | 段階 1 は請求書払い |
 | 会話 | `conversations` `messages` | |
 | Bridge の配布物 | — | 表を持たない。版・OS と CPU ごとのファイル・指紋（sha256）・大きさは置き場の目録ファイル `kaname-bridge.json` が正本（D-109.8）。会社の行を持たないので行の制御の対象も無い |
 | AIに頼んだこと | `bridge_jobs` `bridge_job_states` | 待っている／動いている／終わった／止まった／やめた。止まったものは人が選ぶまで残す（D-090） |
@@ -614,11 +614,11 @@ erDiagram
 | 種別 | `ticket_kinds` `kind_sections` | |
 | 作業の段 | `ticket_stages` | |
 | 切り替えの決まり | `handover_rules` | |
-| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` | |
-| 取引先 | `clients` `client_groups` `client_contacts` | |
+| ナレッジのページ | `knowledge_pages` `knowledge_page_versions` `knowledge_links` `knowledge_breaches` | |
+| ナレッジのフォルダ | `knowledge_folders` `knowledge_shares` | 棚の中の入れ子とグループへの共有（K-674・K-689） |
+| 会社が足す項目 | `custom_fields` `ticket_field_values` `custom_field_kinds` | 項目の定義・チケットごとの値・型のマスタ（D-152.32） |
 | ゲストのグループ | `guest_groups` `guest_group_members` `ticket_guest_shares` | |
-| 依頼 | `client_requests` `conversations` | |
-| 検収 | `acceptances` | |
+| 依頼 | `client_requests` `conversations` `client_request_messages` `clients` `client_groups` `client_contacts` | `clients`・`client_groups`・`client_contacts` は凍結（K-883・取引先を持たない・D-155.35）。前の依頼が指していた取引先の表として残す |
 | テナントへの所属 | `tenant_memberships` | |
 | 規約と同意 | `terms_versions` `terms_consents` | |
 | パスキー | `passkeys` | |

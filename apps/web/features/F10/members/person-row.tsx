@@ -54,13 +54,12 @@ function RoleCell({
   busy?: boolean;
 }) {
   const admin = r.role === "管理者";
-  const cls = admin ? "k-inv-role k-f10m-role k-f10m-admin" : "k-inv-role k-f10m-role";
   const label = `${r.name}の役割を変える（いま ${r.role}）`;
   if (r.self) {
     return (
       <button
         type="button"
-        className={cls}
+        className={admin ? "k-inv-role k-f10m-role k-f10m-admin" : "k-inv-role k-f10m-role"}
         aria-label={label}
         aria-disabled="true"
         title="自分の役割は、自分では変えられません"
@@ -71,7 +70,11 @@ function RoleCell({
   }
   return (
     <Menu defaultOpen={open}>
-      <MenuTrigger className={cls} label={label} disabled={busy}>
+      <MenuTrigger
+        className={admin ? "k-inv-role k-f10m-role k-f10m-admin" : "k-inv-role k-f10m-role"}
+        label={label}
+        disabled={busy}
+      >
         {`${r.role} ▾`}
       </MenuTrigger>
       <MenuPopup align="start" className="k-f10m-menu">

@@ -100,7 +100,10 @@ describe("K-782 作る画面の AI と話せる人", () => {
     const w = await h.world("k782-006");
     await h.pc(w.me);
     const others = await h.conversation(w, w.other, { kind: "draft" });
-    await h.f.admin.query("update members set suspended_at = now(), suspended_by = id where id = $1" /* 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は対） */, [w.outsider.id]);
+    await h.f.admin.query(
+      "update members set suspended_at = now(), suspended_by = id where id = $1" /* 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は対） */,
+      [w.outsider.id],
+    );
     const s = await start(w.outsider);
     expect(s.status).toBe(403);
     expect((await h.json(s)).code).not.toBe(NO_CREATE);

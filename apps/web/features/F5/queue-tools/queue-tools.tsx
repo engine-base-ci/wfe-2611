@@ -128,8 +128,9 @@ export function QueueChips({ total, layout }: { total: number; layout: "table" |
   const { kind, sort, setKind } = useQueueParams();
   const counts = useQueueCounts(queueQueryOf(kind, sort).key);
   const countOf = (k: QueueKind | null): number | undefined => (k === null ? (counts?.total ?? total) : counts?.[k]);
+  const asCard = layout === "card";
   return (
-    <div className={layout === "card" ? "k-hnd-mchips" : "k-ap-chips"} role="group" aria-label="絞り込み">
+    <div className={asCard ? "k-hnd-mchips" : "k-ap-chips"} role="group" aria-label="絞り込み">
       {KINDS.map((c) => (
         <Chip
           key={c.label}

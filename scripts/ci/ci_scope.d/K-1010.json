@@ -20,6 +20,24 @@
     "apps/api/test/features/F7/notifications-list.test.ts",
     "apps/api/test/features/F12/ops-templates-release.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-templates-release.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_operations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-templates-release.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_templates_id_versions.test.ts"
+   ]
   }
  ]
 }

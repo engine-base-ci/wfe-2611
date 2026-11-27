@@ -25,7 +25,6 @@ import {
 import { inListOrder, isPickable, useBulkApprove, useBulkPick, useBulkPreview, useBulkState } from "../bulk/use-bulk";
 
 /** 帯を本文の箱の頭へ（本文の箱は flex の縦並び） */
-const NOTE_FIRST = { order: -1 } as const;
 
 export function QueueBulkFill({ part, at, row, rows }: QueueBulkProps): ReactNode {
   if (part === "head") return <HeadPick rows={rows ?? []} />;
@@ -68,11 +67,12 @@ function RowPick({ row, layout }: { row: QueueRow; layout: "row" | "card" }): Re
     );
   }
   const on = picked.includes(row.id);
+  const asRow = layout === "row";
   const full = !on && picked.length >= BULK_LIMIT;
   const box = (
     <input
       type="checkbox"
-      className={layout === "row" ? "k-more-pick" : undefined}
+      className={asRow ? "k-more-pick" : undefined}
       aria-label={pickLabel(row.ticket_number)}
       checked={on}
       disabled={full}
@@ -125,7 +125,7 @@ function Band({ at, rows }: { at: "table" | "mobile"; rows: readonly QueueRow[] 
   return (
     <>
       {note ? (
-        <div style={NOTE_FIRST}>
+        <div className="k-more-bulk-note">
           <Callout tone={note.tone}>{note.text}</Callout>
         </div>
       ) : null}
