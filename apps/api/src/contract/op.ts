@@ -172,6 +172,7 @@ export const ONE_TX_HOOKS: ReadonlySet<string> = new Set([
   "getTicket",
   "listTicketRuns",
   "listTicketTimeline",
+  "listTicketDecisions",
   "getActionRun",
   "listApprovalQueue",
   "getApproval",
