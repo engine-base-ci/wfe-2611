@@ -33,8 +33,9 @@
 | X-015 | **C8 秘密** | `apps/bridge/src/kaname-tools.ts#MCP_SERVER_SOURCE` | 定数 MCP_SERVER_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（Kaname の道具のサーバー）。理由は X-014 と同じ（K-42） | X-014 と同じ | 恒久 | 有効 |
 | X-016 | **C4 ファイル** | `apps/web/features/F1/consent-terms/legal-text.ts` | 規約・プライバシーポリシーの文面のページ（K-53）が、画面に同梱したひな形（`apps/web/content/legal/*.md`）を要求のときに読む。DB も API も読まない（画面だけを立ち上げる CI の段でも開ける）。利用者のファイルではない | 読むのは `apps/web/content/legal` の `<kind>-v<版>.md` だけ（kind は terms・privacy の 2 つ・版は数だけ）・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
 | X-017 | **C8 秘密** | `packages/auth/` | Better Auth の 2 段階の鍵とバックアップコード：2 段階の鍵（TOTP の鍵）とバックアップコードはログインの部品（Better Auth）が自分の鍵（BETTER_AUTH_SECRET）で包んで kaname_auth の表に持ち、`packages/secrets` を通らない。アカウント全体（ワークスペースをまたぐ 1 人）の秘密で、ワークスペースごとの鍵では包めない（D-128.141・K-308） | 口から返さない（安全の設定を読む口 getMySecurity は残りの数だけ・K308-API-004）・ログに出さない・部品の暗号のまま持つ。読むのは部品のサーバーだけの口（viewBackupCodes）で、中身は数えた後に捨てる | 恒久 | 有効 |
+| X-018 | **C4 ファイル** | `packages/billing/src/invoice-pdf.ts` | 請求書の PDF（K-1013）に埋め込む字の書体（同梱の `packages/billing/assets/NotoSansJP-Regular.ttf`・SIL OFL）を読む。部品の一部で、利用者のファイルではない。作った PDF は関門 C4（`objects.put`）で置く | 読むのは同梱の書体 1 つだけ（パッケージの assets か、Vercel で 1 本の横に写した assets・`apps/api/build-vercel.mjs`）・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
 
-**例外件数：17（恒久 17 / 期限付き 0）**
+**例外件数：18（恒久 18 / 期限付き 0）**
 
 ## 過去の例外（解消済）
 
