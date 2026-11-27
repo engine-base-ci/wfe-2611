@@ -215,6 +215,7 @@ async function completeAll(page: Page, r: Ready): Promise<void> {
   await expect(completeBtn(page), "完了したら「完了にする」は出ない").toHaveCount(0);
   await expect(delegateBtn(page), "完了したチケットは任せられない").toHaveCount(0);
   expect(await ticketState(r.t)).toMatchObject({ stage: "done", completed_by: r.me.memberId });
+  // 完了で本文を書き換えない（D-150.42・K-566。本線の K-1306 は実施事項の区画が元のままかを todoNow で見ていたが、段5 は区画を外すので本文の目的が残るかを bodyNow で見る）
   expect(await bodyNow(r.t), "完了は本文を書き換えない").toContain(SECTIONS.purpose);
   expect(await delegatedMark(r.t), "完了したチケットに「AI に任せている」印は残らない").toBe(false);
   // 先に仕事の状態を見る（取る口の「何も動かしていない」は取り残しを片付けるので、後から見ると片付けが閉じた物まで緑になる）
