@@ -3,6 +3,7 @@
 //   頭：虫眼鏡・探す入力（この 1 つだけ。画面の中央・上寄りに開き、その真下に結果が続く 1 つの箱＝⌘K のパレットの形・後ろは薄い幕）／札／結果（種類ごとに上位 5 件）／足：↑↓ で選ぶ ・ Enter で開く ・ 絞るならチケットの一覧へ。
 //   幅 767 以下：帯の探す欄が帯いっぱいに開くので、箱は帯の下の全面になり、頭の欄は隠して打った字だけを 1 行出す（↑↓ の案内も隠す）。
 //   空は components/k の Empty・読み込み中は Loading・読めないは E-PAGE-007（ErrorState）。置き場：overlay＝重ねる／inline＝その場（モックで並べる）。
+import type { KeyboardEvent, Ref } from "react";
 import { Search } from "lucide-react";
 import { Empty, ErrorState, Loading, PAGE_ERROR } from "@/components/k";
 import { SearchGroup } from "./search-group";
@@ -30,6 +31,10 @@ export interface SearchPanelProps {
   placement?: "overlay" | "inline" | undefined;
   onOpen?: ((hit: SearchHitView) => void) | undefined;
   onRetry?: (() => void) | undefined;
+  /** 箱の入力の焦点を渡す（本物の箱・K-471）。モックは渡さない */
+  inputRef?: Ref<HTMLInputElement> | undefined;
+  /** 箱の入力のキー（↑↓ Enter Esc・K-471） */
+  onInputKeyDown?: ((e: KeyboardEvent<HTMLInputElement>) => void) | undefined;
   /** 読み込み中を出すまでの待ち（既定は 3 秒より長いときだけ・モックは 0） */
   loadingDelayMs?: number | undefined;
 }
@@ -74,11 +79,13 @@ export function SearchPanel(p: SearchPanelProps) {
           <label className="k-f7-search-field">
             <span className="sr-only">探す</span>
             <input
+              ref={p.inputRef}
               type="search"
               className="k-f7-search-input"
               value={p.query}
               placeholder="チケット・ナレッジ・決定を探す"
               onChange={(e) => p.onQuery?.(e.currentTarget.value)}
+              onKeyDown={p.onInputKeyDown}
             />
           </label>
         </div>
