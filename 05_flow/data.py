@@ -524,8 +524,8 @@ PRODUCT_STATES = [
 ROUTES = {
  "signup": "/signup", "verify-email": "/verify-email", "invite-accept": "/invite/:token", "mfa-setup": "/mfa-setup", "billing-setup": "/billing-setup",
  "login": "/login", "password-reset": "/password-reset", "onboard-interview": "/onboard/interview", "onboard-draft": "/onboard/draft", "onboard-testrun": "/onboard/testrun", "onboard-golive": "/onboard/golive",
- "bridge-setup": "/setup/bridge", "credentials": "/settings/credentials", "today": "/today", "approvals": "/approvals", "clone-thread": "/ai/thread", "tasks": "/tasks", "clone-chat": "/ai/chat",
- "ai-activity": "/ai-staff/activity", "search": "/search", "records": "/records", "record-detail": "/records/:id", "goals": "/goals", "goal-allocation": "/goals/:id/allocation", "goal-edit": "/goals/:id/edit",
+ "bridge-setup": "/setup/bridge", "credentials": "/settings/credentials", "today": "/today", "approvals": "/approvals", "clone-thread": "/ai/thread", "tasks": "/tasks", "clone-chat": "/ai/talk",
+ "ai-activity": "/ai", "search": "/search", "records": "/records", "record-detail": "/records/:id", "goals": "/goals", "goal-allocation": "/goals/:id/allocation", "goal-edit": "/goals/:id/edit",
  "my-progress": "/my-progress", "review": "/review", "hypotheses": "/hypotheses", "duties": "/duties", "clone-memory": "/ai/memory", "ledger-def": "/settings/ledgers", "company-model": "/company-model",
  "automation-repair": "/automations/:id/repair", "audit": "/audit", "policies": "/policies", "members": "/members", "member-detail": "/members/:id", "ai-staff": "/ai-staff", "ai-staff-detail": "/ai-staff/:id",
  "security-brief": "/security", "export": "/export", "account-close": "/settings/close", "account": "/account", "company-settings": "/settings/company", "import": "/import", "services": "/services",

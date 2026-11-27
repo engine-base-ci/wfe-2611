@@ -54,7 +54,9 @@ for (const [id, href, h1] of [
 }
 
 // 会話モードへの入口（D-103：会話はどこで開いても同じ 1 本）。サイドバーと下タブの「〇〇AIと話す」
-test("USH-01-011 サイドバーの「高本AIと話す」を押すと会話モード（/ai/chat）が開く", async ({ page }) => {
+test("USH-01-011 サイドバーの「高本AIと話す」を押すと話すの画面（/ai/chat から /ai/talk へ送られる・K-762）が開く", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 6);
   await loginAs(page, u.token);
@@ -67,20 +69,22 @@ test("USH-01-011 サイドバーの「高本AIと話す」を押すと会話モ�
       .locator("button.side-grp")
       .click();
   await link.click();
-  await expect(page).toHaveURL(/\/ai\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({
+  await expect(page).toHaveURL(/\/ai\/talk/);
+  await expect(page.getByRole("heading", { level: 1, name: /のAI$/ }).first()).toBeVisible({
     timeout: 15_000,
   });
 });
-test("USH-01-050 スマホの下タブの「高本AIと話す」を押すと会話モード（/ai/chat）が開く", async ({ page }) => {
+test("USH-01-050 スマホの下タブの「高本AIと話す」を押すと話すの画面（/ai/chat から /ai/talk へ送られる・K-762）が開く", async ({
+  page,
+}) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 6);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 375, height: 800 });
   await page.goto("/dev/shell?screen=today&role=R1&ps=PS3");
   await page.locator('.tabbar a[href="/ai/chat"]').first().click();
-  await expect(page).toHaveURL(/\/ai\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "自分のAIと話す" }).first()).toBeVisible({
+  await expect(page).toHaveURL(/\/ai\/talk/);
+  await expect(page.getByRole("heading", { level: 1, name: /のAI$/ }).first()).toBeVisible({
     timeout: 15_000,
   });
 });

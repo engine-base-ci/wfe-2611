@@ -5,9 +5,11 @@
 //   スマホ（767 以下）：会話の一覧と会話は別の画面（mview）。一覧は「＋ 新しく話す」と全幅の会話カード、会話は頭に「‹」（一覧へ戻る）と題・書く欄は下のタブの上に貼り付く。
 //   PC の幅では mview は効かず、左に一覧・右に会話が並ぶ
 //   前の会話の「記憶に使わない」「覚えたいこと」「業務の型」は段 10 で物が無くなったので出さない。値を受け取って描くだけ
+//   動きは任意の props（K-762 が持ち主）：ConvList の onPick・onNew、ChatComposer の label・onText・onSend・onStop・stopping、
+//   Thread の onTop（人が上の端まで巻いた）、TalkBody の notFound・main・onBack。渡さなければ今の見た目のまま（下絵・K-764・K-767）
 import { ph } from "./phrase";
 import { ChevronLeft } from "lucide-react";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import { Button, Callout } from "@/components/k";
 import { ProposalCard, type Proposal } from "./proposal";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
@@ -35,9 +37,41 @@ export type Entry =
   /** 欄に入れられる AI の案（全部使う／選んで使う） */
   | { kind: "proposal"; proposal: Proposal };
 
-export function Thread({ entries }: { entries: readonly Entry[] }) {
+/** 人が上へ巻いた（ホイール・指・キー）ときだけ、上の端の印が見えていれば onTop を呼ぶ（開いただけでは呼ばない） */
+function useTopEdge(onTop: (() => void) | undefined) {
+  const ref = useRef<HTMLLIElement>(null);
+  const cb = useRef(onTop);
+  cb.current = onTop;
+  const on = onTop !== undefined;
+  useEffect(() => {
+    if (!on) return;
+    const seen = () => {
+      const r = ref.current?.getBoundingClientRect();
+      if (r && r.top >= -1 && r.top <= window.innerHeight) cb.current?.();
+    };
+    const wheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) seen();
+    };
+    const key = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "PageUp" || e.key === "ArrowUp" || e.key === "Home") seen();
+    };
+    window.addEventListener("wheel", wheel, { passive: true });
+    window.addEventListener("touchmove", seen, { passive: true });
+    window.addEventListener("keydown", key);
+    return () => {
+      window.removeEventListener("wheel", wheel);
+      window.removeEventListener("touchmove", seen);
+      window.removeEventListener("keydown", key);
+    };
+  }, [on]);
+  return ref;
+}
+
+export function Thread({ entries, onTop }: { entries: readonly Entry[]; onTop?: () => void }) {
+  const top = useTopEdge(onTop);
   return (
     <ol className="k-room-thread" aria-label="会話">
+      {onTop ? <li ref={top} className="k-room-top" aria-hidden="true" /> : null}
       {entries.map((e, i) => {
         if (e.kind === "day")
           return (
@@ -109,27 +143,53 @@ export type ComposerMode = "idle" | "working" | "sending" | "no-pc";
 export function ChatComposer({
   text = "",
   mode = "idle",
-  placeholder = "高本のAI に話す",
+  label = "高本のAI に話す",
+  placeholder,
   offPlaceholder = "PC をつなぐと話せます",
   quota,
+  onText,
+  onSend,
+  onStop,
+  stopping = false,
 }: {
   text?: string;
   mode?: ComposerMode;
+  /** 書く欄の名前（「〈名〉のAI に話す」） */
+  label?: string;
   placeholder?: string;
   /** 書けないとき（no-pc）の案内（PC がまだ／PC が閉じている） */
   offPlaceholder?: string;
   /** 「5 時間の枠 32%」（使い方の数・K-73 の物なので出すが押せない形） */
   quota?: string;
+  /** 書いた字（渡さなければ書けない形の見本） */
+  onText?: (text: string) => void;
+  onSend?: () => void;
+  onStop?: () => void;
+  /** 止めている間（［止める］は押せない） */
+  stopping?: boolean;
 }) {
   const off = mode === "no-pc";
+  const empty = text.trim() === "";
+  const send = () => {
+    if (mode === "idle" && !empty) onSend?.();
+  };
+  const key = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enter は改行。⌘／Ctrl＋Enter で送る（変換中の Enter では送らない）
+    if (e.key !== "Enter" || !(e.metaKey || e.ctrlKey) || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+    send();
+  };
   return (
     <div className="k-room-composer">
       <textarea
-        aria-label="高本のAI に話す"
-        readOnly
+        aria-label={label}
+        readOnly={!onText}
         disabled={off}
         value={text}
-        placeholder={off ? offPlaceholder : placeholder}
+        placeholder={off ? offPlaceholder : (placeholder ?? label)}
+        {...(onText
+          ? { onChange: (e: ChangeEvent<HTMLTextAreaElement>) => onText(e.target.value), onKeyDown: key }
+          : {})}
       />
       <div className="k-room-composer-row">
         <InertButton size="sm">＋ 添付</InertButton>
@@ -141,7 +201,13 @@ export function ChatComposer({
         ) : null}
         <span className="k-room-composer-end">
           {mode === "working" ? (
-            <Button variant="outlined" size="sm" className="k-room-send">
+            <Button
+              variant="outlined"
+              size="sm"
+              className="k-room-send"
+              disabled={stopping}
+              {...(onStop ? { onClick: () => onStop() } : {})}
+            >
               止める
             </Button>
           ) : (
@@ -150,7 +216,8 @@ export function ChatComposer({
               size="sm"
               className="k-room-send"
               loading={mode === "sending"}
-              disabled={off || (mode === "idle" && text === "")}
+              disabled={off || (mode === "idle" && empty)}
+              {...(onSend ? { onClick: send } : {})}
             >
               送る
             </Button>
@@ -170,10 +237,20 @@ export interface ConvItem {
 }
 
 /** 左の会話の一覧。「＋ 新しく話す」は押せる・星と探すは押せない形。current が null なら新しい会話を始めた状態 */
-export function ConvList({ items, current }: { items: readonly ConvItem[]; current: string | null }) {
+export function ConvList({
+  items,
+  current,
+  onPick,
+  onNew,
+}: {
+  items: readonly ConvItem[];
+  current: string | null;
+  onPick?: (id: string) => void;
+  onNew?: () => void;
+}) {
   return (
     <nav aria-label="会話の一覧" className="k-room-convs">
-      <Button variant="primary" size="sm">
+      <Button variant="primary" size="sm" {...(onNew ? { onClick: () => onNew() } : {})}>
         ＋ 新しく話す
       </Button>
       <div className="k-room-convs-tools">
@@ -189,7 +266,12 @@ export function ConvList({ items, current }: { items: readonly ConvItem[]; curre
       {items.map((c, i) => (
         <Fragment key={c.id}>
           {c.group && c.group !== items[i - 1]?.group ? <p className="k-room-conv-group">{c.group}</p> : null}
-          <button type="button" className="k-room-conv" {...(c.id === current ? { "aria-current": "true" } : {})}>
+          <button
+            type="button"
+            className="k-room-conv"
+            {...(c.id === current ? { "aria-current": "true" } : {})}
+            {...(onPick ? { onClick: () => onPick(c.id) } : {})}
+          >
             <b>{c.title}</b>
             <span>{c.sub}</span>
           </button>
@@ -214,17 +296,22 @@ export function TalkStart({ name, noPc = false }: { name: string; noPc?: boolean
   }
   return (
     <div className="k-room-empty">
-      <h2>{ph(`${name}に、`, "何でも", "話せます")}</h2>
+      <h2>{ph(`${name} に、`, "何でも", "話せます")}</h2>
       <p>考えを整理したいこと・段取り・文章の下書きなど。言葉にすると、AI が一緒に考えます</p>
     </div>
   );
 }
 
 /** スマホの会話の頭：「‹」（一覧へ戻る）と会話の題。PC の幅では出さない */
-function ChatBar({ title, name }: { title: string; name: string }) {
+function ChatBar({ title, name, onBack }: { title: string; name: string; onBack?: () => void }) {
   return (
     <div className="k-room-chat-bar">
-      <button type="button" className="k-room-back" aria-label="会話の一覧へ戻る">
+      <button
+        type="button"
+        className="k-room-back"
+        aria-label="会話の一覧へ戻る"
+        {...(onBack ? { onClick: () => onBack() } : {})}
+      >
         <ChevronLeft size={20} aria-hidden="true" />
       </button>
       <div className="k-room-chat-title">
@@ -244,6 +331,12 @@ export function TalkBody({
   composer,
   notice,
   mview = "chat",
+  notFound = false,
+  main,
+  onPick,
+  onNew,
+  onBack,
+  onTop,
 }: {
   name: string;
   convs: readonly ConvItem[];
@@ -253,19 +346,34 @@ export function TalkBody({
   /** 止まった理由・PC がまだ などの帯（書く欄の上） */
   notice?: ReactNode;
   mview?: "list" | "chat";
+  /** 開いた会話が無い（消した・古いリンク）。一覧は残す */
+  notFound?: boolean;
+  /** 会話の場所に出す物（読み込み中・読めない箱）。在れば会話の代わりに出す */
+  main?: ReactNode;
+  onPick?: (id: string) => void;
+  onNew?: () => void;
+  /** スマホの「‹」（一覧へ戻る） */
+  onBack?: () => void;
+  /** 人が上の端まで巻いた（古い行を読む） */
+  onTop?: () => void;
 }) {
   const title = current === null ? "新しい会話" : (convs.find((c) => c.id === current)?.title ?? "会話");
   return (
     <div className="k-room-talk" data-mview={mview}>
-      <ConvList items={convs} current={current} />
+      <ConvList items={convs} current={current} {...(onPick ? { onPick } : {})} {...(onNew ? { onNew } : {})} />
       <section className="k-room-chat" aria-label="会話">
-        <ChatBar title={title} name={name} />
+        <ChatBar title={title} name={name} {...(onBack ? { onBack } : {})} />
         <p className="k-room-aside">{ROOM_ONLY}</p>
-        {entries.length === 0 ? (
-          <TalkStart name={name} noPc={composer.mode === "no-pc"} />
-        ) : (
-          <Thread entries={entries} />
-        )}
+        {main ??
+          (notFound ? (
+            <div className="k-room-empty">
+              <h2>この会話はありません</h2>
+            </div>
+          ) : entries.length === 0 ? (
+            <TalkStart name={name} noPc={composer.mode === "no-pc"} />
+          ) : (
+            <Thread entries={entries} {...(onTop ? { onTop } : {})} />
+          ))}
         {notice}
         <ChatComposer {...composer} />
       </section>

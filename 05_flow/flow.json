@@ -8874,7 +8874,7 @@
     "R3",
     "R4"
    ],
-   "route": "/ai/chat",
+   "route": "/ai/talk",
    "release": "v1",
    "milestone": 1,
    "needs_login": true,
@@ -8980,7 +8980,7 @@
     "R2",
     "R3"
    ],
-   "route": "/ai-staff/activity",
+   "route": "/ai",
    "release": "v1",
    "milestone": 1,
    "needs_login": true,
@@ -11038,8 +11038,8 @@
     "label": "（名前）のAI",
     "icon": "bot",
     "screens": [
-     "clone-chat",
      "ai-activity",
+     "clone-chat",
      "work-types",
      "rules"
     ],
@@ -11292,8 +11292,8 @@
    "R1": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
+    "clone-chat",
     "work-types",
     "rules",
     "knowledge",
@@ -11311,8 +11311,8 @@
    "R2": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
+    "clone-chat",
     "work-types",
     "rules",
     "knowledge",
@@ -11332,8 +11332,8 @@
    "R3": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
+    "clone-chat",
     "work-types",
     "rules",
     "knowledge",

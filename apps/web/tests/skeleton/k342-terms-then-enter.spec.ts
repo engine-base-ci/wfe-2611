@@ -55,7 +55,7 @@ const mfaPending = async (userId: string): Promise<boolean[]> =>
     )
   ).map((x) => x.p);
 
-/** ログインの画面から入り、チャットの画面を開くと同意し直しの画面に止まる（next=/ai/chat） */
+/** ログインの画面から入り、守られた画面（預けたログイン情報）を開くと同意し直しの画面に止まる（next=/settings/credentials・K-762 で /ai/chat から替えた） */
 async function loginToTerms(page: Page, email: string): Promise<void> {
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(email);
@@ -68,9 +68,9 @@ async function loginToTerms(page: Page, email: string): Promise<void> {
   // ログインの後の移り（同意し直しの画面へ）が終わるのを待ってから次を開く（移りの途中の goto は取り合う）
   await expect(page).toHaveURL(TERMS_STEP, { timeout: 30_000 });
   await expect(termsHeading).toBeVisible();
-  await page.goto("/ai/chat");
-  await expect(page, "同意の前にチャットを開くと、同意し直しの画面に戻る（next=/ai/chat）").toHaveURL(
-    /\/login\?step=terms&next=%2Fai%2Fchat/,
+  await page.goto("/settings/credentials");
+  await expect(page, "同意の前に守られた画面を開くと、同意し直しの画面に戻る（next=/settings/credentials）").toHaveURL(
+    /\/login\?step=terms&next=%2Fsettings%2Fcredentials/,
     { timeout: 15_000 },
   );
   await expect(termsHeading).toBeVisible();
@@ -136,9 +136,9 @@ test("K342-UI-001 同意して中へ移る前に印を下ろすと、移った�
     gate.open();
 
     await page.waitForLoadState("networkidle");
-    await page.goto("/ai/chat"); // 移った先の答えで /mfa-setup へ移り始めていれば、ここが取り合って止まる
+    await page.goto("/settings/credentials"); // 移った先の答えで /mfa-setup へ移り始めていれば、ここが取り合って止まる
     await page.waitForLoadState("networkidle");
-    await expect(page).toHaveURL(/\/(ai\/chat|setup\/bridge)$/);
+    await expect(page).toHaveURL(/\/(settings\/credentials|setup\/bridge)$/);
     expect(mfaBlocked, "移った先の口は 403・MFA_REQUIRED を返さない").toEqual([]);
     expect(
       navigations.filter((p) => p === "/mfa-setup"),

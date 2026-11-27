@@ -57,7 +57,7 @@ test("USH-00-014 入っている人（PC 接続済み）が / を開くと 今�
   await page.goto("/");
   // 今日（T-U-13）がまだ無い間は、ある画面へ送る。入口が 404 に送ると行き止まりの輪になる（D-086.6）
   const { isBuilt } = await import("../lib/built-routes");
-  const want = isBuilt("/today") ? /\/today$/ : /\/ai\/chat$/;
+  const want = isBuilt("/today") ? /\/today$/ : /\/ai\/talk(\?.*)?$/; // K-762：今日が無い間の行き先は /ai/talk
   await page.waitForURL(want, { timeout: 20_000 });
   expect(page.url()).toMatch(want);
   const again = await page.reload(); // 行き先は本当に開く（404 の中身でない）。状態は 200 で見る（描画待ちに頼らない）
@@ -96,7 +96,7 @@ test("USH-00-027 アプリの枠のナビに、まだ作っていない画面へ
   const u = await signupViaApi();
   await setupDone(u);
   await loginAs(page, u.token);
-  await page.goto("/ai/chat");
+  await page.goto("/dev/shell?screen=today&role=R1&ps=PS3"); // K-762：前の枠（aside.side）を持つ画面は /ai/chat を消した後は見本の画面だけ
   await page.waitForSelector("aside.side");
   // 折り畳みの中も DOM にはある（hidden）。開かずに全部読む（開く操作は USH-00-005 で押している）
   const hrefs = (await page

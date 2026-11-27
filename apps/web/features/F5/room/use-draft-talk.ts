@@ -18,7 +18,7 @@ import { catalogText, editedOf, passedText, type DraftNow } from "./draft-words"
 import { itemsOf, type ProposalInput } from "./proposal-apply";
 import type { ComposerMode, Entry } from "./talk";
 import { openTalkStream } from "./talk-stream";
-import { toEntries } from "./talk-words";
+import { jstDay, toEntries, type MessageView as TalkMessage, type WorkView } from "./talk-words";
 
 const SCREEN = "tickets";
 
@@ -88,7 +88,8 @@ function entriesOf(v: ConversationView | null): Entry[] {
   if (!v) return [];
   const msgs = (v.messages ?? []) as unknown as MessageView[];
   const passed = new Map(msgs.map((m) => [m.id ?? "", passedText(m.passed)] as const));
-  const base = toEntries(v).map((e: Entry) => {
+  const work = (v.work ?? null) as unknown as WorkView | null;
+  const base = toEntries(msgs as unknown as TalkMessage[], work, jstDay(new Date().toISOString())).map((e: Entry) => {
     if (e.kind !== "msg") return e;
     const p = passed.get(e.msg.id);
     return p ? { ...e, msg: { ...e.msg, passed: p } } : e;
@@ -132,14 +133,14 @@ export function useDraftTalk({ noPc = false }: { noPc?: boolean } = {}): DraftTa
     if (r?.ok && idRef.current === id) setView(r.data);
   }, []);
 
-  // 流れ：開いている会話ごとに 1 本（最初の ready では読み直さない・K-762 の決め）
+  // 流れ：開いている会話ごとに 1 本（最初の ready では読み直さない・2 回目からの ready と change は onRefresh・K-762 の talk-stream の形）
   useEffect(() => {
     if (!convId) return;
     return openTalkStream(convId, {
-      onReady: () => void read(convId),
-      onChange: () => void read(convId),
+      onRefresh: () => void read(convId),
       onDown: () => void read(convId),
-      onEnd: () => undefined,
+      onLive: () => undefined,
+      onSignedOut: () => undefined,
     });
   }, [convId, read]);
 
