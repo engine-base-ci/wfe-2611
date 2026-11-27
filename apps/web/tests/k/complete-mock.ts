@@ -53,7 +53,10 @@ export const task = (t: string, checked: unknown = false, nested: Node[] = []): 
 export const taskList = (items: Node[]): Node => ({ type: "taskList", content: items });
 export const docOf = (...blocks: Node[]): Node => ({ type: "doc", content: blocks });
 /** 本文の素の字（口が docToText で作る物の代わり。この試験では見ない） */
-const textOf = (_doc: Node): string => "本文";
+const textOf = (_doc: Node): string => {
+  void _doc;
+  return "本文";
+};
 
 /** K-566 の数え方（口と画面が同じ定義）：taskItem で attrs.checked が真偽の true でない物の数（入れ子も数える・段落の字の「[ ]」は数えない） */
 export function serverCount(node: unknown): number {

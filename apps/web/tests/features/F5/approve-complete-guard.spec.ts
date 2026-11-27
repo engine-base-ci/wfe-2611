@@ -18,7 +18,6 @@ import {
   openComplete,
   dialog,
   bandOf,
-  k62Band,
   reasonBox,
   openReturn,
   type Band,
