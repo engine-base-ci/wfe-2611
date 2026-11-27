@@ -199,6 +199,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
       // 上げる頼み（kind の候補の先頭 raise）はページだけを指す（check knowledge_requests_target：raise はフォルダを持たない・K-687）
       else if (t === "knowledge_requests" && x.col === "folder_id") row[x.col] = null;
+      // 請求書の型の登録番号は check（T と 13 桁）が守る（K-1107）。"seed" では入らない
+      else if (t === "ops_invoice_templates" && x.col === "reg_no") row[x.col] = "T1234567890123";
       // ゲストのグループに入れるのは役割 requester の人だけ（引き金 app.guest_same_tenant・K-876）。代表ではなく先に作ったゲストを使う
       else if (t === "guest_group_members" && x.col === "member_id")
         row[x.col] = guestPool.get(tenant)?.shift() ?? bossOf(which);

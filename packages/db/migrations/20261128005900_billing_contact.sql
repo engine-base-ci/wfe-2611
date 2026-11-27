@@ -31,9 +31,9 @@ begin
 
   update tenants set billing_contact = v_new where id = v_tenant;
 
-  if v_prev->>'company' is distinct from p_company then v_fields := v_fields || 'company'; end if;
-  if v_prev->>'attn' is distinct from p_attn then v_fields := v_fields || 'attn'; end if;
-  if v_prev->>'email' is distinct from p_email then v_fields := v_fields || 'email'; end if;
+  if v_prev->>'company' is distinct from p_company then v_fields := v_fields || 'company'::text; end if;
+  if v_prev->>'attn' is distinct from p_attn then v_fields := v_fields || 'attn'::text; end if;
+  if v_prev->>'email' is distinct from p_email then v_fields := v_fields || 'email'::text; end if;
 
   insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, sent_at, created_by)
   select v_tenant, tm.member_id, 'inapp', 'billing.contact_changed', '{}'::jsonb, now(), v_me

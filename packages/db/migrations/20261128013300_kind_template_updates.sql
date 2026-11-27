@@ -174,7 +174,7 @@ create or replace function app.template_update_require() returns void
 language plpgsql stable security definer set search_path = public, app, pg_temp as $$
 begin
   if app.user_id() is null or app.tenant_id() is null or not app.member_ok()
-     or not has_permission(app.user_id(), 'tenants', null, 'admin') then
+     or not app.is_admin(app.user_id()) then
     raise exception '会社の管理者だけが選べる' using errcode = 'insufficient_privilege';
   end if;
 end $$;

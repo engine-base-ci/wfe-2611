@@ -55,7 +55,12 @@ export async function startOpsTemplates(prefix: string, hookFiles: readonly stri
   const versionsBefore = new Set(
     (await t.f.admin.query<{ id: string }>("select id from distribution_versions")).rows.map((r) => r.id),
   );
-  afterAll(async () => {
+  // 戻しは close の中で流す（beforeAll の中で呼ばれた afterAll は vitest に登録されず、版が共用の DB に残って
+  //   次の会社の種まきが同じ名前の種別を 2 つ入れていた・統合の枝の CI）。afterAll は外から直に呼ばれたときのため残す
+  let restored = false;
+  const restore = async (): Promise<void> => {
+    if (restored) return;
+    restored = true;
     for (const r of before.rows)
       await t.f.admin.query("update distributions set current_version = $2 where id = $1", [r.id, r.current_version]);
     const added = (await t.f.admin.query<{ id: string }>("select id from distribution_versions")).rows
@@ -63,7 +68,8 @@ export async function startOpsTemplates(prefix: string, hookFiles: readonly stri
       .filter((id) => !versionsBefore.has(id));
     if (added.length) await t.f.admin.query("delete from distribution_versions where id = any($1::uuid[])", [added]);
     // 運営の記録・会社の記録・安全の記録（ops_audit_events・audit_events・security_events）は追記専用（0003_audit.sql の引き金）なので消さない。試験は前の数との差かその回の印で絞って数える
-  });
+  };
+  afterAll(restore);
 
   const dist: OpsTemplates["dist"] = async (part) => {
     const d = (await t.row<{ id: string; current_version: number }>(
@@ -99,5 +105,9 @@ export async function startOpsTemplates(prefix: string, hookFiles: readonly stri
         where td.tenant_id = $1 and d.key = $2 and td.deleted_at is null`,
       [tenantId, part],
     );
-  return { ...t, dist, addVersion, hashOf, itemOf, kindRow, tenantDist };
+  const close: OpsTemplates["close"] = async () => {
+    await restore();
+    await t.close();
+  };
+  return { ...t, close, dist, addVersion, hashOf, itemOf, kindRow, tenantDist };
 }
