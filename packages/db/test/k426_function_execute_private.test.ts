@@ -26,7 +26,6 @@ const INNER = [
   "app.bridge_pair_new(uuid, uuid)",
   "app.bridge_dev_claim(uuid, text)",
   "app.bridge_claim(text, text)",
-  "app.memory_reviewer(uuid, uuid, uuid)",
   "app.agent_tool_audit(uuid, uuid, text, text, uuid, jsonb)",
   "app.agent_unit(uuid, uuid, text)",
   "app.ticket_basics(uuid)",

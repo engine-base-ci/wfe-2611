@@ -312,6 +312,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     new Set(Object.keys(explicit)),
   );
   await seedKnowledgeForStaff(c, generic, { tenantA, scopeDeptA, staffA });
+  const notices = await withFreshNotices(c, generic);
   return {
     tenantA,
     tenantB,
@@ -321,7 +322,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     scopeDeptA,
     opsId,
     opsTenant,
-    rows: { ...generic, ...explicit },
+    rows: { ...generic, ...notices, ...explicit },
   };
 }
 
@@ -346,4 +347,39 @@ async function seedKnowledgeForStaff(
   }
   const req = rows["knowledge_requests"]?.visible;
   if (req) await c.query("update knowledge_requests set requested_by = $1 where id = $2", [b.staffA, req]);
+}
+
+/** 1 つのお知らせに 1 人 1 行（一意 notice_deliveries_member_uq・K-954）。見本の行を足すたびに、種のお知らせの写しを 1 つずつ使う */
+const FRESH_NOTICES = 8;
+async function withFreshNotices(
+  c: pg.PoolClient,
+  rows: Record<string, Seeded["rows"][string]>,
+): Promise<Record<string, Seeded["rows"][string]>> {
+  const nd = rows["notice_deliveries"];
+  const seedNotice = rows["notices"]?.visible;
+  if (!nd?.insert || !seedNotice) return {};
+  const cols = (
+    await c.query<{ col: string }>(
+      "select column_name as col from information_schema.columns where table_schema = 'public' and table_name = 'notices' and column_name <> 'id' and is_generated <> 'ALWAYS'",
+    )
+  ).rows
+    .map((r) => `"${r.col}"`)
+    .join(", ");
+  const pool: string[] = [];
+  for (let i = 0; i < FRESH_NOTICES; i++)
+    pool.push(
+      (
+        await c.query<{ id: string }>(
+          `insert into notices (${cols}) select ${cols} from notices where id = $1 returning id`,
+          [seedNotice],
+        )
+      ).rows[0]!.id,
+    );
+  const base = nd.insert;
+  return {
+    notice_deliveries: {
+      ...nd,
+      insert: (tenant: string) => ({ ...base(tenant), ...(pool.length ? { notice_id: pool.shift() } : {}) }),
+    },
+  };
 }
