@@ -3,7 +3,7 @@
 //   前の「チケットの形（区画を足す）」は無い（本文が自由な 1 枚になったので要らない）。
 //   見た目だけ（値は props・口は呼ばない）
 import { Check, GripVertical, Plus } from "lucide-react";
-import type { MouseEvent, ReactNode } from "react";
+import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode } from "react";
 import { Badge, Button, Loading, NoticeBox, Select, Tabs, TextField } from "@/components/k";
 import type { Block, Doc } from "@kaname/contracts";
 import { DocEditor } from "@/features/F4/doc/editor";
@@ -263,15 +263,147 @@ export interface StageRow {
   locked?: string;
 }
 
-export function StagesPanel({ stages, editing }: { stages: readonly StageRow[]; editing: string }) {
+/** 直している行の値と動き（K-708 が渡す） */
+export interface StageDraftLive {
+  name: string;
+  tone: Tone;
+  /** 名前の欄の下の赤字 */
+  nameError?: string | undefined;
+  /** 保存できる（変えた所がある・答えを待っていない） */
+  canSave: boolean;
+  onName: (v: string) => void;
+  onTone: (t: Tone) => void;
+}
+
+/** 状態の欄の動き（K-708 が渡す。渡さない呼び方（モック）は今の見た目のまま） */
+export interface StagesLive {
+  draft?: StageDraftLive | undefined;
+  onEdit: (id: string) => void;
+  onCancel: () => void;
+  onSave: () => void;
+  onDelete: (id: string) => void;
+  onAdd: () => void;
+  /** キーボードでつかんでいる行 */
+  grabbed?: string | undefined;
+  /** 並べ替えの答えを待つ間（つまみは押せない） */
+  gripBusy: boolean;
+  /** つまみの動き：Enter でつかむ・↑↓ で動かす・Enter で落とす・Esc で戻す */
+  onGrab: (id: string) => void;
+  onMove: (id: string, by: -1 | 1) => void;
+  onDrop: (id: string) => void;
+  onRelease: () => void;
+  /** マウスで掴んで落とす（落とした行と、その下半分か） */
+  onDragStart: (id: string) => void;
+  onDropOn: (targetId: string, after: boolean) => void;
+}
+
+const GRIP_KEYS = new Set(["Enter", " ", "ArrowUp", "ArrowDown", "Escape"]);
+
+function gripProps(s: StageRow, live: StagesLive | undefined) {
+  if (!live) return {};
+  if (s.locked) return { "aria-disabled": true as const, title: s.locked, draggable: false };
+  const held = live.grabbed === s.id;
+  return {
+    "data-stage-grip": s.id,
+    "aria-pressed": held,
+    disabled: live.gripBusy,
+    draggable: !live.gripBusy,
+    onDragStart: (e: DragEvent<HTMLButtonElement>) => {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", s.id);
+      live.onDragStart(s.id);
+    },
+    onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
+      if (!GRIP_KEYS.has(e.key)) return;
+      if (!held && e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.key === "Enter" || e.key === " ") return held ? live.onDrop(s.id) : live.onGrab(s.id);
+      if (e.key === "Escape") return live.onRelease();
+      live.onMove(s.id, e.key === "ArrowUp" ? -1 : 1);
+    },
+  };
+}
+
+function dropProps(id: string, live: StagesLive | undefined) {
+  if (!live) return {};
+  return {
+    onDragOver: (e: DragEvent<HTMLLIElement>) => e.preventDefault(),
+    onDrop: (e: DragEvent<HTMLLIElement>) => {
+      e.preventDefault();
+      const r = e.currentTarget.getBoundingClientRect();
+      live.onDropOn(id, e.clientY > r.top + r.height / 2);
+    },
+  };
+}
+
+function StageEdit({ s, live }: { s: StageRow; live: StagesLive | undefined }) {
+  const d = live?.draft;
+  if (!live || !d) {
+    return (
+      <div className="k-f9s-stage-edit">
+        <TextField label="名前" name="stage_name" value={s.name} readOnly required />
+        <ColorPick value={s.tone} name="stage_tone" />
+        <div className="k-f9s-acts">
+          <Button variant="outlined">やめる</Button>
+          <Button>保存する</Button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <form
+      className="k-f9s-stage-edit"
+      aria-label={`状態「${s.name}」を直す`}
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (d.canSave) live.onSave();
+      }}
+    >
+      <TextField
+        label="名前"
+        name="stage_name"
+        value={d.name}
+        required
+        error={d.nameError}
+        onChange={(e) => d.onName(e.target.value)}
+      />
+      <ColorPick value={d.tone} name="stage_tone" onChange={d.onTone} />
+      <div className="k-f9s-acts">
+        <Button variant="outlined" onClick={live.onCancel}>
+          やめる
+        </Button>
+        <Button type="submit" disabled={!d.canSave}>
+          保存する
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function StagesPanel({
+  stages,
+  editing,
+  live,
+}: {
+  stages: readonly StageRow[];
+  editing: string;
+  live?: StagesLive | undefined;
+}) {
   return (
     <div className="k-f9s-stack">
       <p className="k-f9s-hint">上から順に、チケットの状態を選ぶ所に並びます。左のつまみで並べ替えます。</p>
       <ol className="k-f9s-stages" aria-label="状態">
         {stages.map((s) => (
-          <li key={s.id} className="k-f9s-stage" data-editing={s.id === editing || undefined}>
+          <li
+            key={s.id}
+            className="k-f9s-stage"
+            data-editing={s.id === editing || undefined}
+            {...dropProps(s.id, live)}
+          >
             <div className="k-f9s-stage-row">
-              <button type="button" className="k-f9s-grip" aria-label={`${s.name}を並べ替える`}>
+              <button type="button" className="k-f9s-grip" aria-label={`${s.name}を並べ替える`} {...gripProps(s, live)}>
                 <GripVertical size={16} aria-hidden="true" />
               </button>
               <span className="k-f9s-pill" data-tone={s.tone}>
@@ -280,7 +412,12 @@ export function StagesPanel({ stages, editing }: { stages: readonly StageRow[]; 
               {s.locked ? <span className="k-f9s-lock">{s.locked}</span> : null}
               <span className="k-f9s-stage-acts">
                 {s.id === editing ? null : (
-                  <Button variant="outlined" size="sm" aria-label={`${s.name}を直す`}>
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    aria-label={`${s.name}を直す`}
+                    {...(live ? { onClick: () => live.onEdit(s.id) } : {})}
+                  >
                     直す
                   </Button>
                 )}
@@ -288,27 +425,22 @@ export function StagesPanel({ stages, editing }: { stages: readonly StageRow[]; 
                   variant="ghost"
                   size="sm"
                   aria-label={`${s.name}を消す`}
-                  {...(s.locked ? { "aria-disabled": true, tabIndex: -1, title: s.locked } : {})}
+                  {...(s.locked
+                    ? { "aria-disabled": true, tabIndex: -1, title: s.locked }
+                    : live
+                      ? { onClick: () => live.onDelete(s.id) }
+                      : {})}
                 >
                   消す
                 </Button>
               </span>
             </div>
-            {s.id === editing ? (
-              <div className="k-f9s-stage-edit">
-                <TextField label="名前" name="stage_name" value={s.name} readOnly required />
-                <ColorPick value={s.tone} name="stage_tone" />
-                <div className="k-f9s-acts">
-                  <Button variant="outlined">やめる</Button>
-                  <Button>保存する</Button>
-                </div>
-              </div>
-            ) : null}
+            {s.id === editing ? <StageEdit s={s} live={live} /> : null}
           </li>
         ))}
       </ol>
       <div>
-        <Button variant="outlined" size="sm" icon={<Plus size={14} />}>
+        <Button variant="outlined" size="sm" icon={<Plus size={14} />} {...(live ? { onClick: live.onAdd } : {})}>
           状態を足す
         </Button>
       </div>

@@ -3,7 +3,9 @@
 import type { ComponentType } from "react";
 import { KindsContainer, type SettingsPanelProps } from "./kinds-container";
 import type { SettingsTabKey } from "./settings-tabs";
+import { StagesContainer } from "./stages-container";
 
 export const TAB_PANELS: Partial<Record<SettingsTabKey, ComponentType<SettingsPanelProps>>> = {
   kinds: KindsContainer,
+  stages: StagesContainer,
 };
