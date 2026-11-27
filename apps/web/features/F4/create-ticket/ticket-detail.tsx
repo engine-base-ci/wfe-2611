@@ -278,6 +278,7 @@ function DetailView({
                   run={runs.current}
                   onRun={runs.follow}
                   onChanged={changed}
+                  slot={st}
                 />
                 <F8.HandoverBandSlot
                   ticket={st}

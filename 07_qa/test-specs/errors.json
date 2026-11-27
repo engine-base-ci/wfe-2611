@@ -7335,6 +7335,208 @@
    ]
   },
   {
+   "id": "E-HND-080",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "同じ渡しを、今日（日本の日付）もう催促した",
+   "false_when": "まだ催促していない渡し・前の催促が昨日以前",
+   "message": "今日はもう催促しました",
+   "action": "明日もう一度押す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分が渡して待っている渡しがある（人宛て）",
+    "steps": [
+     "渡し中の帯の「催促する」を押す",
+     "もう一度「催促する」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.8"
+   ]
+  },
+  {
+   "id": "E-HND-081",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "申し出・グループに配った渡しを催促する",
+   "false_when": "人宛ての引き継ぎ・合意ありで人に配った渡しを催促する",
+   "message": "この渡しは催促できません",
+   "action": "取り消すか、返事を待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分が申し出た・グループに配った待っている渡しがある",
+    "steps": [
+     "申し出（担当者への引き取りの申し出）かグループ宛ての渡しに「催促する」を送る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.8",
+    "D-148.12"
+   ]
+  },
+  {
+   "id": "E-HND-130",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "閲覧のみの人・ゲストを配る相手に選んだ",
+   "false_when": "相手が書ける人",
+   "message": "閲覧のみの人・ゲストには配れません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に閲覧のみの人を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18"
+   ]
+  },
+  {
+   "id": "E-HND-131",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "今の担当者を配る相手に選んだ",
+   "false_when": "相手が今の担当者でない",
+   "message": "この人はもう担当者です",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に今の担当者を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18",
+    "D-148.3"
+   ]
+  },
+  {
+   "id": "E-HND-150",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "人を決めるで、同じ会社でグループ（と下のグループ）の外の人を選んだ",
+   "false_when": "グループの中の人を選んだ",
+   "message": "このグループの人を選んでください",
+   "action": "グループの人を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "「人を決める」でグループの外の人を選ぶ（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.19",
+    "D-125.118"
+   ]
+  },
+  {
+   "id": "E-HND-151",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "人を決めるで、止まっている人・招待中の人・閲覧のみの人・依頼する側の人を選んだ",
+   "false_when": "使える状態の人を選んだ",
+   "message": "この人は担当者にできません。止まっている人・閲覧のみの人は選べません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "「人を決める」で止まっている人を選ぶ（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.19",
+    "D-125.118"
+   ]
+  },
+  {
+   "id": "E-HND-152",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "グループに配られた渡しを答える口で断った",
+   "false_when": "受ける（自分が持つ）か、人を決めた",
+   "message": "グループに配られたものは断れません。自分が持つか、人を決めてください",
+   "action": "自分が持つか、人を決める",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "断る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.17",
+    "D-125.92"
+   ]
+  },
+  {
    "id": "E-INV-009",
    "class": "validation",
    "where": {
@@ -8120,6 +8322,35 @@
    ]
   },
   {
+   "id": "E-NTF-010",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "notifications"
+   },
+   "when": "自分宛てで一覧に出る知らせでない（別の人・別の会社・もう無い・行き先のチケットが見えなくなった）",
+   "false_when": "自分宛ての一覧に出ている知らせ",
+   "message": "このお知らせは見つかりませんでした",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "鈴を押して知らせの一覧を開く",
+    "steps": [
+     "別の人宛ての知らせの id で PATCH /api/v1/notifications/:id を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.3"
+   ]
+  },
+  {
    "id": "E-SRC-001",
    "class": "validation",
    "where": {
@@ -8442,6 +8673,67 @@
    "severity": "low",
    "source": [
     "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-020",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員向けの保存した条件の見せる相手（share か scope_id）を、作った人でない人（そのグループのマネージャー）が今と違う値に変えようとした",
+   "false_when": "作った人が変える・今と同じ値を添えただけ・名前や条件や列や詰め方だけを直す",
+   "message": "見せる相手を変えられるのは、作った人だけです",
+   "action": "名前や条件だけを直す（見せる相手は作った人に頼む）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "グループのマネージャーとして、作った人の「グループの全員」に見せている条件を開く",
+     "画面を通さずに口を直に呼び、見せる相手を「自分だけ」に変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.119",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-021",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員に見せている条件で、share は送らずに scope_id だけを null にした（結果が「グループの全員で見せるグループが無い」になる）",
+   "false_when": "share を「自分だけ」にして一緒に scope_id を null にする・scope_id を別のグループに変える",
+   "message": "グループの全員に見せている条件から、見せるグループは外せません。先に「自分だけ」に変えてください",
+   "action": "先に「自分だけ」に変える",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "「グループの全員」に見せている保存した条件を持つ",
+     "画面を通さずに口を直に呼び、見せるグループだけを外す（scope_id を null）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.119",
     "D-151.9"
    ]
   },
@@ -9029,6 +9321,122 @@
    "source": [
     "D-125.62",
     "D-129.43"
+   ]
+  },
+  {
+   "id": "E-DEL-040",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消した本人でも、そのグループのマネージャー・管理者でもない人が、消したチケットを戻した",
+   "false_when": "消した本人か、そのグループのマネージャー・管理者が戻した",
+   "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+   "action": "消した人かマネージャーに頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "他の人が消したチケットを、書けるだけの人で開く",
+    "steps": [
+     "消したチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-041",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もう戻っている（消えていない）チケットを戻した・同時に別のタブが先に戻した",
+   "false_when": "消えているチケットを戻した",
+   "message": "このチケットはもう戻っています",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを消した直後の画面を 2 つのタブで開く",
+    "steps": [
+     "消した直後の「元に戻す」を 2 つのタブで同時に押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-042",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消してから 30 日を過ぎたチケットを戻した",
+   "false_when": "消してから 30 日以内のチケットを戻した",
+   "message": "消してから 30 日を過ぎているので、もう戻せません",
+   "action": "戻せないので、必要なら新しく作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "30 日より前に消したチケットがある状態にする",
+    "steps": [
+     "30 日を過ぎて消えたままのチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-128.116"
+   ]
+  },
+  {
+   "id": "E-DEL-043",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "親が消えている子を戻した",
+   "false_when": "親が消えていない子を戻した",
+   "message": "このチケットの親が消えています。先に親を戻してください",
+   "action": "親を先に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を消した後で、その親も消した状態にする",
+    "steps": [
+     "親を消した後に、先に消していた子の「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
    ]
   },
   {

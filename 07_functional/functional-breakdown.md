@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-26
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-27
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -53,7 +53,7 @@
 | E-036 | `triggers` | 5. 実行・統制 | scope_layered | 3 | D-010 |
 | E-037 | `policies` | 5. 実行・統制 | scope_layered | 3 | D-060 |
 | E-038 | `approvals` | 5. 実行・統制 | scope_layered | 4 | D-010 |
-| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
+| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 D-151.6 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
@@ -151,10 +151,10 @@
 | E-132 | `passkeys` | 16. 第1フェーズの表 | none | 1 | D-125 D-125.137 D-128 D-128.119 |
 | E-133 | `operations` | 16. 第1フェーズの表 | ops_scoped | 1 | D-125 D-126.19 D-126.2 D-128 |
 | E-135 | `ticket_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.50 D-128 D-128.80 |
-| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 D-155.37 |
 | E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
 | E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
+| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
@@ -229,7 +229,7 @@
 | onboard-testrun | テストで動かす | A11 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 1 | 0 | 1 | 10 | R1 R2 |
 | today | 今日 | A14 A55 A56 A92 | 1 | 0 | 4 | 6 | R1 R2 R3 R4 |
-| approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 16 | R1 R2 R3 |
+| approvals | 承認待ち | A15 A89 | 4 | 45 | 58 | 16 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
 | clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 78 | 22 | R1 R2 R3 R4 |
@@ -277,7 +277,7 @@
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
 | member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R1 R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 91 | 44 | R1 R2 R3 R4 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 96 | 44 | R1 R2 R3 R4 |
 | masters | 決まり | A118 A120 | 1 | 0 | 14 | 18 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |

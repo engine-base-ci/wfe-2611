@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。297 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。311 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4211,6 +4211,125 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "screen": "tickets"
     }
   },
+  "E-HND-080": {
+    "id": "E-HND-080",
+    "cls": "conflict",
+    "message": "今日はもう催促しました",
+    "action": "明日もう一度押す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-080",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-081": {
+    "id": "E-HND-081",
+    "cls": "conflict",
+    "message": "この渡しは催促できません",
+    "action": "取り消すか、返事を待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-081",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-130": {
+    "id": "E-HND-130",
+    "cls": "conflict",
+    "message": "閲覧のみの人・ゲストには配れません",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-130",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-131": {
+    "id": "E-HND-131",
+    "cls": "conflict",
+    "message": "この人はもう担当者です",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-131",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-150": {
+    "id": "E-HND-150",
+    "cls": "conflict",
+    "message": "このグループの人を選んでください",
+    "action": "グループの人を選び直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-150",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-151": {
+    "id": "E-HND-151",
+    "cls": "conflict",
+    "message": "この人は担当者にできません。止まっている人・閲覧のみの人は選べません",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-151",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-152": {
+    "id": "E-HND-152",
+    "cls": "conflict",
+    "message": "グループに配られたものは断れません。自分が持つか、人を決めてください",
+    "action": "自分が持つか、人を決める",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-152",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
   "E-INV-009": {
     "id": "E-INV-009",
     "cls": "validation",
@@ -4680,6 +4799,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "notifications"
     }
   },
+  "E-NTF-010": {
+    "id": "E-NTF-010",
+    "cls": "not_found",
+    "message": "このお知らせは見つかりませんでした",
+    "action": "一覧を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-NTF-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "notifications"
+    }
+  },
   "E-SRC-001": {
     "id": "E-SRC-001",
     "cls": "validation",
@@ -4867,6 +5004,41 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "must_not": false,
     "layers": [
       "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-020": {
+    "id": "E-VWS-020",
+    "cls": "permission",
+    "message": "見せる相手を変えられるのは、作った人だけです",
+    "action": "名前や条件だけを直す（見せる相手は作った人に頼む）",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-VWS-020",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-021": {
+    "id": "E-VWS-021",
+    "cls": "conflict",
+    "message": "グループの全員に見せている条件から、見せるグループは外せません。先に「自分だけ」に変えてください",
+    "action": "先に「自分だけ」に変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-021",
+    "must_not": false,
+    "layers": [
       "API"
     ],
     "where": {
@@ -5205,6 +5377,74 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-DEL-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-040": {
+    "id": "E-DEL-040",
+    "cls": "permission",
+    "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+    "action": "消した人かマネージャーに頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-040",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-041": {
+    "id": "E-DEL-041",
+    "cls": "conflict",
+    "message": "このチケットはもう戻っています",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-042": {
+    "id": "E-DEL-042",
+    "cls": "conflict",
+    "message": "消してから 30 日を過ぎているので、もう戻せません",
+    "action": "戻せないので、必要なら新しく作る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-043": {
+    "id": "E-DEL-043",
+    "cls": "conflict",
+    "message": "このチケットの親が消えています。先に親を戻してください",
+    "action": "親を先に戻す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-043",
     "must_not": false,
     "layers": [
       "UI",

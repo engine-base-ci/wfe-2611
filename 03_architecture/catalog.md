@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 373（作った 106・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 297・部品 70・設定 41
+API 376（作った 115・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 311・部品 70・設定 41
 
 ## 共通の処理
 
@@ -33,7 +33,7 @@ API 373（作った 106・後のフェーズの行為だけ 20）・前の道す
 | `apps/web/components/k/table` | Table | 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える） |
 | `apps/web/components/k/badge` | Badge | 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ） |
 | `apps/web/components/k/tabs` | Tabs | タブ（K-24・Base UI Tabs）。←→ で移り、選んだタブの中身だけを出す（読み上げは tablist / tab / tabpanel） |
-| `apps/web/components/k/notice` | Callout, Toaster, useNotify | 知らせ（K-24）。2 つ： |
+| `apps/web/components/k/notice` | Callout, Toaster, dismissNotify, notify, useNotify | 知らせ（K-24）。2 つ： |
 | `apps/web/components/k/dialog` | Dialog, Confirm | ダイアログ（K-24・Base UI Dialog）。開くと中に動き、Esc で閉じ、閉じると押した所に戻る（Base UI が持つ） |
 | `apps/web/components/k/theme` | ThemeSwitch, applyTheme | 見た目の切り替え（D-128.55）。押すとその場で <html data-theme> を替え、cookie に残す（次に開いたときもサーバーが同じ見た目で出す） |
 | `apps/web/components/k/shell` | Shell | 外枠（K-25・キャンバスの左のバー・上の帯・右のパネル・スマホの下のタブ）。新しい画面は全部この中に置く |
@@ -348,7 +348,7 @@ API 373（作った 106・後のフェーズの行為だけ 20）・前の道す
 | `updateTicketBody` | PATCH /api/v1/tickets/:id/body | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-432 |
 | `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `listTicketItemChanges` | GET /api/v1/tickets/:id/item-changes | 取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る | F4 | 作った | K-433 |
-| `restoreTicketItems` | POST /api/v1/tickets/:id/item-changes/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-576 |
+| `restoreTicketItems` | POST /api/v1/tickets/:id/item-changes/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-576 |
 | `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children | F4 | 作った | K-59,K-441 |
 | `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
@@ -406,24 +406,27 @@ API 373（作った 106・後のフェーズの行為だけ 20）・前の道す
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-383 |
 | `markTicketTimelineSeen` | POST /api/v1/tickets/:id/timeline/seen | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-384 |
 | `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 作った | K-67,K-485 |
-| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分） | F7 | 作った | K-461 |
-| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |
-| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |
+| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分） | F7 | 作った | K-461,K-467 |
+| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-67,K-462,K-467 |
+| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-67,K-462,K-467 |
 | `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物） | F7 | 作った | K-67,K-475 |
 | `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-475 |
-| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
-| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
+| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-476 |
+| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-476 |
 | `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-477 |
-| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-67,K-468 |
-| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
+| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-67,K-468,K-471 |
+| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-465,K-466 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-488 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-487 |
-| `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
-| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-401 |
-| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-401 |
+| `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-489 |
+| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-68,K-401 |
+| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-68,K-401 |
+| `claimTicketHandover` | POST /api/v1/ticket_handovers/:id/claim | 作成・実行（ticket_handovers）— 上から配る（人・グループへ） | F8 | 作った | K-410 |
+| `remindTicketHandover` | POST /api/v1/ticket_handovers/:id/remind | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替 | F8 | 作った | K-406 |
+| `withdrawTicketHandover` | POST /api/v1/ticket_handovers/:id/withdraw | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-406 |
 | `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |
 | `listTicketHandovers` | GET /api/v1/tickets/:id/handovers | 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで） | F8 | 作った | K-405 |
-| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-401 |
+| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-68,K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |

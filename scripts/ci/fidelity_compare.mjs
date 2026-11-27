@@ -115,6 +115,24 @@ export function widthsFor(group, width) {
   return [width];
 }
 
+/** 幅ごとの絵（組の at・K-1301）：その幅で比べる絵とセレクタ。at[幅] が無ければ組の canvas と pairs のまま。
+ *  在れば絵は at の canvas、対は name・role・props などを組のまま、canvas と app のセレクタだけを at の pairs[name] に替えた写し（組は書き替えない）。
+ *  組の幅に無い幅・at の pairs に組の対が欠ける・知らない対は止める（設定の検査 fidelity_config.py が先に止めるが、道具も黙って比べない） */
+export function groupAt(group, width) {
+  if (!group.widths.includes(width)) throw new ArgError(`組 ${group.id} の幅に ${width} が無い（${group.widths.join("・")}）`);
+  const at = group.at?.[String(width)];
+  if (!at) return { canvas: group.canvas, pairs: group.pairs };
+  const names = group.pairs.map((p) => p.name);
+  const missing = names.filter((n) => !Object.hasOwn(at.pairs, n));
+  const unknown = Object.keys(at.pairs).filter((n) => !names.includes(n));
+  if (missing.length) throw new ArgError(`組 ${group.id} の幅 ${width} の at に対 ${missing.join("・")} が無い`);
+  if (unknown.length) throw new ArgError(`組 ${group.id} の幅 ${width} の at に知らない対 ${unknown.join("・")} が在る`);
+  return {
+    canvas: at.canvas,
+    pairs: group.pairs.map((p) => ({ ...p, canvas: at.pairs[p.name].canvas, app: at.pairs[p.name].app })),
+  };
+}
+
 /** 既定の出力の置き場（版に入らない・.gitignore の .qa/visual-fidelity/out/） */
 export const defaultOutDir = (id, width) => `.qa/visual-fidelity/out/${id}${width ? `-${width}` : ""}`;
 
