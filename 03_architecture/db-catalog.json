@@ -14,8 +14,8 @@
    "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
   },
   "acceptances": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "検収を作らない（D-155.44）。コードは使わない"
   },
   "account_event_items": {
    "class": "frozen",
@@ -94,20 +94,28 @@
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
   "client_contacts": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
   },
   "client_groups": {
-   "class": "internal",
-   "why": "口は無いがコードが使う（packages/contracts/src/registry.ts ほか）"
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
+  },
+  "client_request_messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
+  },
+  "client_request_messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
   },
   "client_requests": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
   "clients": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
   },
   "clones": {
    "class": "skeleton",
@@ -189,6 +197,14 @@
    "class": "frozen",
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
+  "guest_group_members": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
+  "guest_groups": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
   "handover_rules": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
@@ -222,12 +238,16 @@
    "why": "口は無いがコードが使う（apps/api/src/auth/ext.ts ほか）"
   },
   "kind_sections": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "本文が 1 枚になり、区画の形（見出し・必須・並び）を使わない（K-578・D-150.35）。口は読まない・書かない・消さない。DB の関数 2 つ（app.ticket_tool_read・app.bridge_finish_job）がまだ引く。表と行の扱いは段 10 が決める"
   },
   "knowledge_links": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "knowledge_folders": {
+   "class": "skeleton",
+   "why": "ナレッジの口が使う（K-674）"
   },
   "knowledge_page_versions": {
    "class": "skeleton",
@@ -552,6 +572,10 @@
   "ticket_imports": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_guest_shares": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）・K-881 のチケットの見せる相手"
   },
   "ticket_kinds": {
    "class": "skeleton",

@@ -25,6 +25,7 @@ import {
   stageKeyOf,
   team,
   ticket,
+  NO_SPEC,
   jobOf,
   messagesOf,
   approved,
@@ -347,7 +348,10 @@ describe("K-63 承認して完了する：実行の結末と「AI に任せて�
     expect(await flagOf(t.id)).toBe(false);
     expect(await canDelegate(boss, t.id)).toBe(true);
     // 人が改めて任せる：通り、印が立ち直る
-    const r = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(a.by) });
+    const r = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(a.by),
+    });
     expect(r.status, await r.clone().text()).toBe(201);
     expect(await flagOf(t.id)).toBe(true);
     expect(await stageKeyOf(t.id)).toBe("running");
@@ -458,7 +462,10 @@ describe("K-63 承認して完了する：実行の結末と「AI に任せて�
     // 本物の「AI に任せる」→ PC が作る段を中身のある結果で終える：承認待ちになり、印は true のまま（作る段の仕事の終わりでは下ろさない）
     const tm = await team("印を変えない：作る段の人");
     const made = await ticket();
-    const r = await req("POST", `/tickets/${made.id}/delegate`, { body: {}, headers: auth(tm.by) });
+    const r = await req("POST", `/tickets/${made.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(tm.by),
+    });
     expect(r.status, await r.clone().text()).toBe(201);
     const makeJob = String(((await json(r)).data as Record<string, unknown>)["job_id"]);
     expect((await take(tm.pc))?.id).toBe(makeJob);

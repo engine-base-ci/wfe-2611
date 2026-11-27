@@ -11,6 +11,7 @@ import { dedicatedBrowser } from "./browser";
 import { aiEntries, joinResponse, sessionFile, sizeOf } from "./transcript";
 import { runClaude, stopCurrent, type Answer, type Finish, type Guard, type Job } from "./runner";
 import { runLoginCheck } from "./login-check";
+import { runRequestDraft } from "./request-draft";
 import { label, phaseText, type Entry } from "./stream";
 import { BRIDGE_UA } from "./pairing";
 
@@ -166,15 +167,14 @@ export function startLoop(d: LoopDeps): () => void {
   const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
   const jobPath = (id: string, what: string) => `/v1/bridge/jobs/${encodeURIComponent(id)}/${what}`;
 
-  /** 結末を返す（K-62）。届かない・Kaname が一時的に落ちている（5xx）ときは、同じ冪等キーで送り直す（1 回分だけ入る）。
+  /** 仕事の結末の口へ送る（K-62 の finish・K-929 の案の結果）。届かない・Kaname が一時的に落ちている（5xx）ときは、同じ冪等キーで送り直す（1 回分だけ入る）。
    *  鍵が通らない（401／403／410）・仕事がもう無い（404）・形が違う（422）は送り直さない */
-  const finish = async (jobId: string, body: Record<string, unknown>): Promise<void> => {
-    const key = `finish-${jobId}`;
+  const sendResult = async (jobId: string, what: string, key: string, body: Record<string, unknown>): Promise<void> => {
     for (let i = 0; i < FINISH_TRIES && !stopped; i++) {
       const sid = d.sessionId();
       if (!sid) return;
       try {
-        const r = await fetch(`${d.apiBase}/api${jobPath(jobId, "finish")}`, {
+        const r = await fetch(`${d.apiBase}/api${jobPath(jobId, what)}`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -199,6 +199,8 @@ export function startLoop(d: LoopDeps): () => void {
       await sleep(FINISH_RETRY_MS[Math.min(i, FINISH_RETRY_MS.length - 1)]!);
     }
   };
+  const finish = (jobId: string, body: Record<string, unknown>): Promise<void> =>
+    sendResult(jobId, "finish", `finish-${jobId}`, body);
 
   // 道具の中継（K-62）：道具のサーバーは鍵だけを持ってここへ送る。PC の印は Bridge が足す。要るときに 1 回だけ起こす
   let relayJob: RelayJob | null = null;
@@ -280,6 +282,19 @@ export function startLoop(d: LoopDeps): () => void {
         state: r.state,
         detail: r.detail,
       });
+      state.working = null;
+      d.onChange({ ...state });
+      return 0;
+    }
+    // 届いた依頼の分身の案（K-929）：道具を全部止めて AI を 1 回起こし、結果を案の口へ返す。会話の道（途中経過・書きかけ・記録・finish）には入らない
+    if (job.kind === "client_request_draft") {
+      await runRequestDraft(
+        {
+          run: runClaude,
+          report: (body) => sendResult(job.job_id, "client-request-draft", `draft-${job.job_id}`, body),
+        },
+        job,
+      );
       state.working = null;
       d.onChange({ ...state });
       return 0;

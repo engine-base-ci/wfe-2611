@@ -25,7 +25,10 @@ import { useEffect, useState } from "react";
 import { Band, BandLine } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import { me } from "@/lib/auth/ext";
+import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
+import * as F7 from "@/features/F7/detail-slots";
+import { stoppedBy } from "@/features/F5/stop/stopped-box";
 import { useApprovalDetail } from "@/features/F5/approve-complete/decide";
 import {
   ChecksSlot,
@@ -68,6 +71,8 @@ interface Props {
   onRun: (runId: string) => Promise<void>;
   /** 段が変わっていた（承認待ち・完了）：チケットと実行を読み直す */
   onChanged: () => Promise<void>;
+  /** 差し込み口に渡す値（K-599・止まった箱ぜんたいの差し込み口 F7.StoppedHandSlot） */
+  slot: SlotTicket;
 }
 const MSG = {
   waking: "PC が起きるのを待っています",
@@ -180,7 +185,7 @@ function madeSub(checkSummary: string | null | undefined, noSpecReason: string |
   return [checkSummary ?? "", reason].filter(Boolean).join(" ・ ") || null;
 }
 
-export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
+export function DelegateBand({ ticket, run, onRun, onChanged, slot }: Props) {
   const qc = useQueryClient();
   const flow = useDelegateState(ticket.id);
   const noSpecReason = ticket.noSpecReason !== undefined ? ticket.noSpecReason : flow.info.noSpecReason;
@@ -192,12 +197,16 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   const awaiting = ticket.stageKey === "awaiting_approval";
   const closed = awaiting || ticket.stageKey === "done";
   const canDelegate = ticket.canDelegate && !active && !closed;
-  const showRun = making && !!run && !closed && (active || run.status === "stopped" || run.status === "cancelled");
+  const ended = run?.status === "stopped" || run?.status === "cancelled";
+  // 引き取った止まった実行（taken_over_at・K-485）は止まった箱を出さない（白い「AI に任せる」の箱が出る・K-599）
+  const showRun = making && !!run && !closed && !run.taken_over_at && (active || ended);
   const showMade = awaiting && !ticket.canDecide && ticket.hasAssignee;
   const approvalDetail = useApprovalDetail(showMade ? ticket.approvalId : null);
   // 任せる前の要約の名前：読めたらその名前、読めなかったら「自分」。読み終わるまでは要約を出さない
   const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: canDelegate, ...ONCE });
   const viewer = who.isSuccess ? who.data.display_name || "自分" : who.isError ? "自分" : null;
+  // 帯が画面から外れたら（別の頁へ・別のチケットへ）、知らせ・小窓・書きかけの理由を元に戻す（戻ってきたときに前の知らせを言い切らない）
+  useEffect(() => delegateFlow.show(ticket.id), [ticket.id]);
   // 任せられない形に替わったら（走り出した・段が変わった）、開いていた小窓も閉じる
   useEffect(() => {
     if (!canDelegate) delegateFlow.close(ticket.id);
@@ -215,6 +224,11 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
     if (showRun) clearBand(ticket.id);
   }, [showRun, ticket.id]);
 
+  /** 実行の一覧と今の実行を読み直してから、詳細を読み直す（止まった箱の差し込み口が書き込みの後に呼ぶ・K-599） */
+  const reload = async () => {
+    await qc.invalidateQueries({ queryKey: ["k62"] });
+    await onChanged();
+  };
   if (!canDelegate && !showRun && !showMade && !notice && !hasMore) return null;
   const stopped = showRun && !!run && !active;
   /** AI が動いている・承認待ちの間だけ data-busy（押している間の busy とは別・K-620） */
@@ -226,11 +240,28 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
       {notice ? <NoticeLine notice={notice} /> : null}
       {ownsTrail ? <TicketNotice ticketId={ticket.id} /> : null}
       {showRun && run && stopped ? (
-        // 止まった帯の箱と確認の結果の表は 1 つの並び（間 14px・キャンバス StFailed）
-        <div className="k-check-stack">
-          <RunBox run={run} ticketId={ticket.id} onChanged={onChanged} />
-          <ChecksSlot where="stopped" ticketId={ticket.id} run={run} />
-        </div>
+        // 止まった帯の箱と確認の結果の表は 1 つの並び（間 14px・キャンバス StFailed）。
+        //   人が止めた実行（K-734 の白い箱）は段 6 の箱のまま。ほかは段 8 の差し込み口 F7.StoppedHandSlot（K-599・K-486）が理由ごとの帯にし、
+        //   確認の結果の表は段 6 の ChecksSlot を渡す。帯のボタンは［自分で直す］だけ（answer=d25f2e58bffb・answer=4d049789b537）
+        stoppedBy(run.stopped_reason) ? (
+          <div className="k-check-stack">
+            <RunBox run={run} ticketId={ticket.id} onChanged={onChanged} />
+            <ChecksSlot where="stopped" ticketId={ticket.id} run={run} />
+          </div>
+        ) : (
+          <F7.StoppedHandSlot
+            ticket={slot}
+            run={run}
+            delegate={{ run: () => void delegateFlow.start(deps), busy: flow.busy, disabled: flow.waitUntil !== null }}
+            onChanged={reload}
+            checks={<ChecksSlot where="stopped" ticketId={ticket.id} run={run} />}
+          >
+            <div className="k-check-stack">
+              <RunBox run={run} ticketId={ticket.id} onChanged={onChanged} />
+              <ChecksSlot where="stopped" ticketId={ticket.id} run={run} />
+            </div>
+          </F7.StoppedHandSlot>
+        )
       ) : showRun && run ? (
         <RunBox run={run} ticketId={ticket.id} onChanged={onChanged} />
       ) : null}

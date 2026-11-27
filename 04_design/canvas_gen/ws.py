@@ -137,7 +137,7 @@ body = ('<div style="display: flex; align-items: center; gap: 12px; flex-wrap: w
   + '<div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start"><div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
   + box("グループと役割", kv("営業", rolesel("メンバー") + ' <span style="font-size: 11px; color: %s">11/02 にマネージャーから（高本）</span>' % MUTED) + kv("兼ねるグループ", '<a href="EdMemberMenu.dc.html" style="font-size: 12px">＋ 兼ねるグループを足す</a>'), btn("グループを移す", "", "EdMemberMenu.dc.html"))
   + box("できること", kv("役割の束", "メンバー（チケットを作る・自分の担当を進める・承認待ちに答える）") + kv("個別に足したもの", pill("見積を承認（100 万円まで）") + ' <span style="font-size: 11px; color: %s">高本が 10/12 に足した</span>' % MUTED) + kv("個別に外したもの", '<span style="color: #8A94A3">なし</span>'), btn("足す・外す"))
-  + box("担当しているもの", kv("チケット", '<a href="List.dc.html">担当 6 件</a> ・ 承認する人 2 件 ・ 期限切れ 0') + kv("取引先", '<a href="CuPage.dc.html">株式会社ソラ</a>（取引先の担当）'))
+  + box("担当しているもの", kv("チケット", '<a href="List.dc.html">担当 6 件</a> ・ 承認する人 2 件 ・ 期限切れ 0') + kv("取引先", '<a href="CuRequests.dc.html">株式会社ソラ</a>（取引先の担当）'))
   + '</div><div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">'
   + box("分身", kv("PC", dot(True, "つながっている（MacBook Air）")) + kv("今月の実行", "212 回 ・ 人ごとの枠の 41%") + kv("止まった（7 日）", "0"))
   + box("ログイン", kv("入り方", "パスキー 2 つ") + kv("2 段階認証", "付けていない（パスキーで入るので要らない）") + kv("最後に入った", "11/02 09:12 ・ iPhone") + '<div style="font-size: 11px; color: %s; padding-top: 6px">パスワードで入る人が認証アプリをなくしたときは、ここから 2 段階認証を戻せる（記録に残る）</div>' % MUTED)

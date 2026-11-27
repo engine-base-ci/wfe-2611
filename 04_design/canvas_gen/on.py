@@ -62,16 +62,6 @@ K2 = K[:a] + c + K[b:]
 K2 = re.sub(r'<aside aria-label="ナレッジの置き場" class="kn-sub".*?</aside>', '', K2, count=1, flags=re.S)
 save("OnKnowledge.dc.html", "ナレッジ（はじめて）", firsttime(K2))
 
-# 取引先が空
-C = L("CuList")
-a = C.index('<section style="flex: 1; min-width: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px">'); b = C.index("</section>", a) + 10
-c = ('<section style="flex: 1; min-width: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px"><h1 style="font-size: 20px; margin: 0">取引先</h1>'
-  + empty("取", "#186F69", "まだ取引先はありません", "取引先を足すと、その取引先のチケット・依頼・検収・決まり（宛名や締め）が 1 か所に集まる。先方の人を招けば、依頼を出してもらえる", btn("＋ 取引先", "p", "EdClient.dc.html"),
-          '<div style="font-size: 12px; color: %s; margin-top: 4px">チケットに書いた会社名から、分身が取引先の候補を出すこともある</div>' % MUTED) + '</section>')
-C2 = C[:a] + c + C[b:]
-C2 = re.sub(r'<aside aria-label="取引先の中" class="kn-sub".*?</aside>', '', C2, count=1, flags=re.S)
-save("OnClients.dc.html", "取引先（はじめて）", firsttime(C2))
-
 # 読み込み中
 sk = lambda w, h=12: '<span style="display: block; width: %s; height: %dpx; border-radius: 6px; background: linear-gradient(90deg, #EEF0F4, #F7F8FA, #EEF0F4)"></span>' % (w, h)
 rows = "".join('<div style="display: flex; gap: 14px; align-items: center; padding: 14px 12px; border-top: 1px solid #EDF0F4">%s%s%s%s</div>' % (sk("44px", 18), sk("60px"), '<span style="flex: 1">' + sk(w) + '</span>', sk("70px")) for w in ["70%", "55%", "80%", "62%", "48%", "74%"])

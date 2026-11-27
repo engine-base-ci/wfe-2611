@@ -2,23 +2,14 @@
 //   写しとタブの下書きの id の鍵は「ワークスペース × 本人」（共有の PC で別の人に見せない・H1）。本人が分かるまでは読まない・書かない。
 //   ログアウトとログイン切れで kaname.ticket-draft で始まる鍵は全部消す（lib/api/client の clearDraftCopies）。
 //   タブごとに下書きの id を持つ（sessionStorage）。2 つのタブで上書きし合わない。作れたら消し、作った後に届く保存は送らない
+//   中身の形は draft-shape（K-442）。サーバーと写しのどちらから読んでも readDraftBody を通す（古い鍵 sections は読み捨てる）
 import { isUuid } from "@kaname/contracts";
 import { call, type CallResult } from "@/lib/api/call";
 import { DRAFT_COPY_PREFIX } from "@/lib/api/client";
+import { readDraftBody, type DraftBody } from "./draft-shape";
 
-export interface DraftBody {
-  scope_id?: string | null;
-  kind_id?: string | null;
-  title?: string;
-  assignee_member_id?: string | null;
-  due_on?: string;
-  start_on?: string;
-  priority?: "mid" | "high";
-  priority_reason?: string;
-  parent_ticket_id?: string | null;
-  sections?: Record<string, string>;
-  notify_member_ids?: string[];
-}
+export type { DraftBody } from "./draft-shape";
+
 /** 誰の下書きか（ワークスペース＝会社の id・本人＝member の id） */
 export interface DraftOwner {
   workspace: string;
@@ -66,7 +57,7 @@ function readCopy(o: DraftOwner): { id: string; body: DraftBody } | null {
     if (!v || typeof v !== "object") return null;
     const { id, body } = v as { id?: unknown; body?: unknown };
     if (typeof id !== "string" || !body || typeof body !== "object" || Array.isArray(body)) return null;
-    return { id, body: body as DraftBody };
+    return { id, body: readDraftBody(body) };
   } catch {
     return null;
   }
@@ -97,7 +88,10 @@ export async function loadDraft(
   const copy = readCopy(o);
   // 一覧の口が通信の失敗で落ちても（例外）、この PC の写し（本人の鍵）があれば、それを出して作る面を開く（D-128.62）
   const r = await (listed ?? readDraftList());
-  const list = r?.ok ? (r.data as unknown as { draft_id: string; body: DraftBody | null }[]) : [];
+  const list = (r?.ok ? (r.data as unknown as { draft_id: string; body: unknown }[]) : []).map((d) => ({
+    draft_id: d.draft_id,
+    body: d.body ? readDraftBody(d.body) : null,
+  }));
   const mine = list.find((d) => d.draft_id === id);
   if (mine?.body) return { body: mine.body, sourceId: null };
   if (copy && copy.id === id) return { body: copy.body, sourceId: null };

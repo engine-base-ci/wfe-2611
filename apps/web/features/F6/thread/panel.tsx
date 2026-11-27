@@ -4,8 +4,10 @@
 //   一覧の右に開く詳細（layout が side）はパネルを描かないので、読みもしない（先読みも page のときだけ）。
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
+import { makeChangeCtx } from "@/features/F4/thread-lines/change-ctx";
 import { RunLogDialog } from "@/features/F5/delegate/run-log";
 import { TicketAiTabSlot } from "@/features/F5/more/slots";
+import { GuestThreadMarks } from "@/features/F11/share/thread-marks";
 import { usePanelTab } from "../scope";
 import { TalkComposer } from "./composer";
 import { FromMessageAction } from "./from-message";
@@ -38,7 +40,10 @@ function PagePanel({ ticket, attrs }: { ticket: SlotTicket; attrs: ReactNode }):
   const [quote, setQuote] = useState<QuoteRef | null>(null);
   const [runLogOpen, setRunLogOpen] = useState(false);
   const openRun = useCallback(() => setRunLogOpen(true), []);
-  const items = useMemo(() => toItems(tl.items ?? [], openRun), [tl.items, openRun]);
+  // 会社の項目の名前は詳細の答え（K-560）の fields から引く（文のために口を足さない・K-574）
+  const fields = ticket.detail["fields"];
+  const changeCtx = useMemo(() => makeChangeCtx(fields), [fields]);
+  const items = useMemo(() => toItems(tl.items ?? [], openRun, changeCtx), [tl.items, openRun, changeCtx]);
   const rowById = useMemo(() => new Map((tl.items ?? []).map((r) => [r.id, r])), [tl.items]);
   // タブ「やり取り」を開いたら最後に開いた時刻を書く（読めてから。1 回開いた画面で 1 回）
   const ready = tl.items !== null;
@@ -87,16 +92,22 @@ function PagePanel({ ticket, attrs }: { ticket: SlotTicket; attrs: ReactNode }):
               {...(tl.olderError ? { olderError: tl.olderError } : {})}
               renderPost={(post) => {
                 const row = rowById.get(post.id);
-                if (!row) return <Post post={post} />;
+                // ゲストに見えるやり取り・依頼のやり取りの頭の印（F11・K-905）。印の無いチケットでは中身をそのまま返す
                 return (
-                  <MessageMenu
-                    ticket={ticket}
-                    item={row}
-                    post={post}
-                    people={tl.people}
-                    onQuote={() => setQuote(quoteOf(row))}
-                    decideSlot={<FromMessageAction ticket={ticket} item={row} post={post} />}
-                  />
+                  <GuestThreadMarks ticket={ticket} rows={tl.items ?? []} postId={post.id} order={order}>
+                    {row ? (
+                      <MessageMenu
+                        ticket={ticket}
+                        item={row}
+                        post={post}
+                        people={tl.people}
+                        onQuote={() => setQuote(quoteOf(row))}
+                        decideSlot={<FromMessageAction ticket={ticket} item={row} post={post} />}
+                      />
+                    ) : (
+                      <Post post={post} />
+                    )}
+                  </GuestThreadMarks>
                 );
               }}
             />

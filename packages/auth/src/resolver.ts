@@ -70,8 +70,10 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
       at: Date | null;
       terms: boolean;
       mfa: boolean;
+      role: string;
     }>(
-      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms, app.session_mfa_pending(c.session_id) as mfa from app.session_check($1, $2, $3, $4) c",
+      // 役割（K-875・D-155.35）：この会社で役割ゲスト（requester）の所属を持つ人は client。毎回その時の所属から引く（G-14）。同じ 1 本の文の列で読む
+      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms, app.session_mfa_pending(c.session_id) as mfa, app.session_role(c.session_id) as role from app.session_check($1, $2, $3, $4) c",
       [s.session.id, countryOf(headers), deviceOf(headers.get("user-agent")), ipOf(headers)],
     );
     const row = r.rows[0];
@@ -80,7 +82,7 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
       ctx: {
         tenantId: row.tenant_id,
         userId: row.member_id,
-        role: "member",
+        role: row.role === "client" ? "client" : "member",
         stepUpAt: row.at ?? null,
         // ログインした時刻（部品のセッションの createdAt）。ログインから 15 分の内は取り直しを求めない口がある（K-308）
         loginAt: loginAtOf(s.session),

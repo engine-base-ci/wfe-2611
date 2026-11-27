@@ -29,7 +29,7 @@ test("KN105-001 375・768・1024・1440 で横にはみ出さない。押せる�
 test("KN105-002 左のバー：役割の主ナビが出て、いまの場所に aria-current。承認待ちの数", async ({ page }) => {
   await open(page, 1440);
   const nav = page.getByRole("navigation", { name: "メニュー", exact: true });
-  for (const name of ["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"])
+  for (const name of ["チケット", "承認待ち", "高本のAI", "ナレッジ", "届いた依頼", "ワークスペースの管理"])
     await expect(nav.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
   await expect(nav.getByRole("link", { name: /^チケット/ })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: /承認待ち/ })).toContainText("2");

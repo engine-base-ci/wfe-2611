@@ -6,8 +6,8 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
+import { shellData } from "../k/shell-answer";
 import { TICKET, executedBand, jst, mockApi, qrow, type Band } from "../features/F5/approve-complete.harness";
-import { mockCreate } from "../k/create-mock";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -51,7 +51,39 @@ async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promi
         scope_id: null,
         workspace_name: "ENGINE BASE",
       });
-    else if (p === "/api/v1/scopes")
+    else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）：キャンバス Main と同じ人・会社・承認待ち・グループの件数 18／42／9（営業だけ書ける）・PC は一覧の live から
+      const devs = (o.devices ?? [{ state: "live" }]) as { state?: string }[];
+      r = ok(
+        shellData({
+          approvals,
+          pcConnected: devs.some((d) => d.state === "live"),
+          groups: [
+            {
+              id: "22222222-0000-4000-8000-000000000001",
+              name: "営業",
+              ticket_prefix: "EG",
+              writable: true,
+              open_count: 18,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000002",
+              name: "受託開発",
+              ticket_prefix: "JD",
+              writable: false,
+              open_count: 42,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000003",
+              name: "経理",
+              ticket_prefix: "KR",
+              writable: false,
+              open_count: 9,
+            },
+          ],
+        }),
+      );
+    } else if (p === "/api/v1/scopes")
       r = ok(
         [
           { id: "22222222-0000-4000-8000-000000000001", name: "営業", ticket_prefix: "EG", tenant_id: WS },
@@ -257,7 +289,8 @@ const CANVAS_TODO = [
 async function openBandModal(page: Page, path: string, button: string, title: string, done = false): Promise<void> {
   await (done ? mockApi(page, { ...executedBand, todo: CANVAS_TODO }) : mockApi(page));
   await page.goto(path.replace("{ticket}", TICKET));
-  await page.getByRole("region", { name: "承認と実行" }).getByRole("button", { name: button, exact: true }).click();
+  // 「完了にする」は題の行（K-572）・「承認して送る」などは帯の中。名前はどちらも画面に 1 つだけなので、頁全体で探す
+  await page.getByRole("button", { name: button, exact: true }).click();
   await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
 }
 
@@ -659,11 +692,13 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[data-state="empty"]')).toBeVisible();
     await expect(page.getByRole("region", { name: "はじめにやること" })).toBeVisible();
   },
-  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ
+  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ。767 以下は表と右の列を隠したスマホの本文の 1 件 1 行が見えるまでも待つ（K-478）
   "tickets-main": async (page, path) => {
     await shellApi(page, 3, { tickets: listRows() });
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
+    if ((page.viewportSize()?.width ?? 1440) <= 767)
+      await expect(page.locator(".k-f7-overview-phone .k-f7-overview-mrow").first()).toBeVisible();
   },
   // グループの一覧（K-252・キャンバス List）：営業で絞った 6 件。表の行が出るまで待つ
   "tickets-list": async (page, path) => {
@@ -671,19 +706,6 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
   },
-  // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
-  "tickets-new": async (page, path) => {
-    await shellApi(page, 3);
-    await page.goto(path);
-    await expect(page.locator('input[name="title"]')).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
-  // 作る面の本文の箱の区画（K-225・キャンバス Create の本文の箱）：種別はタスク（区画 4 つ）・下書きなし。区画の見出しが出るまで待つ。
-  //   種別の区画は作る画面の試験の差し替え（tests/k/create-mock.ts）の口で出す（外枠の差し替えの種別は空）
-  "tickets-new-sections": async (page, path) => {
-    await mockCreate(page);
-    await page.goto(path);
-    await expect(page.locator('section[aria-label="本文"] .k-create-doc h2').first()).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
+  // 作る面（組 tickets-new・tickets-new-sections）は K-442 が組ごと外した（2026-11-24：作る面は新しい並びになり、キャンバス Create と比べない。
+  //   正の絵は下絵 v2 /dev/mock/f4v2・D-150.35）。詳細の組 ticket-detail は K-571 が外す。状態 ticket-detail と detailApi は k1100 の試験が詳細を開くのに使うので残す
 };

@@ -10,12 +10,14 @@
 //     GET  /api/v1/approvals/:id         → { data: { approval, ticket, artifact_version, checks, check_summary, cautions, irreversible, can_decide } }
 //     POST /api/v1/approvals/:id/approve ← {}（頭 idempotency-key）・POST …/return ← { note }
 //     GET  /api/v1/tickets/:id           → K-60 の詳細 ＋ approval（{ id, can_decide, irreversible, note, approver_name }|null）・run（{ phase, status, pc: "live"|"asleep", stopped_reason }|null）・can.complete（K-62 の can に足す）・stage.key
-//     POST /api/v1/tickets/:id/complete  ← { todo_checked, todo_version, conditions_confirmed }
+//     POST /api/v1/tickets/:id/complete  ← { conditions_confirmed: true }（K-566：todo_checked・todo_version は送らない）→ 201 …・unchecked: { body, specs }
+//     GET  /api/v1/tickets/:id の body.doc（K-560）のチェックの箱と、完了を押したときの GET …/test-specs（K-434）が、完了の小窓の未チェックの注意の元（K-572）
 //     承認では本人確認を取り直さない（D-128.177）：本人確認の小窓は出さず、stepUp の口も呼ばない
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Page, Request, Route } from "@playwright/test";
 import { expect, row, rowsOf, type SpecRow } from "../../_lib/row";
+import { shellData } from "../../k/shell-answer";
 
 export const SPEC = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -119,10 +121,34 @@ export type Band = {
   can_complete?: boolean;
   can_delegate?: boolean;
   todo?: string;
+  /** 本文（body.doc）のチェックの箱。既定は未チェックが 2 つ（完了の小窓が開く）。全部 checked なら小窓なしで完了する */
+  tasks?: { text: string; checked: boolean }[];
   completed?: { at: string; by: string } | null;
   /** null なら担当者がいない（K63-UI-049） */
   assignee?: null;
 };
+export const DEFAULT_TASKS = [
+  { text: "請求書を作る", checked: false },
+  { text: "先方に送る", checked: false },
+];
+/** getTicket の body（K-560・{ doc, text }）：目的の段落とチェックの箱の並び */
+export const bodyOf = (tasks: { text: string; checked: boolean }[]) => ({
+  doc: {
+    type: "doc",
+    content: [
+      { type: "paragraph", content: [{ type: "text", text: "月末の請求を出す" }] },
+      {
+        type: "taskList",
+        content: tasks.map((t) => ({
+          type: "taskItem",
+          attrs: { checked: t.checked },
+          content: [{ type: "paragraph", content: [{ type: "text", text: t.text }] }],
+        })),
+      },
+    ],
+  },
+  text: "月末の請求を出す",
+});
 export const BANDS = new WeakMap<object, Band>();
 /** getTicket の答えに、その答えのときの今の実行（runs・action_runs で返す）を結ぶ。答えの JSON には入れない */
 export const withBand = <T extends object>(b: Band, d: T): T => {
@@ -144,6 +170,7 @@ export const ticketOf = (b: Band) =>
       { key: "done", label: "完了の条件", body: { text: "先方が請求書を受け取った" }, version: 1 },
       { key: "todo", label: "実施事項", body: { text: b.todo ?? "- 請求書を作る\n- 先方に送る" }, version: 4 },
     ],
+    body: bodyOf(b.tasks ?? DEFAULT_TASKS),
     kind: { name: "タスク" },
     stage: { name: b.stage, key: b.stage },
     assignee: b.assignee === null ? null : { display_name: "高本" },
@@ -266,6 +293,7 @@ export async function mockApi(
             },
             knowledge_candidates: [],
             skipped_reason: "候補はまだ出していません",
+            unchecked: { body: 0, specs: 0 },
           },
         },
       }),
@@ -306,6 +334,11 @@ export async function mockApi(
     else if (post && p === "/api/v1/auth/step-up") {
       m.stepUps.push(req.postDataJSON() as Record<string, unknown>);
       reply = await m.on.stepUp(req);
+    } else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）。承認待ちの数は承認待ちの口の答えの数（役・名前は下の /me と同じ）
+      const q = await m.on.queue(req);
+      const total = Number((q.body as { meta?: { counts?: { total?: number } } }).meta?.counts?.total ?? 0);
+      reply = { status: 200, body: { data: shellData({ approvals: total }), meta: {} } };
     } else if (/\/me$/.test(p))
       // 役は role_id で読む（分からない役は外枠が項目を出さない・K-138）
       reply = {
@@ -392,13 +425,11 @@ export const executedBand: Band = {
   can_complete: true,
 };
 
+/** 「完了にする」を押して小窓（未チェックの注意）を開く。既定の本文（未チェック 2 つ）なら開く。全部済みなら小窓なしで完了するので使わない */
 export const openComplete = async (page: Page) => {
   await page.getByRole("button", { name: "完了にする", exact: true }).click();
   await expect(dialog(page)).toBeVisible();
 };
-
-export const confirmBox = (page: Page) =>
-  page.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" });
 
 export const titleLink = (id: string, title: string, ticketId: string) =>
   row(R[id], async (page) => {

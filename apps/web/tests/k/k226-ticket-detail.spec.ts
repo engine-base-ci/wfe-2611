@@ -1,4 +1,5 @@
-// K-226「チケットの詳細の本文をキャンバス（TicketDetail）に合わせる」の画面の試験（実 Chrome・実装より先に積む）。
+// K-226「チケットの詳細の本文をキャンバス（TicketDetail）に合わせる」の画面の試験（実 Chrome）。K-571（2026-11-21 の作り直し）で、区画の並び・本文の道具の帯・本文の目次・分類の区に合わせた行
+//   （UI-009〜012・017）と、キャンバスとの突き合わせ（UI-027・028）を外し、題の行・パネルのタブと区・担当と日付と関連の行を新しい形に替えた。本文・結果の場所・項目の並びは k571-detail-body.spec.ts が下絵 v2 と持つ。
 //   正のモック：04_design/canvas/TicketDetail.dc.html。口は網の手前で差し替える（前からの土台 tests/features/F5/approve-complete.harness.ts）。
 //   画面の形（実装の役が作る）：
 //     .k-detail の中に 本文の箱 section.k-page（左）と 右のパネル aside[aria-label="チケットのパネル"]（幅 380）
@@ -22,8 +23,8 @@ import {
 } from "../features/F5/approve-complete.harness";
 import {
   DETAIL_INERT,
-  DISABLED_OPACITY,
-  DOC_TOOLS,
+  DETAIL_LATER,
+  isMayAppear,
   LINE,
   RED_TEXT,
   ROOT,
@@ -34,11 +35,8 @@ import {
   cssOf,
   detailRows,
   expectInert,
-  fidelityCompareTests,
-  fidelityConfigTest,
   firstCharLeft,
   leftOf,
-  opacityOf,
   overflowX,
 } from "./detail-kit";
 import { controlsOf } from "../_lib/row";
@@ -178,7 +176,7 @@ test("K226-UI-002 頭の行：種別の札（種別の色の塗り・白字・11
   expect(Math.max(...ys) - Math.min(...ys)).toBeLessThanOrEqual(3);
 });
 
-test("K226-UI-003 題名 h1：20px・700・行の高さ 1.45。h1 は 1 つ。題名の行の右に 複製・〈見ている人〉のAI と話す（担当者が山田でも高本のAI）・ほかの操作", async ({
+test("K226-UI-003 題名 h1：20px・700・行の高さ 1.45。h1 は 1 つ。題名の行の右に 複製・版と差分・ほかの操作（K-571 で「〈名前〉のAI と話す」は下絵に無いので外した）", async ({
   page,
 }) => {
   await open(page, { stage: "doing" }, {}, 1440, undefined, { assignee: { id: "m2", display_name: "山田" } });
@@ -189,9 +187,9 @@ test("K226-UI-003 題名 h1：20px・700・行の高さ 1.45。h1 は 1 つ。�
   expect(await cssOf(h1, "line-height")).toBe("29px"); // 20px × 1.45（絵の行の高さのまま）
   await expect(page.locator("h1")).toHaveCount(1);
   const acts = page.locator("header.k-page-head .k-page-acts");
-  for (const n of ["複製", "高本のAI と話す", "ほかの操作"])
+  for (const n of ["複製", "版と差分", "ほかの操作"])
     await expect(acts.getByRole("button", { name: n, exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "山田のAI と話す" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /のAI と話す/ })).toHaveCount(0);
   expect((await box(acts)).x).toBeGreaterThan((await box(h1)).x);
 });
 
@@ -274,14 +272,17 @@ test("K226-UI-030 番号をコピーできない（クリップボードが断�
   await expect(page.getByText("番号をコピーしました")).toHaveCount(0);
 });
 
-test("K226-UI-008 まだ使えない操作（複製・ほかの操作・本文の道具 14 個・版と差分・子を足す・つながりを足す・AI と話す）：在る・aria-disabled・薄さ 0.55・押しても Enter でも何も起きない。パネルのやり取りは押せる（K-392）", async ({
+test("K226-UI-008 まだ使えない操作（複製・ほかの操作・版と差分・子を足す・つながりを足す。本文の道具 14 個は K-571 で無くなった）：在る・aria-disabled・薄さ 0.55・押しても Enter でも何も起きない。パネルのやり取りは押せる（K-392）", async ({
   page,
 }) => {
   const writes = countWrites(page);
   await open(page);
   const main = page.locator(".k-detail");
-  // K-764：パネルのタブ「高本のAI」は押せる形になった（段 6 の右のパネルの AI のタブ）。題の行の「高本のAI と話す」は押せない形のまま
-  for (const n of [...DETAIL_INERT, "高本のAI と話す"])
+  // K-764：パネルのタブ「高本のAI」は押せる形になった（段 6 の右のパネルの AI のタブ）。題の行の「〈名前〉のAI と話す」は K-571 で外した（K226-UI-003）
+  // 後ろの葉が本物にする 5 つ（DETAIL_LATER：K-446 複製・K-458 ほかの操作・K-449 版と差分・K-452 子を足す・つながりを足す）は
+  //   「在る」だけ見て、押せないかは見ない（押せるようになっても赤にならない・K-431 が 1 回だけ替えた）
+  for (const n of DETAIL_LATER) await expect(main.getByRole("button", { name: n, exact: true }), n).toHaveCount(1);
+  for (const n of DETAIL_INERT)
     await expectInert(page, main.getByRole("button", { name: n, exact: true }), n, writes);
   const ai = panel(page)
     .getByRole("navigation", { name: "パネルのタブ" })
@@ -295,95 +296,21 @@ test("K226-UI-008 まだ使えない操作（複製・ほかの操作・本文�
   await expect(talk).not.toHaveAttribute("tabindex", "-1");
 });
 
-test("K226-UI-009 本文の道具の帯：14 個がキャンバスの順に並び、右に「「/」で部品を入れる ・ 本文の版 4」（区画の版のいちばん大きい数）と 版と差分。帯の見た目（地・上下の線・左右 20px・上に貼り付く（幅 1440 は外枠の上の帯の下の top 48・幅 375 は top 0）・高さ 28 で幅 30 以上・中の字があふれない・押せないグレー）はキャンバスどおり（部品 DocTools が生まれるこのチケットで見る）", async ({
-  page,
-}) => {
-  await open(page);
-  const bar = card(page).getByRole("toolbar", { name: "本文の道具" });
-  const names = await bar.getByRole("button").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? ""));
-  expect(names.slice(0, DOC_TOOLS.length)).toEqual([...DOC_TOOLS]);
-  await expect(bar).toContainText("「/」で部品を入れる ・ 本文の版 4");
-  await expect(bar.getByRole("button", { name: "版と差分" })).toHaveCount(1);
-  // 帯の見た目（キャンバス TicketDetail・Create で同じ：地は表の頭の色・下に薄い線・道具の高さ 28・押せない物は薄さ 0.55）
-  expect(await cssOf(bar, "background-color")).toBe("rgb(250, 251, 252)");
-  expect(await cssOf(bar, "border-bottom-color")).toBe("rgb(237, 240, 244)");
-  // 詳細の帯だけの値（キャンバス TicketDetail：上に 1px #DDE2E9 の線・左右 20px・本文を送っても上に貼り付く）
-  expect(await cssOf(bar, "border-top-color")).toBe(LINE);
-  expect(await cssOf(bar, "border-top-width")).toBe("1px");
-  expect(await cssOf(bar, "padding-left")).toBe("20px");
-  expect(await cssOf(bar, "padding-right")).toBe("20px");
-  expect(await cssOf(bar, "position")).toBe("sticky");
-  // 貼り付く位置：幅 768 以上は外枠の上の帯（48px・上に貼り付く）の下。帯の下に隠れない（レビューの指摘）
-  expect(await cssOf(bar, "top")).toBe("48px");
-  for (const name of DOC_TOOLS) {
-    const b = bar.getByRole("button", { name, exact: true });
-    await expect(b, name).toHaveAttribute("aria-disabled", "true");
-    expect(Math.round((await box(b)).height), name).toBe(28);
-    expect((await box(b)).width, name).toBeGreaterThanOrEqual(30);
-    // 幅を width で 30 に固めると「見出し」などの字があふれる。最小の幅 30 で、中の字はあふれない
-    expect(await b.evaluate((e) => e.scrollWidth <= e.clientWidth), `${name} の字があふれない`).toBe(true);
-    expect(await opacityOf(b), name).toBeCloseTo(DISABLED_OPACITY, 3);
-  }
-  // 幅 767 以下は外枠が上の帯を出さない（K-138）ので、画面の上の端（0）に貼り付く
-  await page.setViewportSize({ width: 375, height: 1000 });
-  expect(await cssOf(bar, "top")).toBe("0px");
-  expect(await cssOf(bar, "position")).toBe("sticky");
-});
-
-test("K226-UI-010 区画の見出し h2：16px・700・下に 1px #DDE2E9・下の余白 6px。2 つめの見出しは前の本文から 28px 下", async ({
-  page,
-}) => {
-  await open(page);
-  const h2 = card(page).locator("section.k-section h2");
-  await expect(h2).toHaveCount(3);
-  expect(await cssOf(h2, "font-size")).toBe("16px");
-  expect(await cssOf(h2, "font-weight")).toBe("700");
-  expect(await cssOf(h2, "border-bottom-color")).toBe(LINE);
-  expect(await cssOf(h2, "border-bottom-width")).toBe("1px");
-  expect(await cssOf(h2, "padding-bottom")).toBe("6px");
-  const firstBody = await box(card(page).locator("section.k-section").first().locator(".k-pre"));
-  const second = await box(h2.nth(1));
-  expect(Math.abs(second.y - (firstBody.y + firstBody.height) - 28)).toBeLessThanOrEqual(1);
-});
-
-test("K226-UI-011 区画の本文：改行を残す（実施事項の 2 行が 2 行に出る）。HTML の字は字のまま（スクリプトを動かさない）", async ({
-  page,
-}) => {
-  await open(page, { stage: "doing", todo: '- 請求書を作る\n- <img src=x onerror="window.__k226=1">' });
-  const todo = card(page).getByRole("region", { name: "実施事項" }).locator(".k-pre");
-  await expect(todo).toContainText('<img src=x onerror="window.__k226=1">');
-  const lh = parseFloat(await cssOf(todo, "line-height"));
-  expect((await box(todo)).height).toBeGreaterThanOrEqual(lh * 2 - 1);
-  expect(await page.evaluate(() => (window as unknown as { __k226?: number }).__k226)).toBeUndefined();
-});
-
-test("K226-UI-012 空白の無い長い字（300 字）の区画も、本文の箱の中で折り返す（幅 375・1440 で横溢れ 0）", async ({
-  page,
-}) => {
-  const long = "あ".repeat(150) + "a".repeat(150);
-  for (const w of [375, 1440]) {
-    await open(page, { stage: "doing", todo: long }, {}, w);
-    const todo = card(page).getByRole("region", { name: "実施事項" }).locator(".k-pre");
-    const c = await box(card(page));
-    const t = await box(todo);
-    expect(t.x + t.width, `幅 ${w}`).toBeLessThanOrEqual(c.x + c.width + 1);
-    expect(await overflowX(page), `幅 ${w}`).toBe(0);
-    await page.unrouteAll({ behavior: "ignoreErrors" });
-  }
-});
-
-test("K226-UI-013 パネルのタブ：属性（今いる）・やり取り・高本のAI。属性の中は 担当・日付と時間・分類・本文の目次・実行の記録（最新）の順", async ({
+test("K226-UI-013 パネルのタブ：項目（今いる）・やり取り・高本のAI。項目の中は 担当・日付と時間・関連・確認項目・実行の記録（最新）の順（K-571）", async ({
   page,
 }) => {
   await open(page);
   const tabs = panel(page).getByRole("navigation", { name: "パネルのタブ" });
-  await expect(tabs.getByRole("button")).toHaveText(["属性", "やり取り", "高本のAI"]);
-  await expect(tabs.getByRole("button", { name: "属性" })).toHaveAttribute("aria-current", "page");
+  await expect(tabs.getByRole("button")).toHaveText(["項目", "やり取り", "高本のAI"]);
+  await expect(tabs.getByRole("button", { name: "項目", exact: true })).toHaveAttribute("aria-current", "page");
   const heads = await panel(page).locator("h2").allInnerTexts();
-  expect(heads.map((x) => x.trim())).toEqual(["担当", "日付と時間", "分類", "本文の目次", "実行の記録（最新）"]);
+  expect(heads.map((x) => x.trim())).toEqual(["担当", "日付と時間", "関連", "確認項目", "実行の記録（最新）"]);
 });
 
 /** パネルの区画の「項目名 → 値」 */
+/** 後ろの葉が値を入れる行（業務の型・親）は、値を見ない（K-431：どちらの形でも通る） */
+const omit = <T extends Record<string, string>>(o: T, ...keys: string[]) =>
+  Object.fromEntries(Object.entries(o).filter(([k]) => !keys.includes(k)));
 async function fieldsOf(page: Page, section: string) {
   return panel(page)
     .getByRole("region", { name: section })
@@ -405,59 +332,38 @@ test("K226-UI-014 担当：担当者は名前・承認する人は承認待ち�
   page,
 }) => {
   const m = await open(page, { stage: "awaiting_approval", approval: pending({ approver_name: "佐藤" }) });
-  expect(await fieldsOf(page, "担当")).toEqual({ 担当者: "高本", 業務の型: "", 承認する人: "佐藤" });
+  expect(omit(await fieldsOf(page, "担当"), "業務の型")).toEqual({ 担当者: "高本", 承認する人: "佐藤", 優先度: "中" });
   m.on.ticket = () => ({ status: 200, body: { data: detail({ stage: "doing" }) } });
   await page.reload();
-  expect(await fieldsOf(page, "担当")).toEqual({ 担当者: "高本", 業務の型: "", 承認する人: "" });
+  expect(omit(await fieldsOf(page, "担当"), "業務の型")).toEqual({ 担当者: "高本", 承認する人: "", 優先度: "中" });
 });
 
-test("K226-UI-015 日付と時間：開始日と期限は「MM/DD（曜）」・過ぎた期限は赤で「N 日過ぎ」と押せない「期限を変える」（▾）・予定と実績は空", async ({
+test("K226-UI-015 日付と時間：開始日と期限は「MM/DD（曜）」・過ぎた期限は赤で「N 日過ぎ」と押せない「期限を変える」（▾）・予定時間と実績時間は空（K-571 で名前を下絵の「予定時間」「実績時間」に）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await open(page, { stage: "doing" }, { due_on: jst(-2) });
   const f = await fieldsOf(page, "日付と時間");
-  expect(f).toEqual({ 開始日: mdw("2026-10-30"), 期限: `${mdw(jst(-2))}2 日過ぎ`, 予定: "", 実績: "" });
+  expect(f).toEqual({ 開始日: mdw("2026-10-30"), 期限: `${mdw(jst(-2))}2 日過ぎ`, 予定時間: "", 実績時間: "" });
   const due = panel(page).getByRole("region", { name: "日付と時間" }).locator("dd").nth(1);
   expect(await cssOf(due, "color")).toBe(RED_TEXT);
-  await expectInert(page, due.getByRole("button", { name: "期限を変える" }), "期限を変える", writes);
+  // 「期限を変える」は K-444 が押せる形にする：在る（1 個）だけ見る（K-431 が 1 回だけ替えた）
+  await expect(due.getByRole("button", { name: "期限を変える" })).toHaveCount(1);
 });
 
-test("K226-UI-016 分類：グループは名前と接頭辞「営業（EG）」・優先度は中（high は高）・分類・節目・取引先・親は空。グループの口が 500 ならグループだけ空", async ({
+test("K226-UI-016 関連と優先度：グループは名前と接頭辞「営業（EG）」・節目・親は空（会社の項目が無い答え）。優先度は担当の区に中（high は高）。グループの口が 500 ならグループだけ空（K-571 で分類の区を関連・担当に分けた）", async ({
   page,
 }) => {
   const m = await open(page);
-  expect(await fieldsOf(page, "分類")).toEqual({
-    グループ: "営業（EG）",
-    分類: "",
-    節目: "",
-    取引先: "",
-    優先度: "中",
-    親: "",
-  });
-  // 優先度が high なら「高」
+  expect(omit(await fieldsOf(page, "関連"), "親")).toEqual({ グループ: "営業（EG）", 節目: "" });
+  expect((await fieldsOf(page, "担当"))["優先度"]).toBe("中");
   m.on.ticket = () => ({ status: 200, body: { data: detail({ stage: "doing" }, { priority: "high" }) } });
   await page.reload();
-  expect((await fieldsOf(page, "分類"))["優先度"]).toBe("高");
-  // グループの口が 500：グループは空で、ほかの値は出る（嘘の値を出さない・画面は壊れない）
+  expect((await fieldsOf(page, "担当"))["優先度"]).toBe("高");
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await open(page, { stage: "doing" }, {}, 1440, undefined, {}, true);
-  const f = await fieldsOf(page, "分類");
-  expect(f["グループ"]).toBe("");
-  expect(f["優先度"]).toBe("中");
+  expect((await fieldsOf(page, "関連"))["グループ"]).toBe("");
+  expect((await fieldsOf(page, "担当"))["優先度"]).toBe("中");
   await expect(page.locator("header.k-page-head h1")).toHaveText("11 月分の請求書を送る");
-});
-
-test("K226-UI-017 本文の目次：区画の名前が区画の順にリンクで並び、押すとその区画の見出しが画面の中に来る", async ({
-  page,
-}) => {
-  await open(page);
-  await page.setViewportSize({ width: 1440, height: 500 });
-  const toc = panel(page).getByRole("navigation", { name: "本文の目次" });
-  await expect(toc.getByRole("link")).toHaveText(["目的", "完了の条件", "実施事項"]);
-  await toc.getByRole("link", { name: "実施事項" }).click();
-  const h = card(page).getByRole("region", { name: "実施事項" }).locator("h2");
-  await expect(h).toBeInViewport();
 });
 
 test("K226-UI-018 実行の記録（最新）：いちばん新しい 1 件だけを「高本のAI ・ 11/01 09:00 → 09:12（12 分）」で。走っている実行は終わりの時刻が空。実行が無いと「まだ AI に任せていません」", async ({
@@ -582,10 +488,7 @@ test("K226-UI-025 操作要素の漏れ：詳細の本文と右のパネルの�
   page,
 }) => {
   await open(page, { stage: "awaiting_approval", approval: pending() }, {}, 1440, [run({})]);
-  const have = new Set([
-    ...SPEC_ROWS,
-    ...detailRows(["目的", "完了の条件", "実施事項"]).map((r) => `${r.role}|${r.name}`),
-  ]);
+  const have = new Set([...SPEC_ROWS, ...detailRows([]).map((r) => `${r.role}|${r.name}`)]);
   const inBands = new Set(
     (
       await Promise.all(
@@ -600,7 +503,9 @@ test("K226-UI-025 操作要素の漏れ：詳細の本文と右のパネルの�
   );
   const leak = (await controlsOf(page, ".k-detail"))
     .map((c) => `${c.role}|${c.name}`)
-    .filter((k) => !inBands.has(k) && !have.has(k));
+    .filter((k) => !inBands.has(k) && !have.has(k))
+    // 後ろの葉が足す操作要素（本文を書く・並べ替える・消す・親・テスト仕様など）は漏れと数えない（DETAIL_MAY_APPEAR・K-431）
+    .filter((k) => !isMayAppear(k.slice(k.indexOf("|") + 1)));
   expect(leak).toEqual([]);
 });
 
@@ -663,10 +568,3 @@ test("K226-UI-032 「実行の記録」の小窓は右から出る板（キャ�
     await page.unrouteAll({ behavior: "ignoreErrors" });
   }
 });
-
-fidelityConfigTest(
-  "K226-UI-027 突き合わせの設定：ticket-detail が enrolled・持ち主 K-226・画面を整える道具に鍵・画面の側のセレクタに .k-panel が無い",
-  ["ticket-detail"],
-  "K-226",
-);
-fidelityCompareTests("K226-UI-028", "ticket-detail", "TicketDetail");

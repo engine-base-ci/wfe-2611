@@ -117,7 +117,8 @@ export async function setupDelete(hookFiles: readonly string[]): Promise<DeleteW
         title: o.title ?? "請求書を送る",
         due_on: new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10),
         assignee_member_id: by.id,
-        sections: { purpose: "先方に請求書を出す", done: "送って確認が取れている", todo: "- 金額を確かめる" },
+        // 確認項目が 0 件だと「AI に任せる」が 409（E-CONF-020）になるので 1 件付けて作る（K-578・D-150.45）
+        specs: ["請求書が先方に届いている"],
         ...(o.parent ? { parent_ticket_id: o.parent } : {}),
       },
     });
