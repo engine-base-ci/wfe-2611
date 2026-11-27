@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:0b70118056f5cb47
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:5021371b1cc04c6f
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -169,7 +169,7 @@ export interface Ops {
   listMembers: { params: never; query: { "scope_id"?: string | number; "q"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Members[] };
   getMember: { params: { id: string }; query: never; body: never; data: T.MemberDetail };
   updateMemberGroups: { params: { id: string }; query: never; body: T.MemberGroupsInput; data: T.MemberGroupsChanged };
-  removeMember: { params: { id: string }; query: never; body: T.MembersInput; data: T.Members };
+  removeMember: { params: { id: string }; query: never; body: T.MemberRemoveInput; data: T.MemberRemoved };
   previewMemberRemoval: { params: { id: string }; query: never; body: never; data: T.MemberRemovalPreview };
   resumeMember: { params: { id: string }; query: never; body: T.MemberResumeInput; data: T.MemberStateChanged };
   updateMemberRole: { params: { id: string }; query: never; body: T.MemberRoleInput; data: T.MemberRoleChanged };

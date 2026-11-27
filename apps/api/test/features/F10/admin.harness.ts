@@ -229,8 +229,8 @@ export function setupAdmin(): AdminHarness {
         config: { env: "test", webBaseUrl: "https://app.kaname.test", opsEmail: "ops@example.com" },
       } as unknown as HookDeps;
       Object.assign(hooks, ((await import(HOOKS_FILE)) as { register: HookModule }).register.make(d));
-      // 招く口の並び（K-419）・層の一覧（K-803 の hooks）・グループの一覧 listScopes（K-60 の hooks/tickets.ts）も同じ文書で読む（試験が「足した後に別の GET で読み直す」とき）
-      for (const name of ["workspace-invitations", "f10-layers", "tickets"]) {
+      // 招く口の並び（K-419）・層の一覧（K-803 の hooks）・グループの一覧 listScopes（K-60 の hooks/tickets.ts）・承認待ちの並び listApprovalQueue（hooks/approve-complete.ts・K848-API-009）も同じ文書で読む（試験が「足した後に別の GET で読み直す」とき）
+      for (const name of ["workspace-invitations", "f10-layers", "tickets", "approve-complete"]) {
         const file = join(HERE, "..", "..", "..", "src", "hooks", `${name}.ts`);
         if (existsSync(file)) Object.assign(hooks, ((await import(file)) as { register: HookModule }).register.make(d));
       }
