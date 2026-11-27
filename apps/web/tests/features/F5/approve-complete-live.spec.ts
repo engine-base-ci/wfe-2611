@@ -162,7 +162,7 @@ async function delegatedAndMade(page: Page): Promise<World> {
   await page.clock.install();
   await openTicket(page);
   await mark(page);
-  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
   await expect.poll(() => w.delegates).toBe(1);
   await expect(k62Band(page).getByText(MAKING)).toBeVisible();
   // 作る段が終わり、承認待ちになった
@@ -346,7 +346,7 @@ row(R["K63-UI-071"], async (page) => {
   await expect(completeButton(page)).toBeVisible(); // 任せる前：走っている実行が無いので出ている
   const releaseRun = w.hold(MAKE_1);
   const releaseList = w.holdList();
-  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
   await expect.poll(() => w.delegates).toBe(1);
   await expect.poll(() => w.runAsked[MAKE_1] ?? 0).toBeGreaterThan(0); // 任せた実行を読みに行った（まだ答えていない）
   await expect(completeButton(page)).toHaveCount(0); // 任せた直後は出さない
@@ -366,7 +366,7 @@ row(R["K63-UI-072"], async (page) => {
   await expect.poll(() => w.listAsked).toBeGreaterThan(0); // 開いたときの一覧が届いてから（失敗の 1 回を、任せた直後の読み直しに当てる）
   const listsBefore = w.listAsked;
   w.failList = 1;
-  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
   await expect.poll(() => w.delegates).toBe(1);
   await expect.poll(() => w.listAsked).toBeGreaterThan(listsBefore); // 失敗する読み直しが届いた
   await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 任せた実行は id で読めている

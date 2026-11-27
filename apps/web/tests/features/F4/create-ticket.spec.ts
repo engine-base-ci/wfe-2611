@@ -6,6 +6,8 @@ import { dirname, join } from "node:path";
 import type { BrowserContext, Page, Request, Route } from "@playwright/test";
 import { expect, missingRows, row, rowsOf } from "../../_lib/row";
 import { WIDTHS } from "../../_lib/api";
+// 期限の入れ方（日付の欄でも小窓のボタンでも通る）は K-431 が create-mock.ts に 1 か所だけ持つ
+import { TEMPLATE_ISSUE, TEMPLATE_TASK, bodyBox, dueIsDialog, fillDue, writeBody } from "../../k/create-mock";
 
 const SPEC = join(dirname(fileURLToPath(import.meta.url)), "../../../../../07_qa/test-specs/k/create-ticket.md");
 const ROWS = rowsOf(SPEC);
@@ -22,34 +24,10 @@ const SCOPE = "22222222-0000-4000-8000-000000000001";
 const VIEW_ONLY_SCOPE = "22222222-0000-4000-8000-000000000002";
 const TASK = "44444444-0000-4000-8000-000000000001";
 const ISSUE = "44444444-0000-4000-8000-000000000002";
-const sec = (key: string, label: string, mode = "show") => ({
-  key,
-  label,
-  mode,
-  position: 0,
-  content_type: "text",
-  hint: null,
-});
+// 種別の答え（K-560：body_template を足した。sections は K-575 まで残るので空の並び）。ひな形は create-mock.ts の物と同じ（薄い字の節）
 const KINDS = [
-  {
-    id: TASK,
-    name: "タスク",
-    sections: [
-      sec("purpose", "目的", "required"),
-      sec("done", "完了の条件", "required"),
-      sec("todo", "実施事項", "required"),
-      sec("risks", "リスクと懸念"),
-    ],
-  },
-  {
-    id: ISSUE,
-    name: "課題",
-    sections: [
-      sec("happening", "起きていること", "required"),
-      sec("impact", "影響", "required"),
-      sec("done", "完了の条件", "required"),
-    ],
-  },
+  { id: TASK, name: "タスク", sections: [], body_template: TEMPLATE_TASK },
+  { id: ISSUE, name: "課題", sections: [], body_template: TEMPLATE_ISSUE },
 ];
 const MEMBERS = [
   { id: ME, display_name: "高本", kind_id: "human", deleted_at: null, suspended_at: null },
@@ -63,6 +41,8 @@ const MEMBERS = [
     suspended_at: "2026-11-01T00:00:00Z",
   },
 ];
+/** 段落 1 つの文書の木（K-561 の形） */
+const P = (text: string) => ({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text }] }] });
 const jst = (days = 0) => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
 
 type Reply = { status: number; body: unknown };
@@ -143,7 +123,16 @@ async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: bo
               start_on: null,
               priority: "mid",
             },
-            sections: [{ key: "purpose", label: "目的", body: { text: "月末の請求を出す" }, version: 1 }],
+            sections: [],
+            body: { doc: P("月末の請求を出す"), text: "月末の請求を出す", version: 1 },
+            fields: [],
+            spec_count: 0,
+            spec_unchecked: 0,
+            no_spec_reason: null,
+            parent: null,
+            child_count: 0,
+            link_count: 0,
+            results: {},
             kind: { name: "タスク" },
             stage: { name: "未着手" },
             assignee: { display_name: "山田" },
@@ -188,6 +177,8 @@ async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: bo
     else if (p === "/api/v1/scopes") reply = m.on.scopes();
     else if (p === "/api/v1/ticket_kinds") reply = m.on.kinds();
     else if (p === "/api/v1/members") reply = { status: 200, body: { data: MEMBERS, meta: { limit: 200 } } };
+    // 会社の項目のマスタ（K-563・K-569 が種別ごとに読む）。この試験は会社の項目を持たない（0 件）
+    else if (p === "/api/v1/ticket-fields") reply = { status: 200, body: { data: [], meta: { limit: 200 } } };
     else if (p === "/api/v1/tickets" && req.method() === "GET") reply = m.on.list();
     else if (p === "/api/v1/tickets" && req.method() === "POST") {
       const b = req.postDataJSON() as Record<string, unknown>;
@@ -276,10 +267,8 @@ const fillAll = async (page: Page, o: { title?: string; due?: string } = {}) => 
   await expect(form(page)).toBeVisible();
   await page.getByRole("textbox", { name: "題名", exact: true }).fill(o.title ?? "請求書を送る");
   await pick(page, "担当者", "山田");
-  await page.getByRole("textbox", { name: "期限", exact: true }).fill(o.due ?? jst(3));
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill("月末の請求を出す");
-  await page.getByRole("textbox", { name: "完了の条件", exact: true }).fill("先方が受け取った");
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).fill("作る・送る");
+  await fillDue(page, o.due ?? jst(3));
+  await writeBody(page, "月末の請求を出す");
 };
 const create = (page: Page) => page.getByRole("button", { name: "作る", exact: true });
 /** 続きの下書きを読み終えた（読み終えると種別に既定のタスクが入る）。空であることを確かめる前に待つ */
@@ -304,11 +293,8 @@ row(R["K60-UI-000"], async (page) => {
   await mockApi(page);
   await open(page);
   await expect(form(page)).toBeVisible();
-  // 区画の欄（種別のマスタから並ぶ）と知らせる人（人の数だけ並ぶ）は、K60-UI-014・K60-UI-015 の行が受け持つ
-  const generated = new Set([
-    ...KINDS.flatMap((k) => k.sections.map((s) => s.label)),
-    ...MEMBERS.map((x) => x.display_name),
-  ]);
+  // 知らせる人（人の数だけ並ぶ）は K60-UI-015 の行が受け持つ。本文は 1 枚の欄（K-442・本文の道具は K-567 の試験が受け持つ）
+  const generated = new Set([...MEMBERS.map((x) => x.display_name)]);
   // 外枠（左のメニュー・下のタブ）の要素は外枠の試験が受け持つ（D-143.1）。ここは本文だけを見る。外枠が出ることは K60-UI-031
   const missing = (await missingRows(page, ROWS, "[data-ticket-shell]")).filter(
     (x) => !generated.has(/「(.+)」/.exec(x)?.[1] ?? ""),
@@ -344,9 +330,14 @@ row(R["K60-UI-002"], async (page) => {
     assignee_member_id: MATE,
     due_on: jst(3),
     priority: "mid",
-    sections: { purpose: "月末の請求を出す", done: "先方が受け取った", todo: "作る・送る" },
     notify_member_ids: [],
   });
+  // 本文は 1 枚の文書の木（body.doc）で送る：打った字が入り、薄いひな形の節は入らず、素の文字 text も区画の入力 sections も送らない
+  const sentBody = m.creates[0]!["body"] as { doc: unknown; text?: unknown };
+  expect(JSON.stringify(sentBody.doc)).toContain("月末の請求を出す");
+  expect(JSON.stringify(sentBody.doc)).not.toContain('"ghost":true');
+  expect(sentBody).not.toHaveProperty("text");
+  expect(m.creates[0]).not.toHaveProperty("sections");
   expect(String(m.creates[0]!["draft_id"])).toMatch(/^[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { level: 1, name: "請求書を送る" })).toBeVisible();
   // 番号は外枠の帯のいまの場所にも出る（K-138）。ここは本文の詳細を見る
@@ -388,10 +379,12 @@ row(R["K60-UI-006"], async (page) => {
   await mockApi(page);
   await open(page);
   await expect(page.getByRole("combobox", { name: "種別" })).toContainText("タスク");
+  // 種別を選ぶと、その種別のひな形（薄い字の見出しと説明）が本文に入る。まだ書いていなければ入れ替わる（K-442）
+  await expect(bodyBox(page)).toContainText("目的");
   await pick(page, "種別", "課題");
-  await expect(page.getByRole("textbox", { name: "起きていること", exact: true })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "影響", exact: true })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveCount(0);
+  await expect(bodyBox(page)).toContainText("起きていること");
+  await expect(bodyBox(page)).toContainText("影響");
+  await expect(bodyBox(page)).not.toContainText("目的");
 });
 
 row(R["K60-UI-007"], async (page) => {
@@ -416,9 +409,23 @@ row(R["K60-UI-009"], async (page) => {
   await fillAll(page, { due: "" });
   await create(page).click();
   await expect.poll(() => reasonOf(page, "期限")).toContain("期限を入れてください");
-  await page.getByRole("textbox", { name: "期限", exact: true }).fill(jst(-1));
-  await create(page).click();
-  await expect.poll(() => reasonOf(page, "期限")).toContain("期限は今日か、それより後の日にしてください");
+  if (await dueIsDialog(page)) {
+    // 小窓では今日より前の日は選べない（押せない形・赤い理由）。過去の日を押しても作る口へは行かない（昨日が前の月なら今月に過去の日は無いので押さない）
+    await page.getByRole("button", { name: "期限", exact: true }).click();
+    const dlg = page.getByRole("dialog", { name: "期限を決める", exact: true });
+    const [yy, mo, dd] = jst(-1).split("-").map(Number) as [number, number, number];
+    const week = "日月火水木金土"[new Date(Date.UTC(yy, mo - 1, dd)).getUTCDay()];
+    const past = dlg.getByRole("button", { name: `${mo}月${dd}日（${week}）`, exact: true });
+    if (await past.count()) {
+      await past.click({ force: true });
+      await expect(dlg.getByRole("alert")).toContainText("期限は今日か、それより後の日にしてください");
+    }
+    await dlg.getByRole("button", { name: "やめる", exact: true }).click();
+  } else {
+    await page.getByRole("textbox", { name: "期限", exact: true }).fill(jst(-1));
+    await create(page).click();
+    await expect.poll(() => reasonOf(page, "期限")).toContain("期限は今日か、それより後の日にしてください");
+  }
   expect(m.creates).toHaveLength(0);
 });
 
@@ -459,18 +466,17 @@ row(R["K60-UI-012"], async (page) => {
 });
 
 row(R["K60-UI-014"], async (page) => {
+  // 必須の区画は無くなった（D-150.49）：本文は空でも作れる。止めるのは 題名・種別・担当者・期限だけ（K-442）
   const m = await mockApi(page);
   await open(page);
-  await fillAll(page);
-  await page.getByRole("textbox", { name: "完了の条件", exact: true }).fill("");
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).fill("");
+  await expect(form(page)).toBeVisible();
+  await page.getByRole("textbox", { name: "題名", exact: true }).fill("本文なしで作る");
+  await pick(page, "担当者", "山田");
+  await fillDue(page, jst(3));
   await create(page).click();
-  await expect.poll(() => reasonOf(page, "完了の条件")).toContain("この区画は書かないと作れません");
-  await expect.poll(() => reasonOf(page, "実施事項")).toContain("この区画は書かないと作れません");
-  const before = page.getByRole("region", { name: "作る前に" });
-  await expect(before.getByText("× 完了の条件")).toBeVisible();
-  await expect(before.getByText("✓ 目的")).toBeVisible();
-  expect(m.creates).toHaveLength(0);
+  await expect.poll(() => m.creates.length).toBe(1);
+  expect(m.creates[0]).not.toHaveProperty("sections");
+  expect(JSON.stringify(m.creates[0]!["body"] ?? { doc: { content: [] } })).not.toContain("ghost");
 });
 
 row(R["K60-UI-015"], async (page) => {
@@ -503,7 +509,7 @@ row(R["K60-UI-017"], async (page) => {
   await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS_A}`);
   await page.goto("/tickets?new=1");
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("切れる前に書いた題名");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
+  await expect(bodyBox(page)).toContainText("月末の請求を出す");
 });
 
 row(R["K60-UI-018"], async (page) => {
@@ -585,7 +591,7 @@ row(R["K60-UI-032"], async (page) => {
   await open(page);
   await loaded(page);
   await titleBox(page).fill("A の書きかけ");
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill("A の本文");
+  await writeBody(page, "A の本文");
   await expect.poll(() => JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])])).toContain("A の本文");
   const copyA = (await draftCopies(page)).find((c) => c.store === "local" && c.value.includes("A の本文"));
   expect(copyA, "A の写しがこの PC にある").toBeTruthy();
@@ -598,13 +604,13 @@ row(R["K60-UI-032"], async (page) => {
   await open(page);
   await loaded(page);
   await expect(titleBox(page)).toHaveValue("");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("");
+  await expect(bodyBox(page)).not.toContainText("A の本文");
   // B が書く。B の下書きは B のところにだけ残り、A の中身は混ざらない
   await titleBox(page).fill("B の書きかけ");
   const bKey = `${WS_A}~${MATE}`;
   await expect.poll(() => JSON.stringify([...(m.drafts.get(bKey)?.values() ?? [])])).toContain("B の書きかけ");
   expect(JSON.stringify([...(m.drafts.get(bKey)?.values() ?? [])])).not.toContain("A の");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("");
+  await expect(bodyBox(page)).not.toContainText("A の本文");
   // A の下書きに B の中身は入らない（A のものは A のまま）
   const a = JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])]);
   expect(a).not.toContain("B の");
@@ -624,8 +630,8 @@ row(R["K60-UI-033"], async (page) => {
   await fillAll(page);
   // 時計を止め、1 文字足す（下書きをサーバーに残すのを待っている間に「作る」を押す）
   await page.clock.pauseAt(new Date(Date.now() + 60_000));
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).press("End");
-  await page.getByRole("textbox", { name: "実施事項", exact: true }).pressSequentially("。");
+  await bodyBox(page).press("End");
+  await bodyBox(page).pressSequentially("。");
   m.hold = gate();
   await create(page).click();
   await expect.poll(() => m.creates.length).toBe(1);
@@ -780,7 +786,7 @@ row(R["K60-UI-041"], async (page) => {
   await open(page);
   await loaded(page);
   await titleBox(page).fill("写しにある題名");
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill("写しにある本文");
+  await writeBody(page, "写しにある本文");
   await expect
     .poll(async () => (await draftCopies(page)).some((c) => c.store === "local" && c.value.includes("写しにある本文")))
     .toBe(true);
@@ -792,29 +798,21 @@ row(R["K60-UI-041"], async (page) => {
   await expect(form(page)).toBeVisible();
   await loaded(page);
   await expect(titleBox(page)).toHaveValue("写しにある題名");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("写しにある本文");
+  await expect(bodyBox(page)).toContainText("写しにある本文");
 });
 
 row(R["K60-UI-021"], async (page) => {
   const m = await mockApi(page);
-  m.on.create = () => ({
-    status: 422,
-    body: {
-      error: "validation",
-      code: "E-VAL-014",
-      field: "kind_id",
-      details: [
-        {
-          field: "kind_id",
-          message: "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-        },
-      ],
-    },
-  });
+  // 選べなくなった（種別・担当者・知らせる人）は DB の中身で決まる断りなので 404 の E-PAGE-001 で、欄は特定できない
+  //   （field・details を付けない＝在るかを漏らさない・控え帳 K-385・K-401）。欄ごとの理由は 422 の形の誤り（欄つき）だけ。
+  //   画面は 1 つの文（E-PAGE-001 の正本の文）を赤い箱に出し、書いたものは残す
+  m.on.create = () => ({ status: 404, body: { error: "not_found", code: "E-PAGE-001" } });
   await open(page);
   await fillAll(page);
   await create(page).click();
-  await expect(page.getByText(/選んだものが、いまは選べなくなりました/).first()).toBeVisible();
+  const box = page.locator('[data-state="error"][data-code="E-PAGE-001"]');
+  await expect(box).toBeVisible();
+  await expect(box).toContainText("見つかりませんでした");
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("請求書を送る");
 });
 
@@ -825,14 +823,14 @@ row(R["K60-UI-022"], async (page) => {
   await fillAll(page);
   await create(page).click();
   await expect(page.getByText(/この画面を見る権限がありません/)).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
+  await expect(bodyBox(page)).toContainText("月末の請求を出す");
 });
 
 row(R["K60-UI-023"], async (page) => {
   const m = await mockApi(page);
   await open(page);
   await page.getByRole("textbox", { name: "題名", exact: true }).fill("読めなくても消えない題名");
-  await page.getByRole("textbox", { name: "目的", exact: true }).fill("本文");
+  await writeBody(page, "本文");
   await expect.poll(() => m.drafts.get(WS_A)?.size ?? 0).toBe(1);
   let fail = true;
   m.on.kinds = () =>
@@ -842,7 +840,7 @@ row(R["K60-UI-023"], async (page) => {
   fail = false;
   await page.getByRole("button", { name: "もう一度" }).click();
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("読めなくても消えない題名");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("本文");
+  await expect(bodyBox(page)).toContainText("本文");
 });
 
 row(R["K60-UI-024"], async (page) => {
@@ -899,7 +897,16 @@ row(R["K60-UI-028"], async (page) => {
     body: {
       data: {
         ticket: { id: ID, number: "EG-1", title: evil, due_on: null, start_on: null, priority: "mid" },
-        sections: [{ key: "purpose", label: "目的", body: { text: evil }, version: 1 }],
+        sections: [],
+        body: { doc: P(evil), text: evil, version: 1 },
+        fields: [],
+        spec_count: 0,
+        spec_unchecked: 0,
+        no_spec_reason: null,
+        parent: null,
+        child_count: 0,
+        link_count: 0,
+        results: {},
         kind: null,
         stage: null,
         assignee: null,
@@ -960,7 +967,7 @@ row(R["K144-UI-002"], async (page) => {
   await expect(page.getByText("送る内容が大きすぎます").first()).toBeVisible();
   await expect(page.getByText(/読み込めません/)).toHaveCount(0);
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("請求書を送る");
-  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
+  await expect(bodyBox(page)).toContainText("月末の請求を出す");
 });
 
 row(R["K144-UI-003"], async (page) => {

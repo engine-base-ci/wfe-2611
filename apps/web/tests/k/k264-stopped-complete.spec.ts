@@ -4,15 +4,7 @@
 //   この行は、中間テスト 3 の K64-M3-04 が本物の口で見る形（止まった帯の中の「完了にする」から完了にできる）を、網の手前で差し替えた口で先に見る。
 //   口は前からの土台 approve-complete.harness.ts で差し替える。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test } from "@playwright/test";
-import {
-  MSG,
-  bandOf,
-  confirmBox,
-  dialog,
-  mockApi,
-  openTicketSettled,
-  type Band,
-} from "../features/F5/approve-complete.harness";
+import { MSG, bandOf, dialog, mockApi, openTicketSettled, type Band } from "../features/F5/approve-complete.harness";
 
 /** 承認の後の実行が空の結果で止まった（E-SIG-004 の文・K64-M3-04 と同じ止まり方）。作業中に戻り、完了にできる */
 const EMPTY_RESULT = "自分のAI が結果を返さずに終わりました。完了とは見なしていません";
@@ -22,7 +14,7 @@ const STOPPED: Band = {
   can_complete: true,
 };
 
-test("K264-UI-001 承認の後の実行が止まった：赤い箱（題「実行が止まりました」・理由）の中に「完了にする」が 1 つ出て、完了の確かめの文は出ない。押すと完了の小窓が開き、確かめて完了にすると完了の口が 1 回呼ばれる", async ({
+test("K264-UI-001 承認の後の実行が止まった：赤い箱（題「実行が止まりました」・理由）は出て、「完了にする」は題の行に 1 つだけ出る（赤い箱の中には無い・K-572）。完了の確かめの文は出ない。押すと完了の小窓が開き、「このまま完了にする」と完了の口が 1 回呼ばれる", async ({
   page,
 }) => {
   const m = await mockApi(page, STOPPED);
@@ -32,15 +24,13 @@ test("K264-UI-001 承認の後の実行が止まった：赤い箱（題「実�
   await expect(stopped).toContainText(EMPTY_RESULT);
   // 止まった帯は完了の確かめの文を出さない（K-228）
   await expect(bandOf(page).getByText(MSG.completeHint)).toHaveCount(0);
-  const done = stopped.getByRole("button", { name: "完了にする", exact: true });
-  await expect(done, "完了にする道は止まった帯の中に出る").toBeVisible();
+  const done = page.locator("header.k-page-head").getByRole("button", { name: "完了にする", exact: true });
+  await expect(done, "完了にする道は題の行に出る（止まった帯の中には出さない）").toBeVisible();
+  await expect(stopped.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "完了にする", exact: true }), "完了にするは画面に 1 つ").toHaveCount(1);
   await done.click();
   await expect(dialog(page)).toBeVisible();
-  await page.getByRole("checkbox", { name: "請求書を作る" }).check();
-  await page.getByRole("checkbox", { name: "先方に送る" }).check();
-  await confirmBox(page).check();
-  await page.getByRole("button", { name: "確かめて完了にする" }).click();
+  await dialog(page).getByRole("button", { name: "このまま完了にする", exact: true }).click();
   await expect.poll(() => m.completes.length, "完了の口は 1 回").toBe(1);
-  expect(m.completes[0]!["todo_checked"]).toEqual([0, 1]);
+  expect(m.completes[0]).toEqual({ conditions_confirmed: true });
 });

@@ -13,7 +13,7 @@ interface World {
   tenantId: string;
   root: string;
   me: Person;
-  task: { id: string; sections: { key: string; mode: string }[] };
+  task: { id: string };
 }
 const SECRET_TEXT = "でたらめな字ZQX";
 const NUL = "\u0000";
@@ -28,7 +28,6 @@ async function world(): Promise<World> {
   const kinds = (await json(await f.req("GET", "/ticket_kinds", { headers: me.auth })))["data"] as {
     id: string;
     name: string;
-    sections: { key: string; mode: string }[];
   }[];
   return { tenantId: c.tenantId, root: c.rootScope, me, task: kinds.find((k) => k.name === "タスク")! };
 }
@@ -37,7 +36,7 @@ const ticketCount = async (tenantId: string) =>
     (await f.admin.query<{ n: string }>("select count(*) as n from tickets where tenant_id = $1", [tenantId])).rows[0]!
       .n,
   );
-/** 作る口で 1 件作る。title・sections は選べる（sections は必須の欄を「書いた」で埋めた物に足す） */
+/** 作る口で 1 件作る。title は選べる。extraSections を渡したときだけ区画の入力 sections を送る（K-578 で契約から外れた欄・NUL の確かめは契約の形より前） */
 const create = (w: World, title: string, extraSections: Record<string, unknown> = {}) =>
   f.req("POST", "/tickets", {
     body: {
@@ -46,10 +45,7 @@ const create = (w: World, title: string, extraSections: Record<string, unknown> 
       title,
       assignee_member_id: w.me.id,
       due_on: dueOn(),
-      sections: {
-        ...Object.fromEntries(w.task.sections.filter((s) => s.mode === "required").map((s) => [s.key, "書いた"])),
-        ...extraSections,
-      },
+      ...(Object.keys(extraSections).length ? { sections: extraSections } : {}),
     },
     headers: w.me.auth,
   });
@@ -116,7 +112,7 @@ describe("K-427 入口：NUL（U+0000）を含む入力は 422", () => {
   it("K427-API-004 入れ子の値（sections の欄の値）とキー（sections の欄の名前）の NUL：422・欄は入れ子の道（sections.<キー>）か sections。jsonb の 22P05 まで届かず、チケットは増えない", async () => {
     const w = await world();
     const before = await ticketCount(w.tenantId);
-    const key = w.task.sections[0]!.key;
+    const key = "purpose"; // K-578：種別の区画は答えに出ないので、前の区画の名前を 1 つ決めて送る
     const inValue = await create(w, "入れ子の値", { [key]: `書いた${NUL}` });
     expect(inValue.status, await inValue.clone().text()).toBe(422);
     expect(detailsOf(await json(inValue)).map((d) => d.field)).toContain(`sections.${key}`);
