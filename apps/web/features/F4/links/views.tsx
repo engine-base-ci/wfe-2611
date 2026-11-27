@@ -215,6 +215,8 @@ export interface LinkAddDialogProps {
   notice?: ReactNode;
   /** 候補を読めなかった理由（探す欄・候補の下の赤い字。「候補を読み込めませんでした」など） */
   candidateError?: string;
+  /** まだ探していない（探す字が空）。候補の場所に何も出さない（既定 false・K-452） */
+  idle?: boolean;
   onKind?: (kind: AddLinkKind) => void;
   onQuery?: (query: string) => void;
   onSelect?: (number: string) => void;
@@ -232,6 +234,7 @@ function Candidates({ p }: { p: LinkAddDialogProps }) {
       </p>
     );
   }
+  if (p.idle) return null;
   if (p.candidates.length === 0) {
     return (
       <p className="k-f4-links-none" role="status">
