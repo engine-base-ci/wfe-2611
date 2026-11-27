@@ -24,6 +24,15 @@ const fromCatalog = (code: string, field: string, message?: string): HookReply =
   };
 };
 const LIST_MAX = 200;
+/** グループの一覧（listScopes）：元の行に 10 の鍵（K-804・app.scope_list_json）を重ね、その並びで返す。並びに無い行は後ろに元のまま */
+function withScopeKeys(rows: Row[], shaped: Row[]): Row[] {
+  const byId = new Map(rows.map((r) => [String(r["id"]), r]));
+  const seen = new Set(shaped.map((x) => String(x["id"])));
+  return [
+    ...shaped.filter((x) => byId.has(String(x["id"]))).map((x) => ({ ...byId.get(String(x["id"]))!, ...x })),
+    ...rows.filter((r) => !seen.has(String(r["id"]))),
+  ];
+}
 /** チケットの詳細の帯（DB の app.ticket_band の答え・0096 と 0100） */
 interface TicketBand {
   approval: unknown;
@@ -147,19 +156,25 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           (s) => !s["deleted_at"],
         );
         // チケットを書けるグループ：グループごとに聞かず、1 回の SQL で（has_permission を並びに当てる）
+        // 1 件に足す 10 の鍵と並び（K-804）：見える id の並びで app.scope_list_json を 1 回（同じ取引の中）。
+        //   上のグループが先・兄弟は position の順。元の列（layer_id など）は残し、足す鍵を上に重ねる
         const ids = rows.map((s) => String(s["id"]));
-        const writable =
-          a.ctx.role === "member" && ids.length
-            ? await withTenant(appPool, a.ctx, async (cl) =>
-                (
-                  await cl.query<{ id: string }>(
-                    "select s.id::text as id from unnest($1::uuid[]) as s(id) where has_permission(app.user_id(), 'tickets', s.id, 'edit')",
-                    [ids],
-                  )
-                ).rows.map((r) => r.id),
-              )
-            : [];
-        return { status: 200, body: { data: rows, meta: { limit: LIST_MAX, writable } } };
+        const { writable, shaped } = ids.length
+          ? await withTenant(appPool, a.ctx, async (cl) => ({
+              writable:
+                a.ctx.role === "member"
+                  ? (
+                      await cl.query<{ id: string }>(
+                        "select s.id::text as id from unnest($1::uuid[]) as s(id) where has_permission(app.user_id(), 'tickets', s.id, 'edit')",
+                        [ids],
+                      )
+                    ).rows.map((r) => r.id)
+                  : [],
+              shaped:
+                (await cl.query<{ v: Row[] }>("select app.scope_list_json($1::uuid[]) as v", [ids])).rows[0]?.v ?? [],
+            }))
+          : { writable: [] as string[], shaped: [] as Row[] };
+        return { status: 200, body: { data: withScopeKeys(rows, shaped), meta: { limit: LIST_MAX, writable } } };
       },
     },
     getTicket: {
