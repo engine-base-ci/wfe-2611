@@ -16,7 +16,7 @@ export { OPS_TENANT, PLANS, STEP, type PlanKey };
 export const PLANS_PATH = "/ops/plans";
 export const PROPOSALS = "/ops/plan_proposals";
 export const HISTORY = "/ops/plan_history";
-/** listOpsPlans の 1 行の 8 欄（K-987） */
+/** listOpsPlans の 1 行の 9 欄（K-987 の 8 欄＋K-1104 の trial_days） */
 export const PLAN_ROW_KEYS = [
   "facts",
   "member_limit",
@@ -25,6 +25,7 @@ export const PLAN_ROW_KEYS = [
   "plan_key",
   "price_monthly",
   "proposal",
+  "trial_days",
   "version",
 ] as const;
 /** listPlanProposals ほか案の 1 行の 20 欄（K-987） */

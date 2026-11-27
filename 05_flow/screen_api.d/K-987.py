@@ -7,11 +7,11 @@
 _PLAN_KEYS = ["free", "team", "business"]
 
 RESPONSES = {
-    # 値段の安い順。facts は { label, value } の並び（先頭は人数）。proposal は待っている案の短い形
+    # 値段の安い順。trial_days は今の版の無料期間の日数（K-1104・0 なら無し）。facts は { label, value } の並び（先頭は人数）。proposal は待っている案の短い形
     #   { id, state, to_version, price_monthly, proposer_name } か null
     "listOpsPlans": ("PlanOps", {"plan_key": "string", "name": "string", "version": "integer", "price_monthly": "integer",
-                                 "member_limit": "integer", "facts": "array", "places": "integer", "proposal": "object?"}),
-    # before・changes は { price_monthly, member_limit }。existing_policy は after_days・keep。proposer は { member_id, name }・decider は同じ形か null
+                                 "member_limit": "integer", "trial_days": "integer", "facts": "array", "places": "integer", "proposal": "object?"}),
+    # before・changes は { price_monthly, member_limit }（無料期間を変える案だけ trial_days も持つ・K-1104）。existing_policy は after_days・keep。proposer は { member_id, name }・decider は同じ形か null
     "listPlanProposals": ("PlanProposal", {"id": "uuid", "plan_key": "string", "plan_name": "string", "from_version": "integer",
                                            "to_version": "integer", "before": "object", "changes": "object",
                                            "existing_policy": "string", "notice_days": "integer?", "new_from": "string?",

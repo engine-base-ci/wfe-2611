@@ -5378,6 +5378,10 @@
     "type": "jsonb",
     "nullable": true
    },
+   "trial_days": {
+    "type": "integer",
+    "nullable": false
+   },
    "updated_at": {
     "type": "timestamp with time zone",
     "nullable": false

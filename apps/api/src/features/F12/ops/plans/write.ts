@@ -20,8 +20,19 @@ export const MEMBERS_MAX = 10_000;
 export const NOTICE_MIN = 30;
 export const NOTICE_MAX = 365;
 export const REASON_MAX = 1000;
+/** 無料期間の日数（0 なら無し・K-1104・D-156.62） */
+export const TRIAL_MIN = 0;
+export const TRIAL_MAX = 365;
 /** 直すで受ける欄（plan_key は直せない） */
-const EDITABLE = ["price_monthly", "member_limit", "existing_policy", "notice_days", "new_from", "reason"] as const;
+const EDITABLE = [
+  "price_monthly",
+  "member_limit",
+  "trial_days",
+  "existing_policy",
+  "notice_days",
+  "new_from",
+  "reason",
+] as const;
 
 type Answer = { data?: unknown; error?: unknown };
 interface Detail {
@@ -50,6 +61,7 @@ function badValue(k: string, v: unknown): string | null {
   if (k === "plan_key") return typeof v === "string" && PLAN_KEYS.includes(v) ? null : k;
   if (k === "price_monthly") return isInt(v, 0, PRICE_MAX) ? null : k;
   if (k === "member_limit") return isInt(v, MEMBERS_MIN, MEMBERS_MAX) ? null : k;
+  if (k === "trial_days") return isInt(v, TRIAL_MIN, TRIAL_MAX) ? null : k;
   if (k === "existing_policy") return typeof v === "string" && POLICIES.includes(v) ? null : k;
   if (k === "notice_days") return isInt(v, NOTICE_MIN, NOTICE_MAX) ? null : k;
   if (k === "new_from") return v === null || (typeof v === "string" && isDate(v)) ? null : k;

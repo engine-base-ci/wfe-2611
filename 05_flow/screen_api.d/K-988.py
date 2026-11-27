@@ -5,14 +5,15 @@
 
 _PLAN_KEYS = ["free", "team", "business"]
 _POLICIES = ["after_days", "keep"]   # N 日たってから・ずっと今の値段（D-128.72）
-_EDITABLE = ["price_monthly", "member_limit", "existing_policy", "notice_days", "new_from", "reason"]
+_EDITABLE = ["price_monthly", "member_limit", "trial_days", "existing_policy", "notice_days", "new_from", "reason"]
 
-# 体は strict（知らない欄は 422）。new_from の null は決めたらすぐ
+# 体は strict（知らない欄は 422）。new_from の null は決めたらすぐ。trial_days は任意（K-1104）
 INPUTS = {
     "createPlanProposal": ("PlanProposalCreateInput", {"plan_key": "string", "price_monthly": "integer", "member_limit": "integer",
-                                                       "existing_policy": "string", "notice_days": "integer", "new_from": "string?",
-                                                       "reason": "string"}),
-    "updatePlanProposal": ("PlanProposalUpdateInput", {"price_monthly": "integer", "member_limit": "integer", "existing_policy": "string",
+                                                       "trial_days": "integer", "existing_policy": "string", "notice_days": "integer",
+                                                       "new_from": "string?", "reason": "string"}),
+    "updatePlanProposal": ("PlanProposalUpdateInput", {"price_monthly": "integer", "member_limit": "integer", "trial_days": "integer",
+                                                       "existing_policy": "string",
                                                        "notice_days": "integer", "new_from": "string?", "reason": "string"}),
 }
 
@@ -25,6 +26,7 @@ REQUIRED_INPUTS = {
 _RANGES = {
     "price_monthly": {"minimum": 0, "maximum": 10000000},
     "member_limit": {"minimum": 1, "maximum": 10000},
+    "trial_days": {"minimum": 0, "maximum": 365},   # 無料期間の日数（0 なら無し・K-1104・D-156.62）。送らなければ今の版の値のまま
     "existing_policy": {"enum": list(_POLICIES)},
     "notice_days": {"minimum": 30, "maximum": 365},
     "new_from": {"format": "date"},
@@ -64,7 +66,7 @@ _STATE = {"status": 409, "code": "E-OPS-021", "body": {"error": "conflict", "cod
           "trigger": "直すは下書きか差し戻された案でない・回すは下書きでない（2 回目に回したのも）。欄も details も付けない",
           "ears_form": "UNWANTED: IF いま直せない・回せない状態の案なら、Kaname は 409 と E-OPS-021 を返し、案も記録も変えない"}
 _NO_CHANGE = {"status": 409, "code": "E-OPS-020", "body": {"error": "conflict", "code": "E-OPS-020"}, "errors": ["E-OPS-020"],
-              "trigger": "値段と人数が今のプランと同じ（作るも直した後も）。欄も details も付けない",
+              "trigger": "値段と人数と無料期間（送らなければ今の版の値）が今のプランと同じ（作るも直した後も）。欄も details も付けない",
               "ears_form": "UNWANTED: IF 値段と人数が今のプランと同じなら、Kaname は 409 と E-OPS-020 を返し、案も記録も変えない"}
 ERRORS_4XX = {
     "createPlanProposal": [
