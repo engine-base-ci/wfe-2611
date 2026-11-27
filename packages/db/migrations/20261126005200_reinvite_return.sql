@@ -1,6 +1,7 @@
 -- 20261126005200_reinvite_return 外された人が招待から戻る（K-852・D-154.86〜89・D-154.85・D-154.26・D-154.41・関門 C2）
 --   ① app.login_invite_only(利用者, 招待の印の sha256)：本人宛ての使える招待があり、本人が止められていないかを答える（読むだけ・記録は書かない）。
---      使える招待＝宛て（lower(btrim)）が本人のメールと同じ・使っていない・取り消していない・消していない・期限の内・招いた会社が止められていない。
+--      使える招待＝宛て（lower(btrim)）が本人のメールと同じ・使っていない・取り消していない・消していない・期限の内・招いた会社が止められていない
+--      （契約の止め subscriptions.suspended_at と、運営の止め app.tenant_stopped＝tenants.stopped_at・K-970・K-1012。app.tenant_stopped は後の migration だが plpgsql なので呼ぶ時に在れば足りる）。
 --      止められている＝本人の members の行（消した行も・どの会社でも）に suspended_at があるか、同じ組の所属の status が suspended（止めたまま外された人も偽）。
 --      招いた会社がその人を外した会社かどうかは問わない（D-154.88・D-154.89）。印（sha256）があればその 1 つの招待だけを見る
 --   ② app.login_gate：② 「使える組が 1 つも無い」の手前で、①（印なし）が真なら 'invite_only'。ほかの順と記録は 0108 のまま
@@ -44,6 +45,8 @@ begin
        and i.expires_at > now()
        and not exists (select 1 from subscriptions s
                         where s.tenant_id = i.tenant_id and s.suspended_at is not null and s.deleted_at is null)
+       -- 運営が止めた会社（K-970・K-1012 の app.tenant_stopped：tenants.stopped_at か止める日を過ぎた）の招待も使えない（PM の決め 2026-11-28）
+       and not app.tenant_stopped(i.tenant_id)
   );
 end $$;
 revoke all on function app.login_invite_only(text, text) from public;
