@@ -252,7 +252,7 @@ SCREEN_API = {
         ("POST", "/ops/plan_proposals", "A133", "ops_plan_proposals", "createPlanProposal", ["plans"]),
         ("PATCH", "/ops/plan_proposals/:id", "A133", "ops_plan_proposals", "updatePlanProposal", []),
         ("GET", "/ops/plan_proposals/:id/impact", "A133", "ops_plan_proposals", "getPlanProposalImpact", ["subscriptions", "tenants"]),
-        ("POST", "/ops/plan_proposals/:id/submit", "A133", "ops_plan_proposals", "submitPlanProposal", ["notifications"]),
+        ("POST", "/ops/plan_proposals/:id/submit", "A133", "ops_plan_proposals", "submitPlanProposal", []),   # 運営の人へ鈴を出さない（待っている案は 配るもの › プラン の数で見る・K-988）
         ("POST", "/ops/plan_proposals/:id/decide", "A133", "ops_plan_proposals", "decidePlanProposal", ["plan_versions", "notices", "ops_audit_events"]),
         ("POST", "/ops/plan_proposals/:id/return", "A133", "ops_plan_proposals", "returnPlanProposal", ["notifications"]),
         ("GET", "/ops/plan_history", "A133", "ops_audit_events", "listPlanHistory", ["ops_plan_proposals"]),
