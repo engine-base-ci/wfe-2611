@@ -57,6 +57,9 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "credential.wrong_destination": settingKind(null),
   // 請求先（K-959・D-156.30・D-156.41）：請求先を変えたら管理者全員に。押すと請求書の画面
   "billing.contact_changed": settingKind("/billing"),
+  // 段 13（K-975）：運営が問い合わせに返した（問い合わせた本人だけ・D-156.28）。札に合う物が無いので setting。
+  //   行き先は 困ったとき・お知らせ の一覧（1 件の道 /inquiry/<id> は表の行き先が固定なので組めない・申し送り）
+  "inquiry.replied": settingKind("/notices"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
