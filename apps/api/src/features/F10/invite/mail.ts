@@ -17,6 +17,7 @@ const ROLE_LABEL: Record<string, string> = {
   manager: "マネージャー",
   member: "メンバー",
   viewer: "閲覧のみ",
+  requester: "ゲスト",
 };
 
 const DAY = new Intl.DateTimeFormat("ja-JP", {

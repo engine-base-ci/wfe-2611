@@ -189,6 +189,14 @@
    "class": "frozen",
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
+  "guest_group_members": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
+  "guest_groups": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
   "handover_rules": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"

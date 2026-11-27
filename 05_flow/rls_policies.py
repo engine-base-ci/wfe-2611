@@ -240,6 +240,16 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "グループを移す・兼ねる・役割を変えるのは管理者と、その権限を個別に付けた人だけ（マネージャーの束には入れない）", "source": ["D-128.97"]},
         ops_read("scope_memberships"),
     ],
+    # ゲストのグループ（K-876・D-155.37・D-155.39）：社内のメンバーを見られる人が読み、メンバーを直せる人が書く。ゲストが自分のグループを読む守りは K-878
+    **{t: [
+        {"name": f"{t}_members_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (has_permission({U}, 'members', NULL, 'view') OR has_permission({U}, 'members', NULL, 'invite'))",
+         "rationale": "その会社のメンバーを見られる人と招ける人（既定は管理者。一覧の口 app.guest_groups_list と同じ・招く人がメールにゲストのグループの名前を載せる）だけ。作る・招くは DB の関数（app.guest_group_create・app.create_invitations）が権限を見て書く", "source": ["D-155.37", "D-155.39"]},
+        {"name": f"{t}_members_write", "operation": "insert,update,delete", "role": "member",
+         "predicate": f"tenant_id = {T} AND has_permission({U}, 'members', NULL, 'edit')",
+         "rationale": "メンバーを直せる人（既定は管理者）だけ", "source": ["D-128.97", "D-155.40"]},
+        ops_read(t),
+    ] for t in ("guest_groups", "guest_group_members")},
     "terms_versions": [
         {"name": "terms_versions_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
          "rationale": "運営が全員に出す規約の版。今の版を同意し直しの画面に出す", "source": ["D-125.162"]},
