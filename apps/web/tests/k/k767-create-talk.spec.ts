@@ -78,6 +78,20 @@ test("K767-UI-004 欄の今の中身を渡す：人が題名を書いてから�
   page,
 }) => {
   const t = await mockCreateTalk(page);
+  // 1 回目の答えは AI が作業を終えた形で返す（作業中のままだと［送る］が［止める］に替わり 2 回目を言えない。2 回目を言う前の形をそろえる）
+  t.on.view = () => ({
+    status: 200,
+    body: {
+      data: draftView({
+        messages:
+          t.says.length >= 2
+            ? [ME_LINE({ text: "これで足りる？" }), ME_LINE({ text: "期限も入れた", passed: ["title"] })]
+            : t.says.length === 1
+              ? [ME_LINE({ text: "これで足りる？" })]
+              : [],
+      }),
+    },
+  });
   await openTalk(page);
   await titleBox(page).fill("来週の定例の議事録をまとめる");
   await chatBox(page).fill("これで足りる？");
@@ -85,14 +99,6 @@ test("K767-UI-004 欄の今の中身を渡す：人が題名を書いてから�
   await expect.poll(() => t.says.length).toBe(1);
   expect((t.says[0]!.body["draft"] as Record<string, unknown>)["title"]).toBe("来週の定例の議事録をまとめる");
   await titleBox(page).fill("来週の定例の議事録を 12/03 までにまとめる");
-  t.on.view = () => ({
-    status: 200,
-    body: {
-      data: draftView({
-        messages: [ME_LINE({ text: "これで足りる？" }), ME_LINE({ text: "期限も入れた", passed: ["title"] })],
-      }),
-    },
-  });
   await chatBox(page).fill("期限も入れた");
   await chatSend(page).click();
   await expect.poll(() => t.says.length).toBe(2);

@@ -190,7 +190,12 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
   const talk = useDraftTalk();
   const now = useRef(d);
   now.current = d;
-  const draftNow = useCallback(() => draftOf(now.current as unknown as Parameters<typeof draftOf>[0]), []);
+  // AI に渡す本文は作る口と同じく薄い節（種別のひな形の注）を落とした中身（何も書いていなければ空・K767-UI-002）
+  const draftNow = useCallback(() => {
+    const cur = now.current;
+    const form = cur.body ? { ...cur, body: toCreateBody(cur.body).doc } : cur;
+    return draftOf(form as unknown as Parameters<typeof draftOf>[0]);
+  }, []);
   /** AI の案を入れた欄と、入れたときの中身（K-777・印を出す元。画面の中だけ） */
   const [applied, setApplied] = useState<Partial<Record<DraftKey, string>>>({});
 

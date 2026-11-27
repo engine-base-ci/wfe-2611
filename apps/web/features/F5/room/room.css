@@ -1533,7 +1533,8 @@
     background: var(--k-card);
     border-bottom: var(--k-c-detail-rule-border);
     min-height: calc(var(--k-s-xl) + var(--k-s-sm));
-    margin-inline: calc(var(--k-s-lg) * -1);
+    /* 作る画面の会話は端から端まで（会話の器も頁も左右の余白 0・前の -lg のはみ出しで幅 320 が 24px 横に溢れた・K767-UI-015） */
+    margin-inline: 0;
   }
   .k-room-cc-bar .k-room-back {
     display: grid;
@@ -1546,7 +1547,7 @@
     bottom: var(--k-c-shell-tabs-height);
     z-index: 1;
     margin-top: auto;
-    margin-inline: calc(var(--k-s-lg) * -1);
+    margin-inline: 0;
     border: 0;
     border-top: var(--k-c-chat-composer-border);
     border-radius: 0;
