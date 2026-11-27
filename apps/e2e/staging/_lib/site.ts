@@ -24,3 +24,10 @@ export const WEB = site("STAGING_BASE_URL");
 export const API = site("STAGING_API_BASE");
 /** Resend の送った記録を読む鍵（K-202） */
 export const resendKey = (): string => need("STAGING_RESEND_READ_KEY");
+/** staging の試験だけの運営の人のパスキー（K-1101 の秘密）。関数の中で読む（秘密が無い回でも K-65・K-999 は落ちない）。
+ *   受けるのは道具 ops-steps.ts の addOpsPasskey だけ（CDP の WebAuthn.addCredential へ。画面・ページ・投げる文に出さない・K-1102） */
+export const opsPasskey = (): { key: string; id: string; user: string } => ({
+  key: need("STAGING_OPS_PASSKEY_KEY"),
+  id: need("STAGING_OPS_PASSKEY_ID"),
+  user: need("STAGING_OPS_PASSKEY_USER"),
+});
