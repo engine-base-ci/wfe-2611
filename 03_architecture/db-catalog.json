@@ -561,6 +561,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
+  "ticket_guest_shares": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）・K-881 のチケットの見せる相手"
+  },
   "ticket_kinds": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"

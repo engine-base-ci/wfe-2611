@@ -76,7 +76,6 @@ SCREEN_API = {
         ("GET", "/artifact_versions/:id", "A101", "artifact_versions", "getArtifactVersion", []),
         ("POST", "/tickets/:id/attachments", "A101", "attachments", "createTicketAttachment", []),
         ("POST", "/tickets/:id/acceptances", "A123", "acceptances", "requestAcceptance", ["client_contacts", "notifications"]),
-        ("PATCH", "/tickets/:id/client-share", "A123", T, "updateTicketClientShare", ["clients"]),
         # 一覧の設定・知らせ・選ぶもの
         ("GET", "/saved_views", "A58", "saved_views", "listSavedViews", []),
         ("POST", "/saved_views", "A58", "saved_views", "createSavedView", []),
@@ -1480,7 +1479,6 @@ PERMS = {
     "downloadInvoicePdf": ("admin", "同上（期限つきの署名 URL）", False),
     "updateBillingContact": ("admin", "同上", False),
     # 取引先（社内・D-128.53・D-128.54）
-    "updateTicketClientShare": ("assignee", "担当者とマネージャー。テスト仕様・決定ログ・分身の記録は見せられない（D-128.53）", False),
     "listClientLinkCandidates": ("write", "取引先を足す人。見られるチケットの中だけ", False),
     "createClient": ("write", "メンバー以上（閲覧のみは不可）", False),
     "getClient": ("read", "見られる取引先だけ（担当グループだけの取引先はそのグループの人と管理者）。チケットはグループの権限で見える", False),

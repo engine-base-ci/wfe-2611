@@ -88,6 +88,8 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "直せるのは書いた本人だけ", "source": ["D-125.29"]},
         ops_read("ticket_messages"),
     ],
+    # K-881：チケットの見せる相手（ゲストのグループ）。ゲストの読みはこの表に置かない（チケットの方を app.guest_sees_ticket で見る・K-878）
+    "ticket_guest_shares": child_of_ticket("ticket_guest_shares"),
     "ticket_links": [
         {"name": "ticket_links_both_read", "operation": "select", "role": "member",
          "predicate": f"tenant_id = {T} AND app.ticket_visible(from_ticket_id) AND app.ticket_visible(to_ticket_id)",
