@@ -1,4 +1,7 @@
 // 契約の 1 operation を Hono の handler にする。順序は固定：送る量（413・1MB）→ 上限（429）→ 認証（401）→ 認可（403）→ 入力の検証（422・表記ゆらぎの正規化）→ 冪等（409／再送は最初の結果）→ hooks.before → 副作用（hooks.effect・失敗は 502 で記録しない）→ 記録（関門 C2）→ hooks.after
+//   multipart の道（hooks に multipart を持つ口だけ・K-828）：送る量はファイルの上限＋余白 64 KB までをバイトのまま読み（超えたら hooks の tooLarge の答え）、
+//   入力の検証では multipart/form-data でなければ・読めなければ 422（欄 body）。JSON の読み・NUL・契約の strict な形は飛ばし、FormData を HookArgs.form で渡す（input は {}）。
+//   冪等の比べは欄ごとの中身（ファイルは中身の sha256）。multipart を持たない口の道は今のまま
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
 import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
@@ -164,6 +167,45 @@ export async function readBodyLimited(c: Pick<Context, "req">): Promise<string |
   }
   return new TextDecoder().decode(Buffer.concat(chunks));
 }
+/** multipart の口の送る量の余白（K-828）：境の印と頭の分だけ体はファイルより長い。ファイルの大きさの判定は口が file.size で行う */
+export const MULTIPART_MARGIN = 64 * 1024;
+/** readBodyLimited と同じ読みながら数える形で、体をバイトのまま返す（multipart の口・K-828）。max を超えたら読むのをやめて null。
+ *  content-length の頭が max を超えていれば 1 バイトも読まない */
+export async function readBytesLimited(c: Pick<Context, "req">, max: number): Promise<Uint8Array<ArrayBuffer> | null> {
+  const declared = Number(c.req.header("content-length"));
+  if (Number.isFinite(declared) && declared > max) return null;
+  const stream = c.req.raw.body;
+  if (!stream) return new Uint8Array(0);
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  return new Uint8Array(Buffer.concat(chunks));
+}
+/** multipart の体の冪等の比べ（K-828）：欄の名前 → 字の値か、ファイルの中身の sha256（境の印は送るたびに変わるので生のバイトで比べない） */
+async function formDigest(form: FormData): Promise<Record<string, string[]>> {
+  const out: Record<string, string[]> = {};
+  for (const [k, v] of form.entries()) {
+    const d =
+      typeof v === "string"
+        ? v
+        : `sha256:${createHash("sha256")
+            .update(new Uint8Array(await v.arrayBuffer()))
+            .digest("hex")}`;
+    (out[k] ??= []).push(d);
+  }
+  return out;
+}
+
 /** 体の確かめの理由：uuid の形で落ちた欄は "uuid"（道の値と同じ。zod の英語の文を出さない）。ほかは zod のまま */
 const issueMessage = (i: { code: string; message: string; format?: string }) =>
   i.code === "invalid_format" && i.format === "uuid" ? "uuid" : i.message;
@@ -214,7 +256,16 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     // 0) 送る量の守り（D-130.1・K-144 ㉚㊱）：上限・認証・権限・501 より前の一番最初。超えたら振る舞いに届かず何も書かない。
     //    読んだ体は 4) の JSON の読みに使い（2 回読まない）、hooks が c.req.json() で読んでも同じ中身になるよう Hono の器に入れる
     let bodyText: string | null = null;
-    if (def.kind === "create" || def.kind === "update") {
+    //    multipart の口（K-828）：ファイルの上限＋余白までをバイトのまま読む。超えたら口の答え（tooLarge）。体は 4) で FormData に読む
+    const multipart = deps.hooks[operationId]?.multipart;
+    let bodyBytes: Uint8Array<ArrayBuffer> | null = null;
+    if (multipart && (def.kind === "create" || def.kind === "update")) {
+      bodyBytes = await readBytesLimited(c, multipart.maxFileBytes + MULTIPART_MARGIN);
+      if (bodyBytes === null) {
+        const r = multipart.tooLarge();
+        return c.json(r.body, r.status as 413);
+      }
+    } else if (def.kind === "create" || def.kind === "update") {
       bodyText = await readBodyLimited(c);
       if (bodyText === null) return c.json(TOO_LARGE, 413);
       (c.req.bodyCache as unknown as { text?: Promise<string> }).text = Promise.resolve(bodyText);
@@ -306,7 +357,19 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       if (r === "denied" || r === "gone") return err(c, 403, "forbidden", "FORBIDDEN"); // gone：会社から抜けた人（D-131.7）
     }
     let input: Row = {};
-    if (def.kind === "create" || def.kind === "update") {
+    let form: FormData | undefined;
+    if (bodyBytes !== null) {
+      // multipart の口（K-828）：multipart/form-data でなければ・読めなければ 422（欄 body）。JSON の読み・NUL・strict な形は飛ばす
+      const type = c.req.header("content-type") ?? "";
+      const badBody = (message: string) =>
+        err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message }] });
+      if (!/^multipart\/form-data\s*;/i.test(type)) return badBody("multipart");
+      try {
+        form = await new Response(bodyBytes, { headers: { "content-type": type } }).formData();
+      } catch {
+        return badBody("multipart");
+      }
+    } else if (def.kind === "create" || def.kind === "update") {
       let raw: unknown;
       try {
         raw = normalize(JSON.parse(bodyText ?? ""));
@@ -356,7 +419,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     const idem =
       def.kind === "create" && !deps.hooks[operationId]?.noIdempotency ? c.req.header("idempotency-key") : undefined;
     const idemKey = idem ? `${ctx.tenantId}:${ctx.userId}:${def.path}:${idem}` : null;
-    const inputHash = hashOf(input);
+    const inputHash = hashOf(form ? { multipart: await formDigest(form) } : input);
     if (idemKey) {
       const pending = INFLIGHT.get(idemKey); // 同期で見る（await を挟むと同時の要求がすり抜ける）
       const seen = deps.idempotency.get(idemKey) ?? (pending ? await pending : undefined);
@@ -373,6 +436,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       id,
       c,
       ...stepUpGuards(ctx),
+      ...(form ? { form } : {}),
     };
     const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
     if (idemKey)
