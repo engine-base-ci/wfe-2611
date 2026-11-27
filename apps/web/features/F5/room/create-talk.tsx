@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 import { Badge, Button, Select, TextArea, TextField } from "@/components/k";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import { ChoiceRow } from "./proposal";
-import { ChatComposer, Thread, type ComposerMode, type Entry } from "./talk";
+import { ChatComposer, Thread, type Entry } from "./talk";
 import "./room.css";
 
 export type FieldMark = "ai" | "edited";

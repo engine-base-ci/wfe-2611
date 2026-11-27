@@ -25,6 +25,5 @@ export const leaf: K144Leaf = {
   UUID_PARAM_CASES: [
     ["K144-API-1297", "requestClientRequestDraft", "path", "id"], // K-896
   ],
-  BODIES: {
-  },
+  BODIES: {},
 };

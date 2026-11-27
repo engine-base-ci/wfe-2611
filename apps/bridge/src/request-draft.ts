@@ -106,7 +106,7 @@ export function draftBody(f: Finish | null): Record<string, unknown> {
 
 /** 案の仕事を 1 件こなす：道具を全部止めて AI を 1 回起こし、結果を 1 回返す（やり直さない） */
 export async function runRequestDraft(deps: RequestDraftDeps, job: Job): Promise<void> {
-  let f: Finish | null = null;
+  let f: Finish | null;
   try {
     f = await deps.run(
       { ...job, tools: [], allowed_tools: [], browser: "off", conversation_id: null, tool_token: null },
