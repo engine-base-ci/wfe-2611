@@ -4,6 +4,7 @@
 //   ⓪ 欠け・決まった値の外（グループを選んでいない・役割が 4 つの外）は 422・VALIDATION_ERROR（形の誤りだけ。グループが会社に無いのは DB の中身で決まるので ② で 404）
 //   ① 管理者として入るリンク（role_key admin）だけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
 //   ② 32 バイトの乱数のトークンを作り、1 つの取引（app.create_invitation_link）で招待の行と証跡を書く（DB には sha256 だけ）。
+//      取引の頭で席を確かめる（app.seat_check(1)・K-1103）。プランの人数の上限を超える → 409・E-PLAN-003（何も作らない）
 //      グループが会社に無い・消した → 404・E-INV-011／権限が無い → 403／DB が落ちた → 503・E-PAGE-003（何も残らない）
 //   ③ 201 { data: { url, expires_at } }・（Cache-Control: private, no-store は入口の app.ts が全部の答えに付ける。答えにトークンが入るので冪等の器には残さない＝hooks の noIdempotency）
 //   ログ・証跡にトークンとリンクの住所を書かない（ログは場所と例外の種類だけ）
@@ -12,15 +13,20 @@ import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HookDeps } from "../../../hooks/registry.js";
+import { seatLimitDetail } from "./create.js";
 
 /** 役割（契約の role_key は決まった 4 つ）。トークンの長さ（バイト・create.ts と同じ形） */
 const ROLES = ["member", "manager", "viewer", "admin"] as const;
 const TOKEN_BYTES = 32;
 
 const sha256 = (s: string): string => createHash("sha256").update(s).digest("hex");
-const pgInfo = (e: unknown): { code: string; hint: string } => {
-  const x = (e ?? {}) as { code?: unknown; hint?: unknown };
-  return { code: typeof x.code === "string" ? x.code : "", hint: typeof x.hint === "string" ? x.hint : "" };
+const pgInfo = (e: unknown): { code: string; hint: string; detail: string } => {
+  const x = (e ?? {}) as { code?: unknown; hint?: unknown; detail?: unknown };
+  return {
+    code: typeof x.code === "string" ? x.code : "",
+    hint: typeof x.hint === "string" ? x.hint : "",
+    detail: typeof x.detail === "string" ? x.detail : "",
+  };
 };
 /** 例外の種類だけ（DB の番号か名前）。文や値はログに出さない */
 const kindOf = (e: unknown): string => {
@@ -43,7 +49,9 @@ const unavailable = (): HookReply => {
 
 /** DB の関数が断った例外 → 答え。分からない例外は 503（何も残らない） */
 function refused(e: unknown): HookReply {
-  const { code, hint } = pgInfo(e);
+  const { code, hint, detail } = pgInfo(e);
+  if (code === "P0001" && hint === "E-PLAN-003")
+    return { status: 409, body: kanameError("E-PLAN-003", seatLimitDetail(detail)).toJSON() };
   if (code === "42501" && hint === "E-INV-011") {
     const err = kanameError("E-INV-011").toJSON();
     return {
@@ -75,6 +83,7 @@ export function createCreateInvitationLink(d: Pick<HookDeps, "appPool" | "config
     let expiresAt: Date;
     try {
       expiresAt = await withTenant(d.appPool, a.ctx, async (cl) => {
+        await cl.query("select app.seat_check(1, '{}')");
         const r = await cl.query<{ expires_at: Date }>(
           "select expires_at from app.create_invitation_link($1::uuid, $2, $3)",
           [scope, role, sha256(token)],

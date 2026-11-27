@@ -139,6 +139,17 @@ beforeAll(async () => {
   });
   for (const op of ["getWorkspaceMembers", "createInvitations"]) limits[op] = 10_000;
   T = await f.company(WS, "EG");
+  // K-1103：招く時に席の上限（無料は 3 人まで）で止まる。この会社は社内 8 人で何十人も招く（招待中も席に数える）ので、
+  //   人数の上限を持たない試験だけのプラン（limits に members が無い＝上限なし）の契約にしておく。
+  //   プランの行はこの会社の中に置く（運営の会社の free・team・business の並び＝選べるプランに混ぜない）
+  const plan = await f.admin.query<{ id: string }>(
+    "insert into plans (tenant_id, key, name, price_monthly, limits) values ($1, 'k419-unlimited', 'K419 の試験（上限なし）', 0, '{}'::jsonb) returning id",
+    [T.tenantId],
+  );
+  await f.admin.query(
+    "insert into subscriptions (tenant_id, plan_id, status_id, started_at) values ($1, $2, 'active', now() - interval '40 days')",
+    [T.tenantId, plan.rows[0]!.id],
+  );
   O = await f.company("K419 の別の会社", "OT");
   await f.admin.query("update scopes set name = '営業' where id = $1", [T.rootScope]);
   JD = (
