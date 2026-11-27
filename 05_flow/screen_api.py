@@ -508,9 +508,9 @@ INPUTS = {
     # 再設定のメールを頼む（K-313）：メールだけ。登録の有無に関わらず同じ答え（D-042）
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
-    "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
+    "signInWithPassword": ("SignInInput", {"email": "string", "password": "string", "invitation": "string?"}),   # invitation：招待のリンクの印（K-852・使える会社が無い人の門をその招待だけに開ける）
     # 確認のコードで入る（K-302）：待ちの印と、6 けたかバックアップコードのどちらか 1 つ（strict・trust_device を含むほかの欄は 422）
-    "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?"}),
+    "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?", "invitation": "string?"}),   # invitation：K-852
     # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
     "signOut": ("SignOutInput", {}),
     # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
@@ -952,8 +952,8 @@ VALUE_RANGES = {
         "password": {"minLength": 12},
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
-    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
-    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
+    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
+    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72

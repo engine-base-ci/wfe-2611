@@ -1,5 +1,6 @@
 // 認証（Better Auth 1.7）。境界 B2：better-auth を import してよいのはこのパッケージだけ（CI G7）。
 // 表は Postgres の schema "kaname_auth"（RLS の対象の public とは分ける。Supabase は schema auth を自社の認証に使うので同じ名前にしない：T-F-18）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
+import { createHash } from "node:crypto";
 import { deviceOf } from "./device.js";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { APIError } from "better-auth/api";
@@ -82,10 +83,12 @@ export const DISABLED_PATHS = [
   ...FRAGMENT_DISABLED_PATHS,
 ] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
+/** 会社の人が無い・抜けた（招待の印が無い・使えないときも同じ・K-852） */
+const MEMBER_LEFT = "E-AUTH-007";
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
   workspace_suspended: "E-AUTH-012",
-  member_left: "E-AUTH-007",
+  member_left: MEMBER_LEFT,
 };
 /** 止めの確かめができなかった（止めの関数が落ちた）ときの id。止める側に倒す（fail-closed・503） */
 export const LOGIN_GATE_DOWN = "E-PAGE-003";
@@ -93,6 +96,14 @@ export const LOGIN_GATE_DOWN = "E-PAGE-003";
 export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([...Object.values(LOGIN_BLOCKED), LOGIN_GATE_DOWN]);
 /** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
 const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
+/** 招待の印（招待のリンクの印）を運ぶ要求の頭（K-852・D-154.89）。パスキーの確かめの道だけが読む。画面は別の origin なので CORS で許す */
+export const INVITATION_HEADER = "x-kaname-invitation";
+/** 招待の印の長さの上限（招待の口の TOKEN_MAX と同じ） */
+const INVITATION_MAX = 512;
+/** 使える会社が無い人の門（答え invite_only）を、招待の印を口の側が見る道（パスワードの段・6 けたの段・K-852） */
+const INVITE_BODY_PATHS = new Set(["/sign-in/email", "/two-factor/verify-totp", "/two-factor/verify-backup-code"]);
+/** 招待の印を頭で受けて hook が見る道（パスキーの確かめ・K-852） */
+const INVITE_HEADER_PATHS = new Set(["/passkey/verify-authentication"]);
 
 /** 部品（Better Auth）のログ。パスキーの確かめの失敗（@simplewebauthn の例外の文にチャレンジと期待の値が入る）は、例外の種類だけを出す */
 function authLog(level: "debug" | "info" | "warn" | "error", message: string, ...args: unknown[]): void {
@@ -103,6 +114,25 @@ function authLog(level: "debug" | "info" | "warn" | "error", message: string, ..
     return;
   }
   out(`[Better Auth] ${message}`, ...args);
+}
+
+/** パスキーの確かめの要求の頭の招待の印が、本人宛てで使え、本人が止められていないか（K-852）。
+ *  頭が無い・空白だけ・長すぎるは偽。確かめが落ちたら止める側に倒す（503・E-PAGE-003・門と同じ）。印の値はログに出さない */
+async function inviteHeaderOk(appPool: pg.Pool, userId: string, headers: Headers | undefined): Promise<boolean> {
+  const v = headers?.get(INVITATION_HEADER) ?? "";
+  if (v.length < 1 || v.length > INVITATION_MAX || !/\S/.test(v)) return false;
+  try {
+    const r = await appPool.query<{ ok: boolean }>("select app.login_invite_only($1, $2) as ok", [
+      userId,
+      createHash("sha256").update(v).digest("hex"),
+    ]);
+    return r.rows[0]?.ok === true;
+  } catch (e) {
+    const x = e as { code?: unknown; name?: unknown } | null;
+    const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+    console.error(`[auth] 招待の印の確かめができなかった（${why}）`); // 文や値は出さない（種類だけ）
+    throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+  }
 }
 
 /** 型は core の Auth（plugin の endpoint 型は使わない＝zod の内部型を .d.ts に出さない） */
@@ -223,7 +253,7 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
           // 止めの 1 か所（K-303・D-128.91）：どの道（パスワード・2 段階の 6 けた・パスキー・部品を直に呼ぶ）でも、セッションを作る直前にここを通る。
           //   止められた人・止められた会社・抜けた人は APIError（body.code が errors.json の id・文は口が目録から引く）で断り、セッションを作らせない。
           //   止めの関数が落ちたら止める側に倒す（503・E-PAGE-003）。理由の記録（security_events の login_blocked）は関数が書く
-          before: async (session) => {
+          before: async (session, ctx) => {
             let verdict: string | undefined;
             try {
               const r = await o.appPool.query<{ verdict: string }>("select app.login_gate($1) as verdict", [
@@ -237,6 +267,15 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
               throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
             }
             if (verdict === "ok") return;
+            // 使える会社が無いが、本人宛ての使える招待があり止められていない（K-852・D-154.89）：招待の印が来た道だけ通す
+            if (verdict === "invite_only") {
+              const c = ctx as { path?: string; headers?: Headers } | null | undefined;
+              const path = c?.path ?? "";
+              if (INVITE_BODY_PATHS.has(path)) return; // 体の招待の印は口の側が見る（無い・使えなければ口がその場で閉じる）
+              if (INVITE_HEADER_PATHS.has(path) && (await inviteHeaderOk(o.appPool, session.userId, c?.headers)))
+                return;
+              throw new APIError("FORBIDDEN", { code: MEMBER_LEFT });
+            }
             const code = verdict ? LOGIN_BLOCKED[verdict] : undefined;
             // 知らない答え（関数と部品の版ずれ）も止める側に倒す
             if (!code) throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });

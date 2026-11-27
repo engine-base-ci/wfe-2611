@@ -159,13 +159,14 @@ export async function joinInvitation(
   return { tenantId: row.tenant_id, memberId: row.member_id };
 }
 
-/** 参加の関数（app.join_invitation）が断った理由（例外の hint）。招待の状態に加え、別のメール宛て・もう入っている。それ以外の例外は null */
+/** 参加の関数（app.join_invitation）が断った理由（例外の hint）。招待の状態に加え、別のメール宛て・もう入っている・
+ *  止めたまま外された行（suspended・K-852）。それ以外の例外は null */
 export function joinRefusal(
   e: unknown,
-): "not_found" | "used" | "revoked" | "expired" | "wrong_email" | "already_member" | null {
+): "not_found" | "used" | "revoked" | "expired" | "wrong_email" | "already_member" | "suspended" | null {
   const x = e as { code?: unknown; hint?: unknown } | null;
   if (x?.code !== "42501") return null;
-  return x.hint === "wrong_email" || x.hint === "already_member" ? x.hint : acceptRefusal(e);
+  return x.hint === "wrong_email" || x.hint === "already_member" || x.hint === "suspended" ? x.hint : acceptRefusal(e);
 }
 
 /** その人のセッションを部品で作る（K-332）。セッションの hook（止め・Kaname の sessions への写し・同意し直しと付けるまで進めない印）を通る。
