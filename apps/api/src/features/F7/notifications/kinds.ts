@@ -67,6 +67,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 運営の請求（K-983・D-156.54）：期限を過ぎた・期限から 7 日の知らせ（管理者だけ・一覧を開いたときに追いついて出す）。文は画面の葉 K-960
   "billing.overdue": settingKind("/billing"),
   "billing.overdue_week": settingKind("/billing"),
+  // 運営の請求（K-981・D-156.53）：運営が月の請求書を出したことを管理者に知らせる。行き先は請求書の画面（K-960）
+  "billing.invoice_issued": settingKind("/billing"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
