@@ -53,13 +53,14 @@ interface Complete {
   left?: Left[];
   ticket_id?: string;
 }
+// 完了の関数は段5 の K-578 で 2 引数（p_ticket・p_confirmed）。口（complete.ts）と同じ形で呼ぶ
 const complete = (p: Person, ticket: string): Promise<Complete> =>
   withTenant(
     h.pool,
     p.ctx,
     async (cl) =>
       (
-        await cl.query<{ v: Complete }>("select app.ticket_complete($1, null::integer[], null::integer, true) as v", [
+        await cl.query<{ v: Complete }>("select app.ticket_complete($1, true) as v", [
           ticket,
         ])
       ).rows[0]!.v,
@@ -110,7 +111,7 @@ const review = async (p: Person): Promise<{ unused: Json[]; conflicts: Json[]; b
   return (await asJson(r)) as { unused: Json[]; conflicts: Json[]; broken: Json[] };
 };
 const reviewCount = async (p: Person): Promise<unknown> =>
-  ((await asJson(await call(p, "GET", "/knowledge/tree")))["admin_counts"] as Json | null)?.["review"];
+  ((await asJson(await call(p, "GET", "/knowledge/tree")))["admin_counts"] as Json | null)?.["review"] ?? null; // 管理しない人は admin_counts そのものが null（K-676）
 
 interface Story {
   w: World;

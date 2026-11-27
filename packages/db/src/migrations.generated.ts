@@ -334,4 +334,6 @@ export const MIGRATIONS = [
   "20261128041300_ops_invoice_issue_pdf_both.sql",
   "20261128041400_ticket_complete_one.sql",
   "20261128041500_bridge_job_talk_kind.sql",
+  "20261128041600_kn_share_view_checked.sql",
+  "20261128041700_kn_group_manager_names.sql",
 ] as const;

@@ -3,10 +3,8 @@
 //   { group_name: 元のグループの名前, manager_names: 元のグループのマネージャーの表示名（コードポイント順）, writable: false }。それ以外は null
 import type { PagePartCtx, SharedFrom } from "./types.js";
 
-const SQL = `select app.kn_in_group($1, $2) as inside,
-       coalesce((select array_agg(m.display_name order by m.display_name collate "C", m.id)
-                   from members m
-                  where m.tenant_id = app.tenant_id() and m.deleted_at is null and app.kn_group_manager(m.id, $2)), '{}') as names`;
+// 名前は security definer の関数で読む（人の行の守りは見えるグループの人だけを通すので、共有先の人には元のグループのマネージャーが見えない・統合の枝で直した）
+const SQL = "select app.kn_in_group($1, $2) as inside, app.kn_group_manager_names($2) as names";
 
 export async function readSharedFrom(p: PagePartCtx): Promise<SharedFrom | null> {
   const g = p.shelf.groupId;

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:cfbf940af6087ff4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8b413ab12604d6e9
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -119,8 +119,8 @@ export interface Ops {
   declineKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDeclineInput; data: T.KnowledgeRequestDecided };
   dismissKnowledgeRequest: { params: { id: string }; query: never; body: T.KnowledgeDismissInput; data: T.KnowledgeRequestEnded };
   getKnowledgeReview: { params: never; query: never; body: never; data: T.KnowledgeReview };
-  getKnowledgeShares: { params: never; query: { "page_id"?: string | number; "folder_id"?: string | number }; body: never; data: T.KnowledgeShares };
-  setKnowledgeShares: { params: never; query: never; body: T.KnowledgeSharesInput; data: T.KnowledgeShares };
+  getKnowledgeShares: { params: never; query: { "page_id"?: string | number; "folder_id"?: string | number }; body: never; data: T.KnowledgeShareChoice };
+  setKnowledgeShares: { params: never; query: never; body: T.KnowledgeShareSetInput; data: T.KnowledgeShareChoice };
   findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };
   createKnowledgePage: { params: never; query: never; body: T.KnowledgePageCreateInput; data: T.KnowledgePageStub };
