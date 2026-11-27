@@ -23,6 +23,9 @@ export interface AuditQuery {
   limit: number;
 }
 
+/** 契約の問い合わせの名前（listOpsWorkspaceAudit） */
+const AUDIT_QUERY_KEYS: ReadonlySet<string> = new Set(["from", "to", "limit", "cursor"]);
+
 const DATE_RE = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/;
 
 /** YYYY-MM-DD の暦に在る日付か（2026-13-01・2026-02-30 は違う） */
@@ -46,6 +49,9 @@ export function parseAuditQuery(
   raw: Record<string, string>,
 ): { ok: true; value: AuditQuery } | { ok: false; details: Issue[] } {
   const issues: Issue[] = [];
+  // 契約に無い問い合わせの名前は 422（入口の zod は問い合わせを見ない）
+  for (const k of Object.keys(raw))
+    if (!AUDIT_QUERY_KEYS.has(k)) issues.push({ field: k, message: "知らない問い合わせ" });
   const from = dateOf(raw["from"], "from", issues);
   const to = dateOf(raw["to"], "to", issues);
   const limitRaw = raw["limit"] ?? "";

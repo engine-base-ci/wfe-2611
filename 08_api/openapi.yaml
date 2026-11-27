@@ -44487,6 +44487,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          pattern: ^[a-z_][a-z0-9_]{0,62}$
           enum:
           - attention
           - members

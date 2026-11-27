@@ -49,7 +49,8 @@ describe("K-944 運営のログイン：パスキーで入る", () => {
   it("K944-API-002 入った印で運営の口を呼ぶ：GET /api/v1/ops/shell は役の段を通って 501（まだ作っていない口）。顧客の人の印では 403・印なしは 401", async () => {
     const { token } = await signedInOps("shell");
     const ops = await o.api("GET", OPS_SHELL, token);
-    expect(ops.status, await ops.clone().text()).toBe(501);
+    // 外枠の口は K-963（getOpsShell）が作った：役の段を通れば 200（作る前は 501）
+    expect(ops.status, await ops.clone().text()).toBe(200);
     const u = await h.makeUser("cust-shell");
     const signed = await h.signIn(u.email);
     expect(signed.status, await signed.clone().text()).toBe(201);
@@ -138,7 +139,7 @@ describe("K-944 運営のログイン：運営の人でなくなったとき", (
 
   it("K944-API-011 ops_members を外した（revoked_at）：同じ印がその時点で解けず 401（時間を待たない）", async () => {
     const { p, token } = await signedInOps("revoked");
-    expect((await o.api("GET", OPS_SHELL, token)).status).toBe(501);
+    expect((await o.api("GET", OPS_SHELL, token)).status).toBe(200); // K-963 が口を作った（作る前は 501）
     await h.admin.query("update ops_members set revoked_at = now() where member_id = $1", [p.memberId]);
     expect(await o.resolve(token)).toBeNull();
     expect((await o.api("GET", OPS_SHELL, token)).status).toBe(401);
