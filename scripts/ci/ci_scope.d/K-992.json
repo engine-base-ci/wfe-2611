@@ -1,0 +1,37 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-templates-read.ts",
+    "apps/api/src/features/F12/ops/templates/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261128013200_ops_templates.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/F9/ticket-stages-write.test.ts",
+    "apps/api/test/features/F9/ticket-fields-write.test.ts",
+    "apps/api/test/features/F4/ticket-read-adds.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-templates.harness.ts",
+    "apps/api/test/features/F12/ops-templates-read.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts",
+    "apps/api/test/features/F9/rules-work-types-retire.test.ts",
+    "apps/api/test/generated/get_ops_templates.test.ts",
+    "apps/api/test/generated/get_ops_templates_id.test.ts"
+   ]
+  }
+ ]
+}

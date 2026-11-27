@@ -1820,6 +1820,14 @@
     "type": "boolean",
     "nullable": false
    },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
@@ -6934,6 +6942,18 @@
    }
   },
   "tenant_distributions": {
+   "chosen": {
+    "type": "text",
+    "nullable": true
+   },
+   "chosen_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "chosen_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -6961,6 +6981,14 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "offered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "offered_version": {
+    "type": "integer",
+    "nullable": true
    },
    "override": {
     "type": "jsonb",
@@ -7644,6 +7672,14 @@
     "type": "integer",
     "nullable": false
    },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
@@ -7925,6 +7961,14 @@
    "position": {
     "type": "integer",
     "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
