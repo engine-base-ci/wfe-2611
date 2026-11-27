@@ -153,8 +153,9 @@ export interface Job {
   conventions?: string | null;
   /** AI が使うブラウザ（D-119）：chrome＝本人の Chrome（Claude in Chrome）／off＝使わない。無ければ使わない（古い Kaname） */
   browser?: "chrome" | "dedicated" | "off" | null;
-  /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。無ければ会話 */
-  kind?: "chat" | "login_check" | "ticket" | null;
+  /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。
+   *  client_request_draft＝届いた依頼の分身の案を道具なしで 1 回作る（K-929）。無ければ会話 */
+  kind?: "chat" | "login_check" | "ticket" | "client_request_draft" | null;
   /** チケットの仕事（K-62）：任されたチケットと段（make＝成果物を作る・execute＝承認の後の実行） */
   ticket_id?: string | null;
   phase?: "make" | "execute" | null;
