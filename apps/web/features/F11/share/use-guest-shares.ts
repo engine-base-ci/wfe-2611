@@ -1,11 +1,14 @@
 "use client";
 // ゲストに見せる相手を読む・付け外しする器（K-905）。口は K-881 の listTicketGuestShares（読む）と updateTicketGuestShares（付け外し）だけ。
-//   読むのは詳細を開いたときに 1 回（問い合わせ ["guest-shares", id]・区画とやり取りの頭の印で同じ物を使い、口を増やさない）。
-//   付け外しの後は口の答えを写さず、1 回だけ読み直す（再取得を出す・G-02）。変える／変えないは口の答え can_change で決める（役の名前を見ない）
+//   区画とやり取りの頭の印は、詳細の答え（getTicket）の guest_share で出す（初めの読み込みで見せる相手の口を呼ばない・
+//   台帳 perf_budget.json の /tickets/:id の上限 8・PM の決め 2026-11-27 案 (a)）。
+//   listTicketGuestShares を読むのは小窓を開いたとき（候補 choices と 1 つずつの summary）の 1 回と、付け外しが 404・E-GST-040 で断られたときの候補の読み直しだけ。
+//   付け外しの後は口の答えを写さず、詳細を 1 回だけ読み直す（再取得を出す・G-02）。変える／変えないは答えの can_change で決める（役の名前を見ない）
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { errorText } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
+import type { SlotDetail, SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { ONCE } from "@/features/F4/create-ticket/ticket-shell";
 import type { ShareGroup } from "./views";
 
@@ -14,6 +17,11 @@ export interface GuestShares {
   shared: ShareGroup[];
   /** まだ見せていない選べる相手（書けない人には空） */
   choices: ShareGroup[];
+  canChange: boolean;
+}
+/** 詳細の答えの guest_share を画面の形にした物（summary・choices は載らない） */
+export interface ShareState {
+  shared: ShareGroup[];
   canChange: boolean;
 }
 
@@ -27,7 +35,7 @@ function groupsOf(v: unknown, idKey: "guest_group_id" | "id"): ShareGroup[] {
   return v.filter(isRecord).map((g) => ({ id: str(g[idKey]), name: str(g["name"]), summary: str(g["summary"]) }));
 }
 
-/** 口の答えを画面の形に直す（純な関数） */
+/** 見せる相手の口の答えを画面の形に直す（純な関数） */
 export function sharesOf(data: unknown): GuestShares {
   const d = isRecord(data) ? data : {};
   return {
@@ -35,6 +43,13 @@ export function sharesOf(data: unknown): GuestShares {
     choices: groupsOf(d["choices"], "id"),
     canChange: d["can_change"] === true,
   };
+}
+
+/** 詳細の答えの guest_share を画面の形に直す（純な関数）。欄が無ければ null（区画を描かない・「社内だけ」と言わない） */
+export function shareStateOf(detail: SlotDetail): ShareState | null {
+  const g = detail["guest_share"];
+  if (!isRecord(g)) return null;
+  return { shared: groupsOf(g["shared"], "guest_group_id"), canChange: g["can_change"] === true };
 }
 
 async function readShares(id: string): Promise<GuestShares> {
@@ -69,25 +84,21 @@ export function changeBody(before: readonly string[], after: readonly string[]):
   return { ...(add.length ? { add } : {}), ...(remove.length ? { remove } : {}) };
 }
 
-/** 読み方は 1 つ（先読みと区画・やり取りの頭の印で同じ鍵・同じ器。答えがあれば 2 回目の口を呼ばない） */
-export const guestSharesQuery = (id: string) =>
-  ({ queryKey: guestSharesKey(id), queryFn: () => readShares(id), ...ONCE }) as const;
+/** 小窓の候補の読み方（小窓が開いている間だけ持つ：閉じたら捨て、次に開いたときに読み直す） */
+const guestSharesQuery = (id: string) =>
+  ({ queryKey: guestSharesKey(id), queryFn: () => readShares(id), ...ONCE, gcTime: 0 }) as const;
 
-/** 詳細を開いたときに詳細と同時に 1 回読み始める（詳細の答えを待ってから読むと直列の 2 段目になる・台帳 /tickets/:id の max_stages 1） */
-export function usePrefetchGuestShares(id: string, enabled: boolean): void {
-  const qc = useQueryClient();
-  useEffect(() => {
-    if (!enabled) return;
-    void qc.prefetchQuery(guestSharesQuery(id));
-  }, [qc, id, enabled]);
+/** 小窓を開いたときに候補を 1 回読む（区画を描いただけでは呼ばない） */
+export function useShareChoices(id: string) {
+  const q = useQuery(guestSharesQuery(id));
+  return { data: q.data ?? null, failed: q.isError, retry: () => void q.refetch() };
 }
 
-export function useGuestShares(id: string) {
+/** 付け外し。成功なら詳細を 1 回読み直し終わってから null、失敗なら知らせ（404・E-GST-040 は小窓の候補を読み直す） */
+export function useShareUpdate(ticket: SlotTicket) {
   const qc = useQueryClient();
-  const q = useQuery(guestSharesQuery(id));
-  const reload = useCallback(() => qc.invalidateQueries({ queryKey: guestSharesKey(id) }), [qc, id]);
-  /** 付け外し。成功なら読み直し終わってから null、失敗なら知らせ */
-  const update = useCallback(
+  const { id, reload } = ticket;
+  return useCallback(
     async (body: { add?: string[]; remove?: string[] }): Promise<ShareFailure | null> => {
       let fail: ShareFailure;
       try {
@@ -100,15 +111,9 @@ export function useGuestShares(id: string) {
       } catch {
         fail = failureOf(0, "");
       }
-      if (fail.reload) await reload();
+      if (fail.reload) await qc.refetchQueries({ queryKey: guestSharesKey(id), exact: true });
       return fail;
     },
-    [id, reload],
+    [id, reload, qc],
   );
-  return {
-    data: q.data ?? null,
-    failed: q.isError,
-    retry: () => void q.refetch(),
-    update,
-  };
 }

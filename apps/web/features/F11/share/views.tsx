@@ -42,7 +42,8 @@ export function VisibleNotes() {
   );
 }
 
-export type SharePhase = "input" | "saving" | "failed" | "none";
+/** input 選ぶ・saving 送っている・failed 付け外しの失敗・none グループが 0・loading 候補を読んでいる・unread 候補を読めない */
+export type SharePhase = "input" | "saving" | "failed" | "none" | "loading" | "unread";
 
 export interface ShareDialogProps {
   phase?: SharePhase;
@@ -59,6 +60,8 @@ export interface ShareDialogProps {
   onToggle?: (id: string, on: boolean) => void;
   onDecide?: () => void;
   onCancel?: () => void;
+  /** 候補を読めなかったときの「もう一度読む」（phase が unread のとき） */
+  onRetry?: () => void;
 }
 
 /** 見せる相手を選ぶ小窓：ゲストのグループを複数選べる */
@@ -75,8 +78,11 @@ export function ShareDialog({
   onToggle = noop,
   onDecide = noop,
   onCancel = noop,
+  onRetry = noop,
 }: ShareDialogProps) {
   const none = phase === "none";
+  /** 候補がまだ無い（読んでいる・読めない・0）あいだは「決める」を押せない */
+  const blocked = none || phase === "loading" || phase === "unread";
   const saving = phase === "saving";
   return (
     <Dialog
@@ -93,9 +99,9 @@ export function ShareDialog({
           </Button>
           <Button
             loading={saving}
-            disabled={none || !changed}
+            disabled={blocked || !changed}
             onClick={() => {
-              if (!saving && !none && changed) onDecide();
+              if (!saving && !blocked && changed) onDecide();
             }}
           >
             決める
@@ -108,7 +114,15 @@ export function ShareDialog({
           {error.body ?? ""}
         </Callout>
       ) : null}
-      {none ? (
+      {phase === "loading" ? <p className="k-f11c-sub-text" aria-busy="true" /> : null}
+      {phase === "unread" ? (
+        <Callout tone="danger" title="ゲストに見せる設定を読めませんでした">
+          <Button size="sm" variant="outlined" onClick={onRetry}>
+            もう一度読む
+          </Button>
+        </Callout>
+      ) : null}
+      {phase === "loading" || phase === "unread" ? null : none ? (
         <Callout tone="warn" title="ゲストのグループがまだありません">
           メンバーの画面の「ゲスト」のタブで、ゲストのグループを作ってから、もう一度開いてください。
         </Callout>
