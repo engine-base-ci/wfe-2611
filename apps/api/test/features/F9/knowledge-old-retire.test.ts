@@ -118,6 +118,12 @@ describe("K-722 ナレッジの前の形の口 23 を契約から外す", () => 
         headers: writer.auth,
         ...(method === "GET" || method === "DELETE" ? {} : { body: {} }),
       });
+      // 同じ道に別の方法の口が残る道（GET /knowledge_pages は POST が残る）は、前からの入口の決まり（K-35・K-421・契約 fuzz の ST204・ST205：
+      //   契約にある道に契約に無い方法は 405 と使える方法 Allow）で 405。そのときも外した方法は Allow に入らない（口は無い）
+      if (r.status === 405) {
+        expect(r.headers.get("allow") ?? "", `${op} ${method} ${path} の Allow`).not.toContain(method);
+        continue;
+      }
       expect(r.status, `${op} ${method} ${path}：${await r.clone().text()}`).toBe(404);
     }
     const kept = await f.req("GET", concrete("/knowledge_pages/{id}"), { headers: writer.auth });

@@ -3,6 +3,8 @@
 --   中身は K-906 のまま。証跡を書くのは「まだ記録が無い」かつ p_mark のときだけ。答えの first_visit は p_mark に関わらず「まだ記録が無いか」。
 --   引数なしの呼び方は K-906 と同じ振る舞い（p_mark の既定 true）。ホーム以外の画面の外枠の読み（口の visit=elsewhere）は p_mark false。
 --   引数の形が変わるので drop してから作る（同じ名前の 2 つの形を残さない）。権限は新しい形に付け直す。
+-- 消す訳：K-913（answer=b187f0c59dec・引数の形を替えるので作り直す。同じ名前の 2 つの形を残さない）
+-- squawk-ignore ban-drop-function
 drop function if exists app.portal_home();
 
 create function app.portal_home(p_mark boolean default true) returns jsonb

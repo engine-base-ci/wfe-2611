@@ -37,7 +37,6 @@ SCREEN_API = {
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
         ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_sections", "restoreTicketVersion", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/item-changes", "A101", "ticket_messages", "listTicketItemChanges", []),
-        ("POST", "/tickets/:id/item-changes/restore", "A101", "ticket_messages", "restoreTicketItems", ["tickets", "ticket_field_values"]),
         # テスト仕様と確認
         ("GET", "/tickets/:id/test-specs", "A102", "test_specs", "listTestSpecs", []),
         ("POST", "/tickets/:id/test-specs", "A102", "test_specs", "createTestSpec", []),
@@ -115,8 +114,6 @@ SCREEN_API = {
         ("GET", "/conversations/:id/stream", "A20", "messages", "streamConversation", []),   # 書きながらの返事の流れ（D-104.8・D-128.122）
         ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["conversations", "messages", "bridge_jobs", "audit_events"]),
         ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["bridge_jobs", "bridge_job_events", "audit_events"]),
-        ("POST", "/ticket_draft_conversations", "A99|A20", "conversations", "startDraftConversation", []),
-        ("POST", "/ticket_draft_conversations/:id/messages", "A99|A20", "messages", "sendDraftMessage", ["conversations", "action_runs"]),
         ("POST", "/conversations/:id/attachments", "A90", "attachments", "createConversationAttachment", []),
         ("POST", "/conversations/:id/permissions/:pid", "A91", "messages", "answerAgentPermission", []),
         ("POST", "/messages/:id/artifacts", "A95", "artifacts", "createArtifactFromMessage", ["artifact_versions"]),
@@ -331,7 +328,6 @@ SCREEN_API = {
         ("GET", "/ops/shell", "A60", "inquiries", "getOpsShell", ["invoices"]),
         ("GET", "/ops/workspaces", "A60", "tenants", "listOpsWorkspaces", ["subscriptions", "usage_meters", "invoices", "sessions", "action_runs"]),
         # 確定前に去った申し込みの照合落ちをまとめて確かめた（K-1110・D-156.69）
-        ("POST", "/ops/pwned/pending/ack", "A138", "pending_signup", "ackOpsPwnedPending", ["security_events", "ops_audit_events"]),
     ],
     "ops-tenant": [
         ("GET", "/ops/workspaces/:id", "A64", "tenants", "getOpsWorkspace", ["subscriptions", "usage_meters", "action_runs", "credentials", "ops_audit_events"]),
@@ -367,8 +363,6 @@ SCREEN_API = {
         ("POST", "/ops/invoices/issue", "A72", "invoices", "issueOpsInvoices", ["subscriptions", "plan_versions", "notifications", "ops_audit_events", "audit_events"]),
         ("POST", "/ops/invoices/:id/payments", "A72", "payments", "recordPayment", ["invoices", "ops_audit_events", "audit_events"]),
         # K-1107 請求書の型（1 つ・D-156.60）：読む・直す（本人確認の取り直し・版で取り合いを止める）
-        ("GET", "/ops/invoice-template", "A72", "ops_invoice_templates", "getOpsInvoiceTemplate", ["members"]),
-        ("PUT", "/ops/invoice-template", "A72", "ops_invoice_templates", "updateOpsInvoiceTemplate", ["ops_audit_events"]),
     ],
     "ops-team": [
         ("GET", "/ops/members", "A134", "ops_members", "listOpsMembers", ["passkeys"]),
@@ -461,7 +455,7 @@ INPUTS = {
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
 # list で始まるが、data に並びでなく 1 つの形（例：items と counts）を返す口（K-892）。一覧の問い合わせ（cursor・limit・sort）を契約に足さない。チケットごとの分は screen_api.d に書く
-OBJECT_OPS: set[str] = set()
+OBJECT_OPS = set()  # type: set[str]
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
@@ -1159,7 +1153,6 @@ PERMS = {
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
     "listTicketItemChanges": ("read", "そのチケットを見られる人", False),
-    "restoreTicketItems": ("write", "そのチケットを書ける人", False),
     "listTestSpecs": ("read", "そのチケットを見られる人", False),
     "createTestSpec": ("write", "そのグループの人", False),
     "updateTestSpec": ("write", "そのグループの人。OFF にするときは理由が必須", False),
@@ -1226,8 +1219,6 @@ PERMS = {
     "streamConversation": ("self", "自分の会話だけ。本人の会話が変わった合図を流す（会話の字は流さない・D-113）", False),
     "sendConversationMessage": ("self", "自分の AI との会話（clone）だけ。言った字は本人の PC の AI が取りに来る（チケット・作る画面の会話は種類ごとの口）", False),
     "stopConversation": ("self", "自分の会話だけ（種類を問わない）。動いている仕事に止める合図・待っている仕事は取りやめ", False),
-    "startDraftConversation": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
-    "sendDraftMessage": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),
     "answerAgentPermission": ("self", "自分の分身の許可だけ", False),
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),
@@ -1414,8 +1405,6 @@ PERMS = {
     "listOpsInvoices": ("ops:money", "お金を持つ運営の人", False),
     "issueOpsInvoices": ("ops:money", "同上。下書きを確かめてまとめて出す。全部のワークスペースに届くので本人確認を取り直す", True),
     "recordPayment": ("ops:money", "同上。差があれば未入金のまま残す。顧客の請求書の画面と記録にも出る（D-128.69）", True),
-    "getOpsInvoiceTemplate": ("ops:money", "お金を持つ運営の人（請求書の型・K-1107）", False),
-    "updateOpsInvoiceTemplate": ("ops:money", "同上。これから出す請求書の出す側と振込先が変わるので本人確認を取り直す（K-1107）", True),
     "listOpsMembers": ("ops:ops_people", "運営の人を持つ運営の人", False),
     "addOpsMember": ("ops:ops_people", "同上。足した人はパスキーでしか入れない", True),
     "updateOpsMemberCaps": ("ops:ops_people", "同上。自分のできることは変えられない。値段の案と値段を決めるは分ける（D-128.72）", True),

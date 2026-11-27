@@ -422,10 +422,11 @@ describe("K-461 知らせを読む口", () => {
       seen.add(path);
     }
     // 段を合わせると、ほかの段の葉が足した設定・ナレッジの種類の行き先も入る（段10 のナレッジ＝/knowledge・段12・13 の請求＝/billing・
-    //   問い合わせの返事＝/notices・ひな形の新しい版＝/settings/template-updates）
+    //   問い合わせの返事＝/notices・ひな形の新しい版＝/settings/template-updates・メンバーが抜けた＝/members〔answer=730d094adf6a〕）
     expect([...seen].sort()).toEqual([
       "/billing",
       "/knowledge",
+      "/members",
       "/mfa-setup",
       "/notices",
       "/settings/template-updates",

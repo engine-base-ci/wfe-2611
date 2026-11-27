@@ -29,3 +29,10 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 確かめた時刻を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、印も記録も残さない"},
     ],
 }
+
+# 画面の口（統合の枝で本体から移した・K-1112・PM の決め 2026-11-28）
+SCREEN_API = {
+    "ops-home": [
+        ("POST", "/ops/pwned/pending/ack", "A138", "pending_signup", "ackOpsPwnedPending", ["security_events", "ops_audit_events"]),
+    ],
+}

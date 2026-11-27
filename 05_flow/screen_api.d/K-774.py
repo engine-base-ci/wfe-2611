@@ -65,3 +65,16 @@ NOT_NULL_ANSWERS = {
     "sendDraftMessage.conversation_id": "DB の関数 app.draft_talk_say（中で app.talk_enqueue） が会話の id を入れて返し、会話が無ければ error で断る（messages.conversation_id は null 可）",
     "sendDraftMessage.job_id": "DB の関数 app.draft_talk_say（中で app.talk_enqueue） が作った仕事の id を返し、作れなければ no_pc ほかの error で断る（messages.job_id は null 可）",
 }
+
+# 画面の口（統合の枝で本体から移した・K-1112・PM の決め 2026-11-28）
+SCREEN_API = {
+    "clone-chat": [
+        ("POST", "/ticket_draft_conversations", "A99|A20", "conversations", "startDraftConversation", []),
+        ("POST", "/ticket_draft_conversations/:id/messages", "A99|A20", "messages", "sendDraftMessage", ["conversations", "action_runs"]),
+    ],
+}
+
+PERMS = {
+    "startDraftConversation": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
+    "sendDraftMessage": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
+}

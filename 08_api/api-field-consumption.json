@@ -2133,98 +2133,98 @@
    "field": "<scoped>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "duty_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "target_service_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "status_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "run_count",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "avg_ms",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "fail_count",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "learned_procedures",
    "field": "last_verified_at",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "procedure_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "order_no",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "intent_ja",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "locator",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "procedure_steps",
    "field": "is_variable",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（後のフェーズ用・D-128.127・db-catalog.json の frozen）。第1フェーズの画面に出さない"
   },
   {
    "entity": "memory_kinds",
@@ -7356,28 +7356,28 @@
    "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "お知らせの続報の履歴の中の表。会社の人は表を読めず、一覧の関数（K-954）と運営の葉（K-977・K-979）だけが触る。画面にはお知らせの本文として出る"
   },
   {
    "entity": "notice_updates",
    "field": "notice_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "お知らせの続報の履歴の中の表。会社の人は表を読めず、一覧の関数（K-954）と運営の葉（K-977・K-979）だけが触る。画面にはお知らせの本文として出る"
   },
   {
    "entity": "notice_updates",
    "field": "state",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "お知らせの続報の履歴の中の表。会社の人は表を読めず、一覧の関数（K-954）と運営の葉（K-977・K-979）だけが触る。画面にはお知らせの本文として出る"
   },
   {
    "entity": "notice_updates",
    "field": "body",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "お知らせの続報の履歴の中の表。会社の人は表を読めず、一覧の関数（K-954）と運営の葉（K-977・K-979）だけが触る。画面にはお知らせの本文として出る"
   },
   {
    "entity": "status_incidents",
@@ -10927,70 +10927,70 @@
    "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_axes",
    "field": "key",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_axes",
    "field": "name",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_axes",
    "field": "is_builtin",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_axes",
    "field": "position",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_values",
    "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_values",
    "field": "axis_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_values",
    "field": "label",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_values",
    "field": "color",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "class_values",
    "field": "position",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-563・会社が足す項目に移した・D-150.46）。口もコードも使わない"
   },
   {
    "entity": "ticket_class_values",
@@ -12879,70 +12879,70 @@
    "field": "<common>",
    "consumed_by_screens": [],
    "internal": true,
-   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "ticket_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "artifact_version_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "contact_id",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "due_on",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "message",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "result",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "comment",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "decided_at",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "acceptances",
    "field": "reminded_at",
    "consumed_by_screens": [],
-   "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "internal": true,
+   "reason": "凍結（K-883・検収を作らない・D-155.44）。口もコードも使わない"
   },
   {
    "entity": "tenant_memberships",
@@ -14569,37 +14569,5 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
- "unconsumed": [
-  "learned_procedures.duty_id",
-  "learned_procedures.target_service_id",
-  "learned_procedures.status_id",
-  "learned_procedures.run_count",
-  "learned_procedures.avg_ms",
-  "learned_procedures.fail_count",
-  "learned_procedures.last_verified_at",
-  "procedure_steps.procedure_id",
-  "procedure_steps.order_no",
-  "procedure_steps.intent_ja",
-  "procedure_steps.is_variable",
-  "notice_updates.notice_id",
-  "notice_updates.state",
-  "notice_updates.body",
-  "class_axes.key",
-  "class_axes.name",
-  "class_axes.is_builtin",
-  "class_axes.position",
-  "class_values.axis_id",
-  "class_values.label",
-  "class_values.color",
-  "class_values.position",
-  "acceptances.ticket_id",
-  "acceptances.artifact_version_id",
-  "acceptances.contact_id",
-  "acceptances.due_on",
-  "acceptances.message",
-  "acceptances.result",
-  "acceptances.comment",
-  "acceptances.decided_at",
-  "acceptances.reminded_at"
- ]
+ "unconsumed": []
 }
