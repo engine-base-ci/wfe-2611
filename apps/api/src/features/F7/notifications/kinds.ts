@@ -60,6 +60,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 段 13（K-975）：運営が問い合わせに返した（問い合わせた本人だけ・D-156.28）。札に合う物が無いので setting。
   //   行き先は 困ったとき・お知らせ の一覧（1 件の道 /inquiry/<id> は表の行き先が固定なので組めない・申し送り）
   "inquiry.replied": settingKind("/notices"),
+  // 運営が止める日を決めた（K-970・D-156.23）：その会社の管理者に。押せない行（止める日は画面の上の帯で確かめる）
+  "workspace.stop_scheduled": settingKind(null),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
