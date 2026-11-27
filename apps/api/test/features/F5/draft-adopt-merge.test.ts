@@ -196,7 +196,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     const t = await ticket(p);
     const draft = await conv(p, "draft", null, [["human", "作る画面で聞いた", 3]]);
     const other = await k.f.admin.connect();
-    let panel = "";
+    let panel: string;
     let open = false;
     try {
       await other.query("begin");
