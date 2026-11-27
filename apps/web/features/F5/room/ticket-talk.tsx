@@ -2,6 +2,7 @@
 // チケットの右のパネル「〈名〉のAI」タブ（K-764・キャンバス StAiPanel）と、帯の［AI と話す］（止まった帯の［直し方を AI に伝える］は代表の決め answer=4d049789b537 で無くした）。
 //   そのチケットのことだけを話す（呼んだ人の権限の中だけ読む・やり取りの書き込みも読んでいる）。キャンバスの「区画」「確認をやり直す」「業務の型」
 //   「本文を直す案」は古い物（段 5・10・K-59 の持ち物）なので出さない。会話の部品は talk.tsx と同じ（分身の部屋の「話す」と同じ形）
+import { RunSteps } from "@/features/F5/delegate/run-steps";
 import { Bot, ChevronLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { Band, BandLine, Button, Callout, Loading } from "@/components/k";
@@ -135,6 +136,8 @@ export function RunningBandTalk({ name, sub, line }: { name: string; sub: string
       }
     >
       {line ? <BandLine>{line}</BandLine> : null}
+      {/* 本番の作っている帯（delegate-band.tsx の MakingBox）と同じく進みの段を出す（PM の決め 2026-11-28：下絵を本番の形に） */}
+      <RunSteps />
     </Band>
   );
 }
