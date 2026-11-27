@@ -118,6 +118,9 @@ export const OP_RULES = {
   // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
   //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
   takeoverActionRun: `true`,
+  // 動いている AI の実行を止める：入口は「その実行が見える」だけ。担当者かの判定（403・E-RUN-001）と、消した・無い（404）は
+  //   DB の関数 app.run_stop と口（features/F5/stop/run-stop.ts）が持つ（K-731・K-485 の takeoverActionRun と同じ作り）
+  stopActionRun: `true`,
   // チケットを消す・消す前の下見：入口は「そのチケットが見える」だけ（行が見える＝tickets の行の守り・消した物は見えない）。
   //   作った人か、そのグループで tickets の edit を持つ人か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）。
   //   入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文（E-DEL-001）も入口の汎用の 403 に奪われる。

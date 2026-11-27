@@ -1238,7 +1238,7 @@ PERMS = {
     "dryRunTicket": ("assignee", "担当者（宛先は自分に差し替える）", False),
     "listTicketRuns": ("read", "そのチケットを見られる人", False),
     "getActionRun": ("read", "そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ", False),
-    "stopActionRun": ("assignee", "担当者・承認する人・マネージャー", False),
+    "stopActionRun": ("assignee", "そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる", False),
     "listTicketReferences": ("read", "そのチケットを見られる人。見られないページは題名も出さない", False),
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
     "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
