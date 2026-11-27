@@ -31,6 +31,7 @@ import {
   mockHandovers,
   openDetail,
   preview,
+  toTop,
   type HOptions,
   type HView,
   type Preview,
@@ -537,6 +538,9 @@ const DRIVE: Record<string, { skip?: string[]; go: (p: Page, w: number) => Promi
     },
   },
   "f8-blocked": {
+    // 本番は実行が動いているので前の段（F5）の AI の帯が題名の下に出るが、モック f8-blocked は小窓だけを描き帯を描かない。
+    //   帯の字と形は F5 の葉の物（この葉の物ではない）なので帯の役は比べない。小窓の値は比べる（段9 の全部の CI・2026-11-27）
+    skip: ["band:当たった数", "band-title:当たった数", "band-sub:当たった数", "band-btn:当たった数"],
     go: async (p, w) => {
       await setup(p, {
         band: { stage: "doing", run: { phase: "execute", status: "running" } },
@@ -565,12 +569,21 @@ for (const [id, d] of Object.entries(DRIVE)) {
     test(`K411-UI-022 ${id} 幅 ${w}：担当者の欄・帯・小窓の値がモックと同じ（共通の道具 matchMock・役は HND_PAIRS）`, async ({
       browser,
     }) => {
-      const { rows, bad } = await matchMock(browser, id, w, (p) => d.go(p, w), {
-        base: "/dev/mock/f8",
-        pairs: HND_PAIRS,
-        blur: true,
-        ...(d.skip ? { skip: d.skip } : {}),
-      });
+      const { rows, bad } = await matchMock(
+        browser,
+        id,
+        w,
+        async (p) => {
+          await d.go(p, w);
+          await toTop(p);
+        },
+        {
+          base: "/dev/mock/f8",
+          pairs: HND_PAIRS,
+          blur: true,
+          ...(d.skip ? { skip: d.skip } : {}),
+        },
+      );
       expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);
     });
