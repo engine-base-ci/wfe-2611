@@ -7,6 +7,7 @@
 //   並べ方：<Menu><MenuTrigger>…</MenuTrigger><MenuPopup><MenuItem>…</MenuItem></MenuPopup></Menu>
 import { Menu as M } from "@base-ui/react/menu";
 import type { ReactNode } from "react";
+import type { ButtonProps } from "./button";
 
 /** 開くボタンと箱の間（外枠の自分のメニューと同じ） */
 const MENU_SIDE_OFFSET = 6;
@@ -29,17 +30,27 @@ export interface MenuTriggerProps {
   className?: string;
   /** 押せない形（送っている間など）。aria-disabled を付け、押しても開かない（焦点は落とさない） */
   disabled?: boolean;
+  /** ボタンの形（className に k-btn を渡すときの data-variant・data-size。渡さなければ付けない） */
+  variant?: ButtonProps["variant"];
+  size?: ButtonProps["size"];
   children: ReactNode;
 }
 
 /** 開くボタン */
-export function MenuTrigger({ label, className, disabled = false, children }: MenuTriggerProps) {
+export function MenuTrigger({ label, className, disabled = false, variant, size, children }: MenuTriggerProps) {
   // native の disabled は渡さない（Base UI が付けると焦点がボタンから落ちる）。開く手は Base UI の手前で止める
   const stop = disabled
     ? { onClick: stopBase, onMouseDown: stopBase, onPointerDown: stopBase, onKeyDown: stopBase }
     : {};
   return (
-    <M.Trigger className={className} aria-label={label} aria-disabled={disabled ? "true" : undefined} {...stop}>
+    <M.Trigger
+      className={className}
+      aria-label={label}
+      aria-disabled={disabled ? "true" : undefined}
+      data-variant={variant}
+      data-size={size}
+      {...stop}
+    >
       {children}
     </M.Trigger>
   );
