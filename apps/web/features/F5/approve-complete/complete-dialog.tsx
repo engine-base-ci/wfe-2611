@@ -7,7 +7,7 @@
 //   形はキャンバス StCompleteModal（K-229）：頭の下に対象の行・完了の条件（12px・500 の見出しと 12px 灰の文）・実施事項は線の枠・その下に確かめのチェック
 import { useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
-import { Button, Dialog } from "@/components/k";
+import { Button, Checkbox, Dialog } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { catalogMessage, messageOf } from "./message";
 import { checkedNumbers, todoItems, type Problem } from "./complete-model";
@@ -158,22 +158,21 @@ export function CompleteDialog(props: Props) {
           <fieldset className="k-dialog-group">
             <legend>{todo.label}</legend>
             {c.items.map((x, i) => (
-              <label key={i} className="k-dialog-check">
-                <input
-                  type="checkbox"
-                  checked={c.checked[i] ?? false}
-                  disabled={x.done}
-                  onChange={(e) => c.toggle(i, e.target.checked)}
-                />
-                <span>{x.text}</span>
-              </label>
+              <Checkbox
+                key={i}
+                size="sm"
+                checked={c.checked[i] ?? false}
+                disabled={x.done}
+                onChange={(e) => c.toggle(i, e.target.checked)}
+              >
+                {x.text}
+              </Checkbox>
             ))}
           </fieldset>
         ) : null}
-        <label className="k-dialog-check">
-          <input type="checkbox" checked={c.confirmed} onChange={(e) => c.confirm(e.target.checked)} />
-          <span>完了の条件を満たしたことを確かめました</span>
-        </label>
+        <Checkbox size="sm" checked={c.confirmed} onChange={(e) => c.confirm(e.target.checked)}>
+          完了の条件を満たしたことを確かめました
+        </Checkbox>
         {c.problems.length ? <Problems problems={c.problems} /> : null}
       </form>
     </Dialog>

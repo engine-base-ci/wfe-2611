@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { useEffect, useId, useRef, useState } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Button, Callout, Loading, PAGE_ERROR } from "@/components/k";
+import { Button, Callout, Checkbox, Loading, PAGE_ERROR } from "@/components/k";
 import { call } from "@/lib/api/call";
 import { clearDraftCopies, getToken, setToken } from "@/lib/api/client";
 import { pendingRoute } from "@/lib/pending-route";
@@ -175,20 +175,19 @@ export function ConsentTerms({ next }: { next: string | null }) {
               ) : null;
             })}
           </ul>
-          {/* label がチェックを包む（キャンバス AuthConsent：間 8 とチェックの既定の余白・13px） */}
-          <label className="k-terms-check" data-invalid={noAgree ? "" : undefined}>
-            <input
-              type="checkbox"
-              checked={checked}
-              aria-invalid={noAgree || undefined}
-              aria-describedby={noAgree ? errId : undefined}
-              onChange={(e) => {
-                setChecked(e.target.checked);
-                if (e.target.checked) setNoAgree(false);
-              }}
-            />
+          {/* 共通の部品（K-642）：label がチェックを包む。間 8 と印の左右の余白はキャンバス AuthConsent と同じ・13px */}
+          <Checkbox
+            checked={checked}
+            data-invalid={noAgree ? "" : undefined}
+            aria-invalid={noAgree || undefined}
+            aria-describedby={noAgree ? errId : undefined}
+            onChange={(e) => {
+              setChecked(e.target.checked);
+              if (e.target.checked) setNoAgree(false);
+            }}
+          >
             利用規約とプライバシーポリシーに同意します
-          </label>
+          </Checkbox>
           {noAgree ? (
             <p id={errId} className="k-err k-terms-err">
               {msg("E-VAL-019")}
