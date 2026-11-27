@@ -24,23 +24,41 @@ describe("POST /api/v1/members/:id/remove", () => {
     // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-016");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 最後の管理者を外そうとしたなら、Kaname は 409 と E-MEM-004 を返し、何も書かない
-  it.todo("test_post_members_id_remove_conflict");
+  it("test_post_members_id_remove_conflict", () => {
+    // UNWANTED: IF 最後の管理者を外そうとしたなら、Kaname は 409 と E-MEM-004 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-014」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-014");
+  });
   it("test_post_members_id_remove_rejected_422", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
     // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-019」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-019");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 引き継ぎ先が居ないなら、Kaname は 404 と E-MEM-021 を返し、担当を 1 件も移さない
-  it.todo("test_post_members_id_remove_not_found_2");
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 自分を外そうとしたなら、Kaname は 409 と E-MEM-005 を返し、何も書かない
-  it.todo("test_post_members_id_remove_conflict_2");
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 担当の全部に引き継ぎ先が決まっていないなら、Kaname は 409 と E-MEM-020 を返し、何も書かない
-  it.todo("test_post_members_id_remove_conflict_3");
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 引き継ぎ先が止めた人か外す本人なら、Kaname は 409 と E-MEM-022 を返し、何も書かない
-  it.todo("test_post_members_id_remove_conflict_4");
-  // 本物の試験はまだ無い（apps/api/test/features/F10/admin-member-remove.test.ts）：UNWANTED: IF 引き継ぎ先が閲覧のみか依頼する側なら、Kaname は 409 と E-MEM-023 を返し、何も書かない
-  it.todo("test_post_members_id_remove_conflict_5");
+  it("test_post_members_id_remove_not_found_2", () => {
+    // UNWANTED: IF 引き継ぎ先が居ないなら、Kaname は 404 と E-MEM-021 を返し、担当を 1 件も移さない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-006");
+  });
+  it("test_post_members_id_remove_conflict_2", () => {
+    // UNWANTED: IF 自分を外そうとしたなら、Kaname は 409 と E-MEM-005 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-015」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-015");
+  });
+  it("test_post_members_id_remove_conflict_3", () => {
+    // UNWANTED: IF 担当の全部に引き継ぎ先が決まっていないなら、Kaname は 409 と E-MEM-020 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-004」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-004");
+  });
+  it("test_post_members_id_remove_conflict_4", () => {
+    // UNWANTED: IF 引き継ぎ先が止めた人か外す本人なら、Kaname は 409 と E-MEM-022 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-007」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-007");
+  });
+  it("test_post_members_id_remove_conflict_5", () => {
+    // UNWANTED: IF 引き継ぎ先が閲覧のみか依頼する側なら、Kaname は 409 と E-MEM-023 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F10/admin-member-remove.test.ts の「K848-API-007」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/admin-member-remove.test.ts", "utf8")).toContain("K848-API-007");
+  });
   // 当てはまらない（1MB を超える体は入口の共通の 413（D-130.1）で止まり、この口に届かない）：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
   it.todo("test_post_members_id_remove_too_large");
   // 当てはまらない（入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験））：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す

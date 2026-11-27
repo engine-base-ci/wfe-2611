@@ -29,8 +29,11 @@ describe("GET /api/v1/audit_events", () => {
     // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-011");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F10/audit-list.test.ts）：UNWANTED: IF 探すことばが空・空白だけ・101 字以上なら、Kaname は 422 と E-AUD-010 を欄 q の理由つきで返し、記録を読まない
-  it.todo("test_get_audit_events_rejected_422_3");
+  it("test_get_audit_events_rejected_422_3", () => {
+    // UNWANTED: IF 探すことばが空・空白だけ・101 字以上なら、Kaname は 422 と E-AUD-010 を欄 q の理由つきで返し、記録を読まない
+    // 本物の試験：apps/api/test/features/F10/audit-search.test.ts の「K850-API-010」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-search.test.ts", "utf8")).toContain("K850-API-010");
+  });
   // 当てはまらない（入口の上限は契約の共通の試験が持つ）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_audit_events_rate_limited");
   // 当てはまらない（入口の共通の試験が持つ）：UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
