@@ -67,6 +67,7 @@ export function createDeclineClientRequest(d: Pick<HookDeps, "appPool" | "mailer
     const raw = a.input["reason"];
     const reason = typeof raw === "string" ? raw.trim() : "";
     if (reason === "") return invalid("reason", EMPTY);
+    if ([...reason].length > 2000) return invalid("reason", "2000 字まで"); // 値域（VALUE_RANGES の maxLength）は口が断る
     let v: Declined | null;
     try {
       v = await withTenant(d.appPool, a.ctx, async (cl) => {

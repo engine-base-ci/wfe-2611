@@ -5,6 +5,6 @@ import { defineHooks } from "./registry.js";
 
 export const register = defineHooks({
   name: "clientRequestsDraftHooks",
-  make: (d) => ({ requestClientRequestDraft: { before: createRequestClientRequestDraft(d.appPool) } }),
+  make: (d) => ({ requestClientRequestDraft: { before: createRequestClientRequestDraft(d.appPool), noBody: true } }),
   fuzz: "same",
 });
