@@ -1497,6 +1497,13 @@ components:
     textColor: "{state.progress}"
   f4d-sample-mark:      # 下絵の本文の見本の背景の色（同上。正本の注意の淡い面から選ぶ）
     backgroundColor: "{state.warning-container}"
+  # 段 10 の下絵 v2（features/F9/settings の settings.css・K-672）の値。CSS は var(--k-c-f9s-…) だけを読む
+  f9s-pill:             # 種別・状態の札の行の高さ（本文の 1.6 より 0.2 広い 1.8）
+    lineHeight: 1.8
+  f9s-swatch-ring:      # 選んだ色の見本の輪郭（2px・primary）。outline に当てる
+    border: "2px solid {colors.primary}"
+  f9s-swatch-ring-gap:  # 選んだ色の見本の輪郭の離し（outline-offset 2px）
+    width: "2px"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:
