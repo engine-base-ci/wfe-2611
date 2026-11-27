@@ -13,7 +13,10 @@ import { useMyRoles } from "@/lib/auth/role";
 import { NAV } from "@/lib/nav";
 import { KnowledgeLayout } from "./knowledge-layout";
 import { CopyBand, DeclinedBand, PageView, SharedBand, WaitingBand, type BandHandlers } from "./page-views";
+import { MUST_BLOCKED_TOO_LONG } from "./must-shape";
 import { PAGE_SLOTS, mergeSlots, type MergedSlots, type PageCtx } from "./page-slots";
+import { bandAt, bandWho } from "./raise-shape";
+import { copyFromText, sharedWriter } from "./share-shape";
 import {
   bandsOf,
   crumbsOf,
@@ -24,7 +27,6 @@ import {
   partActsOf,
   placeOf,
   shapeTree,
-  writerOf,
   type PageAnswer,
 } from "./shape";
 import type { KnowledgeTreeProps } from "./tree";
@@ -117,31 +119,37 @@ function Bands({ page, merged }: { page: PageAnswer; merged: MergedSlots }): Rea
   const kinds = bandsOf(page);
   if (!kinds.length) return undefined;
   const b = merged.bands;
-  const req = page.request;
+  // 上げる頼み（kind: "raise"）の帯だけをここで描く。共有の頼み（share）の帯は K-693 の物
+  const req = page.request?.kind === "raise" ? page.request : undefined;
   const h = (extra: Omit<BandHandlers, "live">): BandHandlers => ({ live: true, ...extra });
   return (
     <>
       {kinds.includes("waiting") && req ? (
         <WaitingBand
           to={req.to_name}
-          who={req.who_name}
-          at={req.at}
-          handlers={h({ withdraw: b.withdraw && req.can_withdraw ? () => b.withdraw?.(req.id) : undefined })}
+          who={bandWho(req)}
+          at={bandAt(req.at)}
+          canWithdraw={req.can_withdraw}
+          busy={merged.bandBusy}
+          handlers={h({ withdraw: b.withdraw ? () => b.withdraw?.(req.id) : undefined })}
         />
       ) : null}
       {kinds.includes("declined") && req ? (
         <DeclinedBand
           to={req.to_name}
-          who={req.who_name}
-          at={req.at}
+          who={bandWho(req)}
+          at={bandAt(req.at)}
           reason={req.reason ?? ""}
+          busy={merged.bandBusy}
           handlers={h({ dismiss: b.dismiss ? () => b.dismiss?.(req.id) : undefined, redo: b.redo })}
         />
       ) : null}
       {kinds.includes("copy") && page.copied_from ? (
         <CopyBand
-          from={page.copied_from.shelf_name}
+          from={copyFromText(page.copied_from) ?? ""}
           must={page.copied_from.must}
+          upper={page.copied_from.shelf_name}
+          gone={page.copied_from.gone}
           handlers={h({
             openOriginal:
               b.openOriginal && !page.copied_from.gone && page.copied_from.page_id
@@ -151,7 +159,10 @@ function Bands({ page, merged }: { page: PageAnswer; merged: MergedSlots }): Rea
         />
       ) : null}
       {kinds.includes("shared") && page.shared_from ? (
-        <SharedBand from={page.shared_from.group_name} writer={writerOf(page.shared_from)} />
+        <SharedBand
+          from={page.shared_from.group_name}
+          writer={sharedWriter(page.shared_from.group_name, page.shared_from.manager_names ?? [])}
+        />
       ) : null}
     </>
   );
@@ -379,6 +390,7 @@ function Main({ pageId, tree, page, merged, editing, setEditing, onBack, onRetry
         foot={footLine(p.foot)}
         doc={(p.body?.doc ?? { type: "doc", content: [] }) as Doc}
         handlers={handlers}
+        mustBlocked={p.must_blocked === "too_long" ? MUST_BLOCKED_TOO_LONG : undefined}
       />
     </WritingSlot>
   );
