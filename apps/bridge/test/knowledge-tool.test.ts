@@ -107,8 +107,9 @@ describe("K-718 道具 knowledge_open を AI に見せる", () => {
     expect(d.description).toContain("id");
   });
 
-  it("K718-BRG-002 仕事の種類で分ける：チケットの仕事は ticket_read と knowledge_open・会話の仕事は ticket_read 以外の全部（knowledge_open を含む）・ログインの試しは何も出さない", () => {
-    expect(toolDefsFor("ticket").map((t) => t.name)).toEqual(["ticket_read", "knowledge_open"]);
+  it("K718-BRG-002 仕事の種類で分ける：チケットの仕事は ticket_read と knowledge_open を含む（段6 の道具も加わる）・会話の仕事は ticket_read 以外の全部（knowledge_open を含む）・ログインの試しは何も出さない", () => {
+    expect(toolDefsFor("ticket").map((t) => t.name)).toEqual(expect.arrayContaining(["ticket_read", "knowledge_open"])); // 段6 の spec_check・guard_report（K-736・K-738）が加わっても通る形（K62-BRG-012 と同じ）
+    expect(toolDefsFor("ticket").map((t) => t.name)).not.toContain("draft_read");
     const chat = toolDefsFor("chat").map((t) => t.name);
     expect(chat).toContain("knowledge_open");
     expect(chat).not.toContain("ticket_read");
@@ -119,7 +120,9 @@ describe("K-718 道具 knowledge_open を AI に見せる", () => {
   it("K718-BRG-003 道具のサーバーの tools/list は、その仕事の道具の名前だけを返す（チケットの仕事に draft_read は出ない）", async () => {
     const r = await rpc("ticket", [init, { jsonrpc: "2.0", id: 2, method: "tools/list" }]);
     const list = r.find((x) => x["id"] === 2)!;
-    expect(list["result"].tools.map((t: { name: string }) => t.name)).toEqual(["ticket_read", "knowledge_open"]);
+    const names = list["result"].tools.map((t: { name: string }) => t.name);
+    expect(names).toEqual(expect.arrayContaining(["ticket_read", "knowledge_open"])); // 段6 の道具が加わっても通る形（K62-BRG-012 と同じ）
+    expect(names).not.toContain("draft_read");
   });
 
   it("K718-BRG-004 AI が knowledge_open を呼ぶと、手元の口へ page_id だけを送り、契約の口 …/tools/knowledge_open に PC の印と道具の鍵を足して回る。答えの文字がそのまま AI に返る", async () => {
@@ -187,7 +190,9 @@ describe("K-718 道具 knowledge_open を AI に見せる", () => {
       { jsonrpc: "2.0", id: 6, method: "tools/list" },
     ]);
     expect(r.find((x) => x["id"] === 5)!["result"].isError).toBe(true);
-    expect(r.find((x) => x["id"] === 6)!["result"].tools).toHaveLength(2);
+    expect(r.find((x) => x["id"] === 6)!["result"].tools.map((t: { name: string }) => t.name)).toEqual(
+      expect.arrayContaining(["ticket_read", "knowledge_open"]),
+    ); // 落ちた後も tools/list は返る（段6 の道具が加わっても通る形・K62-BRG-012 と同じ）
     expect(MCP_SERVER_SOURCE).not.toContain("console.log");
   });
 });
