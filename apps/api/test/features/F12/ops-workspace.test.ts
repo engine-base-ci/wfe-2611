@@ -14,7 +14,7 @@ let opsNoInquiry: Person;
 let w: Ws;
 
 beforeAll(async () => {
-  t = await startOpsWs("k966", ["ops-workspace"]);
+  t = await startOpsWs("k966", ["ops-workspace", "ops-workspaces"]); // K966-API-020 が一覧の口（listOpsWorkspaces）も呼ぶ
   opsAll = await t.ops("全部");
   opsNoInquiry = await t.ops("お金だけ", ["money"]);
   w = await t.ws("ミナト企画", { plan: "team", members: 3 });

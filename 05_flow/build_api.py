@@ -216,7 +216,7 @@ schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}
 # 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
 KEY_CURSOR_OPS = {"listApprovalQueue", "listAuditEvents", "listCloneActivity", "listNotifications", "listTickets", "listConversations", "listConversationMessages"}
 # sort の値を口が持つ一覧の口（K-748）。sort は表の列でなく、QUERY_RANGES の enum（決まった値）で書く（入口 op.ts・list_query.ts の OWN_SORT_OPS と同じ集まり）
-OWN_SORT_OPS = {"listApprovalQueue"}
+OWN_SORT_OPS = {"listApprovalQueue", "listOpsWorkspaces"}  # listOpsWorkspaces：attention・members・runs（K-963・K-1006 の QUERY_RANGES）
 def qtype(q, table, op=None):
     cols = [] if op in OWN_SORT_OPS else sorted(_DBC.get(table, {}))
     if q == "limit": return {"type": "integer", "minimum": 1, "maximum": getattr(_sa, "LIST_DETAILS", {}).get(op, {}).get("limit_max", 200)}

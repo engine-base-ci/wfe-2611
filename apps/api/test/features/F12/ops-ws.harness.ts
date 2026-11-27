@@ -225,10 +225,15 @@ export async function startOpsWs(prefix: string, hookFiles: readonly string[]): 
   };
 
   const invoice: OpsWs["invoice"] = async (w, o) => {
+    // 出した請求書は会社と月で 1 つ（K-981 の一意 invoices_tenant_period_uq）。同じ会社の 2 枚目からは 1 か月ずつ前の月にする。
+    //   期限は日本の暦の日（期限を過ぎたかは日本の今日で数える。UTC の日付だと日本の朝 9 時前に 1 日ずれる）
     const id = await one(
       `insert into invoices (tenant_id, period_start, period_end, amount, issued_at, due_on, status_id)
-       values ($1, date_trunc('month', now() - interval '1 month')::date, (date_trunc('month', now()) - interval '1 day')::date, $2,
-               now() - interval '20 days', (now() - make_interval(days => $3))::date, $4) returning id`,
+       select $1, (date_trunc('month', now()) - make_interval(months => n + 1))::date,
+              (date_trunc('month', now()) - make_interval(months => n) - interval '1 day')::date, $2,
+              now() - interval '20 days', ((now() at time zone 'Asia/Tokyo') - make_interval(days => $3))::date, $4
+         from (select count(*)::int as n from invoices where tenant_id = $1 and issued_at is not null and deleted_at is null) c
+       returning id`,
       [w.tenantId, o.amount, o.dueDaysAgo, o.paid ? "paid" : "unpaid"],
     );
     return id;

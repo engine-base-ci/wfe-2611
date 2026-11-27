@@ -12,7 +12,7 @@ export type QueryIssue = { field: string; message: string };
 
 // sort の値を口が持つ一覧の口（K-748）。入口は列名の形だけ見て、表の列に在るかは見ない（値は口が決まった物だけ通す）。
 //   契約の生成器 05_flow/build_api.py の OWN_SORT_OPS と同じ集まり
-export const OWN_SORT_OPS: ReadonlySet<string> = new Set(["listApprovalQueue"]);
+export const OWN_SORT_OPS: ReadonlySet<string> = new Set(["listApprovalQueue", "listOpsWorkspaces"]); // listOpsWorkspaces の sort は attention・members・runs（K-963）
 
 export function listQueryIssues(
   query: Record<string, string | undefined>,
