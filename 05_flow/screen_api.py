@@ -1081,10 +1081,10 @@ RESPONSES = {
     #   まだ無い時刻・途中の 1 行・止まった理由・差し戻しの理由は null（? は null を許す・Q2 回 2）
     "getActionRun": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                         "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
+                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "sweep_failed_at": "string?", "reason_kind": "string?", "checks": "object"}),
     "listTicketRuns": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                           "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
+                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "sweep_failed_at": "string?", "reason_kind": "string?", "checks": "object"}),
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),

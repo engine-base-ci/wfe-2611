@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:6a5a97b8f2abc9c1
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:7b0c60c08aff7de0
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -4139,6 +4139,7 @@ export const ActionRunView = z.strictObject({
   started_at: z.string().nullable().optional(),
   finished_at: z.string().nullable().optional(),
   taken_over_at: z.string().nullable().optional(),
+  sweep_failed_at: z.string().nullable().optional(),
   reason_kind: z.string().nullable().optional(),
   checks: z.record(z.string(), z.unknown()).optional(),
 });
