@@ -2,11 +2,18 @@
 //   本文 body：{ doc } だけ（text・知らない鍵は 422・欄 body.<鍵>）。doc の中身は @kaname/contracts の validateDoc（K-561・K-584）。text は口が doc から作る（toTicketBody）
 //   会社の項目 fields：鍵が項目の id（uuid）・値が文字・数・真偽・文字の並び・null のどれか。型ごとの確かめ（選択肢・日付・必須・種別）は DB の app.ticket_fields_set（K-564）が持つ
 //   確認項目 specs：文字の並び（0〜50 件）。文の長さと空白だけかは DB の app.test_spec_title_check（K-434）が持つ
+//   つなぐ相手 links（K-581）：[{ kind: related|derived_from, other_ticket_id: uuid }]（0〜20 件・同じ組なし・知らない鍵なし）。相手が見えるか・書けるかは DB の app.ticket_link_add（K-441）が持つ
 //   本文と確認項目の文は、入口が揃えた体（NFKC・前後の空白を落とした物）でなく画面が送ったままを受ける（hooks.ts が渡す）
 import { isUuid, toTicketBody, validateDoc, type Doc } from "@kaname/contracts";
 import type { Detail } from "./input.js";
 
 export const SPECS_MAX = 50;
+export const LINKS_MAX = 20;
+export const LINK_KINDS = ["related", "derived_from"] as const;
+export interface LinkInput {
+  kind: (typeof LINK_KINDS)[number];
+  other_ticket_id: string;
+}
 
 /** 中身の無い本文（本文を送らなかったとき） */
 export const EMPTY_DOC: Doc = { type: "doc", content: [] };
@@ -72,4 +79,44 @@ export function checkSpecs(specs: unknown): Part<string[]> {
     if (typeof x !== "string") details.push({ field: `specs.${i}`, message: "確認項目は文字で書いてください" });
   });
   return details.length ? { ok: false, details } : { ok: true, value: specs as string[] };
+}
+
+const LINK_KEYS = new Set(["kind", "other_ticket_id"]);
+const isLinkKind = (v: unknown): v is LinkInput["kind"] => (LINK_KINDS as readonly unknown[]).includes(v);
+
+/** つなぐ相手 1 件の形。外れの文（無ければ null） */
+function linkProblem(x: unknown): string | null {
+  if (!isObj(x)) return "つなぐ相手は { kind, other_ticket_id } の形で送ってください";
+  if (Object.keys(x).some((k) => !LINK_KEYS.has(k))) return "つなぐ相手は kind と other_ticket_id だけを送ってください";
+  if (!isLinkKind(x["kind"])) return "つながりの種類は related か derived_from です";
+  if (typeof x["other_ticket_id"] !== "string" || !isUuid(x["other_ticket_id"]))
+    return "つなぐ相手を選び直してください";
+  return null;
+}
+
+/** つなぐ相手：[{ kind, other_ticket_id }]（0〜20 件・同じ組なし）。無ければ空 */
+export function checkLinks(links: unknown): Part<LinkInput[]> {
+  if (links === undefined) return { ok: true, value: [] };
+  if (!Array.isArray(links))
+    return { ok: false, details: [{ field: "links", message: "つなぐ相手は並びで送ってください" }] };
+  if (links.length > LINKS_MAX)
+    return { ok: false, details: [{ field: "links", message: `つなぐ相手は ${LINKS_MAX} 件までです` }] };
+  const details: Detail[] = [];
+  const seen = new Set<string>();
+  links.forEach((x, i) => {
+    const problem = linkProblem(x);
+    if (problem) {
+      details.push({ field: `links.${i}`, message: problem });
+      return;
+    }
+    const link = x as unknown as LinkInput;
+    const pair = `${link.kind}:${link.other_ticket_id.toLowerCase()}`;
+    if (seen.has(pair)) details.push({ field: `links.${i}`, message: "同じ相手を同じ種類で 2 回つなげません" });
+    seen.add(pair);
+  });
+  if (details.length) return { ok: false, details };
+  return {
+    ok: true,
+    value: (links as LinkInput[]).map((x) => ({ kind: x.kind, other_ticket_id: x.other_ticket_id })),
+  };
 }
