@@ -415,6 +415,14 @@ describe("K-461 知らせを読む口", () => {
         expect(href, kind).toBe(`/tickets/${id}`);
         continue;
       }
+      // ゲストの依頼の種類（段11）は知らせの中身の request_id の 1 件を開く（決める人の答え answer=46da04a0a017）。uuid でなければ押せない
+      if (rule.request) {
+        expect(href, kind).toBeNull();
+        expect(hrefOf(kind, { request_id: id }), kind).toBe(`/requests/${id}`);
+        expect(hrefOf(kind, { request_id: "uuid でない" }), kind).toBeNull();
+        expect(routes).toContain("/requests/[id]");
+        continue;
+      }
       if (href === null) continue;
       // 行き先の道は ? の前（段10 のナレッジの種類は /knowledge?view=admin&list=approvals のように一覧の絞りを付けて開く）
       const path = href.split("?")[0]!;

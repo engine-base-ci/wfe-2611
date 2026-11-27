@@ -13,6 +13,8 @@ export interface KindRule {
   href: string | null;
   /** 取り消し系だけ：チケットを消した後も出す。番号だけ（題名・チケットの id・行き先は出さない・D-148.5） */
   afterDelete?: true;
+  /** ゲストの依頼に結ぶ種類（段11）：行き先は知らせの中身の request_id の 1 件 /requests/<request_id>（uuid の形のときだけ・チケットと同じ形） */
+  request?: true;
 }
 
 const ticketKind = (tag: NoticeTag): KindRule => ({ tag, ticket: true, href: null });
@@ -89,6 +91,10 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 外された人の担当を引き継いだ（段11 K-848・D-154.6）：引き継ぎ先に。チケットに結ばず、押しても別の画面へは行かない（お知らせの一覧に留まる・
   //   決める人の答え answer=dd1a8dae13a0「お知らせでいい」）。札は handover（担当の受け渡し）
   "member.tickets_received": { tag: "handover", ticket: false, href: null },
+  // ゲストの依頼（段11 K-907・K-893）：届いた・書き込みがあったを、届け先の社内の人・出し手に。押すとその依頼 1 件を開く（決める人の答え answer=46da04a0a017）。
+  //   札：届いた依頼は受けるか断るかを決める物なので approval、書き込みはやり取りの 1 行なので write（チケットのやり取り ticket.message と同じ）
+  "client_request.created": { tag: "approval", ticket: false, href: null, request: true },
+  "client_request.replied": { tag: "write", ticket: false, href: null, request: true },
 };
 
 /** 鈴に出してよい種類（表の鍵） */
@@ -117,6 +123,10 @@ export const PARAM_KEYS: ReadonlySet<string> = new Set([
 export function hrefOf(kind: string, payload: Record<string, unknown> | null | undefined): string | null {
   const rule = KINDS[kind];
   if (!rule || rule.afterDelete) return null;
+  if (rule.request) {
+    const rid = payload?.["request_id"];
+    return typeof rid === "string" && isUuid(rid) ? `/requests/${rid}` : null;
+  }
   if (!rule.ticket) return rule.href;
   const id = payload?.["ticket_id"];
   return typeof id === "string" && isUuid(id) ? `/tickets/${id}` : null;
