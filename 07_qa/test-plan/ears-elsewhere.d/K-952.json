@@ -35,7 +35,7 @@
     "test_post_inquiries_id_resolve_rejected_401": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_403": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-952.ts",
      "mark": "K144-API-991"
     },
     "test_post_inquiries_id_resolve_rate_limited": {

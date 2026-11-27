@@ -19042,6 +19042,34 @@ components:
       - from_workspace_id
       - to_workspace_ids
       x-required-by: hooks
+    MemberRemoveInput:
+      type: object
+      properties:
+        transfer_to_member_id:
+          type: string
+          format: uuid
+        transfers:
+          type: array
+          maxItems: 500
+          items:
+            type: object
+            required:
+            - ticket_id
+            - to_member_id
+            additionalProperties: false
+            properties:
+              ticket_id:
+                type: string
+                format: uuid
+              to_member_id:
+                type: string
+                format: uuid
+      additionalProperties: false
+      x-operation: removeMember
+      not:
+        required:
+        - transfer_to_member_id
+        - transfers
     WorkspaceSwitchInput:
       type: object
       properties: {}
@@ -23387,6 +23415,19 @@ components:
         restorable_until:
           type: string
       x-operation: leaveWorkspace
+    MemberRemoved:
+      type: object
+      properties:
+        member_id:
+          type: string
+          format: uuid
+        tickets_moved:
+          type: integer
+        handovers_cancelled:
+          type: integer
+        restorable_until:
+          type: string
+      x-operation: removeMember
     WorkspaceSwitched:
       type: object
       properties:
@@ -39943,9 +39984,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MembersInput'
+              $ref: '#/components/schemas/MemberRemoveInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -39953,7 +39994,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Members'
+                    $ref: '#/components/schemas/MemberRemoved'
                   meta:
                     type: object
         '401':

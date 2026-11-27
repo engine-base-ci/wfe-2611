@@ -21,7 +21,11 @@ const kindOf = (e: unknown): string => {
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
 };
 /** 断りの番号の答え（欄・details を付けない） */
-const coded = (status: number, code: string): HookReply => ({ status, body: kanameError(code).toJSON() });
+const coded = (status: number, code: string): HookReply => {
+  const body: Record<string, unknown> = { ...kanameError(code).toJSON() }; // 欄・detail（空の {}）を付けない（在るかを漏らさない）
+  delete body["detail"];
+  return { status, body };
+};
 const down = (e: unknown): HookReply => {
   console.error(`[client-requests-draft] 仕事を積む取引が落ちた（${kindOf(e)}）`);
   return coded(503, "E-PAGE-003");

@@ -61,7 +61,7 @@ begin
   end if;
 
   update tenants set deletion_requested_at = v_at where id = v_tenant;
-  select m.name into v_name from members m where m.id = v_me;
+  select m.display_name into v_name from members m where m.id = v_me;
   perform app.workspace_deletion_notify('workspace.deletion_requested', v_at,
     jsonb_build_object('by', jsonb_build_object('id', v_me, 'name', v_name),
                        'delete_at', to_char((v_at + interval '14 days') at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')));
@@ -100,7 +100,7 @@ begin
   end if;
 
   update tenants set deletion_requested_at = null where id = v_tenant;
-  select m.name into v_name from members m where m.id = v_me;
+  select m.display_name into v_name from members m where m.id = v_me;
   perform app.workspace_deletion_notify('workspace.deletion_cancelled', v_t.deletion_requested_at,
     jsonb_build_object('by', jsonb_build_object('id', v_me, 'name', v_name)));
   perform app.record_audit('workspace.deletion_cancelled', 'workspace', v_tenant::text, 'C2',

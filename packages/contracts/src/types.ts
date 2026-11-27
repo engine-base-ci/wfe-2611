@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6122a8ffdc3ee800
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:cfbf940af6087ff4
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -438,6 +438,7 @@ export type EmailChangeVerifyInput = { token: string };
 export type MySessionsRevokeInput = Record<string, never>;
 export type NotificationSettingsUpdateInput = { workspace_id?: string | null; email_digest?: boolean | null; quiet_hours?: Record<string, unknown> | null; pause?: string | null; urgent_override?: string[] | null; events?: string[] | null };
 export type NotificationSettingsCopyInput = { from_workspace_id: string; to_workspace_ids: string[] };
+export type MemberRemoveInput = { transfer_to_member_id?: string; transfers?: string[] };
 export type WorkspaceSwitchInput = Record<string, never>;
 export type GuestGroupInput = { name: string; request_scope_id: string };
 export type PortalTicketMessageInput = { body: string };
@@ -678,6 +679,7 @@ export type MySessionRevoked = { revoked?: boolean };
 export type MySessionsRevoked = { revoked?: number };
 export type NotificationSettingsCopied = { copied_to?: string[] };
 export type WorkspaceLeft = { tenant_id?: string; left?: boolean; restorable_until?: string };
+export type MemberRemoved = { member_id?: string; tickets_moved?: number; handovers_cancelled?: number; restorable_until?: string };
 export type WorkspaceSwitched = { tenant_id?: string; switched?: boolean };
 export type MyInvitations = { invitations?: string[]; total?: number };
 export type GuestGroupCreated = { group?: Record<string, unknown> };

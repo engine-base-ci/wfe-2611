@@ -190,7 +190,7 @@ export function setupDistribute(prefix: string): DistHarness {
       );
       const p = await f.person(tenant, scope, { name, ticketAbility: o.ability ?? "edit", authUserId });
       await f.admin.query(
-        "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, $4, $5)",
+        "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, $4, $5) on conflict (tenant_id, member_id) do update set auth_user_id = excluded.auth_user_id, role = excluded.role, status = excluded.status",
         [tenant, p.id, authUserId, o.role ?? "member", o.stopped ? "suspended" : "active"],
       );
       if (o.scopeRole)

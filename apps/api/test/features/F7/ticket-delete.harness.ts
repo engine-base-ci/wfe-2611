@@ -6,7 +6,7 @@
 //   準備で読んで準備ごと落とさないため・準備の赤と本体の赤を分ける・answer=8f745003d023）。ファイルは葉ごとの試験が自分の分だけ渡す。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。時刻は眠らずに DB の行の時刻を動かす。
 import { expect } from "vitest";
-import type { Person } from "../fixture.js";
+import { quietWrite, type Person } from "../fixture.js";
 import { data, delegateOk, json, makeKit, type Device, type Kit } from "../F5/delegate-kit.js";
 import { leafHooks } from "../F3/leaf-hooks.js";
 
@@ -91,12 +91,15 @@ export async function setupDelete(hookFiles: readonly string[]): Promise<DeleteW
   const assignee = await person("担当だけの人", "view");
   const manager = await person("マネージャー", "view");
   const admin = await person("管理者", "view");
-  await f.admin.query(
+  // マネージャーの所属は束の引き金を通さずに足す（土台の人は会社に入っている＝joinOnCreate。引き金を通すとマネージャーの束で edit が付き、
+  //   「edit の無いマネージャー」を作れない。権限は ticketAbility で決める・段6 と段10 の統合）
+  await quietWrite(
+    f,
     "insert into scope_memberships (tenant_id, member_id, scope_id, role) values ($1, $2, $3, 'manager')",
     [T.tenantId, manager.id, T.rootScope],
   );
   await f.admin.query(
-    "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'admin', 'active')",
+    "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'admin', 'active') on conflict (tenant_id, member_id) do update set role = 'admin'",
     [T.tenantId, admin.id],
   );
   const outsider = await f.person(k.O.tenantId, k.O.rootScope, { name: "別の会社の人", ticketAbility: "edit" });
