@@ -33,6 +33,7 @@ import {
   ticket,
   writer,
 } from "./notify.harness.js";
+import { NO_SPEC } from "../F5/approve-complete.harness.js"; // 確認項目の無いチケットを任せる理由（K-578・D-150.45）
 
 setupNotify();
 
@@ -58,7 +59,7 @@ async function aiFinishes(
   tm: Awaited<ReturnType<typeof team>>,
   result: string = ARTIFACT,
 ): Promise<string> {
-  const r = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(tm.by) });
+  const r = await req("POST", `/tickets/${t.id}/delegate`, { body: { no_spec_reason: NO_SPEC }, headers: auth(tm.by) });
   expect(r.status, await r.clone().text()).toBe(201);
   const jobId = String(((await json(r)).data as Record<string, unknown>)["job_id"]);
   expect((await take(tm.pc))?.id).toBe(jobId);

@@ -24,9 +24,9 @@ async function ticket(w: World, assignee: P | null, o: { done?: boolean; deleted
     w.tenantId,
   ]);
   const number = `EG-${(seq += 1)}`;
-  const r = await h.one<{ id: string }>(
+  const r = await h.one<{ id: string; number: string }>(
     `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, created_by, completed_at, deleted_at, delegated_to_clone)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id`,
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id, number`,
     [
       w.tenantId,
       o.scope ?? w.eg,
@@ -41,7 +41,7 @@ async function ticket(w: World, assignee: P | null, o: { done?: boolean; deleted
       !!assignee && !o.done,
     ],
   );
-  return { id: r.id, number };
+  return { id: r.id, number: r.number }; // 番号はいつもサーバーが付ける（0071 の ticket_number・入れた値は使わない）
 }
 const handover = (w: World, t: { id: string }, from: P, to: P, state = "waiting") =>
   h.one<{ id: string }>(
@@ -328,10 +328,21 @@ describe("K-848 外す口（removeMember）", () => {
     };
     expect(after.count).toBe(count0 - 1);
     expect(JSON.stringify(after.groups)).not.toContain(w.member.id);
+    // K-1103：招く時に席の上限（無料は 3 人まで）で止まる。この会社は外した後も社内 4 人なので、K-1103 が invite-create で置いたのと同じく
+    //   人数の上限を持たない試験だけのプラン（limits に members が無い）の契約にしておく（プランの行はこの会社の中）
+    const plan = await h.one<{ id: string }>(
+      "insert into plans (tenant_id, key, name, price_monthly, limits) values ($1, 'k848-unlimited', 'K848 の試験（上限なし）', 0, '{}'::jsonb) returning id",
+      [w.tenantId],
+    );
+    await h.rows(
+      "insert into subscriptions (tenant_id, plan_id, status_id, started_at) values ($1, $2, 'active', now() - interval '40 days')",
+      [w.tenantId, plan.id],
+    );
     const again = await h.call(w.admin, "POST", "/invitations", {
       body: { emails: [w.member.email], scope_id: w.eg, role_key: "member" },
     });
     expect(again.status, await again.clone().text()).toBe(201);
+    h.mails.splice(0); // 招き直しの招待のメール（1 通）を、後の行の「メールは出ない」に持ち越さない
   });
 
   it("K848-API-012 引き継ぎ先に知らせる（D-154.6）：全部同じ人 → その人の受け箱に 1 行（種類 member.tickets_received・payload に 外した人の名前・件数・番号の並び）・1 件ずつで 2 人に分ける → 2 人にそれぞれ 1 行・外した本人には出ない・メールは出ない", async () => {

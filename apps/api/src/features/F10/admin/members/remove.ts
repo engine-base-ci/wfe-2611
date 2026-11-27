@@ -16,7 +16,36 @@ type Removed = Record<string, unknown> & { error?: string };
 
 const uuidOrNull = (v: unknown): string | null => (typeof v === "string" && v ? v : null);
 
+/** transfers の上限（K-800 の VALUE_RANGES） */
+const TRANSFERS_MAX = 500;
+const UUID_RX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** 入口（zod）が読まない形の決まり：両方を指さない・transfers は 500 件まで・1 件は ticket_id と to_member_id の uuid だけ（契約の INPUT_RULES・VALUE_RANGES） */
+function shapeIssue(input: Record<string, unknown>): string | null {
+  const items = input["transfers"];
+  if (items === undefined) return null;
+  if (input["transfer_to_member_id"] !== undefined) return "transfer_to_member_id と transfers は一緒に送れない";
+  if (!Array.isArray(items) || items.length > TRANSFERS_MAX) return `transfers は ${TRANSFERS_MAX} 件まで`;
+  const ok = items.every((x) => {
+    if (!x || typeof x !== "object" || Array.isArray(x)) return false;
+    const o = x as Record<string, unknown>;
+    const keys = Object.keys(o).sort().join(",");
+    return (
+      keys === "ticket_id,to_member_id" &&
+      UUID_RX.test(String(o["ticket_id"])) &&
+      UUID_RX.test(String(o["to_member_id"]))
+    );
+  });
+  return ok ? null : "transfers の 1 件は ticket_id と to_member_id（uuid）";
+}
+
 export const run: AdminOp = async ({ d, a }) => {
+  const bad = shapeIssue(a.input);
+  if (bad)
+    return {
+      status: 422,
+      body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field: "transfers", message: bad }] },
+    };
   const to = uuidOrNull(a.input["transfer_to_member_id"]);
   const items = Array.isArray(a.input["transfers"]) ? (a.input["transfers"] as unknown[]) : null;
   let v: Removed | undefined;

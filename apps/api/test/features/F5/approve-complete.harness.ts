@@ -33,7 +33,7 @@ import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import { delegateHooks } from "../../../src/features/F5/delegate/index.js";
 import { approveHooks } from "../../../src/features/F5/approve-complete/index.js";
-import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
+import { joinOnCreate, makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { pairMemberForTest } from "../../bridge_pair.js";
 
 // ---- 決めた文と言葉（K-63.md・errors.json に足す）----
@@ -420,6 +420,7 @@ export const breakWritable = async <T>(title: string, body: () => Promise<T>): P
 export function setupApproveComplete(): void {
   beforeAll(async () => {
     f = await makeFixture();
+    joinOnCreate(f); // 任せる口は段10 の K-699 から、会社に入っている人だけが任せられる（fixture.ts の joinOnCreate）
     // 偽の画面のログインに本人確認の時刻（:su=）を足す。PC の印は本物の解決
     const web = async (h: Headers) => {
       const m = /^Bearer fake:(member|ops|client):([0-9a-f-]{36}):([0-9a-f-]{36})(?::su=(\d+))?$/.exec(
