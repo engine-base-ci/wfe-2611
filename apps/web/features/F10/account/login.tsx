@@ -1,19 +1,22 @@
 "use client";
 // 自分の設定 › ログインと安全（キャンバス MeLogin）。入り方・2 段階認証・パスキーの区画は段 2 の F1 の SecurityBody と同じ見た目（同じ部品）。
 //   この束で新しく押せる形にするのは「入っている端末」と「最近の安全の記録」の 2 区画だけ（F1 の物は書き換えない）
+//   DevicesCard・EventsCard は本番（K-842 の sessions-area.tsx）も使う：任意の props で答えの値を渡す。渡さない呼び方（モック）は下の見本の値
 import { Laptop, Monitor, Smartphone } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Pill, RowButton, SecuritySummary, SettingCard, SettingNote, SettingRow } from "@/components/k/setting-parts";
 import { RevokeConfirm } from "./dialogs";
 import "./account.css";
 
-interface Device {
+export interface Device {
   id: string;
   name: string;
   where: string;
   last: string;
   here?: boolean;
   doubt?: boolean;
+  /** 絵（無ければ見本の決め方：iphone は電話・この端末は PC・ほかは画面） */
+  icon?: "laptop" | "phone" | "monitor";
 }
 const DEVICES: readonly Device[] = [
   { id: "mac", name: "MacBook Pro ・ Chrome", where: "東京", last: "いま", here: true },
@@ -28,19 +31,40 @@ const EVENTS: readonly [string, string][] = [
 ];
 
 function DeviceIcon({ d }: { d: Device }) {
-  if (d.id === "iphone") return <Smartphone size={16} />;
-  return d.here ? <Laptop size={16} /> : <Monitor size={16} />;
+  const icon = d.icon ?? (d.id === "iphone" ? "phone" : d.here ? "laptop" : "monitor");
+  if (icon === "phone") return <Smartphone size={16} />;
+  return icon === "laptop" ? <Laptop size={16} /> : <Monitor size={16} />;
 }
 
-/** 入っている端末の区画。押すと確かめの小窓（onRevoke に端末の id・all はこの端末以外をすべて） */
-function DevicesCard({ onRevoke }: { onRevoke?: (id: string | "all") => void }) {
+export interface DevicesCardProps {
+  /** 端末の行（無ければ見本の値） */
+  devices?: readonly Device[];
+  /** 「この端末以外をすべて切る」を押せない形にする（ほかの端末が無い） */
+  allDisabled?: boolean;
+  /** 行の代わりに出す物（読めなかったときの形など） */
+  notice?: ReactNode;
+  /** 押すと確かめの小窓（端末の id・all はこの端末以外をすべて） */
+  onRevoke?: (id: string | "all") => void;
+}
+
+/** 入っている端末の区画 */
+export function DevicesCard({ devices = DEVICES, allDisabled = false, notice, onRevoke }: DevicesCardProps) {
   return (
     <SettingCard
       title="入っている端末"
       labelledBy="lg-sessions"
-      aside={<RowButton onClick={() => onRevoke?.("all")}>この端末以外をすべて切る</RowButton>}
+      aside={
+        <RowButton
+          aria-disabled={allDisabled || undefined}
+          title={allDisabled ? "ほかの端末はありません" : undefined}
+          onClick={allDisabled ? undefined : () => onRevoke?.("all")}
+        >
+          この端末以外をすべて切る
+        </RowButton>
+      }
     >
-      {DEVICES.map((d) => (
+      {notice ? <li>{notice}</li> : null}
+      {(notice ? [] : devices).map((d) => (
         <SettingRow
           key={d.id}
           icon={<DeviceIcon d={d} />}
@@ -59,11 +83,20 @@ function DevicesCard({ onRevoke }: { onRevoke?: (id: string | "all") => void }) 
   );
 }
 
-function EventsCard() {
+export interface EventsCardProps {
+  /** 記録の行（[時刻, 字]・無ければ見本の値） */
+  events?: readonly [string, string][];
+  /** 記録が 0 件のときの字 */
+  empty?: string;
+}
+
+/** 最近の安全の記録の区画（記録の画面へのリンクは置かない・D-154.2） */
+export function EventsCard({ events = EVENTS, empty }: EventsCardProps) {
   return (
     <SettingCard title="最近の安全の記録" labelledBy="lg-events">
-      {EVENTS.map(([when, what]) => (
-        <SettingRow key={when} name={what} detail={when} />
+      {events.length === 0 && empty ? <SettingRow name={empty} /> : null}
+      {events.map(([when, what], i) => (
+        <SettingRow key={`${i}-${when}`} name={what} detail={when} />
       ))}
     </SettingCard>
   );

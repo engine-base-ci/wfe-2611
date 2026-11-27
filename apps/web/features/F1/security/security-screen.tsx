@@ -2,7 +2,7 @@
 // ログインと安全（K-318・画面 mfa-setup・道 /mfa-setup）。外枠（TicketShell）の中に、自分の設定の第 2 ナビ（MeSub・「ログインと安全」）と本文。
 //   見た目はモック /dev/mock/f1/sec-* と同じ部品（views.tsx）。動き：getMySecurity を 1 回読む → 一覧。パスキーを足す・名前を変える・外す。
 //   口が 403・STEP_UP_REQUIRED なら取り直しの小窓（step-up.tsx）を出し、通ったら止まった操作を 1 回だけやり直す。
-//   2 段階の「付ける」（two-factor.tsx）とパスワードの「変える／決める」（change-password.tsx）は K-319。入っている端末・記録は流れ F10（グレー・口を呼ばない）。
+//   2 段階の「付ける」（two-factor.tsx）とパスワードの「変える／決める」（change-password.tsx）は K-319。入っている端末・記録は K-842 の SessionsArea（listMySessions を getMySecurity と並べて読む）。
 //   mfa_pending（付けるまで進めない・K-319・D-128.141）：外枠も第 2 ナビも出さず、入口の枠の SecurityForced。付け終わって読み直した印が下りたら next（中の道だけ）か / へ。
 //   ?back=1（ほかの画面から戻された・lib/mfa-gate.ts）なら戻された知らせ（口の文・無ければ決まった文）。箱の下のログアウトは signOut を 1 回呼んで /login へ
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
@@ -13,6 +13,8 @@ import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
 import { clearMfaReason, mfaReason } from "@/lib/mfa-gate";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
+import { SessionsArea } from "@/features/F10/account/sessions-area";
+import { useReloadSessions, useSessions } from "@/features/F10/account/use-sessions";
 import { usePasswordFlow } from "./change-password";
 import { hereNow, msgOf, offline, SCREEN } from "./common";
 import { safeNext } from "./next";
@@ -67,6 +69,11 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   const [ready, setReady] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
   const { sec, loadErr, load, setSec } = useSecurity();
+  // 端末の一覧は getMySecurity と並べて読み始める（区画が開くと同じ鍵の答えを使う・K-842）
+  useSessions(ready);
+  const reloadSessions = useReloadSessions();
+  /** 付けるまで進めない形だった（その間の listMySessions は 403 MFA_REQUIRED で、失敗が鍵に残る） */
+  const wasForced = useRef(false);
   const started = useRef(false);
   const autoAdd = useRef(add);
 
@@ -138,6 +145,18 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     autoAdd.current = false;
     openAdd();
   }, [sec, unsupported, openAdd]);
+
+  // 付けるまで進めない形を抜けた：その間に取った端末の一覧の失敗を残さず、1 回だけ読み直す（ふつうに開いたときは読み直さない）
+  useEffect(() => {
+    if (!sec) return;
+    if (sec.mfa_pending === true) {
+      wasForced.current = true;
+      return;
+    }
+    if (!wasForced.current) return;
+    wasForced.current = false;
+    void reloadSessions();
+  }, [sec, reloadSessions]);
 
   // 付けるまで進めない人が付け終わった（読み直した印が下りた）：next（中の道だけ）か / へ
   useEffect(() => {
@@ -379,6 +398,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
             onRemove={openRemove}
             onPassword={password.open}
             onTwoFactor={twoFactor.start}
+            sessionCards={<SessionsArea twoFactor={state.twoFactor} hasPassword={state.hasPassword} />}
           />
           {dialogs}
         </>,

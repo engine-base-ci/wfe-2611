@@ -148,7 +148,7 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     else if (p === "/api/v1/bridge/devices") r = ok([]);
     else if (p.startsWith("/api/v1/me/sessions")) {
       m.sessionsCalls += 1;
-      r = ok([]);
+      r = ok({ sessions: [], events: [] }); // K-842：端末の区画は口につながる（答えの形は K-836）
     } else if (method === "GET" && p === "/api/v1/me/security") {
       m.reads += 1;
       if (m.holdRead) return never();
@@ -343,20 +343,17 @@ test("K318-UI-003 パスワードと 2 段階：札「付けている」・残�
   expect(m.reads).toBe(1);
 });
 
-test("K318-UI-004 流れ F10 とまだの物はグレー：端末と記録の行は data-off で準備中・端末の口は 0 回・切るボタンは押せない・パスキーだけの人でも「要りません」の字が無い", async ({
+test("K318-UI-004 端末と記録の区画は K-842 が口につないだ物（準備中の行が無い・端末の口は 1 回）・パスキーだけの人でも「要りません」の字が無い", async ({
   page,
 }) => {
   for (const sec of [PASSWORD_ONLY, PASSKEY_USER]) {
     await page.unrouteAll({ behavior: "ignoreErrors" });
     const m = await mockApi(page, sec);
     await openList(page);
-    for (const name of ["入っている端末の一覧", "安全の記録"]) {
-      await expect(row(page, name)).toHaveAttribute("data-off", "");
-      await expect(row(page, name)).toContainText("準備中");
-    }
-    await expect(page.locator(SEC).getByRole("button", { name: "この端末以外をすべて切る" })).toBeDisabled();
+    for (const name of ["入っている端末の一覧", "安全の記録"]) await expect(row(page, name)).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "入っている端末", exact: true })).toBeVisible();
     await expect(page.locator(SEC).getByText("要りません")).toHaveCount(0);
-    expect(m.sessionsCalls).toBe(0);
+    await expect.poll(() => m.sessionsCalls).toBe(1);
   }
 });
 
