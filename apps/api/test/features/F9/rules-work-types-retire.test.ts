@@ -228,6 +228,8 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
       ":!scripts/ci/contract_shape_test.py",
       // 消したことを確かめる側の字（外した操作 ID を並べて「無い」を見る）。外す口を使う試験ではない
       ":!scripts/ci/k722_flow_test.py",
+      // 段13 の K-1000（D-156.20）も業務の型の口が K-72 の apis に無いことを、外した操作 ID を並べて確かめる側（使う試験ではない）
+      ":!scripts/ci/k1000_flow_test.py",
       ":!apps/api/test/features/F4/work-type-retire.test.ts",
     ]);
     expect(out, "外した操作 ID を使う前からの試験").toEqual([]);
@@ -239,11 +241,11 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
       "qid",
       "pid",
       "mid",
-      "client_id",
+      // client_id（listClientRequests の問い合わせ）は後から入った段11 の K-892（D-155）が問い合わせを state だけにして外した
       "layer_id",
       "actor_member_id",
-      "tenant_id",
-      "plan_id",
+      // tenant_id（getNotificationSettings の問い合わせ）は後から入った段11 の K-837 が workspace_id に替えた
+      // plan_id（listPlanHistory の問い合わせ）は後から入った段12 の K-987 が plan_key に替えた
       "parent_id",
     ])
       expect(spec, `${name}`).toMatch(new RegExp(`name: ${name}\\b`));
@@ -286,19 +288,22 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
   it("K711-API-016 行為 A131（ルールを置く）は第 1 フェーズに残る：release v1・act_to_screen と裏側の表の画面が clone-chat", () => {
     const flow = JSON.parse(read("05_flow", "flow.json")) as FlowDoc;
     const act = flow.backbone.flatMap((p) => p.acts).find((a) => a.id === "A131");
-    expect(act?.release, "A131 の release").toBe("v1");
+    // 後から入った K-721（D-152.8・D-152.20：決まり・守ることは物として無くし、ルールを置く口は全部外した）で A131 は後のフェーズ（v2）へ送った
+    expect(act?.release, "A131 の release").toBe("v2");
+    expect(flow.deferred["A131"] ?? "", "A131 の送った理由").toContain("D-152.20");
     expect(flow.act_to_screen["A131"], "A131 の画面").toContain("clone-chat");
     expect(flow.blueprint["A131"]?.screen, "裏側の表の A131 の画面").toBe("clone-chat");
   });
 
   it("K711-API-017 第 1 フェーズの画面は 35：rules・work-types は v2 で DEFERRED に理由・spec-dependencies の screen_count_v1 も 35", () => {
     const flow = JSON.parse(read("05_flow", "flow.json")) as FlowDoc;
-    expect(flow.screens.filter((x) => x.release === "v1").length, "第 1 フェーズの画面の数").toBe(35);
+    // 後から入った段11 の K-870（ゲスト・D-155）が前の取引先の画面 clients を第 1 フェーズから外したので 34
+    expect(flow.screens.filter((x) => x.release === "v1").length, "第 1 フェーズの画面の数").toBe(34);
     for (const sid of ["rules", "work-types"]) {
       expect(flow.screens.find((x) => x.id === sid)?.release, sid).toBe("v2");
       expect(flow.deferred[sid] ?? "", `${sid} の送った理由`).toContain("D-152.20");
     }
-    expect(read("spec-dependencies.yaml")).toMatch(/- id: screen_count_v1\n(?: {2}.*\n)*? {2}expected_value: 35\n/);
+    expect(read("spec-dependencies.yaml")).toMatch(/- id: screen_count_v1\n(?: {2}.*\n)*? {2}expected_value: 34\n/);
   });
 
   it("K711-API-018 キャンバスの対応表の later（canvas_gate.py の CV4）：第 1 フェーズの画面・flow に無い画面・空の並びは 2 で終わり、今の対応表は 0", () => {

@@ -181,7 +181,8 @@ describe("K-722 ナレッジの前の形の口 23 を契約から外す", () => 
 
   it("K722-API-006 残す口：新しい形のナレッジの口 25 と search が endpoints.json に在る（外す作業が新しい口を巻き込んでいない）。運営ひな形の 3 口も在る", () => {
     const e = read("08_api", "endpoints.json");
-    for (const op of [...KEPT_OPS, "makeKindTemplateFromTicket", "listKindTemplateUpdates", "applyKindTemplateUpdate"])
+    // makeKindTemplateFromTicket は後から入った K-993（D-156.20・チケットからひな形を作る口は作らない）が契約から外した。残る運営ひな形の口は 2 つ
+    for (const op of [...KEPT_OPS, "listKindTemplateUpdates", "applyKindTemplateUpdate"])
       expect(e, `${op} は残る`).toContain(`"${op}"`);
   });
 
