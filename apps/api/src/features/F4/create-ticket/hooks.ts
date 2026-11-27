@@ -75,12 +75,17 @@ function refusal(r: Record<string, unknown>): HookReply {
 const kindOf = (e: unknown): string => (e instanceof Error ? e.name : typeof e);
 const LIST_MAX = 200;
 /** グループの一覧（listScopes）：元の行に 10 の鍵（K-804・app.scope_list_json）を重ね、その並びで返す。並びに無い行は後ろに元のまま */
+//   元の列は契約（ScopeListItem）に在る物だけを残す（tenant_id・監査の列などは出さない・K-144 の契約の形は strict）
+const SCOPE_RAW_KEYS = ["id", "name", "parent_id", "layer_id", "created_at"] as const;
+const pickScopeRaw = (r: Row): Row => Object.fromEntries(SCOPE_RAW_KEYS.filter((k) => k in r).map((k) => [k, r[k]]));
 function withScopeKeys(rows: Row[], shaped: Row[]): Row[] {
   const byId = new Map(rows.map((r) => [String(r["id"]), r]));
   const seen = new Set(shaped.map((x) => String(x["id"])));
   return [
-    ...shaped.filter((x) => byId.has(String(x["id"]))).map((x) => ({ ...byId.get(String(x["id"]))!, ...x })),
-    ...rows.filter((r) => !seen.has(String(r["id"]))),
+    ...shaped
+      .filter((x) => byId.has(String(x["id"])))
+      .map((x) => ({ ...pickScopeRaw(byId.get(String(x["id"]))!), ...x })),
+    ...rows.filter((r) => !seen.has(String(r["id"]))).map(pickScopeRaw),
   ];
 }
 /** チケットの詳細の帯（DB の app.ticket_band の答え・0096 と 0100） */
@@ -289,20 +294,17 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
         // 1 件に足す 10 の鍵と並び（K-804）：見える id の並びで app.scope_list_json を 1 回（同じ取引の中）。
         //   上のグループが先・兄弟は position の順。元の列（layer_id など）は残し、足す鍵を上に重ねる
         const ids = rows.map((s) => String(s["id"]));
+        //   書けるグループと 10 の鍵は 1 文で読む（読む口の文の数の上限・K-234・K-237）
         const { writable, shaped } = ids.length
-          ? await withTenant(appPool, a.ctx, async (cl) => ({
-              writable:
-                a.ctx.role === "member"
-                  ? (
-                      await cl.query<{ id: string }>(
-                        "select s.id::text as id from unnest($1::uuid[]) as s(id) where has_permission(app.user_id(), 'tickets', s.id, 'edit')",
-                        [ids],
-                      )
-                    ).rows.map((r) => r.id)
-                  : [],
-              shaped:
-                (await cl.query<{ v: Row[] }>("select app.scope_list_json($1::uuid[]) as v", [ids])).rows[0]?.v ?? [],
-            }))
+          ? await withTenant(appPool, a.ctx, async (cl) => {
+              const r = (
+                await cl.query<{ v: Row[] | null; w: string[] | null }>(
+                  "select app.scope_list_json($1::uuid[]) as v, case when $2::boolean then array(select s.id::text from unnest($1::uuid[]) as s(id) where has_permission(app.user_id(), 'tickets', s.id, 'edit')) else '{}'::text[] end as w",
+                  [ids, a.ctx.role === "member"],
+                )
+              ).rows[0];
+              return { writable: r?.w ?? [], shaped: r?.v ?? [] };
+            })
           : { writable: [] as string[], shaped: [] as Row[] };
         return { status: 200, body: { data: withScopeKeys(rows, shaped), meta: { limit: LIST_MAX, writable } } };
       },

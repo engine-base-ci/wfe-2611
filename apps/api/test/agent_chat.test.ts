@@ -24,6 +24,7 @@ import { pairForTest } from "./bridge_pair.js";
 import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
 import { withDevice } from "../src/middleware/tenant.js";
 import { delegateHooks } from "../src/hooks/delegate.js";
+import { talkMirrorHooks } from "../src/hooks/talk-mirror.js"; // CHT-31-001：写す口は契約の口（K-760）
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -75,7 +76,7 @@ beforeAll(async () => {
     auth,
     // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
     resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
-    contract: { hooks: delegateHooks(appPool) },
+    contract: { hooks: { ...delegateHooks(appPool), ...talkMirrorHooks({ appPool }) } },
     authExt: authExt({
       auth,
       appPool,

@@ -29,13 +29,15 @@ describe("K-834 顔の写真（uploadAvatar）", () => {
     const other = await h.f.alsoIn(w.member, co.tenantId, co.rootScope);
     const r = await up(w.member, form(image("png")));
     expect(r.status, await r.clone().text()).toBe(201);
-    const a = (await h.json(r)).data!["avatar"] as any;
+    const a = (await h.json(r)).data!["avatar"] as Record<string, unknown>;
     expect(a).toMatchObject({ kind: "image", initial: "鈴" });
     expect(typeof a.url).toBe("string");
     const rf = (await ref(w.member))!;
     expect(rf).toContain(w.tenantId);
     expect(await present(w.member, rf)).toBe(true);
-    expect(((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as any).avatar.kind).toBe("image");
+    expect(
+      ((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as Record<string, unknown>).avatar.kind,
+    ).toBe("image");
     expect(await ref(w.admin)).toBeNull();
     expect(
       (await h.one<{ r: string | null }>("select avatar_ref as r from members where id = $1", [other.id])).r,
@@ -172,7 +174,7 @@ describe("K-834 顔の写真（uploadAvatar）", () => {
     await up(w.member, form(image("png")));
     const old = (await ref(w.member))!;
     h.driverFail.del = true;
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         expect((await up(w.member, form(image("jpeg"), "image/jpeg", "d.jpg"))).status).toBe(201);

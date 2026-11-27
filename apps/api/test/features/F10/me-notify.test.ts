@@ -26,11 +26,13 @@ const copy = (p: P, from: string, to: unknown, key?: string) =>
     body: { from_workspace_id: from, to_workspace_ids: to },
     ...(key ? { key } : {}),
   });
-const data = async (r: Response) => (await h.json(r)).data as Record<string, any>;
-const ev = (d: Record<string, any>, key: string) => (d["events"] as any[]).find((e) => e.key === key);
-const saved = (p: P) => h.one<Record<string, any>>("select * from notification_settings where member_id = $1", [p.id]);
+const data = async (r: Response) => (await h.json(r)).data as Record<string, unknown>;
+const ev = (d: Record<string, unknown>, key: string) =>
+  (d["events"] as Record<string, unknown>[]).find((e) => e.key === key);
+const saved = (p: P) =>
+  h.one<Record<string, unknown>>("select * from notification_settings where member_id = $1", [p.id]);
 const prefs = (p: P) =>
-  h.rows<Record<string, any>>(
+  h.rows<Record<string, unknown>>(
     "select event_kind_id, channel_id, enabled from notification_preferences where member_id = $1 and deleted_at is null order by 1, 2",
     [p.id],
   );
@@ -66,7 +68,7 @@ describe("K-837 知らせの設定（getNotificationSettings・updateNotificatio
       paused_until: null,
     });
     expect([...d["urgent_override"]].sort()).toEqual(["approval_due_today", "clone_stopped"]);
-    expect((d["events"] as any[]).map((e) => e.key)).toEqual(EVENTS);
+    expect((d["events"] as Record<string, unknown>[]).map((e) => e.key)).toEqual(EVENTS);
     expect(Object.keys(d["events"][0]).sort()).toEqual(["bell", "fixed", "key", "mail"]);
     expect(ev(d, "approval_waiting")).toMatchObject({ bell: true, mail: true, fixed: false });
     expect(ev(d, "clone_finished")).toMatchObject({ bell: true, mail: false, fixed: false });

@@ -19,3 +19,9 @@ export function dataReply(
   const shaped = Array.isArray(data) ? data.map((x) => pick(x, keys)) : pick(data, keys);
   return { status, body: { data: shaped }, headers: { "Cache-Control": "private, no-store" } };
 }
+
+/** 形の誤りの 422（入口の zod が読まない契約の REQUIRED_INPUTS・VALUE_RANGES・INPUT_RULES を口が持つ・x-required-by: hooks） */
+export const invalidInput = (field: string, message: string): HookReply => ({
+  status: 422,
+  body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
+});

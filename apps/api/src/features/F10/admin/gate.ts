@@ -72,11 +72,13 @@ export function replyOf(v: { error: string; [k: string]: unknown }, where = "答
   if (word === "forbidden") return forbidden();
   const plain = Object.hasOwn(PLAIN, word) ? PLAIN[word] : undefined;
   if (plain) return fromCatalog(plain[1], plain[0]);
+  // K-802・K-804 の関数は { name, reason }（K-802 の表）で返す。{ 名前, 訳／state } の形も受ける
+  const who = asText(v["名前"]) || asText(v["name"]);
   if (word === "person_state") {
-    const why = asText(v["訳"]) || PERSON_STATE[asText(v["state"])] || "";
-    return fromCatalog("E-GRP-016", 409, { 名前: asText(v["名前"]), 訳: why });
+    const why = asText(v["訳"]) || PERSON_STATE[asText(v["state"]) || asText(v["reason"])] || "";
+    return fromCatalog("E-GRP-016", 409, { 名前: who, 訳: why });
   }
-  if (word === "person_viewer") return fromCatalog("E-GRP-017", 409, { 名前: asText(v["名前"]) });
+  if (word === "person_viewer") return fromCatalog("E-GRP-017", 409, { 名前: who });
   if (word === "inv_today")
     return fromCatalog("E-INV-019", 409, { 次に送れる時刻: asText(v["次に送れる時刻"]) || asText(v["next_at"]) });
   return down(where, `知らない答え（${word}）`);
