@@ -128,7 +128,8 @@
      "apps/web/src/components/tiptap-ui/heading-button/use-heading.ts・apps/web/src/components/tiptap-ui/heading-dropdown-menu/use-heading-dropdown-menu.ts → apps/web/features/F4/doc/editor/bar/use-heading.ts",
      "apps/web/src/components/tiptap-ui/list-button/use-list.ts・apps/web/src/components/tiptap-ui/list-dropdown-menu/use-list-dropdown-menu.ts → apps/web/features/F4/doc/editor/bar/use-list.ts",
      "apps/web/src/components/tiptap-ui/text-align-button/use-text-align.ts → apps/web/features/F4/doc/editor/bar/use-text-align.ts",
-     "apps/web/src/components/tiptap-ui/blockquote-button/use-blockquote.ts・apps/web/src/components/tiptap-ui/code-block-button/use-code-block.ts → apps/web/features/F4/doc/editor/bar/use-block-button.ts"
+     "apps/web/src/components/tiptap-ui/blockquote-button/use-blockquote.ts・apps/web/src/components/tiptap-ui/code-block-button/use-code-block.ts → apps/web/features/F4/doc/editor/bar/use-block-button.ts",
+     "apps/web/src/components/tiptap-ui/color-highlight-button/use-color-highlight.ts → apps/web/features/F4/doc/editor/bar/use-color-highlight.ts"
     ],
     "why": "道具の今押せるか・押されているか・押したときの命令（hook）だけを写し、見た目は components/k と Base UI・正本のトークンで描く。写す hook は Tiptap の命令を呼ぶだけで依存が増えない",
     "not_used": [
@@ -1031,6 +1032,14 @@
   "remark-math": {
    "for": "会話の書式（数式）",
    "register": "stack.frontend.chat_rendering"
+  },
+  "remark-parse": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
+  },
+  "unified": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
   },
   "resend": {
    "for": "記録にある名前のまま",
