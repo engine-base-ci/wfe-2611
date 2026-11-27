@@ -130,10 +130,17 @@ class OtherJobs(unittest.TestCase):
         self.assertEqual(str(junit.get("if")), "always()", "web が飛ばされた（skipped）回でも junit の組は走って緑で終わる")
         self.assertNotIn("web", JOBS["auto-merge"].get("needs") or [], "取り込みの組は web を待たない（今までどおり）")
         for name, job in JOBS.items():
-            if name in ("web", "junit"):
+            if name in ("web", "junit", "web-report"):
                 continue
             with self.subTest(name):
                 self.assertNotIn("web", job.get("needs") or [], "web を待つ組を新しく作らない（飛ばされると連れて飛ぶ）")
+        # K-1304：分けて流した web の組を合わせる web-report だけは web を待つ。web が飛ばされたら一緒に飛ぶのが正しい（合わせる物が無い）ので、
+        #   if は web の結果が skipped でないことを見て、inputs.web は読まない。junit はそれも待つ（always()）
+        rep = JOBS["web-report"]
+        self.assertEqual(rep.get("needs"), ["static", "web"])
+        self.assertIn("needs.web.result != 'skipped'", str(rep.get("if")).replace('"', "'"))
+        self.assertNotIn("inputs.web", str(rep))
+        self.assertIn("web-report", junit.get("needs") or [])
 
     def test_K258_CI_006_web_steps_kept(self):
         names = [str(s.get("name", "")) for s in JOBS["web"]["steps"]]
