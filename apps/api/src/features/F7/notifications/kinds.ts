@@ -28,6 +28,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "ticket.stage_changed": ticketKind("write"),
   "ticket.decision": ticketKind("write"),
   "ticket.due_changed": ticketKind("write"),
+  // ticket.sort_changed の payload の fields は priority・parent（K-440）／estimate_minutes（K-583）／field:<項目の id>（K-564）のどれか（混ざることもある）。
+  //   fields・url は params に出さない（PARAM_KEYS は message_id だけを通す）。文は K-467 の表（項目を変えました）・K-602
   "ticket.sort_changed": ticketKind("write"),
   // 段 8（K-464・K-463）
   "ticket.stopped": ticketKind("stopped"),

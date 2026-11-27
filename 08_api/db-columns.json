@@ -1028,6 +1028,14 @@
     "type": "text",
     "nullable": true
    },
+   "sweep_error_code": {
+    "type": "text",
+    "nullable": true
+   },
+   "sweep_failed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "taken_session_id": {
     "type": "uuid",
     "nullable": true

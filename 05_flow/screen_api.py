@@ -518,7 +518,8 @@ INPUTS = {
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
                                            "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
                                            "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid",
-                                           "body": "object", "fields": "object", "specs": "string[]"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）
+                                           "body": "object", "fields": "object", "specs": "string[]", "links": "array",
+                                           "duplicate_of": "uuid", "copy": "string[]"}),   # duplicate_of・copy：複製の元と写す物（K-438）。source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）。links：作るときにつなぐ相手（K-581）
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
@@ -873,6 +874,13 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-FLD-004", "body": {"error": "conflict", "code": "E-FLD-004"}, "errors": ["E-FLD-004"],
          "trigger": "会社が必須にした項目が空（渡さない・空の文字・空の並び・null・必須のチェックが付いていない）",
          "ears_form": "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない"},
+        # K-438：複製（duplicate_of・copy）
+        {"status": 404, "code": "E-DUP-001", "body": {"error": "not_found", "code": "E-DUP-001"}, "errors": ["E-DUP-001"],
+         "trigger": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+         "ears_form": "UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-DUP-002", "body": {"error": "conflict", "code": "E-DUP-002"}, "errors": ["E-DUP-002"],
+         "trigger": "子チケットを写すと親子が 3 段を超える",
+         "ears_form": "UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない"},
         {"status": 422, "code": "E-VAL-013", "body": {"error": "validation_failed", "code": "E-VAL-013", "details": []}, "errors": ["E-VAL-013"],
          "trigger": "本文 body を送らず区画 sections だけで作り、種別の必須の区画が空（前の道・K-578 が外すまで）",
          "ears_form": "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない"},
@@ -968,6 +976,11 @@ VALUE_RANGES = {
         "specs": {"maxItems": 50},
         # K-437：本文 body は { doc } だけ（text・知らない鍵は 422）。木の形は updateTicketBody の doc と同じ定義（K-561・K-584 の validateDoc）
         "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
+        # K-581：作るときにつなぐ相手（payload.ts の checkLinks・0〜20 件・同じ組なし・要素は kind と other_ticket_id の 2 つだけ）。相手が選べるかは DB（K-441 の app.ticket_link_add）
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},
+        # K-438：複製で写す物（duplicate.ts の COPY_NAMES・6 つ・重複なし。添付と参照は 422）
+        "copy": {"maxItems": 6, "uniqueItems": True, "items": {"enum": ["body", "assignee", "fields", "specs", "links", "children"]}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
@@ -1092,8 +1105,8 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean", "device_id": "string"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "guest_share": "object", "handover": "object?", "handover_kinds": "string[]"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。guest_share（見せているゲストのグループ shared の id と名前・見ている人が変えられるか can_change）は K-905。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405
-    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "guest_share": "object", "handover": "object?", "handover_kinds": "string[]", "body": "object", "fields": "array", "spec_count": "integer", "spec_unchecked": "integer", "no_spec_reason": "string?", "parent": "object?", "child_count": "integer", "link_count": "integer", "results": "object"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。guest_share（見せているゲストのグループ shared の id と名前・見ている人が変えられるか can_change）は K-905。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405。body（本文 { doc, text, version }・行が無ければ空の本文で版 0）・fields（その種別で出す会社の項目と値）・spec_count と spec_unchecked（確認項目の数と未チェックの数）・no_spec_reason・parent（見える親は鍵 6・見えない親は番号だけ・無ければ null）・child_count（見える直接の子）・link_count・results（成果物・決定ログ・申し送りが在るときだけ鍵が出る）は K-560
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array", "body_template": "object?", "fields": "array"}),   # body_template（種別のひな形）と fields（その種別で出す会社の項目のマスタ・値なし・TicketField の鍵 7）は K-560
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
     # K-62：仕事は行の中身をそのまま job に（無ければ null）。古い Bridge には渡さず outdated（E-CONN-012）
@@ -1109,10 +1122,10 @@ RESPONSES = {
     #   まだ無い時刻・途中の 1 行・止まった理由・差し戻しの理由は null（? は null を許す・Q2 回 2）
     "getActionRun": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                         "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
+                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "sweep_failed_at": "string?", "reason_kind": "string?", "checks": "object"}),
     "listTicketRuns": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                           "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
+                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "sweep_failed_at": "string?", "reason_kind": "string?", "checks": "object"}),
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
@@ -1149,7 +1162,7 @@ RESPONSES = {
     "getOpsWorkspace": ("OpsWorkspace", {"workspace": "object", "pc": "object", "runs": "object", "stopped": "object", "files": "object", "stop_reasons": "array", "recent": "array", "info": "object"}),
     "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"name": "string", "email": "string", "role": "string", "last_seen_at": "string", "pc": "string", "login": "string"}),
     "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
-    "getShell": ("Shell", {"approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object"}),
+    "getShell": ("Shell", {"member": "object", "approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object", "saved_views": "array?"}),
     "getOpsShell": ("OpsShell", {"inquiries_unassigned": "integer", "inquiries_mine": "integer", "invoices_overdue": "integer", "banner": "object"}),
     "getTicketShape": ("TicketShape", {"kinds": "array", "stages": "array", "axes": "array", "handover_rules": "array", "limits": "object", "template_updates": "integer"}),
     "previewTicketShapeChange": ("TicketShapeChangePreview", {"removed": "array", "needs_move_to": "array", "affected_tickets": "integer", "over_limits": "array"}),
@@ -1225,12 +1238,12 @@ PERMS = {
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
-    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
+    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。段・実績・保留（段 7）と期限・開始日（段 8・期限を変えるときは理由が必須）だけ。担当は渡す口（F8）で変える。ほかの欄は E-VAL-018", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ", False),
-    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
+    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
     "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
@@ -1274,8 +1287,8 @@ PERMS = {
     "createTicketAttachment": ("write", "そのグループの人（大きさ・種類の上限）", False),
     "listSavedViews": ("self", "自分のものと、グループの全員に見せたもの", False),
     "createSavedView": ("self", "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）", False),
-    "updateSavedView": ("self", "作った本人", False),
-    "deleteSavedView": ("self", "作った本人", False),
+    "updateSavedView": ("self", "作った人と、グループの全員向けの物は見せているグループのマネージャー（名前・条件・列・詰め方だけ。見せる相手を変えられるのは作った人だけ）", False),
+    "deleteSavedView": ("self", "作った人と、グループの全員向けの物は見せているグループのマネージャー", False),
     "listNotifications": ("self", "自分あてだけ", False),
     "readNotification": ("self", "自分あてだけ", False),
     "readAllNotifications": ("self", "自分あてだけ", False),
@@ -1315,7 +1328,7 @@ PERMS = {
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),
     "updateArtifact": ("self", "書き出した本人。チケットに付いた成果物はそのチケットに書ける人", False),
     "restoreArtifactVersion": ("self", "同上", False),
-    "getShell": ("self", "本人の数だけ（承認待ち・知らせ・星を付けたグループの件数・PC のつながり・はじめにやることの残り・帯）", False),
+    "getShell": ("self", "本人の数だけ（自分・会社・承認待ち・未読の知らせ・見えるグループの件数・PC のつながり・はじめにやることの残り・障害の帯・保存した検索条件）", False),
     "countKnows": ("self", "自分の分身が知っていること（自分・使える取引先・層・ワークスペースの決まりを含む）", False),
     "listMemories": ("self", "自分の記憶だけ", False),
     "createMemory": ("self", "自分の記憶だけ", False),

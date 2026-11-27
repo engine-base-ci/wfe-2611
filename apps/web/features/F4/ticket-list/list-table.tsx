@@ -11,8 +11,9 @@ import Link from "next/link";
 import { Fragment, type MouseEvent, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
+import * as F7 from "@/features/F7/list-slots";
 import { COLUMN_LABEL, type ColumnKey } from "./list-columns";
-import type { ListItem } from "./use-ticket-list";
+import { LIST_RESTART, type ListItem } from "./use-ticket-list";
 
 /** 種別の札の色（キャンバス Main：タスク teal・QA 赤・課題 橙・会議 紫。ほかは中立） */
 const KIND_TONE: Record<string, string> = { タスク: "secondary", QA: "error", 課題: "warning", 会議: "tertiary" };
@@ -142,11 +143,13 @@ function cellOf(
         body: (
           <>
             {mmdd(row.due_on)}
-            {row.overdue ? (
-              <span className="k-list-late" role="img" aria-label="期限切れ">
-                <Flame aria-hidden="true" />
-              </span>
-            ) : null}
+            <F7.DueMarkSlot row={row}>
+              {row.overdue ? (
+                <span className="k-list-late" role="img" aria-label="期限切れ">
+                  <Flame aria-hidden="true" />
+                </span>
+              ) : null}
+            </F7.DueMarkSlot>
           </>
         ),
       };
@@ -268,7 +271,20 @@ export function ListTable({
           </tbody>
         </table>
       </div>
-      {moreError ? (
+      {moreError === LIST_RESTART ? (
+        // 続きの鍵が読めず最初の分から読み直した（K-478）：正本の文を全部出し、続きは「もっと見る」で読む
+        <div className="k-list-more" role="alert">
+          <span>
+            {errorText(moreError).title}
+            {errorText(moreError).body}
+          </span>
+          {hasMore ? (
+            <Button variant="outlined" loading={loadingMore} onClick={onMore}>
+              もっと見る
+            </Button>
+          ) : null}
+        </div>
+      ) : moreError ? (
         <div className="k-list-more" role="alert">
           <span>{errorText(moreError).title}</span>
           <Button variant="outlined" onClick={onMore}>

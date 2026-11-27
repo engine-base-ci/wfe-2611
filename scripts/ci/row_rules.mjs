@@ -38,6 +38,12 @@ export const ROW_EXEMPT_FIELDS = {
   deleteGuestGroup: {
     id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
   },
+  restoreTicket: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
+  },
+  readNotification: {
+    id: "知らせは自分宛ての物だけ（D-151.3）。入口の行の確かめは、別の人の行を 404（NOT_FOUND）、行の守りを緩めたときに 403 と答え、口の 404（E-NTF-010・一覧に出ない行も同じ答え）とずれる。持ち主の確かめは口の文（VISIBLE_SQL の member_id = app.user_id()）と行の守り（notifications_self_read・notifications_self_only_write_*）の 2 重で、外れた行はどれも同じ 404・E-NTF-010（K-462）",
+  },
 };
 const exemptField = (op, field) => {
   const why = ROW_EXEMPT_FIELDS[op]?.[field];

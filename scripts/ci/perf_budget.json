@@ -58,20 +58,6 @@
       "max_begins": 1
     },
     {
-      "name": "決定の一覧",
-      "method": "GET",
-      "path": "/api/v1/tickets/:id/decisions",
-      "max_statements": 7,
-      "max_begins": 1
-    },
-    {
-      "name": "やり取りの最初の 20 件",
-      "method": "GET",
-      "path": "/api/v1/tickets/:id/timeline?limit=20",
-      "max_statements": 7,
-      "max_begins": 1
-    },
-    {
       "name": "承認待ちの一覧",
       "method": "GET",
       "path": "/api/v1/approvals/queue",
@@ -91,48 +77,69 @@
       "path": "/api/v1/me/setup-tasks",
       "max_statements": 6,
       "max_begins": 1
+    },
+    {
+      "name": "外枠（getShell）",
+      "method": "GET",
+      "path": "/api/v1/shell",
+      "max_statements": 9,
+      "max_begins": 1
+    },
+    {
+      "name": "やり取りの最初の 20 件",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/timeline?limit=20",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
+      "name": "決定の一覧",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/decisions",
+      "max_statements": 7,
+      "max_begins": 1
     }
   ],
   "screens": [
     {
       "path": "/tickets",
       "marks": [
+        "GET /api/v1/shell",
         "GET /api/auth-ext/me",
         "GET /api/v1/tickets"
       ],
       "calls": [
+        "/api/v1/shell",
         "/api/auth-ext/me",
-        "/api/v1/scopes",
         "/api/v1/approvals/queue",
-        "/api/v1/bridge/devices",
         "/api/v1/tickets",
         "/api/v1/me/setup-tasks",
         "/api/v1/ticket_kinds",
         "/api/v1/members"
       ],
-      "max_calls": 8,
+      "max_calls": 7,
       "max_stages": 1
     },
     {
       "path": "/tickets?new=1",
       "marks": [
+        "GET /api/v1/shell",
         "GET /api/auth-ext/me",
         "GET /api/v1/ticket_kinds",
         "GET /api/v1/members",
         "GET /api/v1/me/ticket-drafts"
       ],
       "calls": [
+        "/api/v1/shell",
         "/api/auth-ext/me",
-        "/api/v1/scopes",
         "/api/v1/approvals/queue",
-        "/api/v1/bridge/devices",
         "/api/v1/tickets",
         "/api/v1/me/setup-tasks",
         "/api/v1/ticket_kinds",
         "/api/v1/members",
         "/api/v1/me/ticket-drafts"
       ],
-      "max_calls": 9,
+      "max_calls": 8,
       "max_stages": 1
     },
     {
@@ -141,34 +148,31 @@
         "GET /api/v1/tickets/:id",
         "GET /api/v1/tickets/:id/runs",
         "GET /api/v1/tickets/:id/decisions",
-        "GET /api/auth-ext/me"
+        "GET /api/auth-ext/me",
+        "GET /api/v1/shell"
       ],
       "calls": [
+        "/api/v1/shell",
         "/api/auth-ext/me",
-        "/api/v1/scopes",
-        "/api/v1/approvals/queue",
-        "/api/v1/bridge/devices",
         "/api/v1/tickets/:id",
         "/api/v1/tickets/:id/runs",
-        "/api/v1/tickets/:id/decisions",
-        "/api/v1/tickets/:id/timeline"
+        "/api/v1/tickets/:id/timeline",
+        "/api/v1/tickets/:id/decisions"
       ],
-      "max_calls": 8,
+      "max_calls": 6,
       "max_stages": 1
     },
     {
       "path": "/approvals",
       "marks": [
         "GET /api/v1/approvals/queue",
-        "GET /api/auth-ext/me"
+        "GET /api/v1/shell"
       ],
       "calls": [
-        "/api/auth-ext/me",
-        "/api/v1/scopes",
-        "/api/v1/approvals/queue",
-        "/api/v1/bridge/devices"
+        "/api/v1/shell",
+        "/api/v1/approvals/queue"
       ],
-      "max_calls": 4,
+      "max_calls": 2,
       "max_stages": 1
     }
   ],
