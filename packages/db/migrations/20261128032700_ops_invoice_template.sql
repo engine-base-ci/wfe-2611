@@ -9,7 +9,7 @@
 -- ① 表
 create table if not exists ops_invoice_templates (
   id uuid primary key default gen_random_uuid(),
-  tenant_id uuid not null references tenants(id),
+  tenant_id uuid not null references tenants(id) default app.ops_tenant_id(),
   company text not null,
   address text not null,
   reg_no text not null,

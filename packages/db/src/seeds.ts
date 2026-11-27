@@ -311,6 +311,7 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     { tenantA, tenantB, bossA, bossB, scopeRootA, scopeRootB, opsTenant, opsMember: opsId, opsScope },
     new Set(Object.keys(explicit)),
   );
+  await seedKnowledgeForStaff(c, generic, { tenantA, scopeDeptA, staffA });
   return {
     tenantA,
     tenantB,
@@ -322,4 +323,27 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     opsTenant,
     rows: { ...generic, ...explicit },
   };
+}
+
+/**
+ * 「ログイン済み（会社の人）」で読む表のうち、行の守りが「その人が書けるページ・その人の頼み」で決まる表（K-700・K-687・K-689）。
+ * 汎用の種は代表の物なので担当者からは 0 行になる。種の見える行だけ、担当者の自分の棚の下書きのページと担当者の頼みに付け替える。
+ */
+async function seedKnowledgeForStaff(
+  c: pg.PoolClient,
+  rows: Record<string, { visible: string }>,
+  b: { tenantA: string; scopeDeptA: string; staffA: string },
+): Promise<void> {
+  const page = (
+    await c.query<{ id: string }>(
+      "insert into knowledge_pages (tenant_id, scope_id, is_personal, title, owner_member_id, state) values ($1, $2, true, '担当者の下書き', $3, 'draft') returning id",
+      [b.tenantA, b.scopeDeptA, b.staffA],
+    )
+  ).rows[0]!.id;
+  for (const t of ["knowledge_breaches", "knowledge_shares"]) {
+    const id = rows[t]?.visible;
+    if (id) await c.query(`update "${t}" set page_id = $1 where id = $2`, [page, id]);
+  }
+  const req = rows["knowledge_requests"]?.visible;
+  if (req) await c.query("update knowledge_requests set requested_by = $1 where id = $2", [b.staffA, req]);
 }
