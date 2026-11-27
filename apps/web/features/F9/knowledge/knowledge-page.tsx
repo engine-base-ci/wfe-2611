@@ -254,6 +254,9 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
     reload,
     setEditing: setEditingRaw,
     notify: (text) => notify(text),
+    revealFolders: (ids) => {
+      if (ids.length) setOpenFolders((cur) => new Set([...cur, ...ids]));
+    },
   };
   // 後ろの葉の差し込み（hook として毎回同じ順で呼ぶ・ページが無い間も呼ぶ）
   const slots = PAGE_SLOTS.map((use) => use(ctx));

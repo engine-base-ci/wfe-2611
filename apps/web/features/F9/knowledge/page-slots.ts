@@ -8,6 +8,7 @@ import { useMustSlot } from "./must-slot";
 import { useRaiseSlot } from "./raise-slot";
 import { useShareSlot } from "./share-slot";
 import { useCopySlot } from "./copy-slot";
+import { useTreeOpsSlot } from "./tree-ops-slot";
 
 export type ReloadWhat = { page?: boolean; tree?: boolean };
 export type AddTarget = { shelf: ShelfKind; group_id?: string };
@@ -42,6 +43,8 @@ export interface PageCtx {
   reload: (what?: ReloadWhat) => void;
   setEditing: (on: boolean) => void;
   notify: (text: string) => void;
+  /** 木のフォルダを開く（閉じた物に足すだけ・開いている物は閉じない・K-684） */
+  revealFolders: (ids: readonly string[]) => void;
 }
 
 /** まとめた後の形（同じ操作は先の物・小窓は全部を順に） */
@@ -64,6 +67,7 @@ export const PAGE_SLOTS: readonly ((ctx: PageCtx) => PageSlot)[] = [
   useRaiseSlot,
   useShareSlot,
   useCopySlot,
+  useTreeOpsSlot,
 ];
 
 const firstWins = <T extends object>(list: readonly (T | undefined)[]): T =>
