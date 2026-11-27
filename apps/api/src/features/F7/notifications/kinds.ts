@@ -55,6 +55,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   invitation_resend_requested: settingKind(null), // 開く画面がまだ無い
   // 秘密の置き場（K-354・20261119120700）：使える場所の外で渡そうとして止まったことを持ち主に知らせる。開く画面がまだ無い（K-357 が決めるまで押せない行）
   "credential.wrong_destination": settingKind(null),
+  // 請求先（K-959・D-156.30・D-156.41）：請求先を変えたら管理者全員に。押すと請求書の画面
+  "billing.contact_changed": settingKind("/billing"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
