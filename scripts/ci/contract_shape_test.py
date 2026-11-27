@@ -52,7 +52,7 @@ VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "u
 #   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。
 #   ここに無い口の入力の形は required を持たない（条件つきで要る欄＝stepUp の code・種別ごとの必須の区画は required にしない）
 REQUIRED_INPUTS: dict[str, set[str]] = {
-    "completeTicket": {"conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（conditions_confirmed だけ必須・todo_* は任意で中身は見ない・K-566）
+    "completeTicket": {"conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（入力は conditions_confirmed だけ・必須・K-578）
     "returnApproval": {"note"},                       # apps/api/src/features/F5/approve-complete/decide.ts（無い・空は 422 E-VAL-020・K-163）
     "createSignup": {"email", "name", "password"},     # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005。無いと空と同じ）。company_name は空でよい（D-125.135）
     "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
@@ -109,8 +109,6 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
         "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
-        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
-                     "additionalProperties": {"type": "string"}},     # :63〜74（区画の中身の上限 20,000 字は外した・D-130.3。守りは送る量 1MB だけ）
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
         # K-437：payload.ts の checkFields・checkSpecs・checkBody（本文の木は doc_shape・K-432 と同じ定義）
         "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},

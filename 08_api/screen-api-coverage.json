@@ -1,7 +1,7 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-25",
+ "frozen_at": "2026-11-26",
  "summary": {
   "total_screens": 37,
   "total_apis": 373,
@@ -2325,11 +2325,6 @@
     },
     {
      "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/work-type-candidates",
-     "act": "A130"
-    },
-    {
-     "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/delete-preview",
      "act": "A116"
     },
@@ -2401,6 +2396,11 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/item-changes",
+     "act": "A101"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/item-changes/restore",
      "act": "A101"
     },
     {

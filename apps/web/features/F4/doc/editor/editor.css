@@ -110,6 +110,38 @@
   margin: 0;
 }
 
+/* ---- 書式の道具（K-587）：帯のメニューと、本文の中の見出し 4・区切りの線（トークンだけ） ---- */
+/* メニューの箱は Base UI の置き場（Positioner）が道具の下へ置く。下絵の「帯の中に絶対配置」は使わない（帯は狭い幅で横に送られる） */
+.k-f4d-pop.k-f4d-menu-live {
+  position: static;
+  max-width: none;
+  /* 置き場は .k-root の外（body の直下）に出るので、字の形と行の高さを本文に戻す（下絵は帯の中で .k-root の字を受ける・k.css の小窓と同じ） */
+  font-family: var(--k-font);
+  line-height: var(--k-lh-body);
+}
+/* キーボード・マウスでいま指している項目 */
+.k-f4d-menu-live button[data-highlighted] {
+  background: var(--k-select);
+}
+/* 選んでいる項目（いまの見出しの段・いまの並びの種類） */
+.k-f4d-menu-live button[aria-checked="true"] {
+  color: var(--k-primary);
+  font-weight: var(--k-fw-label-md);
+}
+/* ---- 表（K-568）：選んでいるセル（となり合うセルをまとめて選んだとき） ---- */
+.k-f4d-pm .selectedCell {
+  background: var(--k-select);
+}
+.k-f4d-pm h4 {
+  margin: var(--k-s-sm) 0 var(--k-s-xs);
+  font-size: var(--k-text-body-md);
+  font-weight: 700;
+}
+.k-f4d-pm hr {
+  border: 0;
+  border-top: var(--k-c-f4d-rule-border);
+}
+
 /* ---- 色のある文書の読むだけの形（K-577・doc-view-live）：箱と済みの字を DocView の読む形にそろえる（トークンだけ） ---- */
 .k-f4d-read .k-f4d-pm ul[data-type="taskList"] li {
   align-items: flex-start;

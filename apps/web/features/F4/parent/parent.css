@@ -126,3 +126,35 @@
   background: var(--k-surface-variant);
   color: var(--k-on-surface);
 }
+
+/* 札の字（押すと親を変える小窓が開く）。見た目は札の字のまま */
+.k-f4-par-label {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-f4-par-label:hover {
+  color: var(--k-primary);
+}
+.k-f4-par-remove:disabled {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f4-par-chip[aria-invalid="true"] {
+  border-color: var(--k-error);
+}
+/* 札の下の断り・候補が読めないとき */
+.k-f4-par-error {
+  flex-basis: 100%;
+}
+.k-f4-par-failed {
+  margin: 0;
+}

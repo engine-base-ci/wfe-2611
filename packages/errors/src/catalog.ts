@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。292 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。297 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2787,25 +2787,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "return"
     }
   },
-  "E-VAL-022": {
-    "id": "E-VAL-022",
-    "cls": "validation",
-    "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
-    "action": "残っている実施事項を済ませてチェックする",
-    "undo": false,
-    "severity": "low",
-    "support_code": "VAL-022",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "complete"
-    }
-  },
   "E-VAL-023": {
     "id": "E-VAL-023",
     "cls": "validation",
@@ -2888,25 +2869,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "CONF-016",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "complete"
-    }
-  },
-  "E-CONF-017": {
-    "id": "E-CONF-017",
-    "cls": "conflict",
-    "message": "実施事項が変わりました。読み直してから完了にしてください",
-    "action": "読み直して、もう一度確かめる",
-    "undo": false,
-    "severity": "low",
-    "support_code": "CONF-017",
     "must_not": false,
     "layers": [
       "UI",
@@ -3186,44 +3148,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
-  "E-VAL-013": {
-    "id": "E-VAL-013",
-    "cls": "validation",
-    "message": "この区画は書かないと作れません",
-    "action": "区画を書く",
-    "undo": false,
-    "severity": "low",
-    "support_code": "VAL-013",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
-  "E-VAL-014": {
-    "id": "E-VAL-014",
-    "cls": "validation",
-    "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-    "action": "選び直す",
-    "undo": false,
-    "severity": "medium",
-    "support_code": "VAL-014",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
     ],
     "where": {
       "screen": "tickets",
@@ -4950,6 +4874,114 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "save"
     }
   },
+  "E-DUE-001": {
+    "id": "E-DUE-001",
+    "cls": "validation",
+    "message": "期限を変える理由を書いてください",
+    "action": "理由を書いてから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-002": {
+    "id": "E-DUE-002",
+    "cls": "validation",
+    "message": "理由は 200 文字までにしてください",
+    "action": "理由を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-005": {
+    "id": "E-DUE-005",
+    "cls": "conflict",
+    "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+    "action": "親の期限を先に延ばすか、親の期限までの日にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-006": {
+    "id": "E-DUE-006",
+    "cls": "conflict",
+    "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+    "action": "子の期限を先に変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-006",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-007": {
+    "id": "E-DUE-007",
+    "cls": "conflict",
+    "message": "完了したチケットの期限は変えられません",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
+  "E-DUE-008": {
+    "id": "E-DUE-008",
+    "cls": "conflict",
+    "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+    "action": "開き直してから変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUE-008",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "due"
+    }
+  },
   "E-STP-001": {
     "id": "E-STP-001",
     "cls": "permission",
@@ -5271,6 +5303,60 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "delegate"
+    }
+  },
+  "E-ITM-001": {
+    "id": "E-ITM-001",
+    "cls": "conflict",
+    "message": "完了したチケットの項目は、戻せません",
+    "action": "戻さずに閉じる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-ITM-002": {
+    "id": "E-ITM-002",
+    "cls": "conflict",
+    "message": "先に項目が変えられました。読み直してから、もう一度戻してください",
+    "action": "読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-ITM-003": {
+    "id": "E-ITM-003",
+    "cls": "conflict",
+    "message": "戻す項目がありません",
+    "action": "比べる点を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-ITM-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };

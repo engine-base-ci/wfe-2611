@@ -640,13 +640,11 @@
     "F9"
    ],
    "reads": [
-    "F12",
-    "F4"
+    "F12"
    ],
    "boundary": true,
    "lines": [
-    "F9→F12",
-    "F9→F4"
+    "F9→F12"
    ]
   },
   "status_incidents": {
@@ -779,14 +777,16 @@
   },
   "ticket_messages": {
    "writes": [
+    "F4",
     "F6"
    ],
    "reads": [
-    "F11",
-    "F4"
+    "F11"
    ],
    "boundary": true,
    "lines": [
+    "F4→F11",
+    "F4→F6",
     "F6→F11",
     "F6→F4"
    ]
