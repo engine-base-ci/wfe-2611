@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import "@/components/ai/chat.css";
+import { Radio, RadioGroup } from "@/components/k";
 import { agentSetBrowser, AuthExtError, type AgentBrowser } from "@/lib/auth/ext";
 
 const OPTIONS: { value: AgentBrowser; label: string; desc: string }[] = [
@@ -40,24 +41,22 @@ export function BrowserPick({ value, disabled }: { value: AgentBrowser; disabled
   };
   return (
     <div className="kc">
-      <div className="bpick" role="radiogroup" aria-label="AI が使うブラウザ" data-browser-pick>
+      <RadioGroup
+        className="bpick"
+        legend="AI が使うブラウザ"
+        hideLegend
+        name="agent-browser"
+        value={value}
+        disabled={disabled || busy}
+        onValueChange={(v) => void choose(v as AgentBrowser)}
+        data-browser-pick
+      >
         {OPTIONS.map((o) => (
-          <label key={o.value}>
-            <input
-              type="radio"
-              name="agent-browser"
-              value={o.value}
-              checked={value === o.value}
-              disabled={disabled || busy}
-              onChange={() => void choose(o.value)}
-            />
-            <span>
-              <b>{o.label}</b>
-              <span className="muted">{o.desc}</span>
-            </span>
-          </label>
+          <Radio key={o.value} size="lg" value={o.value} description={o.desc}>
+            <b>{o.label}</b>
+          </Radio>
         ))}
-      </div>
+      </RadioGroup>
       <p className="muted" role="status" data-browser-pick-msg>
         {msg}
       </p>

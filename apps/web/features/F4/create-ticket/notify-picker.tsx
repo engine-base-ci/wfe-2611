@@ -3,7 +3,7 @@
 //   欄が空のあいだは全員をチェックで出し、打った字に合う人だけに絞る。選んだ人は札（「〈名前〉 を外す」つき）で上に残す（絞っても消えない）
 //   作る口に送るのは今のまま notify_member_ids（選んだ人の id）
 import { useState } from "react";
-import { TextField } from "@/components/k";
+import { Checkbox, TextField } from "@/components/k";
 
 export interface Person {
   id: string;
@@ -62,10 +62,14 @@ export function NotifyPicker({
       ) : null}
       <div className="k-create-people" role="group" aria-label="知らせる人の候補">
         {shown.map((p) => (
-          <label key={p.id} className="k-create-check">
-            <input type="checkbox" checked={picked.has(p.id)} onChange={(e) => set(p.id, e.target.checked)} />
+          <Checkbox
+            key={p.id}
+            className="k-create-check"
+            checked={picked.has(p.id)}
+            onChange={(e) => set(p.id, e.target.checked)}
+          >
             {p.display_name}
-          </label>
+          </Checkbox>
         ))}
         {q && shown.length === 0 ? <span className="k-desc">合う人がいません</span> : null}
       </div>

@@ -24,6 +24,7 @@ import { agentConversationSet, type AgentContext, type Effort } from "@/lib/auth
 import { toast } from "sonner";
 import { ALL_ALLOWED, MODES } from "@/lib/agent-modes";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/k";
 import { cn } from "@/lib/cn";
 import { useAnchoredPopover } from "@/components/ui/popover";
 import { LaneWait, QueueBox } from "./work";
@@ -721,20 +722,18 @@ export function Composer({
             </button>
           )}
           {memShown ? (
-            <label
+            <Checkbox
+              size="sm"
               className={`cmem${incognito ? " on" : ""}`}
               title="オンにすると、自分のAIが毎朝まとめる記憶にこの会話を入れません"
+              role="switch"
+              aria-label="この会話を記憶に使わない"
+              checked={incognito}
+              onChange={(e) => void setIncognito(e.target.checked)}
+              data-incognito
             >
-              <input
-                type="checkbox"
-                role="switch"
-                aria-label="この会話を記憶に使わない"
-                checked={incognito}
-                onChange={(e) => void setIncognito(e.target.checked)}
-                data-incognito
-              />
               記憶に使わない
-            </label>
+            </Checkbox>
           ) : null}
           <span className="csp" />
           {len > COUNT_FROM ? (

@@ -5,7 +5,7 @@
 //   区切りの名前と並びは前からの決め（D-128.36）。名前と件数は別の span（ちょうどの字で探す前からの試験とぶつけない）
 //   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380・今は行をそのまま返す。承認でない種類の行は段 9 の K-412 が描き分ける）
 import { Fragment, type ReactNode } from "react";
-import { Button } from "@/components/k";
+import { Button, Checkbox } from "@/components/k";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { DUE_GROUPS, dueGroupOf, jstDay, type DueGroup } from "./due";
 import type { QueueRow } from "./queue";
@@ -40,7 +40,7 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
           <thead>
             <tr>
               <th scope="col">
-                <input type="checkbox" disabled aria-label="まとめて選べるものをすべて選ぶ" />
+                <Checkbox disabled aria-label="まとめて選べるものをすべて選ぶ" />
               </th>
               {HEADERS.map((h) => (
                 <th key={h} scope="col">
@@ -110,7 +110,7 @@ function Row({ row, acts }: { row: QueueRow; acts: RowActs }) {
     <tr>
       <td>
         {row.decide_inline ? (
-          <input type="checkbox" disabled aria-label="まとめて承認に入れる" />
+          <Checkbox disabled aria-label="まとめて承認に入れる" />
         ) : (
           <span className="k-ap-dash" title="1 件ずつ決める">
             —

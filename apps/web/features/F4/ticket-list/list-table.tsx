@@ -9,7 +9,7 @@ import { Bot, Flame } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { Fragment, type MouseEvent, type ReactNode } from "react";
-import { Button } from "@/components/k";
+import { Button, Checkbox } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import { COLUMN_LABEL, type ColumnKey } from "./list-columns";
 import type { ListItem } from "./use-ticket-list";
@@ -162,7 +162,7 @@ function cellOf(
 function PickCell({ label }: { label: string }) {
   return (
     <td className="k-list-pick">
-      <input type="checkbox" disabled aria-label={label} title="選ぶ（準備中）" />
+      <Checkbox disabled aria-label={label} title="選ぶ（準備中）" />
     </td>
   );
 }

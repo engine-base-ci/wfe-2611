@@ -4,6 +4,7 @@
 //   表示設定で出す列を選べる。番号と題名は外せない。選んだ列はこのブラウザ（localStorage）に覚える（口は足さない）。
 //   覚えた値が文字の配列でなければ 9 つ全部。配列なら知っている鍵だけを使い、番号と題名は必ず足す。並びはいつも決まった並び
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { Checkbox } from "@/components/k";
 
 export const COLUMN_KEYS = [
   "kind",
@@ -146,15 +147,14 @@ export function ColumnSettings({ columns, title, extra }: { columns: Columns; ti
             <ul className="k-list-columns-list">
               {COLUMN_KEYS.map((k) => (
                 <li key={k}>
-                  <label className="k-list-columns-item">
-                    <input
-                      type="checkbox"
-                      checked={columns.visible.includes(k)}
-                      disabled={FIXED.has(k)}
-                      onChange={(e) => columns.toggle(k, e.target.checked)}
-                    />
+                  <Checkbox
+                    className="k-list-columns-item"
+                    checked={columns.visible.includes(k)}
+                    disabled={FIXED.has(k)}
+                    onChange={(e) => columns.toggle(k, e.target.checked)}
+                  >
                     {COLUMN_LABEL[k]}
-                  </label>
+                  </Checkbox>
                 </li>
               ))}
             </ul>
