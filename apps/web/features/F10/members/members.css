@@ -43,6 +43,16 @@
   color: var(--k-st-on-danger-container);
 }
 
+/* ---- 名前のリンク（メンバーの 1 人の画面へ・K-818）：字の色は行のまま・指したときと焦点で下線 ---- */
+.k-f10m-row .k-inv-name a {
+  color: inherit;
+  text-decoration: none;
+}
+.k-f10m-row .k-inv-name a:hover,
+.k-f10m-row .k-inv-name a:focus-visible {
+  text-decoration: underline;
+}
+
 /* ---- 最後に使った日の列（D-154.1）：人の行は 6 列。招待中の行は空の 1 列 ---- */
 .k-inv-row.k-f10m-row {
   grid-template-columns:
