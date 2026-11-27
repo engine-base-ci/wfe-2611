@@ -122,8 +122,8 @@ const ticket = async (title: string, o: { deleted?: boolean; clientId?: string; 
     )
   ).rows[0]!.id;
 /** ゲストのグループの依頼（ticketId を付けると「受けてチケットにした」依頼）。
- *  この葉の時点では、依頼から作ったチケットの枝（client_requests.ticket_id）だけでゲストに見える（K-878 の橋）。
- *  K-881 がこの枝を外して「見せる相手の行」だけにするとき、K878-API-005 は K-881 が見せる相手の行を入れる版に替える（K-881 の「前からの試験を替えた所」） */
+ *  K-881 が依頼から作ったチケットの枝（client_requests.ticket_id・K-878 の橋）を外し、ゲストに見えるのは「見せる相手の行」だけになった。
+ *  受けてチケットにした依頼は、受けたときに依頼を出したグループが見せる相手に入る（K-894）ので、その行も入れる（shared_by は社内の人・K-881 の「前からの試験を替えた所」） */
 const request = async (g: string, by: Person, o: { ticketId?: string } = {}): Promise<string> => {
   const id = (
     await f.admin.query<{ id: string }>(
@@ -131,6 +131,11 @@ const request = async (g: string, by: Person, o: { ticketId?: string } = {}): Pr
       [T.tenantId, g, o.ticketId ? "ticketed" : "new", o.ticketId ?? null, by.id],
     )
   ).rows[0]!.id;
+  if (o.ticketId)
+    await f.admin.query(
+      "insert into ticket_guest_shares (tenant_id, ticket_id, guest_group_id, shared_by, created_by) values ($1, $2, $3, $4, $4)",
+      [T.tenantId, o.ticketId, g, admin.id],
+    );
   return id;
 };
 
