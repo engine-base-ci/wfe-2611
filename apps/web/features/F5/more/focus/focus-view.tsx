@@ -19,6 +19,8 @@ import { useQueueQuery } from "../fills/queue-tools";
 import { ChecksSlot, StopApprovalActSlot } from "../slots";
 import { FOCUS_LAYER_ATTR, useFocusKeys } from "./focus-keys";
 import { useFocusDetail, useFocusDrop, useFocusList, useFocusRun, type Decision, type FocusTally } from "./use-focus";
+// 前は style 属性で書いていた並び・重なりのクラス（k-more-bulk-note・k-more-contents・k-more-focus-layer）。承認待ちの頁でも読む小さい CSS
+import "@/features/F5/more/fills.css";
 
 const TITLE = "続けて裁く";
 const KEYS = "次 J ・ 前 K ・ 承認 A ・ 差し戻す R ・ 自分で直す E ・ 飛ばす S";

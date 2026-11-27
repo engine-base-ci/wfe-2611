@@ -105,7 +105,8 @@ async function mockHistory(page: Page, o: Partial<Pick<H, "rows" | "cursor">> = 
 const sheet = (page: Page) => page.getByRole("dialog", { name: "決めた履歴", exact: true });
 const histBtn = (page: Page) =>
   page
-    .getByRole("region", { name: "承認待ちの一覧", exact: true })
+    // 幅 767 以下は K-412 のカードの並び「承認待ちの一覧（スマホ）」に出る（PC の表の区画は見えない）
+    .getByRole("region", { name: /^承認待ちの一覧(（スマホ）)?$/ })
     .getByRole("button", { name: "決めた履歴", exact: true });
 const openSheet = async (page: Page) => {
   await histBtn(page).click();
@@ -258,7 +259,8 @@ test("K751-UI-009 入力：小窓の「取り下げる」で取り下げの口�
   await undoRow(page).getByRole("button", { name: "取り消す", exact: true }).click();
   await confirmBtn(page).click();
   await expect.poll(() => h.w.of(WITHDRAW).length).toBe(1);
-  expect(h.w.of(WITHDRAW)[0]).toEqual({ path: `/api/v1/approvals/${UNDO_ID}/withdraw`, body: {} });
+  // 書いた口の控え（f5-more-kit の layer・K-730）は method も持つ（K734・K735 と同じ形で見る）
+  expect(h.w.of(WITHDRAW)[0]).toEqual({ method: "POST", path: `/api/v1/approvals/${UNDO_ID}/withdraw`, body: {} });
   await expect(page.getByRole("heading", { name: "この承認を取り下げます", exact: true })).toHaveCount(0);
   await expect.poll(() => h.asked.length).toBeGreaterThan(1);
   await expect.poll(() => h.m.queueReads).toBeGreaterThan(q0);

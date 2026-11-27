@@ -42,8 +42,10 @@ async function mockQueue(page: Page, o: Partial<Pick<Q, "counts" | "empty" | "cu
     fail: false,
   };
   m.on.queue = (req) => {
-    const sp = new URL(req.url()).searchParams;
-    q.asked.push(sp);
+    const u = new URL(req.url());
+    const sp = u.searchParams;
+    // 外枠の getShell（K-466）も承認待ちの数のためにこの答えを使う。一覧の口に届いた問い合わせだけを数える
+    if (u.pathname !== "/api/v1/shell") q.asked.push(sp);
     if (q.fail) return { status: 503, body: { error: "unavailable", code: "E-PAGE-003" } };
     const kind = sp.get("kind");
     const rows = q.empty ? [] : kind === "handover" ? HAND : kind === "artifact" ? ART : [...ART, ...HAND];
@@ -56,7 +58,8 @@ async function mockQueue(page: Page, o: Partial<Pick<Q, "counts" | "empty" | "cu
 }
 const chips = (page: Page) =>
   page
-    .getByRole("region", { name: "承認待ちの一覧", exact: true })
+    // 幅 767 以下は K-412 のカードの並び「承認待ちの一覧（スマホ）」に出る（PC の表の区画は見えない）
+    .getByRole("region", { name: /^承認待ちの一覧(（スマホ）)?$/ })
     .getByRole("group", { name: "絞り込み", exact: true })
     .getByRole("button");
 const chip = (page: Page, label: string) => chips(page).filter({ hasText: label });

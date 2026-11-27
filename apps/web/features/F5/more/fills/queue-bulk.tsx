@@ -23,6 +23,8 @@ import {
   pickedText,
 } from "../bulk/bulk-words";
 import { inListOrder, isPickable, useBulkApprove, useBulkPick, useBulkPreview, useBulkState } from "../bulk/use-bulk";
+// 前は style 属性で書いていた並び・重なりのクラス（k-more-bulk-note・k-more-contents・k-more-focus-layer）。承認待ちの頁でも読む小さい CSS
+import "@/features/F5/more/fills.css";
 
 /** 帯を本文の箱の頭へ（本文の箱は flex の縦並び） */
 

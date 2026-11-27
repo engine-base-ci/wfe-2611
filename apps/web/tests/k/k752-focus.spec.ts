@@ -501,6 +501,8 @@ test("K752-UI-016 下絵との突き合わせ：focus-card（幅 375・768・144
   await match(browser, "focus-card", async (pg, w) => {
     await setup(pg);
     await enter(pg, w);
+    // 画面の高さも下絵と同じに戻す（openQueue は 1000 で開く。下絵は 812／900・K764-UI-017 と同じ直し）
+    await pg.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
     await pg.keyboard.press("j");
   });
 });
@@ -508,6 +510,8 @@ test("K752-UI-017 下絵との突き合わせ：focus-confirm（A で確かめ�
   await match(browser, "focus-confirm", async (pg, w) => {
     await setup(pg);
     await enter(pg, w);
+    // 画面の高さも下絵と同じに戻す（openQueue は 1000 で開く。下絵は 812／900・K764-UI-017 と同じ直し）
+    await pg.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
     await pg.keyboard.press("a");
   });
 });
@@ -515,6 +519,8 @@ test("K752-UI-018 下絵との突き合わせ：focus-done（終わりの面）"
   await match(browser, "focus-done", async (pg, w) => {
     await setup(pg);
     await enter(pg, w);
+    // 画面の高さも下絵と同じに戻す（openQueue は 1000 で開く。下絵は 812／900・K764-UI-017 と同じ直し）
+    await pg.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
     for (let i = 0; i < 3; i++) await pg.keyboard.press("s");
   });
 });

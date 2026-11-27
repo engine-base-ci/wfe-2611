@@ -207,70 +207,6 @@
   opacity: 1;
 }
 
-/* ---- 決めた履歴の板（K-751）：右から出る板。板の枠は k62-run-sheet を使い回す ---- */
-.k-more-hist {
-  display: grid;
-  align-content: start;
-  gap: var(--k-s-md);
-}
-.k62-run-sheet .k-more-hist-head .k62-run-chips {
-  padding: 0;
-  border-bottom: 0;
-}
-.k-more-hist-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--k-s-sm);
-  justify-content: space-between;
-  padding: var(--k-c-dialog-body-pad);
-  border-bottom: var(--k-c-dialog-head-border-bottom);
-}
-.k-more-day {
-  margin: 0;
-  color: var(--k-on-surface-variant);
-  font-size: var(--k-text-body-sm);
-  font-weight: var(--k-fw-label-md);
-}
-.k-more-hist-list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.k-more-hist-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: start;
-  gap: var(--k-s-sm);
-  padding: var(--k-s-sm) 0;
-  border-bottom: var(--k-c-approvals-td-border-bottom);
-  font-size: var(--k-text-body-sm);
-  line-height: var(--k-lh-body-sm);
-}
-.k-more-hist-row time {
-  font-variant-numeric: tabular-nums;
-  color: var(--k-on-surface-variant);
-}
-.k-more-hist-title {
-  display: grid;
-  gap: var(--k-s-xs);
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.k-more-hist-title b {
-  font-weight: var(--k-fw-label-md);
-}
-.k-more-hist-sub {
-  color: var(--k-on-surface-variant);
-}
-.k-more-hist-note {
-  margin: 0;
-  color: var(--k-on-surface-variant);
-  font-size: var(--k-text-body-sm);
-  line-height: var(--k-lh-body-sm);
-}
-
 /* ---- 続けて裁く（K-752）：1 件ずつ全画面 ---- */
 .k-more-focus {
   display: grid;
@@ -589,7 +525,8 @@
   .k-more-qnote {
     display: none;
   }
-  .k-page-head.k-ap-head > .k-btn.k-ap-next {
+  /* 下の入口（k-more-mnext）が在る頁だけ、見出しの［続けて裁く］を隠す。下の入口がまだ無い本番の頁では見出しから開ける（K752-UI-014） */
+  .k-page:has(.k-more-mnext) .k-page-head.k-ap-head > .k-btn.k-ap-next {
     display: none;
   }
   .k-more-mq {
@@ -671,35 +608,6 @@
     display: inline-flex;
     justify-content: center;
     width: 100%;
-  }
-
-  /* ---- 決めた履歴：全画面の板の中を 1 件 1 枚のカードに ---- */
-  .k-more-hist-head {
-    flex-wrap: nowrap;
-    gap: var(--k-s-sm);
-  }
-  .k62-run-sheet .k-more-hist-head .k62-run-chips {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    min-width: 0;
-  }
-  .k-more-hist-head .k-ap-sort {
-    flex: none;
-    white-space: nowrap;
-  }
-  .k-more-hist-list {
-    gap: var(--k-s-sm);
-  }
-  .k-more-hist-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding: var(--k-s-sm) var(--k-s-md);
-    border: var(--k-c-card-border);
-    border-radius: var(--k-r-card);
-    background: var(--k-card);
-  }
-  .k-more-hist-row > time {
-    grid-column: 1 / -1;
   }
 
   /* ---- 小窓は下から出す（印のある小窓だけ）。足のボタンは等分 ---- */
@@ -831,23 +739,6 @@
 .k-detail-doc > .k-pre {
   margin: var(--k-s-md) 0 0;
   line-height: var(--k-c-section-body-lh);
-}
-
-/* 統合の枝の直し（2026-11-28・D8／class_gate）：前は style 属性で書いていた 3 つ。値は同じ */
-/* 束ねて選ぶ帯の知らせを、帯の並びの 1 つ目に置く（K-748） */
-.k-more-bulk-note {
-  order: -1;
-}
-/* 置き場そのものは並びに加わらない（Callout が本文の並びの 1 つ目になる・K-750） */
-.k-more-contents {
-  display: contents;
-}
-/* 集中して裁く面の重なり（画面全体に重ね、中を縦に送る・K-753） */
-.k-more-focus-layer {
-  position: fixed;
-  inset: 0;
-  overflow-y: auto;
-  z-index: var(--k-c-popup-layer-z);
 }
 
 /* 確認の区画（K-740）と自分で直す枠（K-743）は、詳細の区画（.k-section）の中でも下絵の小さい字・灰の色のまま（統合の枝の直し 2026-11-28）。

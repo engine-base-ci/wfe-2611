@@ -104,6 +104,9 @@ function RoomTalk({ c, isNew, mview }: { c: string | null; isNew: boolean; mview
   // 読み直しをまとめる：読み直し中に来た分は 1 回だけ後ろに積む
   const refetch = useRef(conv.refetch);
   refetch.current = conv.refetch;
+  // 読んでいる最中に来た知らせは、その読みに相乗りすると変わる前の答えのまま終わる。読み終えた後にもう 1 回読む（K762-UI-013）
+  const fetching = useRef(conv.isFetching);
+  fetching.current = conv.isFetching;
   const inflight = useRef(false);
   const again = useRef(false);
   const reread = useCallback(async () => {
@@ -115,7 +118,9 @@ function RoomTalk({ c, isNew, mview }: { c: string | null; isNew: boolean; mview
     try {
       do {
         again.current = false;
-        await refetch.current();
+        const joined = fetching.current;
+        await refetch.current({ cancelRefetch: false });
+        if (joined) await refetch.current({ cancelRefetch: false });
       } while (again.current);
     } finally {
       inflight.current = false;

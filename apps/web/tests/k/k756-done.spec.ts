@@ -303,7 +303,8 @@ async function match(browser: Browser, id: string, drive: (pg: Page, w: number) 
 }
 // 注：下絵の様子の 2 行（「成果物の版 1」「金額を直した」）は K-755 が下絵の側を直す。日の見出しの字（day の texts）だけは、
 //   下絵が 11/2（月）の固定の日付で、試験は今日からの日付で行を作るので比べない（字の形は UI-002 が見る）
-const LIST_SKIP = ["day:texts"];
+//   様子の字（detail の texts）も「承認（M/D 10:30・高本）」の日付が同じ訳で違うので比べない（位置・字の大きさ・色は比べる。字そのものは UI-005 ほかが見る）
+const LIST_SKIP = ["day:texts", "detail:texts"];
 
 test("K756-UI-013 下絵との突き合わせ：done-list（幅 375・768・1440・様子の字と日の見出しの字は比べない）", async ({
   browser,

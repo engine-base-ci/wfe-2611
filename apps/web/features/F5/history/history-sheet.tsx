@@ -12,6 +12,9 @@ import { Button, Confirm } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "@/features/F5/approve-complete/message";
 import { queueKey } from "@/features/F5/approve-complete/queue";
+// 板の枠（k62-run-sheet）と履歴の行（k-more-hist-*）の CSS。承認待ちの頁はこれを別に読まないので、ここで読む（K751-UI-005 ほか：板が透明で幕が上に乗っていた）
+import "@/features/F5/delegate/delegate.css";
+import "./history.css";
 
 export interface HistoryRow {
   id: string;

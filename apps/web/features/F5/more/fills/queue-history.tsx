@@ -8,6 +8,8 @@ import { createPortal } from "react-dom";
 import { Button, Callout } from "@/components/k";
 import { HistorySheet, openHistory, resetHistory, useHistoryShared } from "@/features/F5/history/history-sheet";
 import type { QueueHistoryProps } from "../slots";
+// 前は style 属性で書いていた並び・重なりのクラス（k-more-bulk-note・k-more-contents・k-more-focus-layer）。承認待ちの頁でも読む小さい CSS
+import "@/features/F5/more/fills.css";
 
 /** 頁の中に置かれた先の数（0 になったら板と知らせを戻す。道具の行と空の画面の入れ替わりでは戻さない） */
 let mounted = 0;

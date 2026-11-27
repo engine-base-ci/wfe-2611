@@ -64,8 +64,13 @@ export const AUTH_PAIRS: FidelityPair[] = [
 }));
 
 /** 切り替わりの途中を読まない：動いている transition（短くしても次の描画までは前の値のまま）が全部終わるのを待つ（K-316） */
+// 切り替わった直後の値（帯の調子が替わった直後の字の色など）は、次の描き直しで transition が始まるまで getAnimations に出ない。
+// 2 回描き直しを待ってから、動いている物が終わるのを待つ（K735-UI-013：替わる前の青を読んでいた）
 const settle = (p: Page) =>
-  p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
+  p.evaluate(async () => {
+    await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+    await Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined)));
+  });
 
 export interface MatchOptions {
   /** 比べる役割の組（既定は入口の箱の AUTH_PAIRS）。外枠の中・小窓・困ったときの区画は、画面の葉が自分の組を渡す */

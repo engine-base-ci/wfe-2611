@@ -14,6 +14,7 @@ import { Choice, PickBox } from "./choice";
 import "@/features/F5/approve-complete/approve.css";
 import "@/features/F5/delegate/delegate.css";
 import "./more.css";
+import "@/features/F5/history/history.css";
 
 const INERT = { "aria-disabled": true, tabIndex: -1, title: "まだ使えません" } as const;
 const GAP = "　";
