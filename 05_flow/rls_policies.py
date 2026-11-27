@@ -139,8 +139,8 @@ POLICIES: dict[str, list[dict]] = {
     #   変えた後の行（下書き → 公開）でも通る形にしている
     "knowledge_pages": [
         {"name": "knowledge_pages_read", "operation": "select", "role": "member",
-         "predicate": f"tenant_id = {T} AND (CASE WHEN state = 'draft' THEN owner_member_id = {U} ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
-         "rationale": "まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない", "source": ["D-128.50", "D-128.51", "D-152.1", "D-152.3"]},
+         "predicate": f"tenant_id = {T} AND deleted_at IS NULL AND (CASE WHEN state = 'draft' THEN owner_member_id = {U} ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
+         "rationale": "消したページは誰にも見せない（K-681・消すのは DB の関数 app.kn_page_soft_delete）。まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない", "source": ["D-128.50", "D-128.51", "D-152.1", "D-152.3", "D-152.14"]},
         {"name": "knowledge_pages_create", "operation": "insert", "role": "member",
          "predicate": f"tenant_id = {T} AND owner_member_id = {U} AND state = 'draft' AND app.kn_shelf_writable(scope_id, is_personal, owner_member_id)",
          "rationale": "自分を持ち主にして下書きで作る。その棚に書ける人（会社＝管理者・グループ＝そのグループのマネージャー・自分＝本人）", "source": ["D-128.51", "D-152.3"]},
