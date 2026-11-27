@@ -23,6 +23,8 @@
     3 つの外の表・作り方の手順・読むだけのメソッドは数えない（作り手の作り方の直しは本体でしてよい）。_D 以外の別の名前に写してから足す形は見ない
 赤の文の頭のコミットは、比べる元から先頭までで、その鍵・行を最後に足したコミット（直す人が場所を探すための物。判定には使わない）。
 コミットを 1 つずつ見るとき（この文のコミット探しと、台帳の作り手 --ledger-now）、取り込みのコミットは、どの親にも無かった物だけを数える
+鍵ごとの例外：台帳 body_append_grandfather.json の exceptions（[{key, reason, source}]・1 件まで）は、猶予の entries と別に数えない。理由 15 字以上と決めの番号が要り、
+  比べる元の木に入った（もう足した物でない）例外は消す（残れば赤）。entries の減らすだけはそのまま（PM の決め 2026-11-28）
 猶予：台帳の entries（この決まりの前に始めていた葉が、その枝で既に足していた鍵と行の鍵）は数えない。台帳は 2 つで、受ける鍵の頭が決まっている：
   scripts/ci/body_append_grandfather.json（screen_api.py と文書の鍵）・scripts/ci/body_append_grandfather_build_api.json（build_api.py の鍵だけ・K-1121）。
 受けない頭の鍵が台帳に在れば赤。台帳は分かれ目より増やせない（減らすだけ。分かれ目に無い台帳は作る回なので増えたかを見ない）。
@@ -226,6 +228,9 @@ def added(root: Path, rev: str, parents: list[str]) -> list[tuple[str, str]]:
     return found
 
 
+EXCEPTIONS_MAX = 1   # 鍵ごとの例外の上限（PM の決め 2026-11-28・exceptions の欄）
+
+
 def ledger(src: str | None) -> set[str]:
     if src is None:
         return set()
@@ -258,7 +263,25 @@ def check(root: Path, base: str) -> list[str]:
         if wrong := sorted(k for k in mine if not accepts(k)):
             bad.append(f"{path}：この台帳が受けない鍵 {len(wrong)} 個（{', '.join(wrong)[:200]}・build_api.py の鍵は {LEDGER_BUILD}、ほかは {LEDGER}）")
         now_l |= {k for k in mine if accepts(k)}
-    net = [(key, text) for key, text in added(root, "HEAD", [base]) if key not in now_l]   # 比べる元の木に無く、今の先頭の木に在る物
+    net_all = [(key, text) for key, text in added(root, "HEAD", [base]) if key not in now_l]   # 比べる元の木に無く、今の先頭の木に在る物
+    # 鍵ごとの例外（exceptions・1 件まで）：猶予の entries とは別に、理由と決めの番号つきで 1 つだけ受ける。減らすだけの entries は増やさない。
+    #   比べる元の木に入った（もう足した物でない）例外は消す（残っていれば赤）
+    try:
+        exc = json.loads(show(root, "HEAD", LEDGER) or "{}").get("exceptions", [])
+    except ValueError as e:
+        return [f"{LEDGER} の exceptions が読めない（{e}）"]
+    if len(exc) > EXCEPTIONS_MAX:
+        bad.append(f"{LEDGER}：鍵ごとの例外は {EXCEPTIONS_MAX} 件まで（今 {len(exc)} 件）")
+    net_keys = {k for k, _ in net_all}
+    exc_keys = set()
+    for x in exc:
+        k = str(x.get("key", ""))
+        if len(str(x.get("reason", ""))) < 15 or not x.get("source"):
+            bad.append(f"{LEDGER}：鍵ごとの例外 {k or '（鍵なし）'} に理由（15 字以上）か決めの番号（source）が無い")
+        if k not in net_keys:
+            bad.append(f"{LEDGER}：鍵ごとの例外 {k} はもう当たらない（比べる元に入った・消えた）。exceptions から消す")
+        exc_keys.add(k)
+    net = [(key, text) for key, text in net_all if key not in exc_keys]
     who: dict[str, str] = {}
     if net:   # 文に出すコミット：新しい順に見て最初に当たった物（＝最後に足したコミット）
         for commit, key, _ in scan(root, base):

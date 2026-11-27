@@ -1,5 +1,5 @@
 {
-  "_doc": "K-1112：この決まり（本体の表に直に行を足さない・足す分は葉ごとのファイル）の前に始めていた葉（2026-11-23 の flow.py status の段 write〜merge の葉・K-1112 を除く）が、その枝で既に本体に足していた鍵と行の鍵（entries）。G74 は entries の物を数えない。entries は body_append_gate.py --ledger-now が枝から作った。減らすだけ（増やすと G74 が赤）。tickets はどの葉の枝から作ったかの記録。統合の枝で足した 1 つ（PM の決め 2026-11-28）：05_flow/screen_api.py の OBJECT_OPS: set[str] = set() は K-906 が置く空の表で、K-892 の断片 screen_api.d/K-892.py が中身を足す（断片は本体に在る名前にしか足せない・空の集合は表の字で書けない）",
+  "_doc": "K-1112：この決まり（本体の表に直に行を足さない・足す分は葉ごとのファイル）の前に始めていた葉（2026-11-23 の flow.py status の段 write〜merge の葉・K-1112 を除く）が、その枝で既に本体に足していた鍵と行の鍵（entries）。G74 は entries の物を数えない。entries は body_append_gate.py --ledger-now が枝から作った。減らすだけ（増やすと G74 が赤）。tickets はどの葉の枝から作ったかの記録",
   "tickets": [
     "K-386",
     "K-389",
@@ -74,7 +74,6 @@
     "05_flow/screen_api.py|SCREEN_API 'listTicketItemChanges'",
     "05_flow/screen_api.py|SCREEN_API 'updateTicketBody'",
     "05_flow/screen_api.py|VALUE_RANGES 'delegateTicket'",
-    "05_flow/screen_api.py|文 OBJECT_OPS: set[str] = set()",
     "08_api/phase1/01_チケット.md|`DELETE /saved_views/:id`",
     "08_api/phase1/01_チケット.md|`DELETE /ticket-fields/:id`",
     "08_api/phase1/01_チケット.md|`DELETE /ticket_links/:id`",
@@ -139,5 +138,16 @@
     "08_api/phase1/09_ナレッジ.md|setKnowledgeMust",
     "08_api/phase1/09_ナレッジ.md|updateKnowledgeFolder",
     "08_api/phase1/09_ナレッジ.md|updateKnowledgePage"
+  ],
+  "exceptions": [
+    {
+      "key": "05_flow/screen_api.py|文 OBJECT_OPS: set[str] = set()",
+      "reason": "K-906 が置く空の表。K-892 の断片 05_flow/screen_api.d/K-892.py が中身（listClientRequests）を足す入れ物で、断片は本体に在る名前にしか足せず（registry_d）、空の集合は表の字で書けないので本体の文として置く。本線に入ったら消す",
+      "source": [
+        "K-906",
+        "K-892",
+        "PM の決め 2026-11-28"
+      ]
+    }
   ]
 }
