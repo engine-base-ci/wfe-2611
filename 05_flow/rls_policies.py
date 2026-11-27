@@ -233,6 +233,16 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "届け先で edit できる人が、社内の返事として自分の名で書く", "source": ["D-155.7", "D-155.43"]},
         ops_read("client_request_messages"),
     ],
+    # 依頼のやり取り（K-892・D-155.7）：読むのは依頼が見える社内の人・書くのは届け先で edit できる人が社内として自分の名で。ゲストの読む・書く守りは K-907・K-908
+    "client_request_messages": [
+        {"name": "client_request_messages_staff_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.client_request_visible(client_request_id)",
+         "rationale": "元の依頼が見える社内の人", "source": ["D-155.7", "D-155.43"]},
+        {"name": "client_request_messages_staff_write", "operation": "insert", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.client_request_actable(client_request_id) AND side = 'company' AND author_member_id = {U}",
+         "rationale": "届け先で edit できる人が、社内の返事として自分の名で書く", "source": ["D-155.7", "D-155.43"]},
+        ops_read("client_request_messages"),
+    ],
     "acceptances": [
         {"name": "acceptances_ticket_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.ticket_visible(ticket_id)",
          "rationale": "元のチケットを読める人", "source": ["D-125.124"]},

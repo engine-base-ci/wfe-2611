@@ -105,6 +105,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
   },
+  "client_request_messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
+  },
   "client_requests": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
