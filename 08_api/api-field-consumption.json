@@ -8571,7 +8571,13 @@
    "entity": "ops_invoice_templates",
    "field": "company",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -8580,7 +8586,13 @@
    "entity": "ops_invoice_templates",
    "field": "address",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -8589,7 +8601,13 @@
    "entity": "ops_invoice_templates",
    "field": "reg_no",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -8598,7 +8616,13 @@
    "entity": "ops_invoice_templates",
    "field": "contact",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -8607,7 +8631,13 @@
    "entity": "ops_invoice_templates",
    "field": "payee",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -8616,7 +8646,13 @@
    "entity": "ops_invoice_templates",
    "field": "note",
    "consumed_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "internal": false,
    "reason": null
@@ -12539,7 +12575,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12550,7 +12587,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12561,7 +12599,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12572,7 +12611,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12583,7 +12623,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12594,7 +12635,8 @@
    "consumed_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12610,7 +12652,8 @@
    "entity": "client_groups",
    "field": "client_id",
    "consumed_by_screens": [
-    "rules"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12633,8 +12676,8 @@
    "entity": "client_contacts",
    "field": "client_id",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12643,8 +12686,8 @@
    "entity": "client_contacts",
    "field": "name",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12653,8 +12696,8 @@
    "entity": "client_contacts",
    "field": "email",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12663,8 +12706,8 @@
    "entity": "client_contacts",
    "field": "role",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12673,8 +12716,8 @@
    "entity": "client_contacts",
    "field": "member_id",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null
@@ -12683,8 +12726,8 @@
    "entity": "client_contacts",
    "field": "cc_role",
    "consumed_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "internal": false,
    "reason": null

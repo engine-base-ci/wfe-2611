@@ -725,26 +725,6 @@
     },
     {
      "role": "action",
-     "endpoint": "POST /api/v1/ticket_draft_conversations",
-     "act": "A99"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/ticket_draft_conversations",
-     "act": "A20"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
-     "act": "A99"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
-     "act": "A20"
-    },
-    {
-     "role": "action",
      "endpoint": "POST /api/v1/conversations/:id/attachments",
      "act": "A90"
     },
@@ -767,6 +747,26 @@
      "role": "action",
      "endpoint": "POST /api/v1/artifact_versions/:id/restore",
      "act": "A95"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A20"
     },
     {
      "role": "action",
@@ -1175,11 +1175,6 @@
      "act": "A60"
     },
     {
-     "role": "action",
-     "endpoint": "POST /api/v1/ops/pwned/pending/ack",
-     "act": "A138"
-    },
-    {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/ops/pwned",
      "act": "A138"
@@ -1187,6 +1182,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/ops/workspaces/:id/pwned/ack",
+     "act": "A138"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/pwned/pending/ack",
      "act": "A138"
     }
    ],
@@ -2346,11 +2346,6 @@
      "act": "A101"
     },
     {
-     "role": "action",
-     "endpoint": "POST /api/v1/tickets/:id/item-changes/restore",
-     "act": "A101"
-    },
-    {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/test-specs",
      "act": "A102"
@@ -2644,6 +2639,11 @@
      "role": "action",
      "endpoint": "POST /api/v1/ticket_handovers/:id/remind",
      "act": "A111"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/item-changes/restore",
+     "act": "A101"
     },
     {
      "role": "action",
