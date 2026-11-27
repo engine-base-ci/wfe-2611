@@ -173,7 +173,8 @@
     "E-134 ops_plan_proposals",
     "E-099 payment_methods",
     "E-086 invoices",
-    "E-087 payments"
+    "E-087 payments",
+    "E-150 ops_invoice_templates"
    ],
    "related_apis": [
     "POST /api/subscriptions"
@@ -604,6 +605,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-117 checks",
     "E-050 artifacts",
     "E-116 test_specs",
@@ -762,6 +764,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-094 attachments",
     "E-050 artifacts",
     "E-051 artifact_versions",
@@ -785,15 +788,15 @@
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/stop",
-    "POST /api/ticket_draft_conversations",
-    "POST /api/ticket_draft_conversations",
-    "POST /api/ticket_draft_conversations/:id/messages",
-    "POST /api/ticket_draft_conversations/:id/messages",
     "POST /api/conversations/:id/attachments",
     "POST /api/conversations/:id/permissions/:pid",
     "POST /api/messages/:id/artifacts",
     "PATCH /api/artifacts/:id",
     "POST /api/artifact_versions/:id/restore",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations/:id/messages",
+    "POST /api/ticket_draft_conversations/:id/messages",
     "POST /api/ticket_draft_conversations/:id/adopt",
     "POST /api/ticket_draft_conversations/:id/adopt",
     "navigate /account",
@@ -864,6 +867,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-088 error_events",
     "E-095 skills",
     "E-096 skill_versions",
@@ -1687,22 +1691,23 @@
     "E-134 ops_plan_proposals",
     "E-086 invoices",
     "E-087 payments",
+    "E-150 ops_invoice_templates",
     "E-074 inquiries",
     "E-001 tenants",
     "E-061 sessions",
     "E-039 action_runs",
-    "E-092 pending_signup",
     "E-073 security_events",
-    "E-072 ops_audit_events",
     "E-004 members",
-    "E-052 audit_events"
+    "E-072 ops_audit_events",
+    "E-052 audit_events",
+    "E-092 pending_signup"
    ],
    "related_apis": [
     "GET /api/ops/shell",
     "GET /api/ops/workspaces",
-    "POST /api/ops/pwned/pending/ack",
     "GET /api/ops/pwned",
     "POST /api/ops/workspaces/:id/pwned/ack",
+    "POST /api/ops/pwned/pending/ack",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai",
@@ -1890,6 +1895,7 @@
    "entities": [
     "E-086 invoices",
     "E-087 payments",
+    "E-150 ops_invoice_templates",
     "E-081 plans",
     "E-082 plan_versions",
     "E-083 subscriptions",
@@ -2258,7 +2264,8 @@
    "entities": [
     "E-075 notices",
     "E-076 notice_deliveries",
-    "E-077 status_incidents"
+    "E-077 status_incidents",
+    "E-156 notice_updates"
    ],
    "related_apis": [
     "GET /api/notices",
@@ -2332,6 +2339,7 @@
     "E-134 ops_plan_proposals",
     "E-086 invoices",
     "E-087 payments",
+    "E-150 ops_invoice_templates",
     "E-052 audit_events"
    ],
    "related_apis": [
@@ -2401,6 +2409,7 @@
     "E-075 notices",
     "E-076 notice_deliveries",
     "E-077 status_incidents",
+    "E-156 notice_updates",
     "E-072 ops_audit_events"
    ],
    "related_apis": [
@@ -2471,6 +2480,7 @@
    "entities": [
     "E-086 invoices",
     "E-087 payments",
+    "E-150 ops_invoice_templates",
     "E-081 plans",
     "E-082 plan_versions",
     "E-083 subscriptions",
@@ -2481,7 +2491,6 @@
     "E-080 notifications",
     "E-072 ops_audit_events",
     "E-052 audit_events",
-    "E-150 ops_invoice_templates",
     "E-004 members"
    ],
    "related_apis": [
@@ -2550,7 +2559,8 @@
    "entities": [
     "E-101 llm_routes",
     "E-086 invoices",
-    "E-087 payments"
+    "E-087 payments",
+    "E-150 ops_invoice_templates"
    ],
    "related_apis": [
     "PATCH /api/llm_routes/:id"
@@ -2573,7 +2583,8 @@
     "E-105 subprocessors",
     "E-075 notices",
     "E-076 notice_deliveries",
-    "E-077 status_incidents"
+    "E-077 status_incidents",
+    "E-156 notice_updates"
    ],
    "related_apis": [
     "PATCH /api/disclosure_versions/:id"
@@ -2598,6 +2609,7 @@
     "E-134 ops_plan_proposals",
     "E-086 invoices",
     "E-087 payments",
+    "E-150 ops_invoice_templates",
     "E-004 members",
     "E-058 permissions",
     "E-055 layers",
@@ -2749,6 +2761,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-059 account_events",
     "E-060 account_event_items",
     "E-063 retention_holds",
@@ -2853,6 +2866,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-107 ticket_sections",
     "E-108 ticket_section_versions",
     "E-110 kind_sections",
@@ -2880,7 +2894,6 @@
     "E-094 attachments",
     "E-050 artifacts",
     "E-052 audit_events",
-    "E-146 ticket_field_values",
     "E-038 approvals",
     "E-049 messages",
     "E-080 notifications",
@@ -2890,6 +2903,7 @@
     "E-075 notices",
     "E-144 custom_fields",
     "E-145 custom_field_kinds",
+    "E-146 ticket_field_values",
     "E-115 handover_rules",
     "E-091 invitations"
    ],
@@ -2924,7 +2938,6 @@
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
     "GET /api/tickets/:id/item-changes",
-    "POST /api/tickets/:id/item-changes/restore",
     "GET /api/tickets/:id/test-specs",
     "POST /api/tickets/:id/test-specs",
     "PATCH /api/test_specs/:id",
@@ -2984,6 +2997,7 @@
     "POST /api/ticket_handovers/:id/withdraw",
     "POST /api/ticket_handovers/:id/remind",
     "POST /api/ticket_handovers/:id/remind",
+    "POST /api/tickets/:id/item-changes/restore",
     "POST /api/me/workspaces/:id/switch",
     "GET /api/me/invitations",
     "GET /api/tickets/:id/guest-shares",
@@ -3007,13 +3021,13 @@
     "E-109 ticket_kinds",
     "E-110 kind_sections",
     "E-111 ticket_stages",
+    "E-144 custom_fields",
+    "E-146 ticket_field_values",
+    "E-145 custom_field_kinds",
     "E-065 distributions",
     "E-067 tenant_distributions",
-    "E-144 custom_fields",
     "E-052 audit_events",
-    "E-106 tickets",
-    "E-145 custom_field_kinds",
-    "E-146 ticket_field_values"
+    "E-106 tickets"
    ],
    "related_apis": [
     "GET /api/ticket_kinds/template-updates",
@@ -3077,10 +3091,7 @@
     "E-037 policies",
     "E-055 layers",
     "E-002 scopes",
-    "E-142 scope_memberships",
-    "E-124 clients",
-    "E-125 client_groups",
-    "E-126 client_contacts"
+    "E-142 scope_memberships"
    ],
    "related_apis": [
     "GET /api/policies"
@@ -3130,15 +3141,15 @@
     "E-121 knowledge_pages",
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
+    "E-151 knowledge_breaches",
+    "E-152 knowledge_folders",
+    "E-154 knowledge_shares",
     "E-055 layers",
     "E-002 scopes",
     "E-142 scope_memberships",
-    "E-152 knowledge_folders",
     "E-120 reference_logs",
     "E-153 knowledge_requests",
-    "E-080 notifications",
-    "E-154 knowledge_shares",
-    "E-151 knowledge_breaches"
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/knowledge/tree",
@@ -3184,6 +3195,10 @@
    "entities": [
     "E-127 client_requests",
     "E-043 conversations",
+    "E-155 client_request_messages",
+    "E-124 clients",
+    "E-125 client_groups",
+    "E-126 client_contacts",
     "E-147 guest_groups",
     "E-148 guest_group_members",
     "E-149 ticket_guest_shares",
@@ -3193,9 +3208,8 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
-    "E-155 client_request_messages",
+    "E-128 acceptances",
     "E-049 messages",
-    "E-126 client_contacts",
     "E-095 skills",
     "E-002 scopes",
     "E-052 audit_events",
@@ -3270,7 +3284,8 @@
    "entities": [
     "E-075 notices",
     "E-076 notice_deliveries",
-    "E-077 status_incidents"
+    "E-077 status_incidents",
+    "E-156 notice_updates"
    ],
    "related_apis": [
     "GET /api/auth/service-status"
@@ -3293,6 +3308,10 @@
    "entities": [
     "E-127 client_requests",
     "E-043 conversations",
+    "E-155 client_request_messages",
+    "E-124 clients",
+    "E-125 client_groups",
+    "E-126 client_contacts",
     "E-147 guest_groups",
     "E-148 guest_group_members",
     "E-149 ticket_guest_shares",
@@ -3302,8 +3321,8 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-128 acceptances",
     "E-044 bridge_jobs",
-    "E-155 client_request_messages",
     "E-094 attachments",
     "E-080 notifications",
     "E-049 messages",
@@ -4954,30 +4973,6 @@
      "path_draft": "/api/conversations/:id/stop"
     },
     {
-     "act": "A99",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ticket_draft_conversations"
-    },
-    {
-     "act": "A20",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ticket_draft_conversations"
-    },
-    {
-     "act": "A99",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ticket_draft_conversations/:id/messages"
-    },
-    {
-     "act": "A20",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ticket_draft_conversations/:id/messages"
-    },
-    {
      "act": "A90",
      "role": "action",
      "method": "POST",
@@ -5006,6 +5001,30 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/artifact_versions/:id/restore"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
     },
     {
      "act": "A99",
@@ -6809,12 +6828,6 @@
     },
     {
      "act": "A138",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/ops/pwned/pending/ack"
-    },
-    {
-     "act": "A138",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/ops/pwned"
@@ -6824,6 +6837,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ops/workspaces/:id/pwned/ack"
+    },
+    {
+     "act": "A138",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ops/pwned/pending/ack"
     },
     {
      "role": "transition",
@@ -10642,12 +10661,6 @@
      "path_draft": "/api/tickets/:id/item-changes"
     },
     {
-     "act": "A101",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/tickets/:id/item-changes/restore"
-    },
-    {
      "act": "A102",
      "role": "data_fetch",
      "method": "GET",
@@ -11000,6 +11013,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_handovers/:id/remind"
+    },
+    {
+     "act": "A101",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/item-changes/restore"
     },
     {
      "act": "A74",
@@ -12929,8 +12948,16 @@
   {
    "entity_id": "E-156",
    "entity_name": "notice_updates",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "notices",
+    "ops-notices",
+    "ops-disclosure",
+    "help"
+   ],
+   "used_by_features": [
+    "F-015",
+    "F-016"
+   ]
   },
   {
    "entity_id": "E-077",
@@ -13158,9 +13185,18 @@
    "entity_id": "E-150",
    "entity_name": "ops_invoice_templates",
    "used_by_screens": [
-    "ops-billing"
+    "billing-setup",
+    "ops-home",
+    "company-settings",
+    "billing",
+    "ops-billing",
+    "ops-llm",
+    "ops-tenant"
    ],
    "used_by_features": [
+    "F-001",
+    "F-011",
+    "F-015",
     "F-016"
    ]
   },
@@ -13904,7 +13940,8 @@
    "used_by_screens": [
     "member-detail",
     "tickets",
-    "rules"
+    "requests",
+    "portal"
    ],
    "used_by_features": [
     "F-001",
@@ -13912,9 +13949,9 @@
     "F-005",
     "F-006",
     "F-010",
-    "F-011",
     "F-013",
     "F-021",
+    "F-022",
     "F-023",
     "F-024"
    ]
@@ -13923,24 +13960,24 @@
    "entity_id": "E-125",
    "entity_name": "client_groups",
    "used_by_screens": [
-    "rules"
+    "requests",
+    "portal"
    ],
    "used_by_features": [
-    "F-011",
-    "F-013"
+    "F-021",
+    "F-022"
    ]
   },
   {
    "entity_id": "E-126",
    "entity_name": "client_contacts",
    "used_by_screens": [
-    "rules",
-    "requests"
+    "requests",
+    "portal"
    ],
    "used_by_features": [
-    "F-011",
-    "F-013",
-    "F-021"
+    "F-021",
+    "F-022"
    ]
   },
   {
@@ -13972,8 +14009,28 @@
   {
    "entity_id": "E-128",
    "entity_name": "acceptances",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "member-detail",
+    "tickets",
+    "requests",
+    "portal"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-011",
+    "F-013",
+    "F-021",
+    "F-022",
+    "F-023",
+    "F-024"
+   ]
   },
   {
    "entity_id": "E-129",
@@ -14418,6 +14475,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-130",
     "E-131",
@@ -14432,7 +14490,8 @@
     "E-145",
     "E-146",
     "E-147",
-    "E-149"
+    "E-149",
+    "E-150"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations",
@@ -14555,6 +14614,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-131",
     "E-132",
@@ -14654,6 +14714,7 @@
     "E-121",
     "E-124",
     "E-127",
+    "E-128",
     "E-129",
     "E-134",
     "E-135",
@@ -14745,6 +14806,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-135",
     "E-136",
@@ -14946,6 +15008,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-132",
     "E-134",
@@ -15047,9 +15110,7 @@
     "E-121",
     "E-122",
     "E-123",
-    "E-124",
-    "E-125",
-    "E-126",
+    "E-128",
     "E-133",
     "E-134",
     "E-135",
@@ -15061,6 +15122,7 @@
     "E-144",
     "E-145",
     "E-146",
+    "E-150",
     "E-151",
     "E-152",
     "E-153",
@@ -15201,8 +15263,7 @@
     "E-122",
     "E-123",
     "E-124",
-    "E-125",
-    "E-126",
+    "E-128",
     "E-129",
     "E-133",
     "E-135",
@@ -15284,7 +15345,9 @@
     "E-086",
     "E-087",
     "E-094",
-    "E-134"
+    "E-134",
+    "E-150",
+    "E-156"
    ],
    "api_endpoints_draft": [
     "GET /api/inquiries",
@@ -15349,7 +15412,8 @@
     "E-133",
     "E-134",
     "E-142",
-    "E-150"
+    "E-150",
+    "E-156"
    ],
    "api_endpoints_draft": [
     "GET /api/audit_events",
@@ -15557,8 +15621,10 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-125",
     "E-126",
     "E-127",
+    "E-128",
     "E-129",
     "E-135",
     "E-136",
@@ -15595,7 +15661,11 @@
     "E-107",
     "E-114",
     "E-119",
+    "E-124",
+    "E-125",
+    "E-126",
     "E-127",
+    "E-128",
     "E-135",
     "E-136",
     "E-137",
@@ -15659,6 +15729,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-135",
     "E-136",
@@ -15724,6 +15795,7 @@
     "E-120",
     "E-121",
     "E-124",
+    "E-128",
     "E-129",
     "E-135",
     "E-136",

@@ -227,7 +227,7 @@
 | verify-email | メールを確認する | A02 | 5 | 3 | 4 | 9 | R1 R2 |
 | invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 6 | 11 | R3 R4 |
 | mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 12 | 10 | R1 R2 R3 R4 |
-| billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 9 | R1 R2 |
+| billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 10 | R1 R2 |
 | login | ログインする | A13 | 3 | 3 | 11 | 13 | R1 R2 R3 R4 |
 | password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 8 | R1 R2 R3 R4 |
 | onboard-interview | 自分のAIと話す | A06 | 1 | 0 | 1 | 6 | R1 R2 |
@@ -237,11 +237,11 @@
 | onboard-testrun | テストで動かす | A11 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 1 | 0 | 1 | 10 | R1 R2 |
 | today | 今日 | A14 A55 A56 A92 | 1 | 0 | 4 | 6 | R1 R2 R3 R4 |
-| approvals | 承認待ち | A15 A89 | 4 | 45 | 58 | 17 | R1 R2 R3 |
+| approvals | 承認待ち | A15 A89 | 4 | 45 | 58 | 18 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
-| clone-chat | 分身の部屋：会話と知っていること | A100 A131 A20 A88 A90 A91 A95 | 21 | 45 | 69 | 19 | R1 R2 R3 R4 |
-| ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 49 | 16 | R1 R2 R3 |
+| clone-chat | 分身の部屋：会話と知っていること | A100 A131 A20 A88 A90 A91 A95 | 21 | 45 | 69 | 20 | R1 R2 R3 R4 |
+| ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 49 | 17 | R1 R2 R3 |
 | records | 台帳 | A24 A47 | 1 | 0 | 2 | 4 | R1 R2 R3 R4 |
 | record-detail | 台帳の1件 | A18 A19 | 1 | 0 | 2 | 7 | R1 R2 R3 R4 |
 | goals | 目標 | A22 A54 | 1 | 0 | 2 | 10 | R1 R2 R3 |
@@ -264,10 +264,10 @@
 | export | 持ち出す | A41 | 1 | 0 | 1 | 9 | R1 R2 |
 | account-close | 退会する | A42 | 1 | 0 | 1 | 13 | R1 R2 |
 | ops-support | 運営：問い合わせ | A43 A70 | 2 | 45 | 50 | 10 | R6 |
-| ops-home | 運営：ワークスペースの一覧 | A138 A60 | 4 | 45 | 50 | 17 | R6 |
+| ops-home | 運営：ワークスペースの一覧 | A138 A60 | 4 | 45 | 50 | 18 | R6 |
 | ops-catalog | 運営：配るもの | A59 A79 | 1 | 0 | 2 | 11 | R6 |
 | account | 自分の設定 | A74 A94 | 2 | 45 | 60 | 19 | R1 R2 R3 R4 |
-| company-settings | ワークスペースの設定 | A75 | 2 | 45 | 53 | 16 | R1 R2 |
+| company-settings | ワークスペースの設定 | A75 | 2 | 45 | 53 | 17 | R1 R2 |
 | llm-routes | AI の経路 | A82 | 4 | 0 | 1 | 2 | R1 R2 |
 | app-setup | アプリと通知 | A83 | 3 | 0 | 1 | 7 | R1 R2 R3 R4 |
 | import | 取り込み | A76 | 1 | 0 | 1 | 8 | R1 R2 |
@@ -275,27 +275,27 @@
 | ops-services | 運営：サービス台帳 | A78 | 1 | 0 | 1 | 4 | R6 |
 | ops-skills | 運営：配るもの | A128 A133 A80 | 4 | 45 | 58 | 13 | R6 |
 | inquiry | 問い合わせ | A67 | 5 | 45 | 51 | 5 | R1 R2 R3 |
-| notices | お知らせ | A68 | 3 | 45 | 48 | 3 | R1 R2 R3 R4 |
-| billing | 請求書 | A69 | 3 | 45 | 48 | 9 | R1 R2 |
-| ops-notices | 運営：お知らせ | A71 | 2 | 45 | 51 | 4 | R6 |
+| notices | お知らせ | A68 | 3 | 45 | 48 | 4 | R1 R2 R3 R4 |
+| billing | 請求書 | A69 | 3 | 45 | 48 | 10 | R1 R2 |
+| ops-notices | 運営：お知らせ | A71 | 2 | 45 | 51 | 5 | R6 |
 | ops-billing | 運営：請求 | A72 A87 | 2 | 45 | 50 | 14 | R6 |
-| ops-llm | 運営：AI の経路と使用量 | A85 | 3 | 0 | 1 | 3 | R6 |
-| ops-disclosure | 運営：開示資料 | A86 | 3 | 0 | 1 | 5 | R6 |
-| ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 57 | 27 | R6 |
+| ops-llm | 運営：AI の経路と使用量 | A85 | 3 | 0 | 1 | 4 | R6 |
+| ops-disclosure | 運営：開示資料 | A86 | 3 | 0 | 1 | 6 | R6 |
+| ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 57 | 28 | R6 |
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
-| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 52 | 29 | R1 R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A137 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 94 | 45 | R1 R2 R3 R4 |
+| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 52 | 30 | R1 R2 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A137 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 94 | 46 | R1 R2 R3 R4 |
 | masters | チケットの設定 | A118 A120 | 1 | 0 | 15 | 10 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 6 | 6 | R1 R2 |
-| rules | ルール | A131 | 1 | 0 | 1 | 7 | R1 R2 R3 |
+| rules | ルール | A131 | 1 | 0 | 1 | 4 | R1 R2 R3 |
 | work-types | 業務の型 | A119 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 25 | 12 | R1 R2 R3 |
-| requests | 届いた依頼 | A122 | 1 | 0 | 7 | 21 | R1 R2 |
+| requests | 届いた依頼 | A122 | 1 | 0 | 7 | 24 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 4 | 4 | R6 |
 | legal | 規約・プライバシーポリシー | A96 | 1 | 0 | 0 | 2 | R1 R2 R3 R4 |
-| help | 困ったとき | A135 | 1 | 0 | 1 | 3 | R1 R2 R3 R4 |
-| portal | ゲストの場所 | A124 A125 | 1 | 0 | 9 | 20 | R4 |
+| help | 困ったとき | A135 | 1 | 0 | 1 | 4 | R1 R2 R3 R4 |
+| portal | ゲストの場所 | A124 A125 | 1 | 0 | 9 | 24 | R4 |
 
 ## 引き継ぎ
 
