@@ -560,6 +560,9 @@ open(".github/workflows/v3-gate.yml", "w", encoding="utf-8").write(yml)
 #   （定義の env・組の env に書くと、依存の部品の後処理や組み立ての段にも渡る）。値・住所はここにも定義にも書かない
 STAGING_NAMES = ("STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY")
 STAGING_ENV = "".join(f"          {n}: ${{{{ secrets.{n} }}}}\n" for n in STAGING_NAMES)
+# 試験だけの運営の人のパスキー（K-1101 の秘密・K-1102）。統合テストの段だけに渡す（健康診断・速さの段には渡さない）
+STAGING_OPS_NAMES = ("STAGING_OPS_PASSKEY_KEY", "STAGING_OPS_PASSKEY_ID", "STAGING_OPS_PASSKEY_USER")
+STAGING_E2E_ENV = STAGING_ENV + "".join(f"          {n}: ${{{{ secrets.{n} }}}}\n" for n in STAGING_OPS_NAMES)
 STAGING_SPECS = "apps/e2e/staging/**/*.spec.ts"   # 統合テストの置き場（K-65 が作る物だけ）
 # DB の束ね役（Supabase の pooler）の証明書は Supabase の自前の認証局の物。台の既定の信頼の元には無いので、根の証明書（公開の物）を版に入れて足す（確かめは外さない）
 STAGING_CA = "${{ github.workspace }}/infra/certs/supabase-root-2021.crt"
@@ -609,7 +612,7 @@ jobs:
       - name: "G{G15[0]['id']} {G15[0]['name']}"
         if: ${{{{ hashFiles('{STAGING_SPECS}') != '' }}}}
         env:
-{STAGING_ENV}          NODE_EXTRA_CA_CERTS: {STAGING_CA}
+{STAGING_E2E_ENV}          NODE_EXTRA_CA_CERTS: {STAGING_CA}
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/e2e-staging.xml
         run: {G15[0]['script']}
       - name: "staging の速さ（K-237）"

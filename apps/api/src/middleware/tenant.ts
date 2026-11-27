@@ -11,9 +11,13 @@ const UUID = { test: (v: string): boolean => isUuid(v) };
 /** 要求の解決の答え：テナントの文脈と、同意し直しの印（K-53。立っている間は契約の入口 op.ts が止める） */
 /** mfaPending：付けるまで進めないの印（K-308 が立てる。立っている間は契約の入口 op.ts が止める・K-321）。持たなければ立っていない */
 /** memberLeft：解決が抜けた人かを答えで持つとき（画面のログイン・K-233）。持たなければ入口が DB で確かめる */
-export type SessionResolver = (
-  c: Context,
-) => Promise<{ ctx: TenantContext; termsPending: boolean; mfaPending?: boolean; memberLeft?: boolean } | null>;
+export type SessionResolver = (c: Context) => Promise<{
+  ctx: TenantContext;
+  termsPending: boolean;
+  mfaPending?: boolean;
+  memberLeft?: boolean;
+  tenantStopped?: boolean;
+} | null>;
 /** memberLeft：呼んだ人が会社から抜けた人か（D-131.7 ②・K-166）。契約の入口 op.ts が、認証を通した後に 1 回だけ呼ぶ（呼ばれるまで DB を引かない）。
  *  本物のアプリではこの中間の処理が必ず入れる。入口だけを偽の関門で試す小さなアプリ（authz.test.ts）には無い */
 export type Vars = {
@@ -23,6 +27,9 @@ export type Vars = {
     termsPending: boolean;
     mfaPending: boolean;
     memberLeft?: () => Promise<boolean>;
+    /** tenantStopped：呼んだ人の会社を運営が止めたか（K-970・K-1012）。memberLeft と同じ 1 回の答え（repo.memberState）を分けて使う。
+     *  契約の入口 op.ts が、止めた会社でも通す口（stop-open.ts）でないときだけ呼ぶ。入口だけを試す小さなアプリには無い（止めない） */
+    tenantStopped?: () => Promise<boolean>;
   };
 };
 
@@ -61,8 +68,17 @@ export function tenantContext(repo: Repository, resolve: SessionResolver = anony
     c.set("termsPending", r?.termsPending === true);
     c.set("mfaPending", r?.mfaPending === true);
     // 解決の答えが抜けた人かを持てば、それを使い DB を引かない（K-233）。持たなければ今までどおり引く（PC の印・試験の土台）
+    //   止めた会社か（K-1012）も同じ：解決が答えを持てば使い（画面のログインは session_check の 1 本の文で引いてある）、
+    //   持たないときだけ抜けた人と同じ 1 文（repo.memberState）で引き、2 つの確かめが同じ答えを使う（呼ばれるまで引かない・1 要求に 1 回）
     const known = r?.memberLeft;
-    c.set("memberLeft", known === undefined ? () => repo.memberLeft(ctx) : async () => known);
+    const knownStopped = r?.tenantStopped;
+    let state: Promise<{ gone: boolean; stopped: boolean }> | undefined;
+    const stateOnce = () => (state ??= repo.memberState(ctx));
+    c.set("memberLeft", known === undefined ? async () => (await stateOnce()).gone : async () => known);
+    c.set(
+      "tenantStopped",
+      knownStopped === undefined ? async () => (await stateOnce()).stopped : async () => knownStopped,
+    );
     await next();
   };
 }

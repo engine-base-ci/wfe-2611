@@ -9,9 +9,12 @@
 //   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
 //   PC の状態は、画面が自分で PC の一覧を読み続けるとき（PC をつなぐ・K-220）は画面の答えを受け取り、外枠は読まない（口を二重に呼ばない）
 //   右の自分のAIのパネルは出さない（チケットは PC をつないでいなくても作れる・D-127.8）
+//   障害・メンテの帯と画面いっぱいの形の差し込み口はここ 1 か所（K-957・D-156.10）：ServiceGate が外枠ごと包み（メンテ中・画面が止まっているなら外枠を描かない）、
+//     ServiceBands が本文の前に帯を 1 つ並べる（帯が無ければ何も描かない）
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Shell, type Crumb, type Group } from "@/components/k";
+import { ServiceBands, ServiceGate } from "@/features/F12/help/service-bands";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
@@ -73,7 +76,7 @@ export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
 
 export interface TicketShellProps {
   /** いま見ている画面（flow の screen id）。左のメニューの今いる項目になる */
-  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials";
+  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials" | "members" | "notices" | "billing" | "masters";
   /** 上の帯のいまの場所 */
   crumbs: Crumb[];
   /** 左のメニューの数（まとまりの鍵 → 数）。承認待ちの画面は自分で読んだ数を渡す（外枠は二重に読まない） */
@@ -154,23 +157,28 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
   const badges = { ...counts, ...(approvals !== undefined ? { approvals } : {}) };
   const canCreate = (scopes.data?.writable.length ?? 0) > 0;
   return (
-    <Shell
-      {...(role ? { role } : {})}
-      screen={screen}
-      crumbs={crumbs}
-      workspace={{ name: company, initial: company.slice(0, 1) }}
-      member={{ name, initial: name.slice(0, 1) }}
-      groups={groups}
-      badges={badges}
-      bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
-      theme={readTheme()}
-      {...(railed ? { railed } : {})}
-      {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
-      onSignOut={() => {
-        void signOut().finally(() => window.location.assign("/login"));
-      }}
-    >
-      <div data-ticket-shell>{children}</div>
-    </Shell>
+    <ServiceGate>
+      <Shell
+        {...(role ? { role } : {})}
+        screen={screen}
+        crumbs={crumbs}
+        workspace={{ name: company, initial: company.slice(0, 1) }}
+        member={{ name, initial: name.slice(0, 1) }}
+        groups={groups}
+        badges={badges}
+        bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
+        theme={readTheme()}
+        {...(railed ? { railed } : {})}
+        {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
+        onSignOut={() => {
+          void signOut().finally(() => window.location.assign("/login"));
+        }}
+      >
+        <div data-ticket-shell>
+          <ServiceBands screen={screen} />
+          {children}
+        </div>
+      </Shell>
+    </ServiceGate>
   );
 }

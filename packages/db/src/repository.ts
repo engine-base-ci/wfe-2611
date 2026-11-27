@@ -264,6 +264,18 @@ export class Repository {
     });
   }
 
+  /** 呼んだ会社の人の状態を 1 文で（K-1012）：抜けた人か（K-166 の memberLeft と同じ答え）と、その会社を運営が止めたか（K-970 の app.tenant_stopped）。
+   *  入口（middleware/tenant.ts）が 1 要求に 1 回だけ引き、抜けた人の確かめと止めた会社の確かめが同じ答えを分けて使う（1 要求の文を増やさない） */
+  async memberState(ctx: TenantContext): Promise<{ gone: boolean; stopped: boolean }> {
+    if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return { gone: false, stopped: false };
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ gone: boolean; stopped: boolean }>(
+        "select app.member_left() as gone, app.tenant_stopped(app.tenant_id()) as stopped",
+      );
+      return { gone: r.rows[0]?.gone === true, stopped: r.rows[0]?.stopped === true };
+    });
+  }
+
   /** 行に結ぶ言葉の確かめ（K-15）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
    *  条件は契約の生成（scripts/ci/row_rules.mjs）が出した式だけ（利用者の入力は $1 の id だけ） */
   async rowAllowed(

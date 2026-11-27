@@ -8,6 +8,7 @@
 //   ④ 全部か無しか：そろえる前の字が 320 字を超える（pattern の前に確かめる）か INVITE_EMAIL_PATTERN（契約の emails の items の pattern と同じ字）に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
 //      形の誤りだけを 422 で返し、DB の中身で決まる断りは ⑤ の 409・404 に分ける（口が断る番号の決め・answer=431fc50df51b）
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
+//      取引の頭で、ゲスト（role_key requester）でなければ席を確かめる（app.seat_check・K-1103）。プランの人数の上限を超える → 409・E-PLAN-003（何も作らない・メールも送らない）
 //      グループが会社に無い・消した → 404・E-INV-011。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
 //   ⑥ 取引が終わってから宛てごとに 1 通（関門 C6）。送れたら mail "sent"・送れなかったら "failed" と証跡 invitation.mail_failed。
 //      証跡を書けなければログに招待の id だけ（宛てのメールは出さない・ドメインだけを証跡に書く）
@@ -98,9 +99,17 @@ function checkInput(input: Record<string, unknown>): HookReply | null {
   return null;
 }
 
+/** 席の上限の断り（K-1103）：例外の detail「人数,招待中,上限」→ 画面が字に差す値 */
+export function seatLimitDetail(dt: string): { members: number; invited: number; member_limit: number } {
+  const [members = 0, invited = 0, limit = 0] = dt.split(",").map((x) => Number.parseInt(x, 10) || 0);
+  return { members, invited, member_limit: limit };
+}
+
 /** DB の関数が断った例外 → 答え。分からない例外は 503（何も残らない） */
 function refused(e: unknown): HookReply {
   const { code, hint, detail: dt } = pgInfo(e);
+  if (code === "P0001" && hint === "E-PLAN-003")
+    return { status: 409, body: kanameError("E-PLAN-003", seatLimitDetail(dt)).toJSON() };
   // 404 と 409 は field・details を付けない（控え帳 20:50・PM の決め 2026-11-21 03:00）。無いグループと見えないグループは同じ答え
   if (code === "42501" && hint === "E-INV-011") return { status: 404, body: kanameError("E-INV-011").toJSON() };
   if (code === "42501") return forbidden();
@@ -164,6 +173,8 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
     message: string | null,
   ): Promise<{ rows: Created[]; facts: Facts }> =>
     withTenant(d.appPool, a.ctx, async (cl: pg.PoolClient) => {
+      // 席の確かめ（K-1103）：ゲストは数えず止めない（D-156.51）。送り直す宛ては招待中に数えない
+      if (role !== "requester") await cl.query("select app.seat_check($1::int, $2::text[])", [emails.length, emails]);
       const f = await cl.query<Facts>(
         `select (select t.name from tenants t where t.id = app.tenant_id()) as workspace_name,
                 (select m.display_name from members m where m.id = app.user_id()) as inviter_name,

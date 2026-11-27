@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-invoice-payments.ts",
+    "apps/api/src/features/F12/ops/invoice-payments.ts",
+    "packages/db/migrations/20261128012200_ops_payment.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts",
+    "apps/api/test/features/F12/billing-read.test.ts",
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts",
+    "apps/api/test/generated/post_ops_invoices_id_payments.test.ts"
+   ]
+  }
+ ]
+}

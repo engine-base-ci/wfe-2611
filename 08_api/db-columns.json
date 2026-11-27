@@ -734,6 +734,18 @@
     "type": "uuid",
     "nullable": true
    },
+   "upload_expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "upload_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "upload_token_hash": {
+    "type": "text",
+    "nullable": true
+   },
    "uploaded_by": {
     "type": "uuid",
     "nullable": true
@@ -1820,6 +1832,14 @@
     "type": "boolean",
     "nullable": false
    },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
@@ -2696,6 +2716,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "asker_read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "assignee_ops_member_id": {
     "type": "uuid",
     "nullable": true
@@ -2728,6 +2752,10 @@
     "type": "text",
     "nullable": true
    },
+   "last_message_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "later_until": {
     "type": "timestamp with time zone",
     "nullable": true
@@ -2736,6 +2764,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
    "status_id": {
     "type": "text",
     "nullable": true
@@ -2743,6 +2775,14 @@
    "tenant_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "topic_key": {
+    "type": "text",
+    "nullable": true
    },
    "updated_at": {
     "type": "timestamp with time zone",
@@ -2914,6 +2954,14 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "overdue_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "overdue_week_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "pdf_ref": {
     "type": "text",
     "nullable": true
@@ -2926,12 +2974,28 @@
     "type": "date",
     "nullable": true
    },
+   "plan_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "price_amount": {
+    "type": "integer",
+    "nullable": true
+   },
+   "prorated_amount": {
+    "type": "integer",
+    "nullable": true
+   },
    "status_id": {
     "type": "text",
     "nullable": true
    },
    "subscription_id": {
     "type": "uuid",
+    "nullable": true
+   },
+   "tax_amount": {
+    "type": "integer",
     "nullable": true
    },
    "tenant_id": {
@@ -3015,6 +3079,60 @@
    "used_for_acceptance": {
     "type": "boolean",
     "nullable": false
+   }
+  },
+  "knowledge_folders": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_personal": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "parent_folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
    }
   },
   "knowledge_links": {
@@ -3158,6 +3276,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "copied_from_page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -3174,12 +3296,20 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "form": {
     "type": "text",
     "nullable": false
    },
    "id": {
     "type": "uuid",
+    "nullable": false
+   },
+   "is_must": {
+    "type": "boolean",
     "nullable": false
    },
    "is_personal": {
@@ -3194,11 +3324,19 @@
     "type": "uuid",
     "nullable": true
    },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
    "scope_id": {
     "type": "uuid",
     "nullable": false
    },
    "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "summary": {
     "type": "text",
     "nullable": false
    },
@@ -4206,6 +4344,10 @@
     "type": "jsonb",
     "nullable": true
    },
+   "author_name": {
+    "type": "text",
+    "nullable": true
+   },
    "body": {
     "type": "text",
     "nullable": true
@@ -4290,6 +4432,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "visibility": {
+    "type": "text",
+    "nullable": false
+   },
    "work": {
     "type": "jsonb",
     "nullable": true
@@ -4341,7 +4487,53 @@
     "nullable": true
    }
   },
+  "notice_updates": {
+   "body": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "notice_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
   "notices": {
+   "admins_only": {
+    "type": "boolean",
+    "nullable": false
+   },
    "affects": {
     "type": "jsonb",
     "nullable": false
@@ -4369,6 +4561,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "impact": {
+    "type": "text",
+    "nullable": true
    },
    "kind_id": {
     "type": "text",
@@ -4404,6 +4600,10 @@
    },
    "target_tenant_id": {
     "type": "uuid",
+    "nullable": true
+   },
+   "target_tenant_ids": {
+    "type": "uuid[]",
     "nullable": true
    },
    "tenant_id": {
@@ -4586,6 +4786,10 @@
    }
   },
   "operations": {
+   "check_state": {
+    "type": "text",
+    "nullable": false
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -4600,6 +4804,10 @@
    },
    "deleted_at": {
     "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
     "nullable": true
    },
    "id": {
@@ -4628,6 +4836,10 @@
    },
    "updated_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "version_label": {
+    "type": "text",
     "nullable": true
    }
   },
@@ -4691,6 +4903,56 @@
    "updated_by": {
     "type": "uuid",
     "nullable": true
+   }
+  },
+  "ops_invoice_templates": {
+   "address": {
+    "type": "text",
+    "nullable": false
+   },
+   "company": {
+    "type": "text",
+    "nullable": false
+   },
+   "contact": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": false
+   },
+   "payee": {
+    "type": "text",
+    "nullable": false
+   },
+   "reg_no": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
    }
   },
   "ops_members": {
@@ -4804,6 +5066,10 @@
     "type": "text",
     "nullable": false
    },
+   "submitted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
@@ -4818,6 +5084,44 @@
    },
    "updated_by": {
     "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ops_setup_links": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ops_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "session_opened_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "token_hash": {
+    "type": "text",
+    "nullable": false
+   },
+   "used_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    }
   },
@@ -4908,7 +5212,15 @@
     "type": "date",
     "nullable": true
    },
+   "payer_name": {
+    "type": "text",
+    "nullable": true
+   },
    "recorded_by_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reverses_payment_id": {
     "type": "uuid",
     "nullable": true
    },
@@ -5066,6 +5378,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "effective_from": {
+    "type": "date",
+    "nullable": true
+   },
    "from_plan_id": {
     "type": "uuid",
     "nullable": true
@@ -5073,6 +5389,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "prorated_amount": {
+    "type": "integer",
+    "nullable": true
    },
    "requested_by": {
     "type": "uuid",
@@ -5104,11 +5424,35 @@
     "type": "timestamp with time zone",
     "nullable": false
    },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "existing_from": {
+    "type": "date",
+    "nullable": true
+   },
    "id": {
     "type": "uuid",
     "nullable": false
    },
+   "member_limit": {
+    "type": "integer",
+    "nullable": true
+   },
+   "new_from": {
+    "type": "date",
+    "nullable": true
+   },
    "plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "price_monthly": {
+    "type": "integer",
+    "nullable": true
+   },
+   "proposal_id": {
     "type": "uuid",
     "nullable": true
    },
@@ -5119,6 +5463,10 @@
    "snapshot": {
     "type": "jsonb",
     "nullable": true
+   },
+   "trial_days": {
+    "type": "integer",
+    "nullable": false
    },
    "updated_at": {
     "type": "timestamp with time zone",
@@ -6050,6 +6398,10 @@
     "type": "timestamp with time zone",
     "nullable": false
    },
+   "login_kind": {
+    "type": "text",
+    "nullable": true
+   },
    "machine_id": {
     "type": "uuid",
     "nullable": true
@@ -6732,6 +7084,18 @@
    }
   },
   "tenant_distributions": {
+   "chosen": {
+    "type": "text",
+    "nullable": true
+   },
+   "chosen_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "chosen_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -6759,6 +7123,14 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "offered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "offered_version": {
+    "type": "integer",
+    "nullable": true
    },
    "override": {
     "type": "jsonb",
@@ -6832,6 +7204,10 @@
    }
   },
   "tenants": {
+   "billing_contact": {
+    "type": "jsonb",
+    "nullable": true
+   },
    "client_visibility_default": {
     "type": "text",
     "nullable": false
@@ -6894,6 +7270,22 @@
    },
    "status_id": {
     "type": "uuid",
+    "nullable": true
+   },
+   "stop_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "stop_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "stop_reason_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "stopped_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "tenant_id": {
@@ -7242,6 +7634,10 @@
    }
   },
   "ticket_handovers": {
+   "answered_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "ask": {
     "type": "text",
     "nullable": true
@@ -7278,8 +7674,20 @@
     "type": "text",
     "nullable": false
    },
+   "notify_managers": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "overdue_notified_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "reason": {
     "type": "text",
+    "nullable": true
+   },
+   "reminded_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "reply_due": {
@@ -7293,6 +7701,10 @@
    "switch": {
     "type": "jsonb",
     "nullable": false
+   },
+   "switch_applied": {
+    "type": "jsonb",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
@@ -7421,6 +7833,14 @@
    "position": {
     "type": "integer",
     "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
@@ -7668,6 +8088,10 @@
    }
   },
   "ticket_stages": {
+   "color_key": {
+    "type": "text",
+    "nullable": false
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7699,6 +8123,14 @@
    "position": {
     "type": "integer",
     "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",

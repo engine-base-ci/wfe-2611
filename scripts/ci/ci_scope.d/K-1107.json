@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261128032700_ops_invoice_template.sql",
+    "packages/db/policies/20261128032700_ops_invoice_template.sql",
+    "apps/api/src/features/F12/ops/invoice-template.ts",
+    "apps/api/src/hooks/ops-invoice-template.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-template.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F12/billing/issuer.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-template.test.ts",
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
+    "apps/api/test/features/F12/billing-read.test.ts"
+   ]
+  }
+ ]
+}

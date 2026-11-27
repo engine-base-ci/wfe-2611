@@ -10,7 +10,7 @@ import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolv
 import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
 import { HOOK_MODULES } from "./hooks/all.generated.js";
-import { buildHooks } from "./hooks/registry.js";
+import { buildHooks, type HookMailer } from "./hooks/registry.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { edgeRequest } from "./edge.js";
@@ -20,6 +20,7 @@ import { resendMail, signedMail, type MailLike } from "@kaname/notify";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
 import { assertApiStartup } from "./startup.js";
 import { nearLimitNotifier } from "./ops-alert.js";
+import { inquiryUploadRoute } from "./features/F12/inquiries/upload-route.js";
 
 export interface BootOptions {
   /** 起動時の存在確認の差し替え（テスト用。本番は S3 の HEAD） */
@@ -57,8 +58,9 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   const inner = o.mail ?? (config.resendApiKey ? resendMail(config.resendApiKey) : null);
   const mail = inner ? signedMail(inner, config.operator, config.mailReplyTo) : null;
   // 送出は 1 か所。認証（再設定）と保留の申し込み（確認）の両方がこれを通る
-  const mailer = mail
-    ? async (m: { to: string; subject: string; text: string }) => {
+  // 添付（K-1109・請求書の PDF）はそのまま渡す。ログにファイルの名前と中身は出さない
+  const mailer: HookMailer | undefined = mail
+    ? async (m) => {
         // 送れたか／送れなかったかを必ず残す（黙って落ちると「メールが来ない」を誰も再現できない・G-15）
         try {
           // dev の自動テスト宛ては送らない（送出先の 1 日の上限を食い潰すため）。
@@ -70,7 +72,13 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
             return;
           }
           // send は投げずに { error } を返す。見ないと拒否されても「送った」になる（G-15）
-          const r = await mail.send({ from: config.mailFrom, to: m.to, subject: m.subject, text: m.text }); // 署名と返信先は signedMail が付ける
+          const r = await mail.send({
+            from: config.mailFrom,
+            to: m.to,
+            subject: m.subject,
+            text: m.text,
+            ...(m.attachments?.length ? { attachments: m.attachments } : {}),
+          }); // 署名と返信先は signedMail が付ける
           if (r.error) throw new Error(r.error.message);
           console.log(`[mail] 送った → ${mailTag(m.to)}（${m.subject}）`);
         } catch (e) {
@@ -102,7 +110,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
   //   外の置き場（Bridge の配布物・BRIDGE_RELEASE_BASE）の期限つき URL は、置き場の仕組み（S3 の署名つき URL）で作る（D-128.160）
   const objects = new ObjectStore(repo, o.storageDriver ?? s3, {
     signingSecret: `${config.authSecret}:files`,
-    externalSigner: s3Presigner(s3c, config.storage.endpoint),
+    externalSigner: s3Presigner(s3c, config.storage.endpoint, config.storage.bucket),
   });
   // 会話が変わった知らせを受ける 1 本（D-113・台帳 X-008）。URL が無ければ持たない（画面は見に行く形のまま）
   // 外への口（関門 C1）。登録の漏れたパスワードの照合が通る（K-51）。宛先は照合のサービスだけ
@@ -146,6 +154,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
       hooks: buildHooks(HOOK_MODULES, hookDeps, "server"),
     },
   });
+  // 問い合わせの添付の上げ終わり（契約の口の外・K-950）。外の置き場が無いときだけローカルの上げ先も持つ
+  app.route("/api/uploads", inquiryUploadRoute(hookDeps));
   return { app, report, close };
 }
 

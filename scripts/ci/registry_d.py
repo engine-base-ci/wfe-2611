@@ -9,6 +9,8 @@
   merge_py(target, dir, ...)   .py の断片を 1 つずつ実行し、大文字の名前ごとに target の表へ足す
 
 足し方：dict は鍵ごと（同じ鍵は止める）・set は和・list はつなぐ。
+名前で指す（K-990）：(名前, …) の組を値に持つ dict の表に、断片が値を名前の文字だけで書くと、同じ表で同じ名前の組をそのまま使う
+（ほかの断片の形を写さない）。当たる組が無ければ止める。読む側は今までどおり組だけを見る。
 screen_lists に挙げた名前は「画面 → 行のリスト」で、同じ画面は行をつなぎ、行の operationId（5 つ目）が重なれば止める。
 """
 from __future__ import annotations
@@ -100,6 +102,25 @@ def _run(path: Path, helpers: Mapping[str, object]) -> dict:
     return namespace
 
 
+def _shape_names(table: dict) -> dict[str, tuple]:
+    return {v[0]: v for v in table.values() if isinstance(v, tuple) and v and isinstance(v[0], str)}
+
+
+def _resolve_names(target: dict, key_owners: Mapping[str, str]) -> None:
+    """断片が名前の文字だけで書いた値を、同じ表で同じ名前の組に置き換える（全部の断片を足した後に 1 回）"""
+    for owned, source in key_owners.items():
+        name, _, raw = owned.partition(":")
+        table = target[name]
+        key = next(k for k in table if repr(k) == raw)
+        value = table[key]
+        shapes = _shape_names(table)
+        if not isinstance(value, str) or not shapes:
+            continue
+        if value not in shapes:
+            raise RegistryConflict(f"{source}: {name} の {key} が名前で指す {value} の組が、どの口にも無い（その組を持つ断片がまだ無い）")
+        table[key] = shapes[value]
+
+
 def merge_py(target: dict, directory: Path, names: Sequence[str] | None = None,
              screen_lists: Sequence[str] = (), helpers: Mapping[str, object] | None = None) -> list[Path]:
     """.py の断片を target の表に足す。フォルダが無ければ何もしない。読んだ断片を返す。"""
@@ -122,4 +143,5 @@ def merge_py(target: dict, directory: Path, names: Sequence[str] | None = None,
                 _merge_screen_rows(target, name, value, path, owners[name])
             else:
                 _merge_value(target, name, value, path, key_owners)
+    _resolve_names(target, key_owners)
     return used

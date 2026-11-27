@@ -15,6 +15,8 @@ interface Common {
   error?: string | null | undefined;
   required?: boolean;
   name: string;
+  /** 理由を読み上げの役 role="alert" で出す（画面の確かめの字を押したすぐ後に読ませる・K-1003）。既定は付けない（見た目は変わらない） */
+  errorAlert?: boolean;
   /** 大きさ（K-218）：md＝作業の画面（既定・13px）・lg＝入口の画面（高さ 42・14px・項目名 500） */
   size?: "md" | "lg";
 }
@@ -27,6 +29,7 @@ function Frame({
   required,
   name,
   size = "md",
+  errorAlert = false,
   children,
 }: Common & { children: ReactNode }) {
   const head = (
@@ -52,7 +55,7 @@ function Frame({
       {children}
       {description ? <Field.Description className="k-desc">{description}</Field.Description> : null}
       {error ? (
-        <Field.Error className="k-err" match>
+        <Field.Error className="k-err" match {...(errorAlert ? { role: "alert" } : {})}>
           {error}
         </Field.Error>
       ) : null}
@@ -61,7 +64,17 @@ function Frame({
 }
 
 export type TextFieldProps = Common & Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "required" | "size">;
-export function TextField({ label, description, hint, error, required, name, size, ...input }: TextFieldProps) {
+export function TextField({
+  label,
+  description,
+  hint,
+  error,
+  required,
+  name,
+  size,
+  errorAlert,
+  ...input
+}: TextFieldProps) {
   return (
     <Frame
       label={label}
@@ -71,6 +84,7 @@ export function TextField({ label, description, hint, error, required, name, siz
       required={required}
       name={name}
       size={size}
+      errorAlert={errorAlert ?? false}
     >
       <Field.Control className="k-input" required={required} aria-required={required || undefined} {...input} />
     </Frame>
@@ -78,7 +92,17 @@ export function TextField({ label, description, hint, error, required, name, siz
 }
 
 export type TextAreaProps = Common & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "name" | "required">;
-export function TextArea({ label, description, hint, error, required, name, size, ...area }: TextAreaProps) {
+export function TextArea({
+  label,
+  description,
+  hint,
+  error,
+  required,
+  name,
+  size,
+  errorAlert,
+  ...area
+}: TextAreaProps) {
   return (
     <Frame
       label={label}
@@ -88,6 +112,7 @@ export function TextArea({ label, description, hint, error, required, name, size
       required={required}
       name={name}
       size={size}
+      errorAlert={errorAlert ?? false}
     >
       <Field.Control
         render={<textarea />}
@@ -102,7 +127,17 @@ export function TextArea({ label, description, hint, error, required, name, size
 
 export type PasswordFieldProps = Omit<TextFieldProps, "type">;
 /** パスワード（D-087）：既定は隠す。押すと見え、もう一度押すと隠れる。読み上げの名前と aria-pressed も一緒に変わる。的は 24px 以上 */
-export function PasswordField({ label, description, hint, error, required, name, size, ...input }: PasswordFieldProps) {
+export function PasswordField({
+  label,
+  description,
+  hint,
+  error,
+  required,
+  name,
+  size,
+  errorAlert,
+  ...input
+}: PasswordFieldProps) {
   const [shown, setShown] = useState(false);
   return (
     <Frame
@@ -113,6 +148,7 @@ export function PasswordField({ label, description, hint, error, required, name,
       required={required}
       name={name}
       size={size}
+      errorAlert={errorAlert ?? false}
     >
       <div className="k-pw">
         <Field.Control

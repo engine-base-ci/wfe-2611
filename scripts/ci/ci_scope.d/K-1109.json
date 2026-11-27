@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/notify/src/resend.ts",
+    "packages/notify/src/signature.ts"
+   ],
+   "tests": [
+    "packages/notify/test/attachments.test.ts",
+    "packages/notify/test/resend.test.ts",
+    "packages/notify/test/signature.test.ts",
+    "apps/api/test/features/F12/ops-invoices-mail.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F12/ops/invoices-mail.ts",
+    "packages/db/migrations/20261128032900_ops_invoice_mail.sql",
+    "05_flow/screen_api.d/K-1109.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoices-mail.test.ts",
+    "apps/api/test/features/F12/ops-invoices-issue.test.ts",
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts"
+   ]
+  }
+ ]
+}
