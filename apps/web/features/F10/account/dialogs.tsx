@@ -95,35 +95,88 @@ export function EmailDoneCard({ kind }: { kind: Done }) {
 
 // ---------------------------------------------------------------- ワークスペースから抜ける（キャンバス EdLeaveWs）
 export type LeaveKind = "assigned" | "ready" | "last-admin";
-const TICKETS = ["JD-201 ログイン画面の文言を直す", "JD-204 追加開発の見積"];
+const SAMPLE_NAME = "京蟻システム株式会社";
+const SAMPLE_TICKETS: readonly { number: string; title: string }[] = [
+  { number: "JD-201", title: "ログイン画面の文言を直す" },
+  { number: "JD-204", title: "追加開発の見積" },
+];
 
-export function LeaveDialog({ kind }: { kind: LeaveKind }) {
+/** 本番が渡す値（K-841）。渡さない呼び方（モック）は見本の字のまま */
+export interface LeaveDialogProps {
+  kind: LeaveKind;
+  /** 会社の名前（同じ字で題・説明・注に出す） */
+  name?: string;
+  /** サブの「あなたは …」の役割の字 */
+  role?: string;
+  /** 担当しているチケット（口の先頭 10 件） */
+  tickets?: readonly { number: string; title: string }[];
+  /** 一覧に出ない残りの件数（「ほか N 件」） */
+  more?: number;
+  onLeave?: () => void;
+  onCancel?: () => void;
+  /** 抜ける口の答えを待つ間 */
+  busy?: boolean;
+  /** 小窓の中の赤い箱の字 */
+  error?: string;
+  /** 切り替えの口の答えを待つ間（渡しにいく・決めにいく・抜けるを押せない） */
+  goBusy?: boolean;
+  onGoTickets?: () => void;
+  onGoAdmin?: () => void;
+}
+
+export function LeaveDialog({
+  kind,
+  name = SAMPLE_NAME,
+  role,
+  tickets = SAMPLE_TICKETS,
+  more = 0,
+  onLeave,
+  onCancel,
+  busy = false,
+  error,
+  goBusy = false,
+  onGoTickets,
+  onGoAdmin,
+}: LeaveDialogProps) {
   const stuck = kind !== "ready";
+  const waiting = busy || goBusy;
   return (
     <Dialog
       open
-      onOpenChange={noop}
-      title="京蟻システム株式会社 から抜ける"
-      subtitle={`あなたは ${kind === "last-admin" ? "管理者" : "メンバー"}`}
+      onOpenChange={(o) => {
+        if (!o && !waiting) (onCancel ?? noop)();
+      }}
+      title={`${name} から抜ける`}
+      subtitle={`あなたは ${role ?? (kind === "last-admin" ? "管理者" : "メンバー")}`}
       actions={
         <>
-          <Button variant="outlined">やめる</Button>
-          {kind === "assigned" ? <Button variant="secondary">担当を渡しにいく</Button> : null}
-          {kind === "last-admin" ? <Button variant="secondary">管理者を決めにいく</Button> : null}
-          <Button variant="danger" disabled={stuck}>
+          <Button variant="outlined" disabled={waiting} onClick={onCancel}>
+            やめる
+          </Button>
+          {kind === "assigned" ? (
+            <Button variant="secondary" disabled={busy} loading={goBusy} onClick={onGoTickets}>
+              担当を渡しにいく
+            </Button>
+          ) : null}
+          {kind === "last-admin" ? (
+            <Button variant="secondary" disabled={busy} loading={goBusy} onClick={onGoAdmin}>
+              管理者を決めにいく
+            </Button>
+          ) : null}
+          <Button variant="danger" disabled={stuck || goBusy} loading={busy} onClick={onLeave}>
             {kind === "assigned" ? "抜ける（渡し終わってから）" : "抜ける"}
           </Button>
         </>
       }
     >
-      <p>
-        抜けると、京蟻システム株式会社のチケット・ナレッジは見られなくなり、あなたの分身もそこでは動かなくなります。
-      </p>
+      <p>抜けると、{name}のチケット・ナレッジは見られなくなり、あなたの分身もそこでは動かなくなります。</p>
+      {error ? <Callout tone="danger">{error}</Callout> : null}
       {kind === "assigned" ? (
-        <Callout tone="warn" title="担当しているチケット 2 件">
-          {TICKETS.map((t) => (
-            <div key={t}>{t}</div>
+        <Callout tone="warn" title={`担当しているチケット ${tickets.length + more} 件`}>
+          {tickets.map((t) => (
+            <div key={t.number}>{`${t.number} ${t.title}`}</div>
           ))}
+          {more > 0 ? <div>{`ほか ${more} 件`}</div> : null}
           抜ける前に、ほかの人に渡してください（受けてもらうまで抜けられない）
         </Callout>
       ) : null}
@@ -133,10 +186,9 @@ export function LeaveDialog({ kind }: { kind: LeaveKind }) {
           あなたはこのワークスペースの最後の管理者です。ほかの人を管理者にしてから、抜けてください
         </Callout>
       ) : null}
-      <p>あなたの分身が 京蟻システム株式会社 で覚えたことは、抜けるとすべて消えます（消えたものは戻りません）</p>
+      <p>{`あなたの分身が ${name} で覚えたことは、抜けるとすべて消えます（消えたものは戻りません）`}</p>
       <SettingNote>
-        京蟻システム株式会社
-        のワークスペースに残るのは、あなたが書いたやり取り・決定ログだけ。抜けたあとでも、招待されればまた入れる
+        {`${name} のワークスペースに残るのは、あなたが書いたやり取り・決定ログだけ。抜けたあとでも、招待されればまた入れる`}
       </SettingNote>
     </Dialog>
   );
