@@ -1,7 +1,8 @@
 "use client";
 // メンバーの 1 人 1 行（段 11）：段 9 の Person と同じ並び（丸いアイコン・名前とメール・役割・状態・操作）に、
 //   役割の ▾（押すと役割の一覧）・行の「⋯」（メンバーの操作）・招待中の行の「送り直す」「取り消す」を押せる形にした版。
-//   値は props で受け取って描くだけ（口は呼ばない）。メニューの開き方（menu）で、開いた形も描ける
+//   値は props で受け取って描くだけ（口は呼ばない）。メニューの開き方（menu）で、開いた形も描ける。
+//   招待中の行の「送り直す」「取り消す」は、関数を渡したときだけ押して動く（K-809・渡さない呼び方＝モックは今の見た目のまま）
 import { Badge, Button, Menu, MenuItem, MenuPopup, MenuTrigger } from "@/components/k";
 import "@/features/F10/invite/invite.css";
 import "./members.css";
@@ -29,6 +30,8 @@ export interface MemberRowData {
   invitedLeft?: string;
   /** 招待を送り直した直後 */
   resent?: boolean;
+  /** 招待中の行の招待の id（送り直す・取り消すの口が指す・K-809） */
+  invitedId?: string;
 }
 export type MenuKind = "role" | "more";
 
@@ -99,9 +102,23 @@ function MoreCell({ r, open }: { r: MemberRowData; open: boolean }) {
   );
 }
 
+/** 招待中の行の操作（K-809）。答えを待つ間（busy）は押せない形（aria-disabled）で、押しても何もしない */
+export interface InvitedActs {
+  onResend?: () => void;
+  onRevoke?: () => void;
+  busy?: boolean;
+}
+
 /** 1 人 1 行。menu を渡すと、その行のそのメニューが開いた形で描かれる */
-export function PersonRow({ r, menu }: { r: MemberRowData; menu?: MenuKind | undefined }) {
+export function PersonRow({
+  r,
+  menu,
+  onResend,
+  onRevoke,
+  busy = false,
+}: { r: MemberRowData; menu?: MenuKind | undefined } & InvitedActs) {
   const invited = Boolean(r.invitedLeft);
+  const wait = busy ? { "aria-disabled": true as const } : {};
   return (
     <li className="k-inv-row k-f10m-row" data-invited={invited || undefined}>
       <span className="k-inv-avatar" data-invited={invited || undefined} aria-hidden="true">
@@ -137,10 +154,11 @@ export function PersonRow({ r, menu }: { r: MemberRowData; menu?: MenuKind | und
       <span className="k-inv-more k-f10m-acts">
         {invited ? (
           <>
-            <Button variant="outlined" size="sm">
+            {/* 押せる大きさは 32px 以上（スマホでも・D-154.13）＝ md */}
+            <Button variant="outlined" {...wait} onClick={busy ? undefined : onResend}>
               送り直す
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" {...wait} onClick={busy ? undefined : onRevoke}>
               取り消す
             </Button>
           </>
