@@ -155,6 +155,7 @@ export function createGetMyInquiry(appPool: pg.Pool): (a: HookArgs) => Promise<H
       });
       if (!out) return bare(404, "E-PAGE-001");
       const { context, conversation_id: _c, ...base } = out.row;
+      void _c; // 会話の id は答えに出さない（欄から外すだけ）
       return {
         status: 200,
         body: {

@@ -112,7 +112,8 @@ test("K599-SL-003 差し込み口は前からのファイルに入っている�
   const band = code(src("features/F5/delegate/delegate-band.tsx"));
   const m = band.match(/<F7\.StoppedHandSlot[\s\S]*?<\/F7\.StoppedHandSlot>/);
   if (!m) bad.push("delegate-band.tsx に <F7.StoppedHandSlot …>…</F7.StoppedHandSlot> が無い");
-  else if (!/k-check-stack/.test(m[0]) || !/<RunBox/.test(m[0]) || !/<(CheckTable|ChecksSlot)\b/.test(m[0])) // 表は段6 の K-740 で差し込み口 ChecksSlot に替わった
+  else if (!/k-check-stack/.test(m[0]) || !/<RunBox/.test(m[0]) || !/<(CheckTable|ChecksSlot)\b/.test(m[0]))
+    // 表は段6 の K-740 で差し込み口 ChecksSlot に替わった
     bad.push("StoppedHandSlot が止まった箱ぜんたい（k-check-stack・RunBox・CheckTable）を包んでいない");
   // 読み直し onChanged を渡す（包みの開きタグの中＝k-check-stack より前）。K-486 が書き込みの後に呼ぶ
   else if (!/onChanged=\{/.test(m[0].slice(0, m[0].indexOf("k-check-stack"))))

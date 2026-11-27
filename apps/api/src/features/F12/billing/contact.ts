@@ -5,6 +5,7 @@
 //   関数が請求先を書き、管理者全員に画面のお知らせ・記録（関門 C2）を同じ取引で残す。同じ値なら何も書かない。メールは送らない。
 //   断りの言葉 → 番号は K-958 の errors.ts。ログに請求先の字（会社名・宛名・メール）を出さない（例外の種類だけ）
 import type pg from "pg";
+import { EMAIL_RE } from "@kaname/auth/signup";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { fromCatalog, kindOf, replyOf } from "./errors.js";
@@ -32,6 +33,17 @@ export function normalizeContact(input: Record<string, unknown>): BillingContact
 const blankField = (c: BillingContact): keyof BillingContact | null =>
   (["company", "attn", "email"] as const).find((k) => c[k] === "") ?? null;
 
+/** 契約の上限（会社名・宛名は 100 字まで） */
+const NAME_MAX = 100;
+
+/** 契約の形（字数・メールの形）に合わない欄。zod は欄の形を見ないので口が断る */
+const badField = (c: BillingContact): { field: keyof BillingContact; message: string } | null => {
+  if ([...c.company].length > NAME_MAX) return { field: "company", message: `${NAME_MAX} 字まで` };
+  if ([...c.attn].length > NAME_MAX) return { field: "attn", message: `${NAME_MAX} 字まで` };
+  if (!EMAIL_RE.test(c.email)) return { field: "email", message: "メールの形" };
+  return null;
+};
+
 /** 止める側に倒す（503・E-PAGE-003）。ログは決まった字と例外の種類だけ */
 const contactDown = (e: unknown): HookReply => {
   console.error(`[billing] 請求先を書けなかった（${kindOf(e)}）`);
@@ -50,6 +62,12 @@ export function updateBillingContact(appPool: pg.Pool) {
           code: "VALIDATION_ERROR",
           details: [{ field: blank, message: "空白だけでは送れません" }],
         },
+      };
+    const bad = badField(c);
+    if (bad)
+      return {
+        status: 422,
+        body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [bad] },
       };
     let v: Fn | null;
     try {

@@ -27,7 +27,7 @@ const loginEmail = async (p: P) =>
     )
   ).e;
 const pending = (p: P) =>
-  h.rows<Record<string, any>>("select * from app.member_email_changes where member_id = $1 order by created_at", [
+  h.rows<Record<string, unknown>>("select * from app.member_email_changes where member_id = $1 order by created_at", [
     p.id,
   ]);
 const fresh = () => `new-${randomUUID().slice(0, 8)}@engine-base.example`;
@@ -37,7 +37,7 @@ describe("K-835 メールを変える（requestEmailChange・verifyEmailChange�
     await h.ready();
     const w = await h.world();
     const to = fresh();
-    const r = await ask(w.member, `　${to.toUpperCase()} `);
+    const r = await ask(w.member, `\u3000${to.toUpperCase()} `);
     expect(r.status, await r.clone().text()).toBe(201);
     const d = (await h.json(r)).data!;
     expect(d["pending_email"]).toBe(to);
@@ -52,7 +52,9 @@ describe("K-835 メールを変える（requestEmailChange・verifyEmailChange�
     const rows = await pending(w.member);
     expect(rows.length).toBe(1);
     expect(JSON.stringify(rows[0])).not.toContain(tok);
-    expect(((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as any).email_pending).toBe(to);
+    expect(
+      ((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as Record<string, unknown>).email_pending,
+    ).toBe(to);
   });
 
   it("K835-API-002 本人確認：取り直しが無い・15 分より前なら 403・STEP_UP_REQUIRED・メールも待っている変更も作らない", async () => {
@@ -153,7 +155,9 @@ describe("K-835 メールを変える（requestEmailChange・verifyEmailChange�
     expect(r.status).toBe(502);
     expect((await h.json(r)).code).toBe("E-ME-025");
     expect((await pending(w.member)).filter((x) => !x.revoked_at && !x.used_at).length).toBe(0);
-    expect(((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as any).email_pending).toBeNull();
+    expect(
+      ((await h.json(await h.call(w.member, "GET", "/me"))).data!["member"] as Record<string, unknown>).email_pending,
+    ).toBeNull();
     h.failMailTo.delete(to);
     expect((await ask(w.member, to)).status).toBe(201);
   });
@@ -174,7 +178,7 @@ describe("K-835 メールを変える（requestEmailChange・verifyEmailChange�
     expect(
       (await h.one<{ v: boolean }>('select "emailVerified" as v from kaname_auth."user" where email = $1', [to])).v,
     ).toBe(true);
-    const me = (await h.json(await h.call(other, "GET", "/me"))).data!["member"] as any;
+    const me = (await h.json(await h.call(other, "GET", "/me"))).data!["member"] as Record<string, unknown>;
     expect(me.email).toBe(to);
     expect(me.email_pending).toBeNull();
     expect(
@@ -265,7 +269,7 @@ describe("K-835 メールを変える（requestEmailChange・verifyEmailChange�
     await ask(w.member, to);
     const tok = tokenOf(to);
     h.failMailTo.add(w.member.email);
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         expect((await verify(w.member, tok)).status).toBe(201);

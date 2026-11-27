@@ -863,7 +863,7 @@
    "method": "POST",
    "path": "/api/v1/ticket_kinds/{id}/template-from-ticket",
    "decision": "D-156.20",
-   "reason": "チケットからひな形を作る口は外す（代表の言い直し）"
+   "reason": "チケットからひな形を作る口（makeKindTemplateFromTicket）は外す（代表の言い直し）"
   }
  ]
 }

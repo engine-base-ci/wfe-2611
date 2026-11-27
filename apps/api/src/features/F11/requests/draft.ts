@@ -21,7 +21,11 @@ const kindOf = (e: unknown): string => {
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
 };
 /** 断りの番号の答え（欄・details を付けない） */
-const coded = (status: number, code: string): HookReply => ({ status, body: kanameError(code).toJSON() });
+const coded = (status: number, code: string): HookReply => {
+  const body: Record<string, unknown> = { ...kanameError(code).toJSON() }; // 欄・detail（空の {}）を付けない（在るかを漏らさない）
+  delete body["detail"];
+  return { status, body };
+};
 const down = (e: unknown): HookReply => {
   console.error(`[client-requests-draft] 仕事を積む取引が落ちた（${kindOf(e)}）`);
   return coded(503, "E-PAGE-003");
@@ -32,7 +36,8 @@ function refused(e: unknown): HookReply {
   const { code, hint } = pgInfo(e);
   if (code === "42501" && hint === "E-GST-100") return coded(404, "E-GST-100");
   if (code === "42501") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
-  if (code === "22023" && (hint === "E-GST-140" || hint === "E-GST-141" || hint === "E-GST-142")) return coded(409, hint);
+  if (code === "22023" && (hint === "E-GST-140" || hint === "E-GST-141" || hint === "E-GST-142"))
+    return coded(409, hint);
   return down(e);
 }
 
@@ -40,7 +45,11 @@ export function createRequestClientRequestDraft(appPool: pg.Pool): (a: HookArgs)
   return async (a: HookArgs): Promise<HookReply> => {
     let v: { job_id?: string } | undefined;
     try {
-      v = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<{ v: { job_id?: string } }>(SQL, [a.id])).rows[0]?.v);
+      v = await withTenant(
+        appPool,
+        a.ctx,
+        async (cl) => (await cl.query<{ v: { job_id?: string } }>(SQL, [a.id])).rows[0]?.v,
+      );
     } catch (e) {
       return refused(e);
     }
