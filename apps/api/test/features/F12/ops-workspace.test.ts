@@ -356,7 +356,7 @@ describe("K-966 守りと失敗", () => {
     expect(n1).toBe(await row());
   });
 
-  it("K966-API-021 済んでいない問い合わせの数（タブ「問い合わせ N」）：open・waiting・later を数え、done・消した問い合わせ・ほかの会社の問い合わせは数えない。数だけで題を返さない", async () => {
+  it("K966-API-021 済んでいない問い合わせの数（タブ「問い合わせ N」）：open・waiting・later を数え、done・消した問い合わせ・ほかの会社の問い合わせは数えない。数の欄は題を返さない（「最近」の欄は題名も出す）", async () => {
     const x = await t.ws("問い合わせの数");
     const y = await t.ws("ほかの会社の問い合わせ");
     const count = async () => (((await ws(x.tenantId)).b.data as Row)["inquiries"] as Row)["open"];
@@ -371,7 +371,9 @@ describe("K-966 守りと失敗", () => {
     expect(await count()).toBe(3);
     const d = (await ws(x.tenantId)).b;
     expect(Object.keys((d.data as Row)["inquiries"] as Row)).toEqual(["open"]);
-    expect(JSON.stringify(d)).not.toContain("k966-021");
+    // 数の欄は数だけで題を返さない。「最近」の欄は問い合わせの題名も出す（決める人 answer=a12dd25fea58）
+    expect(JSON.stringify((d.data as Row)["inquiries"])).not.toContain("k966-021");
+    expect(JSON.stringify((d.data as Row)["recent"])).toContain("k966-021-題");
     const money = await ws(x.tenantId, opsNoInquiry);
     expect(money.r.status).toBe(200);
     expect(((money.b.data as Row)["inquiries"] as Row)["open"]).toBe(3);

@@ -156,18 +156,21 @@ describe("K-1109 出すと送る", () => {
 
 describe("K-1109 送れない・数える", () => {
   it("K1109-API-005 1 通が送れない：もう 1 人には届き、201・meta.mail { sent 1, failed 1 }・請求書は出たまま・ログは 1 行で宛先と会社の名前が無い", async () => {
-    const w = await paying("1 通落ちる会社");
+    // その月にまだ契約が始まっていない会社には請求を出さない（決める人 answer=06faefa3bd11）。ほかの試験の会社の契約は 2013-01 から
+    //   なので、この会社だけ 2012-06 から契約し、2012-06 を出す（出すのはこの会社だけ＝meta.mail は この会社の 2 人の分）
+    const w = await t.world("1 通落ちる会社");
+    await t.contract(w, "team", "2012-06-01");
     const a1 = await emailOf(w.admin);
     const a2 = (await admin2(w, "落ちる管理者")).email;
     t.failMailTo.add(a2);
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const err = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
-      const { r, j } = await issue({ month: "2014-09" });
+      const { r, j } = await issue({ month: "2012-06" });
       expect(r.status).toBe(201);
       expect((j["meta"] as Row)["mail"]).toEqual({ sent: 1, failed: 1 });
       expect(to(a1)).toHaveLength(1);
-      expect(await t.invoiceOf(w, "2014-09")).toBeDefined();
+      expect(await t.invoiceOf(w, "2012-06")).toBeDefined();
       const logs = [...warn.mock.calls, ...err.mock.calls].flat().map(String);
       expect(logs.filter((l) => l.includes("[ops] 請求書のメールを送れなかった（1 通）"))).toHaveLength(1);
       const all = logs.join("\n");
