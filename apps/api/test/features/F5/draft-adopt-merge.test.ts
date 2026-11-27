@@ -85,7 +85,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     ]);
     const r = await adopt(p, draft, t);
     expect(r.status, await r.clone().text()).toBe(201);
-    expect(data(await json(r))).toEqual({ conversation_id: panel, ticket_id: t });
+    expect((await data(r))).toEqual({ conversation_id: panel, ticket_id: t });
     const lines = await bodies(panel);
     expect(lines.slice(0, 4)).toEqual([
       "human:作る画面で聞いた",
@@ -144,7 +144,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     const rs = await Promise.all([adopt(p, c1, t), adopt(p, c2, t)]);
     expect(rs.map((r) => r.status)).toEqual([201, 201]);
     const ids = await Promise.all(
-      rs.map(async (r) => (data(await json(r)) as { conversation_id: string }).conversation_id),
+      rs.map(async (r) => ((await data(r)) as { conversation_id: string }).conversation_id),
     );
     expect(ids[0]).toBe(ids[1]);
     expect(await liveTicketTalks(p, t)).toBe(1);
@@ -160,7 +160,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     const draft = await conv(p, "draft", null, [["human", "自分の言葉", 1]]);
     const r = await adopt(p, draft, t);
     expect(r.status, await r.clone().text()).toBe(201);
-    expect(data(await json(r))).toEqual({ conversation_id: draft, ticket_id: t });
+    expect((await data(r))).toEqual({ conversation_id: draft, ticket_id: t });
     expect(await bodies(theirs)).toEqual(["human:ほかの人の言葉"]);
   });
 
@@ -221,7 +221,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
       open = false;
       const r = await pending;
       expect(r.status, await r.clone().text()).toBe(201);
-      expect(data(await json(r))).toEqual({ conversation_id: panel, ticket_id: t });
+      expect((await data(r))).toEqual({ conversation_id: panel, ticket_id: t });
     } finally {
       if (open) await other.query("rollback");
       other.release();

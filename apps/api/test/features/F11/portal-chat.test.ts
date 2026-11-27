@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
-import { makeFixture, type Fixture, type Person } from "../fixture.js";
+import { makeFixture, quietWrite, type Fixture, type Person } from "../fixture.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..", "..", "..", "..");
@@ -75,13 +75,23 @@ interface World {
 async function world(): Promise<World> {
   await ready();
   const c = await f.company(`K882 の会社 ${Math.random().toString(36).slice(2, 7)}`, "PM");
-  return {
+  const w: World = {
     tenantId: c.tenantId,
     root: c.rootScope,
     boss: await f.person(c.tenantId, c.rootScope, { name: "高本", ticketAbility: "edit" }),
     assignee: await f.person(c.tenantId, c.rootScope, { name: "担当の人", ticketAbility: "edit" }),
     staff: await f.person(c.tenantId, c.rootScope, { name: "営業の人", ticketAbility: "edit" }),
   };
+  // 社内の人は会社に入っている（本物の人は必ず tenant_memberships が active）。土台の person は会社に入れないので、
+  //   担当者の受け箱の条件（app.portal_ticket_message_post）と止めた・抜けた担当者の行（K882-API-012）が成り立つよう入れる。
+  //   権限は ticketAbility のままにしたいので、役割の束の引き金は通さない（quietWrite・K-699 の joinOnCreate と同じ形）
+  for (const p of [w.boss, w.assignee, w.staff])
+    await quietWrite(
+      f,
+      "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, 'member', 'active')",
+      [w.tenantId, p.id],
+    );
+  return w;
 }
 const ticket = async (
   w: World,

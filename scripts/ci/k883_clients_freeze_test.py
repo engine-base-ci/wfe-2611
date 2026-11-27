@@ -27,7 +27,7 @@ CATALOG_MD = ROOT / "03_architecture" / "catalog.md"
 ER = ROOT / "03_architecture" / "ER図.md"
 MIGRATION_0074 = ROOT / "packages" / "db" / "migrations" / "0074_clients.sql"
 FROZEN_NOW = ("clients", "client_contacts", "client_groups", "acceptances")
-FROZEN_TOTAL = 64  # 今まで 60 ＋ この葉の 4 つ
+FROZEN_TOTAL = 74  # 今まで 60 ＋ この葉の 4 つ ＋ 段10 が凍結した 10（checks・imports・kind_sections・knowledge_links・learning_candidates・memories・policies・skill_test_runs・skill_versions・skills・K-722 ほか・統合の枝）
 
 
 def tables() -> dict[str, dict]:

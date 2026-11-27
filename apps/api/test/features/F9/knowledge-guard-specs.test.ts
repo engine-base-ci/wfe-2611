@@ -514,7 +514,7 @@ describe("K-699 同時・守り・失敗", () => {
     const w = await world("k699-018");
     const t = await mkTicket(w, w.g1, w.mem1);
     await pub(w.co.rootScope, w.boss, "会社の決まり", "x", { must: true });
-    await q("update members set suspended_at = now() where id = $1", [w.mem1.id]);
+    await q("update members set suspended_at = now(), suspended_by = id where id = $1" /* 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は対） */, [w.mem1.id]);
     await expect(q("select app.knowledge_seed_specs($1, $2)", [t, w.mem1.id])).rejects.toThrow();
     expect(await specs(t)).toEqual([]);
     expect(await guardLines(t)).toEqual([]);

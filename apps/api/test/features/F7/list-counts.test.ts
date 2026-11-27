@@ -253,7 +253,8 @@ describe("K-474 一覧の上の数の札：いつ付くか・変わらないも�
     const s = await scenario();
     at();
     const p = await listOk(f, s.w.me, "view=mine&limit=2");
-    expect(Object.keys(p.data[0]!)).toHaveLength(12);
+    // K-92 の 12 個に、段5 の K-560 がいつも付ける scope を足した 13 個（K473-API-016 と同じ数え方）
+    expect(Object.keys(p.data[0]!)).toHaveLength(13);
     expect(Object.keys(p.meta).sort()).toEqual(["counts", "next_cursor"]);
     expect(Object.keys(p.meta.counts!).sort()).toEqual(KEYS);
     const r = await list(f, s.w.me, "view=mine&limit=2");
