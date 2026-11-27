@@ -799,6 +799,11 @@
     "test_post_tickets_id_complete_conflict_2": {
      "file": "apps/api/test/features/F9/knowledge-complete-guard.test.ts",
      "mark": "K701-API-001"
+    },
+    "test_post_tickets_id_complete_unavailable": "K63-API-043",
+    "test_post_tickets_id_complete_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
     }
    }
   },

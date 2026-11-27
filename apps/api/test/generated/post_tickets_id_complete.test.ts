@@ -44,8 +44,11 @@ describe("POST /api/v1/tickets/:id/complete", () => {
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-029」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-029");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-complete.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
-  it.todo("test_post_tickets_id_complete_unavailable");
+  it("test_post_tickets_id_complete_unavailable", () => {
+    // UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
+    // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-043」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-043");
+  });
   it("test_post_tickets_id_complete_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
@@ -56,8 +59,11 @@ describe("POST /api/v1/tickets/:id/complete", () => {
     // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-045」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-045");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-complete.test.ts）：UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
-  it.todo("test_post_tickets_id_complete_terms_pending");
+  it("test_post_tickets_id_complete_terms_pending", () => {
+    // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+    // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-005");
+  });
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_post_tickets_id_complete_mfa_pending");
   it("test_post_tickets_id_complete_session_unresolved", () => {
