@@ -1275,7 +1275,7 @@ PERMS = {
     "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
     "editApproval": ("approver", "承認する人", False),
     "returnApproval": ("approver", "承認する人（理由が必須）", False),
-    "stopApproval": ("approver", "承認する人・担当者・マネージャー", False),
+    "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
     "withdrawApproval": ("approver", "承認した本人だけ・実行中になる前だけ（D-125.105）", False),
     "previewBulkApproval": ("approver", "自分が承認するものだけ", False),
     "bulkApprove": ("approver", "自分が承認するもので、条件（D-128.86）に合うものだけ。サーバーがもう一度確かめる", False),

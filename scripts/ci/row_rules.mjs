@@ -106,8 +106,8 @@ export const OP_RULES = {
   approveApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 差し戻す人も承認する人と同じ（今の担当者だけ・K-163）
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
-  // 承認する人・担当者・マネージャー
-  stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
+  // 承認する人＝今の担当者だけ（K-732・D-153.26）。DB の関数 app.approval_stop も同じ判定をする
+  stopApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
   copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
