@@ -196,6 +196,8 @@ async function completeAll(page: Page, r: Ready): Promise<void> {
   expect(await ticketState(r.t)).toMatchObject({ stage: "done", completed_by: r.me.memberId });
   // 完了は本文も実施事項の区画も書き換えない（K-566・D-150.42。前は全部「- [x]」の版にしていた・K-1303 で替えた）
   expect(await todoNow(r.t), "完了で実施事項の区画は書き換わらない").toBe(SECTIONS.todo);
+  // 完了で本文（実施事項の区画）を書き換えない（D-150.42・K-566。前は全部「- [x]」の版にしていた・K-1306 で替えた）
+  expect(await todoNow(r.t), "完了の前後で実施事項は元のまま（書き換えない）").toBe(SECTIONS.todo);
   expect(await delegatedMark(r.t), "完了したチケットに「AI に任せている」印は残らない").toBe(false);
   // 先に仕事の状態を見る（取る口の「何も動かしていない」は取り残しを片付けるので、後から見ると片付けが閉じた物まで緑になる）
   expect(

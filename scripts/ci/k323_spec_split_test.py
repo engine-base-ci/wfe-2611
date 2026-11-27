@@ -68,8 +68,14 @@ def setup_steps(job: str) -> list[dict]:
     return out
 
 
+# spec-parts（K-1307）は置き場の変数 SPEC_SHARDS が 2 以上の回だけ G57・G65 を分けて流す matrix の組。分ける前と同じ 3 組の数には入れない
+#   （その形と、spec の G57・G65 と同時に流れないことは k1307_spec_shards_test.py が見る）
+SPLIT_JOB = "spec-parts"
+SPLIT = {57: " && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2", 65: " && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2"}
+
+
 def spec_jobs() -> list[str]:
-    return [j for j in JOBS if j == "spec" or j.startswith("spec-")]
+    return [j for j in JOBS if (j == "spec" or j.startswith("spec-")) and j != SPLIT_JOB]
 
 
 class Groups(unittest.TestCase):
@@ -111,11 +117,12 @@ class SameGates(unittest.TestCase):
                     self.assertTrue(str(s["name"]).startswith(f"G{gid} {g['name']}"), "段の名前は前と同じ")
                     self.assertEqual(str(s["run"]).rstrip("\n"), g["script"].rstrip("\n"), "段の命令は前と同じ（1 文字も変えない）")
                     cond = str(s.get("if", ""))
+                    split = SPLIT.get(gid, "") if j == "spec" else ""   # K-1307：SPEC_SHARDS が 2 以上の回は spec-parts が流す（1 か無い回は前と同じ）
                     if gid in HEAVY:
-                        self.assertEqual(cond, f"${{{{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',{gid},')) }}}}",
+                        self.assertEqual(cond, f"${{{{ !cancelled(){split} && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',{gid},')) }}}}",
                                          "重い検査の条件は前と同じ（範囲は自分の組の scope の段から）")
                     else:
-                        self.assertEqual(cond, "${{ !cancelled() }}", "前の段が赤でも流す（条件は前と同じ）")
+                        self.assertEqual(cond, f"${{{{ !cancelled(){split} }}}}", "前の段が赤でも流す（条件は前と同じ）")
                     self.assertNotIn("continue-on-error", s)
                     want_env = yaml.safe_load(g["env"]) if g.get("env") else None
                     self.assertEqual(s.get("env"), want_env, "段の env（本線との分かれ目 CI_BASE など）は前と同じ")
