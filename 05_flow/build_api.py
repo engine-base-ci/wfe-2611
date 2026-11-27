@@ -214,7 +214,7 @@ schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}
 # 問い合わせの値の形（入口 op.ts が確かめるのと同じ。K-35）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
 # 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
-KEY_CURSOR_OPS = {"listApprovalQueue", "listAuditEvents", "listCloneActivity", "listNotifications", "listTickets", "listConversations", "listConversationMessages"}
+KEY_CURSOR_OPS = {"listApprovalQueue", "listCloneActivity", "listNotifications", "listTickets", "listConversations", "listConversationMessages"}
 # sort の値を口が持つ一覧の口（K-748）。sort は表の列でなく、QUERY_RANGES の enum（決まった値）で書く（入口 op.ts・list_query.ts の OWN_SORT_OPS と同じ集まり）
 OWN_SORT_OPS = {"listApprovalQueue", "listOpsWorkspaces"}  # listOpsWorkspaces：attention・members・runs（K-963・K-1006 の QUERY_RANGES）
 def qtype(q, table, op=None):
