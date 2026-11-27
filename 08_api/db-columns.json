@@ -936,6 +936,10 @@
     "type": "text",
     "nullable": true
    },
+   "client_request_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "conversation_id": {
     "type": "uuid",
     "nullable": true
