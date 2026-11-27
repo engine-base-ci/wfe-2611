@@ -43,3 +43,16 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 送られた版が請求書の型の今の版と違うなら、Kaname は 409 と E-BILL-007 を返し、型も記録も書かない"},
     ],
 }
+
+# 画面の口（統合の枝で本体から移した・K-1112・PM の決め 2026-11-28）
+SCREEN_API = {
+    "ops-billing": [
+        ("GET", "/ops/invoice-template", "A72", "ops_invoice_templates", "getOpsInvoiceTemplate", ["members"]),
+        ("PUT", "/ops/invoice-template", "A72", "ops_invoice_templates", "updateOpsInvoiceTemplate", ["ops_audit_events"]),
+    ],
+}
+
+PERMS = {
+    "getOpsInvoiceTemplate": ("ops:money", "お金を持つ運営の人（請求書の型・K-1107）", False),
+    "updateOpsInvoiceTemplate": ("ops:money", "同上。これから出す請求書の出す側と振込先が変わるので本人確認を取り直す（K-1107）", True),
+}
