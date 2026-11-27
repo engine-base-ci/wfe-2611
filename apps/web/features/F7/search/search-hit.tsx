@@ -1,6 +1,7 @@
 // 探した結果の 1 行。種類ごとに右端が違う（チケット＝段の札・決定／ナレッジ＝小さな字・会話＝日付と引用 1 行）。
 //   行き先が無いもの（ナレッジの画面がまだ無い間。会話は /ai/chat?c=… へ行ける）は、出すが押せない形（aria-disabled・title に準備中・D-145.9）。
 //   選んでいる行（↑↓ で動く）は淡い面と aria-current。
+import type { Route } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/k";
 import { HitMark } from "./hit-mark";
@@ -39,7 +40,7 @@ export function SearchHit({ hit, terms, active, onOpen }: SearchHitProps) {
       </span>
     );
   return (
-    <Link {...common} href={hit.href} aria-current={active ? "true" : undefined} onClick={() => onOpen?.(hit)}>
+    <Link {...common} href={hit.href as Route} aria-current={active ? "true" : undefined} onClick={() => onOpen?.(hit)}>
       {body}
     </Link>
   );

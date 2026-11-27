@@ -2,6 +2,7 @@
 // 運営のワークスペースの一覧の画面（/ops・K-965）。URL の絞り込みを読み → 外枠の答え（上の数）と一覧の口を読み → 部品に値と押したときの関数を渡す。
 //   絞り込み・探す・並びは URL に持つ（router.push で戻るが効く）。どちらかが読めなければ本文は読めなかった旨（E-PAGE-007）
 //   照合が使えなかった登録の帯と小窓（K-1019）：帯の数は外枠の pwned.unchecked・小窓を開いたときだけ一覧を読む・「確かめた」で 1 行ずつ
+import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, ErrorState, PageBody, PageHeader } from "@/components/k";
@@ -124,7 +125,7 @@ export function WsListScreen() {
   const list = useOpsWorkspaces(lq);
   const [pwnedOpen, setPwnedOpen] = useState(false);
 
-  const go = (next: ListQuery) => router.push(`${HOME}${toSearch(next)}`);
+  const go = (next: ListQuery) => router.push(`${HOME}${toSearch(next)}` as Route);
   const relogin = list.data?.kind === "login";
   useEffect(() => {
     if (relogin) router.replace(`/ops/login?next=${encodeURIComponent(pathname + window.location.search)}`);

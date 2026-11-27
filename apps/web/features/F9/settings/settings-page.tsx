@@ -3,6 +3,7 @@
 //   第 2 ナビ（WsSub・「チケットの設定」が今の場所）・本文（TicketSettings：種別／状態／項目のタブ）。モック /dev/mock/f9/set-* の WsFrame と同じ組み立て。
 //   管理者（R1・R2）だけ：役を読み終えるまでは読み込み中、見られない人は「この画面を見る権限がありません」（E-PAGE-002）で、設定の口は呼ばない。
 //   タブの中身は tab-panels.tsx の登録（K-708・K-709 が足す）。タブと種別は ?tab=・?id= で持ち、離れる前に保存していない変更を確かめる
+import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -74,7 +75,7 @@ function AdminBody({
   const id = sp?.get("id") ?? idProp;
   const Panel = TAB_PANELS[tab];
 
-  const go = (href: string) => confirmLeave(() => router.push(href, { scroll: false }));
+  const go = (href: string) => confirmLeave(() => router.push(href as Route, { scroll: false }));
   const onTab = (t: SettingsTabKey) => {
     if (t === tab || inert.includes(t)) return;
     go(hrefOf(t));

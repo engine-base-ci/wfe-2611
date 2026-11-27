@@ -2,6 +2,7 @@
 // 配るもの › プラン：いまのプラン・値段を変える案・決める人の画面・値段の記録（段 13・領域 ops2・キャンバス OpPlans・OpPlanEdit・OpPlanReview・OpPlanLog）。
 //   値を受け取って描くだけ。値段は仮。業務の型は描かない（段 10 の決め）
 //   本番（K-991）は任意の props で値と押したときの関数を渡す。渡さない呼び方（モック）は下絵の見た目のまま
+import type { Route } from "next";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent, ReactNode } from "react";
@@ -69,7 +70,7 @@ export function PlansChips({
   const router = useRouter();
   const go = (v: PlansView) => {
     const href = hrefs?.[v];
-    return href ? () => router.push(href) : undefined;
+    return href ? () => router.push(href as Route) : undefined;
   };
   return (
     <div className="k-op-chips" role="group" aria-label="プランの見方">
