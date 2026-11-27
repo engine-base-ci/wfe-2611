@@ -267,7 +267,7 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
     expect(p.data.find((x) => x.id === done.id)?.overdue).toBe(false);
   });
 
-  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 12 個（区画の本文・作った人・消した印を返さない）・meta は next_cursor（と counts だけ・総数を返さない）", async () => {
+  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 13 個（12 個＋ K-560 が足した scope。区画の本文・作った人・消した印を返さない）・meta は next_cursor（と counts だけ・総数を返さない）", async () => {
     const w = await world();
     const parent = await make(w);
     await make(w, { parent: parent.id });
@@ -284,6 +284,7 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
           "number",
           "overdue",
           "parent_ticket_id",
+          "scope",
           "stage",
           "title",
           "updated_at",
