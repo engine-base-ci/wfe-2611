@@ -24,9 +24,9 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "05_flow"))
 sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117）
 from portable_regex import walk as _portable  # noqa: E402  作り手が契約に書くときの直し（\s \S \d \w を JS と同じ字に・K-1117）。表の字はそのまま、比べる前に当てる
-import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 
 
 def _load_screen_api():
@@ -52,7 +52,7 @@ VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "u
 #   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。
 #   ここに無い口の入力の形は required を持たない（条件つきで要る欄＝stepUp の code・種別ごとの必須の区画は required にしない）
 REQUIRED_INPUTS: dict[str, set[str]] = {
-    "completeTicket": {"conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（conditions_confirmed だけ必須・todo_* は任意で中身は見ない・K-566）
+    "completeTicket": {"conditions_confirmed"},   # apps/api/src/features/F5/approve-complete/complete.ts（入力は conditions_confirmed だけ・必須・K-578）
     "returnApproval": {"note"},                       # apps/api/src/features/F5/approve-complete/decide.ts（無い・空は 422 E-VAL-020・K-163）
     "createSignup": {"email", "name", "password"},     # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005。無いと空と同じ）。company_name は空でよい（D-125.135）
     "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
@@ -109,14 +109,15 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
         "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
-        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
-                     "additionalProperties": {"type": "string"}},     # :63〜74（区画の中身の上限 20,000 字は外した・D-130.3。守りは送る量 1MB だけ）
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
         # K-437：payload.ts の checkFields・checkSpecs・checkBody（本文の木は doc_shape・K-432 と同じ定義）
         "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},   # K-581：payload.ts の checkLinks
+        "copy": {"maxItems": 6, "uniqueItems": True, "items": {"enum": ["body", "assignee", "fields", "specs", "links", "children"]}},   # K-438：duplicate.ts の COPY_NAMES
         "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）

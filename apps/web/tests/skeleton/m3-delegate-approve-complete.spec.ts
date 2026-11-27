@@ -24,7 +24,6 @@ import {
   runsOf,
   systemLines,
   ticketState,
-  todoNow,
   workOf,
   type Job,
   type PcWork,
@@ -121,10 +120,32 @@ async function takeSoon(r: Ready, what: string): Promise<Job> {
   return job!;
 }
 
+/** 本文（鍵 body）の今の版の素の文字（機械が読む text） */
+const bodyNow = async (ticketId: string): Promise<string> =>
+  (
+    await admin<{ t: string }>(
+      `select v.body->>'text' as t from ticket_section_versions v join ticket_sections s on s.id = v.section_id
+        where s.ticket_id = $1 and s.section_key = 'body' order by v.version desc limit 1`,
+      [ticketId],
+    )
+  )[0]!.t;
+
+/** 題の行の「AI に任せる」を押す（頁全体で役と名前で探す・置き場に左右されない）。
+ *  確認項目が 0 件のときの小窓（K-573）が挟まれば、使わない理由を書いて任せる。小窓が無い間（K-573 の前）も通る */
+async function pressDelegate(page: Page, r: Ready): Promise<void> {
+  await delegateBtn(page).click();
+  const reasonBox = page.getByRole("textbox", { name: "確認項目を使わない理由" });
+  await expect(reasonBox.or(aiBand(page).getByText("に任せました"))).toBeVisible();
+  if (await reasonBox.isVisible()) {
+    await reasonBox.fill(`定型の作業・${r.title}`);
+    await page.getByRole("dialog").getByRole("button", { name: "理由を書いて任せる", exact: true }).click();
+  }
+}
+
 /** 画面で任せる → 帯は「任せました。PC が受け取るのを待っています」→ PC が作る段の仕事を取る → 画面が自分で「作っています」に替わる */
 async function delegateAndTake(page: Page, r: Ready): Promise<Job> {
   await openTicket(page, r);
-  await delegateBtn(page).click();
+  await pressDelegate(page, r);
   await expect(aiBand(page)).toContainText(`${aiOf(r.me)} に任せました`);
   await expect(aiBand(page), "PC が受け取る前は「作っています」と言わない（D-133.1）").toContainText(MSG.queuedLive);
   await expect(execBand(page), "作る段の間は K-63 の帯を出さない（D-128.178）").toHaveCount(0);
@@ -181,21 +202,23 @@ async function takeExecute(r: Ready): Promise<Job> {
   expect(exec.prompt).toContain(MSG.execHint);
   return exec;
 }
-/** 完了の小窓で実施事項を全部チェックし、完了の条件を確かめて完了にする → 帯が「完了しました（名前・日時）」に替わる */
+/** 題の行の「完了にする」を押して完了にする。本文と確認項目に未チェックが残っていれば注意の小窓が出るので「このまま完了にする」を押す
+ *  （小窓が無ければそのまま完了・K-572）。→ 帯が「完了しました（名前・日時）」に替わる */
 async function completeAll(page: Page, r: Ready): Promise<void> {
+  const before = await bodyNow(r.t);
+  expect(before, "完了の前の本文に実施事項の行が在る（空どうしの一致で緑にしない）").toContain("見積を作る");
   await completeBtn(page).click();
-  const d = page.getByRole("dialog");
-  await d.getByRole("checkbox", { name: "見積を作る" }).check();
-  await d.getByRole("checkbox", { name: "先方に送る" }).check();
-  await d.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" }).check();
-  await d.getByRole("button", { name: "確かめて完了にする" }).click();
-  await expect(execBand(page).getByText(/完了しました（.+・\d{1,2}\/\d{1,2} \d{1,2}:\d{2}）/)).toBeVisible();
+  const notice = page.getByRole("dialog");
+  const done = execBand(page).getByText(/完了しました（.+・\d{1,2}\/\d{1,2} \d{1,2}:\d{2}）/);
+  await expect(notice.or(done)).toBeVisible();
+  if (await notice.isVisible()) await notice.getByRole("button", { name: "このまま完了にする", exact: true }).click();
+  await expect(done).toBeVisible();
   await expect(execBand(page)).toContainText(r.me.name);
   await expect(completeBtn(page), "完了したら「完了にする」は出ない").toHaveCount(0);
   await expect(delegateBtn(page), "完了したチケットは任せられない").toHaveCount(0);
   expect(await ticketState(r.t)).toMatchObject({ stage: "done", completed_by: r.me.memberId });
-  // 完了で本文（実施事項の区画）を書き換えない（D-150.42・K-566。前は全部「- [x]」の版にしていた・K-1306 で替えた）
-  expect(await todoNow(r.t), "完了の前後で実施事項は元のまま（書き換えない）").toBe(SECTIONS.todo);
+  // 完了で本文を書き換えない（D-150.42・K-566）。K-1306 と同じく完了の前後で元のままかを見る（段5 は区画が無いので本文の版の文字で比べる）
+  expect(await bodyNow(r.t), "完了の前後で本文は元のまま（書き換えない・D-150.42）").toBe(before);
   expect(await delegatedMark(r.t), "完了したチケットに「AI に任せている」印は残らない").toBe(false);
   // 先に仕事の状態を見る（取る口の「何も動かしていない」は取り残しを片付けるので、後から見ると片付けが閉じた物まで緑になる）
   expect(
@@ -225,6 +248,8 @@ test("K64-M3-01 正常：任せる → PC が作って終える → 承認待ち
   await expect(line.getByRole("button", { name: "承認する" }), "取り消せない操作は行で決めない").toHaveCount(0);
   await line.getByRole("link", { name: "中身を見る" }).click();
   await expect(page).toHaveURL(new RegExp(`/tickets/${r.t}$`));
+  const beforeRun = await bodyNow(r.t);
+  expect(beforeRun, "実行の前の本文に実施事項の行が在る（空どうしの一致で緑にしない）").toContain("見積を作る");
   await approveOnBand(page);
   const exec = await takeExecute(r);
   expect(await r.w.take(), "同じ仕事は二度渡らない").toBeNull();
@@ -240,7 +265,8 @@ test("K64-M3-01 正常：任せる → PC が作って終える → 承認待ち
   await expect(execBand(page).getByText(MSG.completeHint), "実行が終わると完了の案内に替わる").toBeVisible();
   await expect(delegateBtn(page), "終わった後は任せ直す道（ボタン）も並ぶ（D-129.11）").toBeVisible();
   expect(await delegatedMark(r.t), "実行が終わったら印が外れる").toBe(false);
-  expect(await todoNow(r.t), "AI の実行は実施事項にチェックを入れない（人が確かめる・D-125.55）").toBe(SECTIONS.todo);
+  // AI の実行は本文を書き換えない（D-125.55）。実行の前後で本文の版の文字が元のままかを見る
+  expect(await bodyNow(r.t), "AI の実行の前後で本文は元のまま（人が確かめる・D-125.55）").toBe(beforeRun);
   await completeAll(page, r);
   // 記録：作る段と実行する段が、1 枚のチケットの上で 1 本につながる
   const runs = await runsOf(r.t);
@@ -408,8 +434,8 @@ test("K64-M3-04 実行が止まる（G-15）：承認の後の実行が空の結
   const stopped = execBand(page).getByRole("alert").filter({ hasText: MSG.stoppedTitle });
   await expect(stopped, "止まった帯は赤い箱 1 つ").toHaveCount(1);
   await expect(
-    stopped.getByRole("button", { name: "完了にする", exact: true }),
-    "止まった後も、人が確かめて完了にする道が出る（止まった帯の中の「完了にする」）",
+    completeBtn(page),
+    "止まった後も、人が確かめて完了にする道が出る（「完了にする」は題の行・頁全体で探す）",
   ).toBeVisible();
   await expect(execBand(page).getByText(MSG.completeHint), "止まった帯は完了の確かめの文を出さない").toHaveCount(0);
   await expect(delegateBtn(page), "もう一度任せる道も並ぶ").toBeVisible();

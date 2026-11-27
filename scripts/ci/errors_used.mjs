@@ -18,7 +18,7 @@ export function used(root = ROOT) {
   const ids = new Set(JSON.parse(readFileSync(join(root, SRC), "utf8")).errors.map((e) => e.id));
   const refs = new Map();
   for (const d of ["apps", "packages"]) for (const p of walk(join(root, d))) {
-    const rel = relative(root, p); if (/node_modules|\/dist\/|catalog\.ts$|\.test\.ts$|\/test\//.test(rel)) continue; // テストは対象外（正本に無い ID を故意に使う）
+    const rel = relative(root, p); if (/node_modules|\/dist\/|catalog\.ts$|\.test\.ts$|\/tests?\//.test(rel)) continue; // テストは対象外（正本に無い ID を故意に使う）。画面の試験の置き場 tests/ も同じ（K-578・PM の決め 2026-11-24）
     const s = readFileSync(p, "utf8");
     for (const m of s.matchAll(/\bE-[A-Z]+-\d{3}\b/g)) refs.set(m[0], [...(refs.get(m[0]) ?? []), rel]);
   }

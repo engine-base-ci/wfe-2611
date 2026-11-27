@@ -38,7 +38,7 @@ setupApproveComplete();
 
 describe("K-63 承認して完了する：承認・差し戻し（口・本物の DB）", () => {
   it("K63-API-006 承認待ち × 差し戻すと理由 × 承認する人：差し戻しを記録し（理由・next_actor clone）、理由つきの作り直しの仕事を同じ AI に積む。チケットは実行中", async () => {
-    const t = await ticket();
+    const t = await ticket({ body: true }); // K-578：prompt のチケットの中身は本文の行から組む（前の区画は読まない）
     const d = await delegated(t);
     const r = await giveBack(boss, d.approvalId, "  宛名を「株式会社サンプル 経理部」にしてください  ");
     expect(r.status, await r.clone().text()).toBe(201);
