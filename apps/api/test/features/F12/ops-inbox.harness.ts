@@ -2,9 +2,8 @@
 //   単体の試験の土台（K-973 が持ち込む・K-974・K-975 も使う）。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 //   実装の前に流して赤を確かめない（D-128.143）。顧客の側（問い合わせを作る・返事を読む）は inquiry.harness.ts（K-949）をそのまま使い、
 //   運営の人（運営の会社の members ＋ ops_members の caps）と、運営の記録の後片付けだけをこの土台が足す
-import { afterAll } from "vitest";
 import { startInquiries, type Inquiries, type World } from "./inquiry.harness.js";
-import type { Person } from "../fixture.js";
+import { afterClose, type Person } from "../fixture.js";
 
 /** 運営の会社（0003 の app.ops_tenant_id()） */
 export const OPS_TENANT = "00000000-0000-4000-8000-000000000001";
@@ -39,7 +38,7 @@ export async function startOpsInbox(prefix: string, hookFiles: readonly string[]
   const t = await startInquiries(prefix, ["inquiry-create", ...hookFiles]);
   const opsMembers: string[] = [];
   let scope: string | null = null;
-  afterAll(async () => {
+  afterClose(async () => {
     // 運営の記録・会社の記録・安全の記録（ops_audit_events・audit_events・security_events）は追記専用（0003_audit.sql の引き金）なので消さない。試験は前の数との差かその回の印で絞って数える
     if (opsMembers.length)
       await t.f.admin.query("delete from ops_members where member_id = any($1::uuid[])", [opsMembers]);

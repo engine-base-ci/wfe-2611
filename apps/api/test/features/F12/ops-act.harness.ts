@@ -4,7 +4,6 @@
 //     中を見る・止める・再開は契約の step_up が always なので、本人確認の取り直しの時刻を偽のログインに書けるようにする（billing.harness.ts と同じ形）。
 //     偽のログイン：Bearer fake:<role>:<tenant>:<member>:<取り直しからの秒|->（ops-ws.harness.ts の Person の頭に秒を足す）
 //   運営が顧客の画面を見るときは x-tenant-id でその会社を指す（middleware/tenant.ts）。葉の hooks のファイルは最初の要求のときに 1 回だけ読む
-import { afterAll } from "vitest";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { TenantContext } from "@kaname/db/context";
@@ -13,7 +12,7 @@ import { createDeviceResolver } from "@kaname/auth/resolver";
 import { createApp } from "../../../src/app.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
-import { nextIp, type Person } from "../fixture.js";
+import { afterClose, nextIp, type Person } from "../fixture.js";
 import { startOpsWs, type OpsWs } from "./ops-ws.harness.js";
 
 const HOOKS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "src", "hooks");
@@ -54,7 +53,7 @@ export async function startOpsAct(prefix: string, hookFiles: readonly string[]):
     },
   };
   // 中を見るの許可・止める印・お知らせの行は ops-ws.harness.ts が消さないので、ここで消す（vitest の afterAll は後に登録した物から流れる）
-  afterAll(async () => {
+  afterClose(async () => {
     if (!tenants.length) return;
     await t.f.admin.query("delete from support_access_grants where tenant_id = any($1::uuid[])", [tenants]);
     await t.f.admin.query(

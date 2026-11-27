@@ -3,9 +3,8 @@
 //   組み立ては段 1 の土台 fixture.ts（本物の DB・偽の画面のログイン）と、葉の hooks のファイルを最初の要求のときに読む leaf-hooks.ts（K-364）。
 //   お知らせは運営の会社（app.ops_tenant_id()）の行。共用の試験の DB なので、ほかの試験の「全部向け」のお知らせも見える。
 //   だから答えを見るときは、この回の題の頭（run）が付いた行だけを見る。終わったらこの回の行を消す（G-10）。
-import { afterAll } from "vitest";
 import { randomUUID } from "node:crypto";
-import { makeFixture, type Fixture, type Person } from "../fixture.js";
+import { afterClose, makeFixture, type Fixture, type Person } from "../fixture.js";
 import { leafHooks } from "../F3/leaf-hooks.js";
 
 /** 運営の会社（0003 の app.ops_tenant_id()） */
@@ -76,7 +75,7 @@ export async function startNotices(prefix: string, hookFiles: readonly string[])
   const run = `${prefix}-${Date.now().toString(36)}`;
   const made: string[] = [];
   const plans: string[] = [];
-  afterAll(async () => {
+  afterClose(async () => {
     if (made.length) {
       await f.admin.query("delete from notice_updates where notice_id = any($1::uuid[])", [made]);
       await f.admin.query("delete from status_incidents where notice_id = any($1::uuid[])", [made]);

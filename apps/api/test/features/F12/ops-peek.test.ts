@@ -30,7 +30,9 @@ afterAll(async () => {
 });
 
 const BODY = { reason: "問い合わせ「承認したのに動かない」の調べ", minutes: 60 };
-const open = async (wsId: string, body: unknown = BODY, who: Person = opsAll, step: number | undefined = STEP) => {
+const open = async (wsId: string, body: unknown = BODY, who: Person = opsAll, ...opt: [step?: number]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const step = opt.length ? opt[0] : STEP;
   const r = await t.act(who, "POST", `/ops/workspaces/${wsId}/peeks`, body, { stepUpAgoSec: step });
   return { r, b: await t.json(r) };
 };
