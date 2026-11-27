@@ -43,7 +43,7 @@ export function Mention({ children }: { children: ReactNode }) {
   return <span className="k-talk-mention">{children}</span>;
 }
 
-/** 右のパネルのタブ（属性・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 まで押せない形 */
+/** 右のパネルのタブ（項目・やり取り・〈見ている人〉のAI）。やり取りに読んでいない数の札。AI のタブは段 6 まで押せない形 */
 export function TalkTabs({
   active,
   count,
@@ -59,7 +59,7 @@ export function TalkTabs({
   return (
     <nav aria-label="パネルのタブ" className="k-detail-tabs">
       <button type="button" aria-current={active === "attr" ? "page" : undefined} onClick={() => onTab?.("attr")}>
-        属性
+        項目
       </button>
       <button type="button" aria-current={active === "talk" ? "page" : undefined} onClick={() => onTab?.("talk")}>
         やり取り
@@ -156,7 +156,9 @@ export type ThreadItem =
   | { kind: "post"; post: PostView }
   | { kind: "editing"; post: PostView; text: string }
   | { kind: "line"; who: Person; text: ReactNode; time: string }
-  | { kind: "run"; title: ReactNode; meta: string; result: string; onOpen?: () => void };
+  | { kind: "run"; title: ReactNode; meta: string; result: string; onOpen?: () => void }
+  /** 段 10 などが作った 1 行をそのまま描く（K-702） */
+  | { kind: "node"; node: ReactNode };
 
 function PostMenu({ menu, open }: { menu: "own" | "manager"; open?: boolean }) {
   return (
@@ -483,6 +485,8 @@ export function ThreadList({
               return <Line key={i} who={it.who} text={it.text} time={it.time} />;
             case "run":
               return <RunCard key={i} title={it.title} meta={it.meta} result={it.result} onOpen={it.onOpen} />;
+            case "node":
+              return <Fragment key={i}>{it.node}</Fragment>;
           }
         })}
         {order === "desc" ? more : null}

@@ -6,13 +6,13 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/k";
 import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import "@/features/F4/create-ticket/ticket-detail.css";
-import { Avatar, Composer, Line, Post, RunCard, ThreadFilters, type Person } from "@/features/F6/thread/views";
+import { Composer, Line, Post, RunCard, ThreadFilters, type Person } from "@/features/F6/thread/views";
 import "@/features/F6/thread/thread.css";
 import type { Block, Doc, Inline, ListItemNode, ParagraphNode } from "@kaname/contracts";
 import { DocView } from "@/features/F4/doc/editor";
+import { AI_PERSON, BreachText, GuardLineText, GuardPost } from "@/features/F9/knowledge/ticket-rows";
 import {
   CompleteBlockedDialog,
-  GuardList,
   OpenedText,
   SpecList,
   type GuardPage,
@@ -57,7 +57,8 @@ const TITLE = "セイコー商事の 11 月分の請求書を送る";
 const NUMBER = "EG-119";
 const TAKA: Person = { name: "高本 聖斗", initial: "高", tone: "lavender" };
 const SATO: Person = { name: "佐藤 花子", initial: "佐", tone: "teal" };
-const AI: Person = { name: "高本のAI", initial: "AI", tone: "indigo" };
+// やり取りの AI の行は作者の無い行なので名前も顔も「AI」（本番と同じ・K-702）
+const AI: Person = AI_PERSON;
 
 const MUST: readonly GuardPage[] = [
   { id: "p-invoice", title: "請求書の送り方", place: "会社 › 経理" },
@@ -178,22 +179,6 @@ function ItemsBody() {
   );
 }
 
-/** AI の書き込み：このチケットで守る物（やり取りに残る） */
-function GuardPost() {
-  return (
-    <article className="k-talk-post" aria-label="高本のAI 09:00">
-      <Avatar who={AI} />
-      <div className="k-talk-post-main">
-        <div className="k-talk-post-head">
-          <b>{AI.name}</b>
-          <time className="k-talk-sub">09:00</time>
-        </div>
-        <GuardList must={MUST} opened={OPENED} />
-      </div>
-    </article>
-  );
-}
-
 function TalkBody({ later }: { later: boolean }) {
   return (
     <div className="k-talk">
@@ -210,26 +195,18 @@ function TalkBody({ later }: { later: boolean }) {
           time="09:00"
         />
         {later ? (
-          <Line
-            who={AI}
-            text={
-              <>
-                <b>高本のAI</b> が、このチケットで守る物を並べた（必ず守る 3・開いたページ 2）
-              </>
-            }
-            time="09:00"
-          />
+          <Line who={AI} text={<GuardLineText must={MUST} opened={OPENED} />} time="09:00" />
         ) : (
-          <GuardPost />
+          <GuardPost time="09:00" must={MUST} opened={OPENED} />
         )}
         {later ? (
           <>
             <Line
               who={AI}
-              text={<OpenedText ai="高本のAI" title="セイコー商事との決めごと" place="グループ：営業" />}
+              text={<OpenedText ai={AI.name} title="セイコー商事との決めごと" place="グループ：営業" />}
               time="09:01"
             />
-            <Line who={AI} text={<OpenedText ai="高本のAI" title="単価の表" place="会社 › 経理" />} time="09:02" />
+            <Line who={AI} text={<OpenedText ai={AI.name} title="単価の表" place="会社 › 経理" />} time="09:02" />
             <RunCard
               title={
                 <>
@@ -250,12 +227,7 @@ function TalkBody({ later }: { later: boolean }) {
             />
             <Line
               who={AI}
-              text={
-                <>
-                  守れていなかった決まりが 1 つ：<b>メールの書き方</b>（件名に【請求書】が無い）。<b>高本のAI</b>{" "}
-                  が直した
-                </>
-              }
+              text={<BreachText kind="ai_self_reported" title="メールの書き方" note="件名に【請求書】が無い" />}
               time="09:12"
             />
             <Post
