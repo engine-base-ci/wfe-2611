@@ -1,34 +1,40 @@
 "use client";
-// メンバーの画面の「ゲスト」のタブの入れ物（K-874）と、グループの行の「⋯」から名前を直す・消す（K-928・口は K-927）。
-//   読むのは use-guest-groups（listGuestGroups）。空・読めない（503）・権限が無い（403）は K-874 の形。
+// ゲストのタブの中身の入れ物（K-874）：並びのほかの 3 つの形（空・読めない・権限が無い）。並びそのものは MembersBody（views.tsx）が描く。
+//   空：「ゲストのグループがまだありません」（作るボタンは見出しの行の 1 つだけ・K874-UI-004）
+//   読めない（503 など）：文「読めませんでした」＋［再読み込み］（K874-UI-005）。メンバーのタブはそのまま出る
+//   権限が無い（403）：NoAccess（E-PAGE-002）。画面は役の名前で出し分けない（読めるかは口が決める）
+// グループの行の「⋯」から名前を直す・消す（K-928・口は K-927）：useGuestGroupEditing が小窓の開け閉めと送るを持つ。
 //   名前を直す：毎回今の名前で開く・前後の空白を取って送る・変えなければ口を呼ばず閉じる・空は「名前を入れてください」。
 //   消す：確かめに中のゲストの数（止めている人も数える）・送っている間は 2 回目を呼ばない。
 //   失敗：404・E-GST-001 は知らせ＋小窓を閉じて読み直す／409・E-GST-002 は欄の下（文は正本の番号で引く）／403・503 などは小窓の中の赤の知らせ（値は残る）。
 //   画面は役の名前で出し分けない（直せるか・消せるかは口の 403 が決める）
-import { useRef, useState } from "react";
-import {
-  Badge,
-  Button,
-  Empty,
-  ErrorState,
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuTrigger,
-  NoAccess,
-  PAGE_ERROR,
-  errorText,
-  useNotify,
-} from "@/components/k";
+import { useRef, useState, type ReactNode } from "react";
+import { Button, Empty, NoAccess, PAGE_ERROR, errorText, useNotify } from "@/components/k";
 import type { CallErr } from "@/lib/api/call";
 import { GuestGroupDeleteConfirm, GuestGroupRenameDialog } from "./guest-group-views";
-import { useGuestGroupEdit, useGuestGroups, type GuestGroupAnswer } from "./use-guest-groups";
+import { useGuestGroupEdit, type GuestGroupAnswer } from "./use-guest-groups";
+
+export type GuestTabState = "empty" | "failed" | "forbidden";
+
+export function GuestTabContent({ state, onRetry }: { state: GuestTabState; onRetry: () => void }) {
+  if (state === "forbidden") return <NoAccess />;
+  if (state === "failed")
+    return (
+      <section className="k-state" data-state="error" aria-label="ゲストのグループ">
+        <p className="k-state-title">読めませんでした</p>
+        <div className="k-state-actions">
+          <Button variant="outlined" onClick={onRetry}>
+            再読み込み
+          </Button>
+        </div>
+      </section>
+    );
+  return <Empty title="ゲストのグループがまだありません" />;
+}
 
 const E_NOT_FOUND = "E-GST-001";
 const E_DUP_NAME = "E-GST-002";
 const EMPTY_NAME = "名前を入れてください";
-const TONES = ["amber", "indigo", "teal", "plum"] as const;
-const inert = { "aria-disabled": true, tabIndex: -1, title: "まだ使えません" } as const;
 
 /** 正本の文（番号で引く）。正本に無い番号は落とさず番号の字を出す */
 function catalogMessage(code: string): string {
@@ -51,122 +57,12 @@ type Editing =
   | { kind: "rename"; group: GuestGroupAnswer; name: string; error?: string; alert?: string; saving: boolean }
   | { kind: "delete"; group: GuestGroupAnswer; alert?: string; busy: boolean };
 
-function GuestPerson({ p }: { p: GuestGroupAnswer["guests"][number] }) {
-  return (
-    <li className="k-inv-row" data-guest>
-      <span className="k-inv-avatar" aria-hidden="true">
-        {p.name.slice(0, 1)}
-      </span>
-      <span className="k-inv-who">
-        <span className="k-inv-name">{p.name}</span>
-        <span className="k-inv-sub">{p.email}</span>
-      </span>
-      <span className="k-inv-role-cell">
-        <button type="button" className="k-inv-role" {...inert}>
-          ゲスト ▾
-        </button>
-      </span>
-      <span className="k-inv-state" data-tone={p.suspended ? "warn" : "none"}>
-        {p.suspended ? "一時的に止まっている" : ""}
-      </span>
-      <span className="k-inv-more">
-        {/* 一時的に止める・戻す・外すを押せる形にするのは K-931（answer=03b52b9684c4） */}
-        <Menu>
-          <MenuTrigger className="k-btn" label={`${p.name}のほかの操作`}>
-            ⋯
-          </MenuTrigger>
-          <MenuPopup align="end">
-            <MenuItem disabled>{p.suspended ? "戻す" : "一時的に止める"}</MenuItem>
-            <MenuItem disabled>外す</MenuItem>
-          </MenuPopup>
-        </Menu>
-      </span>
-    </li>
-  );
-}
-
-function GuestInvited({ i }: { i: GuestGroupAnswer["invitations"][number] }) {
-  return (
-    <li className="k-inv-row">
-      <span className="k-inv-avatar" data-invited aria-hidden="true">
-        ？
-      </span>
-      <span className="k-inv-who">
-        <span className="k-inv-name">{i.email}</span>
-        <span className="k-inv-sub">{`招待中 ・ あと ${i.left_days} 日`}</span>
-      </span>
-      <span className="k-inv-role-cell">
-        <Badge tone="progress">招待中</Badge>
-      </span>
-      <span className="k-inv-state" data-tone="none" />
-      <span className="k-inv-more">
-        <Button variant="outlined" size="sm" {...inert}>
-          送り直す
-        </Button>
-      </span>
-    </li>
-  );
-}
-
-function GuestGroupSection({
-  g,
-  index,
-  onInvite,
-  onRename,
-  onDelete,
-}: {
-  g: GuestGroupAnswer;
-  index: number;
-  onInvite?: (groupId: string) => void;
-  onRename: () => void;
-  onDelete: () => void;
-}) {
-  const head = `ggrp-${g.id}`;
-  const invited = g.invitations.length;
-  return (
-    <section className="k-inv-group" aria-labelledby={head}>
-      <div className="k-inv-group-head">
-        <span className="k-inv-code" data-tone={TONES[index % TONES.length]} aria-hidden="true">
-          {g.name.slice(0, 1)}
-        </span>
-        <h2 id={head} className="k-inv-group-name">
-          {g.name}
-        </h2>
-        <span className="k-inv-sub">{`${g.guests.length} 人${invited ? ` ＋ 招待中 ${invited}` : ""}`}</span>
-        {g.request_scope ? <span className="k-inv-sub">{`依頼は ${g.request_scope.name} に届く`}</span> : null}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="k-inv-group-invite"
-          {...(onInvite ? { onClick: () => onInvite(g.id) } : inert)}
-        >
-          ＋ このゲストのグループに招く
-        </Button>
-        <Menu>
-          <MenuTrigger className="k-btn" label={`${g.name}のほかの操作`}>
-            ⋯
-          </MenuTrigger>
-          <MenuPopup align="end">
-            <MenuItem onSelect={onRename}>名前を直す</MenuItem>
-            <MenuItem onSelect={onDelete}>消す</MenuItem>
-          </MenuPopup>
-        </Menu>
-      </div>
-      <ul className="k-inv-rows">
-        {g.guests.map((p) => (
-          <GuestPerson key={p.id} p={p} />
-        ))}
-        {g.invitations.map((i) => (
-          <GuestInvited key={i.id} i={i} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/** ゲストのタブの本文。onInvite はグループの行の「＋ このゲストのグループに招く」（招くの小窓を開く・K-874） */
-export function GuestTab({ onInvite }: { onInvite?: (groupId: string) => void }) {
-  const q = useGuestGroups();
+/** グループの「⋯」の名前を直す・消す（K-928）。startRename・startDelete で開き、dialogs を画面に置く */
+export function useGuestGroupEditing(): {
+  startRename: (g: GuestGroupAnswer) => void;
+  startDelete: (g: GuestGroupAnswer) => void;
+  dialogs: ReactNode;
+} {
   const { rename, remove } = useGuestGroupEdit();
   const notify = useNotify();
   const [editing, setEditing] = useState<Editing | null>(null);
@@ -218,28 +114,8 @@ export function GuestTab({ onInvite }: { onInvite?: (groupId: string) => void })
     }
   };
 
-  if (q.isPending) return null;
-  if (q.isError) {
-    if (q.error.status === 403) return <NoAccess />;
-    return <ErrorState code={PAGE_ERROR.down} acts={[() => void q.refetch()]} />;
-  }
-  const groups = q.data;
-  return (
-    <div className="k-inv-body">
-      {groups.length === 0 ? <Empty title="ゲストのグループがまだありません" /> : null}
-      {groups.map((g, i) => (
-        <GuestGroupSection
-          key={g.id}
-          g={g}
-          index={i}
-          {...(onInvite ? { onInvite } : {})}
-          onRename={() => setEditing({ kind: "rename", group: g, name: g.name, saving: false })}
-          onDelete={() => setEditing({ kind: "delete", group: g, busy: false })}
-        />
-      ))}
-      <p className="k-inv-sub">
-        ゲストのグループは見せ方のまとまりだけ（決まりやページは持たない）。グループの依頼とそのチケット、見せる相手にグループが選ばれたチケットを、グループのゲスト全員が見る。別のゲストのグループどうしは互いに見えない
-      </p>
+  const dialogs = (
+    <>
       {editing?.kind === "rename" ? (
         <GuestGroupRenameDialog
           name={editing.name}
@@ -270,6 +146,11 @@ export function GuestTab({ onInvite }: { onInvite?: (groupId: string) => void })
           onConfirm={() => void submitDelete()}
         />
       ) : null}
-    </div>
+    </>
   );
+  return {
+    startRename: (g) => setEditing({ kind: "rename", group: g, name: g.name, saving: false }),
+    startDelete: (g) => setEditing({ kind: "delete", group: g, busy: false }),
+    dialogs,
+  };
 }
