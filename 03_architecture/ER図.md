@@ -761,3 +761,6 @@ erDiagram
 | D-085 | 開示資料：成果物から生成・版・画面と PDF・監査ログの保持 | `disclosure_versions`（D-085.1・D-085.2・D-085.3）・`subprocessors`（D-085.2）・`export_jobs`（D-085.4） |
 | D-090 | 自分のAIが実際に動く：文脈は Claude Code が持つ・止まったら止めたまま・分岐で session を変える・自己診断と生存を Kaname に返す | `bridge_jobs` / `bridge_job_states`（D-090.2・D-090.4・D-090.5）・`conversations.agent_session_id`（D-090.1）・`conversations.branched_from_message_id`（D-090.3）・`sessions.health` / `health_at`（D-090.7）・`sessions.last_seen_at`（D-090.8）。読む側で生の select をせず `app.bridge_take_job` / `app.bridge_finish_job` / `app.bridge_resume_job` / `app.agent_state` / `app.bridge_state` を通す |
 | D-015 | Bridge の配布：インストーラは Kaname のサーバーから配り、自動更新も同じ置き場を見る 表は持たず、置き場の目録ファイル `kaname-bridge.json`（D-109.8）。画面は `/api/auth-ext/bridge/download?os=` を通す |
+
+<!-- 段10:K-722 -->
+凍結した表（K-722・D-152.20）：memories（自分のAI の記憶・決まり・好み）・skills（業務の型・スキル）・skill_versions（業務の型の版）・skill_test_runs（業務の型を出す前の試し）・policies（AI の動きの決まり）・learning_candidates（覚えたいことの候補）・knowledge_links（ナレッジのつながり）・imports（資料の取り込み）の 8 つは、記憶と業務の型を物として無くした（D-152）ので、今は口もコードも誰も読まない・書かない。表と行は消さずに残す（db-catalog.json の frozen）
