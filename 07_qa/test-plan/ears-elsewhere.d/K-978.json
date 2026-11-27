@@ -1,0 +1,62 @@
+{
+ "ops": {
+  "publishOpsNotice": {
+   "file": "apps/api/test/features/F12/ops-notices-publish.test.ts",
+   "reason": "お知らせの今の状態・種類・出す日時で答えが変わり、障害の状態・運営の記録・メンテのメールを出す。種では作れない（K-978）",
+   "covers": {
+    "test_post_ops_notices_id_publish_ok": "K978-API-001",
+    "test_post_ops_notices_id_publish_shape": "K978-API-001",
+    "test_post_ops_notices_id_publish_not_found": "K978-API-012",
+    "test_post_ops_notices_id_publish_conflict": "K978-API-005",
+    "test_post_ops_notices_id_publish_rejected_401": "K978-API-013",
+    "test_post_ops_notices_id_publish_rejected_403": "K978-API-013",
+    "test_post_ops_notices_id_publish_rejected_422": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_publish_rate_limited": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_publish_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_notices_id_publish_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_notices_id_publish_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  },
+  "sendWorkspaceNotice": {
+   "file": "apps/api/test/features/F12/ops-notices-publish.test.ts",
+   "reason": "指す会社の在りかで答えが変わり、その会社の記録を書く。種では作れない（K-978）",
+   "covers": {
+    "test_post_ops_workspaces_id_notices_ok": "K978-API-016",
+    "test_post_ops_workspaces_id_notices_shape": "K978-API-016",
+    "test_post_ops_workspaces_id_notices_not_found": "K978-API-018",
+    "test_post_ops_workspaces_id_notices_rejected_401": "K978-API-021",
+    "test_post_ops_workspaces_id_notices_rejected_403": "K978-API-021",
+    "test_post_ops_workspaces_id_notices_rejected_422": "K978-API-019",
+    "test_post_ops_workspaces_id_notices_rate_limited": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_notices_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_notices_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_workspaces_id_notices_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  }
+ }
+}

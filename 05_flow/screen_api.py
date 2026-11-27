@@ -422,7 +422,7 @@ SCREEN_API = {
         ("POST", "/ops/notices", "A71", "notices", "createOpsNotice", ["status_incidents"]),
         ("GET", "/ops/notices/:id", "A71", "notices", "getOpsNotice", ["status_incidents", "notice_deliveries"]),
         ("PATCH", "/ops/notices/:id", "A71", "notices", "updateOpsNotice", []),
-        ("POST", "/ops/notices/:id/publish", "A71", "notices", "publishOpsNotice", ["notice_deliveries", "notifications", "ops_audit_events"]),
+        ("POST", "/ops/notices/:id/publish", "A71", "notices", "publishOpsNotice", ["notice_deliveries", "ops_audit_events"]),
         ("POST", "/ops/notices/:id/updates", "A71", "status_incidents", "addIncidentUpdate", ["notices", "ops_audit_events"]),
     ],
     "ops-billing": [
