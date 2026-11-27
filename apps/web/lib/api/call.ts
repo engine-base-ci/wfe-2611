@@ -88,7 +88,8 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
   const write = e.method !== "GET";
   const headers: Record<string, string> = { accept: "application/json", ...(args.headers ?? {}) };
   const token = getToken();
-  if (token) headers["authorization"] = `Bearer ${token}`;
+  // 呼ぶ側が頭に印を渡したときはそれを使う（運営のパスキーを付けるだけのセッションを閉じる・K-1003）
+  if (token && headers["authorization"] === undefined) headers["authorization"] = `Bearer ${token}`;
   if (args.screenId) headers["x-screen-id"] = args.screenId;
   if (write) {
     headers["content-type"] = "application/json";
