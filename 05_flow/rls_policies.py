@@ -58,6 +58,8 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "tickets_client_read", "operation": "select", "role": "client",
          "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND deleted_at IS NULL AND draft_import_id IS NULL AND client_share <> '{{}}'::jsonb",
          "rationale": "取引先の人は、自分の取引先のチケットのうち会社が見せると決めたものだけ（どの項目を見せるかは API が client_share で絞る・D-125.122・D-128.100）。消したものは見えない（D-128.158）", "source": ["D-125.122", "D-128.100", "D-128.158"]},
+        {"name": "tickets_guest_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND app.guest_sees_ticket(id)",
+         "rationale": "ゲストは自分のゲストのグループの依頼から作ったチケットだけ（消した・下書きは見えない。どの項目を返すかは先方の口が決める・D-155.41）。見せる相手の行は K-881 が足す（K-878）", "source": ["D-155.37", "D-155.41", "D-155.42"]},
         ops_read("tickets"),
     ],
     "ticket_sections": child_of_ticket("ticket_sections"),
@@ -210,7 +212,26 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "client_requests_own_edit", "operation": "update", "role": "client",
          "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND contact_id = app.my_contact() AND state IN ('new', 'asking')",
          "rationale": "自分の依頼を、受けてもらう前（新しい・聞いている）のあいだ直せる", "source": ["D-125.123"]},
+        # K-892：ゲストのグループの依頼を、届け先の社内のグループが見える人が読む・その届け先で edit できる人が直す（D-155.43・D-155.40）
+        {"name": "client_requests_staff_guest_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND guest_group_id IS NOT NULL AND app.client_request_visible(id)",
+         "rationale": "届け先のグループが見える人と、会社全体の edit を持つ人（届け先が無い依頼はこの人だけ）", "source": ["D-155.43", "D-155.40"]},
+        {"name": "client_requests_staff_guest_update", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND guest_group_id IS NOT NULL AND app.client_request_actable(id)",
+         "rationale": "届け先で client_requests を edit できる人が、届け先を変える・返す・チケットにする・断る（K-893〜K-895）", "source": ["D-155.43", "D-155.40"]},
         ops_read("client_requests"),
+        {"name": "client_requests_guest_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND guest_group_id = app.my_guest_group()",
+         "rationale": "ゲストは自分のゲストのグループの依頼だけを読む（グループの別のゲストが出した物も）。書く方針は書く口の葉が足す（K-878）", "source": ["D-155.37", "D-128.46"]},
+    ],
+    # 依頼のやり取り（K-892・D-155.7）：読むのは依頼が見える社内の人・書くのは届け先で edit できる人が社内として自分の名で。ゲストの読む・書く守りは K-907・K-908
+    "client_request_messages": [
+        {"name": "client_request_messages_staff_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.client_request_visible(client_request_id)",
+         "rationale": "元の依頼が見える社内の人", "source": ["D-155.7", "D-155.43"]},
+        {"name": "client_request_messages_staff_write", "operation": "insert", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.client_request_actable(client_request_id) AND side = 'company' AND author_member_id = {U}",
+         "rationale": "届け先で edit できる人が、社内の返事として自分の名で書く", "source": ["D-155.7", "D-155.43"]},
+        ops_read("client_request_messages"),
     ],
     "acceptances": [
         {"name": "acceptances_ticket_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.ticket_visible(ticket_id)",
@@ -399,6 +420,12 @@ POLICIES: dict[str, list[dict]] = {
     "pending_signup": [{"name": "pending_signup_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                         "rationale": "ログインの前の保留。アプリの役からは読めない（登録の口だけが kaname_auth の側で扱う・D-088.2）", "source": ["D-088.2", "D-128.115"]}],
 }
+
+# ゲストのグループ（K-876 が表と社内の人の方針を足す）に、ゲストが自分のグループの行だけを読む方針を足す（K-878）。
+#   K-876 の一覧の後ろに足す形にして、どちらの葉が先に入っても方針が欠けない
+POLICIES.setdefault("guest_groups", []).append(
+    {"name": "guest_groups_guest_read", "operation": "select", "role": "client", "predicate": f"tenant_id = {T} AND id = app.my_guest_group()",
+     "rationale": "ゲストは自分のゲストのグループの 1 行だけを読む（別のグループ・グループの人の表は読めない）", "source": ["D-155.37", "D-128.46"]})
 
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）
 PENDING_CHILD_TABLES = {

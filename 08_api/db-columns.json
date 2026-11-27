@@ -1414,7 +1414,7 @@
    },
    "client_id": {
     "type": "uuid",
-    "nullable": false
+    "nullable": true
    },
    "contact_id": {
     "type": "uuid",
@@ -1454,6 +1454,10 @@
    },
    "due_on": {
     "type": "date",
+    "nullable": true
+   },
+   "guest_group_id": {
+    "type": "uuid",
     "nullable": true
    },
    "id": {
