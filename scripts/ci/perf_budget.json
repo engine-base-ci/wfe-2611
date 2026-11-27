@@ -147,6 +147,7 @@
       "marks": [
         "GET /api/v1/tickets/:id",
         "GET /api/v1/tickets/:id/runs",
+        "GET /api/v1/tickets/:id/decisions",
         "GET /api/auth-ext/me",
         "GET /api/v1/shell"
       ],
