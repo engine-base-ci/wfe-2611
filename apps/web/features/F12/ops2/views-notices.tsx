@@ -1,5 +1,6 @@
 "use client";
 // 運営のお知らせ：一覧・作る・1 件（障害の続報）・出す確かめ（段 13・領域 ops2・キャンバス OpNotices・OpNoticeNew・OpNotice）。値を受け取って描くだけ
+import type { Route } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import {
@@ -83,7 +84,7 @@ const colsOf = (rowHref: (r: NoticeRow) => string): RespColumn<NoticeRow>[] => [
     key: "title",
     header: "題",
     cell: (r) => (
-      <Link className="k-link" href={rowHref(r)}>
+      <Link className="k-link" href={rowHref(r) as Route}>
         {r.title}
       </Link>
     ),
@@ -133,7 +134,7 @@ export function NoticesPage({
         title="お知らせ"
         sub="全部のワークスペースか、選んだワークスペースに出す"
         actions={
-          <Link className="k-btn" data-variant="primary" data-size="md" href={writeHref}>
+          <Link className="k-btn" data-variant="primary" data-size="md" href={writeHref as Route}>
             <Plus size={14} aria-hidden="true" />
             お知らせを書く
           </Link>
@@ -444,7 +445,7 @@ export function NoticePage({
   const stepValue = STEP_OPTIONS.find((o) => o.label === (step ?? DEFAULT_STEP))?.value ?? "watch";
   const emptyBody = live && (body ?? "").trim() === "";
   const edit = editHref ? (
-    <Link className="k-btn" data-variant="outlined" data-size="md" href={editHref}>
+    <Link className="k-btn" data-variant="outlined" data-size="md" href={editHref as Route}>
       書き直す
     </Link>
   ) : (

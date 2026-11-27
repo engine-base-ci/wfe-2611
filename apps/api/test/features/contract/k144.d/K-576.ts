@@ -20,7 +20,7 @@ export const leaf: K144Leaf = {
       return base(method, path, o);
     };
   },
-  UUID_PARAM_CASES: [["K144-API-520", "restoreTicketItems", "path", "id"]], // K-576
+  UUID_PARAM_CASES: [["K144-API-529", "restoreTicketItems", "path", "id"]], // K-576
   BODIES: {
     restoreTicketItems: { from: 1, to: 2 }, // K-576
   },

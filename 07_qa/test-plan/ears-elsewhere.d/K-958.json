@@ -29,7 +29,7 @@
     "test_get_invoices_id_pdf_rejected_403": "K958-API-016",
     "test_get_invoices_id_pdf_not_found": "K958-API-014",
     "test_get_invoices_id_pdf_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-958.ts",
      "mark": "K144-API-958"
     },
     "test_get_invoices_id_pdf_rate_limited": "K958-API-012",

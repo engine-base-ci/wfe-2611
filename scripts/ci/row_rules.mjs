@@ -71,6 +71,24 @@ export const ROW_EXEMPT_FIELDS = {
   readNotification: {
     id: "知らせは自分宛ての物だけ（D-151.3）。入口の行の確かめは、別の人の行を 404（NOT_FOUND）、行の守りを緩めたときに 403 と答え、口の 404（E-NTF-010・一覧に出ない行も同じ答え）とずれる。持ち主の確かめは口の文（VISIBLE_SQL の member_id = app.user_id()）と行の守り（notifications_self_read・notifications_self_only_write_*）の 2 重で、外れた行はどれも同じ 404・E-NTF-010（K-462）",
   },
+  getClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_get（K-892） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  updateClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_set_route（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  replyToClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_reply（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  acceptClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_accept（K-894） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  declineClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_decline（K-895） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  requestClientRequestDraft: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_draft_enqueue（K-896） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
 };
 const exemptField = (op, field) => {
   const why = ROW_EXEMPT_FIELDS[op]?.[field];

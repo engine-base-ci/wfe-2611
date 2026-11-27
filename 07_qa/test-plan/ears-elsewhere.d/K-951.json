@@ -32,8 +32,8 @@
     "test_get_inquiries_id_rejected_401": "K951-API-011",
     "test_get_inquiries_id_rejected_403": "K951-API-011",
     "test_get_inquiries_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-980"
+     "file": "apps/api/test/features/contract/k144.d/K-951.ts",
+     "mark": "K144-API-992"
     },
     "test_get_inquiries_id_rate_limited": {
      "file": "apps/api/test/features/F12/inquiry-read.test.ts",
