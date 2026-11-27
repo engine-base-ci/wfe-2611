@@ -369,7 +369,7 @@ SCREEN_API = {
         ("POST", "/rules", "A121", "policies", "createRule", ["approvals"]),
     ],
     "requests": [
-        ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["clients", "client_contacts"]),
+        ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["client_request_messages"]),
         ("GET", "/client_requests/:id", "A122", "client_requests", "getClientRequest", ["messages", "conversations", "client_contacts", "skills"]),
         ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes"]),
         ("POST", "/client_requests/:id/reply", "A122", "messages", "replyToClientRequest", ["client_requests", "notifications"]),
@@ -377,16 +377,16 @@ SCREEN_API = {
         ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["messages", "notifications"]),
     ],
     "portal": [
-        ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["acceptances", T, "clients"]),
+        ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["client_requests", T]),
         ("POST", "/portal/requests/questions", "A124", "client_requests", "askPortalRequestQuestions", ["bridge_jobs"]),
         ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["conversations", "attachments", "notifications", "bridge_jobs"]),
         ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["messages"]),
         ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_requests", "notifications"]),
         ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
-        ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", ["artifacts", "ticket_messages"]),
+        ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", [T, "ticket_sections", "ticket_messages"]),
         ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
         ("POST", "/portal/acceptances/:id/answer", "A126", "acceptances", "answerAcceptance", [T, "ticket_messages", "notifications"]),
-        ("GET", "/portal/notices", "A125", "notices", "listPortalNotices", ["status_incidents"]),
+        ("GET", "/portal/notices", "A125", "notices", "listPortalNotices", ["notices"]),
     ],
     # ---------------------------------------------------------------- ナレッジ（08_api/phase1/09_ナレッジ.md）
     "knowledge": [
@@ -557,6 +557,8 @@ INPUTS = {
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
+# list で始まるが、data に並びでなく 1 つの形（例：items と counts）を返す口（K-892）。一覧の問い合わせ（cursor・limit・sort）を契約に足さない。チケットごとの分は screen_api.d に書く
+OBJECT_OPS: set[str] = set()
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
@@ -1107,11 +1109,11 @@ RESPONSES = {
     "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
     "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
     "getClientPortalPreview": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
-    "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "ticket_draft": "object", "questions": "array", "reply_draft": "string", "route_suggestion": "object"}),
-    "getPortalHome": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
+    "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "routes": "array", "can_act": "boolean", "pc_connected": "boolean", "ticket_draft": "object?", "questions": "array", "reply_draft": "string?", "route_suggestion": "object?"}),   # K-892：案は draft_state が ready のときだけ（無ければ null）
+    "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
-    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
+    "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
     "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
@@ -1183,7 +1185,7 @@ QUERIES = {
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
     "listClientActivity": ["client_visible"],
-    "listClientRequests": ["state", "client_id"],
+    "listClientRequests": ["state"],
     "listClientLinkCandidates": ["name", "domain"],
     "listKnowledgePages": ["scope_id", "parent_id", "topic", "owner_id", "state", "sort"],
     "searchKnowledgeLinkTargets": ["q"],
@@ -1491,20 +1493,20 @@ PERMS = {
     "removeClientContact": ("manager", "同上。外すとクライアントの場所に入れなくなり、セッションはすぐ切れる", False),
     "inviteClientContact": ("manager", "同上（7 日で切れる招待）", False),
     "remindAcceptance": ("assignee", "そのチケットの担当者とマネージャー", False),
-    "listClientRequests": ("read", "見られる取引先の依頼だけ", False),
-    "getClientRequest": ("read", "同上。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
+    "listClientRequests": ("read", "見られる届け先の依頼だけ（ゲストのグループの依頼・届け先の社内のグループが見える人と会社全体の edit を持つ人）", False),
+    "getClientRequest": ("read", "同上（見えなければ 404）。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
     "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
     "replyToClientRequest": ("write", "同上。返事は先方に見える", False),
     "acceptClientRequest": ("write", "同上。受けるとチケットになり依頼とつながったまま残る", False),
     "declineClientRequest": ("write", "同上（理由を返す）", False),
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
-    "getPortalHome": ("client", "自分の取引先の、見せると決めたものだけ（D-128.100）", False),
+    "getPortalHome": ("client", "自分のゲストのグループの依頼と、見せてもらったチケットだけ", False),
     "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
     "createPortalRequest": ("client", "「依頼できる」の人だけ。同じ取引先の人に見える", False),
     "getPortalRequest": ("client", "自分の取引先の依頼だけ", False),
     "postPortalRequestMessage": ("client", "「依頼できる」の人だけ。自分の取引先の依頼だけ", False),
     "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
-    "getPortalTicket": ("client", "自分の取引先のチケットで、見せると決めた項目だけ", False),
+    "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
     "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
     "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
@@ -1585,7 +1587,7 @@ PERMS = {
     "markNoticeRead": ("self", "本人の既読だけ", False),
     "getServiceStatusForMember": ("read", "ワークスペースのメンバー", False),
     "getServiceStatus": ("public", "誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）", False),
-    "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
+    "listPortalNotices": ("client", "ゲスト（全部向けの障害・メンテだけ）", False),
 }
 
 # 成功の状態コード（既定は POST 201・それ以外 200）。POST でも「作らず決めるだけ」で 200 を返す口だけ書く（K-410）。チケットごとの分は screen_api.d に書く
