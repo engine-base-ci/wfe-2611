@@ -10,6 +10,7 @@ import type { TenantContext } from "@kaname/db/context";
 import { checkFor, stepUpFresh, stepUpOrFreshLogin } from "./permissions.js";
 import { kanameError } from "@kaname/errors";
 import { OPS_TENANT_ID } from "@kaname/db/id";
+import { STOP_OPEN_OPS } from "./stop-open.js";
 export type { ContractDeps } from "./deps.js";
 
 const LIMIT_DEFAULT = 50;
@@ -269,6 +270,18 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
           return guardDown(c, operationId, "抜けた人の確かめ", ex);
         }
         if (left) return err(c, 403, "forbidden", "FORBIDDEN");
+      }
+      // 2.65) 運営が止めた会社（K-970・K-1012・D-156.23）の会社の人は、止められた画面が使う口（stop-open.ts の STOP_OPEN_OPS）のほかを 403 E-OPS-007 で止める
+      //      （体は error と code だけ・何も書かない）。運営の人（role ops）と PC（role device）はここでは止めない（PC は仕事の口で止める）。
+      //      引くのは 2.6 と同じ 1 回の答え（middleware/tenant.ts）。判定できなければ 503（通す側に倒さない・G-15）。getter が無いアプリでは止めない
+      if (ctx.role === "member" && !STOP_OPEN_OPS.has(operationId)) {
+        let stopped: boolean;
+        try {
+          stopped = (await c.get("tenantStopped")?.()) === true;
+        } catch (ex) {
+          return guardDown(c, operationId, "止めた会社の確かめ", ex);
+        }
+        if (stopped) return err(c, 403, "workspace_stopped", "E-OPS-007");
       }
     }
     // 3.0) 入口の uuid（D-129.42・K-144）：道の値と問い合わせの id を、id で行を引く権限の確かめ（3.1・4.1）とまだ作っていない口の 501 より前に

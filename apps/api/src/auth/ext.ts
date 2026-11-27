@@ -152,6 +152,10 @@ export function authExt(d: AuthExtDeps): Hono {
     if (r?.termsPending) return termsRequired(c);
     // 付けるまで進めない（K-321・D-128.141）：同意し直しの次。止めない道は同意し直しと同じ（上の TERMS_OPEN_EXT）
     if (r?.mfaPending) return mfaRequired(c);
+    // 運営が止めた会社（K-970・K-1012・D-156.23）：会社の人は止めない道（外枠が読む /me）のほかを 403 E-OPS-007（体は error と code だけ）。
+    //   答えは上の解決の 1 本の文が持つ（文を増やさない）。PC の印はここを通らない（PC は bridge.ts の 2 口で止める）
+    if (r?.ctx.role === "member" && r.tenantStopped === true)
+      return c.json({ error: "workspace_stopped", code: "E-OPS-007" }, 403);
     return next();
   });
 

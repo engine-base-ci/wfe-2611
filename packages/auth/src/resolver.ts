@@ -54,6 +54,9 @@ export interface Resolved {
   /** 会社から抜けた人か（D-131.7・K-166）。画面のログインの解決は、解けた時点で抜けていない（false）と分かる。
    *  持たない解決（PC の印など）は、入口が今までどおり DB で確かめる（K-233） */
   memberLeft?: boolean;
+  /** その会社を運営が止めたか（K-970 の app.tenant_stopped・K-1012）。画面のログインの解決は session_check と同じ 1 本の文で引く。
+   *  持たない解決（PC の印など）は、入口が抜けた人の確かめと同じ 1 文で DB から引く */
+  tenantStopped?: boolean;
 }
 
 export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
@@ -63,6 +66,7 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
     // セッションの見張り（K-20・D-125.140・D-128.120）：操作が無い 12 時間・最長 7 日・国か端末が変わったら閉じて 401。
     //   同じ国の中で IP だけ変わったら記録だけ（security_events）。生きていれば最後に見た時刻を進める。
     //   直前の本人確認の時刻（K-14）と同意し直しの印（K-53）も同じ 1 本の文で引く（K-233。session_check は from の中で 1 回だけ動く）
+    //   運営が止めた会社か（K-970・K-1012）も同じ文で引く（入口で引き直さない・K-237 の文の数を増やさない）
     const r = await appPool.query<{
       session_id: string;
       member_id: string;
@@ -71,8 +75,9 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
       terms: boolean;
       mfa: boolean;
       ops: string | null;
+      stopped: boolean;
     }>(
-      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms, app.session_mfa_pending(c.session_id) as mfa, app.session_ops(c.session_id) as ops from app.session_check($1, $2, $3, $4) c",
+      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms, app.session_mfa_pending(c.session_id) as mfa, app.session_ops(c.session_id) as ops, app.tenant_stopped(c.tenant_id) as stopped from app.session_check($1, $2, $3, $4) c",
       [s.session.id, countryOf(headers), deviceOf(headers.get("user-agent")), ipOf(headers)],
     );
     const row = r.rows[0];
@@ -113,6 +118,7 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
       mfaPending: row.mfa === true,
       // 行が在る＝session_check が members.deleted_at is null で結んだ＝抜けていない（入口で member_left を引き直さない・K-233）
       memberLeft: false,
+      tenantStopped: row.stopped === true,
     };
   };
 }
