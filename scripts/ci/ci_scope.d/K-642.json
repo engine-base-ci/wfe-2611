@@ -1,9 +1,0 @@
-{
- "data_links": [
-  {"paths": ["04_design/DESIGN-kaname.md", "04_design/gen_tokens.py", "scripts/ci/design_gate.py", "design-gate.json"], "tests": ["apps/web/tests/k/k642-choice.spec.ts"]}
- ],
- "reads_ok": {
-  "apps/web/tests/k/k642-choice.spec.ts": "画面の apps/web の app・components・features の .tsx（丸・四角を直に書いていないか）・部品 apps/web/components/k の choice.tsx・index.ts・k.css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md・開発用の置き場 apps/web/app/(dev)/dev/mock のフォルダ・04_design/fidelity.json を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-642）",
-  "apps/web/tests/_lib/choice-align.mjs": "測る関数だけ。読みの印に当たるのは JSDoc の型 import(\"@playwright/test\") で、ファイル・子プロセス・動的 import は使わない（K-642）"
- }
-}

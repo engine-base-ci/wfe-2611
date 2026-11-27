@@ -375,9 +375,13 @@
   flex-wrap: wrap;
   gap: var(--k-s-xs) var(--k-s-md);
 }
-/* 知らせる人の行（並べ方と印は共通の部品 .k-choice・K-642。ここは押せる高さだけ） */
 .k-create-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
   min-height: var(--k-c-create-target-height);
+  font-size: var(--k-text-body);
+  cursor: pointer;
 }
 
 /* ---- 右：作る前に・高本のAI から ---- */

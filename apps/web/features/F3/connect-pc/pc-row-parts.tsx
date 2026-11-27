@@ -10,7 +10,7 @@
 // どれも見せるだけの部品：値と押した結果は props で受け、口は呼ばない（口につなぐのは各チケットの画面の葉）。
 // 値は正本（DESIGN-kaname.md → styles/k-tokens.css）のトークンだけ。生の色・大きさは pc-row-parts.css にも書かない
 import type { ReactNode } from "react";
-import { Button, Confirm, Menu, MenuItem, MenuPopup, MenuTrigger, Radio, TextField } from "@/components/k";
+import { Button, Confirm, Menu, MenuItem, MenuPopup, MenuTrigger, TextField } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import "./pc-row-parts.css";
 
@@ -209,24 +209,25 @@ export function BrowserChoice({ deviceId, value, busy = false, note, onChange }:
     <fieldset className="k-pc-browser" data-browser-pick aria-busy={busy || undefined}>
       <legend className="k-pc-browser-legend">AI が使うブラウザ</legend>
       {BROWSER_OPTIONS.map((o) => (
-        <Radio
-          key={o.value}
-          size="sm"
-          className="k-pc-choice"
-          name={`agent-browser-${deviceId}`}
-          value={o.value}
-          checked={value === o.value}
-          disabled={busy}
-          onChange={() => {
-            if (o.value !== value) onChange?.(o.value);
-          }}
-        >
-          <span className="k-pc-choice-label">
-            {o.label}
-            {o.value === "chrome" ? <span className="k-pc-choice-tag">（既定）</span> : null}
+        <label key={o.value} className="k-pc-choice">
+          <input
+            type="radio"
+            name={`agent-browser-${deviceId}`}
+            value={o.value}
+            checked={value === o.value}
+            disabled={busy}
+            onChange={() => {
+              if (o.value !== value) onChange?.(o.value);
+            }}
+          />
+          <span>
+            <span className="k-pc-choice-label">
+              {o.label}
+              {o.value === "chrome" ? <span className="k-pc-choice-tag">（既定）</span> : null}
+            </span>
+            <span className="k-pc-choice-desc">{o.desc}</span>
           </span>
-          <span className="k-pc-choice-desc">{o.desc}</span>
-        </Radio>
+        </label>
       ))}
       {note ? <RowNote tone={note.tone}>{note.text}</RowNote> : null}
     </fieldset>

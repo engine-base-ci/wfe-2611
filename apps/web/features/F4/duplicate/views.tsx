@@ -4,7 +4,7 @@
 //      写すものの既定は全部 ON（本文・担当者と承認する人・テスト仕様・参照するもの・子チケット・添付）。実施事項のチェックは外して写す（文を添える）。
 //      やり取りと記録は写さず、元へのつながりだけ残す。複製した直後の期限は元のまま・題名に「（複製）」を付けない。添付はまだ使えない（押せない形）
 //   2 作る面の「過去のチケットから複製」：作り方の切り替え（CreateHow）と、元を選ぶ小窓（DuplicatePickDialog・親の小窓と同じ検索の形）
-import { Button, Checkbox, Dialog, NoticeBox, Select, TextField } from "@/components/k";
+import { Button, Dialog, NoticeBox, Select, TextField } from "@/components/k";
 import { PickList, PickSearch, type PickItem } from "../parent/views";
 import "./duplicate.css";
 
@@ -42,15 +42,16 @@ function CopyItem({ r, onToggle }: { r: CopyRow; onToggle: DuplicateDialogProps[
   const off = Boolean(r.unavailable);
   return (
     <div className="k-f4-dup-row" {...(off ? { "aria-disabled": true, title: r.unavailable } : {})}>
-      <Checkbox
-        size="sm"
-        checked={r.checked}
-        readOnly={!onToggle}
-        disabled={off}
-        onChange={(e) => onToggle?.(r.key, e.target.checked)}
-      >
+      <label className="k-dialog-check">
+        <input
+          type="checkbox"
+          checked={r.checked}
+          readOnly={!onToggle}
+          disabled={off}
+          onChange={(e) => onToggle?.(r.key, e.target.checked)}
+        />
         {r.label}
-      </Checkbox>
+      </label>
       {r.note ? <p className="k-f4-dup-note">{r.note}</p> : null}
     </div>
   );

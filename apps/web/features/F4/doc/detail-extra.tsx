@@ -2,7 +2,7 @@
 // 詳細・確認項目に足した状態の部品（段 5・K-450・K-569・K-447）：確認項目の文をその場で直す・作る面のチェックの箱は押せない形・
 //   詳細のパネルで会社の項目の値をその場で直す・本文を直す入口と帯と確かめの小窓。見た目だけ（値は props・口は呼ばない）
 import type { ReactNode } from "react";
-import { Band, Button, Checkbox, Dialog, NoticeBox, Select, TextArea, TextField } from "@/components/k";
+import { Band, Button, Dialog, NoticeBox, Select, TextArea, TextField } from "@/components/k";
 import type { SpecLine } from "./views";
 import "./extra.css";
 
@@ -33,7 +33,8 @@ export function SpecsItemV3({
           const done = l.done === true;
           return (
             <li key={l.text} data-done={done}>
-              <Checkbox
+              <input
+                type="checkbox"
                 className="k-f4d-spec-box"
                 defaultChecked={done}
                 aria-label={l.text}
