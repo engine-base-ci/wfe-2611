@@ -5540,6 +5540,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "bridge_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -5555,6 +5559,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "ref_id": {
     "type": "uuid",
@@ -5574,7 +5582,7 @@
    },
    "ticket_id": {
     "type": "uuid",
-    "nullable": false
+    "nullable": true
    },
    "title": {
     "type": "text",
