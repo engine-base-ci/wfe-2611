@@ -67,7 +67,7 @@
   flex-wrap: wrap;
   gap: var(--k-c-detail-tab-gap);
 }
-.k-room-tabs button {
+.k-room-tabs :is(button, a) {
   display: inline-flex;
   align-items: center;
   gap: var(--k-s-xs);
@@ -78,9 +78,10 @@
   color: var(--k-on-surface-variant);
   font: inherit;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
 }
-.k-room-tabs button[aria-current="page"] {
+.k-room-tabs :is(button, a)[aria-current="page"] {
   border-bottom-color: var(--k-primary);
   color: var(--k-primary);
   font-weight: var(--k-fw-label-md);
@@ -724,7 +725,7 @@
     gap: 0;
     overflow-x: auto;
   }
-  .k-room-tabs button {
+  .k-room-tabs :is(button, a) {
     flex: 1 1 auto;
     justify-content: center;
     min-height: var(--k-c-shell-bar-tool-height);
@@ -749,15 +750,15 @@
   }
 
   /* ---- 本文：左右は spacing.md（外枠の既定の 24 から詰める）。本文の高さは画面の残り全部（書く欄・下の入口を下に寄せるため） ---- */
-  .k-main:has(> .k-page > .k-room-body),
-  .k-main:has(> .k-detail[data-mtab="ai"]) {
+  /* 外枠を flex にせず、頁の側で残りの高さを取る＝画面の高さ − 上の帯 − 下のタブ（頁の padding も含める・K-755）。
+     子孫の選び方で外枠をたどらないので、本番の外枠（TicketShell）の包み [data-ticket-shell] を挟んでも当たる */
+  .k-page:has(> .k-room-body),
+  .k-detail[data-mtab="ai"],
+  .k-page:has(> .k-room-ct[data-mview="chat"]) {
     display: flex;
     flex-direction: column;
-  }
-  .k-main > .k-page:has(> .k-room-body) {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
+    box-sizing: border-box;
+    min-height: calc(var(--k-c-room-page-height) - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
   }
   .k-page > .k-room-body {
     flex: 1 1 auto;
@@ -1033,11 +1034,7 @@
     border-radius: 0;
   }
 
-  /* ---- チケットの右のパネル：「高本のAI」タブを開いた全画面 ---- */
-  .k-detail[data-mtab="ai"] {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
+  /* ---- チケットの右のパネル：「高本のAI」タブを開いた全画面（高さは上の頁の側の規則 1 つ・K-755） ---- */
   .k-detail[data-mtab="ai"] > .k-page,
   .k-detail[data-mtab="ai"] .k-detail-panel-close {
     display: none;
@@ -1584,14 +1581,8 @@
 
 /* 作る画面の会話（スマホ）：会話は画面の残りの高さ全部を使い、書く欄を下のタブの上に寄せる（話す画面と同じ） */
 @media (max-width: 767px) {
-  .k-main:has(> .k-page > .k-room-ct[data-mview="chat"]) {
-    display: flex;
-    flex-direction: column;
-  }
-  .k-main > .k-page:has(> .k-room-ct[data-mview="chat"]) {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
+  /* 頁の高さと並べ方は話す画面と同じ規則（767 以下の頁の側の規則・K-755） */
+  .k-page:has(> .k-room-ct[data-mview="chat"]) {
     padding-bottom: 0;
   }
   .k-page > .k-room-ct[data-mview="chat"] {

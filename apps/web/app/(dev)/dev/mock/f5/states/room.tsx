@@ -237,13 +237,13 @@ function view(id: string, theme: Theme): ReactNode {
     case "talk-convs":
       return (
         <RoomPage theme={theme} ps="PS2" tab="talk">
-          {talk(TALK_LIST, { quota: "5 時間の枠 32%" }, { mview: "list" })}
+          {talk(TALK_LIST, {}, { mview: "list" })}
         </RoomPage>
       );
     case "talk-chat-mobile":
       return (
         <RoomPage theme={theme} ps="PS2" tab="talk" mchat>
-          {talk(TALK_LIST, { quota: "5 時間の枠 32%" })}
+          {talk(TALK_LIST, {})}
         </RoomPage>
       );
     case "talk-new":
@@ -321,7 +321,7 @@ function view(id: string, theme: Theme): ReactNode {
           theme={theme}
           ps="PS2"
           count={1}
-          panel={<AiPanel ticket="EG-128" entries={PANEL_TALK} composer={{ quota: "5 時間の枠 32%" }} />}
+          panel={<AiPanel ticket="EG-128" entries={PANEL_TALK} composer={{}} />}
         />
       );
     case "tk-talk-empty":

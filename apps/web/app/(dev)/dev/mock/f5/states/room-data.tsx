@@ -11,10 +11,9 @@ export const NOW: NowView = {
   ticket: "EG-127",
   title: "発注ナビの応募文を作っています",
   since: "3 分前から",
-  percent: 60,
 };
 export const NEXT: readonly NextRow[] = [
-  { ticket: "EG-121", title: "見積の根拠を確かめる", state: "確認中" },
+  { ticket: "EG-121", title: "見積の根拠を確かめる", state: "順番待ち" },
   { ticket: "KR-031", title: "入金の照合を記録する", state: "承認済み", warn: true },
 ];
 export const NEXT_STOPPED: readonly NextRow[] = [
@@ -47,7 +46,6 @@ const NOTE: DoneRow = {
   kind: "made",
   title: "打ち合わせのまとめを書いた",
   ticket: "EG-133",
-  detail: "成果物の版 1",
   result: "そのまま通った",
   tone: "success",
 };
@@ -57,7 +55,7 @@ const FIXED: DoneRow = {
   kind: "made",
   title: "見積の下書きを作った",
   ticket: "EG-131",
-  detail: "高本が金額を直した（版 3）",
+  detail: "高本が直した（版 3）",
   result: "直された",
   tone: "warning",
 };
@@ -101,7 +99,7 @@ export const DONE_STOPPED: readonly DoneDay[] = [{ label: "11/1（日）", rows:
 export const DONE_SUMMARY = { total: 23, passed: 19, fixed: 3, stopped: 1 } as const;
 
 export const CONVS: readonly ConvItem[] = [
-  { id: "c1", title: "来月の営業の段取りを考えたい", sub: "今日 09:40〜", group: "今日" },
+  { id: "c1", title: "来月の営業の段取りを考えたい", sub: "今日 09:40", group: "今日" },
   { id: "c2", title: "保守更新 3 社の更新案", sub: "11/01", group: "それ以前" },
   { id: "c3", title: "応募文の書き出しを柔らかく", sub: "10/30", group: "それ以前" },
 ];
@@ -122,12 +120,6 @@ const AI_A: Entry = {
     who: "ai",
     time: "09:41",
     body: "今月の数字から見ると、保守更新は 3 社が 12 月に期限です。新規は発注ナビの応募の採用率が 18% なので、3 件取るには 17 件ほど応募が要ります。順番の案です。",
-    list: [
-      "保守更新 3 社の更新案を今週中に出す（セイコー様は進行中）",
-      "発注ナビの応募を週 4 件に増やす",
-      "紹介先リストを作って、既存のお客さんに紹介をお願いする",
-    ],
-    took: "見たもの：営業グループの概要 ・ EG-124 保守更新 ・ 発注ナビ 10 月の応募結果",
   },
 };
 const ME_Q2: Entry = {
@@ -188,7 +180,6 @@ export const PANEL_TALK: readonly Entry[] = [
       who: "ai",
       time: "10:41",
       body: "10/19 分（30,000 円）を外すと、合計は 1,716,000 円から 1,683,000 円になります。成果物を作り直してよければ、続けて任せてください。",
-      took: "見たもの：やり取り 11/01 10:20 ・ 決定の 2 件 ・ EG-097 の単価",
     },
   },
 ];
@@ -201,7 +192,6 @@ export const PANEL_PROGRESS: readonly Entry[] = [
       who: "ai",
       time: "10:45",
       body: "請求書の PDF を作り終えたところです。これから金額を見積と突き合わせます。",
-      took: "見たもの：EG-128 本文",
     },
   },
 ];
@@ -265,7 +255,6 @@ export const CT_PROPOSAL: readonly Entry[] = [
       who: "ai",
       time: "10:40",
       body: "11 月分のチケットを見て案を作りました。欄に入れる物を選んでください。期限は 12/26（金）にしています。",
-      took: "見たもの：EG-098 11 月分の作業報告書 ・ セイコー様の取引先の情報",
     },
   },
   { kind: "proposal", proposal: PROPOSAL },
@@ -339,7 +328,6 @@ export const CT_EDITED: readonly Entry[] = [
       who: "ai",
       time: "10:43",
       body: "直した題名の「12/26 までに」と、本文の「鈴木さん」を踏まえました。確認項目に「鈴木さんにも送っている」を足す案です。",
-      list: ["鈴木さんにも送っている"],
     },
   },
 ];
@@ -354,7 +342,8 @@ export const CT_WRITING: readonly Entry[] = [
     text: "11 月分のチケットを見ました。同じ形なら、題名は「セイコー様へ 12 月分の作業報告書を送る」、本文には",
   },
 ];
-export const CT_ERROR: readonly Entry[] = [CT_ME];
+/** 送れなかった言葉は書く欄だけに残す（会話の行に出さない・K-767 の決め） */
+export const CT_ERROR: readonly Entry[] = [];
 
 // ---- チケットの右のパネルに続いた、作る時の会話（tk-talk-from-create）
 export const FROM_CREATE: readonly Entry[] = [
@@ -367,7 +356,6 @@ export const FROM_CREATE: readonly Entry[] = [
       who: "ai",
       time: "10:45",
       body: "作る時に話した内容は、このまま使えます。任せられる準備ができています。",
-      took: "見たもの：EG-129 本文 ・ 確認項目 3 件",
     },
   },
 ];

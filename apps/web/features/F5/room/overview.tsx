@@ -17,6 +17,8 @@ export interface NowView {
   since: string;
   /** 進み（0〜100）。分からなければ出さない */
   percent?: number;
+  /** いまの仕事を開く道（本番は /tickets/<id>）。無ければ /tickets/<番号>（下絵） */
+  href?: string;
 }
 export interface NextRow {
   ticket: string;
@@ -59,7 +61,7 @@ function NowCard({ now, asleep }: { now: NowView | null; asleep: boolean }) {
       </div>
     );
   return (
-    <a className="k-room-now" href={`/tickets/${now.ticket}`}>
+    <a className="k-room-now" href={now.href ?? `/tickets/${now.ticket}`}>
       <span className="k-room-now-meta">{`${now.ticket} ・ ${now.since}`}</span>
       <span className="k-room-now-title">{now.title}</span>
       {now.percent !== undefined ? (
@@ -161,44 +163,63 @@ export function RoomOverview({ now, next, waiting, growth, asleep = false }: Roo
 }
 
 /** PC がまだ（PS0・キャンバス OnRoom）：PC をつなぐ案内。話すだけはできるが、実行は PC が要る */
-export function PcNone() {
+/** ボタンの形のリンク（本番の行き先がある時）。無ければ押しても動かないボタン（下絵） */
+function Act({ href, variant, children }: { href?: string; variant: "primary" | "outlined"; children: string }) {
+  if (!href) return <Button variant={variant}>{children}</Button>;
+  return (
+    <a className="k-btn" data-variant={variant} data-size="md" href={href}>
+      {children}
+    </a>
+  );
+}
+
+export function PcNone({ href }: { href?: string } = {}) {
   return (
     <div className="k-room-pc" data-tone="wait" role="status">
       <div className="k-room-pc-text">
         <b>PC がまだつながっていません</b>
         <p>分身はあなたの PC で動きます。PC をつなぐまで、チケットを進める（実行する）ことはできません</p>
       </div>
-      <Button variant="primary">PC をつなぐ（3 分）</Button>
+      <Act variant="primary" {...(href ? { href } : {})}>
+        PC をつなぐ（3 分）
+      </Act>
     </div>
   );
 }
 
 /** PC が閉じている（PS3）：開けば続きから進む */
-export function PcClosed() {
+export function PcClosed({ href, label = "高本の MacBook" }: { href?: string; label?: string } = {}) {
   return (
     <div className="k-room-pc" data-tone="wait" role="status">
       <div className="k-room-pc-text">
         <b>PC が閉じています</b>
         <p>
-          高本の MacBook を開くと、待っている仕事をすぐ始めます。承認から 24
-          時間を過ぎた物は、実行の前にもう一度聞きます
+          {`${label} を開くと、待っている仕事をすぐ始めます。承認から 24 時間を過ぎた物は、実行の前にもう一度聞きます`}
         </p>
       </div>
-      <Button variant="outlined">PC の様子を見る</Button>
+      <Act variant="outlined" {...(href ? { href } : {})}>
+        PC の様子を見る
+      </Act>
     </div>
   );
 }
 
 /** はじめて（PS0・何もしていない）：話すだけはできる */
-export function RoomFirst() {
+export function RoomFirst({ name = "高本のAI", createHref }: { name?: string; createHref?: string } = {}) {
   return (
     <section className="k-room-empty" aria-labelledby="room-first">
-      <h2 id="room-first">{ph("高本のAI は", "まだ", "何も", "していません")}</h2>
+      <h2 id="room-first">{ph(`${name} は`, "まだ", "何も", "していません")}</h2>
       <p>
         PC をつなぐと、チケットを任せたり話しかけたりできます。いまやっていることや、あなたを待っている物がここに出ます
       </p>
       <div className="k-room-empty-acts">
-        <InertButton>チケットを作る</InertButton>
+        {createHref ? (
+          <a className="k-btn" data-variant="outlined" data-size="md" href={createHref}>
+            チケットを作る
+          </a>
+        ) : (
+          <InertButton>チケットを作る</InertButton>
+        )}
       </div>
     </section>
   );
@@ -207,18 +228,25 @@ export function RoomFirst() {
 export function RoomLoading() {
   return <Loading delayMs={0} />;
 }
-export function RoomFailed() {
-  return <ErrorState code={PAGE_ERROR.loadFailed} />;
+/** 読めない箱。［もう一度］はいつも出す（onRetry が無い下絵では押しても何もしない） */
+export function RoomFailed({ onRetry }: { onRetry?: () => void } = {}) {
+  return <ErrorState code={PAGE_ERROR.loadFailed} acts={[onRetry ?? (() => undefined)]} />;
 }
 
 /** スマホの下の入口（キャンバス MbAI の「〈名〉のAI と話す」）：下のタブの上に貼り付く 1 行。PC の幅では出さない（話すはタブから） */
-export function TalkEntry({ name }: { name: string }) {
+export function TalkEntry({ name, href }: { name: string; href?: string }) {
   return (
     <div className="k-room-entry" role="group" aria-label="話す">
       <span className="k-room-entry-text">{`${name} と話す`}</span>
-      <Button variant="primary" size="sm">
-        話す
-      </Button>
+      {href ? (
+        <a className="k-btn" data-variant="primary" data-size="sm" href={href}>
+          話す
+        </a>
+      ) : (
+        <Button variant="primary" size="sm">
+          話す
+        </Button>
+      )}
     </div>
   );
 }
