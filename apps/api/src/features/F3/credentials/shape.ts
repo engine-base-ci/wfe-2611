@@ -1,7 +1,7 @@
 // 預けたログイン情報の答えの形（K-351・D-128.57）。一覧（listCredentials）・預ける・上書きの口が同じ形で答える。
 //   出すのは名前と使い方だけ。金庫の参照（vault_ref）・持ち主の id・サービスの欄（service_*）は読まない・出さない。
 //   コードを待っている確かめ：確かめの仕事（bridge_jobs の kind login_check）が asking で、まだ答えていない頼み（bridge_job_events の ask）が
-//   あれば、いちばん新しい頼みの request_id を付け、state を asking にする（列 login_check_state は asking を持てない・0066。前の一覧 app.my_credentials と同じ読み方）。
+//   あれば、いちばん新しい頼みの request_id を付け、state を asking にする（列 login_check_state は asking を持てない・0066。前の一覧の関数（K-371 で消した）と同じ読み方）。
 //   PC の仕事は本人の物だけが見える（行の守り bridge_jobs_self_read）。同じ条件を文にも書く（索引 bridge_jobs_queue_idx で引く）
 
 /** 行を読む文（credentials c と、答えていない頼み asks a）。後ろに where・order by を続けて使う。行の守りの中（withTenant）で流す */

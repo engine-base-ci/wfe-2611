@@ -1,14 +1,13 @@
 // 受け取って返す（D-090・T-B-03）を画面から押して確かめる。テストの名前に正本の行 ID を持つ（op_gate.py）。
 // Bridge の役は、本物の口（x-bridge-session）を叩いて演じる。画面から見える振る舞いは実物と同じ。
 // 止まったものは自動で再開しない。止まったら理由だけを出し、次に送る文で決まる（D-104.15 で D-090.5 を改めた）。
-// D-128.150：「PC をつなぐ」の前の画面は /setup/bridge/legacy に移した（K-89・K-90・K-91 が使う）。その画面の部品（data-state・data-wake・
-//   data-download など）を見る試験は legacy を開く。PC をつなぐ・生きている知らせ・受け取るは K-57 の契約の口（/api/v1/bridge/*）。
+// K-367：前の「PC をつなぐ」画面（T-U-09）を消したので、その画面を開いていた 10 本（BRG-03-019/023・026・014・021・022・
+//   BRG-06-005・008・006・004・010）を消した（行は置き換え先の行 ID つきの BLOCKED・07_qa/test-specs/screens/bridge-setup.md ほか）。
+//   BRG-03-013/015 は会話の画面の側だけを残した（PC の画面の「切れています」は K230-UI-011・K57-UI-015 が見る）。前の画面が在っても無くても通る。
+//   PC をつなぐ・生きている知らせ・受け取るは K-57 の契約の口（/api/v1/bridge/*）。
 //   Bridge の口は PC の印（"kpc_…"）、DB の行は sessions の id（deviceRowId で引く・K-57 で分けた・D-128.137）
-import { existsSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import {
-  API,
-  admin,
   bridgeAnswer,
   bridgeAsk,
   bridgeAsleep,
@@ -30,36 +29,6 @@ import {
 // 「起こす」を試すと kaname-bridge:// で本物が立ち上がる。次のテストに持ち越さない（G-10）
 // 本物の Bridge は止めない（本人の仕事が死ぬ）。画面からだけ見えなくする
 test.beforeEach(({ page }) => hideRealBridge(page));
-
-/** 「この PC に Bridge が入っていない人」を演じるテストは、本当に入っている PC では作れない。
- *  起こす（kaname-bridge://）を押すと本物が立ち上がってしまうため。黙って通さず、理由つきで止める */
-const BRIDGE_APP = "/Applications/Kaname Bridge.app";
-/** 「まだ配布していない」を演じるテストは、配布物を置いてある環境では作れない（BRIDGE_RELEASE_DIR に .dmg がある）。黙って通さず理由つきで止める */
-const needsNoRelease = async (): Promise<void> => {
-  let served: boolean;
-  try {
-    // 受け取りの口（downloadBridgeRelease・K-57）はログインした人の口。404 は「まだ配布していない」（E-CONN-014）
-    const u = await signupViaApi();
-    const r = await fetch(`${API}/api/v1/bridge/releases/mac/file`, {
-      headers: { authorization: `Bearer ${u.token}` },
-      redirect: "manual",
-    });
-    served = r.status !== 404;
-  } catch {
-    served = false;
-  }
-  test.skip(
-    served,
-    "この環境には配布物が置いてあるので「まだ配布していない」を作れない（BLOCKED：BRIDGE_RELEASE_DIR を外した環境か staging で流す）",
-  );
-};
-
-const needsNoBridge = (): void => {
-  test.skip(
-    existsSync(BRIDGE_APP),
-    "この PC には Bridge が入っているので「入っていない人」を作れない（BLOCKED：入っていない PC か staging で流す）",
-  );
-};
 
 /** はじめの設定を通した人が、この PC をつないだ状態で会話モードを開く */
 async function connected(page: Page) {
@@ -181,12 +150,11 @@ test("BRG-03-011 何も送らなければ止まったまま。勝手に動き出
   expect((await bridgeTake(sid)).json.data, "Bridge に渡る仕事も無い").toBeNull();
 });
 
-test("BRG-03-013 BRG-03-015 知らせが来なくなったら「切れています」に変わり、言ったことは溜まる", async ({ page }) => {
+test("BRG-03-013 BRG-03-015 知らせが来なくなったら会話の画面が「溜めておいて」に変わり、言ったことは溜まる（PC の画面の「切れています」は K230-UI-011・K57-UI-015）", async ({
+  page,
+}) => {
   const { u, sid, row } = await connected(page);
   await bridgeAsleep(row);
-  await page.goto("/setup/bridge/legacy");
-  await expect(page.locator("[data-disconnected]")).toContainText("いまは仕事を渡せません");
-  await expect(page.locator("[data-connected]"), "つないだ記録があっても接続中と出し続けない").toHaveCount(0);
   await page.goto("/ai/chat");
   await expect(page.locator("[data-asleep]")).toContainText("溜めておいて");
   await say(page, "起きたらこれをやって");
@@ -198,52 +166,6 @@ test("BRG-03-013 BRG-03-015 知らせが来なくなったら「切れていま�
   await bridgeBeat(sid); // 起きた
   const j = await bridgeTake(sid);
   expect(j.json.data?.prompt, "起きたら溜まった分から動く").toBe("起きたらこれをやって");
-});
-
-test("BRG-03-019 BRG-03-023 切れている間：経過は人の言葉で出し、やることを 1 つだけ出す（次の段へ逃がさない）", async ({
-  page,
-}) => {
-  const { row } = await connected(page);
-  await admin("update sessions set last_seen_at = now() - interval '25 hours' where id = $1", [row]);
-  await page.goto("/setup/bridge/legacy");
-  const box = page.locator('[data-state="slp"]');
-  await expect(box).toContainText("昨日", { timeout: 15_000 }); // 87853 秒 のような機械の数字を見せない
-  await expect(box, "秒でそのまま出さない").not.toContainText(/\d{4,} 秒/);
-  await expect(page.locator("[data-wake]"), "やることは ボタン 1 つで起こす").toBeVisible();
-  await expect(box, "つないだ端末の名前を言う").toContainText("MacBook Pro（QA）");
-  // 本文の中に「次の段へ行く道」を置かない（上の手順バーは進み具合の表示なので別）
-  await expect(
-    box.getByRole("link", { name: /話す|書いておく/ }),
-    "段 1 を通していない人を次の段へ逃がさない",
-  ).toHaveCount(0);
-});
-
-test("BRG-03-026 「接続を確かめる」は、この PC の Bridge を見に行って、見つからなければそう言う", async ({ page }) => {
-  const { row } = await connected(page);
-  await bridgeAsleep(row);
-  await page.goto("/setup/bridge/legacy");
-  await expect(page.locator('[data-state="slp"]')).toBeVisible({ timeout: 15_000 });
-  const watching = page.locator("[data-watching]");
-  await expect(watching, "見ていることを言う").toContainText("見つかりません");
-  const before = await watching.innerText();
-  await page.getByRole("button", { name: /接続を確かめる|確かめています/ }).click();
-  // 押した結果が変わる（時刻が進む）＝押しても何も起きない、にならない
-  await expect.poll(async () => (await watching.innerText()) !== before, { timeout: 15_000 }).toBe(true);
-});
-
-test("BRG-03-014 起きたら渡せる状態に戻り、Bridge が返した自己診断がそのまま出る", async ({ page }) => {
-  needsNoBridge();
-  const { sid, row } = await connected(page);
-  await bridgeAsleep(row);
-  await bridgeBeat(sid, [
-    { name: "本人のサブスクの Claude Code がある", ok: true, detail: "/opt/homebrew/bin/claude" },
-    { name: "Chrome がある（本人のログイン済みプロファイルを使う）", ok: false, detail: "見つかりません" },
-  ]);
-  await page.goto("/setup/bridge/legacy");
-  await expect(page.locator("[data-connected]")).toContainText("いま仕事を渡せます");
-  await expect(page.locator('[data-check="ok"]')).toHaveCount(1);
-  await expect(page.locator('[data-check="ng"]'), "できない項目を隠さない").toHaveCount(1);
-  await expect(page.locator('[data-check="ng"]')).toContainText("見つかりません");
 });
 
 test("BRG-03-016 「新しい会話」で今の 1 本が閉じ、前のやりとりは消えない", async ({ page }) => {
@@ -329,152 +251,6 @@ test("E-SIG-002-A E-SIG-002-B E-SIG-002-C 合図を出さずに終わった：�
   // C 一手＝「続けて」と送る（D-104.15）。入力欄は開いたまま
   await expect(page.getByRole("textbox", { name: "自分のAIに書く" })).toBeEnabled();
   await say(page, "続けて");
-});
-
-test("BRG-03-021 確かめ終わる前に手順やダウンロードを出さない（一瞬出てから入れ替わるのを作らない）", async ({
-  page,
-}) => {
-  needsNoBridge();
-  const { row } = await connected(page);
-  await bridgeAsleep(row);
-  // 開いた瞬間から 2 秒、出ている中身を 50ms ごとに記録する
-  await page.addInitScript(() => {
-    (window as unknown as { __seen: string[] }).__seen = [];
-    const id = setInterval(() => {
-      const el = document.querySelector("[data-state]");
-      const t = document.body?.innerText ?? "";
-      (window as unknown as { __seen: string[] }).__seen.push(
-        `${el?.getAttribute("data-state") ?? "-"}|${t.includes("接続コード") ? "手順" : ""}`,
-      );
-    }, 50);
-    setTimeout(() => clearInterval(id), 2500);
-  });
-  await page.goto("/setup/bridge/legacy");
-  await expect(page.locator('[data-state="slp"]')).toBeVisible({ timeout: 15_000 });
-  await page.waitForTimeout(600);
-  const seen = (await page.evaluate(() => (window as unknown as { __seen: string[] }).__seen)) as string[];
-  const states = [...new Set(seen.map((x) => x.split("|")[0]!))].filter((x) => x !== "-");
-  // 出てよいのは「確かめています」と、その次の 1 回だけ。手順（n）を挟まない
-  expect(
-    states.filter((x) => x !== "loading" && x !== "slp"),
-    `出た状態の並び: ${states.join(" → ")}`,
-  ).toEqual([]);
-  expect(states[0], "まず確かめる").toBe("loading");
-  expect(seen.filter((x) => x.endsWith("|手順")).length, "切れている人に接続コードを一瞬でも出さない").toBe(0);
-});
-
-test("BRG-03-022 「まだ配布していません」の置き場は、押したら理由といまできることを言う", async ({ page }) => {
-  await needsNoRelease();
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  const card = page.locator("[data-download]").first();
-  await expect(card).toBeVisible({ timeout: 15_000 });
-  await card.click();
-  const msg = page.locator("[data-download-msg]");
-  await expect(msg, "押しても何も起きない的を置かない").toBeVisible();
-  await expect(msg).toContainText("まだ配布していません");
-  await expect(msg).toContainText("署名と置き場");
-  await expect(msg, "人にコマンドを打たせない").not.toContainText("pnpm");
-});
-
-// 配布（T-B-06）：置き場は Kaname のサーバー。顧客は 3 手だけ
-test("BRG-06-005 配布物を置いていないときは、押すと理由が出る（コマンドは出さない）", async ({ page }) => {
-  await needsNoRelease();
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  await page.locator('[data-download="mac"]').click();
-  const msg = page.locator("[data-download-msg]");
-  await expect(msg).toContainText("まだ配布していません", { timeout: 15_000 });
-  await expect(msg, "人にコマンドを打たせない").not.toContainText("pnpm");
-});
-
-test("BRG-06-008 署名が済むまでは、OS に止められたときの越え方だけを出す（Mac は「このまま開く」・Windows は「詳細情報」→「実行」。右クリックは案内しない・コマンドは出さない）", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  const w = page.locator("details[data-os-warning]");
-  await expect(w).toBeVisible({ timeout: 15_000 });
-  await expect(w.locator('[data-os-warning="mac"]'), "閉じている間は中身を出さない").toBeHidden();
-  await w.locator("summary").click();
-  const mac = w.locator('[data-os-warning="mac"]');
-  await expect(mac).toBeVisible();
-  await expect(mac).toContainText("完了");
-  await expect(mac).toContainText("プライバシーとセキュリティ");
-  await expect(mac).toContainText("このまま開く");
-  await expect(w.locator('[data-os-warning="win"]')).toContainText("詳細情報");
-  await expect(w.locator('[data-os-warning="win"]')).toContainText("実行");
-  const text = await w.innerText();
-  expect(text, "いまの macOS では効かない越え方を案内しない").not.toContain("右クリック");
-  expect(text, "人にコマンドを打たせない").not.toMatch(/xattr|sudo|terminal|ターミナル/i);
-});
-
-test("BRG-06-006 顧客の手順は 3 つだけ（受け取る・開く・初回だけ許可）。接続コードもコマンドも打たせない", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  const lead = page.locator("[data-install-lead]");
-  await expect(lead).toBeVisible({ timeout: 15_000 });
-  await expect(lead.locator("li"), "手順は 3 つ").toHaveCount(3);
-  await expect(lead).toContainText("受け取る");
-  await expect(lead).toContainText("開く");
-  await expect(lead).toContainText("許可");
-  const body = (await page.locator("main").innerText()).replace(/\s+/g, "");
-  expect(body.includes("pnpm"), "画面にコマンドを出さない").toBe(false);
-  await expect(page.locator("[data-pair-code]"), "接続コードは畳んである（打たせない）").toBeHidden();
-});
-
-test("BRG-06-004 ダウンロードは Kaname の口を通る（外のサービスへ飛ばさない）", async ({ page, request }) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  const hits: string[] = [];
-  page.on("request", (r) => hits.push(r.url()));
-  await page.locator('[data-download="win"]').click();
-  await expect(page.locator("[data-download-msg]")).toBeVisible({ timeout: 15_000 });
-  expect(
-    hits.some((h) => /\/api\/v1\/bridge\/releases\/win\/file$/.test(h)),
-    "Kaname の口を叩く",
-  ).toBe(true);
-  expect(
-    hits.some((h) => /github\.com|githubusercontent/.test(h)),
-    "外のサービスへは行かない",
-  ).toBe(false);
-  const r = await request.get(`${API}/api/v1/bridge/releases/win/file`, {
-    headers: { authorization: `Bearer ${u.token}` },
-    maxRedirects: 0,
-  });
-  // 置いてあれば中身か短い期限の署名 URL（200）、無ければ理由（404・E-CONN-014）。外へ 302 で飛ばさない（D-128.153）
-  expect([200, 404]).toContain(r.status());
-});
-
-test("BRG-06-010 止まっているときは、ボタン 1 つで起こす（人に探させない）", async ({ page }) => {
-  needsNoBridge();
-  const { row } = await connected(page);
-  await bridgeAsleep(row);
-  await page.goto("/setup/bridge/legacy");
-  const box = page.locator('[data-state="slp"]');
-  await expect(box).toBeVisible({ timeout: 15_000 });
-  await expect(box, "Launchpad から探せ、と言わない").not.toContainText("Launchpad");
-  // 押すと この PC の Bridge を起こす合図（kaname-bridge://）を出す
-  const asked: string[] = [];
-  await page.route("kaname-bridge://**", (r) => {
-    asked.push(r.request().url());
-    void r.abort();
-  });
-  await page.locator("[data-wake]").click();
-  await expect(page.locator("[data-wake-msg]"), "出てこないときは理由を言う").toContainText("入っていないかも");
-  await expect(box).toContainText("PC を立ち上げると Bridge も一緒に立ち上がる");
 });
 
 // ---- 1 行 1 イベント（D-093）：途中経過・確認・会話の id・完了の判定。Bridge の役は本物の口を叩いて演じる

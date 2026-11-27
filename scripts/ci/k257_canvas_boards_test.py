@@ -49,14 +49,15 @@ TEXTS = {
                        "この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）", "やめる"], ["差し戻して作り直させる"]),
     "StCompleteModal": (["完了にする", "完了の条件", "実施事項", "完了の条件を満たしたことを確かめました", "やめる", "確かめて完了にする"], []),
     "Approvals": (["あなたが決めるもの", "期限切れ", "今日", "7 日以内", "それより後", "期限なし", "（今日）"], ["今週", "来週以降"]),
-    "EdPC": (["常駐アプリを入れる", "Mac 用", "Windows 用", "10 分で切れる ・ この PC 専用の鍵が作られ、ほかの PC からは使えない", "新しいコード", "前の設定の画面"],
-             []),   # 「…を受け取る」は aria-label に持たせてよいので全文では見ない（枠のボタンにしないことは K257-CV-011 が見る）
-    "MePC": (["つないでいる PC", "切れている", "直し方", "Bridge を起こす", "前の設定の画面"], ["切れています"]),   # 戻るは絵にもとから「12/01 に戻る」があるので字では見ない（K257-CV-011 が a[data-act="back"] で見る）
-    "MePCInstalled": (["この PC の Bridge につなぐ", "このアカウントに切り替える", "前の設定の画面"], []),
+    "EdPC": (["常駐アプリを入れる", "Mac 用", "Windows 用", "10 分で切れる ・ この PC 専用の鍵が作られ、ほかの PC からは使えない", "新しいコード"],
+             ["前の設定の画面"]),   # 「…を受け取る」は aria-label に持たせてよいので全文では見ない（枠のボタンにしないことは K257-CV-011 が見る）
+    "MePC": (["つないでいる PC", "切れている", "直し方", "Bridge を起こす"], ["切れています", "前の設定の画面"]),   # 戻るは絵にもとから「12/01 に戻る」があるので字では見ない（K257-CV-011 が a[data-act="back"] で見る）
+    "MePCInstalled": (["この PC の Bridge につなぐ", "このアカウントに切り替える"], ["前の設定の画面"]),
 }
 CATALOG = ROOT / "packages" / "errors" / "src" / "catalog.ts"
-# 今の画面（apps/web/features/F3/connect-pc/connect-pc.tsx）に在って絵に無かった、ほかの 3 つ（決める人の答え：画面に残る操作は全部描き足す）
-LEGACY_P = "Claude Code を入れてログインする・AI が使うブラウザを選ぶ・PC を外すは、"   # 画面の「ほかの設定」の文（.k-desc：12px・#4A5563）
+# 今の画面（apps/web/features/F3/connect-pc/connect-pc.tsx）に在って絵に無かった、ほかの 2 つ（決める人の答え：画面に残る操作は全部描き足す）。
+#   K-367：前の画面を消したので、前に描き足した「前の設定の画面」の案内（「ほかの設定」の文）は 3 枚とも無いことを見る
+LEGACY_P = "Claude Code を入れてログインする・AI が使うブラウザを選ぶ・PC を外すは、"   # 前の画面への案内の文（K-367 で絵から消す）
 LINK_STYLE = ["color: #22345C", "text-decoration: underline"]   # .k-link
 SWITCH_STYLE = ["height: 30px", "border-radius: 6px", "font-size: 12px", "border: 1.5px solid #B91C1C", "background: transparent", "color: #B91C1C"]   # 危ない操作のボタン（線と字が赤・地なし）。大きさは隣の「この PC の Bridge につなぐ」と同じ
 
@@ -88,21 +89,11 @@ def _act(s: str, tag: str, act: str, label: str, name: str, style: list[str], ba
 
 
 def _other_acts() -> list[str]:
-    """前の設定の画面（3 枚とも・本文の最後の「ほかの設定」の文の中）・戻る（MePC・頭の並びで題の前）・このアカウントに切り替える（MePCInstalled・つなぐの隣）と、見比べの 1 枚の「このときだけ出る」の 1 行"""
+    """前の設定の画面が 3 枚とも無い（K-367 で前の画面と一緒に消した：data-act=legacy・前の画面の道・「ほかの設定」の文のどれも無い）・戻る（MePC・頭の並びで題の前）・このアカウントに切り替える（MePCInstalled・つなぐの隣）と、見比べの 1 枚の「このときだけ出る」の 1 行"""
     bad: list[str] = []
-    for n, after in (("EdPC", "つないでいる PC"), ("MePC", "つないでいる PC"), ("MePCInstalled", "この PC の Bridge につなぐ")):
+    for n in ("EdPC", "MePC", "MePCInstalled"):
         s = (CANVAS / f"{n}.dc.html").read_text(encoding="utf-8")
-        at = _act(s, "a", "legacy", "前の設定の画面", n, LINK_STYLE, bad)
-        if at < 0:
-            continue
-        if 'href="/setup/bridge/legacy"' not in s[at : s.find(">", at)]:
-            bad.append(f"{n}：前の設定の画面の href が /setup/bridge/legacy でない")
-        p = max((t.start() for t in re.finditer(r"<p[\s>]", s[:at])), default=-1)   # 前の設定の画面を含む段落の始まり（<path は除く）
-        tail = s.find("</a>", at) + 4
-        if not (0 <= s.find(after) < p and LEGACY_P in s[p:at] and re.match(r"で行えます。</p>\s*</section>", s[tail:])):
-            bad.append(f"{n}：前の設定の画面が、本文の最後（段落の閉じのすぐ後が本文の </section>）の「{LEGACY_P}…で行えます。」の文の中に無い")
-        elif not re.search(r'<p\b[^>]*style="[^"]*font-size: 12px[^"]*color: #4A5563', s[p : s.find(">", p) + 1]):
-            bad.append(f"{n}：ほかの設定の文が 12px・#4A5563 でない")
+        bad += [f"{n}：前の画面への案内（{w}）が残っている" for w in ('data-act="legacy"', "/setup/bridge/legacy", LEGACY_P, "前の設定の画面") if w in s]
     me = (CANVAS / "MePC.dc.html").read_text(encoding="utf-8")
     at = _act(me, "a", "back", "戻る", "MePC", LINK_STYLE, bad)
     main = me.find('<section style="flex: 1')
@@ -319,7 +310,7 @@ class Boards(unittest.TestCase):
         self.assertEqual(bad, [])
 
     def test_K257_CV_011_pc_actions(self):
-        """K257-CV-011 PC をつなぐの絵に、今の画面に在って絵に無かった操作を全部、画面の本物の文と形で描き足す：EdPC の 2 段目の説明の行の中に button[data-act="new-code"]「新しいコード」（字のリンクの形）、MePC の切れている行の直し方の箱の中に E-CONN-001 の文と button[data-act="wake"]「Bridge を起こす」、3 枚とも本文の最後の「ほかの設定」の文の中に a[data-act="legacy"]「前の設定の画面」、MePC の頭の並びで題の前に a[data-act="back"]「戻る」（EdPC・MePCInstalled には無い）、MePCInstalled のつなぐの隣に button[data-act="switch-account"]「このアカウントに切り替える」（危ない操作の形）。条件つきの 2 つ（戻る・切り替える）は見比べの 1 枚に「…のときだけ出る」の 1 行。受け取るは字のリンクのまま（枠のボタンにしない）・行は足さない（札 3 つ・最後に見えた 1 つのまま）"""
+        """K257-CV-011 PC をつなぐの絵に、今の画面に在って絵に無かった操作を全部、画面の本物の文と形で描き足す：EdPC の 2 段目の説明の行の中に button[data-act="new-code"]「新しいコード」（字のリンクの形）、MePC の切れている行の直し方の箱の中に E-CONN-001 の文と button[data-act="wake"]「Bridge を起こす」、3 枚とも「前の設定の画面」の案内は無い（K-367 で前の画面と一緒に消した）、MePC の頭の並びで題の前に a[data-act="back"]「戻る」（EdPC・MePCInstalled には無い）、MePCInstalled のつなぐの隣に button[data-act="switch-account"]「このアカウントに切り替える」（危ない操作の形）。条件つきの 2 つ（戻る・切り替える）は見比べの 1 枚に「…のときだけ出る」の 1 行。受け取るは字のリンクのまま（枠のボタンにしない）・行は足さない（札 3 つ・最後に見えた 1 つのまま）"""
         bad = []
         ed = (CANVAS / "EdPC.dc.html").read_text(encoding="utf-8")
         me = (CANVAS / "MePC.dc.html").read_text(encoding="utf-8")
