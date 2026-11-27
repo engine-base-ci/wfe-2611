@@ -33,3 +33,14 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 戻す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、項目・やり取り・お知らせ・証跡のどれも残さない"},
     ],
 }
+
+# 画面の口（統合の枝で本体から移した・K-1112・PM の決め 2026-11-28）
+SCREEN_API = {
+    "tickets": [
+        ("POST", "/tickets/:id/item-changes/restore", "A101", "ticket_messages", "restoreTicketItems", ["tickets", "ticket_field_values"]),
+    ],
+}
+
+PERMS = {
+    "restoreTicketItems": ("write", "そのチケットを書ける人", False),
+}
