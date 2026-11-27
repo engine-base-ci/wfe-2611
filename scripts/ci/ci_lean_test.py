@@ -259,7 +259,8 @@ class RealScopeTest(unittest.TestCase):
         self.assertEqual([f for f in left if not f.startswith("infra/provision/")], [], f"unmapped が残っている（spec か no_test_paths に書く）: {left[:20]}")
 
     def test_K156_CI_033_japanese_name_is_spec(self) -> None:
-        self.assertEqual(ci_scope.root_kind("03_architecture/ER図.md", self.rules, str(ROOT)), "spec")
+        # ER図.md は K-883 が data_links（k883 の試験が読む）に入れたので、日本語の名前の正本の例は アーキテクチャ設計書.md にする
+        self.assertEqual(ci_scope.root_kind("03_architecture/アーキテクチャ設計書.md", self.rules, str(ROOT)), "spec")
         self.assertEqual(ci_scope.root_kind("08_api/types.ts", self.rules, str(ROOT)), "spec")   # 根の生成物のコードも（G38 が作り直して比べる）
 
 
