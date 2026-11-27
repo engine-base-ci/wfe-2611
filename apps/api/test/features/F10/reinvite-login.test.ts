@@ -150,8 +150,10 @@ describe("K-852 ログインの口：使える会社が無い人 × 招待の印
   ] as const)(
     "K852-API-003 体の招待の印が使えない（%s）：403・E-AUTH-007・認証のセッションは残らない",
     async (label, o) => {
-      const host = await h.owner(`h003-${label}`);
-      const b = await joinNew(host, `b003-${label}`);
+      // メールの宛ての名前に日本語の表題を入れない（認証の部品が Invalid email address で断る）。表題は 16 進にして使う
+      const tag = Buffer.from(String(label)).toString("hex").slice(0, 12);
+      const host = await h.owner(`h003-${tag}`);
+      const b = await joinNew(host, `b003-${tag}`);
       await removed(b.memberId);
       const inv = await h.invite(host, { email: b.email, ...o });
       const before = await h.authSessions(b.userId);

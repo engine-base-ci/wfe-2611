@@ -12,8 +12,22 @@ import { notFound, replyOfUpdate } from "./errors.js";
 const ids = (v: unknown): string[] =>
   Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === "string"))] : [];
 
+/** add・remove は在れば 1〜20 個・どちらも無い（空の並びだけ）は欄 body */
+function shapeIssue(input: Record<string, unknown>): { field: string; message: string } | null {
+  for (const k of ["add", "remove"]) {
+    const v = input[k];
+    if (Array.isArray(v) && v.length > 20) return { field: k, message: "20 個まで" };
+  }
+  const n = (k: string) => (Array.isArray(input[k]) ? (input[k] as unknown[]).length : 0);
+  if (n("add") === 0 && n("remove") === 0) return { field: "body", message: "add か remove のどちらかを 1 つ以上" };
+  return null;
+}
+
 export async function updateGuestShares(appPool: pg.Pool, a: HookArgs): Promise<HookReply> {
   if (!a.id) return notFound();
+  // 値域（VALUE_RANGES）と「どちらか 1 つは要る」は口が断る（入口の zod は欄を optional・上限なしの作り）。何も変えない
+  const bad = shapeIssue(a.input);
+  if (bad) return { status: 422, body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [bad] } };
   const add = ids(a.input["add"]);
   const remove = ids(a.input["remove"]);
   try {

@@ -39,9 +39,9 @@ async function ticket(
     o.stage ?? "doing",
   ]);
   const number = `EG-${(seq += 1)}`;
-  const r = await h.one<{ id: string }>(
+  const r = await h.one<{ id: string; number: string }>(
     `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, created_by, completed_at, deleted_at)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`,
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id, number`,
     [
       w.tenantId,
       o.scope ?? w.eg,
@@ -55,7 +55,7 @@ async function ticket(
       o.deleted ? new Date() : null,
     ],
   );
-  return { id: r.id, number };
+  return { id: r.id, number: r.number }; // 番号はいつもサーバーが付ける（0071 の ticket_number・入れた値は使わない）
 }
 const handover = (
   w: World,
@@ -102,7 +102,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.number)).toEqual([a.number, b.number, c.number]);
     expect(Object.keys(d["tickets"][0]).sort()).toEqual(["handing", "id", "number", "stage", "title"]);
     expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.handing)).toEqual([false, false, true]);
-    expect(d["tickets"][0].stage).toBe("進行中");
+    expect(d["tickets"][0].stage).toBe("作業中"); // 会社の段の名前（ticket_stages.name）。doing の既定の名前は 0071 から「作業中」
   });
 
   it("K815-API-002 担当 0 件：200・tickets・handovers_cancelled・approvals_reassigned は空・deleted と kept は出る", async () => {
