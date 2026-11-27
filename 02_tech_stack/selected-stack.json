@@ -1140,6 +1140,14 @@
   "@tiptap/extension-subscript": {
    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
    "register": "stack.frontend.rich_text"
+  },
+  "@pdf-lib/fontkit": {
+   "for": "請求書の PDF に日本語の書体を埋め込む（K-1013・D-156.42）",
+   "register": "stack.document_generation"
+  },
+  "pdf-lib": {
+   "for": "請求書の PDF を作る（K-1013・D-156.42）",
+   "register": "stack.document_generation"
   }
  }
 }
