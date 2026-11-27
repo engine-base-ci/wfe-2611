@@ -21,11 +21,11 @@ import { setupOps, ALL_CAPS, OPS_TENANT } from "./ops.harness.js";
 
 const o = setupOps("k945");
 const { h } = o;
-// この回が createFirstOps で作った運営の人（できること 9 つ・値段を決めるも持つ）を外す。残すと共用の DB で
+// この回が createFirstOps で作った運営の人（できること 9 つ・値段を決めるも持つ）を外す（パスキーのリンクが指すので消さずに外した印）。残すと共用の DB で
 //   ほかの試験の「値段を決められる人が 1 人のとき」（K-1017・K-990）が数を取り違える（G-10）
 afterAll(async () => {
   await h.admin.query(
-    `delete from ops_members where member_id in (
+    `update ops_members set revoked_at = now() where revoked_at is null and member_id in (
        select m.id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email like $1)`,
     [`${h.run}-%`],
   );
