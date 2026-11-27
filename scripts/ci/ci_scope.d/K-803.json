@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/layers/**",
+    "apps/api/src/hooks/f10-layers.ts",
+    "packages/db/migrations/20261126000300_layer_write.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-layer.test.ts"
+   ]
+  }
+ ]
+}

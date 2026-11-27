@@ -1,0 +1,18 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-notices-publish.ts",
+    "apps/api/src/features/F12/ops/notices/publish.ts",
+    "apps/api/src/features/F12/ops/notices/mail.ts",
+    "packages/db/migrations/20261128011800_ops_notices_publish.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-notices-publish.test.ts",
+    "apps/api/test/generated/post_ops_notices_id_publish.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_notices.test.ts",
+    "apps/api/test/features/F12/notices-read.test.ts"
+   ]
+  }
+ ]
+}

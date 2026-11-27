@@ -1,0 +1,27 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-sessions.ts",
+    "apps/api/src/features/F10/me/sessions.ts",
+    "packages/db/migrations/20261126003600_me_sessions.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-sessions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-sessions.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_me_sessions.test.ts",
+    "apps/api/test/generated/delete_me_sessions_id.test.ts",
+    "apps/api/test/generated/post_me_sessions_revoke_others.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/me-sessions.test.ts": "土台 me.harness.ts が葉の hooks のファイル apps/api/src/hooks/me-sessions.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-836"
+ }
+}

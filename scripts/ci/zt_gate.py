@@ -23,13 +23,15 @@ WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self",
 OPS_CAPS = {"any", "inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
 # 本人確認を取り直す操作（D-125.139・D-128.68・D-128.70）。表に出てきたら step_up が要る
 # approveApproval は外した：AI の成果物の承認では本人確認を取り直さない（D-128.177・K-162）
-STEP_UP_REQUIRED = {"createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
-                    "createExport", "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
+# updateMemberPermissions・createExport は外した：人ごとの「できること」と書き出しを作らない（D-154.10・D-154.4・K-800）
+STEP_UP_REQUIRED = {"createCredential", "updateCredential", "updateMemberRole",
+                    "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
                     "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor",
                     "requestEmailChange", "revokeMyDevice", "releaseOpsWorkType", "rollbackOpsWorkType", "releaseOpsTemplate",
                     "updateMemberGroups", "suspendMember", "resumeMember", "removeMember", "updateWorkspacePermissions",
                     "changePlan", "requestWorkspaceDeletion", "createInvitations", "createInvitationLink",
-                    "changeOpsWorkspacePlan", "resumeWorkspace", "issueOpsInvoices", "addOpsMember", "updateOpsMemberCaps", "removeOpsMember"}
+                    "changeOpsWorkspacePlan", "resumeWorkspace", "issueOpsInvoices", "addOpsMember", "updateOpsMemberCaps", "removeOpsMember",
+                    "revokeMySession", "revokeOtherSessions"}
 # PC がまだ印を持たないうちに呼ぶ口（接続コードそのものが鍵・1 分 5 回・10 分・1 回だけ・D-089・D-128.93・K-57）
 BRIDGE_PUBLIC = {"claimPairingCode"}
 PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept", "help"}   # ログイン前の画面だけが public を使える

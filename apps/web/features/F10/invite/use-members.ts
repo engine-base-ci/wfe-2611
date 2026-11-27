@@ -9,8 +9,8 @@ import type { InviteGroup, MemberGroup, MemberRow } from "./views";
 export const MEMBERS_KEY = ["k420", "members"] as const;
 export const SCREEN = "members";
 
-/** 口の答え（K-419 の形）。契約の型は中身を持たないので、ここで読む形を決める */
-interface Person {
+/** 口の答え（K-419・K-808 の形）。契約の型は中身を持たないので、ここで読む形を決める */
+export interface Person {
   id: string;
   name: string;
   email: string;
@@ -20,22 +20,28 @@ interface Person {
   self?: boolean;
   pc?: "ok" | "away" | "never" | "none";
   pc_days_away?: number | null;
+  /** そのグループでの役割（K-419・無ければ会社の役割で字を決める・K-818） */
+  group_role?: string | null;
+  /** 一時的に止めている人（K-818） */
+  suspended?: boolean;
+  /** 最後に使ってからの日数（K-808・まだ使っていなければ null） */
+  last_used_days?: number | null;
 }
-interface GroupAnswer {
+export interface GroupAnswer {
   id: string;
   /** scopes.ticket_prefix（会社のグループなどは null） */
   code: string | null;
   name: string;
   members: Person[];
 }
-interface InvitedAnswer {
+export interface InvitedAnswer {
   id: string;
   email: string;
   scope_id: string;
   role: string;
   left_days: number;
 }
-interface MembersAnswer {
+export interface MembersAnswer {
   groups: GroupAnswer[];
   invitations: InvitedAnswer[];
   count: number;
@@ -46,6 +52,8 @@ export interface MembersView {
   /** 招くの小窓のグループの選ぶ欄 */
   scopes: InviteGroup[];
   count: number;
+  /** 口の答えそのもの（メンバーの画面の行の値は features/F10/members/members-shape.ts が読む・K-818） */
+  answer: MembersAnswer;
 }
 
 const ROLE_LABEL: Record<string, string> = {
@@ -119,7 +127,7 @@ export function toView(a: MembersAnswer): MembersView {
       rows: [...g.members.map(toRow), ...invited],
     };
   });
-  return { groups, scopes: a.groups.map((g) => ({ id: g.id, name: g.name })), count: a.count };
+  return { groups, scopes: a.groups.map((g) => ({ id: g.id, name: g.name })), count: a.count, answer: a };
 }
 
 export function useMembers() {

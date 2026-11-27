@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-plans-impact.ts",
+    "apps/api/src/features/F12/ops/plans/impact.ts",
+    "packages/db/migrations/20261128012900_ops_plans_impact.sql",
+    "05_flow/screen_api.d/K-989.py",
+    "scripts/ci/contract_shape.d/K-989.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-plans-impact.test.ts",
+    "apps/api/test/generated/get_ops_plan_proposals_id_impact.test.ts"
+   ]
+  }
+ ]
+}

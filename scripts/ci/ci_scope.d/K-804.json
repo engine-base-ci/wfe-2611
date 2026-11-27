@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/scopes/update.ts",
+    "packages/db/migrations/20261126000400_group_update.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-scope-update.test.ts"
+   ]
+  }
+ ]
+}

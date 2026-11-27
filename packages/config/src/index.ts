@@ -54,7 +54,43 @@ export interface Config {
   edgeSecret?: string | undefined;
   /** 確かめの口 GET /api/edge/echo を開く（K-262・KANAME_EDGE_ECHO=1）。staging の確かめの間だけ。本番は入れない */
   edgeEcho?: boolean;
+  /** 請求書の画面の支払い条件と振込先（K-958・D-125.24：直書きしない）。BILLING_TERMS・BILLING_PAYEE（「|」で区切る）。
+   *  振込先が空の並びなら、画面は「まだ決まっていません」（K-960）。
+   *  請求書の PDF の出す側（K-1013・D-156.31・D-156.59）：invoiceNo＝インボイスの登録番号（BILLING_INVOICE_NO・空なら PDF に行なし）・
+   *  issuer＝会社名（BILLING_ISSUER・無ければ「Kaname 運営」）・issuerAddress（BILLING_ISSUER_ADDRESS）・issuerContact（BILLING_ISSUER_CONTACT）・
+   *  note＝備考（BILLING_NOTE）。空なら PDF に行なし */
+  billing: {
+    terms: string;
+    payeeLines: string[];
+    invoiceNo: string;
+    issuer: string;
+    issuerAddress: string;
+    issuerContact: string;
+    note: string;
+  };
   port: number;
+}
+
+/** 支払い条件の既定（BILLING_TERMS が無いとき） */
+export const BILLING_TERMS_DEFAULT = "請求書払い ・ 月末締め 翌月 1 日に出す ・ 月末払い";
+
+/** 請求書の PDF の出す側の会社名の既定（BILLING_ISSUER が無いとき・K-1013） */
+export const BILLING_ISSUER_DEFAULT = "Kaname 運営";
+
+/** 請求書の支払い条件と振込先を環境変数から読む（K-958）。振込先は「|」で区切った行 */
+export function billingFrom(env: Record<string, string | undefined>): Config["billing"] {
+  return {
+    terms: env["BILLING_TERMS"]?.trim() || BILLING_TERMS_DEFAULT,
+    payeeLines: (env["BILLING_PAYEE"] || "")
+      .split("|")
+      .map((x) => x.trim())
+      .filter(Boolean),
+    invoiceNo: env["BILLING_INVOICE_NO"]?.trim() || "",
+    issuer: env["BILLING_ISSUER"]?.trim() || BILLING_ISSUER_DEFAULT,
+    issuerAddress: env["BILLING_ISSUER_ADDRESS"]?.trim() || "",
+    issuerContact: env["BILLING_ISSUER_CONTACT"]?.trim() || "",
+    note: env["BILLING_NOTE"]?.trim() || "",
+  };
 }
 const REQUIRED = [
   "DATABASE_URL",
@@ -207,6 +243,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       : null,
     edgeSecret: env["KANAME_EDGE_SECRET"] || undefined,
     edgeEcho: env["KANAME_EDGE_ECHO"] === "1",
+    billing: billingFrom(env),
     port: Number(env["PORT"] ?? 3001),
   };
 }

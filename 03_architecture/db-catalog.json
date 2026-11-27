@@ -305,6 +305,10 @@
    "class": "frozen",
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
+  "member_email_changes": {
+   "class": "internal",
+   "why": "メールを変える待ち（app スキーマ・アプリの役は直に触れない）。関数 app.me_email_change_* が読み書きする（K-835）"
+  },
   "member_kinds": {
    "class": "internal",
    "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
@@ -368,6 +372,10 @@
   "ops_plan_proposals": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ops_setup_links": {
+   "class": "internal",
+   "why": "口は無いが、関数 app.ops_setup_consume などだけが触る裏の表（運営の人のパスキーを付けるリンク・K-945）"
   },
   "payment_methods": {
    "class": "frozen",

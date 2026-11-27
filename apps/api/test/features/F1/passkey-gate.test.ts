@@ -152,9 +152,15 @@ describe("K-308 パスキーで入る道でも止めが効く（K-303 の止め 
     expect(((await h.json(r)) as Record<string, unknown>)["code"]).toBe("E-AUTH-012");
   });
 
-  it("K308-API-022 会社から抜けた × パスキーで入る：403・E-AUTH-007。セッションは増えない", async () => {
+  it("K308-API-022 会社から抜けた × パスキーで入る：403・E-AUTH-007。セッションは増えない。抜けた会社から本人宛ての使える招待（招き直し）が届いていても、確かめの要求に招待の印（頭 x-kaname-invitation）が無ければ同じ（招待で門を開けるのは招待の印を送ったときだけ・頭の印で開ける道は K852-API-028・K-852・D-154.89）", async () => {
     const { u, a, before } = await userWithKey("left");
     await h.admin.query("update members set deleted_at = now() where id = $1", [u.memberId]);
+    await h.admin.query(
+      `insert into invitations (tenant_id, email, scope_id, role_id, token_hash, expires_at, created_by)
+       select $1, $2, s.id, 'member', encode(sha256(convert_to(gen_random_uuid()::text, 'UTF8')), 'hex'), now() + interval '7 days', $3
+         from scopes s where s.tenant_id = $1 and s.parent_id is null and s.deleted_at is null order by s.created_at limit 1`,
+      [u.tenantId, u.email, u.memberId],
+    );
     const r = await passkeyLogin(u, a);
     await expectNoEntry(r, u, before);
     expect(r.status).toBe(403);

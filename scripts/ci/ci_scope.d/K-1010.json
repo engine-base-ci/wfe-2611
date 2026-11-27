@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-templates-release.ts",
+    "apps/api/src/features/F12/ops/templates/release.ts",
+    "apps/api/src/features/F12/ops/operations.ts",
+    "packages/db/migrations/20261128015000_ops_templates_release.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-release.test.ts",
+    "apps/api/test/features/F12/ops-templates-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/F12/ops-templates-release.test.ts"
+   ]
+  }
+ ]
+}

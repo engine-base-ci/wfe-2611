@@ -186,6 +186,17 @@ beforeAll(async () => {
   ])
     limits[op] = 10_000;
   T = await f.company(WS, "EG");
+  // K-1103：招く時に席の上限（無料は 3 人まで）で止まる。この会社は社内 4 人（管理者・マネージャー・メンバー・招く権限の人）で社内の人も招くので、
+  //   人数の上限を持たない試験だけのプラン（limits に members が無い＝上限なし）の契約にしておく（K-419 の invite-create.test.ts と同じ直し）。
+  //   プランの行はこの会社の中に置く（運営の会社の free・team・business の並び＝選べるプランに混ぜない）
+  const plan = await f.admin.query<{ id: string }>(
+    "insert into plans (tenant_id, key, name, price_monthly, limits) values ($1, 'k876-unlimited', 'K876 の試験（上限なし）', 0, '{}'::jsonb) returning id",
+    [T.tenantId],
+  );
+  await f.admin.query(
+    "insert into subscriptions (tenant_id, plan_id, status_id, started_at) values ($1, $2, 'active', now() - interval '40 days')",
+    [T.tenantId, plan.rows[0]!.id],
+  );
   O = await f.company("K876 の別の会社", "OT");
   await f.admin.query("update scopes set name = '営業' where id = $1", [T.rootScope]);
   JD = (

@@ -45,8 +45,8 @@ interface SubItem {
 const WS_ITEMS: SubItem[] = [
   { key: "members", label: "メンバー", icon: Users },
   { key: "rules", label: "決まり", icon: ShieldCheck },
-  { key: "log", label: "記録", icon: ClipboardList },
-  { key: "settings", label: "設定", icon: Settings },
+  { key: "log", label: "記録", icon: ClipboardList, href: "/audit" },
+  { key: "settings", label: "設定", icon: Settings, href: "/settings/company" },
 ];
 
 /** ワークスペースの管理の第 2 ナビ（自分の設定の第 2 ナビ MeSub と同じ形・クラス。メンバーのほかは F9・F10 の残りなので押せない） */

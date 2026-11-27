@@ -7,7 +7,7 @@
 import { countryOf } from "@kaname/auth/device";
 import { verifySignInCode, type SignInCodeOutcome } from "@kaname/auth/two_factor";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { kindOf, reply, type LoginDeps } from "./shared.js";
+import { kindOf, reply, type LoginDeps, type MemberState } from "./shared.js";
 
 /** コードの長さの上限（E-VAL-009） */
 const CODE_MAX = 64;
@@ -17,7 +17,7 @@ const blank = (v: string | undefined): boolean => v === undefined || v.trim() ==
 
 export function signInCodeFeature(
   d: LoginDeps,
-  memberGone: (token: string, ua: string | undefined) => Promise<boolean>,
+  memberState: (token: string, ua: string | undefined, invitation?: unknown) => Promise<MemberState>,
 ) {
   /** 前処理（入口の strict な形の確かめより前）：待ちの印が無い・コードが 1 つでない・文字でない（null・数・真偽）・空・64 文字を超えるは 422（部品を呼ばない・失敗の数に入れない）。
    *  コードは「どちらか 1 つだけが文字」で来る（契約の oneOf と同じ・K-638）。null は「無い」と見ない（本物の code と null の backup_code を通さない） */
@@ -35,9 +35,11 @@ export function signInCodeFeature(
     return { input: b };
   };
 
-  const answer = async (r: SignInCodeOutcome, ua: string | undefined): Promise<HookReply> => {
+  const answer = async (r: SignInCodeOutcome, ua: string | undefined, invitation: unknown): Promise<HookReply> => {
     if (r.ok) {
-      if (await memberGone(r.token, ua)) return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
+      // 会社の人が無い：体の招待の印が本人宛てで使えれば印を渡す（K-852）。そうでなければその場で閉じて 403
+      if ((await memberState(r.token, ua, invitation)) === "gone")
+        return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
       return { status: 201, body: { data: { token: r.token, backup_codes_left: r.backupCodesLeft } } };
     }
     switch (r.reason) {
@@ -63,7 +65,7 @@ export function signInCodeFeature(
         ...(ua ? { userAgent: ua } : {}),
         country: countryOf(a.c.req.raw.headers),
       });
-      return await answer(r, ua);
+      return await answer(r, ua, a.input["invitation"]);
     } catch (e) {
       // DB が落ちた・セッションを写す所で失敗した：500。部品の hook の失敗は部品が、入った後の後処理の失敗は verifySignInCode が
       //   その場でセッションを閉じてある（生きたセッションを残さない・K-322）

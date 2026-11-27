@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F12/ops/**",
+    "apps/api/src/hooks/ops-workspace.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-workspace.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-workspace.test.ts",
+    "apps/api/test/features/F12/ops-ws.harness.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-966.json"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_workspaces_id.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_members.test.ts"
+   ]
+  }
+ ]
+}

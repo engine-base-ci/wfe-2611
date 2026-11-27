@@ -1,5 +1,6 @@
 // 認証（Better Auth 1.7）。境界 B2：better-auth を import してよいのはこのパッケージだけ（CI G7）。
 // 表は Postgres の schema "kaname_auth"（RLS の対象の public とは分ける。Supabase は schema auth を自社の認証に使うので同じ名前にしない：T-F-18）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
+import { createHash } from "node:crypto";
 import { deviceOf } from "./device.js";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { APIError } from "better-auth/api";
@@ -45,7 +46,8 @@ export interface Mail {
   subject: string;
   text: string;
   url: string;
-  kind: "verify" | "reset" | "new_device";
+  /** ops_setup：運営の人がパスキーを付けるリンク（K-945・命令 ops:first と運営の人を足す口）*/
+  kind: "verify" | "reset" | "new_device" | "ops_setup";
 }
 export type Mailer = (m: Mail) => Promise<void>;
 /** 2 段階の待ちの印の長さ（秒・K-301） */
@@ -82,17 +84,41 @@ export const DISABLED_PATHS = [
   ...FRAGMENT_DISABLED_PATHS,
 ] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
+/** 会社の人が無い・抜けた（招待の印が無い・使えないときも同じ・K-852） */
+const MEMBER_LEFT = "E-AUTH-007";
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
   workspace_suspended: "E-AUTH-012",
-  member_left: "E-AUTH-007",
+  member_left: MEMBER_LEFT,
 };
 /** 止めの確かめができなかった（止めの関数が落ちた）ときの id。止める側に倒す（fail-closed・503） */
 export const LOGIN_GATE_DOWN = "E-PAGE-003";
 /** 部品の道（パスワード・6 けた・パスキー・直に呼ぶ）が止めで断られたときの印。signInWithLock と口はこの id で見分ける */
-export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([...Object.values(LOGIN_BLOCKED), LOGIN_GATE_DOWN]);
+/** 運営の人がパスキーでない道（パスワードなど）で入ろうとした（K-944・D-128.70・D-156.2）。運営の場所はパスキーしか使えない（403） */
+export const OPS_PASSKEY_ONLY = "E-AUTH-022";
+export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([
+  ...Object.values(LOGIN_BLOCKED),
+  LOGIN_GATE_DOWN,
+  OPS_PASSKEY_ONLY,
+]);
+/** パスキーで入る部品の道。部品 @better-auth/passkey の版の道の名前。版を上げたらここだけ直す（K944-API-001 が拾う）。
+ *  セッションの hook が「パスキーで入ったか」をこの道で見分ける（K-944。置き換える葉もこの定数を使う） */
+export const PASSKEY_VERIFY_PATH = "/passkey/verify-authentication";
+/** 例外の種類だけ（文や値は出さない） */
+const kindOf = (e: unknown): string => {
+  const x = e as { code?: unknown; name?: unknown } | null;
+  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+};
 /** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
 const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
+/** 招待の印（招待のリンクの印）を運ぶ要求の頭（K-852・D-154.89）。パスキーの確かめの道だけが読む。画面は別の origin なので CORS で許す */
+export const INVITATION_HEADER = "x-kaname-invitation";
+/** 招待の印の長さの上限（招待の口の TOKEN_MAX と同じ） */
+const INVITATION_MAX = 512;
+/** 使える会社が無い人の門（答え invite_only）を、招待の印を口の側が見る道（パスワードの段・6 けたの段・K-852） */
+const INVITE_BODY_PATHS = new Set(["/sign-in/email", "/two-factor/verify-totp", "/two-factor/verify-backup-code"]);
+/** 招待の印を頭で受けて hook が見る道（パスキーの確かめ・K-852） */
+const INVITE_HEADER_PATHS = new Set(["/passkey/verify-authentication"]);
 
 /** 部品（Better Auth）のログ。パスキーの確かめの失敗（@simplewebauthn の例外の文にチャレンジと期待の値が入る）は、例外の種類だけを出す */
 function authLog(level: "debug" | "info" | "warn" | "error", message: string, ...args: unknown[]): void {
@@ -103,6 +129,25 @@ function authLog(level: "debug" | "info" | "warn" | "error", message: string, ..
     return;
   }
   out(`[Better Auth] ${message}`, ...args);
+}
+
+/** パスキーの確かめの要求の頭の招待の印が、本人宛てで使え、本人が止められていないか（K-852）。
+ *  頭が無い・空白だけ・長すぎるは偽。確かめが落ちたら止める側に倒す（503・E-PAGE-003・門と同じ）。印の値はログに出さない */
+async function inviteHeaderOk(appPool: pg.Pool, userId: string, headers: Headers | undefined): Promise<boolean> {
+  const v = headers?.get(INVITATION_HEADER) ?? "";
+  if (v.length < 1 || v.length > INVITATION_MAX || !/\S/.test(v)) return false;
+  try {
+    const r = await appPool.query<{ ok: boolean }>("select app.login_invite_only($1, $2) as ok", [
+      userId,
+      createHash("sha256").update(v).digest("hex"),
+    ]);
+    return r.rows[0]?.ok === true;
+  } catch (e) {
+    const x = e as { code?: unknown; name?: unknown } | null;
+    const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+    console.error(`[auth] 招待の印の確かめができなかった（${why}）`); // 文や値は出さない（種類だけ）
+    throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+  }
 }
 
 /** 型は core の Auth（plugin の endpoint 型は使わない＝zod の内部型を .d.ts に出さない） */
@@ -223,7 +268,7 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
           // 止めの 1 か所（K-303・D-128.91）：どの道（パスワード・2 段階の 6 けた・パスキー・部品を直に呼ぶ）でも、セッションを作る直前にここを通る。
           //   止められた人・止められた会社・抜けた人は APIError（body.code が errors.json の id・文は口が目録から引く）で断り、セッションを作らせない。
           //   止めの関数が落ちたら止める側に倒す（503・E-PAGE-003）。理由の記録（security_events の login_blocked）は関数が書く
-          before: async (session) => {
+          before: async (session, ctx) => {
             let verdict: string | undefined;
             try {
               const r = await o.appPool.query<{ verdict: string }>("select app.login_gate($1) as verdict", [
@@ -231,16 +276,40 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
               ]);
               verdict = r.rows[0]?.verdict;
             } catch (e) {
-              const x = e as { code?: unknown; name?: unknown } | null;
-              const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
-              console.error(`[auth] 止めの確かめができなかった（${why}）`); // 文や値は出さない（種類だけ）
+              console.error(`[auth] 止めの確かめができなかった（${kindOf(e)}）`); // 文や値は出さない（種類だけ）
               throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
             }
-            if (verdict === "ok") return;
-            const code = verdict ? LOGIN_BLOCKED[verdict] : undefined;
-            // 知らない答え（関数と部品の版ずれ）も止める側に倒す
-            if (!code) throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
-            throw new APIError("FORBIDDEN", { code });
+            // 使える会社が無いが、本人宛ての使える招待があり止められていない（K-852・D-154.89）：招待の印が来た道だけ通す（通しても下の運営の確かめは通る）
+            if (verdict === "invite_only") {
+              const c = ctx as { path?: string; headers?: Headers } | null | undefined;
+              const path = c?.path ?? "";
+              const invited =
+                INVITE_BODY_PATHS.has(path) || // 体の招待の印は口の側が見る（無い・使えなければ口がその場で閉じる）
+                (INVITE_HEADER_PATHS.has(path) && (await inviteHeaderOk(o.appPool, session.userId, c?.headers)));
+              if (!invited) throw new APIError("FORBIDDEN", { code: MEMBER_LEFT });
+            } else if (verdict !== "ok") {
+              const code = verdict ? LOGIN_BLOCKED[verdict] : undefined;
+              // 知らない答え（関数と部品の版ずれ）も止める側に倒す
+              if (!code) throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+              throw new APIError("FORBIDDEN", { code });
+            }
+            // 運営の人はパスキーだけで入る（K-944・D-128.70・D-156.2）：パスキーでない道なら 403・E-AUTH-022 でセッションを作らせない。
+            //   運営の人かどうかは DB の関数だけが決める（関門 C2）。関数が落ちたら止める側に倒す（503・E-PAGE-003）
+            const viaPasskey = (ctx as { path?: string } | null)?.path === PASSKEY_VERIFY_PATH;
+            let ops: string | undefined;
+            try {
+              const r = await o.appPool.query<{ v: string }>("select app.ops_login_check($1, $2) as v", [
+                session.userId,
+                viaPasskey,
+              ]);
+              ops = r.rows[0]?.v;
+            } catch (e) {
+              console.error(`[auth] 運営の入り方の確かめができなかった（${kindOf(e)}）`);
+              throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+            }
+            if (ops === "ok") return;
+            if (ops === "passkey_only") throw new APIError("FORBIDDEN", { code: OPS_PASSKEY_ONLY });
+            throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
           },
           // 認証のセッションができたら public.sessions に写す（失効の正はこちら）。会社に属していない利用者は null（登録の途中）
           after: async (session, ctx) => {
@@ -267,6 +336,23 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
               // 写せなかったら認証側のセッションも消してから上げる（半分だけ入った状態を残さない・K-301・G-15）
               await pool.query("delete from kaname_auth.session where id = $1", [session.id]).catch(() => undefined);
               throw e;
+            }
+            // 入り方を残す（K-944）：パスキーで入ったセッションに login_kind 'passkey'。解決は運営の人のこの印のセッションだけを運営として解く（2 層目）。
+            //   書けなかったら認証側のセッションを消してから上げる（半分だけ入った状態を残さない）。消すのも落ちたら種類だけをログに出して元の失敗を上げる
+            //   （残った認証側のセッションは入り方が無いので、運営として解けない）
+            if ((ctx as { path?: string } | null)?.path === PASSKEY_VERIFY_PATH) {
+              try {
+                await o.appPool.query("select app.mark_session_login_kind($1, 'passkey')", [session.id]);
+              } catch (e) {
+                await pool
+                  .query("delete from kaname_auth.session where id = $1", [session.id])
+                  .catch((x: unknown) =>
+                    console.error(`[auth] 入り方を書けなかった後の後片付けができなかった（${kindOf(x)}）`),
+                  );
+                // 元の例外をそのまま投げると、部品 @better-auth/passkey が APIError でない例外を 400 に包む。止めの hook と同じ 503・E-PAGE-003 で上げる
+                console.error(`[auth] 入り方を書けなかった（${kindOf(e)}）`);
+                throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+              }
             }
             // 同意し直しの印（K-53・D-125.162）：今の版の利用規約かプライバシーポリシーにまだ同意していなければ、このセッションに立てる。
             //   パスワード・パスキー・2 段階の後・確認のメールで確定した直後のどれもこの hook を通る。Bridge のセッションには立てない（D-128.137）

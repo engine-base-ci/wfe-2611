@@ -1,0 +1,33 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/billing/src/invoice-pdf.ts",
+    "packages/billing/assets/NotoSansJP-Regular.ttf"
+   ],
+   "tests": [
+    "packages/billing/test/invoice-pdf.test.ts",
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F12/ops/invoices-pdf.ts",
+    "apps/api/src/features/F12/ops/invoices-issue.ts",
+    "apps/api/src/hooks/ops-invoices-issue.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
+    "apps/api/test/features/F12/ops-invoices-issue.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/billing-ops.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts"
+   ]
+  }
+ ]
+}

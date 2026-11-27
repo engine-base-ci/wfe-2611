@@ -10,8 +10,9 @@ export interface PasskeyNetReply {
   body: Record<string, unknown>;
 }
 
-const bearer = (): Record<string, string> => {
-  const t = getToken();
+/** 頭の Bearer。token を渡したときはそれ（運営のパスキーを付けるだけのセッション・K-1003：ログインの印の置き場に置かない）、無ければログインの印 */
+const bearer = (token?: string): Record<string, string> => {
+  const t = token ?? getToken();
   return t ? { authorization: `Bearer ${t}` } : {};
 };
 async function reply(res: Response): Promise<PasskeyNetReply> {
@@ -21,9 +22,9 @@ async function reply(res: Response): Promise<PasskeyNetReply> {
 }
 
 /** 始めの口（部品 1.7.15 は GET）。道は /api/auth/passkey/ の下だけ */
-export async function passkeyGet(path: `/api/auth/passkey/${string}`): Promise<PasskeyNetReply> {
+export async function passkeyGet(path: `/api/auth/passkey/${string}`, token?: string): Promise<PasskeyNetReply> {
   const res = await fetch(`${apiBase()}${path}`, {
-    headers: { accept: "application/json", ...bearer() },
+    headers: { accept: "application/json", ...bearer(token) },
     credentials: "omit",
   });
   return reply(res);
@@ -34,6 +35,7 @@ export async function passkeyPost(
   path: `/api/auth/passkey/${string}`,
   body: unknown,
   challenge: string,
+  token?: string,
 ): Promise<PasskeyNetReply> {
   const res = await fetch(`${apiBase()}${path}`, {
     method: "POST",
@@ -41,7 +43,7 @@ export async function passkeyPost(
       accept: "application/json",
       "content-type": "application/json",
       [PASSKEY_CHALLENGE_HEADER]: challenge,
-      ...bearer(),
+      ...bearer(token),
     },
     credentials: "omit",
     body: JSON.stringify(body),
