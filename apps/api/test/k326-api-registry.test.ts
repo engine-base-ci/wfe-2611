@@ -150,11 +150,22 @@ describe("K-326 本物の一覧", () => {
     const HOOK_MODULES = await modules();
     const skipped = HOOK_MODULES.filter((m) => typeof m.fuzz === "object" && "skip" in m.fuzz);
     expect(skipped.map((m) => m.name).sort()).toEqual(
-      ["authHooks", "consentTermsHooks", "signupHooks", "talkStreamHooks", "verifyEmailHooks"].sort(),
+      [
+        "authHooks",
+        "consentTermsHooks",
+        "signupHooks",
+        "talkStreamHooks",
+        "verifyEmailHooks",
+        "meEmailHooks", // K-835（メールを替える・確かめのメールを送る）
+        "opsResendVerificationHooks", // K-967（運営が確かめのメールを送り直す）
+      ].sort(),
     );
     for (const m of skipped) {
       const why = (m.fuzz as { skip: string }).skip;
-      if (m.name === "talkStreamHooks") {
+      if (m.name === "meEmailHooks" || m.name === "opsResendVerificationHooks") {
+        // メールを送る口は的に送り口を渡さない（関門 C6・外へ出る）。振る舞いは K-835・K-967 の試験が持つ
+        expect(why, m.name).toContain("メールを送る口");
+      } else if (m.name === "talkStreamHooks") {
         // 流れの口は的に知らせの接続が無く必ず 503・差すと開いたまま（K-759）。振る舞いは K-759 の試験が持つ
         expect(why, m.name).toContain("流れの口");
         expect(why, m.name).toContain("K-759 の試験");
