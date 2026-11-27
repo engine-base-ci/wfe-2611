@@ -225,7 +225,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           async (cl) =>
             (
               await cl.query<Row>(
-                `select k.id, k.name, k.color, k.position, k.is_builtin, k.body_template, app.ticket_field_master(k.id) as fields
+                `select k.id, k.name, k.color, k.color_key, k.position, k.is_builtin, k.body_template, app.ticket_field_master(k.id) as fields
                    from ticket_kinds k
                   where k.tenant_id = app.tenant_id() and k.deleted_at is null
                   order by k.position, k.id
@@ -241,6 +241,8 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           id: k["id"],
           name: k["name"],
           color: k["color"] ?? null,
+          // 見分けの色 8 つの鍵（color は鍵から DB の引き金が合わせる 16 進・K-704）
+          color_key: k["color_key"] ?? null,
           position: k["position"],
           is_builtin: k["is_builtin"],
           // 種別のひな形（本文に入れる文書の木か null）と会社の項目のマスタ（値なし・並び位置の順・K-560）
