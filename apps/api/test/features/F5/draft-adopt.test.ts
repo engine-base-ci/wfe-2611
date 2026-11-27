@@ -2,6 +2,7 @@
 //   名前の頭の行 ID（K776-API-…）は 11_tickets/K-776.md の表と 1 対 1。
 //   口：POST /api/v1/ticket_draft_conversations/:id/adopt ← { ticket_id } → 201 { data: { conversation_id, ticket_id } }。作る画面の会話（draft）が、作ったチケットの会話（ticket）になる。
 //   土台は delegate-kit.ts の makeKit（本物の Postgres・本物の口）。会話・チケットは DB に直に置く（作る口・会話の口の形に頼らない）。口の登録は葉の hooks のファイルを最初に叩くときに 1 回だけ読む。
+//   K776-API-009・014（409・E-TALK-083）は K-783 が「時間の順に 1 つにまとめる」（D-153.36）に替え、K-783 の draft-adopt-merge.test.ts に移した（2026-11-24）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 import { randomUUID } from "node:crypto";
 import { join } from "node:path";
@@ -15,7 +16,6 @@ const HOOKS_DIR = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..",
 const NOT_CREATOR = "E-TALK-080"; // そのチケットを作った人でない（403）
 const NOT_DRAFT = "E-TALK-081"; // 作る画面の会話でない（自分の AI との会話など・409）
 const MOVED = "E-TALK-082"; // もう移した（409）
-const HAS_TALK = "E-TALK-083"; // そのチケットの会話が自分にもうある（409）
 
 let k: Kit;
 beforeAll(async () => {
@@ -234,24 +234,6 @@ describe("K-776 作った後に会話をチケットへ移す", () => {
     expect(await auditOf(c)).toHaveLength(1);
   });
 
-  it("K776-API-009 そのチケットの自分の会話がもう在る（右のパネルで先に話した）：409・E-TALK-083・作る画面の会話は作る画面の会話のまま・もう在る会話は変わらない。ほかの人のそのチケットの会話は邪魔しない（201）", async () => {
-    const p = await person("先に話した人");
-    const other = await person("ほかの人が話した");
-    const t = await raw(p);
-    const talk = await conv(p, "ticket", t);
-    const c = await conv(p);
-    const r = await adopt(p, c, { ticket_id: t });
-    expect(r.status, await r.clone().text()).toBe(409);
-    expect(await code(r)).toBe(HAS_TALK);
-    await stillDraft(c);
-    expect(await row(talk)).toMatchObject({ talk_kind: "ticket", ticket_id: t });
-    // ほかの人の会話は、人ごとに 1 つの決まりの外
-    const t2 = await raw(p, { title: "別のチケット" });
-    await conv(other, "ticket", t2);
-    const c2 = await conv(p);
-    expect((await adopt(p, c2, { ticket_id: t2 })).status).toBe(201);
-  });
-
   it("K776-API-010 動いている仕事があっても会話ごと移る：201。その仕事が終わると、返事は同じ会話に入る（会話の種類は ticket のまま）", async () => {
     const p = await person("動いている人");
     const pc: Device = await k.device(p);
@@ -311,24 +293,6 @@ describe("K-776 作った後に会話をチケットへ移す", () => {
     expect([a, b]).toContain(won);
     expect(await notesOf(c)).toHaveLength(1);
     expect(await auditOf(c)).toHaveLength(1);
-  });
-
-  it("K776-API-014 2 つの作る画面の会話を同じチケットへ同時に移す：1 つだけ通り（201 と 409・E-TALK-083）、人ごと・チケットごとに 1 つの決まりが守られる（500 にならない）", async () => {
-    const p = await person("同時の人 B");
-    const t = await raw(p);
-    const c1 = await conv(p);
-    const c2 = await conv(p);
-    const rs = await Promise.all([adopt(p, c1, { ticket_id: t }), adopt(p, c2, { ticket_id: t })]);
-    expect(rs.map((r) => r.status).sort()).toEqual([201, 409]);
-    expect(await code(rs.find((r) => r.status === 409)!)).toBe(HAS_TALK);
-    expect(
-      await k.n(
-        "select count(*) as n from conversations where owner_member_id = $1 and ticket_id = $2 and talk_kind = 'ticket' and deleted_at is null",
-        [p.id, t],
-      ),
-    ).toBe(1);
-    const lostId = rs[0]!.status === 409 ? c1 : c2;
-    expect(await row(lostId)).toMatchObject({ talk_kind: "draft", ticket_id: null });
   });
 
   it("K776-API-015 ログインしていないは 401・1 分に 61 回目は 429（retry_after_sec は 1〜60 の整数）。上限で止めた呼び出しは何も変えない", async () => {

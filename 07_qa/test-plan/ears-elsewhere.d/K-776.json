@@ -1,37 +1,88 @@
 {
- "ops": {
-  "adoptDraftConversation": {
-   "file": "apps/api/test/features/F5/draft-adopt.test.ts",
-   "reason": "会話を移す口は、会話の種類・持ち主・チケットを作った人・チケットの会話の有無で答えが変わる。生成の試験の種では会話とチケットの組を作れない（K-776）",
-   "covers": {
-    "test_post_ticket_draft_conversations_id_adopt_ok": "K776-API-001",
-    "test_post_ticket_draft_conversations_id_adopt_shape": "K776-API-001",
-    "test_post_ticket_draft_conversations_id_adopt_rejected_401": "K776-API-015",
-    "test_post_ticket_draft_conversations_id_adopt_rejected_403": "K776-API-003",
-    "test_post_ticket_draft_conversations_id_adopt_not_found": "K776-API-005",
-    "test_post_ticket_draft_conversations_id_adopt_conflict": "K776-API-007",
-    "test_post_ticket_draft_conversations_id_adopt_conflict_2": "K776-API-008",
-    "test_post_ticket_draft_conversations_id_adopt_conflict_3": "K776-API-009",
-    "test_post_ticket_draft_conversations_id_adopt_rejected_422": "K776-API-011",
-    "test_post_ticket_draft_conversations_id_adopt_rate_limited": "K776-API-015",
-    "test_post_ticket_draft_conversations_id_adopt_terms_pending": {
-     "file": "apps/api/test/features/F1/terms.test.ts",
-     "mark": "K53-API-005"
-    },
-    "test_post_ticket_draft_conversations_id_adopt_session_unresolved": "K776-API-016",
-    "test_post_ticket_draft_conversations_id_adopt_too_large": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-042"
-    },
-    "test_post_ticket_draft_conversations_id_adopt_session_unresolved_2": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-032"
-    }
+ "errors": [
+  {
+   "id": "E-TALK-080",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
    },
-   "na": {
-    "test_post_ticket_draft_conversations_id_adopt_ok_2": "チケットを作るのは作る口 createTicket（K-437）。この口は作る画面の会話をチケットの会話に付け替えるだけで、チケットも番号も作らない",
-    "test_post_ticket_draft_conversations_id_adopt_upstream_failed": "この口はサーバーの外を呼ばない（DB の会話の種類と 1 行の知らせと証跡を書くだけ）"
-   }
+   "when": "そのチケットを作った人でない人が、作る時の会話を移そうとした",
+   "false_when": "移す人がそのチケットを作った人",
+   "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
+   "action": "作った人に頼む",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "ほかの人が作ったチケットを指して、自分の作る画面の会話を移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-081",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話でない会話（自分の AI との会話）を移そうとした",
+   "false_when": "作る画面の会話（draft）を移した",
+   "message": "この会話は、チケットに移せません",
+   "action": "—",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "自分の AI との会話の id を指して移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-082",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もうチケットに移した会話を、もう 1 度移そうとした",
+   "false_when": "まだ移していない作る画面の会話を移した",
+   "message": "この会話は、もうチケットに移しています",
+   "action": "チケットの右のパネルで続ける",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "移した会話の id を指して、もう 1 度移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
   }
- }
+ ]
 }
