@@ -25224,7 +25224,10 @@
    ],
    "carry": [
     "07_qa/test-specs/k/approve-complete.md",
-    "apps/web/app/(dev)/dev/mock/k190/mocks.tsx",
+    "\"apps/web/app/(dev)/dev/mock/k190/mocks.tsx\"",
+    "11_tickets/K-190.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
     "07_functional/段1-K190/下絵.html"
    ],
    "depends_on": [
