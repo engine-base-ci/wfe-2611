@@ -336,6 +336,102 @@
    "path": "/api/v1/class_axes",
    "decision": "D-150.46",
    "reason": "分類の軸は会社が足す項目の「1 つ選ぶ」にまとめた。軸を読む口は listTicketFields に置き換えた（K-563 が外した口の記録・K-582 で足す）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clients",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（listClients・K-924）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clients/link-candidates",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（listClientLinkCandidates・K-924）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/clients",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（createClient・K-924）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clients/{id}",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（getClient・K-924）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/clients/{id}",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（updateClient・K-924）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clients/{id}/activity",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（listClientActivity・K-924）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/clients/{id}/share",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（updateClientShare・K-924）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clients/{id}/portal-preview",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（getClientPortalPreview・K-924）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/clients/{id}/contacts",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（createClientContact・K-924）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/client_contacts/{id}",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（updateClientContact・K-924）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/client_contacts/{id}",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（removeClientContact・K-924）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/client_contacts/{id}/invitation",
+   "decision": "D-155.35",
+   "reason": "取引先を持たない（代表の決め）。先方の人は役割ゲストで招き、見せ方はチケットごとのゲストのグループ（D-155.37）（inviteClientContact・K-924）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/tickets/{id}/acceptances",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（requestAcceptance・K-924・K-926 から前へ移した）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/acceptances/{id}/remind",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（remindAcceptance・K-924・K-926 から前へ移した）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/portal/acceptances/{id}",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（getPortalAcceptance・K-924・K-926 から前へ移した）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/portal/acceptances/{id}/answer",
+   "decision": "D-155.44",
+   "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（answerAcceptance・K-924・K-926 から前へ移した）"
   }
  ]
 }

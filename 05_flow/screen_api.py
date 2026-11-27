@@ -17,7 +17,7 @@ SCREEN_API = {
         ("GET", "/me", "A74", "members", "getMe", ["tenant_memberships", "tenants"]),
         ("GET", "/search", "A21", T, "search", ["knowledge_pages", "ticket_decisions", "conversations"]),
         # 1 件を開く・作る・直す・消す
-        ("GET", "/tickets/:id", "A101", T, "getTicket", ["ticket_sections", "test_specs", "ticket_links", "clients"]),
+        ("GET", "/tickets/:id", "A101", T, "getTicket", ["ticket_sections", "test_specs", "ticket_links", "clients", "ticket_guest_shares", "guest_groups"]),
         ("POST", "/tickets", "A99|A98|A129", T, "createTicket", ["ticket_sections", "test_specs", "conversations"]),
         ("PATCH", "/tickets/:id", "A103|A17|A115|A113", T, "updateTicket", ["ticket_class_values", "ticket_messages"]),
         ("GET", "/tickets/:id/kind-change-preview", "A103", T, "previewTicketKindChange", ["kind_sections", "ticket_sections"]),
@@ -76,8 +76,6 @@ SCREEN_API = {
         ("GET", "/tickets/:id/artifacts", "A101", "artifacts", "listTicketArtifacts", ["artifact_versions"]),
         ("GET", "/artifact_versions/:id", "A101", "artifact_versions", "getArtifactVersion", []),
         ("POST", "/tickets/:id/attachments", "A101", "attachments", "createTicketAttachment", []),
-        ("POST", "/tickets/:id/acceptances", "A123", "acceptances", "requestAcceptance", ["client_contacts", "notifications"]),
-        ("PATCH", "/tickets/:id/client-share", "A123", T, "updateTicketClientShare", ["clients"]),
         # 一覧の設定・知らせ・選ぶもの
         ("GET", "/saved_views", "A58", "saved_views", "listSavedViews", []),
         ("POST", "/saved_views", "A58", "saved_views", "createSavedView", []),
@@ -92,7 +90,6 @@ SCREEN_API = {
         ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
-        ("GET", "/clients", "A103", "clients", "listClients", []),
     ],
     # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
     "approvals": [
@@ -353,41 +350,26 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- 取引先とクライアントの場所（08_api/phase1/08_取引先とクライアントの場所.md）
     "clients": [
-        ("GET", "/clients", "A121", "clients", "listClients", ["client_groups", "client_contacts", "client_requests", "acceptances", "tickets"]),
-        ("GET", "/clients/link-candidates", "A121", T, "listClientLinkCandidates", ["clients"]),
-        ("POST", "/clients", "A121", "clients", "createClient", ["client_groups", T, "audit_events"]),
-        ("GET", "/clients/:id", "A121", "clients", "getClient", ["client_groups", "client_contacts", "client_requests", "acceptances", T, "policies", "knowledge_pages"]),
-        ("PATCH", "/clients/:id", "A121", "clients", "updateClient", ["client_groups", "audit_events"]),
-        ("GET", "/clients/:id/activity", "A121", "ticket_messages", "listClientActivity", ["client_requests", "acceptances", "action_runs"]),
-        ("PATCH", "/clients/:id/share", "A121", "clients", "updateClientShare", ["ticket_kinds", "audit_events"]),
-        ("GET", "/clients/:id/portal-preview", "A121", "clients", "getClientPortalPreview", [T, "acceptances", "client_requests"]),
-        ("POST", "/clients/:id/contacts", "A121", "client_contacts", "createClientContact", ["invitations", "notifications", "audit_events"]),
-        ("PATCH", "/client_contacts/:id", "A121", "client_contacts", "updateClientContact", ["audit_events"]),
-        ("DELETE", "/client_contacts/:id", "A121", "client_contacts", "removeClientContact", ["tenant_memberships", "sessions", "invitations", "audit_events"]),
-        ("POST", "/client_contacts/:id/invitation", "A121", "invitations", "inviteClientContact", ["notifications", "audit_events"]),
-        ("POST", "/acceptances/:id/remind", "A123", "acceptances", "remindAcceptance", ["notifications"]),
         ("GET", "/rules", "A121", "policies", "listRules", ["clients", "scopes"]),
         ("POST", "/rules", "A121", "policies", "createRule", ["approvals"]),
     ],
     "requests": [
-        ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["clients", "client_contacts"]),
+        ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["client_request_messages"]),
         ("GET", "/client_requests/:id", "A122", "client_requests", "getClientRequest", ["messages", "conversations", "client_contacts", "skills"]),
-        ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes"]),
-        ("POST", "/client_requests/:id/reply", "A122", "messages", "replyToClientRequest", ["client_requests", "notifications"]),
-        ("POST", "/client_requests/:id/accept", "A122", "client_requests", "acceptClientRequest", [T, "ticket_sections", "messages", "notifications"]),
-        ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["messages", "notifications"]),
+        ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes", "client_requests", "audit_events"]),
+        ("POST", "/client_requests/:id/reply", "A122", "client_requests", "replyToClientRequest", ["client_request_messages", "notifications", "audit_events"]),
+        ("POST", "/client_requests/:id/accept", "A122", "client_requests", "acceptClientRequest", [T, "ticket_sections", "ticket_messages", "ticket_guest_shares", "client_request_messages", "notifications", "audit_events"]),
+        ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["notifications", "audit_events"]),
     ],
     "portal": [
-        ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["acceptances", T, "clients"]),
+        ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["client_requests", T]),
         ("POST", "/portal/requests/questions", "A124", "client_requests", "askPortalRequestQuestions", ["bridge_jobs"]),
-        ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["conversations", "attachments", "notifications", "bridge_jobs"]),
-        ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["messages"]),
-        ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_requests", "notifications"]),
-        ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
-        ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", ["artifacts", "ticket_messages"]),
-        ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
-        ("POST", "/portal/acceptances/:id/answer", "A126", "acceptances", "answerAcceptance", [T, "ticket_messages", "notifications"]),
-        ("GET", "/portal/notices", "A125", "notices", "listPortalNotices", ["status_incidents"]),
+        ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["client_request_messages", "attachments", "notifications"]),   # K-907
+        ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["client_request_messages"]),   # K-907
+        ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_request_messages", "client_requests", "notifications"]),   # K-908
+        ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", ["attachments"]),   # K-909：置いたら下書きの行を書く
+        ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", [T, "ticket_sections", "ticket_messages"]),
+        ("GET", "/portal/notices", "A125", "notices", "listPortalNotices", ["notices"]),
     ],
     # ---------------------------------------------------------------- ナレッジ（08_api/phase1/09_ナレッジ.md）
     "knowledge": [
@@ -560,6 +542,8 @@ INPUTS = {
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
+# list で始まるが、data に並びでなく 1 つの形（例：items と counts）を返す口（K-892）。一覧の問い合わせ（cursor・limit・sort）を契約に足さない。チケットごとの分は screen_api.d に書く
+OBJECT_OPS: set[str] = set()
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
@@ -1115,7 +1099,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean", "device_id": "string"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "handover": "object?", "handover_kinds": "string[]", "body": "object", "fields": "array", "spec_count": "integer", "spec_unchecked": "integer", "no_spec_reason": "string?", "parent": "object?", "child_count": "integer", "link_count": "integer", "results": "object"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405。body（本文 { doc, text, version }・行が無ければ空の本文で版 0）・fields（その種別で出す会社の項目と値）・spec_count と spec_unchecked（確認項目の数と未チェックの数）・no_spec_reason・parent（見える親は鍵 6・見えない親は番号だけ・無ければ null）・child_count（見える直接の子）・link_count・results（成果物・決定ログ・申し送りが在るときだけ鍵が出る）は K-560
+    "getTicket": ("TicketDetail", {"ticket": "object", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "guest_share": "object", "handover": "object?", "handover_kinds": "string[]", "body": "object", "fields": "array", "spec_count": "integer", "spec_unchecked": "integer", "no_spec_reason": "string?", "parent": "object?", "child_count": "integer", "link_count": "integer", "results": "object"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。guest_share（見せているゲストのグループ shared の id と名前・見ている人が変えられるか can_change）は K-905。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405。body（本文 { doc, text, version }・行が無ければ空の本文で版 0）・fields（その種別で出す会社の項目と値）・spec_count と spec_unchecked（確認項目の数と未チェックの数）・no_spec_reason・parent（見える親は鍵 6・見えない親は番号だけ・無ければ null）・child_count（見える直接の子）・link_count・results（成果物・決定ログ・申し送りが在るときだけ鍵が出る）は K-560
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "body_template": "object?", "fields": "array"}),   # 区画 sections は K-578 が外した。body_template（種別のひな形）と fields（その種別で出す会社の項目のマスタ・値なし・TicketField の鍵 7）は K-560
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
@@ -1153,17 +1137,11 @@ RESPONSES = {
     "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
     "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
-    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
-    "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
-    "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
-    "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
-    "getClientPortalPreview": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
-    "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "ticket_draft": "object", "questions": "array", "reply_draft": "string", "route_suggestion": "object"}),
-    "getPortalHome": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
+    "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "routes": "array", "can_act": "boolean", "pc_connected": "boolean", "ticket_draft": "object?", "questions": "array", "reply_draft": "string?", "route_suggestion": "object?"}),   # K-892：案は draft_state が ready のときだけ（無ければ null）
+    "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
-    "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
-    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
-    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
+    "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array", "can_write": "boolean"}),
+    "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
@@ -1199,7 +1177,6 @@ META = {
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
-    "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
     "listOpsInvoices": {"summary": "object"},
@@ -1216,7 +1193,6 @@ QUERIES = {
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
-    "listClients": ["q", "mine", "scope_id", "has_requests", "waiting_acceptance"],
     "listSavedViews": ["share"],
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
@@ -1233,9 +1209,7 @@ QUERIES = {
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
-    "listClientActivity": ["client_visible"],
-    "listClientRequests": ["state", "client_id"],
-    "listClientLinkCandidates": ["name", "domain"],
+    "listClientRequests": ["state"],
     "listKnowledgePages": ["scope_id", "parent_id", "topic", "owner_id", "state", "sort"],
     "searchKnowledgeLinkTargets": ["q"],
     "listKnowledgeVerifications": ["mine", "soon"],
@@ -1306,7 +1280,6 @@ PERMS = {
     "listTicketArtifacts": ("read", "そのチケットを見られる人", False),
     "getArtifactVersion": ("read", "そのチケットを見られる人（ファイルは期限つきの署名 URL）", False),
     "createTicketAttachment": ("write", "そのグループの人（大きさ・種類の上限）", False),
-    "requestAcceptance": ("assignee", "担当者とマネージャー。送る先はその取引先の人だけ", False),
     "listSavedViews": ("self", "自分のものと、グループの全員に見せたもの", False),
     "createSavedView": ("self", "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）", False),
     "updateSavedView": ("self", "作った人と、グループの全員向けの物は見せているグループのマネージャー（名前・条件・列・詰め方だけ。見せる相手を変えられるのは作った人だけ）", False),
@@ -1318,7 +1291,6 @@ PERMS = {
     "listTicketStages": ("read", "同上", False),
     "listTicketFields": ("read", "そのワークスペースのメンバー", False),
     "listMembers": ("read", "同上（メールは管理者と本人だけ）", False),
-    "listClients": ("read", "見られる取引先だけ（担当グループだけの取引先・D-128.54）", False),
     # 承認待ち
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
@@ -1530,35 +1502,20 @@ PERMS = {
     "downloadInvoicePdf": ("admin", "同上（期限つきの署名 URL）", False),
     "updateBillingContact": ("admin", "同上", False),
     # 取引先（社内・D-128.53・D-128.54）
-    "updateTicketClientShare": ("assignee", "担当者とマネージャー。テスト仕様・決定ログ・分身の記録は見せられない（D-128.53）", False),
-    "listClientLinkCandidates": ("write", "取引先を足す人。見られるチケットの中だけ", False),
-    "createClient": ("write", "メンバー以上（閲覧のみは不可）", False),
-    "getClient": ("read", "見られる取引先だけ（担当グループだけの取引先はそのグループの人と管理者）。チケットはグループの権限で見える", False),
-    "updateClient": ("manager", "取引先の担当・担当グループのマネージャー・管理者", False),
-    "listClientActivity": ("read", "同上。チケットのやり取りは見られるものだけ", False),
-    "updateClientShare": ("manager", "取引先の担当・担当グループのマネージャー・管理者。テスト仕様・決定ログ・分身の記録は見せられない", False),
-    "getClientPortalPreview": ("read", "見られる取引先だけ（先方からの見え方を見るだけ）", False),
-    "createClientContact": ("manager", "取引先の担当・担当グループのマネージャー・管理者", False),
-    "updateClientContact": ("manager", "同上", False),
-    "removeClientContact": ("manager", "同上。外すとクライアントの場所に入れなくなり、セッションはすぐ切れる", False),
-    "inviteClientContact": ("manager", "同上（7 日で切れる招待）", False),
-    "remindAcceptance": ("assignee", "そのチケットの担当者とマネージャー", False),
-    "listClientRequests": ("read", "見られる取引先の依頼だけ", False),
-    "getClientRequest": ("read", "同上。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
-    "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
-    "replyToClientRequest": ("write", "同上。返事は先方に見える", False),
-    "acceptClientRequest": ("write", "同上。受けるとチケットになり依頼とつながったまま残る", False),
-    "declineClientRequest": ("write", "同上（理由を返す）", False),
+    "listClientRequests": ("read", "見られる届け先の依頼だけ（ゲストのグループの依頼・届け先の社内のグループが見える人と会社全体の edit を持つ人）", False),
+    "getClientRequest": ("read", "同上（見えなければ 404）。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
+    "updateClientRequest": ("write", "届け先で client_requests を edit できる人（届け先のグループを変える）", False),
+    "replyToClientRequest": ("write", "届け先で client_requests を edit できる人。返事は先方に見える", False),
+    "acceptClientRequest": ("write", "届け先で client_requests を edit でき、グループに tickets を edit できる人。受けると普通のチケットになり、依頼のやり取りがチャットの頭に残る", False),
+    "declineClientRequest": ("write", "届け先で client_requests を edit できる人（理由は出し手に見える）", False),
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
-    "getPortalHome": ("client", "自分の取引先の、見せると決めたものだけ（D-128.100）", False),
-    "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
-    "createPortalRequest": ("client", "「依頼できる」の人だけ。同じ取引先の人に見える", False),
-    "getPortalRequest": ("client", "自分の取引先の依頼だけ", False),
-    "postPortalRequestMessage": ("client", "「依頼できる」の人だけ。自分の取引先の依頼だけ", False),
-    "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
-    "getPortalTicket": ("client", "自分の取引先のチケットで、見せると決めた項目だけ", False),
-    "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
-    "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
+    "getPortalHome": ("client", "自分のゲストのグループの依頼と、見せてもらったチケットだけ", False),
+    "askPortalRequestQuestions": ("client", "ゲスト。依頼が届く社内のグループの担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いた字はデータとして渡す", False),
+    "createPortalRequest": ("client", "ゲスト。自分のゲストのグループの依頼として出す（見るだけの形は無い）", False),
+    "getPortalRequest": ("client", "自分のゲストのグループの依頼だけ", False),
+    "postPortalRequestMessage": ("client", "ゲスト。自分のゲストのグループの依頼で、まだ決まっていない物だけ", False),
+    "uploadPortalAttachment": ("client", "ゲスト。ファイルは大きさと種類を検査してから置く（関門 C4）。依頼に付くまでは本人の下書き", False),
+    "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
     "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
     "getKnowledgeTree": ("read", "同上", False),
@@ -1637,7 +1594,7 @@ PERMS = {
     "markNoticeRead": ("self", "本人の既読だけ", False),
     "getServiceStatusForMember": ("read", "ワークスペースのメンバー", False),
     "getServiceStatus": ("public", "誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）", False),
-    "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
+    "listPortalNotices": ("client", "ゲスト（全部向けの障害・メンテだけ）", False),
 }
 
 # 成功の状態コード（既定は POST 201・それ以外 200）。POST でも「作らず決めるだけ」で 200 を返す口だけ書く（K-410）。チケットごとの分は screen_api.d に書く

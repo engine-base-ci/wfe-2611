@@ -6,7 +6,7 @@
 //   本人確認は取り直さない（D-128.177：キャンバスの「本人確認」の文と口は使わない）。
 //   答えを待つ間は主ボタン・「やめる」が押せず、Esc でも閉じない（Confirm の busy）。開き直すと目で見たの印は外れている
 import { useEffect, useState } from "react";
-import { Confirm } from "@/components/k";
+import { Checkbox, Confirm } from "@/components/k";
 
 const IRREVERSIBLE = "取り消せません";
 const SEEN = "成果物を目で見た";
@@ -44,10 +44,9 @@ export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, bus
       }}
     >
       {irreversible ? (
-        <label className="k-dialog-check">
-          <input type="checkbox" checked={seen} disabled={busy} onChange={(e) => setSeen(e.target.checked)} />
-          <span>{SEEN}</span>
-        </label>
+        <Checkbox size="sm" checked={seen} disabled={busy} onChange={(e) => setSeen(e.target.checked)}>
+          {SEEN}
+        </Checkbox>
       ) : null}
     </Confirm>
   );

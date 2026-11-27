@@ -10,7 +10,7 @@
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
-  "ui": 19,
+  "ui": 20,
   "packages": 13,
   "errors": 287,
   "stack": 56,
@@ -7524,6 +7524,15 @@
     "Select"
    ],
    "what": "選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる"
+  },
+  {
+   "file": "apps/web/components/k/choice",
+   "exports": [
+    "Checkbox",
+    "Radio",
+    "RadioGroup"
+   ],
+   "what": "丸い選択・四角い選択（K-642・正本 components.choice・choice-box）。画面はネイティブの丸・四角を直に書かず、ここだけを使う"
   },
   {
    "file": "apps/web/components/k/menu",

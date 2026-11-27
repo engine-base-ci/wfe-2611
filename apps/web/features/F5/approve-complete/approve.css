@@ -248,7 +248,7 @@
 }
 
 /* 完了の小窓（K-183・形は K-229 のキャンバス StCompleteModal）：段の間は小窓の本文と同じ・狭い幅でも折り返して横にはみ出さない。
-   実施事項の枠とチェックの行は小窓の部品（.k-dialog-group・.k-dialog-check） */
+   実施事項の枠は小窓の部品（.k-dialog-group）、チェックの行は共通の部品（.k-choice・K-642） */
 .k63-complete {
   display: grid;
   gap: var(--k-c-dialog-body-gap);

@@ -24,17 +24,6 @@
   color: var(--k-on-surface-variant);
   font-size: var(--k-text-body-sm);
 }
-/* 同意のチェック：label がチェックを包む。間は 8 とチェックの既定の余白（大きさは素のまま） */
-.k-terms-check {
-  display: flex;
-  align-items: center;
-  gap: var(--k-s-sm);
-  font-size: var(--k-text-body);
-}
-/* 全体の初めの決まり（* の余白 0）を外し、ブラウザの既定の余白に戻す（キャンバスはこの余白で見える間 11） */
-.k-terms-check input {
-  margin: revert;
-}
 /* ログアウト：地なし・13px・灰・高さ 36（キャンバス AuthConsent） */
 .k-btn.k-terms-out {
   min-height: 36px;

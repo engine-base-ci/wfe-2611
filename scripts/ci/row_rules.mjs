@@ -32,6 +32,12 @@ export const ROW_EXEMPT_FIELDS = {
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },
+  updateGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
+  deleteGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
   restoreTicket: {
     id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
   },
@@ -47,8 +53,6 @@ const exemptField = (op, field) => {
 const ME = "app.user_id()";
 const TICKET_PEOPLE = (t) => `(${t}.assignee_member_id = ${ME} or ${t}.created_by = ${ME} or app.manages_scope(${t}.scope_id))`;
 const VIA_TICKET = (col = "ticket_id") => `exists (select 1 from tickets t where t.id = ${col} and ${TICKET_PEOPLE("t")})`;
-const CLIENT_MANAGER = (cid) =>
-  `(app.client_editable(${cid}) or exists (select 1 from client_groups g where g.client_id = ${cid} and g.deleted_at is null and app.manages_scope(g.scope_id)))`;
 
 /** 言葉 → :id の表 → 条件。read は「行が見える」だけ（RLS の select がそのまま守り） */
 export const RULES = {
@@ -84,7 +88,6 @@ export const RULES = {
   assignee: {
     // 担当者・作成者・マネージャー。戻すは消した本人も（D-128.84）
     tickets: `(${TICKET_PEOPLE("tickets")} or deleted_by = ${ME})`,
-    acceptances: VIA_TICKET(),
     // 実行：始めた人・そのグループのマネージャー・その実行の承認のチケットの担当者
     action_runs: `(created_by = ${ME} or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = ${ME}))`,
   },
@@ -96,11 +99,7 @@ export const RULES = {
   recipient: {
     ticket_handovers: `to_member_id = ${ME}`,
   },
-  manager: {
-    // 取引先の担当・担当グループのマネージャー・管理者
-    clients: CLIENT_MANAGER("clients.id"),
-    client_contacts: CLIENT_MANAGER("client_contacts.client_id"),
-  },
+  manager: {},
 };
 /** 口ごとに言葉の中の人が違うもの（screen_api.py の範囲の説明） */
 export const OP_RULES = {

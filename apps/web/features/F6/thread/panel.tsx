@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { makeChangeCtx } from "@/features/F4/thread-lines/change-ctx";
 import { RunLogDialog } from "@/features/F5/delegate/run-log";
+import { GuestThreadMarks } from "@/features/F11/share/thread-marks";
 import { usePanelTab } from "../scope";
 import { TalkComposer } from "./composer";
 import { FromMessageAction } from "./from-message";
@@ -88,16 +89,22 @@ function PagePanel({ ticket, attrs }: { ticket: SlotTicket; attrs: ReactNode }):
               {...(tl.olderError ? { olderError: tl.olderError } : {})}
               renderPost={(post) => {
                 const row = rowById.get(post.id);
-                if (!row) return <Post post={post} />;
+                // ゲストに見えるやり取り・依頼のやり取りの頭の印（F11・K-905）。印の無いチケットでは中身をそのまま返す
                 return (
-                  <MessageMenu
-                    ticket={ticket}
-                    item={row}
-                    post={post}
-                    people={tl.people}
-                    onQuote={() => setQuote(quoteOf(row))}
-                    decideSlot={<FromMessageAction ticket={ticket} item={row} post={post} />}
-                  />
+                  <GuestThreadMarks ticket={ticket} rows={tl.items ?? []} postId={post.id} order={order}>
+                    {row ? (
+                      <MessageMenu
+                        ticket={ticket}
+                        item={row}
+                        post={post}
+                        people={tl.people}
+                        onQuote={() => setQuote(quoteOf(row))}
+                        decideSlot={<FromMessageAction ticket={ticket} item={row} post={post} />}
+                      />
+                    ) : (
+                      <Post post={post} />
+                    )}
+                  </GuestThreadMarks>
                 );
               }}
             />

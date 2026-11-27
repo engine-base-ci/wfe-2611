@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F11/acceptances-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・build_functional.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-71.md・01_hearing/決定ログ_進行中.md を readFileSync で読み、git grep で外した操作 ID を探す（K926-API-002〜010）"
+ }
+}

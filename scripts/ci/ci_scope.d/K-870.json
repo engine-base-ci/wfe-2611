@@ -1,0 +1,42 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "05_flow/flow.json",
+    "05_flow/flows.json",
+    "05_flow/phase1.py",
+    "05_flow/screen_api.py",
+    "apps/web/lib/nav.ts",
+    "apps/web/lib/routes.ts",
+    "apps/web/lib/built-routes.ts",
+    "11_tickets/K-71.md",
+    "11_tickets/K-144.md",
+    "11_tickets/K-60.md",
+    "11_tickets/K-62.md",
+    "11_tickets/K-64.md",
+    "11_tickets/K-92.md",
+    "04_design/DESIGN-kaname.md",
+    "04_design/DESIGN-kaname-preview.html",
+    "04_design/gen_preview.py",
+    "04_design/canvas-screens.json",
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "scripts/ci/trace_gate.py",
+    "scripts/ci/decision_source_gate.py",
+    "scripts/ci/flow_gate.py",
+    "scripts/ci/flow_db_gate.py",
+    "scripts/ci/canvas_gate.py",
+    "scripts/ci/canvas_design_gate.py",
+    "scripts/ci/gen_routes.mjs"
+   ],
+   "tests": [
+    "scripts/ci/k870_guest_docs_test.py"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "scripts/ci/k870_guest_docs_test.py": "決定ログ 01_hearing/決定ログ_進行中.md と答えの記録・流れ 05_flow/flow.json・flows.json・screen_api.py・生成物 apps/web/lib/nav.ts・routes.ts・built-routes.ts・親と古い葉の md（K-71・K-144・K-60・K-62・K-64・K-92・K-870）・正本 04_design/DESIGN-kaname.md・プレビュー・gen_preview.py・絵 04_design/canvas/*.dc.html・作り手の元 04_design/canvas_gen（base・ed2.py）・対応表 04_design/canvas-screens.json を読み、trace_gate.py・decision_source_gate.py・flow_gate.py・flow_db_gate.py・canvas_gate.py・canvas_design_gate.py・gen_routes.mjs check を子プロセスで流す（K-870）"
+ }
+}

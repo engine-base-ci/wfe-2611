@@ -9,6 +9,7 @@ export {
   type PasswordFieldProps,
 } from "./field";
 export { Select, type SelectOption, type SelectProps } from "./select";
+export { Checkbox, Radio, RadioGroup, type CheckboxProps, type RadioProps, type RadioGroupProps } from "./choice";
 export {
   Menu,
   MenuTrigger,

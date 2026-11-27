@@ -1,0 +1,36 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "05_flow/screen_api.py",
+        "05_flow/screen_api.d/**",
+        "08_api/openapi.yaml",
+        "08_api/endpoints.json",
+        "08_api/types.ts",
+        "08_api/lint-mapping.json",
+        "08_api/retired-endpoints.json",
+        "08_api/phase1/08_取引先とクライアントの場所.md",
+        "08_api/phase1/01_チケット.md",
+        "03_architecture/catalog.json",
+        "03_architecture/catalog.md",
+        "packages/contracts/src/registry.ts",
+        "packages/contracts/src/ops.ts",
+        "apps/api/src/routes/index.ts",
+        "apps/api/src/routes/clients.ts",
+        "apps/api/src/routes/client_contacts.ts",
+        "scripts/ci/row_rules.mjs",
+        "scripts/ci/decision_source_gate.py",
+        "11_tickets/K-59.md",
+        "11_tickets/K-71.md",
+        "01_hearing/決定ログ_進行中.md",
+        "01_hearing/decider-answers.jsonl"
+      ],
+      "tests": [
+        "apps/api/test/features/F11/clients-retire.test.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/api/test/features/F11/clients-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-59.md・K-71.md・01_hearing/決定ログ_進行中.md・01_hearing/decider-answers.jsonl を readFileSync で読み、scripts/ci/decision_source_gate.py を子プロセスで流し、git grep で外した操作 ID を探す（K924-API-002〜011）・K-924"
+  }
+}

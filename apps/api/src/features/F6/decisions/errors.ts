@@ -16,9 +16,6 @@ export const fromCatalog = (code: string, status: number, o: { field?: string; m
   };
 };
 
-/** 取引先のルールにするのは取引先の画面ができてから（段 12・代表の答え ㉒） */
-export const CLIENT_RULE_LATER = "取引先の画面ができてから使えます";
-
 /** action が無い・知らない言葉（改める・取り消すの口が関数を呼ぶ前に使う・K-391）。入口の zod は enum を読まないので口が自分で断る */
 export const badAction = (): HookReply => ({
   status: 422,
@@ -56,15 +53,14 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
     return fromCatalog("E-PAGE-001", 404, { field: "decided_by_member_id", message: DECIDER_NOT_FOUND });
   if (word === "bad_source")
     return fromCatalog("E-PAGE-001", 404, { field: "source_message_id", message: SOURCE_NOT_FOUND });
-  // 取引先のルールにする：段 12 の取引先の画面ができるまで、今の状態ではできない（409・PM の決め）。details は決めた文
-  if (word === "not_yet") return fromCatalog("E-CONF-037", 409, { field: "promoted_to", message: CLIENT_RULE_LATER });
-  if (word === "bad_promoted")
+  // 送ってよいのは ticket だけ。入口の形は promoted_to の値を見ないので、ticket 以外（DB の関数が not_yet と返すもの）もここで 422（K-916）
+  if (word === "bad_promoted" || word === "not_yet")
     return {
       status: 422,
       body: {
         error: "validation_failed",
         code: "VALIDATION_ERROR",
-        details: [{ field: "promoted_to", message: "ticket か client_rule" }],
+        details: [{ field: "promoted_to", message: "ticket だけ" }],
       },
     };
   // 守りの判定で例外（guard_failed）と知らない言葉は止める側
