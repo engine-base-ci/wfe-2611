@@ -1110,7 +1110,7 @@ RESPONSES = {
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
-    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
+    "getPlanProposalImpact": ("PlanProposalImpact", {"customers": "integer", "stopped": "integer", "monthly_revenue_diff": "integer", "immediate": "boolean", "existing_from": "string?", "new_from": "string?", "by_workspace": "array"}),   # K-989：7 欄（K-991 の影響の区画の正本）
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
     "getMember": ("MemberDetail", {"member": "object", "groups": "array", "role_bundle": "object", "granted": "array", "revoked": "array", "assigned": "object", "clone": "object", "login": "object", "recent_events": "array"}),
@@ -1418,7 +1418,7 @@ PERMS = {
     "listPlanProposals": ("ops:plan_propose", "同上", False),
     "createPlanProposal": ("ops:plan_propose", "値段の案を持つ運営の人。理由が必須", False),
     "updatePlanProposal": ("ops:plan_propose", "案を作った本人（決める人に回す前だけ）", False),
-    "getPlanProposalImpact": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
+    "getPlanProposalImpact": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     "submitPlanProposal": ("ops:plan_propose", "案を作った本人", False),
     "decidePlanProposal": ("ops:plan_decide", "値段を決めるを持つ運営の人。自分の案は決められない（決められる人が 1 人しかいないときだけ例外）。全部の顧客に効くので本人確認を取り直す（D-128.72）", True),
     "returnPlanProposal": ("ops:plan_decide", "同上（差し戻す理由が必須）", False),
