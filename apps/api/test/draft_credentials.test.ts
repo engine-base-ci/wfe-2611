@@ -35,7 +35,6 @@ const req = (method: string, path: string, body?: unknown, headers: Record<strin
     headers: { "content-type": "application/json", ...headers },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
-const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
@@ -146,52 +145,5 @@ describe("たたき台と預けたログイン情報（D-108）", () => {
     expect((await req("GET", "/onboard/draft")).status).toBe(401);
   });
 
-  it("ログイン情報：入れたサービス名と宛先が残り、台帳の可否つきで一覧に出る。中身は返らず、他の人には見えない", async () => {
-    const { H } = await signUp();
-    const d = `qa-${Date.now().toString(36)}.example.jp`;
-    await admin.query(
-      "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
-    );
-    await admin.query(
-      "insert into service_registry (tenant_id, name, domain, automation_verdict_id) values (app.ops_tenant_id(), 'QA会計', $1, 'api')",
-      [d],
-    );
-    try {
-      expect(
-        (
-          await post(
-            "/vault/credentials",
-            { service_name: `https://www.${d}/login`, login: "a@example.com", password: "Pass-word-1234" },
-            H,
-          )
-        ).status,
-      ).toBe(201);
-      expect(
-        (
-          await post(
-            "/vault/credentials",
-            { service_name: "発注ナビ", login: "b@example.com", password: "Pass-word-1234" },
-            H,
-          )
-        ).status,
-      ).toBe(201);
-      const list = await json<
-        { service_name: string; service_domain: string; verdict: string; state: string; ref_tail: string }[]
-      >(req("GET", "/vault/credentials", undefined, H));
-      expect(list.map((x) => [x.service_name, x.service_domain, x.verdict, x.state])).toEqual([
-        [`https://www.${d}/login`, d, "api", "stored"],
-        ["発注ナビ", "", "unspecified", "stored"],
-      ]);
-      expect(list[0]!.ref_tail).toHaveLength(6);
-      expect(JSON.stringify(list)).not.toMatch(/Pass-word|a@example\.com|b@example\.com/);
-      const other = await signUp();
-      expect(await json<unknown[]>(req("GET", "/vault/credentials", undefined, other.H))).toEqual([]);
-    } finally {
-      await admin.query(
-        "update credentials set service_id = null where service_id in (select id from service_registry where domain = $1)",
-        [d],
-      );
-      await admin.query("delete from service_registry where domain = $1", [d]);
-    }
-  });
+  // K-358：預けたログイン情報の前の道すじ（/vault/credentials）の行は消した（一覧は契約の口 listCredentials の K-351、預けるは K-352 が見る）
 });
