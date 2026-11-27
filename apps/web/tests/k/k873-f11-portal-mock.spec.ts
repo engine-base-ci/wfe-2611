@@ -95,8 +95,22 @@ test("K873-MK-003 検収・取引先・呼び名の字が 0：portal の部品�
     readdirSync(PORTAL)
       .filter((f) => /\.tsx$/.test(f))
       .sort(),
-  ).toEqual(["frame.tsx", "home.tsx", "request.tsx", "work.tsx"]);
-  for (const f of [...PARTS, RENDER_SRC]) {
+  ).toEqual([
+    "frame.tsx",
+    // 画面の葉が足した頁と外枠（K-911・K-912・K-913）。字の決まりは同じに見る
+    "home-page.tsx",
+    "home.tsx",
+    "new-request-page.tsx",
+    "portal-shell.tsx",
+    "request-page.tsx",
+    "request.tsx",
+    "work-page.tsx",
+    "work.tsx",
+  ]);
+  const pages = readdirSync(PORTAL)
+    .filter((f) => /\.tsx$/.test(f))
+    .map((f) => join(PORTAL, f));
+  for (const f of [...new Set([...PARTS, ...pages]), RENDER_SRC]) {
     const s = noComments(readFileSync(f, "utf8"));
     for (const w of ["検収", "取引先", "確認してほしい", "クライアント", "先方の人"])
       expect(s.includes(w), `${f} に ${w}`).toBe(false);

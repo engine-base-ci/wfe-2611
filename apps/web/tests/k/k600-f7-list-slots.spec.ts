@@ -156,7 +156,8 @@ test("K600-SL-006 一覧の絞りの組と数：use-ticket-list.ts は filter �
   if (!/\bextra\?:\s*Readonly<Record<string,\s*string>>/.test(hook))
     bad.push("use-ticket-list.ts の filter に extra?: Readonly<Record<string, string>> が無い");
   if (!/\bcounts\b/.test(hook)) bad.push("use-ticket-list.ts の返り値に counts が無い");
-  if (!/meta\??\.counts/.test(hook)) bad.push("use-ticket-list.ts が答えの meta.counts を読まない");
+  if (!/meta\??\.counts|meta\[\s*"counts"\s*\]/.test(hook))
+    bad.push("use-ticket-list.ts が答えの meta.counts を読まない");
   for (const n of ["extra=", "onExtra=", "counts="])
     if (!page.includes(n)) bad.push(`list-page.tsx の差し込み口に ${n} を渡していない`);
   if (!/<F7\.MineChipsSlot[^>]*\brows=/.test(page)) bad.push("MineChipsSlot に rows を渡していない");

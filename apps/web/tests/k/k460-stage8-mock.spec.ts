@@ -123,12 +123,23 @@ test("K460-MK-002 各状態の持ち主は画面の葉（口の葉・試験の�
 test("K460-MK-003 部品は見た目だけ：features/F7 の .tsx は口を呼ばない（fetch・lib/api・useRouter・lib/auth・useQuery）・生の色や大きさを書かない（style=・#色・px）", () => {
   const files = walk(F7, [".tsx"]).filter((f) => !/-slot\.tsx$/.test(f));
   expect(files.length, "部品のファイルが 30 に満たない").toBeGreaterThanOrEqual(30);
+  // 後の葉が口につないだ部品（口を呼んでよい。生の値の決まりはそのまま）：ガントの期限 K-482・お知らせ K-467・保存した条件 K-479・探す K-471
+  const LIVE = new Set([
+    "gantt/gantt-view.tsx",
+    "gantt/set-due-dialog.tsx",
+    "notice/notice-live.tsx",
+    "saved/save-view-dialog.tsx",
+    "search/search-live.tsx",
+  ]);
   const bad: string[] = [];
   for (const f of files) {
     const src = readFileSync(f, "utf8")
       .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/^\s*\/\/.*$/gm, "");
-    if (/\bfetch\(|lib\/api|useRouter|from "@\/lib\/auth|useQuery|useMutation/.test(src)) bad.push(`${f}：口を呼ぶ`);
+      .replace(/^\s*\/\/.*$/gm, "")
+      .replace(/\((?:max|min)-width: \d+px\)/g, ""); // 幅の区切り（@media と同じ・正本の決まりの外）は生の値に数えない
+    const live = [...LIVE].some((x) => f.endsWith(`/${x}`));
+    if (!live && /\bfetch\(|lib\/api|useRouter|from "@\/lib\/auth|useQuery|useMutation/.test(src))
+      bad.push(`${f}：口を呼ぶ`);
     if (/style=\{|#[0-9a-fA-F]{3,6}\b|\b\d+px\b/.test(src)) bad.push(`${f}：生の値`);
   }
   expect(bad, bad.join("\n")).toEqual([]);
@@ -289,7 +300,8 @@ test("K460-DS-002 下絵が借りていた値の置き換えを CSS に反映し
   expect(cal).toContain("var(--k-c-calendar-tray-width)");
   expect(cal).not.toMatch(/calc\(var\(--k-s-xl\)|--k-s-xs\) \* 1\.5/);
   const gantt = css("gantt", "gantt.css");
-  expect(gantt).toContain("var(--k-c-gantt-body-height)");
+  // 本体の高さは K-482（2026-11-27）が「目盛り 2 段＋行 18 本」の式にした（同じトークンの行と目盛りの高さから作る）
+  expect(gantt).toMatch(/var\(--k-c-gantt-scale-height\)[^;]*var\(--k-c-gantt-row-height\)/);
   expect(gantt).not.toMatch(/--k-s-xl\) \* 13/);
   expect(css("due", "due.css")).not.toMatch(/inset 0 0 0 1px/);
   // 画面の幅・高さの生の式（100vw・100dvh）は D8 が赤にする。許す例外は足さない（控え帳）ので、親の大きさ（%）に替える

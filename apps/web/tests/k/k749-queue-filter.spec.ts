@@ -372,6 +372,9 @@ test("K749-UI-017 入口（ファイルを読む）：先 features/F5/more/fills
   const src = readFileSync(join(WEB, "features/F5/more/fills/queue-tools.tsx"), "utf8");
   for (const n of ["QueueToolsFill", "QueueEmptyFill", "useQueueQuery"])
     expect(src).toMatch(new RegExp(`export function ${n}\\b`));
-  const tools = readFileSync(join(WEB, "features/F5/queue-tools/queue-tools.tsx"), "utf8");
+  // 札の字を見る（「外した」と書いた注は札の字ではないので外して見る）
+  const tools = readFileSync(join(WEB, "features/F5/queue-tools/queue-tools.tsx"), "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
   expect(tools).not.toMatch(/決まりの例外|やり方を広げる/);
 });
