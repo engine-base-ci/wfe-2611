@@ -2,6 +2,7 @@
 // 見せてもらったチケットの 1 件（題・本文・詳細・やり取りと段の札）・見られない画面・招待を受けた直後の画面・ログインの有効期限切れ。
 //   どれもキャンバスに絵が無いので、画面に出る字は仮
 import { Badge, Button, Empty, ErrorState, PAGE_ERROR, TextArea } from "@/components/k";
+import { SAMPLE_GROUP, usePortalCompany } from "./frame";
 import { Msg } from "./request";
 import "./portal.css";
 
@@ -93,31 +94,66 @@ export function WorkDetail({ fromRequest = false }: { fromRequest?: boolean }) {
   );
 }
 
-/** 見られない：見せられていない依頼や仕事を直接開いたとき。あるかどうかも伝えない */
-export function NotVisible({ what = "このページ" }: { what?: string }) {
+/** 見られない：見せられていない依頼や仕事を直接開いたとき。あるかどうかも伝えない。
+ *  groupName が空の字（見られない人にはゲストのグループが分からない）なら、見られる物の一文は出さない（K-911） */
+export function NotVisible({
+  what = "このページ",
+  groupName = SAMPLE_GROUP,
+  onBack = noop,
+}: {
+  what?: string;
+  groupName?: string;
+  onBack?: () => void;
+}) {
+  const company = usePortalCompany();
   return (
-    <Empty title={`${what}は見られません`} action={<Button variant="primary">やり取りに戻る</Button>}>
-      この場所で見られるのは、セイコー株式会社（ゲスト）の依頼と、ENGINE BASE
-      が見せると決めたものだけです。リンクが正しいか、もう一度確かめてください。
+    <Empty
+      title={`${what}は見られません`}
+      action={
+        <Button variant="primary" onClick={onBack}>
+          やり取りに戻る
+        </Button>
+      }
+    >
+      {groupName && company
+        ? `この場所で見られるのは、${groupName}の依頼と、${company} が見せると決めたものだけです。`
+        : null}
+      リンクが正しいか、もう一度確かめてください。
     </Empty>
   );
 }
 
-/** 招待を受けた直後（ゲストの文）。名前とパスワードを決めたあとの最初の画面 */
-export function Welcome() {
+/** 招待を受けた直後（ゲストの文）。名前とパスワードを決めたあとの最初の画面。
+ *  name は本人の名前（口の me.name・呼ぶのは名字＝空白の前）。inviter は招いた人（口が返さなければ出さない・K-911） */
+export function Welcome({
+  name = "山田 花子",
+  inviter = "高本 聖斗",
+  onStart = noop,
+}: {
+  name?: string;
+  inviter?: string | null;
+  onStart?: () => void;
+}) {
+  const company = usePortalCompany();
+  const call = name.split(/[\s\u3000]+/)[0] || name;
   return (
     <div className="k-f11p-center">
       <section className="k-f11p-welcome" aria-labelledby="k-f11p-welcome-h">
         <h1 id="k-f11p-welcome-h" className="k-f11p-h1">
-          ようこそ、山田さん
+          ようこそ、{call}さん
         </h1>
-        <p className="k-f11p-sub">高本 聖斗 さんが、ENGINE BASE とのやり取りに招きました。あなたの権限：ゲスト</p>
+        <p className="k-f11p-sub">
+          {inviter
+            ? `${inviter} さんが、${company} とのやり取りに招きました。`
+            : `${company} とのやり取りに招かれました。`}
+          あなたの権限：ゲスト
+        </p>
         <ul className="k-f11p-list">
-          <li>ENGINE BASE にお願いしたいことを、依頼として出せます</li>
+          <li>{company} にお願いしたいことを、依頼として出せます</li>
           <li>見せてもらったチケットの進みを見て、やり取りできます</li>
         </ul>
         <div className="k-f11p-acts">
-          <Button variant="primary" size="lg">
+          <Button variant="primary" size="lg" onClick={onStart}>
             やり取りを始める
           </Button>
         </div>
@@ -126,7 +162,7 @@ export function Welcome() {
   );
 }
 
-/** ログインの有効期限切れ（共通の 1 件） */
-export function SessionExpired() {
-  return <ErrorState code={PAGE_ERROR.sessionExpired} acts={[noop]} />;
+/** ログインの有効期限切れ（共通の 1 件）。「入り直す」で onRelogin（自動では移さない） */
+export function SessionExpired({ onRelogin = noop }: { onRelogin?: () => void }) {
+  return <ErrorState code={PAGE_ERROR.sessionExpired} acts={[onRelogin]} />;
 }

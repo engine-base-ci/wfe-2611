@@ -1,18 +1,27 @@
 "use client";
 // ゲストの場所の最初の画面（キャンバス CpHome）：依頼と見せてもらったチケットの 2 つ（2026-11-23 代表の決め answer=6ba09f587792）。値は見本を受け取って描くだけ。
 //   読み込み中・読めない・空は同じ箱の中で出す。字：キャンバスのまま、無い所は仮
+//   本物の値は props で渡す（K-911・渡さなければ見本のまま）。部品は口を呼ばない
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Badge, Button, Callout, ErrorState, Loading, PAGE_ERROR } from "@/components/k";
+import { SAMPLE_GROUP, usePortalCompany } from "./frame";
 import "./portal.css";
 
 const noop = () => undefined;
 
 export interface RequestItem {
+  /** 行の鍵（無ければ題） */
+  id?: string;
   title: string;
   meta: string;
   badge: string;
+  /** 開く依頼のやり取りの道。無ければ行は押せない（見本） */
+  href?: string;
 }
 export interface WorkItem {
+  /** 行の鍵（無ければ題） */
+  id?: string;
   title: string;
   meta: string;
   /** 開くチケットの道（見せてもらったチケットの画面） */
@@ -40,20 +49,57 @@ export const WORKS: WorkItem[] = [
 
 export type HomePhase = "normal" | "empty" | "loading" | "failed";
 
+export interface HomeBodyProps {
+  phase?: HomePhase;
+  notice?: { title: string; body: string } | undefined;
+  /** 依頼の行（口の値）。無ければ見本 */
+  requests?: RequestItem[];
+  /** 見せてもらったチケットの行（口の値）。無ければ見本 */
+  works?: WorkItem[];
+  /** ゲストのグループの名前（口の group_name）。無ければ見本 */
+  groupName?: string;
+  onNewRequest?: () => void;
+  onRetry?: () => void;
+}
+
+function Row({ item }: { item: RequestItem }) {
+  const inner = (
+    <>
+      <span className="k-f11p-row-main">
+        <span>{item.title}</span>
+        <span className="k-f11p-row-meta">{item.meta}</span>
+      </span>
+      <Badge>{item.badge}</Badge>
+    </>
+  );
+  return item.href ? (
+    <Link className="k-f11p-row k-f11p-row-link" href={item.href}>
+      {inner}
+    </Link>
+  ) : (
+    <div className="k-f11p-row">{inner}</div>
+  );
+}
+
 export function HomeBody({
   phase = "normal",
   notice,
-}: {
-  phase?: HomePhase;
-  notice?: { title: string; body: string };
-}) {
+  requests = REQUESTS,
+  works = WORKS,
+  groupName = SAMPLE_GROUP,
+  onNewRequest = noop,
+  onRetry = noop,
+}: HomeBodyProps) {
+  const company = usePortalCompany();
   const empty = phase === "empty";
   return (
     <>
       <div className="k-f11p-titlebar">
-        <h1>ENGINE BASE とのやり取り</h1>
+        <h1>{company ? `${company} とのやり取り` : "やり取り"}</h1>
         <span className="k-f11p-titlebar-act">
-          <Button variant="primary">＋ 依頼を出す</Button>
+          <Button variant="primary" onClick={onNewRequest}>
+            ＋ 依頼を出す
+          </Button>
         </span>
       </div>
       {notice ? (
@@ -64,47 +110,39 @@ export function HomeBody({
       {phase === "loading" ? (
         <Loading label="やり取りを読み込んでいます…" delayMs={0} />
       ) : phase === "failed" ? (
-        <ErrorState code={PAGE_ERROR.loadFailed} acts={[noop]} />
+        <ErrorState code={PAGE_ERROR.loadFailed} acts={[onRetry]} />
       ) : (
         <>
           <section className="k-f11p-card" aria-label="依頼">
             <div className="k-f11p-card-head">
               <b>依頼</b>
-              <span className="k-f11p-row-meta">・ セイコー株式会社（ゲスト）の依頼</span>
+              <span className="k-f11p-row-meta">・ {groupName}の依頼</span>
             </div>
-            {empty ? (
+            {empty || requests.length === 0 ? (
               <p className="k-f11p-row-empty">
                 まだ依頼はありません。お願いしたいことがあれば「依頼を出す」から送れます
               </p>
             ) : (
-              REQUESTS.map((r) => (
-                <div key={r.title} className="k-f11p-row">
-                  <span className="k-f11p-row-main">
-                    <span>{r.title}</span>
-                    <span className="k-f11p-row-meta">{r.meta}</span>
-                  </span>
-                  <Badge>{r.badge}</Badge>
-                </div>
-              ))
+              requests.map((r) => <Row key={r.id ?? r.title} item={r} />)
             )}
           </section>
           <section className="k-f11p-card" aria-label="見せてもらったチケット">
             <div className="k-f11p-card-head">
               <b>見せてもらったチケット</b>
             </div>
-            {empty ? (
+            {empty || works.length === 0 ? (
               <p className="k-f11p-row-empty">
-                まだ見せてもらったチケットはありません。ENGINE BASE が見せると決めたチケットが、ここに出ます
+                まだ見せてもらったチケットはありません。{company} が見せると決めたチケットが、ここに出ます
               </p>
             ) : (
-              WORKS.map((w) => (
-                <a key={w.title} className="k-f11p-row k-f11p-row-link" href={w.href}>
+              works.map((w) => (
+                <Link key={w.id ?? w.title} className="k-f11p-row k-f11p-row-link" href={w.href}>
                   <span className="k-f11p-row-main">
                     <span>{w.title}</span>
                     <span className="k-f11p-row-meta">{w.meta}</span>
                   </span>
                   <ChevronRight size={14} aria-hidden="true" />
-                </a>
+                </Link>
               ))
             )}
           </section>
