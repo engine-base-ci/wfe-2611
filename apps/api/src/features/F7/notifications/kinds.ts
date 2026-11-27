@@ -83,6 +83,9 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "billing.overdue_week": settingKind("/billing"),
   // 運営の請求（K-981・D-156.53）：運営が月の請求書を出したことを管理者に知らせる。行き先は請求書の画面（K-960）
   "billing.invoice_issued": settingKind("/billing"),
+  // メンバーが抜けた（段11 K-838・D-154.25）：その会社のほかの有効な管理者に。押すと設定のメンバーの画面（決める人の答え answer=730d094adf6a）。
+  //   6 つの札にメンバー・会社の動きの札は無いので、いちばん近い setting（管理者が受け取る会社の設定の動き・請求先や止める日と同じ）
+  "member.left": settingKind("/members"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */

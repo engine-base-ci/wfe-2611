@@ -88,10 +88,11 @@ describe("K-1107 読む・直す", () => {
     expect((await get()).j.data).toEqual(d);
   });
 
-  it("K1107-API-003 表記ゆらぎ：全角の英数字・全角の空白・前後の空白は直って保存される", async () => {
+  it("K1107-API-003 表記ゆらぎ：全角の英数字・全角の空白・前後の空白は直って保存される（全角の登録番号も半角に直して受ける）", async () => {
     const { r, j } = await put({
       ...BODY,
       company: "　合同会社ＫＡＮＡＭＥ運営 ",
+      reg_no: "Ｔ１２３４５６７８９０１２３", // 表記ゆらぎの決まり：全角は直して受ける（PM の決め 2026-11-28）
       address: " 大阪府大阪市北区梅田１－１－１　",
       contact: " ｉｎｆｏ＠ｋａｎａｍｅ.example ",
       payee: " みらい銀行　普通　１２３４５６７ ",
@@ -107,15 +108,15 @@ describe("K-1107 読む・直す", () => {
       "みらい銀行 普通 1234567",
       "手数料はご負担ください",
     ]);
+    expect(d["reg_no"]).toBe("T1234567890123");
   });
 
-  it("K1107-API-004 形の誤り：欄が無い・登録番号が T123 と全角・101 字・空白だけ・501 字の備考・知らない欄・version が -1 と字・NUL はどれも 422 で、何も変わらない", async () => {
+  it("K1107-API-004 形の誤り：欄が無い・登録番号が T123・101 字・空白だけ・501 字の備考・知らない欄・version が -1 と字・NUL はどれも 422 で、何も変わらない", async () => {
     const { company: _c, ...noCompany } = BODY;
     void _c;
     const bad: unknown[] = [
       { ...noCompany, version: 0 },
       { ...BODY, reg_no: "T123", version: 0 },
-      { ...BODY, reg_no: "Ｔ１２３４５６７８９０１２３", version: 0 },
       { ...BODY, company: "あ".repeat(101), version: 0 },
       { ...BODY, address: "　 ", version: 0 },
       { ...BODY, note: "あ".repeat(501), version: 0 },
