@@ -10,6 +10,7 @@ import {
   Select,
   TextArea,
   TextField,
+  NoticeBox,
   type BadgeTone,
 } from "@/components/k";
 import { Bullets, Card, Chip, Facts, Feed, Note, RadioChoice, StatusBadge } from "@/features/F12/ops/ops-parts";
@@ -17,6 +18,7 @@ import "@/features/F12/ops/ops.css";
 import "./ops2.css";
 import { RespTable, type RespColumn } from "@/features/F12/shared/resp-table";
 import "../shared/choice.css";
+import { NoticeWriteView, type NoticeWriteProps } from "./notice-write-view";
 
 interface NoticeRow {
   kind: string;
@@ -137,13 +139,15 @@ function PickChecks({ label, items, on }: { label: string; items: readonly strin
   );
 }
 
-export interface NoticeNewPageProps {
+export interface NoticeNewPageProps extends Partial<NoticeWriteProps> {
   /** 出したお知らせを書き直す（題・本文・影響・メンテの時間だけ直せる。種類・誰に・出す場所・いつ出すかは押せない形で出す＝隠さない） */
   edit?: boolean;
 }
 
-/** お知らせを書く・書き直す：種類・題・本文・メンテの始まりと終わり・影響・誰に・出す場所・いつ出すか・顧客にはこう見える */
-export function NoticeNewPage({ edit = false }: NoticeNewPageProps) {
+/** お知らせを書く・書き直す：種類・題・本文・メンテの始まりと終わり・影響・誰に・出す場所・いつ出すか・顧客にはこう見える。
+ *  form を渡すと本番の欄（K-1015・notice-write-view.tsx）。渡さない呼び方（モック）は下絵のまま */
+export function NoticeNewPage({ edit = false, ...live }: NoticeNewPageProps) {
+  if (live.form && live.onForm) return <NoticeWriteView {...(live as NoticeWriteProps)} edit={edit} />;
   const fixed = edit ? { disabled: true } : {};
   return (
     <PageBody labelledBy="oq-notice-new-title">
@@ -349,26 +353,48 @@ export function NoticePage() {
 }
 
 /** お知らせを出す確かめ：届く数・メンテはメールも */
-export function NoticePublishConfirm({ onClose, onConfirm }: { onClose?: () => void; onConfirm?: () => void }) {
+export interface NoticePublishConfirmProps {
+  onClose?: () => void;
+  onConfirm?: () => void;
+  /** 開いているか（既定は開いている＝モック） */
+  open?: boolean;
+  /** 出すと起きること（K-1015：publishBullets の字） */
+  bullets?: readonly string[];
+  title?: string;
+  description?: string;
+  /** 出す口が断った・落ちたときの字（確かめの中の赤い箱） */
+  error?: string | null;
+  busy?: boolean;
+}
+const SAMPLE_BULLETS = [
+  "48 か所・延べ 312 人の「困ったとき・お知らせ」に出る",
+  "画面の上の帯にも出る（閉じられる）",
+  "メンテの間は、メンテナンス中の画面になる",
+  "メンテなので、48 か所の管理者にメールも届く（使えなくなるため）",
+] as const;
+export function NoticePublishConfirm({
+  onClose,
+  onConfirm,
+  open = true,
+  bullets = SAMPLE_BULLETS,
+  title = "このお知らせを出す",
+  description = "11/10（月）2:00〜3:00 メンテナンス。出すと、全部のワークスペースの人に届きます",
+  error = null,
+  busy = false,
+}: NoticePublishConfirmProps) {
   return (
     <Confirm
-      open
+      open={open}
       onOpenChange={(o) => !o && onClose?.()}
       onConfirm={() => onConfirm?.()}
+      busy={busy}
       tone="primary"
       confirmLabel="出す"
-      title="このお知らせを出す"
-      description="11/10（月）2:00〜3:00 メンテナンス。出すと、全部のワークスペースの人に届きます"
+      title={title}
+      description={description}
     >
-      <Bullets
-        label="出すと起きること"
-        items={[
-          "48 か所・延べ 312 人の「困ったとき・お知らせ」に出る",
-          "画面の上の帯にも出る（閉じられる）",
-          "メンテの間は、メンテナンス中の画面になる",
-          "メンテなので、48 か所の管理者にメールも届く（使えなくなるため）",
-        ]}
-      />
+      {error ? <NoticeBox>{error}</NoticeBox> : null}
+      <Bullets label="出すと起きること" items={bullets} />
       <Note>
         出したあとも、続報と 題・本文・影響・メンテの時間 の書き直しはできます。出したことは運営の記録に残ります
       </Note>
