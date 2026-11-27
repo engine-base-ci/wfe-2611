@@ -46,7 +46,7 @@ type TakenJob = {
   kind: "chat" | "login_check" | "ticket";
   credential_id: string | null;
   ticket_id: string | null;
-  phase: "make" | "execute" | null;
+  phase: "make" | "execute" | "dry_run" | null;
 };
 
 export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
@@ -68,17 +68,47 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
       return false;
     }
   };
+  /** 渡す前の試し打ちの片付け（K-779）：待ってから 24 時間を過ぎた試し打ちを止める。失敗は記録だけで取る口を止めず、承認の後の実行の扱い（holdExecute）にも響かせない。
+   *   残るのは「承認待ちのまま 24 時間以上待った試し打ち」だけで、本人宛ての送信なので害が小さい（承認が決まった物は承認の行の引き金が止める）。ログは場所と例外の種類だけ */
+  const sweepDryRunBeforeTake = async (ctx: HookArgs["ctx"], sid: string): Promise<void> => {
+    try {
+      await withTenant(pool, ctx, (cl) => cl.query("select app.dry_run_expire($1)", [sid]));
+    } catch (e) {
+      console.error(`[delegate] takeBridgeJob：渡す前の試し打ちの片付けに失敗した（${(e as Error)?.name ?? "Error"}）`);
+    }
+  };
 
-  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
-  const withExtras = async (sid: string, job: TakenJob) => {
+  /** 会話の仕事の会話の種類（K-737：Bridge が作る画面の会話の仕事にだけ draft_propose を見せる）。会話でない仕事は null。
+   *   主キーの読み 1 回（消されていても読む）。会話の表は本人の行だけ見える（RLS）ので、その PC の人の文脈で読む */
+  const talkKindOf = async (ctx: HookArgs["ctx"], job: TakenJob): Promise<string | null> => {
+    if (!job.conversation_id) return null;
+    const r = await withTenant(pool, ctx, (cl) =>
+      cl.query<{ talk_kind: string | null }>("select talk_kind from conversations where id = $1", [
+        job.conversation_id,
+      ]),
+    );
+    return r.rows[0]?.talk_kind ?? null;
+  };
+
+  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3）。
+   *   試し打ち（phase dry_run・K-746）には道具の鍵を出さない：確認項目を変えない仕事なので、spec_check・guard_report を PC の AI に並べない */
+  const withExtras = async (ctx: HookArgs["ctx"], sid: string, job: TakenJob) => {
     const memories = job.conversation_id
       ? ((await one<unknown>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id])) ?? [])
       : [];
-    const tool_token =
-      job.conversation_id || job.kind === "ticket" ? await issueToolToken(pool, sid, job.job_id) : null;
+    const wantsTools = (job.conversation_id || job.kind === "ticket") && job.phase !== "dry_run";
+    const tool_token = wantsTools ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
       (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
-    return { ...job, memories, tool_token, conventions: job.conversation_id ? AGENT_CONVENTIONS : null, browser };
+    const talk_kind = await talkKindOf(ctx, job);
+    return {
+      ...job,
+      memories,
+      tool_token,
+      conventions: job.conversation_id ? AGENT_CONVENTIONS : null,
+      browser,
+      talk_kind,
+    };
   };
 
   return {
@@ -104,6 +134,7 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
         //   失敗は記録だけで答えに出さない（PC は次の問い合わせでまた取りに来る）。その回は承認の後の実行を 1 つも渡さず、会話・作る段の仕事は渡す（K-189）。
         //   「失敗した」はこの要求の中だけで持つ（待ちの輪の中の取り直しも同じ向き。次の要求はまた片付けから）
         const holdExecute = !(await sweepBeforeTake(a.ctx, sid));
+        await sweepDryRunBeforeTake(a.ctx, sid);
         const until = Date.now() + (hot ? wait * 1000 : 0);
         for (;;) {
           const job = await takeOne(sid, holdExecute);
@@ -111,7 +142,12 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
             return {
               status: 201,
               body: {
-                data: { job: await withExtras(sid, job), forbidden_domains: forbidden, next_ms: 0, outdated: false },
+                data: {
+                  job: await withExtras(a.ctx, sid, job),
+                  forbidden_domains: forbidden,
+                  next_ms: 0,
+                  outdated: false,
+                },
               },
             };
           if (Date.now() >= until) break;

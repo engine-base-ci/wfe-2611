@@ -129,16 +129,16 @@ async function loginByForm(page: Page, email: string): Promise<void> {
 async function stuckOnTerms(page: Page): Promise<void> {
   await expect(page).toHaveURL(TERMS_STEP);
   await expect(heading(page, "利用規約とプライバシーポリシーが新しくなりました")).toBeVisible();
-  await page.goto("/ai/chat");
+  await page.goto("/settings/credentials"); // K-762：守られた画面の例を /ai/chat から替えた
   await expect(page, "同意の前に他の画面へ行けない").toHaveURL(TERMS_STEP, { timeout: 15_000 });
 }
 /** 中へ入れる（チャットの画面を開いても同意し直しへ戻されない。はじめの設定が済んでいない人は、はじめの設定へ移る・D-089）。
  *  入る前に、その人を入り方を 1 つ持つ人にする（readyToEnter） */
 async function canEnter(page: Page, email: string): Promise<void> {
   await readyToEnter(email);
-  await page.goto("/ai/chat");
+  await page.goto("/settings/credentials");
   await page.waitForLoadState("networkidle");
-  await expect(page).toHaveURL(/\/(ai\/chat|setup\/bridge)$/);
+  await expect(page).toHaveURL(/\/(settings\/credentials|setup\/bridge)$/);
   await expect(page).not.toHaveURL(TERMS_STEP);
 }
 

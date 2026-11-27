@@ -213,9 +213,11 @@ schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}
 # 問い合わせの値の形（入口 op.ts が確かめるのと同じ。K-35）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
 # 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
-KEY_CURSOR_OPS = {"listApprovalQueue", "listNotifications", "listTickets"}
+KEY_CURSOR_OPS = {"listApprovalQueue", "listCloneActivity", "listNotifications", "listTickets", "listConversations", "listConversationMessages"}
+# sort の値を口が持つ一覧の口（K-748）。sort は表の列でなく、QUERY_RANGES の enum（決まった値）で書く（入口 op.ts・list_query.ts の OWN_SORT_OPS と同じ集まり）
+OWN_SORT_OPS = {"listApprovalQueue"}
 def qtype(q, table, op=None):
-    cols = sorted(_DBC.get(table, {}))
+    cols = [] if op in OWN_SORT_OPS else sorted(_DBC.get(table, {}))
     if q == "limit": return {"type": "integer", "minimum": 1, "maximum": getattr(_sa, "LIST_DETAILS", {}).get(op, {}).get("limit_max", 200)}
     if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
     if q.endswith("_id"): return {"type": "string", "format": "uuid"}   # *_id は正式な uuid（scope_id も・D-129.42・K-144）
@@ -300,10 +302,12 @@ for e in endpoints:
     _in = _in_of.get(op["operationId"]) or getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
     ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
-    if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"]["application/octet-stream"] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）
+    if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"][getattr(_sa, "RAW_200_TYPES", {}).get(e["operation_id"], "application/octet-stream")] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）・流れは text/event-stream（K-759）
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
+    for _st in getattr(_sa, "ALSO_2XX", {}).get(op["operationId"], []):   # 同じ口がもう 1 つ返す成功の番号（K-422：リンクの参加は 202）。形は同じ答えの型
+        op["responses"].setdefault(str(_st), {**ok, "description": "受け付けた（まだ決まっていない）"})
     _unx = getattr(_sa, "UNEXPRESSIBLE_422", {}).get(op["operationId"])   # 契約に書けない値の決まり（K-144 ㉑）：口の振る舞いのまま 422
     if _unx:
         if "422" not in op["responses"]: raise SystemExit(f"{op['operationId']} に 422 が無いのに UNEXPRESSIBLE_422 がある")

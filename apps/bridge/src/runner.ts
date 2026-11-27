@@ -10,6 +10,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { CONVENTIONS, memoryPrompt, type JobMemory } from "./conventions";
 import { guardArgs, guardEnv, type Blocked } from "./guard";
+import { MEMORY_DENY, memoryOffEnv } from "./claude-memory";
 import { KANAME_TOOL_RULE, kanameServer, mcpArgs, type KanameTools } from "./kaname-tools";
 import { DEDICATED_SERVER, DEDICATED_TOOL_RULE, dedicatedServer, type DedicatedBrowser } from "./browser";
 import { modeArgs, optionArgs } from "./modes";
@@ -157,8 +158,11 @@ export interface Job {
   kind?: "chat" | "login_check" | "ticket" | null;
   /** チケットの仕事（K-62）：任されたチケットと段（make＝成果物を作る・execute＝承認の後の実行） */
   ticket_id?: string | null;
-  phase?: "make" | "execute" | null;
+  /** make＝成果物を作る・execute＝承認の後の実行・dry_run＝試し打ち（K-746・確認項目を変えない仕事） */
+  phase?: "make" | "execute" | "dry_run" | null;
   credential_id?: string | null;
+  /** 会話の仕事の会話の種類（K-737）：draft＝作る画面の会話（draft_propose だけを見せる）。会話でない仕事・古い Kaname は無い */
+  talk_kind?: "clone" | "ticket" | "draft" | null;
 }
 
 /** Claude in Chrome の道具（聞かずに使える。開く先は禁止の宛先の見張りが止める・D-107・D-119） */
@@ -274,6 +278,22 @@ function addUsage(a: Usage | null, b: Usage | null): Usage | null {
   };
 }
 
+/** 使わない道具の引数：禁止の宛先（フックの置き場があるときだけ・--settings つき）と Claude の側に残させない宛先を 1 つの --disallowedTools に */
+function disallowedArgs(job: Job, guard?: Guard | null): string[] {
+  const g = guard && job.blocked?.length ? guardArgs(job.blocked, guard.hookPath, guard.nodeBin) : [];
+  if (!g.length) return ["--disallowedTools", ...MEMORY_DENY];
+  const at = g.indexOf("--settings");
+  return [...g.slice(0, at), ...MEMORY_DENY, ...g.slice(at)];
+}
+
+/** Claude を起こす環境（許可リストだけ・フックの環境・自動の記憶を止める・K-737）。どの仕事の種類でも同じ形 */
+export function runEnv(job: Job, guard?: Guard | null): NodeJS.ProcessEnv {
+  return childEnv(shellPath(), {
+    ...(guard && job.blocked?.length ? guardEnv(job.blocked, guard.log) : {}),
+    ...memoryOffEnv(),
+  });
+}
+
 /** 起動の引数。未改変の公式 CLI に、本人が選んだものだけを渡す（D-092.2・D-104） */
 export function buildArgs(
   job: Job,
@@ -300,7 +320,7 @@ export function buildArgs(
   if (chrome) args.push("--chrome");
   // Kaname の道具（D-110）と Bridge 専用のブラウザ（D-119）を 1 本の設定で渡す。
   // --mcp-config は可変長なので、すぐ後ろに別の引数（--append-system-prompt 等）が来る位置に置く
-  const kaname = kanameServer(tools, job.tool_token, job.kind ?? "chat");
+  const kaname = kanameServer(tools, job.tool_token, job.kind ?? "chat", job.talk_kind, job.phase);
   const own = job.browser === "dedicated" && dedicated ? dedicatedServer(dedicated) : null;
   args.push(...mcpArgs({ kaname, [DEDICATED_SERVER]: own }));
   // 会話の仕事にだけ Kaname の書き方を渡す（記憶のまとめなど会話の無い仕事は、渡した文の指示だけで動く）
@@ -310,8 +330,9 @@ export function buildArgs(
     args.push("--append-system-prompt", mem ? `${rules}\n\n${mem}` : rules);
   }
   for (const d of extraDirs) args.push("--add-dir", d);
-  // 禁止の宛先（D-107.2・D-107.3）：使わない道具（可変長）の後ろには必ず --settings を置く
-  if (guard && job.blocked?.length) args.push(...guardArgs(job.blocked, guard.hookPath, guard.nodeBin));
+  // 使わない道具（D-107.2・D-107.3）：禁止の宛先（WebFetch）の後ろに Claude の側に残させない宛先（K-737）を続け、1 つの一覧で渡す。
+  //   --disallowedTools は可変長なので、フックがあればその後ろに --settings、無ければ次は --allowedTools などの -- で始まる引数
+  args.push(...disallowedArgs(job, guard));
   // 可変長の引数（--allowedTools）は最後に置く（後ろの引数を飲み込ませない）
   // Kaname の道具は聞かずに使える（本人の会社のたたき台に書くだけ・外に出ない・D-110.4）
   const extra = [
@@ -384,7 +405,7 @@ function runOnce(
     // アプリの PATH は /usr/bin:/bin… だけなので、claude が動かすもの（フック・MCP・git・node・python）が
     // 軒並み「見つかりません」で落ちる。実例：SessionEnd hook で `/bin/sh: node: command not found`
     // 環境は許可リストだけ（ANTHROPIC_API_KEY 等を渡すとサブスクではなく API の料金で動きうる）
-    const env = childEnv(shellPath(), guard && job.blocked?.length ? guardEnv(job.blocked, guard.log) : {});
+    const env = runEnv(job, guard);
     const p = spawn(bin, args, { stdio: ["pipe", "pipe", "pipe"], env });
     let session: string | null = job.agent_session_id;
     const started = new Map<string, { name: string; target: string; at: number }>(); // 道具の呼び出し中（id → 始めた時刻）

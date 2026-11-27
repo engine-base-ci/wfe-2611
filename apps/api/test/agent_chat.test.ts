@@ -520,7 +520,7 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
 });
 
 describe("資料を付ける（D-104.11）", () => {
-  it("置き場に置いて id を返し、仕事に付き、Bridge は期限つきの署名 URL で中身を取れる。他の仕事・書き換えた署名は通らない", async () => {
+  it("置き場に置いて id を返し、仕事に付く（Bridge の取り寄せは契約の口へ移った・K-761）", async () => {
     const { H, B } = await ready();
     const fd = new FormData();
     fd.append("file", new File([new TextEncoder().encode("日付,金額\n9/1,1000\n")], "台帳.csv", { type: "text/csv" }));
@@ -528,30 +528,122 @@ describe("資料を付ける（D-104.11）", () => {
     expect(up.status).toBe(201);
     const att = ((await up.json()) as { data: { id: string; name: string; size: number } }).data;
     expect(att).toMatchObject({ name: "台帳.csv", size: new TextEncoder().encode("日付,金額\n9/1,1000\n").length });
-    const s = await json<{ job_id: string }>(post("/agent/say", { text: "これを見て", attachment_ids: [att.id] }, H));
+    await json<{ job_id: string }>(post("/agent/say", { text: "これを見て", attachment_ids: [att.id] }, H));
     const t = await json<Take>(post("/bridge/take", { protocol: 5 }, B));
     expect(t?.attachments).toEqual([expect.objectContaining({ id: att.id, name: "台帳.csv" })]);
-    const sr = await post("/bridge/attachment", { job_id: s.job_id, attachment_id: att.id }, B);
-    const sb = (await sr.json()) as { data: { url: string; name: string } };
-    expect(sr.status, JSON.stringify(sb)).toBe(200);
-    const signed = sb.data;
-    expect(signed.url).not.toContain("storage_ref");
-    const path = new URL(signed.url).pathname + new URL(signed.url).search;
-    const file = await app.request(`http://localhost${path}`);
-    expect(file.status).toBe(200);
-    expect(await file.text()).toBe("日付,金額\n9/1,1000\n");
-    const bad = await app.request(`http://localhost${path.replace(/sig=[^&]+/, "sig=00")}`);
-    expect(bad.status, "書き換えた署名は 403").toBe(403);
-    const other = await json<{ job_id: string }>(post("/agent/say", { text: "別の仕事" }, H));
-    expect(
-      (await post("/bridge/attachment", { job_id: other.job_id, attachment_id: att.id }, B)).status,
-      "付いていない仕事からは取れない",
-    ).toBe(404);
+    // K-765：Bridge が資料を取りに行く道は契約の口 getFileForBridge（K-761）へ移り、前の道すじ /bridge/attachment は外した。取り寄せと署名は K-761 の試験が見る
     const empty = await app.request(`http://localhost${X}/agent/attachments`, {
       method: "POST",
       headers: H,
       body: new FormData(),
     });
     expect(empty.status).toBe(422);
+  });
+});
+
+// ---------------------------------------------------------------- transcript_mirror.test.ts から移した 2 本（K-765：前の道すじの写しの試験を消すとき、
+//   外す道すじ /bridge/entries・/bridge/mirror-targets を使わない確かめだけをここへ移した・PM の決め）
+describe("はじめの設定から言ったときの依頼（transcript_mirror から移した）", () => {
+  it("CHT-34-004 はじめの設定から言ったときだけ、自分のAI への依頼に「聞かずに覚える」の 1 行が添えられる（会話の吹き出しには出ない）", async () => {
+    const r = await ready();
+    const onb = await json<{ job_id: string }>(
+      post(
+        "/agent/say",
+        {
+          text: "受託開発です",
+          context: { screen: "onboard-interview", screen_name: "はじめの設定：会社のことを話す" },
+        },
+        r.H,
+      ),
+    );
+    const p1 = (await admin.query("select prompt from bridge_jobs where id = $1", [onb.job_id])).rows[0]
+      .prompt as string;
+    expect(p1).toContain("はじめの設定の聞き取り中です");
+    expect(p1).toContain("本人に聞かずに");
+    const other = await json<{ job_id: string }>(
+      post(
+        "/agent/say",
+        { text: "今日の予定は？", context: { screen: "clone-chat", screen_name: "自分のAIと話す" } },
+        r.H,
+      ),
+    );
+    const p2 = (await admin.query("select prompt from bridge_jobs where id = $1", [other.job_id])).rows[0]
+      .prompt as string;
+    expect(p2).not.toContain("はじめの設定の聞き取り中です");
+  });
+});
+
+describe("区切りに間に合わなかった一言を捨てない（D-112・transcript_mirror から移した）", () => {
+  it("CHT-31-006 仕事が区切りの一言を取りに行った後、結末の前に届いた一言は、送ったときのモードで次の仕事として並ぶ。本人が止めた仕事では並べない", async () => {
+    const { H, B } = await ready();
+    const a = await json<{ job_id: string; conversation_id: string }>(
+      post("/agent/say", { text: "会社のことを聞いて" }, H),
+    );
+    await post("/bridge/take", { protocol: 5 }, B);
+    await json(post("/bridge/steers", { job_id: a.job_id, reply: "" }, B)); // 区切りの一言を取りに行った（まだ無い）
+    expect(
+      (await post("/agent/steer", { job_id: a.job_id, text: "全部やって", permission_mode: "bypassPermissions" }, H))
+        .status,
+    ).toBe(201);
+    await post("/bridge/finish", { job_id: a.job_id, state: "done", result: "済" }, B);
+    const jobs = await admin.query(
+      "select prompt, state_id, permission_mode from bridge_jobs where conversation_id = $1 order by created_at",
+      [a.conversation_id],
+    );
+    expect(jobs.rows.map((r) => [r.state_id, r.permission_mode])).toEqual([
+      ["done", "manual"],
+      ["queued", "bypassPermissions"],
+    ]);
+    expect(jobs.rows[1].prompt).toContain("全部やって");
+    // 本人が止めた仕事では並べない
+    const b2 = await json<{ job_id: string }>(post("/bridge/take", { protocol: 5 }, B));
+    await post("/agent/steer", { job_id: b2.job_id, text: "やっぱりこれも" }, H);
+    await post("/bridge/finish", { job_id: b2.job_id, state: "stopped", reason: "あなたが止めました" }, B);
+    const after = await admin.query("select count(*)::int n from bridge_jobs where conversation_id = $1", [
+      a.conversation_id,
+    ]);
+    expect(after.rows[0].n).toBe(2);
+  });
+});
+
+describe("流れながら写した文と仕事の結末が重ならない（D-112・transcript_mirror から契約の口へ向け直して移した）", () => {
+  it("CHT-31-001 流れながら写した文は吹き出しになり、仕事の結末で答えを重ねて足さない。作業の記録は最後の文に付く", async () => {
+    const { H, B } = await ready();
+    const a = await json<{ job_id: string; conversation_id: string }>(
+      post("/agent/say", { text: "会社のことを聞いて" }, H),
+    );
+    await post("/bridge/take", { protocol: 5 }, B);
+    // 写す口は契約の口（K-760・会話は仕事から決まる）。PC の印は bridge_contract.ts の send と同じ頭
+    const mirror = (uuid: string, text: string) =>
+      app.request(`http://localhost/api/v1/bridge/jobs/${a.job_id}/conversation-entries`, {
+        method: "POST",
+        headers: { "content-type": "application/json", ...B },
+        body: JSON.stringify({ entries: [{ uuid, text }] }),
+      });
+    const U = (n: number) => `5d984925-0000-4000-8000-${String(n).padStart(12, "0")}`;
+    const e1 = await json<{ inserted: number }>(mirror(U(1), "まず今のたたき台を確認します。"));
+    expect(e1.inserted).toBe(1);
+    await mirror(U(2), "たたき台を置きました。");
+    expect(
+      (await post("/bridge/finish", { job_id: a.job_id, state: "done", result: "たたき台を置きました。" }, B)).status,
+    ).toBe(200);
+    const m = (
+      await json<State>(req("GET", `/agent/state?conversation_id=${a.conversation_id}`, undefined, H))
+    ).messages.filter((x) => x.who === "ai");
+    expect(m.map((x) => x.text)).toEqual(["まず今のたたき台を確認します。", "たたき台を置きました。"]);
+    expect(m[0]!.work).toBeNull();
+    expect(m[1]!.work).toMatchObject({ ops: 0 });
+  });
+  it("CHT-31-005 古い Bridge（文を写さない）は、今までどおり結末で答えが 1 つ入る", async () => {
+    const { H, B } = await ready();
+    const a = await json<{ job_id: string; conversation_id: string }>(
+      post("/agent/say", { text: "会社のことを聞いて" }, H),
+    );
+    await post("/bridge/take", { protocol: 5 }, B);
+    await post("/bridge/finish", { job_id: a.job_id, state: "done", result: "古い Bridge の答え" }, B);
+    const m = (
+      await json<State>(req("GET", `/agent/state?conversation_id=${a.conversation_id}`, undefined, H))
+    ).messages.filter((x) => x.who === "ai");
+    expect(m.map((x) => x.text)).toEqual(["古い Bridge の答え"]);
   });
 });

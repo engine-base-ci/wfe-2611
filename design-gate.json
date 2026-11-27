@@ -393,6 +393,10 @@
       "reason": "外枠の下のタブ（components/k/shell.css の .k-tabs）の高さは幅 767 以下の @media の中の規則にだけ在り、素の規則に高さが無い（D5 は @media の中を比べない）。作る画面の足元の帯（K-224）がこの高さのトークンを読む"
     },
     {
+      "part": "room-page",
+      "reason": "スマホの分身の部屋・チケットの右のパネルの AI・作る画面の会話の頁の高さの元。room.css の 767 以下の @media の中で上の帯と下のタブを calc で引いて使い、素の規則に height が無い（D5 は @media の中を比べない）"
+    },
+    {
       "part": "shell-bar-tool",
       "reason": "外枠の上の帯の道具（components/k/shell.css の .k-bar-tools .k-icon-btn）の 44px は幅 767 以下の @media の中の規則にだけ在る（D5 は @media の中を比べない）。CSS はこのトークンだけを読む（K-350・D-147）"
     },

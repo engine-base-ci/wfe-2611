@@ -169,6 +169,9 @@ export function label(tool: string): string {
   // Kaname の道具（D-110）。たたき台に置いている・直している
   const KANAME: Record<string, string> = {
     ticket_read: "チケットを読んでいます",
+    spec_check: "確認項目にチェックを付けています",
+    guard_report: "守れていなかった決まりを知らせています",
+    draft_propose: "チケットの案を出しています",
     draft_read: "たたき台を読んでいます",
     goal_set: "たたき台に目標を置いています",
     goal_remove: "目標を外しています",

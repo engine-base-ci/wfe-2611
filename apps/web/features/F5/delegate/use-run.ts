@@ -9,7 +9,7 @@ import { call } from "@/lib/api/call";
 export interface RunView {
   id: string;
   ticket_id: string;
-  phase: "make" | "execute" | null;
+  phase: "make" | "execute" | "dry_run" | null;
   status: string;
   by: { member_id: string; display_name: string } | null;
   pc: string | null;

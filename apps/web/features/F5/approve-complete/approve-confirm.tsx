@@ -5,8 +5,10 @@
 //   取り消せる承認：題「承認します」・注意とチェックなし・主ボタン「承認する」。
 //   本人確認は取り直さない（D-128.177：キャンバスの「本人確認」の文と口は使わない）。
 //   答えを待つ間は主ボタン・「やめる」が押せず、Esc でも閉じない（Confirm の busy）。開き直すと目で見たの印は外れている
+//   「成果物を目で見た」の前は段 6 の差し込み口 ApproveChecksSlot（K-730・K-740 が確認項目を足す・最初は何も出さない）
 import { useEffect, useState } from "react";
 import { Confirm } from "@/components/k";
+import { ApproveChecksSlot } from "@/features/F5/more/slots";
 
 const IRREVERSIBLE = "取り消せません";
 const SEEN = "成果物を目で見た";
@@ -20,9 +22,11 @@ interface Props {
   cautions: readonly string[];
   busy: boolean;
   onConfirm: () => void;
+  /** 承認の id（段 6 の差し込み口に渡す・K-730）。無くても今のまま */
+  approvalId?: string;
 }
 
-export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, busy, onConfirm }: Props) {
+export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, busy, onConfirm, approvalId }: Props) {
   const [seen, setSeen] = useState(false);
   // 見たことを持ち越さない：開くたびに印を外す
   useEffect(() => {
@@ -43,6 +47,7 @@ export function ApproveConfirm({ open, onOpenChange, irreversible, cautions, bus
         if (!mustSee) onConfirm();
       }}
     >
+      <ApproveChecksSlot {...(approvalId ? { approvalId } : {})} />
       {irreversible ? (
         <label className="k-dialog-check">
           <input type="checkbox" checked={seen} disabled={busy} onChange={(e) => setSeen(e.target.checked)} />

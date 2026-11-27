@@ -735,6 +735,8 @@ components:
     typography: "{typography.body-sm}"
   shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px。スマホは上の帯 shell-bar と下のタブの両方を出す・D-147）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
     height: "60px"
+  room-page:            # スマホの分身の部屋・チケットの右のパネルの AI・作る画面の会話の頁の高さの元（画面の高さ。上の帯と下のタブは room.css の calc で引く・K-755）
+    height: "100dvh"
   # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）
   create-head:          # 作る画面の帯の中の間（見出し・作り方・保存の状態）
     gap: "12px"

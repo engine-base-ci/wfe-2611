@@ -52,9 +52,10 @@ def section_rows() -> tuple[dict[str, str], list[str]]:
 
 class DecisionLogTest(unittest.TestCase):
     def test_K780_DC_001_section_rows(self) -> None:
-        """§153 の表に D-153.1〜33 が順にちょうど 1 回ずつ（n 行目が D-153.n）在り、代表の決めの行（1〜14・16・17・24・30・33）は 2026-11-22 高本さん・answer=<印> を持ち、15 は「2026-11-22 19:50 代表の言葉」、ほかはどの行も「PM の決め」を持ち高本さん・answer= を持たない。「代表に確認中」の行は無い。決定ログに足す控えと字が同じ"""
+        """§153 の表の頭の 33 行に D-153.1〜33 が順にちょうど 1 回ずつ（n 行目が D-153.n）在り、代表の決めの行（1〜14・16・17・24・30・33）は 2026-11-22 高本さん・answer=<印> を持ち、15 は「2026-11-22 19:50 代表の言葉」、ほかはどの行も「PM の決め」を持ち高本さん・answer= を持たない。「代表に確認中」の行は無い。決定ログに足す控えと字が同じ"""
         rows, order = section_rows()
-        self.assertEqual(order, [f"D-153.{n}" for n in range(1, COUNT + 1)], "表の並び（trace_gate は表の何行目かで番号を数える）")
+        # 頭の 33 行が D-153.1〜33（後ろの D-153.34〜 は K-781 が足し、k781_decision_log_test.py が見る・2026-11-24）
+        self.assertEqual(order[:COUNT], [f"D-153.{n}" for n in range(1, COUNT + 1)], "表の並び（trace_gate は表の何行目かで番号を数える）")
         bad: list[str] = []
         for n in range(1, COUNT + 1):
             ln = rows[f"D-153.{n}"]

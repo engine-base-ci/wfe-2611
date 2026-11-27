@@ -518,7 +518,7 @@ row(R["K53-UI-023"], async (page) => {
   });
   await loginByForm(page, o.email);
   expect(new URL(page.url()).searchParams.get("step"), "ログインの後に同意し直しの画面へ移されない").not.toBe("terms");
-  await page.goto("/ai/chat");
+  await page.goto("/settings/credentials"); // K-762：前の /ai/chat は /ai/talk へ送るだけになったので、守られた (app) の画面の例を替えた
   await page.waitForLoadState("networkidle");
   await expect(page).not.toHaveURL(/step=terms/);
   await expect(page.getByText(MSG.required)).toHaveCount(0);

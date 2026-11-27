@@ -36,7 +36,8 @@ SCREEN_API = {
         # 本文（1 枚の文書）と版
         ("PATCH", "/tickets/:id/body", "A101", "ticket_sections", "updateTicketBody", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
-        ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_section_versions", "restoreTicketVersion", ["ticket_sections"]),
+        ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_sections", "restoreTicketVersion", ["ticket_section_versions"]),
+        ("GET", "/tickets/:id/item-changes", "A101", "ticket_messages", "listTicketItemChanges", []),
         ("POST", "/ticket_kinds/:id/template-from-ticket", "A101", "kind_sections", "makeKindTemplateFromTicket", [T]),
         # テスト仕様と確認
         ("GET", "/tickets/:id/test-specs", "A102", "test_specs", "listTestSpecs", []),
@@ -45,8 +46,6 @@ SCREEN_API = {
         ("DELETE", "/test_specs/:id", "A102", "test_specs", "deleteTestSpec", []),
         ("POST", "/tickets/:id/test-specs/suggest", "A102", "test_specs", "suggestTestSpecs", ["action_runs"]),
         ("POST", "/tickets/:id/test-specs/lint", "A102", "test_specs", "lintTestSpecs", []),
-        ("GET", "/tickets/:id/checks", "A102", "checks", "listChecks", ["test_specs", "artifact_versions"]),
-        ("POST", "/checks/:id/human", "A15", "checks", "markHumanCheck", []),
         # 分身に任せる・実行
         ("POST", "/tickets/:id/delegate", "A104", "action_runs", "delegateTicket", ["approvals"]),
         ("POST", "/tickets/:id/dry-run", "A105", "action_runs", "dryRunTicket", []),
@@ -56,7 +55,7 @@ SCREEN_API = {
         ("GET", "/tickets/:id/references", "A101", "reference_logs", "listTicketReferences", []),
         ("GET", "/tickets/:id/agent-session", "A20", "conversations", "getTicketAgentSession", ["messages"]),
         ("POST", "/tickets/:id/agent-session/messages", "A20|A91", "messages", "sendTicketAgentMessage", ["conversations", "action_runs"]),
-        ("POST", "/tickets/:id/agent-session/apply", "A101", "ticket_sections", "applyTicketAgentProposal", ["ticket_section_versions", "checks"]),
+        ("POST", "/tickets/:id/agent-session/apply", "A101", "ticket_sections", "applyTicketAgentProposal", ["ticket_section_versions"]),
         # やり取り・決定・渡す
         ("GET", "/tickets/:id/timeline", "A107", "ticket_messages", "listTicketTimeline", ["action_runs"]),
         ("POST", "/tickets/:id/messages", "A107", "ticket_messages", "createTicketMessage", [T, "notifications"]),
@@ -66,8 +65,8 @@ SCREEN_API = {
         ("GET", "/tickets/:id/decisions", "A108", "ticket_decisions", "listTicketDecisions", []),
         ("POST", "/tickets/:id/decisions", "A108", "ticket_decisions", "createTicketDecision", []),
         ("PATCH", "/ticket_decisions/:id", "A108", "ticket_decisions", "updateTicketDecision", ["policies"]),
-        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", ["notifications"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T]),
+        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", [T, "notifications", "audit_events"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
         # つながり・成果物・検収
         ("GET", "/tickets/:id/links", "A103", "ticket_links", "listTicketLinks", []),
         ("POST", "/tickets/:id/links", "A103", "ticket_links", "createTicketLink", []),
@@ -86,7 +85,7 @@ SCREEN_API = {
         ("GET", "/shell", "A58", "notifications", "getShell", ["approvals", "ticket_handovers", "scopes", "sessions", "notices"]),
         ("PATCH", "/notifications/:id", "A109", "notifications", "readNotification", []),
         ("POST", "/notifications/read-all", "A109", "notifications", "readAllNotifications", []),
-        ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
+        ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", []),
         ("GET", "/ticket_stages", "A103", "ticket_stages", "listTicketStages", []),
         ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
@@ -95,21 +94,21 @@ SCREEN_API = {
     ],
     # ---------------------------------------------------------------- 承認待ち（08_api/phase1/02_承認待ち.md）
     "approvals": [
-        ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "checks"]),
-        ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "checks", "ticket_messages", "policies"]),
+        ("GET", "/approvals/queue", "A15", "approvals", "listApprovalQueue", ["tickets", "ticket_handovers", "test_specs"]),
+        ("GET", "/approvals/:id", "A15", "approvals", "getApproval", ["tickets", "action_runs", "artifact_versions", "test_specs", "ticket_messages", "policies"]),
         ("POST", "/approvals/:id/approve", "A15", "approvals", "approveApproval", ["action_runs", "audit_events"]),
         ("POST", "/approvals/:id/edit", "A15", "approvals", "editApproval", ["tickets"]),
         ("POST", "/approvals/:id/return", "A15", "approvals", "returnApproval", ["ticket_messages", "memory_proposals"]),
         ("POST", "/approvals/:id/stop", "A15|A89", "approvals", "stopApproval", ["action_runs"]),
         ("POST", "/approvals/:id/withdraw", "A89", "approvals", "withdrawApproval", ["action_runs"]),
-        ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", ["checks"]),
+        ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", []),
         ("POST", "/approvals/bulk", "A15", "approvals", "bulkApprove", ["action_runs", "audit_events"]),
         ("GET", "/approvals/history", "A15", "approvals", "listApprovalHistory", ["tickets"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", ["tickets"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
     ],
     # ---------------------------------------------------------------- 分身の部屋（08_api/phase1/03_分身の部屋.md）
     "clone-chat": [
-        ("GET", "/clones/me", "A20", "clones", "getMyClone", ["members", "sessions"]),
+        ("GET", "/clones/me", "A20", "clones", "getMyClone", ["members", "sessions", "clones"]),
         ("PATCH", "/clones/me", "A91", "clones", "updateMyClone", ["members"]),
         ("GET", "/conversations", "A88", "conversations", "listConversations", []),
         ("POST", "/conversations", "A88|A100", "conversations", "createConversation", []),
@@ -118,8 +117,10 @@ SCREEN_API = {
         ("DELETE", "/conversations/:id", "A88", "conversations", "deleteConversation", []),
         ("GET", "/conversations/:id/messages", "A20", "messages", "listConversationMessages", []),
         ("GET", "/conversations/:id/stream", "A20", "messages", "streamConversation", []),   # 書きながらの返事の流れ（D-104.8・D-128.122）
-        ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["action_runs", "reference_logs"]),
-        ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["action_runs"]),
+        ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["conversations", "messages", "bridge_jobs", "audit_events"]),
+        ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["bridge_jobs", "bridge_job_events", "audit_events"]),
+        ("POST", "/ticket_draft_conversations", "A99|A20", "conversations", "startDraftConversation", []),
+        ("POST", "/ticket_draft_conversations/:id/messages", "A99|A20", "messages", "sendDraftMessage", ["conversations", "action_runs"]),
         ("POST", "/conversations/:id/attachments", "A90", "attachments", "createConversationAttachment", []),
         ("POST", "/conversations/:id/permissions/:pid", "A91", "messages", "answerAgentPermission", []),
         ("POST", "/messages/:id/artifacts", "A95", "artifacts", "createArtifactFromMessage", ["artifact_versions"]),
@@ -152,15 +153,14 @@ SCREEN_API = {
         ("POST", "/work_types/:id/copy", "A119", "skills", "copyWorkType", ["skill_versions"]),
         ("PATCH", "/work_types/:id/draft", "A119", "skill_versions", "updateWorkTypeDraft", []),
         ("GET", "/work_types/:id/versions", "A119", "skill_versions", "listWorkTypeVersions", []),
-        ("POST", "/work_types/:id/try", "A119", "skill_test_runs", "tryWorkType", ["tickets", "checks"]),
+        ("POST", "/work_types/:id/try", "A119", "skill_test_runs", "tryWorkType", ["tickets"]),
         ("POST", "/work_types/:id/release", "A119", "skill_versions", "releaseWorkType", ["skills"]),
         ("POST", "/work_types/:id/spread-requests", "A119", "approvals", "requestWorkTypeSpread", ["notifications"]),
     ],
     "ai-activity": [
-        ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals"]),
-        ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),
-        ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["memories", "learning_candidates"]),
-        ("POST", "/clones/me/activity/export", "A53", "export_jobs", "exportCloneActivity", []),
+        ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals", "action_runs", "sessions"]),
+        ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["action_runs", "approvals", "ticket_section_versions"]),
+        ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["action_runs", "approvals", "ticket_section_versions", "test_specs"]),
         ("POST", "/action_runs/:id/takeover", "A57", "action_runs", "takeoverActionRun", ["tickets"]),
     ],
     # ---------------------------------------------------------------- ログイン・登録・2 段階・パスキー（08_api/phase1/04_ログイン.md）
@@ -245,11 +245,11 @@ SCREEN_API = {
         ("POST", "/bridge/usage", "A94", "agent_usage_snapshots", "reportUsage", []),
         ("POST", "/bridge/jobs/take", "A104", "bridge_jobs", "takeBridgeJob", ["action_runs"]),
         ("POST", "/bridge/jobs/:id/progress", "A104", "bridge_job_events", "reportJobProgress", ["action_runs", "messages"]),
-        ("POST", "/bridge/jobs/:id/finish", "A104", "bridge_jobs", "finishBridgeJob", ["action_runs", "messages", "checks"]),
+        ("POST", "/bridge/jobs/:id/finish", "A104", "bridge_jobs", "finishBridgeJob", ["action_runs", "messages"]),
         ("POST", "/bridge/jobs/:id/questions", "A91", "messages", "askFromBridge", ["notifications"]),
         ("GET", "/bridge/jobs/:id/questions/:qid", "A91", "messages", "getBridgeQuestionAnswer", []),
         ("GET", "/bridge/jobs/:id/control", "A104", "bridge_jobs", "getJobControl", []),
-        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", ["attachments"]),
+        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", []),   # 写真・画面の写しは送らない（K-761）
         ("POST", "/bridge/jobs/:id/conversation-entries", "A20", "messages", "mirrorConversationEntries", ["conversations"]),
         ("GET", "/bridge/mirror-targets", "A20", "conversations", "listMirrorTargets", ["messages"]),   # 写しを取り戻す先（D-112・D-128.122）
         ("POST", "/bridge/jobs/:id/artifacts", "A95", "artifacts", "putArtifactFromBridge", ["artifact_versions"]),
@@ -534,8 +534,10 @@ INPUTS = {
     # K-60：チケットを作る。番号・消した人・取り込みの下書きは入れさせない。区画は鍵 → 本文。知らせる人は最初から選べる（D-128.138）
     "createTicket": ("TicketCreateInput", {"scope_id": "uuid", "kind_id": "uuid", "title": "string", "assignee_member_id": "uuid",
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
-                                           "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
-                                           "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
+                                           "parent_ticket_id": "uuid", "estimate_minutes": "any",
+                                           "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid",
+                                           "body": "object", "fields": "object", "specs": "string[]", "links": "array",
+                                           "duplicate_of": "uuid", "copy": "string[]"}),   # duplicate_of・copy：複製の元と写す物（K-438）。source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。区画の入力 sections は K-578 が外した＝送ると 422）。links：作るときにつなぐ相手（K-581）
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
@@ -549,11 +551,11 @@ INPUTS = {
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
     # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
     "approveApproval": ("ApprovalApproveInput", {}),
-    "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
+    "returnApproval": ("ApprovalReturnInput", {"note": "string", "next_actor": "string?"}),   # next_actor：clone（既定・AI が直す）か self（自分で直す・K-744）
     # K-332：招待で参加する。ログインしていない人は名前とパスワード（ログイン中の人は空・K-333）。宛てのメールは招待のもの（体の email は口の前処理が落とす）
-    "acceptInvitation": ("InvitationAcceptInput", {"name": "string?", "password": "string?"}),
-    # K-165：完了にする。todo_checked は済ませた実施事項の番号（0 から）の並び・todo_version は画面が読んだ todo の区画の版（無ければ 0）・conditions_confirmed は完了の条件を確かめた印
-    "completeTicket": ("TicketCompleteInput", {"todo_checked": "array?", "todo_version": "integer?", "conditions_confirmed": "boolean"}),
+    "acceptInvitation": ("InvitationAcceptInput", {"name": "string?", "password": "string?", "email": "string?"}),   # K-422：email はリンクの招待で新しく入るときだけ読む（メールで招いた招待は体の email を読まない）
+    # K-165：完了にする。conditions_confirmed は完了の条件を確かめた印（実施事項の番号と版は K-578 が外した＝送ると 422）
+    "completeTicket": ("TicketCompleteInput", {"conditions_confirmed": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -678,7 +680,7 @@ ERRORS_4XX = {
          "trigger": "もう決まった（承認・差し戻し）か取り下げた承認を差し戻す",
          "ears_form": "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-020"],
-         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・次に直す人 next_actor が clone・self でない（欄 next_actor・K-744）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
          "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
@@ -693,7 +695,7 @@ ERRORS_4XX = {
          "trigger": "終わっていない子がある（E-VAL-024・欄 children に子ごと。チェックの箱・確認項目の未チェックでは止めない・K-566）",
          "ears_form": "UNWANTED: IF 終わっていない子があるなら、Kaname は 422 と子ごとの理由（E-VAL-024）を返し、何も書かない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-023"],
-         "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・実施事項の番号や版が整数でない・本文に知らない欄",
+         "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・本文に知らない欄（todo_checked・todo_version を含む）",
          "ears_form": "UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
@@ -741,9 +743,6 @@ ERRORS_4XX = {
     ],
     # 招待で参加する（K-332 ログインしていない人・K-333 ログイン中は今のアカウントで参加し、その画面だけ招かれた所へ切り替える・別のメール宛ては 403・もう入っていれば 409・answer=becc3d3aa526）。冪等キーは使わない（答えにログインの印が入る・汎用の 409 は NO_GENERIC_409 で外す）
     "acceptInvitation": [
-        {"status": 401, "code": "UNAUTHENTICATED", "body": {"error": "unauthenticated", "code": "UNAUTHENTICATED"},
-         "trigger": "ログインしていない人が、宛てのメールを持たない招待（リンクの招待・K-421）で参加しようとした（確認のメールの道 K-422 が入るまでの間・ログインしてから参加）",
-         "ears_form": "UNWANTED: IF ログインしていない人が宛てのメールを持たない招待で参加しようとしたなら、Kaname は 401 と UNAUTHENTICATED を返し、利用者も所属も作らず招待も使わない"},
         {"status": 403, "code": "E-AUTH-012", "body": {"error": "auth", "code": "E-AUTH-012"}, "errors": ["E-AUTH-012"],
          "trigger": "招いたワークスペースが止められている（subscriptions.suspended_at）",
          "ears_form": "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない"},
@@ -765,6 +764,12 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation", "code": "E-VAL-007"}, "errors": ["E-VAL-007", "E-VAL-005", "E-VAL-026", "E-VAL-011"],
          "trigger": "名前が空・100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い（E-VAL-005）・128 文字を超える（E-VAL-026）・漏れたもの（E-VAL-011）・本文に知らない欄",
          "ears_form": "UNWANTED: IF 名前かパスワードが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、利用者を作らず招待も使わない"},
+        {"status": 422, "code": "E-INV-013", "body": {"error": "validation", "code": "E-INV-013"}, "errors": ["E-INV-013"],
+         "trigger": "リンクの招待で新しく参加する人が送ったメールが空・空白だけ・メールの形でない（契約の VALUE_RANGES の pattern・K-422）",
+         "ears_form": "UNWANTED: IF 送られたメールが空か形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない"},
+        {"status": 409, "code": "E-INV-016", "body": {"error": "conflict", "code": "E-INV-016"}, "errors": ["E-INV-016"],
+         "trigger": "リンクの招待（宛てのメールが無い招待）で新しく参加するのに、メールが送られていない（招待の行で決まる・欄 details は付けない・K-422）",
+         "ears_form": "UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "招待を読む DB・利用者を作る所・受諾の関数・セッションを作る所が落ちた",
          "ears_form": "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない"},
@@ -856,11 +861,42 @@ ERRORS_4XX = {
          "trigger": "配布物の置き場に届かない",
          "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない"},
     ],
-    # チケットを作る（K-60・K-144）。親が無い・見えない
+    # チケットを作る（K-60・K-144・K-437）。404・409 の体は error と code（と正本の文）だけで field・details・detail を付けない（在るかを漏らさない・控え帳 2026-11-20 16:51・2026-11-21 01:15）
     "createTicket": [
+        {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"},
+         "trigger": "そのグループにチケットを書く権限が無い（見るだけの人・別の会社のグループ）",
+         "ears_form": "UNWANTED: IF そのグループにチケットを書けないなら、Kaname は 403 と FORBIDDEN を返し、チケットを作らない"},
         {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "親のチケットが無い・消えた・見えない",
-         "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"},
+         "trigger": "選んだ種別・担当者・知らせる人・親のチケット・会社の項目が無い・消えた・抜けた・別の会社（書いている間に選べなくなったも同じ）",
+         "ears_form": "UNWANTED: IF 選んだ種別・担当者・知らせる人・親・会社の項目が無いか選べないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-VAL-015", "body": {"error": "conflict", "code": "E-VAL-015"}, "errors": ["E-VAL-015"],
+         "trigger": "親に選んだチケットの下に入れると親子が 3 段を超える",
+         "ears_form": "UNWANTED: IF 親子が 3 段を超えるなら、Kaname は 409 と E-VAL-015 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-VAL-012", "body": {"error": "conflict", "code": "E-VAL-012"}, "errors": ["E-VAL-012"],
+         "trigger": "期限が今日（日本時間）より前",
+         "ears_form": "UNWANTED: IF 期限が今日より前なら、Kaname は 409 と E-VAL-012 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-VAL-028", "body": {"error": "conflict", "code": "E-VAL-028"}, "errors": ["E-VAL-028"],
+         "trigger": "開始日が期限より後",
+         "ears_form": "UNWANTED: IF 開始日が期限より後なら、Kaname は 409 と E-VAL-028 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-FLD-001", "body": {"error": "conflict", "code": "E-FLD-001"}, "errors": ["E-FLD-001"],
+         "trigger": "その種別に出ない会社の項目に値を付けた",
+         "ears_form": "UNWANTED: IF その種別に出ない会社の項目に値を付けたなら、Kaname は 409 と E-FLD-001 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-FLD-002", "body": {"error": "conflict", "code": "E-FLD-002"}, "errors": ["E-FLD-002"],
+         "trigger": "会社の項目の選択肢に無い値を付けた",
+         "ears_form": "UNWANTED: IF 会社の項目の選択肢に無い値を付けたなら、Kaname は 409 と E-FLD-002 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-FLD-003", "body": {"error": "conflict", "code": "E-FLD-003"}, "errors": ["E-FLD-003"],
+         "trigger": "会社の項目の型と合わない値を付けた（型はマスタで決まる）",
+         "ears_form": "UNWANTED: IF 会社の項目の型と合わない値を付けたなら、Kaname は 409 と E-FLD-003 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-FLD-004", "body": {"error": "conflict", "code": "E-FLD-004"}, "errors": ["E-FLD-004"],
+         "trigger": "会社が必須にした項目が空（渡さない・空の文字・空の並び・null・必須のチェックが付いていない）",
+         "ears_form": "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない"},
+        # K-438：複製（duplicate_of・copy）
+        {"status": 404, "code": "E-DUP-001", "body": {"error": "not_found", "code": "E-DUP-001"}, "errors": ["E-DUP-001"],
+         "trigger": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+         "ears_form": "UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-DUP-002", "body": {"error": "conflict", "code": "E-DUP-002"}, "errors": ["E-DUP-002"],
+         "trigger": "子チケットを写すと親子が 3 段を超える",
+         "ears_form": "UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない"},
     ],
 }
 # 2xx の EARS を口ごとに上書きする（operationId → 文）。無い口は行為の裏側の文（flow.json の blueprint）になる。
@@ -868,11 +904,18 @@ ERRORS_4XX = {
 EARS_OK = {
     "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
 }
+# 成功の番号が 2 つある口（operationId → 201（POST の決め打ち）のほかに返す番号）。K-422：リンクの招待で新しく入る人の参加は 202（確認のメールを送っただけ）
+ALSO_2XX = {"acceptInvitation": [202]}
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
-NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "createInvitationLink"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）／K-421：答えにリンクのトークンが入る（器に残さない・二度押しで 2 本のリンクができ、どちらも使える）
+NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "createInvitationLink", "confirmInvitationJoin"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）／K-421：答えにリンクのトークンが入る（器に残さない・二度押しで 2 本のリンクができ、どちらも使える）／K-422：confirmInvitationJoin も答えにログインの印が入る（器に残さない）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
+    "streamConversation": {"type": "string"},   # 合図の流れ（text/event-stream・ready／change／down／end と ": alive"・K-759）
+}
+# RAW_200 の内容の種類（operationId → Content-Type）。ここに無い口は application/octet-stream（K-759）
+RAW_200_TYPES = {
+    "streamConversation": "text/event-stream",
 }
 # 答えの欄が、その口の表の null を許す列と同じ名前でも null を返さないもの（"op.欄" → 理由）。ここに無い欄は表のとおり null 可にする（K-144）
 NOT_NULL_ANSWERS = {
@@ -881,15 +924,15 @@ NOT_NULL_ANSWERS = {
     "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
     # K-62：実行の 1 件は、任せる関数（phase make）と K-63 の承認の関数（phase execute）が ticket_id・phase を必ず入れた行だけを返す（action_runs の列は会話の実行のために null 可）
     "getActionRun.ticket_id": "チケットの実行だけを読む口。任せる関数と承認の関数が ticket_id を必ず入れる（action_runs.ticket_id は会話の実行のために null 可）",
-    "getActionRun.phase": "チケットの実行だけを読む口。任せる関数が make・承認の関数が execute を必ず入れる（action_runs.phase は会話の実行のために null 可）",
+    "getActionRun.phase": "チケットの実行だけを読む口。任せる関数が make・承認の関数が execute・試し打ちの関数が dry_run（試し打ち）を必ず入れ、make・execute・dry_run のどれか（action_runs.phase は会話の実行のために null 可）",
     "listTicketRuns.ticket_id": "チケットの実行の一覧。どの行も ticket_id を持つ（action_runs.ticket_id は会話の実行のために null 可）",
-    "listTicketRuns.phase": "チケットの実行の一覧。どの行も make か execute を持つ（action_runs.phase は会話の実行のために null 可）",
+    "listTicketRuns.phase": "チケットの実行の一覧。どの行も make・execute・dry_run（試し打ち）のどれかを持つ（action_runs.phase は会話の実行のために null 可）",
 }
 # 類 E（K-144 ⑯・回 9）：口が「無い」ことで 422 にする入力の欄（必須の欄）。契約の入力の形の required と x-required-by: hooks になる
 #   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
 #   条件つきで要る欄（stepUp の code・種別ごとの必須の区画・優先度「高」の理由）は載せない
 REQUIRED_INPUTS = {
-    "completeTicket": ["conditions_confirmed"],   # apps/api/src/features/F5/approve-complete/complete.ts（conditions_confirmed だけ必須・無ければ 422。todo_checked・todo_version は任意で中身は見ない・K-566）
+    "completeTicket": ["conditions_confirmed"],   # apps/api/src/features/F5/approve-complete/complete.ts（conditions_confirmed だけ必須・無ければ 422・K-578）
     "returnApproval": ["note"],                                          # apps/api/src/features/F5/approve-complete/decide.ts（無い・空・空白だけは 422 E-VAL-020・K-163）
     "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
@@ -915,7 +958,7 @@ PATH_PATTERNS = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（ほかの英小文字だけは 422）・202〜204（ほかは目録の名前か 404）
     "downloadBridgeRelease": {"name": r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$"},
     # apps/api/src/features/F5/delegate/tools.ts（道具の名前は ticket_read と会話の道具 8 つだけ。それ以外は 422・K62-API-032）
-    "callKanameTool": {"name": "^(?:ticket_read|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$"},
+    "callKanameTool": {"name": "^(?:ticket_read|guard_report|spec_check|draft_propose|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$"},
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
@@ -926,17 +969,34 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "c
 import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117・口は packages/auth/src/signup.ts の isLoginEmail）
 _CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 _CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+# K-437：作る口の本文 body の木の形（doc_shape）を下の値域の字に書くため、scripts/ci を import の道に入れる（下の断片を足す前の行と同じ文）
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432 と同じ定義・K-437）
+
 VALUE_RANGES = {
     "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
-        "title": {"pattern": "\\S", "maxLength": 200},
-        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
-        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},
+        "title": {"pattern": "\\S", "maxLength": 200},   # 口の TITLE_MAX（生の字で数える・NFKC で整えない・D-150.34）
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "format": "date"},   # 暦に在る日（K-437）。今日より前は 409 E-VAL-012（時刻で決まるので契約に書かない）
+        "start_on": {"anyOf": [{"maxLength": 0}, {"format": "date"}]},   # 空か暦に在る日（K-437・K-1116 の調べ：0000-00-00 を口が 422 で断るので format: date で書く）
         "priority": {"enum": ["", "mid", "high"]},
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},
-        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
-                     "additionalProperties": {"type": "string"}},   # 区画の中身の上限は置かない（D-130.3）。守りは送る量 1MB だけ
         "notify_member_ids": {"maxItems": 20},
+        # K-437：会社の項目（鍵は項目の id・値は文字・数・真偽・文字の並び・null）と確認項目（文字の並び・50 件まで）
+        "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
+                   "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
+                                                      {"type": "array", "items": {"type": "string"}}], "nullable": True}},
+        "specs": {"maxItems": 50},
+        # K-437：本文 body は { doc } だけ（text・知らない鍵は 422）。木の形は updateTicketBody の doc と同じ定義（K-561・K-584 の validateDoc）
+        "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
+        # K-581：作るときにつなぐ相手（payload.ts の checkLinks・0〜20 件・同じ組なし・要素は kind と other_ticket_id の 2 つだけ）。相手が選べるかは DB（K-441 の app.ticket_link_add）
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},
+        # K-438：複製で写す物（duplicate.ts の COPY_NAMES・6 つ・重複なし。添付と参照は 422）
+        "copy": {"maxItems": 6, "uniqueItems": True, "items": {"enum": ["body", "assignee", "fields", "specs", "links", "children"]}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
@@ -957,9 +1017,7 @@ VALUE_RANGES = {
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
-    "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。形の誤り（負の番号・整数でない版）は 422・false は 422 E-VAL-023
-        "todo_checked": {"items": {"type": "integer", "minimum": 0}},
-        "todo_version": {"minimum": 0},
+    "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete。false は 422 E-VAL-023
         "conditions_confirmed": {"enum": [True]},
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
@@ -973,9 +1031,6 @@ INPUT_RULES: dict[str, dict] = {}
 QUERY_RANGES: dict[str, dict[str, dict]] = {}
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
-    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
-                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
-                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
     "claimPairingCode": ["NFKC で英数字になる字（① など）"],
     "updateConversation": ["名前が null（空と同じ）"],
     "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],
@@ -1002,16 +1057,14 @@ RESPONSES = {
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
     "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
-    "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string", "unchecked": "object"}),
+    "completeTicket": ("TicketCompletion", {"ticket": "object", "unchecked": "object"}),  # K-766：ナレッジの候補は外した（D-153.15）
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string"}),   # K-161：期限なし・聞き直しでない行は due_on・note が null
+    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string", "handover_kind": "string?", "reply_due": "string?", "carry_children": "integer?", "to_scope_name": "string?", "ticket_scope_name": "string?"}),   # K-161：期限なし・聞き直しでない行は due_on・note が null。K-405：渡しの行は kind handover・AI の成果物の行は handover_kind・reply_due・carry_children・to_scope_name・ticket_scope_name が null
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
-    "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
-    "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "getCloneNow": ("CloneNow", {"current": "object", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
-    "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
+    "getCloneNow": ("CloneNow", {"pc": "object", "current": "object?", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
+    "getCloneGrowth": ("CloneGrowth", {"assigned": "integer", "pass_rate": "integer?", "pass_rate_last_week": "integer?", "work_seconds": "integer"}),   # 育ち具合は数 3 つだけ（D-153.13・K-754）
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
-    "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string?", "used": "array", "result": "string"}),   # action_runs.ticket_id は null 可（K-62 が足した列）
+    "listCloneActivity": ("CloneActivity", {"id": "uuid", "at": "string", "kind": "string", "ticket_id": "uuid", "ticket_number": "string", "title": "string", "result": "string", "detail": "object"}),   # 自分の分身が終えた実行（K-754）
     # 型の後ろの ? は null を許す（申し込みが無い・期限が無いときは null）
     "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
     "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
@@ -1064,8 +1117,8 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean", "device_id": "string"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387
-    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?", "handover": "object?", "handover_kinds": "string[]", "body": "object", "fields": "array", "spec_count": "integer", "spec_unchecked": "integer", "no_spec_reason": "string?", "parent": "object?", "child_count": "integer", "link_count": "integer", "results": "object"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387。handover（今の渡し 1 件か null・待っている物か一番新しい物・中身は TicketHandover の 17 の鍵）と handover_kinds（見ている人が渡せる種類 pass・distribute・offer）は K-405。body（本文 { doc, text, version }・行が無ければ空の本文で版 0）・fields（その種別で出す会社の項目と値）・spec_count と spec_unchecked（確認項目の数と未チェックの数）・no_spec_reason・parent（見える親は鍵 6・見えない親は番号だけ・無ければ null）・child_count（見える直接の子）・link_count・results（成果物・決定ログ・申し送りが在るときだけ鍵が出る）は K-560
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "body_template": "object?", "fields": "array"}),   # 区画 sections は K-578 が外した。body_template（種別のひな形）と fields（その種別で出す会社の項目のマスタ・値なし・TicketField の鍵 7）は K-560
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
     # K-62：仕事は行の中身をそのまま job に（無ければ null）。古い Bridge には渡さず outdated（E-CONN-012）
@@ -1073,8 +1126,8 @@ RESPONSES = {
     "getJobControl": ("JobControl", {"stop": "boolean", "reason": "string?", "steers": "array"}),   # 止める理由が無ければ null（K-62・Q2 回 2）
     "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
     # K-162：承認した答え（pc は任せた人の PC が 75 秒以内に知らせていれば live・K-62 と同じ式）。差し戻し（K-163）も同じ形
-    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
-    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
+    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
+    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string?", "pc": "string"}),
     "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
     "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
     # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。
@@ -1140,7 +1193,7 @@ RESPONSES = {
                                             "role": "string", "message": "string?", "email": "string?", "expires_at": "string",
                                             "account_exists": "boolean", "signed_in": "object?"}),
     # 招待で参加した（K-332）：ログインの印（部品のセッションの token）・入ったワークスペース・次に移る画面（入った直後は /mfa-setup）
-    "acceptInvitation": ("InvitationAccepted", {"token": "string", "workspace_id": "string", "next": "string"}),
+    "acceptInvitation": ("InvitationAccepted", {"token": "string", "workspace_id": "string", "next": "string", "state": "string?", "email": "string?"}),   # K-422：リンクの招待で新しく入る人の 202 は { state, email } だけ（確認のメールを送った・まだ参加していない）
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
@@ -1169,7 +1222,7 @@ QUERIES = {
     "listSavedViews": ["share"],
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
-    "listConversations": ["q", "starred"],
+    "listConversations": [],   # 探す（q）・星（starred）は作らない（D-153.16・K-757）。cursor と limit はいつも付く
     "listMemories": ["kind", "since"],
     "listLearningCandidates": ["trigger", "target"],
     "listRules": ["scope", "client_id"],
@@ -1223,6 +1276,7 @@ PERMS = {
     "updateTicketBody": ("write", "そのグループの人", False),
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
+    "listTicketItemChanges": ("read", "そのチケットを見られる人", False),
     "makeKindTemplateFromTicket": ("admin", "チケットの形を直せる人（D-128.48・D-128.83）", False),
     "listTestSpecs": ("read", "そのチケットを見られる人", False),
     "createTestSpec": ("write", "そのグループの人", False),
@@ -1230,13 +1284,11 @@ PERMS = {
     "deleteTestSpec": ("write", "そのグループの人", False),
     "suggestTestSpecs": ("write", "そのグループの人（分身は呼んだ人の権限の中で動く）", False),
     "lintTestSpecs": ("write", "そのグループの人", False),
-    "listChecks": ("read", "そのチケットを見られる人", False),
-    "markHumanCheck": ("approver", "③ 人の確認を割り当てられた人（承認する人）", False),
     "delegateTicket": ("write", "そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）", False),
     "dryRunTicket": ("assignee", "担当者（宛先は自分に差し替える）", False),
     "listTicketRuns": ("read", "そのチケットを見られる人", False),
     "getActionRun": ("read", "そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ", False),
-    "stopActionRun": ("assignee", "担当者・承認する人・マネージャー", False),
+    "stopActionRun": ("assignee", "そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる", False),
     "listTicketReferences": ("read", "そのチケットを見られる人。見られないページは題名も出さない", False),
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
     "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
@@ -1246,8 +1298,8 @@ PERMS = {
     "listTicketDecisions": ("read", "そのチケットを見られる人（見るだけの人も読める）", False),
     "createTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は足せない・⑧）。決めた人は同じ会社の今のメンバー（既定は本人）", False),
     "updateTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は変えられない・⑧）", False),
-    "createTicketHandover": ("write", "渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者", False),
-    "answerTicketHandover": ("recipient", "渡された・判断を仰がれた相手だけ", False),
+    "createTicketHandover": ("write", "渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・ゲスト・止まっている人はできない（D-148.3・D-148.18）", False),
+    "answerTicketHandover": ("recipient", "答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）", False),
     "listTicketLinks": ("read", "両方のチケットを見られる人（片方が見えないときは番号だけ）", False),
     "createTicketLink": ("write", "両方のチケットに書ける人", False),
     "deleteTicketLink": ("write", "そのグループの人", False),
@@ -1271,12 +1323,12 @@ PERMS = {
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
     "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
-    "editApproval": ("approver", "承認する人", False),
-    "returnApproval": ("approver", "承認する人（理由が必須）", False),
-    "stopApproval": ("approver", "承認する人・担当者・マネージャー", False),
-    "withdrawApproval": ("approver", "承認した本人だけ・実行中になる前だけ（D-125.105）", False),
+    "editApproval": ("approver", "承認する人（今の担当者）だけ。成果物の字を直して新しい版を作る（承認待ちのまま）", False),
+    "returnApproval": ("approver", "承認する人（理由が必須）。次は誰が直すかを選べる（AI／自分・K-744）", False),
+    "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
+    "withdrawApproval": ("approver", "承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す", False),
     "previewBulkApproval": ("approver", "自分が承認するものだけ", False),
-    "bulkApprove": ("approver", "自分が承認するもので、条件（D-128.86）に合うものだけ。サーバーがもう一度確かめる", False),
+    "bulkApprove": ("approver", "自分が承認する物だけ。1 件ずつ承認と同じ守りで確かめる。取り消せない物も対象（D-153.11）", False),
     "listApprovalHistory": ("self", "自分が決めたものだけ", False),
     # チケットの右のパネル（そのチケットでの自分の分身との話）
     "getTicketAgentSession": ("read", "そのチケットを見られる人。話は自分の分身とのものだけ（ほかの人の話は見えない）", False),
@@ -1287,13 +1339,15 @@ PERMS = {
     "updateMyClone": ("self", "自分の分身だけ（許可のモード・自動で覚える）。全部許可にするのは本人が選んだときだけ", False),
     "listConversations": ("self", "自分の会話だけ（管理者も運営も中身は見ない。運営が中を見る 1 時間の許可のときだけ）", False),
     "createConversation": ("self", "自分の分身とだけ", False),
-    "getConversation": ("self", "自分の会話だけ", False),
+    "getConversation": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_view も持つ・K-757）", False),
     "updateConversation": ("self", "自分の会話だけ（名前・星・記憶に使わない・閉じる）", False),
     "deleteConversation": ("self", "自分の会話だけ", False),
-    "listConversationMessages": ("self", "自分の会話だけ", False),
-    "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
-    "sendConversationMessage": ("self", "自分の会話だけ。分身は本人の権限の中でだけ読む・動く", False),
-    "stopConversation": ("self", "自分の会話だけ", False),
+    "listConversationMessages": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）", False),
+    "streamConversation": ("self", "自分の会話だけ。本人の会話が変わった合図を流す（会話の字は流さない・D-113）", False),
+    "sendConversationMessage": ("self", "自分の AI との会話（clone）だけ。言った字は本人の PC の AI が取りに来る（チケット・作る画面の会話は種類ごとの口）", False),
+    "stopConversation": ("self", "自分の会話だけ（種類を問わない）。動いている仕事に止める合図・待っている仕事は取りやめ", False),
+    "startDraftConversation": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
+    "sendDraftMessage": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),
     "answerAgentPermission": ("self", "自分の分身の許可だけ", False),
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),
@@ -1332,7 +1386,6 @@ PERMS = {
     "getCloneNow": ("self", "自分の分身だけ", False),
     "getCloneGrowth": ("self", "自分の分身だけ", False),
     "listCloneActivity": ("self", "自分の分身がやったことだけ", False),
-    "exportCloneActivity": ("self", "自分の分身がやったことだけ", False),
     "takeoverActionRun": ("assignee", "そのチケットの担当者だけ（自分で進める形に切り替える。動いている・待っている仕事はその場で止める）", False),
     # ログイン・登録（ログイン前は public。どれも IP ごとの上限が厳しい・同じ答えを返して有る無しを漏らさない）
     "createSignup": ("public", "誰でも。確認のメールを押すまで会社も利用者も作らない（D-088.2）。漏れたパスワードは弾く（D-125.137）", False),
@@ -1401,14 +1454,14 @@ PERMS = {
     "askFromBridge": ("device", "同上（本人に聞く）", False),
     "getBridgeQuestionAnswer": ("device", "同上", False),
     "getJobControl": ("device", "同上（止める・割り込みの指示を受け取る）", False),
-    "reportBrowserState": ("device", "同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）", False),
-    "mirrorConversationEntries": ("device", "同上（会話の記録の写し。正は本人の PC・D-112）", False),
-    "listMirrorTargets": ("device", "同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）", False),
+    "reportBrowserState": ("device", "同上。仕事の間のブラウザの様子（使う・使えない）だけ。写真・画面の写しは送らない（K-761）", False),
+    "mirrorConversationEntries": ("device", "同上（その仕事を受け取った PC だけ。会話は仕事から決める・記録と同じ id の文だけ写す・D-112）", False),
+    "listMirrorTargets": ("device", "同上（直近 14 日の本人の会話と、そこで使った Claude Code の session と最新の仕事の id）", False),
     "putArtifactFromBridge": ("device", "同上", False),
     "callKanameTool": ("device", "同上。分身は本人の権限の中でだけ Kaname の道具を呼べる", False),
     "resolveCredential": ("device", "その人の PC の実行器だけ。持ち主と使える場所が合うときだけ・その仕事の間だけ。AI と画面には返さない（D-128.57）", False),
     "reportCredentialCheck": ("device", "その人の PC", False),
-    "getFileForBridge": ("device", "その仕事に付いたファイルだけ（期限つきの署名 URL）", False),
+    "getFileForBridge": ("device", "その仕事に付いた資料だけ（期限つきの署名 URL）。動いている仕事の間だけ（K-761）", False),
     # 運営：配るもの（運営の人で、そのできることを持つ人だけ・D-128.70）
     "listOpsWorkTypes": ("ops:distribute", "配るものを持つ運営の人", False),
     "getOpsWorkType": ("ops:distribute", "同上。どのワークスペースがどの版を使っているかは数だけ（中身は見ない）", False),

@@ -1,6 +1,6 @@
 // K-469「探す：自分の会話」の単体の試験（口・本物の DB）。名前の頭の行 ID（K469-API-…）は 11_tickets/K-469.md の行の表と 1 対 1。
 // 口：GET /api/v1/search。会話の探し方は features/F7/search/conversations.ts（DB の関数 app.agent_conversations(p_member, p_q)・0041・0061 を使う）。
-//   答えの 1 件：{ kind: "conversation", id: 会話の id, title: 会話の名前（無ければ「新しい会話」）, snippet: 当たった本文のまわり（名前だけで当たったら空の字）, url: /ai/chat?c=<id> }
+//   答えの 1 件：{ kind: "conversation", id: 会話の id, title: 会話の名前（無ければ「新しい会話」）, snippet: 当たった本文のまわり（名前だけで当たったら空の字）, url: /ai/talk?c=<id>（K-765：前の /ai/chat は /ai/talk へ送るだけになった） }
 //   見えるのは本人の会話だけ（会社の管理者も他人の会話は読めない）。権限（グループ）には関係しない。
 // 前の試験土台の K-468（search.harness.ts・口の置き場）が先に入っている。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -67,13 +67,13 @@ async function conv(
 const convHits = (h: Hit[]) => h.filter((x) => x.kind === "conversation");
 
 describe("K-469 探す：自分の会話", () => {
-  it("K469-API-001 会話の名前で当たる：鍵は 5 つ・kind conversation・title は名前・snippet は空の字（名前だけで当たったので本文の引用は無い）・url は /ai/chat?c=<id>", async () => {
+  it("K469-API-001 会話の名前で当たる：鍵は 5 つ・kind conversation・title は名前・snippet は空の字（名前だけで当たったので本文の引用は無い）・url は /ai/talk?c=<id>", async () => {
     const w = await world();
     const c = await conv(w.me, { title: "セイコー様の請求の相談" });
     await conv(w.me, { title: "別の相談" });
     const h = convHits(await ok(w.me, qs("請求")));
     expect(h).toEqual([
-      { kind: "conversation", id: c, title: "セイコー様の請求の相談", snippet: "", url: `/ai/chat?c=${c}` },
+      { kind: "conversation", id: c, title: "セイコー様の請求の相談", snippet: "", url: `/ai/talk?c=${c}` },
     ]);
     expect(Object.keys(h[0]!).sort()).toEqual(["id", "kind", "snippet", "title", "url"]);
   });

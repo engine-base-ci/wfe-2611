@@ -64,7 +64,7 @@ navLink("KSC-01-004", /^チケット/, "/tickets", async (p) =>
 navLink("KSC-01-005", /^承認待ち/, "/approvals", async (p) =>
   expect(nav(p).getByRole("link", { name: /承認待ち/ })).toContainText("2"),
 );
-navLink("KSC-01-006", /^高本のAI/, "/ai/chat");
+navLink("KSC-01-006", /^高本のAI/, "/ai"); // K-755：AI のまとまりの行き先は分身の部屋のようす（/ai・D-153.23）
 navLink("KSC-01-007", /^ナレッジ/, "/knowledge");
 navLink("KSC-01-009", /^営業/, "#eg", async (p) =>
   expect(nav(p).getByRole("link", { name: /^営業/ })).toContainText("18"),

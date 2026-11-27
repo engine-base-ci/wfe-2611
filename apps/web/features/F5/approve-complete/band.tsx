@@ -8,24 +8,30 @@
 //     ③ 承認の後の実行が走っている … pc live は「実行中」・running で pc asleep は「実行中・PC が閉じています…」・asking は「AI が許可を求めています…」
 //     ④ 実行待ち・PC が閉じている（queued・pc asleep）… 「実行待ち・PC が閉じています…」（queued・pc live は「実行中」）
 //     ⑤ 止まった … 実行の記録（action_runs）の止まった理由を全文そのまま（切らない・言い換えない・D-131.2・D-131.4）
-//     ⑥ 作業中・承認待ちなし・走っている実行なし・can.complete（AI に任せていないチケットも・K-184）… 「完了の条件を確かめて完了にしてください」＋「完了にする」（小窓は complete-dialog.tsx）
+//     ⑥ 作業中・承認待ちなし・走っている実行なし・can.complete（AI に任せていないチケットも・K-184）… 「完了の条件を確かめて完了にしてください」（案内の字だけ）。
+//        「完了にする」のボタンは題の行（complete-act.tsx・K-572）。押したときの流れ（use-complete.ts）の小窓と赤い知らせは、この帯が同じ store を読んで出す
 //     ⑦ 完了 … 「完了しました（高本・11/08 15:20）」・ボタンなし
-//   ③〜⑤ はボタンなし（K-182）。止まったときも自動で戻さず、ボタンは「完了にする」だけ（K63-UI-035）。
+//   ③〜⑤ はボタンなし（K-182）。止まったときも自動で戻さない（「完了にする」は題の行・K63-UI-035）。
 //   箱は components/k の Band（K-228・キャンバス StConfirmDone・StDone）：④ は淡い橙（題「実行待ち ・ PC が閉じています」・「PC をつなぐ」のリンク）、
-//   ③ は青（題が今の文）、⑤ は赤（role=alert・題「実行が止まりました」・理由の全文・完了にするを同じ箱に）、⑥ は白（完了にする）、⑦ は緑
+//   ③ は青（題が今の文）、⑤ は赤（role=alert・題「実行が止まりました」・理由の全文）、⑥ は白（案内の字）、⑦ は緑
 //   帯の section の印 data-busy（K-620）：AI が動いている・承認待ちの間だけ付ける（① 決める帯・担当者なしの箱・③ 実行が走っている・④ 実行待ち）。
 //   ⑤ 止まった・⑥ 完了にする・⑦ 完了・知らせだけのときは付けない。題名の下の帯の順の器（F4 の detail-slots.ts・属性の名前は両方の注に書く）が
 //   この印の付いた帯だけを「承認・実行の帯」と数え、渡し・保留の帯に譲らせる。帯の section は状態が替わっても同じ要素のまま
+//   段 6 の画面の葉の差し込み口（K-730・features/F5/more/slots.tsx）：③ 走っている箱の acts＝StopRunActSlot（where execute）・
+//   実行待ち（④ と ③ の queued）の箱＝ExecuteQueuedSlot。帯の上の知らせ（TicketNotice）は ① 承認待ちの箱を出している間だけここが描く（ほかは K-62 の帯）
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Band, BandLine, Button, NoticeBox } from "@/components/k";
+import { Band, BandLine, NoticeBox } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
+import { ExecuteQueuedSlot, StopRunActSlot, TicketNotice } from "@/features/F5/more/slots";
+import { useNotice, useTrail } from "@/features/F5/more/trail";
 import { CompleteDialog } from "./complete-dialog";
-import { completedLine, todoItems, type Completed } from "./complete-model";
+import { completedLine, type Completed } from "./complete-model";
 import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
+import { docOf, useComplete } from "./use-complete";
 
 export type { BandApproval } from "./decide";
 export const BAND_LABEL = "承認と実行";
@@ -37,7 +43,6 @@ const MSG = {
   asking: "AI が許可を求めています。許可は自動で断られ、続けられなければ止まります",
   pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます",
   completeHint: "完了の条件を確かめて完了にしてください",
-  allDone: "実施事項は全部終わりました",
   waitTitle: "実行待ち ・ PC が閉じています",
   stoppedTitle: "実行が止まりました",
 } as const;
@@ -46,33 +51,31 @@ const SETUP_BRIDGE = "/setup/bridge";
 const COMPLETABLE_STAGE = "doing";
 
 /** 承認の後の実行（phase execute）の今の様子。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
-type ExecuteView = { kind: "running"; title: string } | { kind: "wait" } | { kind: "stopped"; reason: string } | null;
+type ExecuteView =
+  { kind: "running"; title: string; queued: boolean } | { kind: "wait" } | { kind: "stopped"; reason: string } | null;
 function executeView(run: RunView): ExecuteView {
   if (!isActive(run)) {
     if (run.status === "done" || !run.stopped_reason) return null;
     return { kind: "stopped", reason: run.stopped_reason }; // ⑤ 理由は口の文をそのまま
   }
-  if (run.status === "asking") return { kind: "running", title: MSG.asking };
-  if (run.pc !== "asleep") return { kind: "running", title: MSG.running }; // queued・running で PC が開いている
-  return run.status === "queued" ? { kind: "wait" } : { kind: "running", title: MSG.runningAsleep };
+  if (run.status === "asking") return { kind: "running", title: MSG.asking, queued: false };
+  if (run.pc !== "asleep") return { kind: "running", title: MSG.running, queued: run.status === "queued" }; // queued・running で PC が開いている
+  return run.status === "queued" ? { kind: "wait" } : { kind: "running", title: MSG.runningAsleep, queued: false };
 }
 
-interface Section {
-  key: string;
-  label: string;
-  body: { text?: string } | null;
-  version: number;
-}
 /** 帯が読む getTicket の答えのところ（K-60 の詳細・K-162 の approval・K165 の can.complete と completed） */
 export interface BandTicket {
   /** 番号と題名（小窓の頭の下の対象の行・K-229） */
   ticket?: { number?: string | null; title?: string | null } | null;
   stage: { key?: string | null } | null;
   assignee: unknown;
-  sections: Section[];
+  /** 本文（K-560 の getTicket の body）。無い答えは本文の未チェック 0 */
+  body?: { doc?: unknown } | null;
   approval?: BandApproval | null;
   can?: { complete?: boolean } | null;
   completed?: Completed | null;
+  /** 確認項目を使わない理由（K-560 の getTicket の no_spec_reason・承認のカードの要約に足す・K-573） */
+  no_spec_reason?: string | null;
 }
 interface Props<T extends BandTicket> {
   ticketId: string;
@@ -124,15 +127,10 @@ export function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown
 export const targetLine = (number?: string | null, title?: string | null): string | undefined =>
   [number, title].filter(Boolean).join(" ") || undefined;
 
-const sectionOf = (ticket: BandTicket, key: string, fallback: string) => {
-  const s = ticket.sections.find((x) => x.key === key);
-  return { label: s?.label ?? fallback, text: s?.body?.text ?? "", version: s?.version ?? 0 };
-};
-
 export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKnown, onTicket, onChanged }: Props<T>) {
   usePolledTicket(ticketId, isActive(run), onTicket);
   const [notice, setNotice] = useState<string | null>(null);
-  const [completing, setCompleting] = useState(false); // 完了の小窓（「完了にする」を出せる間だけ開く）
+  const c = useComplete({ ticketId, doc: docOf(ticket), onChanged });
   /** 口が断った（409・404 など）：知らせを出して読み直す。401 は入り直し（共通の扱い・戻る先にこのチケット） */
   const failed = async (r: CallErr) => {
     if (r.status === 401) return;
@@ -141,13 +139,21 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   };
 
   const approval = ticket.approval ?? null;
+  // 帯の上の知らせ・帯の下の 1 行（段 6・trail.ts）：在る間は帯を null にしない
+  const moreNotice = useNotice(ticketId);
+  const trail = useTrail(ticketId);
   const execute = run?.phase === "execute" ? run : null;
   const complete = canCompleteNow(ticket, run, runKnown);
   const target = targetLine(ticket.ticket?.number, ticket.ticket?.title);
   // 「完了にする」を出さない形に替わったら（実行が走り出した・承認待ちになった・段が変わった）、開いていた小窓も閉じる
+  const { back } = c;
   useEffect(() => {
-    if (!complete) setCompleting(false);
-  }, [complete]);
+    if (!complete) back();
+  }, [complete, back]);
+  /** 実行待ち（queued）の箱を差し込み口で包む（K-735 が取り下げを足す） */
+  const queued = (r: RunView, box: ReactNode) => (
+    <ExecuteQueuedSlot run={r} ticketId={ticketId} {...(target ? { target } : {})} box={box} onChanged={onChanged} />
+  );
   /** 帯の中身と、AI が動いている・承認待ちか（data-busy を付けるか・K-620） */
   const { body, busy } = (() => {
     const busyBody = (node: ReactNode) => ({ body: node, busy: true });
@@ -162,73 +168,72 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
           onFailed={failed}
           onStart={() => setNotice(null)}
           {...(target ? { target } : {})}
+          noSpecReason={ticket.no_spec_reason ?? null}
+          ticketId={ticketId}
         />,
       );
     if (approval && ticket.assignee === null) return busyBody(<Band tone="approval" title={MSG.noAssignee} />); // 箱は 1 つ（K-62 の帯は出さない）
     if (approval) return idleBody(); // 決められない人：K-62 の帯だけ（D-128.178）
     const view = execute ? executeView(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
-    const completeButton = complete ? <Button onClick={() => setCompleting(true)}>完了にする</Button> : null;
     if (view?.kind === "stopped")
       return idleBody(
-        <Band tone="danger" role="alert" title={MSG.stoppedTitle} {...(completeButton ? { acts: completeButton } : {})}>
+        <Band tone="danger" role="alert" title={MSG.stoppedTitle}>
           <BandLine>{view.reason}</BandLine>
         </Band>,
       );
-    if (view?.kind === "running") return busyBody(<Band tone="info" title={view.title} />);
-    if (view?.kind === "wait")
-      return busyBody(
+    if (execute && view?.kind === "running") {
+      const box = (
         <Band
-          tone="wait"
-          title={MSG.waitTitle}
-          acts={
-            <a className="k-link" href={SETUP_BRIDGE}>
-              PC をつなぐ
-            </a>
-          }
-        >
-          <BandLine>{MSG.pcClosed}</BandLine>
-        </Band>,
+          tone="info"
+          title={view.title}
+          acts={<StopRunActSlot run={execute} where="execute" onChanged={onChanged} />}
+        />
+      );
+      return busyBody(view.queued ? queued(execute, box) : box);
+    }
+    if (execute && view?.kind === "wait")
+      return busyBody(
+        queued(
+          execute,
+          <Band
+            tone="wait"
+            title={MSG.waitTitle}
+            acts={
+              <a className="k-link" href={SETUP_BRIDGE}>
+                PC をつなぐ
+              </a>
+            }
+          >
+            <BandLine>{MSG.pcClosed}</BandLine>
+          </Band>,
+        ),
       );
     if (!complete) return idleBody();
-    return idleBody(
-      <CompleteHint todo={sectionOf(ticket, "todo", "実施事項").text} onOpen={() => setCompleting(true)} />,
-    );
+    return idleBody(<Band tone="plain" title={MSG.completeHint} />);
   })();
 
-  const dialogOpen = completing && complete;
-  if (!body && !notice && !dialogOpen) return null;
+  const dialogOpen = c.state.dialog && complete;
+  const shownNotice = notice ?? c.state.notice;
+  /** 知らせと帯の下の 1 行は、承認待ちの箱（DecideBody）を出している間だけこの帯が描く（ほかは K-62 の帯・2 回描かない） */
+  const ownsTrail = !!approval?.can_decide && ticket.stage?.key !== "done";
+  const hasMore = ownsTrail && (moreNotice !== null || trail.length > 0);
+  if (!body && !shownNotice && !dialogOpen && !hasMore) return null;
   return (
     <section aria-label={BAND_LABEL} className="k62-band k-section" data-busy={busy ? "" : undefined}>
-      {notice ? <NoticeBox>{notice}</NoticeBox> : null}
+      {shownNotice ? <NoticeBox>{shownNotice}</NoticeBox> : null}
+      {ownsTrail ? <TicketNotice ticketId={ticketId} /> : null}
       {body}
       {dialogOpen ? (
         <CompleteDialog
-          ticketId={ticketId}
           {...(target ? { target } : {})}
-          todo={sectionOf(ticket, "todo", "実施事項")}
-          conditions={sectionOf(ticket, "done", "完了の条件")}
-          onClose={() => setCompleting(false)}
-          onDone={async () => {
-            setNotice(null);
-            await onChanged();
-          }}
-          onFailed={failed}
+          tasks={c.state.tasks}
+          specs={c.state.specs}
+          problems={c.state.problems}
+          busy={c.state.phase === "sending"}
+          onBack={back}
+          onGo={() => void c.go()}
         />
       ) : null}
     </section>
-  );
-}
-
-/** ⑥ 完了の案内と「完了にする」（押すと完了の小窓）。実施事項が 1 件以上あって全部済みのときだけ要約「実施事項は全部終わりました」 */
-function CompleteHint({ todo, onOpen }: { todo: string; onOpen: () => void }) {
-  const items = todoItems(todo);
-  const allDone = items.length > 0 && items.every((i) => i.done);
-  return (
-    <Band
-      tone="plain"
-      title={MSG.completeHint}
-      {...(allDone ? { sub: MSG.allDone } : {})}
-      acts={<Button onClick={onOpen}>完了にする</Button>}
-    />
   );
 }

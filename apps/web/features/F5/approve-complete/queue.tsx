@@ -7,9 +7,11 @@
 //   行の「承認する」は確かめの小窓（approve-confirm.tsx・K-229・D-143.4）を開くだけで、口は小窓の主ボタンで呼ぶ
 //   形はキャンバス Approvals（K-231）：見出しの帯（「あなたが決めるもの N 件」・続けて裁く）と、本文の箱にカード 1 つ（queue-table.tsx）。
 //   空はキャンバス ApEmpty：点線の箱に ✓・見出し・説明・決めた履歴。続けて裁く・決めた履歴の画面はまだ無いので押せない（D-145.9）
+//   段 6 の画面の葉の差し込み口（K-730・features/F5/more/slots.tsx）：［続けて裁く］＝QueueFocusSlot・空の画面＝QueueEmptySlot・
+//   その中の［決めた履歴］＝QueueHistorySlot・問い合わせの足し＝useQueueQuery（K-749・最初は空）
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Button, Callout, Empty, Loading } from "@/components/k";
+import { Button, Callout, Empty, Loading, Toaster } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "./message";
 import { ApproveConfirm } from "./approve-confirm";
@@ -17,6 +19,8 @@ import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { QueueCard } from "./queue-table";
+import { QueueEmptySlot, QueueFocusSlot, QueueHistorySlot } from "@/features/F5/more/slots";
+import { useQueueQuery } from "@/features/F5/more/fills/queue-tools";
 import "./approve.css";
 
 export interface QueueRow {
@@ -40,6 +44,8 @@ interface QueuePage {
   rows: QueueRow[];
   total: number;
   cursor: string | null;
+  /** 口の meta.counts をそのまま（札の数を先 K-749 が頁から読む・無ければ空） */
+  counts: Record<string, number | undefined>;
 }
 
 export const queueKey = ["k63", "queue"] as const;
@@ -47,24 +53,25 @@ const LOAD_FAILED = "承認待ちを読み込めませんでした。もう一�
 
 class QueueReadError extends Error {}
 
-async function readPage(cursor: string | null): Promise<QueuePage> {
+async function readPage(cursor: string | null, extra: Record<string, string>): Promise<QueuePage> {
   const r = await call("listApprovalQueue", {
-    query: cursor ? { cursor } : {},
+    query: { ...extra, ...(cursor ? { cursor } : {}) },
     screenId: "approvals",
   });
   if (!r.ok) throw new QueueReadError(r.code);
-  const counts = (r.meta["counts"] ?? {}) as { total?: number };
+  const counts = (r.meta["counts"] ?? {}) as Record<string, number | undefined>;
   const rows = r.data as unknown as QueueRow[];
-  return { rows, total: Number(counts.total ?? rows.length), cursor: r.meta.cursor ?? null };
+  return { rows, total: Number(counts["total"] ?? rows.length), cursor: r.meta.cursor ?? null, counts };
 }
 
 export function ApprovalsPage() {
+  const extra = useQueueQuery();
   const q = useInfiniteQuery({
-    queryKey: queueKey,
+    queryKey: [...queueKey, ...extra.key],
     enabled: typeof window !== "undefined" && !!getToken(),
     retry: false,
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) => readPage(pageParam),
+    queryFn: ({ pageParam }) => readPage(pageParam, extra.query),
     getNextPageParam: (last) => last.cursor,
   });
   useEffect(() => {
@@ -83,9 +90,7 @@ export function ApprovalsPage() {
               あなたが決めるもの <span className="k63-count">{total} 件</span>
             </p>
           ) : null}
-          {q.data && !q.isError && rows.length > 0 ? (
-            <Button className="k-ap-next" aria-disabled="true" tabIndex={-1}>{`続けて裁く（${total} 件）`}</Button>
-          ) : null}
+          {q.data && !q.isError && rows.length > 0 ? <QueueFocusSlot rows={rows} total={total} /> : null}
         </header>
         <div className="k-ap-body">
           {q.isError ? (
@@ -123,15 +128,7 @@ interface QueueViewProps {
 /** 空（ApEmpty）：点線の箱に ✓・見出し・説明・決めた履歴（画面がまだ無いので押せない） */
 function NothingToDecide() {
   return (
-    <Empty
-      icon="✓"
-      title="いま決めるものはありません"
-      action={
-        <Button variant="outlined" aria-disabled="true" tabIndex={-1}>
-          決めた履歴
-        </Button>
-      }
-    >
+    <Empty icon="✓" title="いま決めるものはありません" action={<QueueHistorySlot where="empty" />}>
       AI が成果物を作り、確かめが終わると、ここに並びます
     </Empty>
   );
@@ -195,12 +192,13 @@ function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
   );
   const shown = rows.filter((r) => !done.has(r.id));
   return (
-    <>
+    // 小さな知らせ（渡された行を受けた・もう決まっていた・K-412）の置き場。最後の 1 件で空の画面に替わっても消えないよう、一覧の入れ物に置く
+    <Toaster>
       {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {dialog}
       {confirm}
       {shown.length === 0 ? (
-        <NothingToDecide />
+        <QueueEmptySlot empty={<NothingToDecide />} />
       ) : (
         <QueueCard rows={shown} total={total} acts={{ busy, onApprove: setConfirming, onReturn: setReturning }} />
       )}
@@ -209,6 +207,6 @@ function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
           もっと見る
         </Button>
       ) : null}
-    </>
+    </Toaster>
   );
 }

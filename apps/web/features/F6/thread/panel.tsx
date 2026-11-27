@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { RunLogDialog } from "@/features/F5/delegate/run-log";
+import { TicketAiTabSlot } from "@/features/F5/more/slots";
 import { usePanelTab } from "../scope";
 import { TalkComposer } from "./composer";
 import { FromMessageAction } from "./from-message";
@@ -55,6 +56,8 @@ function PagePanel({ ticket, attrs }: { ticket: SlotTicket; attrs: ReactNode }):
       <TalkTabs active={tab} me={ticket.me} {...(count ? { count } : {})} onTab={(t) => scope?.setTab(t)} />
       {tab === "attr" ? (
         attrs
+      ) : tab === "ai" ? (
+        <TicketAiTabSlot ticketId={ticket.id} me={ticket.me} />
       ) : (
         <div className="k-talk" id="ticket-talk">
           <ThreadFilters

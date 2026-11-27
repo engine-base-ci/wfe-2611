@@ -19,6 +19,7 @@ export const ID_TABLE = {
   "/api/v1/knowledge/proposals": "knowledge_page_versions",
   "/api/v1/knowledge_imports": "imports",
   "/api/v1/exports": "export_jobs",
+  "/api/v1/ticket_draft_conversations": "conversations",
 };
 /** 入口で行を読まない口（理由が必須）。認証の側の表など、public の表に無いもの */
 export const ROW_EXEMPT = {
@@ -105,8 +106,12 @@ export const OP_RULES = {
   approveApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 差し戻す人も承認する人と同じ（今の担当者だけ・K-163）
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
-  // 承認する人・担当者・マネージャー
-  stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
+  // 承認する人＝今の担当者だけ（K-732・D-153.26）。DB の関数 app.approval_stop も同じ判定をする
+  stopApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認する人＝今の担当者だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_self_edit と口が持つ（K-742・守りは 2 層）
+  editApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認した本人だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_withdraw と口が持つ（K-733・守りは 2 層）
+  withdrawApproval: `approver_member_id = ${ME}`,
   // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
   copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
@@ -114,9 +119,28 @@ export const OP_RULES = {
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（K-401・D-148.17）。
+  //   状態は見ない（決まった渡しに答えた人には 403 でなく 409・E-HND-005 を口が返す）。RULES.recipient は替えない（ほかの口に効かせない）。
+  //   関数 app.handover_answer_gate も中で同じ判定をする（守りは 2 層）
+  answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 段9:K-406 取り消す・催促するの行はこの下
+
+  // 段9:K-410 人を決めるの行はこの下
+
   // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
   //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
   takeoverActionRun: `true`,
+  // 動いている AI の実行を止める：入口は「その実行が見える」だけ。担当者かの判定（403・E-RUN-001）と、消した・無い（404）は
+  //   DB の関数 app.run_stop と口（features/F5/stop/run-stop.ts）が持つ（K-731・K-485 の takeoverActionRun と同じ作り）
+  stopActionRun: `true`,
+  // 試し打ち：入口は見えるだけ。担当者かの判定（403）・状態（409）・消した・無い（404）は
+  //   DB の関数 app.ticket_dry_run と口（features/F5/more/dry-run.ts）が持つ（K-746・K-731 の stopActionRun と同じ作り）
+  dryRunTicket: `true`,
+  // まとめて承認：入口は見えるだけ。承認する人か・今の状態・書けるかの判定は DB の関数 app.approval_decide が 1 件ずつ持つ。
+  //   まとめて承認は 1 件ずつの守りと同じ（K-768・D-153.11）。確かめの読み（app.approval_bulk_scan）も自分が承認する物だけを数える
+  previewBulkApproval: `true`,
+  bulkApprove: `true`,
   // チケットを消す・消す前の下見：入口は「そのチケットが見える」だけ（行が見える＝tickets の行の守り・消した物は見えない）。
   //   作った人か、そのグループで tickets の edit を持つ人か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）。
   //   入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文（E-DEL-001）も入口の汎用の 403 に奪われる。

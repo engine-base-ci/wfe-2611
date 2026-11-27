@@ -26,6 +26,6 @@ export const searchConversations: Searcher = async (cl, input) => {
     id: r.id,
     title: r.title,
     snippet: r.hit ?? "",
-    url: `/ai/chat?c=${r.id}`,
+    url: `/ai/talk?c=${r.id}`,
   }));
 };

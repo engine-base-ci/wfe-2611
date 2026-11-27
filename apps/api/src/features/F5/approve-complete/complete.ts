@@ -12,11 +12,9 @@ import { withTenant, type TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import { NotifyGateway, type NotifyEvent, type Transport } from "@kaname/notify";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
-import { fromCatalog, invalid, replyOf } from "./errors.js";
+import { fromCatalog, replyOf } from "./errors.js";
 
 export const COMPLETED_KIND = "ticket.completed";
-/** 完了のときのナレッジの候補は、骨格では出さない（D-128.138） */
-export const SKIPPED_REASON = "候補はまだ出していません";
 
 /** 関門 C6 が 1 人に送る回数（最初の 1 回＋送り直し 1 回）。DB の関数 app.ticket_completed_notice（0101）が失敗の行に書く
  *  retry_count の 1 は、この数から 1 を引いた数（送り直した回数）と同じ数。ここを変えるときは、新しい migration で関数の数も同じに変える */
@@ -78,8 +76,6 @@ const completedReply = (t: Completed): HookReply => ({
         completed_at: t["completed_at"],
         completed_by: t["completed_by"],
       },
-      knowledge_candidates: [],
-      skipped_reason: SKIPPED_REASON,
       // 未チェックの数（本文のチェックの箱・確認項目）。数えて返すだけで、完了は止めない（D-150.42）
       unchecked: t["unchecked"],
     },
@@ -88,14 +84,7 @@ const completedReply = (t: Completed): HookReply => ({
 
 async function complete(pool: pg.Pool, a: HookArgs, o: CompleteOptions): Promise<HookReply> {
   const where = "完了にする";
-  // 欄があること・型（並び・整数・真偽）は入口が契約の形で確かめ済み。todo_checked・todo_version は受けても中身を見ない（前の小窓が送り続ける・D-150.42）
-  //   送られたときの形（番号が整数の並び・版が 0 以上の整数）だけここで確かめる。形の誤りは 422（中身の突き合わせはしない）
-  const checked = a.input["todo_checked"];
-  if (checked !== undefined && (!Array.isArray(checked) || !checked.every((x) => Number.isInteger(x))))
-    return invalid("todo_checked", "実施事項の番号（0 からの整数）の並びで送ってください");
-  const version = a.input["todo_version"];
-  if (version !== undefined && (!Number.isInteger(version) || (version as number) < 0))
-    return invalid("todo_version", "実施事項の版（0 以上の整数）を送ってください");
+  // 入力は確かめ印 conditions_confirmed だけ（形は入口が契約で確かめ済み・契約に無い欄は入口が 422・K-578）
   let r: Completed | undefined;
   try {
     r = await withTenant(
@@ -103,7 +92,7 @@ async function complete(pool: pg.Pool, a: HookArgs, o: CompleteOptions): Promise
       a.ctx,
       async (cl) =>
         (
-          await cl.query<{ v: Completed }>("select app.ticket_complete($1, null::integer[], null::integer, $2) as v", [
+          await cl.query<{ v: Completed }>("select app.ticket_complete($1, $2) as v", [
             a.id,
             a.input["conditions_confirmed"] === true,
           ])

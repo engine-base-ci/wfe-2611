@@ -4,10 +4,19 @@
 //   12px の要約「成果物は M/D HH:MM に作成 ・ 確認 〈check_summary〉」・取り消せない注意の赤い箱・24 時間の聞き直しの 1 行、
 //   次の行に 承認して送る（主）・自分で直す（押せない）・差し戻す・止める（押せない）。成果物は箱の下のカード（artifact-card.tsx）。
 //   「承認して送る」「承認する」は確かめの小窓（approve-confirm.tsx・K-229・D-143.4）を開くだけで、口は小窓の主ボタンで呼ぶ
+//   段 6 の画面の葉の差し込み口（K-730・features/F5/more/slots.tsx）：［自分で直す］＝SelfEditActSlot・［止める］＝StopApprovalActSlot・
+//   箱の下に帯の上の知らせ（TicketNotice は band.tsx）・帯の下の 1 行（TicketTrail）・試し打ち（DryRunSlot）・成果物の場所（ArtifactAreaSlot）・確認（ChecksSlot）
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Band, BandCaution, BandLine, Button } from "@/components/k";
-import { InertButton } from "@/features/F4/create-ticket/detail-head";
+import {
+  ArtifactAreaSlot,
+  ChecksSlot,
+  DryRunSlot,
+  SelfEditActSlot,
+  StopApprovalActSlot,
+  TicketTrail,
+} from "@/features/F5/more/slots";
 import { call, type CallErr } from "@/lib/api/call";
 import { ApproveConfirm } from "./approve-confirm";
 import { ArtifactCard } from "./artifact-card";
@@ -47,10 +56,15 @@ export function useApprovalDetail(id: string | null) {
   });
 }
 
-/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）」。口が返した値だけで作る（無い部分は出さない） */
-export function approvalSummary(d: ApprovalDetail): string {
-  const at = d.approval?.created_at ? jstStamp(d.approval.created_at) : "";
-  const parts = [at ? `成果物は ${at} に作成` : "", d.check_summary ? `確認 ${d.check_summary}` : ""];
+/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません） ・ 確認項目を使わない理由：…」。
+ *  口が返した値だけで作る（無い部分は出さない）。理由は詳細の読み getTicket の no_spec_reason（K-573・D-150.45）。承認の 1 件が読めない間も理由は出す */
+export function approvalSummary(d: ApprovalDetail | null | undefined, noSpecReason?: string | null): string {
+  const at = d?.approval?.created_at ? jstStamp(d.approval.created_at) : "";
+  const parts = [
+    at ? `成果物は ${at} に作成` : "",
+    d?.check_summary ? `確認 ${d.check_summary}` : "",
+    noSpecReason?.trim() ? `確認項目を使わない理由：${noSpecReason}` : "",
+  ];
   return parts.filter(Boolean).join(" ・ ");
 }
 interface Props {
@@ -63,6 +77,10 @@ interface Props {
   onStart: () => void;
   /** 小窓の頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
   target?: string;
+  /** 確認項目を使わない理由（getTicket の no_spec_reason・K-573）。無ければ要約に足さない */
+  noSpecReason?: string | null;
+  /** チケットの id（段 6 の差し込み口と帯の下の 1 行に渡す・K-730）。無ければ帯の下の 1 行を描かない */
+  ticketId?: string;
 }
 
 /** 確かめの小窓の主ボタン：2 回押しでも口は 1 回。答えが来たら（どの答えでも）小窓を閉じてから読み直す */
@@ -89,8 +107,10 @@ function useApprove({ approval, onChanged, onFailed, onStart }: Props) {
 }
 
 export function DecideBody(props: Props) {
-  const { approval, onChanged, onFailed, target } = props;
+  const { approval, onChanged, onFailed, target, noSpecReason, ticketId } = props;
+  const slotIds = { ...(ticketId ? { ticketId } : {}) };
   const detail = useApprovalDetail(approval.id);
+  const summary = approvalSummary(detail.data, noSpecReason);
   const { busy, approve, confirming, setConfirming } = useApprove(props);
   const [returning, setReturning] = useState(false); // 差し戻しの小窓（K-181）
   const irreversible = approval.irreversible !== false;
@@ -102,27 +122,40 @@ export function DecideBody(props: Props) {
       <Button onClick={() => setConfirming(true)} loading={busy} disabled={busy}>
         {irreversible ? "承認して送る" : "承認する"}
       </Button>
-      <InertButton>自分で直す</InertButton>
+      <SelfEditActSlot approval={approval} {...slotIds} onChanged={onChanged} onFailed={onFailed} />
       <Button variant="outlined" disabled={busy} onClick={() => setReturning(true)}>
         差し戻す
       </Button>
-      <InertButton>止める</InertButton>
+      <StopApprovalActSlot
+        approval={approval}
+        {...slotIds}
+        {...(target ? { target } : {})}
+        onChanged={onChanged}
+        onFailed={onFailed}
+      />
     </>
   );
   return (
     <div className="k63-decide">
-      <Band
-        tone="approval"
-        title={MSG.waitingMe}
-        {...(detail.data && approvalSummary(detail.data) ? { sub: approvalSummary(detail.data) } : {})}
-        acts={acts}
-      >
+      <Band tone="approval" title={MSG.waitingMe} {...(summary ? { sub: summary } : {})} acts={acts}>
         {approval.note ? <BandLine>{approval.note}</BandLine> : null}
         {cautionLines.map((c, i) => (
           <BandCaution key={i}>{c}</BandCaution>
         ))}
       </Band>
-      {artifact?.text ? <ArtifactCard version={artifact.version} text={artifact.text} /> : null}
+      {ticketId ? <TicketTrail ticketId={ticketId} /> : null}
+      <DryRunSlot approvalId={approval.id} {...slotIds} />
+      <ArtifactAreaSlot
+        approvalId={approval.id}
+        {...slotIds}
+        artifact={artifact}
+        card={
+          artifact?.text ? (
+            <ArtifactCard version={artifact.version} text={artifact.text} approvalId={approval.id} {...slotIds} />
+          ) : null
+        }
+      />
+      <ChecksSlot where="approval" {...slotIds} approvalId={approval.id} />
       <ApproveConfirm
         open={confirming}
         onOpenChange={(o) => {
@@ -131,12 +164,14 @@ export function DecideBody(props: Props) {
         irreversible={irreversible}
         cautions={detail.data?.cautions ?? []}
         busy={busy}
+        approvalId={approval.id}
         onConfirm={() => void approve()}
       />
       {returning ? (
         <ReturnDialog
           approvalId={approval.id}
           {...(target ? { target } : {})}
+          {...(props.ticketId ? { ticketId: props.ticketId } : {})}
           screenId="tickets"
           open
           onOpenChange={setReturning}

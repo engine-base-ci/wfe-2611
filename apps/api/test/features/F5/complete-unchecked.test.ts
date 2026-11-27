@@ -216,13 +216,13 @@ describe("K-566 完了の口の直し：未チェックは数えて返すだけ�
     expect(((await json(r)).data as { unchecked: { body: number } }).unchecked.body).toBe(1);
   });
 
-  it("K566-API-013 答えの形：data の鍵は ticket・knowledge_candidates・skipped_reason・unchecked の 4 つで、unchecked は鍵ちょうど body と specs（どちらも 0 以上の整数）", async () => {
+  it("K566-API-013 答えの形：data の鍵は ticket・unchecked の 2 つで（K-766 で knowledge_candidates・skipped_reason を外した・D-153.15）、unchecked は鍵ちょうど body と specs（どちらも 0 以上の整数）", async () => {
     const t = await ticket();
     await executed(t);
     const r = await complete(boss, t.id, await completeBody(t));
     expect(r.status).toBe(201);
     const data = (await json(r)).data as Record<string, unknown>;
-    expect(Object.keys(data).sort()).toEqual(["knowledge_candidates", "skipped_reason", "ticket", "unchecked"]);
+    expect(Object.keys(data).sort()).toEqual(["ticket", "unchecked"]); // K-766
     const u = data["unchecked"] as Record<string, unknown>;
     expect(Object.keys(u).sort()).toEqual(["body", "specs"]);
     for (const v of Object.values(u)) expect(Number.isInteger(v) && (v as number) >= 0).toBe(true);

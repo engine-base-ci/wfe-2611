@@ -114,10 +114,11 @@ DETAIL = {
     "StRunning": ("AI が実行しているとき", "作業中", "#2F4B7C",
                   band("status", "#C7D7F5", "#EEF3FD", "#1E40AF", "高本のAI が作っています", "開始 10:31 ・ 3 分",
                        [bbtn("AI と話す", "o#DDE2E9", 30, off=True), bbtn("止める", "o#DDE2E9", 30, off=True)], extra=steps())),
+    # StFailed の帯に［直し方を AI に伝える］は置かない（代表の決め answer=4d049789b537：やり取りで直す）
     "StFailed": ("AI が止まったとき", "作業中", "#2F4B7C",
                  band("alert", "#F3C7C7", "#FDECEC", "#991B1B", "高本のAI が止まりました",
                       "金額が見積 EG-097 の月額と合いませんでした",
-                      [bbtn("AI に任せる", "p", 30), bbtn("直し方を AI に伝える", "o#F3C7C7", 30, off=True), bbtn("自分で直す", "o#F3C7C7", 30, off=True)])
+                      [bbtn("AI に任せる", "p", 30), bbtn("自分で直す", "o#F3C7C7", 30, off=True)])
                  + "\n     " + CHECK_TABLE),
     "StBefore": ("AI に任せる前", "未着手", "#6B7585",
                  band("status", "#DDE2E9", "#FFFFFF", "#22345C", "AI に任せる", "高本のAI が実施事項を進め、確かめてから承認を待ちます",

@@ -928,7 +928,7 @@ export interface QueueCardView {
   id: string;
   number: string;
   /** 番号の札の右の 1 行（「高本さんから ・ 渡された」「佐藤のAI ・ 確認 通過 3」） */
-  meta: string;
+  meta: ReactNode;
   title: string;
   sub?: string;
   /** 返事の期限など（橙の字） */
@@ -947,19 +947,33 @@ export interface QueueCardMobileProps {
   acts?: ReactNode;
   /** カードの中の赤い字（role=alert） */
   error?: string;
+  /** 題名・中身の 1 行の後に出す 1 行（承認待ちのカードの「確認 …」・K-730） */
+  extra?: ReactNode;
+  /** 番号の所（渡すと既定の番号を置き換える。承認待ちのカードは差し込み口が四角と番号を描く・番号は 1 回だけ・K-730） */
+  num?: ReactNode;
 }
 
-export function QueueCardMobile({ card, onAct, busy = false, href = "#ticket", acts, error }: QueueCardMobileProps) {
+export function QueueCardMobile({
+  card,
+  onAct,
+  busy = false,
+  href = "#ticket",
+  acts,
+  error,
+  extra,
+  num,
+}: QueueCardMobileProps) {
   return (
     <li className="k-hnd-mcard">
       <div className="k-hnd-mcard-meta">
-        <span className="k-hnd-mcard-num">{card.number}</span>
+        {num ?? <span className="k-hnd-mcard-num">{card.number}</span>}
         <span className="k-hnd-mcard-from">{card.meta}</span>
       </div>
       <a className="k-hnd-mcard-title" href={href}>
         {card.title}
       </a>
       {card.sub ? <p className="k-hnd-mcard-sub">{card.sub}</p> : null}
+      {extra}
       {card.note ? <p className="k-hnd-mcard-note">{card.note}</p> : null}
       {error ? (
         <p className="k-err" role="alert">

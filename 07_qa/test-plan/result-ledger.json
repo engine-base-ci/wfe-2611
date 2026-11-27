@@ -2,48 +2,8 @@
  "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
  "at": "2026-11-09",
- "count": 2220,
+ "count": 2160,
  "rows": [
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-004"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-005"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-006"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-007"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-033"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-034"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-035"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-036"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-037"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-013"
-  },
   {
    "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-03-019"
@@ -59,22 +19,6 @@
   {
    "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-03-026"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-015"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-016"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-017"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-018"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -115,30 +59,6 @@
   {
    "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-02-003"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-027"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-028"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-029"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-030"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-038"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-032"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -234,30 +154,6 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-031"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-008"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-009"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-010"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-011"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-03-012"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-06-008"
   },
   {
@@ -338,30 +234,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-002-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-002-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SIG-002-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SIG-002-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SIG-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-TO-003-A"
   },
   {
@@ -386,30 +258,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-010-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-010-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-010-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-LIM-010-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-LIM-010-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-LIM-010-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-CONN-011-A"
   },
   {
@@ -419,18 +267,6 @@
   {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-CONN-011-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-GATE-010-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-GATE-010-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-GATE-010-C"
   },
   {
    "file": "07_qa/test-specs/errors.md",
@@ -466,42 +302,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-001-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-001-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-001-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-002-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-002-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-003-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-003-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CHAT-003-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-ART-001-A"
   },
   {
@@ -523,18 +323,6 @@
   {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-ART-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-012-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-012-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-CONN-012-C"
   },
   {
    "file": "07_qa/test-specs/errors.md",
@@ -5114,14 +4902,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "SCR-CLONE-CHAT-292"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "SCR-CLONE-CHAT-293"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "SCR-CLONE-CHAT-220"
   },
   {
@@ -5359,10 +5139,6 @@
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "CHT-27-001"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-27-005"
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
@@ -5851,14 +5627,6 @@
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "API-16-030"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "SCR-CLONE-CHAT-119"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "SCR-CLONE-CHAT-120"
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",

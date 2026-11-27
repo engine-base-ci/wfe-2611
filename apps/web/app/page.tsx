@@ -20,7 +20,7 @@ export default function Home() {
     if (loading || step === null) return;
     const back = resumeHref(step);
     // 通し終わった人の行き先（今日）がまだ無い間は、ある画面へ送る。入口が 404 に送ると行き止まりの輪になる
-    const done = isBuilt(FALLBACKS.entry.signedIn) ? (FALLBACKS.entry.signedIn as Route) : ("/ai/chat" as Route);
+    const done = isBuilt(FALLBACKS.entry.signedIn) ? (FALLBACKS.entry.signedIn as Route) : ("/ai/talk" as Route);
     router.replace(back ?? done);
   }, [session, loading, step, router]);
   return (
