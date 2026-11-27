@@ -1,4 +1,6 @@
 # K-419 招く口（createInvitations）の契約の形の表に足す分（K-325 の断片）。getWorkspaceMembers は体を受けない GET なので足す行は無い
+# getWorkspaceMembers の答えの人（groups[].members[]）の鍵は K-419 の 11 に K-808 が last_used_at（画面のセッションの last_seen_at のいちばん新しい物・ISO 8601・無ければ null）と
+# last_used_days（今から何日前・24 時間ごとに切り捨て・無ければ null）を足した 13（DB の関数 app.workspace_members が組む・答えの辞書は変えない）
 # apps/api/src/features/F10/invite/create.ts（emails・scope_id・role_key は無ければ 422。message は無くてよい）
 import invite_patterns as _IP  # 宛ての pattern（scripts/ci/invite_patterns.py・口は apps/api/src/features/F10/invite/patterns.ts と同じ字・K419-API-024 が照らす）
 REQUIRED_INPUTS = {
