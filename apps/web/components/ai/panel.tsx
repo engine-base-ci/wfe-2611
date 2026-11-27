@@ -20,7 +20,7 @@ export function AssistantPanel({ selected }: { selected?: string | null }) {
 export function AssistantPanelView({
   chat,
   selected,
-  chatHref = "/ai/chat" as Route,
+  chatHref = "/ai/talk" as Route,
 }: {
   chat: AgentChatModel;
   selected: string | null;

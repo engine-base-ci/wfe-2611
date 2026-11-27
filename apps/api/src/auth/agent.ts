@@ -1,14 +1,15 @@
 // 自分のAIとの会話の口（D-104・D-105・T-B-15〜T-B-22）。/api/auth-ext の下に付く（ext.ts から route する）。
 //   画面の口：会話の一覧・新しく話す・名前／星／記憶に残さない・消す・見た・止める・止めずに直す・許可の答え（3 択＋一言・問い合わせ）・
 //            「いつも許可」の一覧と取り消し・許可の既定・使用量・資料を付ける・記憶の毎朝のまとめ・上げる候補
-//   Bridge の口：書きながらの返事（partial）・止める／直すの合図（control）・資料の署名 URL（attachment）・答え（answer2）
+//   Bridge の口：書きながらの返事（partial）・止めずに直す一言（steers）・資料の署名 URL の受け口（files）・答え（answer2）
+//   会話の写し・取り戻す先・資料の取り寄せは契約の口へ移した（K-760・K-761・K-765）
 // 判定は DB の関数（security definer）の中。読む側で生の select をすると行レベルの制御に弾かれ、例外にならず 0 件になる
 import { Hono } from "hono";
 import { createDeviceResolver } from "@kaname/auth/resolver";
 import type pg from "pg";
 import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
-import { digestPrompt, takeRemember, type DigestSource } from "./memory.js";
+import { digestPrompt, type DigestSource } from "./memory.js";
 import { artifactRoutes } from "./artifacts.js";
 import { deleteConversation, editMemory, newConversation, setConversation } from "./agent-ops.js";
 import { badId, idList, idOf, idOrNull, isBridgeKeyShape, queryId } from "./ids.js";
@@ -472,44 +473,6 @@ export function agentRoutes(d: AgentDeps): Hono {
   const badPcId = async (c: Parameters<typeof bad>[0], sid: string, field: string) =>
     (await alive(sid)) ? badId(c, field) : GONE(c);
   // 書きながら出る返事の途中（D-104.8）
-  // 自分のAI の文を写す（D-112）。本人の PC の Claude Code の記録と同じ id。同じ id は二度入れない
-  app.post("/bridge/entries", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as {
-      conversation_id?: unknown;
-      job_id?: unknown;
-      entries?: unknown;
-    };
-    const conv = idOrNull(b.conversation_id);
-    if (conv === false) return badPcId(c, sid, "conversation_id");
-    const job = idOrNull(b.job_id);
-    if (job === false) return badPcId(c, sid, "job_id");
-    if (!conv) return bad(c, 422, "VALIDATION_FAILED", "会話の id が要ります");
-    if (!Array.isArray(b.entries) || b.entries.length > 500)
-      return bad(c, 422, "VALIDATION_FAILED", "写す文は 1〜500 件の並びで送ってください");
-    if (!(await alive(sid))) return GONE(c);
-    // 「覚えて」の印は吹き出しに出さない（覚えるのは仕事の結末で 1 回だけ・D-105.1）
-    const entries = (b.entries as { uuid?: unknown; text?: unknown; at?: unknown }[]).map((e) => ({
-      ...e,
-      text: takeRemember(String(e.text ?? "")).text,
-    }));
-    const r = await q1<{ n: number }>("select app.bridge_entries($1, $2, $3, $4::jsonb) as n", [
-      sid,
-      conv,
-      job,
-      JSON.stringify(entries),
-    ]);
-    return c.json({ data: { inserted: r?.n ?? 0 } });
-  });
-  // 取り戻す先（D-112）：直近の本人の会話と、そこで使った Claude Code の session
-  app.post("/bridge/mirror-targets", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await alive(sid))) return GONE(c);
-    const r = await q1<{ v: unknown }>("select app.bridge_mirror_targets($1) as v", [sid]);
-    return c.json({ data: r?.v ?? [] });
-  });
   app.post("/bridge/partial", async (c) => {
     const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
@@ -538,32 +501,6 @@ export function agentRoutes(d: AgentDeps): Hono {
     const r = await q1<{ v: unknown }>("select app.bridge_take_steers($1, $2, $3) as v", [sid, job, reply]);
     if (r?.v === null || r?.v === undefined) return GONE(c);
     return c.json({ data: { steers: r.v } });
-  });
-  // 資料の期限つき署名 URL（D-104.11）。その仕事に付いたものだけ。保存先の鍵は渡さない
-  app.post("/bridge/attachment", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; attachment_id?: unknown };
-    const job = idOrNull(b.job_id);
-    if (job === false) return badPcId(c, sid, "job_id");
-    const att = idOrNull(b.attachment_id);
-    if (att === false) return badPcId(c, sid, "attachment_id");
-    if (!job || !att) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資料の id が要ります");
-    const r = await q1<{
-      v: { storage_ref: string; name: string; mime: string; size: number; tenant_id: string; member_id: string } | null;
-    }>("select app.bridge_attachment($1, $2, $3) as v", [sid, job, att]);
-    if (!r?.v)
-      return (await alive(sid)) ? bad(c, 404, "ATTACHMENT_NOT_FOUND", "その資料はこの仕事に付いていません") : GONE(c);
-    if (!d.objects) return bad(c, 503, "STORAGE_UNAVAILABLE", "保存先が応答しません");
-    const s = await d.objects.signUrl(
-      { tenantId: r.v.tenant_id, userId: r.v.member_id, role: "member" },
-      r.v.storage_ref,
-      600,
-    );
-    if (s.status !== "done") return bad(c, 502, "E-CHAT-002", "資料の場所を出せませんでした");
-    return c.json({
-      data: { url: `${d.baseUrl}/api/auth-ext${s.value.url}`, name: r.v.name, mime: r.v.mime, size: r.v.size },
-    });
   });
   // 署名 URL の受け口（Bridge が資料を取る）。署名と期限だけで判定し、会社の名前空間の外は出さない
   app.get("/files/:ref{.+}", async (c) => {

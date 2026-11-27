@@ -13,7 +13,7 @@
     "start:test": "NEXT_DIST_DIR=.next-prod next start --port 3124",
     "e2e:screens": "PW_REPORT=pw-reports/screens.json BASE_URL=http://127.0.0.1:3124 playwright test tests/screens tests/shared.spec.ts tests/reachability.spec.ts tests/layout.spec.ts",
     "e2e:showcase": "PW_REPORT=pw-reports/showcase.json BASE_URL=http://localhost:3123 playwright test tests/shell.spec.ts tests/shell-ops.spec.ts tests/ui.spec.ts tests/views.spec.ts",
-    "e2e:bridge": "PW_REPORT=pw-reports/bridge-loop.json BASE_URL=http://127.0.0.1:3124 playwright test tests/screens/bridge-loop.spec.ts tests/screens/setup-gate.spec.ts --retries=2",
+    "e2e:bridge": "PW_REPORT=pw-reports/setup-gate.json BASE_URL=http://127.0.0.1:3124 playwright test tests/screens/setup-gate.spec.ts --retries=2",
     "e2e:k": "PW_REPORT=pw-reports/k.json playwright test tests/components.spec.ts tests/k-shell.spec.ts tests/states.spec.ts tests/k tests/features"
   },
   "dependencies": {

@@ -80,27 +80,6 @@ for (const [w, h] of [
     expect((await measure(page)).composerBottom).toBeLessThanOrEqual(m.vh);
   });
 }
-
-test("CHT-33-002 会話モード（/ai/chat・幅 1440）：会話の名前と入力欄は動かず、会話の中だけがスクロールする", async ({
-  page,
-}) => {
-  const u = await longTalk(6);
-  await loginAs(page, u.token);
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/ai/chat");
-  await expect(page.locator('[data-part="conversation"] .chat .msg').nth(40)).toBeAttached({ timeout: 20_000 });
-  await page.waitForTimeout(500);
-  const m = await measure(page);
-  expect(m.chatOverflow, "会話の中は溢れていてスクロールできる").toBeGreaterThan(200);
-  expect(m.composerBottom, "入力欄は画面の中").toBeLessThanOrEqual(m.vh);
-  const title0 = await topOf(page, "[data-conversation-title]");
-  await page.locator('[data-part="conversation"] .chat').evaluate((el) => (el.scrollTop = 0));
-  await page.mouse.wheel(0, -2000);
-  await page.waitForTimeout(300);
-  expect(await topOf(page, "[data-conversation-title]"), "会話の名前は動かない").toBe(title0);
-  expect((await measure(page)).composerBottom).toBeLessThanOrEqual(m.vh);
-});
-
 test("CHT-33-003 767 以下（幅 375）は今までどおりページごとに流れる（会話の箱だけを固定しない）", async ({ page }) => {
   const u = await longTalk(2);
   await loginAs(page, u.token);

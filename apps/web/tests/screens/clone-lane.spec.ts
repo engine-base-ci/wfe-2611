@@ -49,18 +49,3 @@ test("CHT-26-001 前の会話を読んだ印が付いても、開き直すと答
   });
   await expect(page.locator('.msg[data-who="me"]').last()).toContainText("請求書のこと聞いて");
 });
-
-test("CHT-26-002 別の会話で自分のAI が答えを待っている間に送った文は、黙って止まらず「別の会話が終わったら動く」と出て、その会話へ移れる", async ({
-  page,
-}) => {
-  const { u, first } = await branched(page);
-  await setupStep(u.memberId, 6); // 会話の画面（/ai/chat）で前の会話を開く
-  await page.goto(`/ai/chat?c=${first}`);
-  await expect(box(page)).toBeVisible({ timeout: 15_000 });
-  await say(page, "もう一度はじめから");
-  const lane = page.locator("[data-lane-wait]");
-  await expect(lane).toContainText("別の会話で、自分のAI があなたの答えを待っています", { timeout: 15_000 });
-  await expect(page.locator("[data-queue]")).toContainText("もう一度はじめから");
-  await lane.getByRole("button", { name: "その会話を開く" }).click();
-  await expect(page.locator('[data-part="question"]')).toBeVisible({ timeout: 15_000 });
-});
