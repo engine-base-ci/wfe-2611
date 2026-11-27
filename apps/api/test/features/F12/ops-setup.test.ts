@@ -12,7 +12,7 @@
 //   startOpsSetup  POST /api/v1/auth/ops-setup  ← { token }（ほかの欄は 422）・ログインしていない人が呼ぶ
 //     201 { data: { token: <セッションの印> } }。セッションの入り方は 'ops_setup'：解決は role ops・mfaPending true（パスキーを付けるだけ。運営の口は 403 MFA_REQUIRED）
 //     409 E-PAGE-006（無い・使った・期限切れ・欄なし）／ 422（形）／ 429（1 分に 10 回・IP ごと）
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import type pg from "pg";
 import { createHash } from "node:crypto";
 import type { Mail } from "@kaname/auth";
@@ -21,6 +21,15 @@ import { setupOps, ALL_CAPS, OPS_TENANT } from "./ops.harness.js";
 
 const o = setupOps("k945");
 const { h } = o;
+// この回が createFirstOps で作った運営の人（できること 9 つ・値段を決めるも持つ）を外す。残すと共用の DB で
+//   ほかの試験の「値段を決められる人が 1 人のとき」（K-1017・K-990）が数を取り違える（G-10）
+afterAll(async () => {
+  await h.admin.query(
+    `delete from ops_members where member_id in (
+       select m.id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email like $1)`,
+    [`${h.run}-%`],
+  );
+});
 const SETUP = "/api/v1/auth/ops-setup";
 const WEB = "http://127.0.0.1:3123";
 const OPS_SHELL = "/api/v1/ops/shell";

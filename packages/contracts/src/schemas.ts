@@ -224,7 +224,7 @@ export const Goals = z.strictObject({
   kind_id: z.string().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
   period_end: z.iso.date().nullable().optional(),
-  target_value: z.string().nullable().optional(),
+  target_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   unit_id: z.uuid().nullable().optional(),
   origin_id: z.uuid().nullable().optional(),
   id: z.uuid(),
@@ -245,14 +245,14 @@ export const GoalsInput = z.strictObject({
   kind_id: z.string().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
   period_end: z.iso.date().nullable().optional(),
-  target_value: z.string().nullable().optional(),
+  target_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   unit_id: z.uuid().nullable().optional(),
   origin_id: z.uuid().nullable().optional(),
 });
 export const GoalAllocations = z.strictObject({
   goal_id: z.uuid().nullable().optional(),
   assignee_member_id: z.uuid().nullable().optional(),
-  allocated_value: z.string().nullable().optional(),
+  allocated_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   agreement_status_id: z.string().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
@@ -265,7 +265,7 @@ export const GoalAllocations = z.strictObject({
 export const GoalAllocationsInput = z.strictObject({
   goal_id: z.uuid().nullable().optional(),
   assignee_member_id: z.uuid().nullable().optional(),
-  allocated_value: z.string().nullable().optional(),
+  allocated_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   agreement_status_id: z.string().nullable().optional(),
 });
 export const GoalContributions = z.strictObject({
@@ -330,7 +330,7 @@ export const HypothesesInput = z.strictObject({
 export const Measures = z.strictObject({
   hypothesis_id: z.uuid().nullable().optional(),
   statement: z.string().nullable().optional(),
-  expected_effect: z.string().nullable().optional(),
+  expected_effect: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -343,11 +343,11 @@ export const Measures = z.strictObject({
 export const MeasuresInput = z.strictObject({
   hypothesis_id: z.uuid().nullable().optional(),
   statement: z.string().nullable().optional(),
-  expected_effect: z.string().nullable().optional(),
+  expected_effect: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
 });
 export const Validations = z.strictObject({
   measure_id: z.uuid().nullable().optional(),
-  measured_value: z.string().nullable().optional(),
+  measured_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   verdict_id: z.string().nullable().optional(),
   measured_at: z.iso.datetime({ offset: true }).nullable().optional(),
   id: z.uuid(),
@@ -360,7 +360,7 @@ export const Validations = z.strictObject({
 });
 export const ValidationsInput = z.strictObject({
   measure_id: z.uuid().nullable().optional(),
-  measured_value: z.string().nullable().optional(),
+  measured_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   verdict_id: z.string().nullable().optional(),
   measured_at: z.iso.datetime({ offset: true }).nullable().optional(),
 });
@@ -458,7 +458,7 @@ export const LedgerViewsInput = z.strictObject({
 export const LedgerRecords = z.strictObject({
   definition_id: z.uuid().nullable().optional(),
   stage_id: z.uuid().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   occurred_on: z.iso.date().nullable().optional(),
   assignee_id: z.uuid().nullable().optional(),
   goal_id: z.uuid().nullable().optional(),
@@ -476,7 +476,7 @@ export const LedgerRecords = z.strictObject({
 export const LedgerRecordsInput = z.strictObject({
   definition_id: z.uuid().nullable().optional(),
   stage_id: z.uuid().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   occurred_on: z.iso.date().nullable().optional(),
   assignee_id: z.uuid().nullable().optional(),
   goal_id: z.uuid().nullable().optional(),
@@ -589,7 +589,7 @@ export const Memories = z.strictObject({
   owner_member_id: z.uuid().nullable().optional(),
   title: z.string().nullable().optional(),
   body: z.string().nullable().optional(),
-  confidence: z.string().nullable().optional(),
+  confidence: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   source_type_id: z.string().nullable().optional(),
   source_ref_id: z.uuid().nullable().optional(),
   approved_by: z.uuid().nullable().optional(),
@@ -615,7 +615,7 @@ export const MemoriesInput = z.strictObject({
   owner_member_id: z.uuid().nullable().optional(),
   title: z.string().nullable().optional(),
   body: z.string().nullable().optional(),
-  confidence: z.string().nullable().optional(),
+  confidence: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   source_type_id: z.string().nullable().optional(),
   source_ref_id: z.uuid().nullable().optional(),
   approved_by: z.uuid().nullable().optional(),
@@ -920,7 +920,7 @@ export const ActionRuns = z.strictObject({
   finished_at: z.iso.datetime({ offset: true }).nullable().optional(),
   tokens_in: z.number().int().nullable().optional(),
   tokens_out: z.number().int().nullable().optional(),
-  cost: z.string().nullable().optional(),
+  cost: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   error_summary: z.string().nullable().optional(),
   ai_employee_id: z.uuid().nullable().optional(),
   duty_id: z.uuid().nullable().optional(),
@@ -950,7 +950,7 @@ export const ActionRunsInput = z.strictObject({
   finished_at: z.iso.datetime({ offset: true }).nullable().optional(),
   tokens_in: z.number().int().nullable().optional(),
   tokens_out: z.number().int().nullable().optional(),
-  cost: z.string().nullable().optional(),
+  cost: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   error_summary: z.string().nullable().optional(),
   ai_employee_id: z.uuid().nullable().optional(),
   duty_id: z.uuid().nullable().optional(),
@@ -1197,7 +1197,7 @@ export const PermissionRulesInput = z.strictObject({
 export const AgentUsageSnapshots = z.strictObject({
   member_id: z.uuid().nullable().optional(),
   window_id: z.string().nullable().optional(),
-  utilization: z.string().nullable().optional(),
+  utilization: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   resets_at: z.iso.datetime({ offset: true }).nullable().optional(),
   observed_at: z.iso.datetime({ offset: true }).nullable().optional(),
   id: z.uuid(),
@@ -1211,7 +1211,7 @@ export const AgentUsageSnapshots = z.strictObject({
 export const AgentUsageSnapshotsInput = z.strictObject({
   member_id: z.uuid().nullable().optional(),
   window_id: z.string().nullable().optional(),
-  utilization: z.string().nullable().optional(),
+  utilization: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   resets_at: z.iso.datetime({ offset: true }).nullable().optional(),
   observed_at: z.iso.datetime({ offset: true }).nullable().optional(),
 });
@@ -1223,7 +1223,7 @@ export const Messages = z.strictObject({
   action_run_id: z.uuid().nullable().optional(),
   kind: z.string().nullable().optional(),
   options: z.unknown().nullable().optional(),
-  confidence: z.string().nullable().optional(),
+  confidence: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   citations: z.unknown().nullable().optional(),
   parent_message_id: z.uuid().nullable().optional(),
   quote: z.unknown().nullable().optional(),
@@ -1251,7 +1251,7 @@ export const MessagesInput = z.strictObject({
   action_run_id: z.uuid().nullable().optional(),
   kind: z.string().nullable().optional(),
   options: z.unknown().nullable().optional(),
-  confidence: z.string().nullable().optional(),
+  confidence: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   citations: z.unknown().nullable().optional(),
   parent_message_id: z.uuid().nullable().optional(),
   quote: z.unknown().nullable().optional(),
@@ -1298,7 +1298,7 @@ export const ArtifactVersions = z.strictObject({
   artifact_id: z.uuid().optional(),
   version: z.number().int().optional(),
   storage_ref: z.string().optional(),
-  size_bytes: z.string().nullable().optional(),
+  size_bytes: z.string().regex(new RegExp("^-?[0-9]+$", "u")).nullable().optional(),
   owner_member_id: z.uuid().nullable().optional(),
   reverted_from: z.number().int().nullable().optional(),
   note: z.string().nullable().optional(),
@@ -1313,7 +1313,7 @@ export const ArtifactVersions = z.strictObject({
 });
 export const ArtifactVersionsInput = z.strictObject({
   artifact_id: z.uuid().optional(),
-  size_bytes: z.string().nullable().optional(),
+  size_bytes: z.string().regex(new RegExp("^-?[0-9]+$", "u")).nullable().optional(),
   owner_member_id: z.uuid().nullable().optional(),
   reverted_from: z.number().int().nullable().optional(),
   note: z.string().nullable().optional(),
@@ -1966,7 +1966,7 @@ export const NotificationsInput = z.strictObject({
 export const Plans = z.strictObject({
   key: z.string().optional(),
   name: z.string().nullable().optional(),
-  price_monthly: z.string().nullable().optional(),
+  price_monthly: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   limits: z.unknown().nullable().optional(),
   current_version: z.number().int().nullable().optional(),
   id: z.uuid(),
@@ -1980,7 +1980,7 @@ export const Plans = z.strictObject({
 export const PlansInput = z.strictObject({
   key: z.string().optional(),
   name: z.string().nullable().optional(),
-  price_monthly: z.string().nullable().optional(),
+  price_monthly: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   limits: z.unknown().nullable().optional(),
   current_version: z.number().int().nullable().optional(),
 });
@@ -2074,8 +2074,8 @@ export const PlanChangeRequestsInput = z.strictObject({
 export const UsageMeters = z.strictObject({
   meter_key: z.string().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
-  value: z.string().nullable().optional(),
-  limit_value: z.string().nullable().optional(),
+  value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
+  limit_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2087,14 +2087,14 @@ export const UsageMeters = z.strictObject({
 export const UsageMetersInput = z.strictObject({
   meter_key: z.string().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
-  value: z.string().nullable().optional(),
-  limit_value: z.string().nullable().optional(),
+  value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
+  limit_value: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
 });
 export const Invoices = z.strictObject({
   subscription_id: z.uuid().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
   period_end: z.iso.date().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   issued_at: z.iso.datetime({ offset: true }).nullable().optional(),
   due_on: z.iso.date().nullable().optional(),
   status_id: z.string().nullable().optional(),
@@ -2119,7 +2119,7 @@ export const InvoicesInput = z.strictObject({
   subscription_id: z.uuid().nullable().optional(),
   period_start: z.iso.date().nullable().optional(),
   period_end: z.iso.date().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   issued_at: z.iso.datetime({ offset: true }).nullable().optional(),
   due_on: z.iso.date().nullable().optional(),
   status_id: z.string().nullable().optional(),
@@ -2158,7 +2158,7 @@ export const OpsInvoiceTemplatesInput = z.strictObject({
 export const Payments = z.strictObject({
   invoice_id: z.uuid().nullable().optional(),
   paid_on: z.iso.date().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   method_id: z.string().nullable().optional(),
   recorded_by_ops_member_id: z.uuid().nullable().optional(),
   stripe_payment_ref: z.string().optional(),
@@ -2175,7 +2175,7 @@ export const Payments = z.strictObject({
 export const PaymentsInput = z.strictObject({
   invoice_id: z.uuid().nullable().optional(),
   paid_on: z.iso.date().nullable().optional(),
-  amount: z.string().nullable().optional(),
+  amount: z.string().regex(new RegExp("^-?[0-9]+(\\.[0-9]+)?$", "u")).nullable().optional(),
   method_id: z.string().nullable().optional(),
   recorded_by_ops_member_id: z.uuid().nullable().optional(),
   stripe_payment_ref: z.string().optional(),
@@ -2341,7 +2341,7 @@ export const Attachments = z.strictObject({
   owner_id: z.uuid().nullable().optional(),
   storage_ref: z.string().nullable().optional(),
   mime: z.string().nullable().optional(),
-  size: z.string().nullable().optional(),
+  size: z.string().regex(new RegExp("^-?[0-9]+$", "u")).nullable().optional(),
   name: z.string().nullable().optional(),
   uploaded_by: z.uuid().nullable().optional(),
   scanned_at: z.iso.datetime({ offset: true }).nullable().optional(),
@@ -2361,7 +2361,7 @@ export const AttachmentsInput = z.strictObject({
   owner_type: z.string().nullable().optional(),
   owner_id: z.uuid().nullable().optional(),
   mime: z.string().nullable().optional(),
-  size: z.string().nullable().optional(),
+  size: z.string().regex(new RegExp("^-?[0-9]+$", "u")).nullable().optional(),
   name: z.string().nullable().optional(),
   uploaded_by: z.uuid().nullable().optional(),
   scanned_at: z.iso.datetime({ offset: true }).nullable().optional(),
@@ -3619,8 +3619,8 @@ export const TicketGuestShares = z.strictObject({
   can_change: z.boolean().optional(),
 });
 export const TicketGuestSharesInput = z.strictObject({
-  add: z.array(z.uuid()).nullable().optional(),
-  remove: z.array(z.uuid()).nullable().optional(),
+  add: z.array(z.uuid()).min(1).max(20).nullable().optional(),
+  remove: z.array(z.uuid()).min(1).max(20).nullable().optional(),
 });
 export const TicketHandovers = z.strictObject({
   ticket_id: z.uuid().optional(),
@@ -3868,45 +3868,45 @@ export const StepUpInput = z.strictObject({
   passkey: z.record(z.string(), z.unknown()).optional(),
 });
 export const PasskeyRenameInput = z.strictObject({
-  name: z.string().optional(),
+  name: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const SignupInput = z.strictObject({
-  email: z.string().optional(),
-  name: z.string().optional(),
-  company_name: z.string().optional(),
-  password: z.string().optional(),
+  email: z.string().regex(new RegExp("^[ \\t\\n\\r]*(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}[ \\t\\n\\r]*$", "u")).optional(),
+  name: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  company_name: z.string().max(100).optional(),
+  password: z.string().min(12).optional(),
 });
 export const SignupResendInput = z.strictObject({
 
 });
 export const SignupVerifyInput = z.strictObject({
-  token: z.string().optional(),
+  token: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const PasswordForgotInput = z.strictObject({
-  email: z.string().optional(),
+  email: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+@[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+\\.[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
 });
 export const SignInInput = z.strictObject({
-  email: z.string().optional(),
-  password: z.string().optional(),
-  invitation: z.string().nullable().optional(),
+  email: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  password: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  invitation: z.string().max(512).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
 });
 export const SignInCodeInput = z.strictObject({
   pending: z.string().optional(),
-  code: z.string().nullable().optional(),
-  backup_code: z.string().nullable().optional(),
-  invitation: z.string().nullable().optional(),
+  code: z.string().max(64).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
+  backup_code: z.string().max(64).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
+  invitation: z.string().max(512).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
 });
 export const SignOutInput = z.strictObject({
 
 });
 export const AdminRecoveryInput = z.strictObject({
-  pending: z.string().optional(),
+  pending: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const TwoFactorStartInput = z.strictObject({
   password: z.string().nullable().optional(),
 });
 export const TwoFactorConfirmInput = z.strictObject({
-  code: z.string().optional(),
+  code: z.string().max(64).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const PasswordChangeInput = z.strictObject({
   current_password: z.string().optional(),
@@ -3928,7 +3928,7 @@ export const PairingCodeInput = z.strictObject({
 
 });
 export const BridgeClaimInput = z.strictObject({
-  code: z.string().optional(),
+  code: z.string().max(32).regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\-‐‑‒–—―ー−－]*(?:[2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\-‐‑‒–—―ー−－]*){6}$", "u")).optional(),
   device_label: z.string().optional(),
   machine_id: z.uuid().nullable().optional(),
 });
@@ -3940,23 +3940,23 @@ export const BridgeHeartbeatInput = z.strictObject({
 export const TicketCreateInput = z.strictObject({
   scope_id: z.uuid().optional(),
   kind_id: z.uuid().optional(),
-  title: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   assignee_member_id: z.uuid().optional(),
   due_on: z.iso.date().optional(),
   start_on: z.string().optional(),
-  priority: z.string().optional(),
+  priority: z.enum(["","mid","high"]).optional(),
   priority_reason: z.string().optional(),
   parent_ticket_id: z.uuid().optional(),
   estimate_minutes: z.unknown().nullable().optional(),
-  notify_member_ids: z.array(z.uuid()).optional(),
+  notify_member_ids: z.array(z.uuid()).max(20).optional(),
   draft_id: z.uuid().optional(),
   source_draft_id: z.uuid().optional(),
   body: z.record(z.string(), z.unknown()).optional(),
   fields: z.record(z.string(), z.unknown()).optional(),
-  specs: z.array(z.string()).optional(),
-  links: z.array(z.unknown()).optional(),
+  specs: z.array(z.string()).max(50).optional(),
+  links: z.array(z.unknown()).max(20).optional(),
   duplicate_of: z.uuid().optional(),
-  copy: z.array(z.unknown()).optional(),
+  copy: z.array(z.unknown()).max(6).optional(),
 });
 export const TicketDraftInput = z.strictObject({
   draft_id: z.uuid().optional(),
@@ -3967,7 +3967,7 @@ export const DismissSetupTasksInput = z.strictObject({
   key: z.string().optional(),
 });
 export const TicketDelegateInput = z.strictObject({
-  no_spec_reason: z.string().optional(),
+  no_spec_reason: z.string().max(500).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const BridgeTakeInput = z.strictObject({
   wait_sec: z.number().int().optional(),
@@ -3988,7 +3988,7 @@ export const BridgeProgressInput = z.strictObject({
 });
 export const BridgeFinishInput = z.strictObject({
   state: z.string().optional(),
-  result: z.string().optional(),
+  result: z.string().max(200000).optional(),
   reason: z.string().optional(),
   agent_session_id: z.uuid().optional(),
 });
@@ -4000,12 +4000,12 @@ export const ApprovalApproveInput = z.strictObject({
 });
 export const ApprovalReturnInput = z.strictObject({
   note: z.string().optional(),
-  next_actor: z.string().nullable().optional(),
+  next_actor: z.enum(["clone","self"]).nullable().optional(),
 });
 export const InvitationAcceptInput = z.strictObject({
   name: z.string().nullable().optional(),
   password: z.string().nullable().optional(),
-  email: z.string().nullable().optional(),
+  email: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+@[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+\\.[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).nullable().optional(),
 });
 export const TicketCompleteInput = z.strictObject({
   conditions_confirmed: z.boolean().optional(),
@@ -4014,75 +4014,75 @@ export const InvitationResendInput = z.strictObject({
 
 });
 export const CredentialCreateInput = z.strictObject({
-  layer: z.string().optional(),
-  kind: z.string().optional(),
-  name: z.string().optional(),
+  layer: z.enum(["workspace","personal"]).optional(),
+  kind: z.enum(["login","key"]).optional(),
+  name: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
   description: z.string().nullable().optional(),
-  login: z.string().optional(),
-  password: z.string().optional(),
-  value: z.string().optional(),
-  two_factor: z.string().optional(),
-  totp_secret: z.string().optional(),
-  destinations: z.array(z.string()).optional(),
-  expires_on: z.string().nullable().optional(),
+  login: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  password: z.string().min(1).optional(),
+  value: z.string().min(1).optional(),
+  two_factor: z.enum(["none","totp","sms","email","push"]).optional(),
+  totp_secret: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*){16,}[=＝]*[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
+  destinations: z.array(z.string()).min(1).max(20).optional(),
+  expires_on: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[0-9０-９]{4}[-－](?:(?:[0０][13578１３５７８]|[1１][02０２])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][01０１])|(?:[0０][469４６９]|[1１][1１])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][0０])|[0０][2２][-－](?:[0０][1-9１-９]|[1１][0-9０-９]|[2２][0-8０-８]))|(?:[0-9０-９]{2}(?:[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])|(?:[0０]{2}|[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])[0０]{2})[-－][0０][2２][-－][2２][9９])[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).nullable().optional(),
 });
 export const CredentialUpdateInput = z.strictObject({
-  login: z.string().optional(),
-  password: z.string().optional(),
-  value: z.string().optional(),
-  two_factor: z.string().optional(),
-  totp_secret: z.string().optional(),
-  destinations: z.array(z.string()).optional(),
-  expires_on: z.string().nullable().optional(),
+  login: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  password: z.string().min(1).optional(),
+  value: z.string().min(1).optional(),
+  two_factor: z.enum(["none","totp","sms","email","push"]).optional(),
+  totp_secret: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*){16,}[=＝]*[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
+  destinations: z.array(z.string()).min(1).max(20).optional(),
+  expires_on: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[0-9０-９]{4}[-－](?:(?:[0０][13578１３５７８]|[1１][02０２])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][01０１])|(?:[0０][469４６９]|[1１][1１])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][0０])|[0０][2２][-－](?:[0０][1-9１-９]|[1１][0-9０-９]|[2２][0-8０-８]))|(?:[0-9０-９]{2}(?:[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])|(?:[0０]{2}|[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])[0０]{2})[-－][0０][2２][-－][2２][9９])[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).nullable().optional(),
   description: z.string().nullable().optional(),
   reason: z.string().optional(),
 });
 export const CredentialResolveInput = z.strictObject({
   job_id: z.uuid().optional(),
   credential_id: z.uuid().optional(),
-  destination: z.string().optional(),
-  executor_key: z.string().optional(),
+  destination: z.string().max(2048).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  executor_key: z.string().max(200).regex(new RegExp("^MCowBQYDK2VuAyEA[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$", "u")).optional(),
 });
 export const CredentialLoginCheckInput = z.strictObject({
 
 });
 export const CredentialLoginAnswerInput = z.strictObject({
-  request_ref: z.string().optional(),
-  code: z.string().optional(),
+  request_ref: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  code: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\-‐‑‒–—―ー−－]*(?:[0-9A-Za-z０-９Ａ-Ｚａ-ｚ][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\-‐‑‒–—―ー−－]*){1,64}$", "u")).optional(),
   approved: z.boolean().optional(),
 });
 export const CredentialCheckReportInput = z.strictObject({
   job_id: z.uuid().optional(),
-  state: z.string().optional(),
-  detail: z.string().optional(),
-  request_ref: z.string().optional(),
-  ask_kind: z.string().optional(),
-  text: z.string().optional(),
+  state: z.enum(["ok","bad_password","needs_2fa","bad_code","captcha","unreachable","no_form","stopped","no_answer","asking","waiting"]).optional(),
+  detail: z.string().max(400).optional(),
+  request_ref: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  ask_kind: z.enum(["code","approve"]).optional(),
+  text: z.string().max(300).optional(),
 });
 export const DeviceBrowserInput = z.strictObject({
-  browser: z.string().optional(),
+  browser: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
 });
 export const DeviceBrowserCheckInput = z.strictObject({
 
 });
 export const BridgeBrowserInput = z.strictObject({
-  browser: z.string().optional(),
+  browser: z.string().regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
 });
 export const TicketTimelineSeenInput = z.strictObject({
-  seen_at: z.string().nullable().optional(),
+  seen_at: z.string().regex(new RegExp("^(?:[1-9][0-9]{3}-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|[1-9][0-9]{3}-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|[1-9][0-9]{3}-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[1-9][0-9](?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,6})?(?:Z|[+-](?:0[0-9]|1[0-5])(?::?[0-5][0-9])?)$", "u")).nullable().optional(),
 });
 export const TicketMessageInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   mention_member_ids: z.array(z.uuid()).optional(),
   notify_member_ids: z.array(z.uuid()).optional(),
   quote_of_id: z.uuid().nullable().optional(),
-  stage_key: z.string().optional(),
+  stage_key: z.enum(["todo","doing","hold"]).optional(),
   stage_id: z.uuid().optional(),
-  hold_reason: z.string().optional(),
-  resume_condition: z.string().optional(),
+  hold_reason: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f]", "u")).optional(),
+  resume_condition: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f]", "u")).optional(),
 });
 export const TicketMessageEditInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   mention_member_ids: z.array(z.uuid()).optional(),
 });
 export const TicketMessageStarInput = z.strictObject({
@@ -4090,48 +4090,48 @@ export const TicketMessageStarInput = z.strictObject({
 });
 export const TicketUpdateInput = z.strictObject({
   stage_id: z.uuid().optional(),
-  stage_key: z.string().optional(),
-  actual_minutes: z.number().int().nullable().optional(),
-  hold_reason: z.string().optional(),
-  resume_condition: z.string().optional(),
-  priority: z.string().optional(),
-  priority_reason: z.string().optional(),
+  stage_key: z.enum(["todo","doing","hold"]).optional(),
+  actual_minutes: z.number().int().min(0).max(100000).nullable().optional(),
+  hold_reason: z.string().regex(new RegExp("^[^\\u0000]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f][^\\u0000]*$", "u")).optional(),
+  resume_condition: z.string().regex(new RegExp("^[^\\u0000]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f][^\\u0000]*$", "u")).optional(),
+  priority: z.enum(["mid","high"]).optional(),
+  priority_reason: z.string().regex(new RegExp("^[^\\u0000]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f][^\\u0000]*$", "u")).optional(),
   parent_ticket_id: z.uuid().nullable().optional(),
   fields: z.record(z.string(), z.unknown()).optional(),
-  estimate_minutes: z.number().int().nullable().optional(),
-  due_on: z.string().nullable().optional(),
-  start_on: z.string().nullable().optional(),
-  due_reason: z.string().optional(),
-  expected_due_on: z.string().nullable().optional(),
-  expected_start_on: z.string().nullable().optional(),
+  estimate_minutes: z.number().int().min(0).max(100000).nullable().optional(),
+  due_on: z.string().regex(new RegExp("^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$", "u")).nullable().optional(),
+  start_on: z.string().regex(new RegExp("^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$", "u")).nullable().optional(),
+  due_reason: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f-\\u009f]", "u")).optional(),
+  expected_due_on: z.string().regex(new RegExp("^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$", "u")).nullable().optional(),
+  expected_start_on: z.string().regex(new RegExp("^(?:(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|(?:000[1-9]|00[1-9][0-9]|0[1-9][0-9]{2}|[1-9][0-9]{3})-02-(?:0[1-9]|1[0-9]|2[0-8])|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$", "u")).nullable().optional(),
 });
 export const TicketDecisionInput = z.strictObject({
-  text: z.string().optional(),
+  text: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f]", "u")).optional(),
   reason: z.string().nullable().optional(),
   decided_by_member_id: z.uuid().nullable().optional(),
   decided_note: z.string().nullable().optional(),
   source_message_id: z.uuid().nullable().optional(),
-  promoted_to: z.string().nullable().optional(),
+  promoted_to: z.enum(["ticket"]).nullable().optional(),
 });
 export const TicketDecisionUpdateInput = z.strictObject({
-  action: z.string().optional(),
+  action: z.enum(["revise","cancel"]).optional(),
   text: z.string().nullable().optional(),
   reason: z.string().nullable().optional(),
 });
 export const TicketHandoverCreateInput = z.strictObject({
-  kind: z.string().optional(),
+  kind: z.enum(["pass","offer","distribute"]).optional(),
   to_member_id: z.uuid().nullable().optional(),
   to_scope_id: z.uuid().nullable().optional(),
-  reason: z.string().optional(),
-  ask: z.string().nullable().optional(),
+  reason: z.string().regex(new RegExp("^[^\\u0000]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f\\ufeff][^\\u0000]*$", "u")).optional(),
+  ask: z.string().regex(new RegExp("^[^\\u0000]*$", "u")).nullable().optional(),
   reply_due: z.iso.datetime({ offset: true }).nullable().optional(),
   switch: z.record(z.string(), z.unknown()).nullable().optional(),
   notify_managers: z.boolean().nullable().optional(),
   replaces: z.uuid().nullable().optional(),
 });
 export const TicketHandoverAnswerInput = z.strictObject({
-  decision: z.string().optional(),
-  decline_reason: z.string().nullable().optional(),
+  decision: z.enum(["accept","decline"]).optional(),
+  decline_reason: z.string().regex(new RegExp("^[^\\u0000]*$", "u")).nullable().optional(),
   switch: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const HandoverWithdrawInput = z.strictObject({
@@ -4144,37 +4144,37 @@ export const TicketHandoverClaimInput = z.strictObject({
   member_id: z.uuid().optional(),
 });
 export const InvitationsCreateInput = z.strictObject({
-  emails: z.array(z.string()).optional(),
+  emails: z.array(z.string()).min(1).max(50).optional(),
   scope_id: z.uuid().nullable().optional(),
-  role_key: z.string().optional(),
-  message: z.string().nullable().optional(),
+  role_key: z.enum(["member","manager","viewer","admin","requester"]).optional(),
+  message: z.string().max(500).nullable().optional(),
   guest_group_id: z.uuid().nullable().optional(),
 });
 export const InvitationLinkCreateInput = z.strictObject({
   scope_id: z.uuid().optional(),
-  role_key: z.string().optional(),
+  role_key: z.enum(["member","manager","viewer","admin"]).optional(),
 });
 export const InvitationJoinConfirmInput = z.strictObject({
-  token: z.string().optional(),
+  token: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const TicketBodyInput = z.strictObject({
-  version: z.number().int().optional(),
+  version: z.number().int().min(0).max(2147483647).optional(),
   doc: z.record(z.string(), z.unknown()).optional(),
 });
 export const BodyRestoreInput = z.strictObject({
-  current_version: z.number().int().optional(),
+  current_version: z.number().int().min(1).optional(),
 });
 export const TestSpecCreateInput = z.strictObject({
-  title: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const TestSpecUpdateInput = z.strictObject({
-  version: z.number().int().optional(),
+  version: z.number().int().min(1).optional(),
   checked: z.boolean().optional(),
-  title: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const TicketLinkInput = z.strictObject({
   other_ticket_id: z.uuid().optional(),
-  kind: z.string().optional(),
+  kind: z.enum(["related","derived_from"]).optional(),
 });
 export const NotificationReadInput = z.strictObject({
   read: z.boolean().optional(),
@@ -4183,20 +4183,20 @@ export const NotificationReadAllInput = z.strictObject({
 
 });
 export const SavedViewInput = z.strictObject({
-  name: z.string().optional(),
-  share: z.string().optional(),
+  name: z.string().min(1).regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f-\\u009f](?:[^\\u0000-\\u001f\\u007f-\\u009f]{0,58}[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f-\\u009f])?[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
+  share: z.enum(["self","group"]).optional(),
   scope_id: z.uuid().nullable().optional(),
   filters: z.record(z.string(), z.unknown()).optional(),
-  columns: z.array(z.string()).optional(),
-  density: z.string().optional(),
+  columns: z.array(z.string()).max(50).optional(),
+  density: z.enum(["normal","compact"]).optional(),
 });
 export const SavedViewUpdateInput = z.strictObject({
-  name: z.string().optional(),
-  share: z.string().optional(),
+  name: z.string().min(1).regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f-\\u009f](?:[^\\u0000-\\u001f\\u007f-\\u009f]{0,58}[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f-\\u009f])?[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
+  share: z.enum(["self","group"]).optional(),
   scope_id: z.uuid().nullable().optional(),
   filters: z.record(z.string(), z.unknown()).optional(),
-  columns: z.array(z.string()).optional(),
-  density: z.string().optional(),
+  columns: z.array(z.string()).max(50).optional(),
+  density: z.enum(["normal","compact"]).optional(),
 });
 export const ActionRunTakeoverInput = z.strictObject({
 
@@ -4205,30 +4205,30 @@ export const TicketRestoreInput = z.strictObject({
 
 });
 export const ItemRestoreInput = z.strictObject({
-  from: z.number().int().optional(),
-  to: z.number().int().optional(),
+  from: z.number().int().min(1).optional(),
+  to: z.number().int().min(1).optional(),
 });
 export const KnowledgeFolderCreateInput = z.strictObject({
-  shelf: z.string().optional(),
+  shelf: z.enum(["company","group","me"]).optional(),
   group_id: z.uuid().nullable().optional(),
   parent_folder_id: z.uuid().nullable().optional(),
-  name: z.string().optional(),
+  name: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const KnowledgeFolderUpdateInput = z.strictObject({
-  name: z.string().optional(),
+  name: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   parent_folder_id: z.uuid().nullable().optional(),
-  position: z.number().int().optional(),
+  position: z.number().int().min(0).max(2147483647).optional(),
 });
 export const KnowledgePageCreateInput = z.strictObject({
-  shelf: z.string().optional(),
+  shelf: z.enum(["company","group","me"]).optional(),
   group_id: z.uuid().nullable().optional(),
   folder_id: z.uuid().nullable().optional(),
-  title: z.string().optional(),
-  desc: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  desc: z.string().max(200).optional(),
 });
 export const KnowledgeDraftInput = z.strictObject({
-  title: z.string().optional(),
-  desc: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  desc: z.string().max(200).optional(),
   doc: z.record(z.string(), z.unknown()).optional(),
 });
 export const KnowledgePublishInput = z.strictObject({
@@ -4236,15 +4236,15 @@ export const KnowledgePublishInput = z.strictObject({
 });
 export const KnowledgePageMoveInput = z.strictObject({
   folder_id: z.uuid().nullable().optional(),
-  position: z.number().int().optional(),
+  position: z.number().int().min(0).max(2147483647).optional(),
 });
 export const KnowledgeMustInput = z.strictObject({
   must: z.boolean().optional(),
 });
 export const KnowledgeSimilarInput = z.strictObject({
-  title: z.string().optional(),
-  desc: z.string().optional(),
-  text: z.string().optional(),
+  title: z.string().max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  desc: z.string().max(200).optional(),
+  text: z.string().max(10000).optional(),
   exclude_page_id: z.uuid().optional(),
 });
 export const KnowledgeCopyInput = z.strictObject({
@@ -4253,7 +4253,7 @@ export const KnowledgeCopyInput = z.strictObject({
 export const KnowledgeRaiseInput = z.strictObject({
   group_id: z.uuid().nullable().optional(),
   folder_id: z.uuid().nullable().optional(),
-  message: z.string().nullable().optional(),
+  message: z.string().max(1000).nullable().optional(),
 });
 export const KnowledgeDismissInput = z.strictObject({
 
@@ -4262,56 +4262,56 @@ export const KnowledgeApproveInput = z.strictObject({
 
 });
 export const KnowledgeDeclineInput = z.strictObject({
-  reason: z.string().optional(),
+  reason: z.string().max(1000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const KnowledgeShareSetInput = z.strictObject({
   page_id: z.uuid().nullable().optional(),
   folder_id: z.uuid().nullable().optional(),
-  group_ids: z.array(z.uuid()).optional(),
-  message: z.string().nullable().optional(),
+  group_ids: z.array(z.uuid()).max(50).optional(),
+  message: z.string().max(1000).nullable().optional(),
 });
 export const TicketKindCreateInput = z.strictObject({
-  name: z.string().optional(),
-  color_key: z.string().optional(),
+  name: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  color_key: z.enum(["indigo","teal","amber","coral","sage","plum","lavender","teal-light"]).optional(),
   body_template: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const TicketKindUpdateInput = z.strictObject({
-  name: z.string().optional(),
-  color_key: z.string().optional(),
+  name: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  color_key: z.enum(["indigo","teal","amber","coral","sage","plum","lavender","teal-light"]).optional(),
   body_template: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const TicketKindOrderInput = z.strictObject({
-  kind_ids: z.array(z.uuid()).optional(),
+  kind_ids: z.array(z.uuid()).min(1).optional(),
 });
 export const TicketStageCreateInput = z.strictObject({
-  name: z.string().optional(),
-  color_key: z.string().optional(),
+  name: z.string().max(20).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  color_key: z.enum(["indigo","teal","amber","coral","sage","plum","lavender","teal-light"]).optional(),
 });
 export const TicketStageUpdateInput = z.strictObject({
-  name: z.string().optional(),
-  color_key: z.string().optional(),
+  name: z.string().max(20).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  color_key: z.enum(["indigo","teal","amber","coral","sage","plum","lavender","teal-light"]).optional(),
 });
 export const TicketStageOrderInput = z.strictObject({
-  stage_ids: z.array(z.uuid()).optional(),
+  stage_ids: z.array(z.uuid()).min(1).optional(),
 });
 export const TicketFieldCreateInput = z.strictObject({
-  name: z.string().optional(),
-  field_type: z.string().optional(),
-  kind_ids: z.array(z.uuid()).optional(),
+  name: z.string().max(80).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  field_type: z.enum(["short_text","long_text","number","date","select","multi_select","check"]).optional(),
+  kind_ids: z.array(z.uuid()).min(1).optional(),
   required: z.boolean().optional(),
   description: z.string().nullable().optional(),
   options: z.array(z.unknown()).optional(),
 });
 export const TicketFieldUpdateInput = z.strictObject({
-  name: z.string().optional(),
-  field_type: z.string().optional(),
+  name: z.string().max(80).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  field_type: z.enum(["short_text","long_text","number","date","select","multi_select","check"]).optional(),
   required: z.boolean().optional(),
   description: z.string().nullable().optional(),
-  options: z.array(z.unknown()).optional(),
-  kind_ids: z.array(z.uuid()).optional(),
+  options: z.array(z.unknown()).min(1).optional(),
+  kind_ids: z.array(z.uuid()).min(1).optional(),
 });
 export const TicketFieldOrderInput = z.strictObject({
-  field_ids: z.array(z.uuid()).optional(),
+  field_ids: z.array(z.uuid()).min(1).optional(),
 });
 export const ActionRunStopInput = z.strictObject({
 
@@ -4323,77 +4323,77 @@ export const ApprovalWithdrawInput = z.strictObject({
 
 });
 export const ApprovalEditInput = z.strictObject({
-  text: z.string().optional(),
-  version: z.number().int().optional(),
+  text: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  version: z.number().int().min(1).optional(),
 });
 export const DryRunInput = z.strictObject({
 
 });
 export const ConversationSay = z.strictObject({
-  text: z.string().optional(),
+  text: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const ConversationStopInput = z.strictObject({
 
 });
 export const ConversationEntriesInput = z.strictObject({
-  entries: z.array(z.unknown()).optional(),
+  entries: z.array(z.unknown()).min(1).max(500).optional(),
 });
 export const BridgeBrowserStateInput = z.strictObject({
-  browser: z.string().optional(),
-  state: z.string().optional(),
+  browser: z.enum(["chrome","dedicated"]).optional(),
+  state: z.enum(["using","off"]).optional(),
 });
 export const TicketAgentMessageInput = z.strictObject({
-  text: z.string().optional(),
+  text: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const BulkApprovalPreviewInput = z.strictObject({
-  approval_ids: z.array(z.uuid()).nullable().optional(),
+  approval_ids: z.array(z.uuid()).min(1).max(50).nullable().optional(),
 });
 export const BulkApproveInput = z.strictObject({
-  approval_ids: z.array(z.uuid()).optional(),
+  approval_ids: z.array(z.uuid()).min(1).max(50).optional(),
 });
 export const DraftConversationStartInput = z.strictObject({
 
 });
 export const DraftMessageInput = z.strictObject({
-  text: z.string().optional(),
+  text: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   draft: z.record(z.string(), z.unknown()).optional(),
-  edited: z.array(z.unknown()).nullable().optional(),
+  edited: z.array(z.unknown()).max(3).nullable().optional(),
 });
 export const ConversationAdoptInput = z.strictObject({
   ticket_id: z.uuid().optional(),
 });
 export const ScopeCreateInput = z.strictObject({
-  name: z.string().optional(),
-  ticket_prefix: z.string().optional(),
+  name: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  ticket_prefix: z.string().regex(new RegExp("^(?![Tt]$)[A-Za-z][A-Za-z0-9]{0,7}$", "u")).optional(),
   parent_id: z.uuid().optional(),
   layer_id: z.uuid().optional(),
-  color: z.string().optional(),
-  manager_member_ids: z.array(z.uuid()).optional(),
-  member_ids: z.array(z.uuid()).optional(),
+  color: z.enum(["teal","plum","indigo","amber","coral","sage"]).optional(),
+  manager_member_ids: z.array(z.uuid()).max(10).optional(),
+  member_ids: z.array(z.uuid()).max(50).optional(),
 });
 export const LayerCreateInput = z.strictObject({
-  label: z.string().optional(),
-  order_no: z.number().int().optional(),
+  label: z.string().max(40).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  order_no: z.number().int().min(1).optional(),
 });
 export const LayerUpdateInput = z.strictObject({
-  label: z.string().optional(),
-  order_no: z.number().int().optional(),
+  label: z.string().max(40).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  order_no: z.number().int().min(1).optional(),
 });
 export const ScopeUpdateInput = z.strictObject({
-  name: z.string().optional(),
-  color: z.string().optional(),
-  position: z.number().int().optional(),
-  manager_member_ids: z.array(z.uuid()).optional(),
+  name: z.string().max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  color: z.enum(["teal","plum","indigo","amber","coral","sage"]).optional(),
+  position: z.number().int().min(1).optional(),
+  manager_member_ids: z.array(z.uuid()).max(10).optional(),
 });
 export const MemberRoleInput = z.strictObject({
-  role_key: z.string().optional(),
+  role_key: z.enum(["manager","member","viewer","admin"]).optional(),
   scope_id: z.uuid().optional(),
 });
 export const MemberGroupsInput = z.strictObject({
   primary_scope_id: z.uuid().optional(),
-  add_scope_ids: z.array(z.uuid()).optional(),
-  remove_scope_ids: z.array(z.uuid()).optional(),
-  role_key: z.string().optional(),
+  add_scope_ids: z.array(z.uuid()).max(20).optional(),
+  remove_scope_ids: z.array(z.uuid()).max(20).optional(),
+  role_key: z.enum(["manager","member","viewer"]).optional(),
 });
 export const MemberSuspendInput = z.strictObject({
 
@@ -4402,34 +4402,34 @@ export const MemberResumeInput = z.strictObject({
 
 });
 export const WorkspaceUpdateInput = z.strictObject({
-  name: z.string().optional(),
+  name: z.string().min(1).max(100).optional(),
 });
 export const WorkspaceLogoInput = z.strictObject({
 
 });
 export const WorkspacePermissionsInput = z.strictObject({
-  billing: z.string().optional(),
-  delete_workspace: z.string().optional(),
+  billing: z.enum(["admin","admin_manager"]).optional(),
+  delete_workspace: z.enum(["admin","admin_manager"]).optional(),
 });
 export const WorkspaceDeletionInput = z.strictObject({
-  confirm_name: z.string().optional(),
+  confirm_name: z.string().min(1).max(100).optional(),
 });
 export const MeUpdateInput = z.strictObject({
-  name: z.string().nullable().optional(),
+  name: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
   call_name: z.string().nullable().optional(),
-  language: z.string().nullable().optional(),
-  theme: z.string().nullable().optional(),
+  language: z.enum(["ja"]).nullable().optional(),
+  theme: z.enum(["system","light","dark"]).nullable().optional(),
   week_start: z.number().int().nullable().optional(),
-  timezone: z.string().nullable().optional(),
+  timezone: z.enum(["Asia/Tokyo","UTC"]).nullable().optional(),
 });
 export const AvatarUploadInput = z.strictObject({
 
 });
 export const EmailChangeInput = z.strictObject({
-  email: z.string().optional(),
+  email: z.string().max(254).regex(new RegExp("^[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*(?:[^@＠﹫ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*)+[@＠﹫][ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^@＠﹫ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff](?:[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^@＠﹫ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff])*[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[.․﹒．](?:[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*[^@＠﹫ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff])+[ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]*$", "u")).optional(),
 });
 export const EmailChangeVerifyInput = z.strictObject({
-  token: z.string().optional(),
+  token: z.string().min(1).max(200).optional(),
 });
 export const MySessionsRevokeInput = z.strictObject({
 
@@ -4438,45 +4438,45 @@ export const NotificationSettingsUpdateInput = z.strictObject({
   workspace_id: z.uuid().nullable().optional(),
   email_digest: z.boolean().nullable().optional(),
   quiet_hours: z.record(z.string(), z.unknown()).nullable().optional(),
-  pause: z.string().nullable().optional(),
+  pause: z.enum(["1h","today","tomorrow_morning","null"]).nullable().optional(),
   urgent_override: z.array(z.unknown()).nullable().optional(),
-  events: z.array(z.unknown()).nullable().optional(),
+  events: z.array(z.unknown()).max(7).nullable().optional(),
 });
 export const NotificationSettingsCopyInput = z.strictObject({
   from_workspace_id: z.uuid().optional(),
-  to_workspace_ids: z.array(z.uuid()).optional(),
+  to_workspace_ids: z.array(z.uuid()).min(1).max(20).optional(),
 });
 export const MemberRemoveInput = z.strictObject({
   transfer_to_member_id: z.uuid().optional(),
-  transfers: z.array(z.unknown()).optional(),
+  transfers: z.array(z.unknown()).max(500).optional(),
 });
 export const WorkspaceSwitchInput = z.strictObject({
 
 });
 export const GuestGroupInput = z.strictObject({
-  name: z.string().optional(),
+  name: z.string().min(1).max(80).optional(),
   request_scope_id: z.uuid().optional(),
 });
 export const PortalTicketMessageInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).optional(),
 });
 export const ClientRequestRouteInput = z.strictObject({
   route_id: z.uuid().optional(),
 });
 export const ClientRequestReplyInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).optional(),
 });
 export const ClientRequestAcceptInput = z.strictObject({
-  title: z.string().nullable().optional(),
+  title: z.string().min(1).max(200).nullable().optional(),
   body: z.string().nullable().optional(),
   assignee_member_id: z.uuid().optional(),
   due_on: z.string().optional(),
   scope_id: z.uuid().optional(),
   kind_id: z.uuid().nullable().optional(),
-  guest_group_ids: z.array(z.uuid()).nullable().optional(),
+  guest_group_ids: z.array(z.uuid()).min(1).max(20).nullable().optional(),
 });
 export const ClientRequestDeclineInput = z.strictObject({
-  reason: z.string().optional(),
+  reason: z.string().min(1).max(2000).optional(),
 });
 export const ClientRequestDraftInput = z.strictObject({
 
@@ -4486,100 +4486,100 @@ export const ClientRequestDraftResultInput = z.strictObject({
   failed: z.string().nullable().optional(),
 });
 export const PortalRequestCreateInput = z.strictObject({
-  body: z.string().optional(),
-  due_on: z.string().nullable().optional(),
-  attachment_ids: z.array(z.uuid()).nullable().optional(),
+  body: z.string().min(1).max(10000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  due_on: z.string().regex(new RegExp("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "u")).nullable().optional(),
+  attachment_ids: z.array(z.uuid()).max(5).nullable().optional(),
 });
 export const PortalRequestMessageInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).max(10000).optional(),
 });
 export const PortalAttachmentInput = z.strictObject({
-  name: z.string().optional(),
-  content_type: z.string().optional(),
-  data: z.string().optional(),
+  name: z.string().min(1).max(200).optional(),
+  content_type: z.string().max(100).regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*/[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]*$", "u")).optional(),
+  data: z.string().max(1000000).optional(),
 });
 export const PortalQuestionsInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).max(10000).optional(),
 });
 export const GuestGroupRenameInput = z.strictObject({
-  name: z.string().optional(),
+  name: z.string().min(1).max(80).optional(),
 });
 export const OpsSetupInput = z.strictObject({
-  token: z.string().optional(),
-  name: z.string().nullable().optional(),
+  token: z.string().regex(new RegExp("^[A-Za-z0-9_-]{43}$", "u")).optional(),
+  name: z.string().min(1).max(40).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).nullable().optional(),
 });
 export const InquiryCreateInput = z.strictObject({
-  topic: z.string().optional(),
-  title: z.string().optional(),
-  body: z.string().optional(),
-  attachment_ids: z.array(z.uuid()).optional(),
+  topic: z.enum(["usage","trouble","billing","other"]).optional(),
+  title: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  attachment_ids: z.array(z.uuid()).max(5).optional(),
   context: z.record(z.string(), z.unknown()).optional(),
 });
 export const InquiryMessageInput = z.strictObject({
-  body: z.string().optional(),
-  attachment_ids: z.array(z.uuid()).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  attachment_ids: z.array(z.uuid()).max(5).optional(),
 });
 export const InquiryResolveInput = z.strictObject({
 
 });
 export const InquiryAttachmentInput = z.strictObject({
-  name: z.string().optional(),
-  content_type: z.string().optional(),
-  size: z.number().int().optional(),
+  name: z.string().min(1).max(200).optional(),
+  content_type: z.enum(["image/png","image/jpeg","image/gif","image/webp","application/pdf","application/zip"]).optional(),
+  size: z.number().int().min(1).max(10485760).optional(),
 });
 export const OpsInquiryUpdateInput = z.strictObject({
   take: z.boolean().optional(),
   release: z.boolean().optional(),
-  state: z.string().optional(),
+  state: z.enum(["open","done"]).optional(),
   later_until: z.string().nullable().optional(),
 });
 export const OpsInquiryReplyInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const OpsInquiryNoteInput = z.strictObject({
-  body: z.string().optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const OpsMemberAddInput = z.strictObject({
-  email: z.string().optional(),
-  caps: z.array(z.string()).optional(),
+  email: z.string().min(3).max(254).regex(new RegExp("^[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+@[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+\\.[^@ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]+$", "u")).optional(),
+  caps: z.array(z.enum(["inquiry","peek","money","stop","notice","distribute","plan_propose","plan_decide","ops_people"])).min(1).max(9).optional(),
 });
 export const PlanProposalCreateInput = z.strictObject({
-  plan_key: z.string().optional(),
-  price_monthly: z.number().int().optional(),
-  member_limit: z.number().int().optional(),
-  trial_days: z.number().int().optional(),
-  existing_policy: z.string().optional(),
-  notice_days: z.number().int().optional(),
+  plan_key: z.enum(["free","team","business"]).optional(),
+  price_monthly: z.number().int().min(0).max(10000000).optional(),
+  member_limit: z.number().int().min(1).max(10000).optional(),
+  trial_days: z.number().int().min(0).max(365).optional(),
+  existing_policy: z.enum(["after_days","keep"]).optional(),
+  notice_days: z.number().int().min(30).max(365).optional(),
   new_from: z.iso.date().nullable().optional(),
-  reason: z.string().optional(),
+  reason: z.string().min(1).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const PlanProposalUpdateInput = z.strictObject({
-  price_monthly: z.number().int().optional(),
-  member_limit: z.number().int().optional(),
-  trial_days: z.number().int().optional(),
-  existing_policy: z.string().optional(),
-  notice_days: z.number().int().optional(),
+  price_monthly: z.number().int().min(0).max(10000000).optional(),
+  member_limit: z.number().int().min(1).max(10000).optional(),
+  trial_days: z.number().int().min(0).max(365).optional(),
+  existing_policy: z.enum(["after_days","keep"]).optional(),
+  notice_days: z.number().int().min(30).max(365).optional(),
   new_from: z.iso.date().nullable().optional(),
-  reason: z.string().optional(),
+  reason: z.string().min(1).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const PlanProposalDecideInput = z.strictObject({
-  notice_body: z.string().optional(),
+  notice_body: z.string().min(1).max(2000).optional(),
 });
 export const PlanProposalReturnInput = z.strictObject({
-  reason: z.string().optional(),
+  reason: z.string().min(1).max(500).optional(),
 });
 export const KindTemplateUpdateApplyInput = z.strictObject({
-  choice: z.string().optional(),
+  choice: z.enum(["change","keep"]).optional(),
 });
 export const OpsPwnedAckInput = z.strictObject({
 
 });
 export const OpsWorkspaceStopInput = z.strictObject({
-  reason_key: z.string().optional(),
-  mode: z.string().optional(),
+  reason_key: z.enum(["unpaid","violation","danger","request"]).optional(),
+  mode: z.enum(["scheduled","now"]).optional(),
   stop_on: z.iso.date().optional(),
-  note: z.string().optional(),
-  admin_notice: z.string().optional(),
+  note: z.string().min(1).max(500).optional(),
+  admin_notice: z.string().min(1).max(2000).optional(),
 });
 export const NoticeReadInput = z.strictObject({
 
@@ -4588,90 +4588,90 @@ export const OpsNoticePublishInput = z.strictObject({
 
 });
 export const IncidentUpdateInput = z.strictObject({
-  state: z.string().optional(),
-  body: z.string().optional(),
+  state: z.enum(["investigating","identified","monitoring","resolved"]).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const WorkspaceNoticeInput = z.strictObject({
-  title: z.string().optional(),
-  body: z.string().optional(),
-  placements: z.array(z.string()).optional(),
+  title: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  placements: z.array(z.enum(["band","list"])).min(1).max(2).optional(),
   admins_only: z.boolean().optional(),
 });
 export const BillingContactInput = z.strictObject({
-  company: z.string().optional(),
-  attn: z.string().optional(),
-  email: z.string().optional(),
+  company: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  attn: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  email: z.email().optional(),
 });
 export const PlanChangeInput = z.strictObject({
-  plan_key: z.string().optional(),
+  plan_key: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
 });
 export const OpsInvoiceIssueInput = z.strictObject({
-  month: z.string().optional(),
+  month: z.string().regex(new RegExp("^[0-9]{4}-(0[1-9]|1[0-2])$", "u")).optional(),
   dry_run: z.boolean().optional(),
 });
 export const PaymentRecordInput = z.strictObject({
-  amount: z.number().int().optional(),
+  amount: z.number().int().min(1).optional(),
   paid_on: z.iso.date().optional(),
-  payer_name: z.string().optional(),
+  payer_name: z.string().min(1).max(100).optional(),
   reverses_payment_id: z.uuid().optional(),
 });
 export const OpsPlanChangeInput = z.strictObject({
-  plan_key: z.string().optional(),
+  plan_key: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   inquiry_id: z.uuid().optional(),
 });
 export const OpsVerificationResendInput = z.strictObject({
 
 });
 export const OpsPeekOpenInput = z.strictObject({
-  reason: z.string().optional(),
-  minutes: z.number().int().optional(),
+  reason: z.string().min(1).max(200).optional(),
+  minutes: z.number().int().min(1).max(60).optional(),
   inquiry_id: z.uuid().optional(),
 });
 export const OpsWorkspaceResumeInput = z.strictObject({
-  note: z.string().optional(),
+  note: z.string().min(1).max(500).optional(),
 });
 export const OpsMemberCapsInput = z.strictObject({
-  caps: z.array(z.string()).optional(),
+  caps: z.array(z.enum(["inquiry","peek","money","stop","notice","distribute","plan_propose","plan_decide","ops_people"])).min(1).max(9).optional(),
 });
 export const OpsTemplateReleaseInput = z.strictObject({
-  items: z.array(z.unknown()).optional(),
-  change_reason: z.string().optional(),
+  items: z.array(z.unknown()).min(0).max(100).optional(),
+  change_reason: z.string().min(1).max(500).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   dry_run: z.boolean().optional(),
 });
 export const OpsNoticeCreateInput = z.strictObject({
-  kind: z.string().optional(),
-  title: z.string().optional(),
-  body: z.string().optional(),
-  audience_mode: z.string().optional(),
-  audience_plans: z.array(z.string()).optional(),
+  kind: z.enum(["incident","maintenance","release"]).optional(),
+  title: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  audience_mode: z.enum(["all","plans","workspaces"]).optional(),
+  audience_plans: z.array(z.enum(["free","team","business"])).optional(),
   audience_workspace_ids: z.array(z.uuid()).optional(),
-  placements: z.array(z.string()).optional(),
+  placements: z.array(z.enum(["band","list"])).min(1).max(2).optional(),
   publish_at: z.iso.datetime({ offset: true }).nullable().optional(),
   maintenance_from: z.iso.datetime({ offset: true }).nullable().optional(),
   maintenance_to: z.iso.datetime({ offset: true }).nullable().optional(),
-  impact: z.string().nullable().optional(),
+  impact: z.string().min(1).max(200).nullable().optional(),
 });
 export const OpsNoticeUpdateInput = z.strictObject({
-  kind: z.string().optional(),
-  title: z.string().optional(),
-  body: z.string().optional(),
-  audience_mode: z.string().optional(),
-  audience_plans: z.array(z.string()).optional(),
+  kind: z.enum(["incident","maintenance","release"]).optional(),
+  title: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  body: z.string().min(1).max(4000).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  audience_mode: z.enum(["all","plans","workspaces"]).optional(),
+  audience_plans: z.array(z.enum(["free","team","business"])).optional(),
   audience_workspace_ids: z.array(z.uuid()).optional(),
-  placements: z.array(z.string()).optional(),
+  placements: z.array(z.enum(["band","list"])).min(1).max(2).optional(),
   publish_at: z.iso.datetime({ offset: true }).nullable().optional(),
   maintenance_from: z.iso.datetime({ offset: true }).nullable().optional(),
   maintenance_to: z.iso.datetime({ offset: true }).nullable().optional(),
-  impact: z.string().nullable().optional(),
+  impact: z.string().min(1).max(200).nullable().optional(),
 });
 export const OpsInvoiceTemplateInput = z.strictObject({
-  company: z.string().optional(),
-  address: z.string().optional(),
-  reg_no: z.string().optional(),
-  contact: z.string().optional(),
-  payee: z.string().optional(),
-  note: z.string().optional(),
-  version: z.number().int().optional(),
+  company: z.string().min(1).max(100).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  address: z.string().min(1).max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  reg_no: z.string().regex(new RegExp("^T[0-9]{13}$", "u")).optional(),
+  contact: z.string().min(1).max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  payee: z.string().min(1).max(200).regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
+  note: z.string().max(500).optional(),
+  version: z.number().int().min(0).optional(),
 });
 export const OpsPwnedPendingAckInput = z.strictObject({
 
@@ -6319,7 +6319,7 @@ export const OpsPwnedPendingAck = z.strictObject({
   remaining: z.number().int().optional(),
 });
 export const UpdateConversationInput = z.strictObject({
-  title: z.string().optional(),
+  title: z.string().regex(new RegExp("[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]", "u")).optional(),
   participant_member_ids: z.array(z.uuid()).nullable().optional(),
   area: z.string().nullable().optional(),
   subject_type: z.string().nullable().optional(),
@@ -6337,3 +6337,7 @@ export const UpdateConversationInput = z.strictObject({
 });
 
 export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, NoticeUpdates, NoticeUpdatesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, OpsInvoiceTemplates, OpsInvoiceTemplatesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput, Tickets, TicketsInput, TicketSections, TicketSectionsInput, TicketSectionVersions, TicketSectionVersionsInput, TicketKinds, TicketKindsInput, KindSections, KindSectionsInput, TicketStages, TicketStagesInput, ClassAxes, ClassAxesInput, ClassValues, ClassValuesInput, TicketClassValues, TicketClassValuesInput, CustomFields, CustomFieldsInput, CustomFieldKinds, CustomFieldKindsInput, TicketFieldValues, TicketFieldValuesInput, HandoverRules, HandoverRulesInput, TestSpecs, TestSpecsInput, Checks, ChecksInput, TicketDecisions, TicketDecisionsInput, TicketMessages, TicketMessagesInput, ReferenceLogs, ReferenceLogsInput, KnowledgePages, KnowledgePagesInput, KnowledgePageVersions, KnowledgePageVersionsInput, KnowledgeLinks, KnowledgeLinksInput, KnowledgeBreaches, KnowledgeBreachesInput, KnowledgeFolders, KnowledgeFoldersInput, KnowledgeLimits, KnowledgeLimitsInput, KnowledgeRequests, KnowledgeRequestsInput, KnowledgeShares, KnowledgeSharesInput, Clients, ClientsInput, ClientGroups, ClientGroupsInput, ClientContacts, ClientContactsInput, ClientRequests, ClientRequestsInput, ClientRequestMessages, ClientRequestMessagesInput, Acceptances, AcceptancesInput, TenantMemberships, TenantMembershipsInput, TermsVersions, TermsVersionsInput, TermsConsents, TermsConsentsInput, Passkeys, PasskeysInput, Operations, OperationsInput, TicketLinks, TicketLinksInput, GuestGroups, GuestGroupsInput, GuestGroupMembers, GuestGroupMembersInput, TicketGuestShares, TicketGuestSharesInput, TicketHandovers, TicketHandoversInput, SavedViews, SavedViewsInput, TicketImports, TicketImportsInput, LearningCandidates, LearningCandidatesInput, BridgePairingCodes, BridgePairingCodesInput, NotificationSettings, NotificationSettingsInput, OpsPlanProposals, OpsPlanProposalsInput, ScopeMemberships, ScopeMembershipsInput, RoleBundleDefaults, RoleBundleDefaultsInput, StepUpInput, PasskeyRenameInput, SignupInput, SignupResendInput, SignupVerifyInput, PasswordForgotInput, SignInInput, SignInCodeInput, SignOutInput, AdminRecoveryInput, TwoFactorStartInput, TwoFactorConfirmInput, PasswordChangeInput, PasswordSetInput, PasswordResetInput, TermsConsentInput, PairingCodeInput, BridgeClaimInput, BridgeHeartbeatInput, TicketCreateInput, TicketDraftInput, DismissSetupTasksInput, TicketDelegateInput, BridgeTakeInput, BridgeProgressInput, BridgeFinishInput, BridgeToolInput, ApprovalApproveInput, ApprovalReturnInput, InvitationAcceptInput, TicketCompleteInput, InvitationResendInput, CredentialCreateInput, CredentialUpdateInput, CredentialResolveInput, CredentialLoginCheckInput, CredentialLoginAnswerInput, CredentialCheckReportInput, DeviceBrowserInput, DeviceBrowserCheckInput, BridgeBrowserInput, TicketTimelineSeenInput, TicketMessageInput, TicketMessageEditInput, TicketMessageStarInput, TicketUpdateInput, TicketDecisionInput, TicketDecisionUpdateInput, TicketHandoverCreateInput, TicketHandoverAnswerInput, HandoverWithdrawInput, HandoverRemindInput, TicketHandoverClaimInput, InvitationsCreateInput, InvitationLinkCreateInput, InvitationJoinConfirmInput, TicketBodyInput, BodyRestoreInput, TestSpecCreateInput, TestSpecUpdateInput, TicketLinkInput, NotificationReadInput, NotificationReadAllInput, SavedViewInput, SavedViewUpdateInput, ActionRunTakeoverInput, TicketRestoreInput, ItemRestoreInput, KnowledgeFolderCreateInput, KnowledgeFolderUpdateInput, KnowledgePageCreateInput, KnowledgeDraftInput, KnowledgePublishInput, KnowledgePageMoveInput, KnowledgeMustInput, KnowledgeSimilarInput, KnowledgeCopyInput, KnowledgeRaiseInput, KnowledgeDismissInput, KnowledgeApproveInput, KnowledgeDeclineInput, KnowledgeShareSetInput, TicketKindCreateInput, TicketKindUpdateInput, TicketKindOrderInput, TicketStageCreateInput, TicketStageUpdateInput, TicketStageOrderInput, TicketFieldCreateInput, TicketFieldUpdateInput, TicketFieldOrderInput, ActionRunStopInput, ApprovalStopInput, ApprovalWithdrawInput, ApprovalEditInput, DryRunInput, ConversationSay, ConversationStopInput, ConversationEntriesInput, BridgeBrowserStateInput, TicketAgentMessageInput, BulkApprovalPreviewInput, BulkApproveInput, DraftConversationStartInput, DraftMessageInput, ConversationAdoptInput, ScopeCreateInput, LayerCreateInput, LayerUpdateInput, ScopeUpdateInput, MemberRoleInput, MemberGroupsInput, MemberSuspendInput, MemberResumeInput, WorkspaceUpdateInput, WorkspaceLogoInput, WorkspacePermissionsInput, WorkspaceDeletionInput, MeUpdateInput, AvatarUploadInput, EmailChangeInput, EmailChangeVerifyInput, MySessionsRevokeInput, NotificationSettingsUpdateInput, NotificationSettingsCopyInput, MemberRemoveInput, WorkspaceSwitchInput, GuestGroupInput, PortalTicketMessageInput, ClientRequestRouteInput, ClientRequestReplyInput, ClientRequestAcceptInput, ClientRequestDeclineInput, ClientRequestDraftInput, ClientRequestDraftResultInput, PortalRequestCreateInput, PortalRequestMessageInput, PortalAttachmentInput, PortalQuestionsInput, GuestGroupRenameInput, OpsSetupInput, InquiryCreateInput, InquiryMessageInput, InquiryResolveInput, InquiryAttachmentInput, OpsInquiryUpdateInput, OpsInquiryReplyInput, OpsInquiryNoteInput, OpsMemberAddInput, PlanProposalCreateInput, PlanProposalUpdateInput, PlanProposalDecideInput, PlanProposalReturnInput, KindTemplateUpdateApplyInput, OpsPwnedAckInput, OpsWorkspaceStopInput, NoticeReadInput, OpsNoticePublishInput, IncidentUpdateInput, WorkspaceNoticeInput, BillingContactInput, PlanChangeInput, OpsInvoiceIssueInput, PaymentRecordInput, OpsPlanChangeInput, OpsVerificationResendInput, OpsPeekOpenInput, OpsWorkspaceResumeInput, OpsMemberCapsInput, OpsTemplateReleaseInput, OpsNoticeCreateInput, OpsNoticeUpdateInput, OpsInvoiceTemplateInput, OpsPwnedPendingAckInput, ScopeOverview, TicketKindChangePreview, TicketDeletePreview, SearchHit, TimelineItem, TestSpecLint, TicketCompletion, BulkResult, ApprovalQueueItem, ApprovalDetail, CloneNow, CloneGrowth, CloneActivity, SignupCreated, SignupResent, SignupStatus, SignupVerified, PasswordForgotAccepted, SignInResult, SignInCodeResult, SignedOut, AdminRecoveryResult, PasswordResetDone, CurrentTerms, TermsConsented, ConversationCreated, ConversationUpdated, MySecurity, TwoFactorSetup, TwoFactorEnabled, BackupCodes, StepUp, PasswordChanged, PasswordSet, Me, MyUsage, SetupTask, SetupTasksDismissed, PairingCode, BridgeRelease, BridgeClaim, BridgeReleaseLink, BridgeHeartbeat, BridgeDevice, TicketDetail, TicketKindChoice, TicketDraft, BridgeJob, JobControl, TicketDelegation, ApprovalDecided, BridgeFinish, BridgeToolResult, ActionRunView, ResolvedCredential, PlanProposalImpact, WorkspaceMembers, InvitationLink, PlanChoice, Billing, SignedUrl, ClientRequestDetail, PortalHome, PortalQuestions, PortalRequest, PortalTicket, KnowledgeTree, KnowledgePageDetail, OpsWorkspaceRow, OpsWorkspace, OpsWorkspaceMember, OpsWorkspaceBilling, Shell, OpsShell, OpsInquiryDetail, OpsNoticeDetail, PublicServiceStatus, InvitationPreview, InvitationAccepted, ServiceStatus, InvitationResendResult, Credential, CredentialDeleted, CredentialLoginCheck, CredentialLoginAnswer, CredentialCheckReport, RevokedDevice, DeviceBrowser, DeviceBrowserCheck, BridgeBrowser, TicketTimelineSeen, TicketMessageStar, TicketUpdated, TicketDecision, TicketDecisionCreated, TicketDecisionChange, HandoverPreview, HandoverRule, TicketHandoverCreated, TicketHandoverAnswered, TicketHandover, HandoverWithdrawn, HandoverReminded, TicketHandoverClaimed, InvitationsSent, InvitationJoinConfirmed, BodySaved, TicketVersionsView, BodyRestored, TicketItemChangesView, TestSpecItem, TicketLink, TicketLinkDeleted, Notification, NotificationsRead, SavedView, SavedViewDeleted, TicketDeleted, TicketRestored, TicketField, ItemRestored, KnowledgeVersionItem, KnowledgeVersion, KnowledgeFolder, KnowledgeFolderDeleted, KnowledgePageStub, KnowledgeDraftSaved, KnowledgeDraftDiscarded, KnowledgePublished, KnowledgePageDeleted, KnowledgeMustSet, KnowledgeSimilar, KnowledgeRequest, KnowledgeRequestEnded, KnowledgeApproval, KnowledgeRequestDecided, KnowledgeShareChoice, KnowledgeReview, TicketKindSetting, TicketKindDeleted, TicketStageSetting, TicketStageDeleted, TicketFieldSetting, TicketFieldDeleted, ActionRunStopped, ApprovalStopped, ApprovalWithdrawn, ApprovalEdited, DryRunStarted, ApprovalHistoryItem, MyClone, ConversationView, ConversationRow, MessageView, ConversationSaid, ConversationStopped, ConversationEntriesMirrored, MirrorTarget, BridgeBrowserReported, BridgeJobFile, TicketAgentSession, TicketAgentSent, BulkApprovalPreview, DraftConversationStarted, DraftMessageSent, ConversationAdopted, ScopeCreated, LayerCreated, LayerUpdated, Layer, ScopeUpdated, ScopeListItem, InvitationResent, InvitationRevoked, MemberDetail, MemberRoleChanged, MemberGroupsChanged, MemberStateChanged, MemberRemovalPreview, WorkspaceSettings, WorkspaceRenamed, WorkspaceLogo, WorkspacePermissions, WorkspaceDeletion, MeUpdated, Avatar, EmailChangeRequested, EmailChanged, MySessions, MySessionRevoked, MySessionsRevoked, NotificationSettingsCopied, WorkspaceLeft, MemberRemoved, WorkspaceSwitched, MyInvitations, GuestGroupCreated, TicketGuestSharesUpdated, PortalTicketMessageCreated, ClientRequestList, ClientRequestRouted, ClientRequestReplied, ClientRequestAccepted, ClientRequestDeclined, ClientRequestDraftQueued, ClientRequestDraftResult, PortalRequestCreated, PortalRequestMessagePosted, PortalAttachmentAdded, GuestGroupRenamed, GuestGroupDeleted, OpsSetupSession, MyInquiry, MyInquiryDetail, MyInquiryMessage, InquiryAttachmentUpload, OpsInquiryRow, OpsInquiryMessage, OpsMemberRow, PlanOps, PlanProposal, PlanHistoryRow, OpsTemplateRow, OpsTemplate, KindTemplateUpdate, OpsPwnedRow, OpsPwnedAck, Notice, NoticeRead, OpsNoticeRow, BillingContact, PlanChange, OpsInvoiceRow, OpsInvoiceIssue, OpsVerificationResent, OpsWorkspaceInquiry, OpsWorkspaceAuditRow, OpsPeek, OpsMemberRemoved, OpsOperation, OpsInvoiceTemplate, OpsPwnedPendingAck, UpdateConversationInput };
+
+export const INPUT_RULES: Record<string, Record<string, unknown>> = {"TicketGuestSharesInput":{"anyOf":[{"required":["add"]},{"required":["remove"]}]},"SignInInput":{"allOf":[{"properties":{"email":{"pattern":"^[ \\t\\n\\r]*(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}[ \\t\\n\\r]*$"}}}]},"SignInCodeInput":{"allOf":[{"properties":{"pending":{"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"}}}],"oneOf":[{"required":["code"],"properties":{"code":{"type":"string"}},"not":{"required":["backup_code"]}},{"required":["backup_code"],"properties":{"backup_code":{"type":"string"}},"not":{"required":["code"]}}]},"TicketCreateInput":{"allOf":[{"anyOf":[{"not":{"properties":{"priority":{"enum":["high"]}},"required":["priority"]}},{"properties":{"priority_reason":{"type":"string","pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"}},"required":["priority_reason"]}]},{"anyOf":[{"not":{"required":["copy"]}},{"required":["duplicate_of"]}]}]},"CredentialCreateInput":{"anyOf":[{"properties":{"kind":{"enum":["login"]},"two_factor":{"enum":["none","sms","email","push"]}},"required":["kind","login","password","two_factor"],"not":{"anyOf":[{"required":["value"]},{"required":["totp_secret"]}]}},{"properties":{"kind":{"enum":["login"]}},"required":["kind","login","password"],"not":{"anyOf":[{"required":["two_factor"]},{"required":["value"]},{"required":["totp_secret"]}]}},{"properties":{"kind":{"enum":["login"]},"two_factor":{"enum":["totp"]}},"required":["kind","login","password","two_factor","totp_secret"],"not":{"anyOf":[{"required":["value"]}]}},{"properties":{"kind":{"enum":["key"]}},"required":["kind","value"],"not":{"anyOf":[{"required":["login"]},{"required":["password"]},{"required":["two_factor"]},{"required":["totp_secret"]}]}}]},"CredentialUpdateInput":{"allOf":[{"anyOf":[{"required":["login"]},{"required":["password"]},{"required":["value"]},{"required":["two_factor"]},{"required":["totp_secret"]},{"required":["destinations"]},{"required":["expires_on"]},{"required":["description"]}]},{"anyOf":[{"not":{"anyOf":[{"required":["login"]},{"required":["password"]},{"required":["value"]},{"required":["totp_secret"]}]}},{"required":["login","password"],"not":{"required":["value"]}},{"required":["value"],"not":{"anyOf":[{"required":["login"]},{"required":["password"]},{"required":["two_factor"]},{"required":["totp_secret"]}]}}]}]},"CredentialLoginAnswerInput":{"oneOf":[{"required":["code"],"not":{"required":["approved"]}},{"required":["approved"],"not":{"required":["code"]}}]},"CredentialCheckReportInput":{"oneOf":[{"properties":{"state":{"enum":["asking","waiting"]}},"required":["request_ref"]},{"properties":{"state":{"enum":["ok","bad_password","needs_2fa","bad_code","captcha","unreachable","no_form","stopped","no_answer"]}}}]},"TicketMessageInput":{"allOf":[{"not":{"required":["stage_id","stage_key"]}},{"anyOf":[{"not":{"required":["stage_key"]}},{"properties":{"stage_key":{"enum":["todo","doing"]}}},{"required":["hold_reason","resume_condition"]}]},{"anyOf":[{"required":["stage_id"]},{"required":["stage_key"],"properties":{"stage_key":{"enum":["hold"]}}},{"not":{"anyOf":[{"required":["hold_reason"]},{"required":["resume_condition"]}]}}]}]},"TicketUpdateInput":{"allOf":[{"not":{"required":["stage_id","stage_key"]}},{"anyOf":[{"required":["stage_id"]},{"required":["stage_key"]},{"required":["actual_minutes"]},{"required":["hold_reason"]},{"required":["resume_condition"]},{"required":["priority"]},{"required":["priority_reason"]},{"required":["parent_ticket_id"]},{"required":["fields"]},{"required":["estimate_minutes"]},{"required":["due_on"]},{"required":["start_on"]}]},{"anyOf":[{"not":{"required":["stage_key"]}},{"properties":{"stage_key":{"enum":["todo","doing"]}}},{"required":["hold_reason","resume_condition"]}]},{"anyOf":[{"not":{"required":["stage_key"]}},{"properties":{"stage_key":{"enum":["hold"]}}},{"not":{"anyOf":[{"required":["hold_reason"]},{"required":["resume_condition"]}]}}]},{"anyOf":[{"not":{"required":["due_on"]}},{"required":["due_reason"],"properties":{"due_reason":{"type":"string"}}}]},{"anyOf":[{"not":{"required":["due_reason"]}},{"required":["due_on"]}]},{"anyOf":[{"not":{"required":["expected_due_on"]}},{"required":["due_on"]}]},{"anyOf":[{"not":{"required":["expected_start_on"]}},{"required":["start_on"]}]}],"oneOf":[{"properties":{"priority":{"enum":["high"]}},"required":["priority","priority_reason"]},{"not":{"anyOf":[{"required":["priority_reason"]},{"properties":{"priority":{"enum":["high"]}},"required":["priority"]}]}}]},"TicketDecisionUpdateInput":{"oneOf":[{"properties":{"action":{"enum":["revise"]},"text":{"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f]"}},"required":["text"]},{"properties":{"action":{"enum":["cancel"]},"reason":{"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f]"}},"required":["reason"]}]},"TicketHandoverCreateInput":{"allOf":[{"not":{"allOf":[{"required":["to_member_id"],"properties":{"to_member_id":{"type":"string"}}},{"required":["to_scope_id"],"properties":{"to_scope_id":{"type":"string"}}}]}},{"anyOf":[{"not":{"required":["kind"],"properties":{"kind":{"enum":["offer"]}}}},{"properties":{"to_member_id":{"nullable":true,"enum":[null]},"to_scope_id":{"nullable":true,"enum":[null]},"reply_due":{"nullable":true,"enum":[null]}}}]},{"anyOf":[{"not":{"required":["kind"],"properties":{"kind":{"enum":["pass"]}}}},{"properties":{"to_scope_id":{"nullable":true,"enum":[null]}}}]},{"anyOf":[{"not":{"required":["replaces"],"properties":{"replaces":{"type":"string"}}}},{"required":["kind"],"properties":{"kind":{"enum":["pass"]}}}]},{"anyOf":[{"not":{"anyOf":[{"required":["kind"],"properties":{"kind":{"enum":["pass"]}}},{"required":["kind"],"properties":{"kind":{"enum":["distribute"]}}}]}},{"anyOf":[{"required":["to_member_id"],"properties":{"to_member_id":{"type":"string"}}},{"required":["to_scope_id"],"properties":{"to_scope_id":{"type":"string"}}}]}]}]},"TicketHandoverAnswerInput":{"allOf":[{"anyOf":[{"not":{"required":["decision"],"properties":{"decision":{"enum":["decline"]}}}},{"required":["decline_reason"],"properties":{"decline_reason":{"type":"string","pattern":"^[^\\u0000]*[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff\\u0000-\\u001f\\u007f\\ufeff][^\\u0000]*$"}}}]}]},"InvitationsCreateInput":{"oneOf":[{"properties":{"role_key":{"enum":["requester"]}},"required":["guest_group_id"],"not":{"required":["scope_id"]}},{"properties":{"role_key":{"enum":["member","manager","viewer","admin"]}},"required":["scope_id"],"not":{"required":["guest_group_id"]}}]},"TestSpecUpdateInput":{"oneOf":[{"required":["checked"]},{"required":["title"]}]},"SavedViewInput":{"anyOf":[{"not":{"required":["share"]}},{"properties":{"share":{"enum":["self"]}}},{"required":["scope_id"],"properties":{"scope_id":{"type":"string"}}}]},"SavedViewUpdateInput":{"allOf":[{"anyOf":[{"required":["name"]},{"required":["share"]},{"required":["scope_id"]},{"required":["filters"]},{"required":["columns"]},{"required":["density"]}]},{"anyOf":[{"not":{"required":["share"]}},{"properties":{"share":{"enum":["self"]}}},{"required":["scope_id"],"properties":{"scope_id":{"type":"string"}}}]}]},"KnowledgeFolderCreateInput":{"anyOf":[{"properties":{"shelf":{"enum":["company","me"]}}},{"required":["group_id"],"properties":{"group_id":{"type":"string","format":"uuid"}}}]},"KnowledgeFolderUpdateInput":{"anyOf":[{"required":["name"]},{"required":["parent_folder_id"]},{"required":["position"]}]},"KnowledgePageCreateInput":{"anyOf":[{"properties":{"shelf":{"enum":["company","me"]}}},{"required":["group_id"],"properties":{"group_id":{"type":"string","format":"uuid"}}}]},"KnowledgeDraftInput":{"anyOf":[{"required":["title"]},{"required":["desc"]},{"required":["doc"]}]},"KnowledgePageMoveInput":{"anyOf":[{"required":["folder_id"]},{"required":["position"]}]},"KnowledgeShareSetInput":{"oneOf":[{"required":["page_id"]},{"required":["folder_id"]}]},"TicketKindUpdateInput":{"anyOf":[{"required":["name"]},{"required":["color_key"]},{"required":["body_template"]}]},"TicketStageUpdateInput":{"anyOf":[{"required":["name"]},{"required":["color_key"]}]},"TicketFieldCreateInput":{"oneOf":[{"properties":{"field_type":{"enum":["select","multi_select"]},"options":{"minItems":1}},"required":["options"]},{"properties":{"field_type":{"enum":["short_text","long_text","number","date","check"]},"options":{"maxItems":0}}}]},"TicketFieldUpdateInput":{"allOf":[{"anyOf":[{"required":["name"]},{"required":["field_type"]},{"required":["required"]},{"required":["description"]},{"required":["options"]},{"required":["kind_ids"]}]},{"not":{"required":["field_type","options"],"properties":{"field_type":{"enum":["short_text","long_text","number","date","check"]}}}}]},"LayerUpdateInput":{"anyOf":[{"required":["label"]},{"required":["order_no"]}]},"ScopeUpdateInput":{"anyOf":[{"required":["name"]},{"required":["color"]},{"required":["position"]},{"required":["manager_member_ids"]}]},"MemberGroupsInput":{"anyOf":[{"required":["primary_scope_id"]},{"required":["add_scope_ids"]},{"required":["remove_scope_ids"]}]},"WorkspacePermissionsInput":{"anyOf":[{"required":["billing"]},{"required":["delete_workspace"]}]},"MeUpdateInput":{"anyOf":[{"required":["name"]},{"required":["call_name"]},{"required":["language"]},{"required":["theme"]},{"required":["week_start"]},{"required":["timezone"]}]},"NotificationSettingsUpdateInput":{"anyOf":[{"required":["email_digest"]},{"required":["quiet_hours"]},{"required":["pause"]},{"required":["urgent_override"]},{"required":["events"]}]},"MemberRemoveInput":{"not":{"required":["transfer_to_member_id","transfers"]}},"ClientRequestDraftResultInput":{"oneOf":[{"required":["draft"]},{"required":["failed"]}]},"OpsInquiryUpdateInput":{"allOf":[{"anyOf":[{"required":["take"]},{"required":["release"]},{"required":["state"]},{"required":["later_until"]}]},{"not":{"properties":{"take":{"const":true},"release":{"const":true}},"required":["take","release"]}},{"not":{"required":["state","later_until"]}}]},"PlanProposalCreateInput":{"allOf":[{"not":{"properties":{"existing_policy":{"enum":["after_days"]}},"required":["existing_policy"],"not":{"required":["notice_days"]}}},{"not":{"properties":{"existing_policy":{"enum":["keep"]}},"required":["existing_policy","notice_days"]}}]},"PlanProposalUpdateInput":{"allOf":[{"anyOf":[{"required":["price_monthly"]},{"required":["member_limit"]},{"required":["trial_days"]},{"required":["existing_policy"]},{"required":["notice_days"]},{"required":["new_from"]},{"required":["reason"]}]},{"not":{"properties":{"existing_policy":{"enum":["after_days"]}},"required":["existing_policy"],"not":{"required":["notice_days"]}}},{"not":{"properties":{"existing_policy":{"enum":["keep"]}},"required":["existing_policy","notice_days"]}}]},"PlanProposalDecideInput":{"allOf":[{"properties":{"notice_body":{"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"}}}]},"PlanProposalReturnInput":{"allOf":[{"properties":{"reason":{"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"}}}]},"OpsWorkspaceStopInput":{"anyOf":[{"required":["stop_on"],"properties":{"mode":{"enum":["scheduled"]}}},{"not":{"required":["stop_on"]},"properties":{"mode":{"enum":["now"]},"reason_key":{"enum":["violation","danger"]}}}]},"WorkspaceNoticeInput":{"not":{"properties":{"admins_only":{"const":true},"placements":{"contains":{"const":"band"}}},"required":["admins_only","placements"]}},"OpsNoticeCreateInput":{"allOf":[{"oneOf":[{"properties":{"audience_mode":{"enum":["workspaces"]},"audience_workspace_ids":{"minItems":1}},"required":["audience_workspace_ids"],"not":{"required":["audience_plans"]}},{"properties":{"audience_mode":{"enum":["plans"]},"audience_plans":{"minItems":1}},"required":["audience_plans"],"not":{"required":["audience_workspace_ids"]}},{"properties":{"audience_mode":{"enum":["all"]}},"not":{"anyOf":[{"required":["audience_plans"]},{"required":["audience_workspace_ids"]}]}}]},{"anyOf":[{"required":["maintenance_from","maintenance_to"]},{"not":{"anyOf":[{"required":["maintenance_from"]},{"required":["maintenance_to"]}]}}]}]},"OpsNoticeUpdateInput":{"oneOf":[{"properties":{"audience_mode":{"enum":["workspaces"]},"audience_workspace_ids":{"minItems":1}},"required":["audience_mode","audience_workspace_ids"],"not":{"required":["audience_plans"]}},{"properties":{"audience_mode":{"enum":["plans"]},"audience_plans":{"minItems":1}},"required":["audience_mode","audience_plans"],"not":{"required":["audience_workspace_ids"]}},{"properties":{"audience_mode":{"enum":["all"]}},"not":{"anyOf":[{"required":["audience_plans"]},{"required":["audience_workspace_ids"]}]},"required":["audience_mode"]},{"not":{"anyOf":[{"required":["audience_mode"]},{"required":["audience_plans"]},{"required":["audience_workspace_ids"]}]}}]}};
+
+export const QUERY_RULES: Record<string, Record<string, Record<string, unknown>>> = {"getActionRun":{},"stopActionRun":{},"takeoverActionRun":{},"getApproval":{},"approveApproval":{},"editApproval":{},"returnApproval":{},"stopApproval":{},"withdrawApproval":{},"bulkApprove":{},"previewBulkApproval":{},"listApprovalHistory":{"decision":{"type":"string","enum":["approve","return","stop"]},"from":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"to":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"listApprovalQueue":{"kind":{"type":"string","enum":["artifact","handover"]},"sort":{"type":"string","pattern":"^[a-z_][a-z0-9_]{0,62}$","enum":["due","waiting","title"]},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"getArtifactVersion":{},"restoreArtifactVersion":{},"updateArtifact":{},"listAuditEvents":{"q":{"type":"string","minLength":1,"maxLength":100,"pattern":"[^ \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff]"},"kind":{"type":"string","enum":["perm","out","device","ai","deleted","ops"]},"member_id":{"type":"string","format":"uuid"},"ticket_id":{"type":"string","format":"uuid"},"from":{"type":"string","pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{1,6})?)?(Z|[+-][0-9]{2}:[0-9]{2})$"},"to":{"type":"string","pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{1,6})?)?(Z|[+-][0-9]{2}:[0-9]{2})$"},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":100}},"getInvitation":{},"acceptInvitation":{},"requestInvitationResend":{},"confirmInvitationJoin":{},"startOpsSetup":{},"requestPasswordReset":{},"resetPassword":{},"requestAdminRecovery":{},"getServiceStatus":{},"signInWithPassword":{},"signOut":{},"createSignup":{},"resendSignupEmail":{},"getSignupStatus":{},"verifySignup":{},"stepUp":{},"consentToTerms":{},"getCurrentTerms":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["created_at","created_by","deleted_at","id","kind","published_at","tenant_id","updated_at","updated_by","url","version"]}},"verifySignInCode":{},"setBridgeBrowser":{},"claimPairingCode":{},"reportCredentialCheck":{},"resolveCredential":{},"listMyDevices":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["alive_at","auth_session_id","bridge_version","browser","cli_model","country","created_at","created_by","deleted_at","device","device_label","device_token_hash","health","health_at","id","ip_region","issued_at","kind_id","last_ip","last_seen_at","login_kind","machine_id","member_id","mfa_pending","revoke_reason_id","revoked_at","step_up_at","tenant_id","terms_pending","updated_at","updated_by"]}},"updateMyDevice":{},"revokeMyDevice":{},"checkMyDeviceBrowser":{},"getFileForBridge":{"job_id":{"type":"string","format":"uuid"}},"sendHeartbeat":{},"putArtifactFromBridge":{},"reportBrowserState":{},"reportClientRequestDraft":{},"getJobControl":{},"mirrorConversationEntries":{},"finishBridgeJob":{},"reportJobProgress":{},"askFromBridge":{},"getBridgeQuestionAnswer":{},"callKanameTool":{},"takeBridgeJob":{},"listMirrorTargets":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":50}},"createPairingCode":{},"downloadBridgeRelease":{},"getLatestBridgeRelease":{"os":{"type":"string"},"arch":{"type":"string"}},"reportUsage":{},"listClientRequests":{"state":{"type":"string","enum":["live","done"]}},"getClientRequest":{},"updateClientRequest":{},"acceptClientRequest":{},"declineClientRequest":{},"requestClientRequestDraft":{},"replyToClientRequest":{},"getMyClone":{},"updateMyClone":{},"listCloneActivity":{"kind":{"type":"string","enum":["ran","made","stopped"]},"from":{"type":"string","format":"date"},"to":{"type":"string","format":"date"},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"getCloneGrowth":{},"getCloneNow":{},"listConversations":{"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":100}},"createConversation":{},"getConversation":{},"updateConversation":{},"deleteConversation":{},"createConversationAttachment":{},"listConversationMessages":{"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"sendConversationMessage":{},"answerAgentPermission":{},"stopConversation":{},"streamConversation":{},"listCredentials":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createCredential":{},"updateCredential":{},"deleteCredential":{},"checkCredentialLogin":{},"answerCredentialLoginCheck":{},"listGuestGroups":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["agent_effort","agent_model","agent_permission_mode","auth_user_id","avatar_ref","call_name","created_at","created_by","deleted_at","display_name","id","kind_id","language","manager_member_id","role_id","scope_id","setup_dismissed_at","setup_skipped_keys","setup_step","suspended_at","suspended_by","tenant_id","theme","timezone","updated_at","updated_by","week_start"]}},"createGuestGroup":{},"updateGuestGroup":{},"deleteGuestGroup":{},"listHandoverRules":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"listMyInquiries":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createInquiry":{},"getMyInquiry":{},"postInquiryMessage":{},"resolveMyInquiry":{},"uploadInquiryAttachment":{},"createInvitations":{},"revokeInvitation":{},"resendInvitation":{},"createInvitationLink":{},"downloadInvoicePdf":{},"listKnowledgeApprovals":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":50}},"createKnowledgeFolder":{},"updateKnowledgeFolder":{},"deleteKnowledgeFolder":{},"withdrawKnowledgeRequest":{},"approveKnowledgeRequest":{},"declineKnowledgeRequest":{},"dismissKnowledgeRequest":{},"getKnowledgeReview":{},"getKnowledgeShares":{"page_id":{"type":"string","format":"uuid"},"folder_id":{"type":"string","format":"uuid"}},"setKnowledgeShares":{},"findSimilarKnowledge":{},"getKnowledgeTree":{},"createKnowledgePage":{},"getKnowledgePage":{},"updateKnowledgePage":{},"deleteKnowledgePage":{},"copyKnowledgePage":{},"saveKnowledgeDraft":{},"discardKnowledgeDraft":{},"setKnowledgeMust":{},"publishKnowledgePage":{},"requestKnowledgeRaise":{},"listKnowledgeVersions":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"getKnowledgePageVersion":{},"listLayers":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createLayer":{},"updateLayer":{},"getMe":{},"updateMe":{},"uploadAvatar":{},"regenerateBackupCodes":{},"requestEmailChange":{},"verifyEmailChange":{},"listMyInvitations":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["accepted_member_id","created_at","created_by","deleted_at","email","expires_at","guest_group_id","id","message","permission_preset","resend_requested_at","resent_at","revoked_at","role_id","scope_id","tenant_id","token_hash","updated_at","updated_by"]}},"getNotificationSettings":{"workspace_id":{"type":"string","format":"uuid"}},"updateNotificationSettings":{},"copyNotificationSettings":{},"renamePasskey":{},"deletePasskey":{},"setMyPassword":{},"changePassword":{},"getMySecurity":{},"listMySessions":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["alive_at","auth_session_id","bridge_version","browser","cli_model","country","created_at","created_by","deleted_at","device","device_label","device_token_hash","health","health_at","id","ip_region","issued_at","kind_id","last_ip","last_seen_at","login_kind","machine_id","member_id","mfa_pending","revoke_reason_id","revoked_at","step_up_at","tenant_id","terms_pending","updated_at","updated_by"]}},"revokeMySession":{},"revokeOtherSessions":{},"listSetupTasks":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["agent_effort","agent_model","agent_permission_mode","auth_user_id","avatar_ref","call_name","created_at","created_by","deleted_at","display_name","id","kind_id","language","manager_member_id","role_id","scope_id","setup_dismissed_at","setup_skipped_keys","setup_step","suspended_at","suspended_by","tenant_id","theme","timezone","updated_at","updated_by","week_start"]}},"dismissSetupTasks":{},"listMyTicketDrafts":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["auth_user_id","created_at","created_by","deleted_at","id","joined_at","member_id","role","status","tenant_id","updated_at","updated_by"]}},"saveMyTicketDraft":{},"disableTwoFactor":{},"confirmTwoFactor":{},"startTwoFactor":{},"getMyUsage":{},"leaveWorkspace":{},"switchWorkspace":{},"listMembers":{"scope_id":{"type":"string","format":"uuid"},"q":{"type":"string"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["agent_effort","agent_model","agent_permission_mode","auth_user_id","avatar_ref","call_name","created_at","created_by","deleted_at","display_name","id","kind_id","language","manager_member_id","role_id","scope_id","setup_dismissed_at","setup_skipped_keys","setup_step","suspended_at","suspended_by","tenant_id","theme","timezone","updated_at","updated_by","week_start"]}},"getMember":{},"updateMemberGroups":{},"removeMember":{},"previewMemberRemoval":{},"resumeMember":{},"updateMemberRole":{},"suspendMember":{},"resetMemberTwoFactor":{},"createArtifactFromMessage":{},"listNotices":{"kind":{"type":"string","enum":["incident","maintenance","release"]},"unread":{"type":"string","enum":["true"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"markNoticeRead":{},"listNotifications":{"unread":{"type":"string","enum":["true","false"]},"actor_member_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":50}},"readNotification":{},"readAllNotifications":{},"listOpsInquiries":{"box":{"type":"string","enum":["unassigned","mine","waiting","later","done"]},"topic":{"type":"string","enum":["usage","trouble","billing","other"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":100}},"getOpsInquiry":{},"updateOpsInquiry":{},"addOpsInquiryNote":{},"replyOpsInquiry":{},"getOpsInvoiceTemplate":{},"updateOpsInvoiceTemplate":{},"listOpsInvoices":{"month":{"type":"string","pattern":"^[0-9]{4}-(0[1-9]|1[0-2])$"},"state":{"type":"string","enum":["unpaid","paid","overdue"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"recordPayment":{},"issueOpsInvoices":{},"listOpsMembers":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"addOpsMember":{},"updateOpsMemberCaps":{},"removeOpsMember":{},"listOpsNotices":{"kind":{"type":"string","enum":["incident","maintenance","release"]},"state":{"type":"string","enum":["draft","scheduled","published","resolved"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createOpsNotice":{},"getOpsNotice":{},"updateOpsNotice":{},"publishOpsNotice":{},"addIncidentUpdate":{},"listOperations":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["check_state","created_at","created_by","current_version","deleted_at","description","id","key","kind","name","tenant_id","updated_at","updated_by","version_label"]}},"closePeek":{},"listPlanHistory":{"plan_key":{"type":"string","enum":["free","team","business"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["action","created_at","created_by","deleted_at","grant_id","id","occurred_at","ops_member_id","payload","target_id","target_tenant_id","target_type","tenant_id","updated_at","updated_by"]}},"listPlanProposals":{"state":{"type":"string","enum":["draft","waiting","decided","returned"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["changes","created_at","created_by","decided_at","decided_by","deleted_at","existing_policy","from_version","id","new_from","notice_days","plan_id","proposed_by","reason","return_reason","state","submitted_at","tenant_id","to_version","updated_at","updated_by"]}},"createPlanProposal":{},"updatePlanProposal":{},"decidePlanProposal":{},"getPlanProposalImpact":{},"returnPlanProposal":{},"submitPlanProposal":{},"listOpsPlans":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["created_at","created_by","current_version","deleted_at","id","key","limits","name","price_monthly","tenant_id","updated_at","updated_by"]}},"listOpsPwned":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"ackOpsPwnedPending":{},"getOpsShell":{},"listOpsTemplates":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"getOpsTemplate":{},"releaseOpsTemplate":{},"listOpsWorkspaces":{"q":{"type":"string","maxLength":100},"view":{"type":"string","enum":["all","attention","stopped","closing"]},"plan":{"type":"string","enum":["free","team","business"]},"sort":{"type":"string","pattern":"^[a-z_][a-z0-9_]{0,62}$","enum":["attention","members","runs"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"getOpsWorkspace":{},"listOpsWorkspaceAudit":{"from":{"type":"string"},"to":{"type":"string"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":100}},"getOpsWorkspaceBilling":{},"listOpsWorkspaceInquiries":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["ai_first_answered_at","asker_read_at","assignee_ops_member_id","context","conversation_id","created_at","created_by","deleted_at","id","kind_id","last_message_at","later_until","opened_by_member_id","state","status_id","tenant_id","title","topic_key","updated_at","updated_by"]}},"listOpsWorkspaceMembers":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["agent_effort","agent_model","agent_permission_mode","auth_user_id","avatar_ref","call_name","created_at","created_by","deleted_at","display_name","id","kind_id","language","manager_member_id","role_id","scope_id","setup_dismissed_at","setup_skipped_keys","setup_step","suspended_at","suspended_by","tenant_id","theme","timezone","updated_at","updated_by","week_start"]}},"resendOpsVerification":{},"sendWorkspaceNotice":{},"openPeek":{},"changeOpsWorkspacePlan":{},"ackOpsPwned":{},"resumeWorkspace":{},"stopWorkspace":{},"getPortalHome":{"visit":{"type":"string","enum":["elsewhere"]}},"uploadPortalAttachment":{},"listPortalNotices":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["admins_only","affects","body","created_at","created_by","deleted_at","emailed_admins_at","id","impact","kind_id","maintenance_from","maintenance_to","placements","publish_at","published_by","state","target_plan_ids","target_tenant_id","target_tenant_ids","tenant_id","title","updated_at","updated_by"]}},"createPortalRequest":{},"getPortalRequest":{},"postPortalRequestMessage":{},"askPortalRequestQuestions":{},"getPortalTicket":{},"postPortalTicketMessage":{},"listSavedViews":{"share":{"type":"string","enum":["self","group"]},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createSavedView":{},"updateSavedView":{},"deleteSavedView":{},"listScopes":{"layer_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["color","created_at","created_by","deleted_at","id","layer_id","name","next_ticket_no","parent_id","position","tenant_id","ticket_prefix","updated_at","updated_by"]}},"createScope":{},"updateScope":{},"getScopeOverview":{},"search":{"q":{"type":"string","maxLength":100},"kinds":{"type":"string","pattern":"^(?:ticket|decision|conversation|knowledge)(?:,(?:ticket|decision|conversation|knowledge))*$"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":5}},"getServiceStatusForMember":{},"getShell":{},"updateTestSpec":{},"deleteTestSpec":{},"listTicketFieldMaster":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"listTicketFields":{"kind_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createTicketField":{},"updateTicketField":{},"deleteTicketField":{},"reorderTicketFields":{},"updateTicketDecision":{},"startDraftConversation":{},"adoptDraftConversation":{},"sendDraftMessage":{},"answerTicketHandover":{},"claimTicketHandover":{},"remindTicketHandover":{},"withdrawTicketHandover":{},"createTicketImport":{},"getTicketImport":{},"commitTicketImport":{},"listTicketKinds":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["body_template","color","color_key","created_at","created_by","deleted_at","description","id","is_builtin","name","position","template_hash","template_key","tenant_id","updated_at","updated_by"]}},"createTicketKind":{},"updateTicketKind":{},"deleteTicketKind":{},"reorderTicketKinds":{},"listKindTemplateUpdates":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"applyKindTemplateUpdate":{},"deleteTicketLink":{},"updateTicketMessage":{},"deleteTicketMessage":{},"starTicketMessage":{},"listTicketStages":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["color_key","created_at","created_by","deleted_at","id","is_fixed","key","name","position","template_hash","template_key","tenant_id","updated_at","updated_by"]}},"createTicketStage":{},"updateTicketStage":{},"deleteTicketStage":{},"reorderTicketStages":{},"listTickets":{"view":{"type":"string","enum":["mine","all"]},"q":{"type":"string","maxLength":100},"scope_id":{"type":"string","format":"uuid"},"kind_id":{"type":"string","format":"uuid"},"stage_id":{"type":"string","format":"uuid"},"assignee_id":{"type":"string","format":"uuid"},"done":{"type":"string","enum":["true","false"]},"due":{"type":"string","enum":["none"]},"delegated":{"type":"string","enum":["true","false"]},"approving":{"type":"string","enum":["true","false"]},"due_from":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"due_to":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"start_from":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"start_to":{"type":"string","format":"date","pattern":"^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"overdue":{"type":"string","enum":["true","false"]},"fire":{"type":"string","enum":["true","false"]},"parent":{"type":"string","pattern":"^(?:none|any|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"},"fields":{"type":"string","pattern":"^(?:start_on|priority|estimate_minutes|actual_minutes|scope)(?:,(?:start_on|priority|estimate_minutes|actual_minutes|scope))*$"},"cursor":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,200}$"},"limit":{"type":"integer","minimum":1,"maximum":100},"sort":{"type":"string","enum":["due_on","start_on","updated_at","created_at"]}},"createTicket":{},"getTicket":{},"updateTicket":{},"deleteTicket":{"children":{"type":"string","enum":["","move","cascade","detach"]},"parent_id":{"type":"string","format":"uuid"},"reason":{"type":"string","maxLength":400}},"getTicketAgentSession":{},"applyTicketAgentProposal":{},"sendTicketAgentMessage":{},"listTicketArtifacts":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["approved_by","created_at","created_by","current_version","deleted_at","format_id","id","owner_member_id","scope_id","source_conversation_id","source_job_id","source_message_id","storage_ref","task_id","template_id","tenant_id","title","updated_at","updated_by"]}},"createTicketAttachment":{},"updateTicketBody":{},"completeTicket":{},"listTicketDecisions":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["cancel_reason","cancelled_at","cancelled_by","created_at","created_by","decided_at","decided_by","decided_note","deleted_at","id","promoted_to","reason","source_message_id","superseded_by_id","tenant_id","text","ticket_id","updated_at","updated_by"]}},"createTicketDecision":{},"delegateTicket":{},"previewTicketDelete":{},"dryRunTicket":{},"listTicketGuestShares":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","pattern":"^[a-z_][a-z0-9_]{0,62}$"}},"updateTicketGuestShares":{},"previewTicketHandover":{},"listTicketHandovers":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["answered_by","ask","created_at","created_by","decided_at","decline_reason","deleted_at","from_member_id","id","kind","notify_managers","overdue_notified_at","reason","reminded_at","reply_due","state","switch","switch_applied","tenant_id","ticket_id","to_member_id","to_scope_id","updated_at","updated_by"]}},"createTicketHandover":{},"listTicketItemChanges":{"from":{"type":"string"},"to":{"type":"string"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"restoreTicketItems":{},"previewTicketKindChange":{},"listTicketLinks":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["created_at","created_by","deleted_at","from_ticket_id","id","kind","tenant_id","to_ticket_id","updated_at","updated_by"]}},"createTicketLink":{},"createTicketMessage":{},"listTicketReferences":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["action_run_id","bridge_job_id","created_at","created_by","deleted_at","id","member_id","ref_id","ref_type","seen_at","tenant_id","ticket_id","title","updated_at","updated_by","url"]}},"restoreTicket":{},"listTicketRuns":{"scope_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["action_kind_id","ai_employee_id","approval_id","bridge_job_id","choke_point_id","cost","created_at","created_by","deleted_at","duty_id","error_summary","finished_at","id","mode_id","phase","procedure_id","scope_id","service_id","started_at","status_id","taken_over_at","task_id","tenant_id","ticket_id","tokens_in","tokens_out","updated_at","updated_by"]}},"listTestSpecs":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"createTestSpec":{},"lintTestSpecs":{},"suggestTestSpecs":{},"listTicketTimeline":{"filter":{"type":"string"},"before_at":{"type":"string"},"before_id":{"type":"string","format":"uuid"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":100}},"markTicketTimelineSeen":{},"listTicketVersions":{"from":{"type":"string"},"to":{"type":"string"},"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200}},"restoreTicketVersion":{},"bulkUpdateTickets":{},"getWorkspaceSettings":{},"updateWorkspace":{},"getBilling":{},"updateBillingContact":{},"requestWorkspaceDeletion":{},"cancelWorkspaceDeletion":{},"uploadWorkspaceLogo":{},"getWorkspaceMembers":{},"updateWorkspacePermissions":{},"changePlan":{},"listWorkspacePlans":{"cursor":{"type":"string","pattern":"^[0-9]{1,9}$"},"limit":{"type":"integer","minimum":1,"maximum":200},"sort":{"type":"string","enum":["created_at","created_by","current_version","deleted_at","id","key","limits","name","price_monthly","tenant_id","updated_at","updated_by"]}}};

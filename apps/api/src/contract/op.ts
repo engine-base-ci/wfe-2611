@@ -4,8 +4,8 @@
 //   冪等の比べは欄ごとの中身（ファイルは中身の sha256）。multipart を持たない口の道は今のまま
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
-import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
-import { SCHEMAS } from "@kaname/contracts/schemas";
+import { ENDPOINTS, inputRulesOk, isUuid, queryIssues, type EndpointDef } from "@kaname/contracts";
+import { INPUT_RULES, QUERY_RULES, SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps, Hook, HookArgs, HookReply } from "./deps.js";
@@ -382,6 +382,9 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
       return err(c, 501, "not_implemented", "NOT_IMPLEMENTED", { message: "契約にある口だが、まだ作っていない" });
     // 4) 入力
+    //    問い合わせ：契約に無い名前・契約の値の形（候補・字の形・値の範囲）に合わない値は 422（D-129.42）
+    const badQuery = queryIssues(QUERY_RULES[operationId], c.req.query());
+    if (badQuery.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badQuery });
     //    道の id は 3.0 で正式な uuid と確かめ済み（:id は契約で format: uuid）
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
     // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
@@ -433,6 +436,11 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
           details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: issueMessage(i) })),
         });
       input = parsed.data as Row;
+      // 形全体の決まり（契約の oneOf・anyOf・allOf・not・K-355）も入口で確かめる（D-129.42）。欄ごとの形は zod が先に見た
+      if (def.input && !inputRulesOk(INPUT_RULES[def.input], input))
+        return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
+          details: [{ field: "body", message: "欄の組み合わせが契約の決まりに合わない" }],
+        });
     }
     let list: { where: Row; limit: number; offset: number; orderBy?: string } | null = null;
     if (def.kind === "list") {

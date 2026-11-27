@@ -85,6 +85,9 @@ describe("K-981 下書き（dry_run）", () => {
   it("K981-API-003 無料は出さない。無料でもその月に上げた日割りがあれば、その額だけの行（amount 0・tax 0・total は日割り）", async () => {
     const free = await t.world("無料のまま");
     const up = await t.world("無料から上げた");
+    // 会社を作った日より前の月は請求しない（K-1104 の最初に請求する日 F＝始めた日＋無料期間・契約が無ければ会社を作った日）。
+    //   2019-03 に上げた会社として、作った日を前に置く
+    await t.f.admin.query("update tenants set created_at = '2019-01-01T00:00:00+09:00' where id = $1", [up.tenantId]);
     await t.planRequest(up, {
       from: "free",
       to: "team",

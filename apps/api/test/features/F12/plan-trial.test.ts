@@ -143,6 +143,7 @@ describe("K-1104 置き場と 1 か所", () => {
     expect(await trialOf(p.id, old.tenantId, await day(TODAY))).toBe(0);
     await addTrialVersion("team", 30, { newFrom: await day(`${TODAY} - interval '1 day'`), existingFrom: null });
     const fresh = await t.ws("今日始めたチーム");
+    await startedOn(fresh.tenantId, await day(TODAY)); // 土台の会社は 40 日前に始めた契約で作られる（ops-ws.harness.ts）。今日始めた会社にする
     expect(await trialOf(p.id, fresh.tenantId, await day(TODAY))).toBe(30);
     expect(await trialOf(p.id, old.tenantId, await day(TODAY))).toBe(0);
   });

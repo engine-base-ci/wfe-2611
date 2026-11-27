@@ -9,6 +9,7 @@ import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { rowOf, rulesSource } from "./row_rules.mjs";
+import { parseQueries, parseSchemas } from "./yaml_block.mjs";
 
 const ROOT = process.cwd();
 const OPENAPI = "08_api/openapi.yaml";
@@ -76,15 +77,23 @@ export function parsePaths(yaml) {
   }
   return out;
 }
+/** YAML の 1 行の値（'…'・"…"・素の字）を字にする */
+function yamlScalar(v) {
+  const t = v.trim();
+  if (t.startsWith("'") && t.endsWith("'")) return t.slice(1, -1).replace(/''/g, "'");
+  if (t.startsWith('"') && t.endsWith('"')) return JSON.parse(t);
+  return t;
+}
 /** components.schemas → { Name: { props: {name: {type, format}}, required: [], table } }（&id／*id の別名を解く） */
 export function parseComponents(yaml) {
   const lines = yaml.split("\n");
   let i = lines.findIndex((l) => l === "components:");
   const out = {}; const anchors = {};
-  let name = null, prop = null, sec = null, propAnchor = null, inSchemas = false;
+  let name = null, prop = null, sec = null, propAnchor = null, inSchemas = false, enumOf = null, enumDepth = 10;
   for (i = i + 1; i < lines.length; i++) {
     const l = lines[i]; let m;
     if (/^\S/.test(l)) break;
+    if (enumOf && !(l.startsWith(" ".repeat(enumDepth) + "- ") && l[enumDepth] === "-")) enumOf = null; // 候補の並びは同じ深さの「- 」が続く間だけ
     if (/^  \w+:$/.test(l)) { inSchemas = l === "  schemas:"; name = null; continue; }
     if (!inSchemas) continue;
     if ((m = /^    (\w+):$/.exec(l))) { name = m[1]; out[name] = { props: {}, required: [], table: null, requiredBy: null }; sec = null; prop = null; continue; }
@@ -101,7 +110,18 @@ export function parseComponents(yaml) {
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
     if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }
-    if (sec === "props" && prop && (m = /^          maxLength: (\d+)/.exec(l))) { out[name].props[prop].maxLength = Number(m[1]); continue; } // 長い文（K-62・string:N）
+    if (sec === "props" && prop && (m = /^          (minLength|maxLength|minimum|maximum|minItems|maxItems): (-?\d+(?:\.\d+)?)$/.exec(l))) { out[name].props[prop][m[1]] = Number(m[2]); enumOf = null; continue; } // 字数・値の範囲（D-129.42：入口で確かめる）
+    if (sec === "props" && prop && (m = /^          pattern:(?: (.*))?$/.exec(l))) {
+      // 長い字は次の行に折り返される（より深い字下げの行が続き。折り返しは空白 1 つ）
+      const parts = m[1] ? [m[1]] : [];
+      while (i + 1 < lines.length && /^ {11,}\S/.test(lines[i + 1])) parts.push(lines[++i].trim());
+      out[name].props[prop].pattern = yamlScalar(parts.join(" "));
+      enumOf = null;
+      continue;
+    }
+    if (sec === "props" && prop && /^          enum:$/.test(l)) { enumOf = out[name].props[prop].enum = []; enumDepth = 10; continue; }
+    if (sec === "props" && prop && /^            enum:$/.test(l)) { enumOf = out[name].props[prop].itemsEnum = []; enumDepth = 12; continue; } // 並びの中身の候補
+    if (sec === "props" && prop && enumOf && (m = /^( +)- (.+)$/.exec(l)) && m[1].length === enumDepth) { enumOf.push(yamlScalar(m[2])); continue; }
     if (sec === "props" && prop && (m = /^            type: (\S+)/.exec(l))) { out[name].props[prop].items = m[1]; continue; }
     if (sec === "props" && prop && (m = /^            format: (\S+)/.exec(l))) { out[name].props[prop].itemsFormat = m[1]; continue; } // 並びの中身の形（uuid の並び・K-144）
   }
@@ -118,18 +138,24 @@ const hashOf = (s) =>
 const slug = (s) => s.replace(/^\/api\/v1\//, "").replace(/[{}:]/g, "").replace(/[^a-z0-9]+/gi, "_").replace(/_+$/, "");
 const kindOf = (method, path) => (method === "GET" ? (path.includes("{") ? "get" : "list") : method === "POST" ? "create" : method === "DELETE" ? "delete" : "update");
 
+const lenOf = (p) => `${p.minLength !== undefined ? `.min(${p.minLength})` : ""}${p.maxLength !== undefined ? `.max(${p.maxLength})` : ""}`;
+const rangeOf = (p) => `${p.minimum !== undefined ? `.min(${p.minimum})` : ""}${p.maximum !== undefined ? `.max(${p.maximum})` : ""}`;
 function zodOf(p) {
   // null を許す列（DB で null 可・K-35）は、入力でも null を受ける（PATCH で空に戻す）
   if (p.nullable) return `${zodOf({ ...p, nullable: false })}.nullable()`;
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
-  if (p.type === "string") return "z.string()"; // 自由に書く欄に一律の上限を置かない（D-130.1）。守りは入口の送る量 1MB（op.ts）。欄の上限（maxLength）は契約の側に書き、口が断る（K-144 ㉓・K-62）
-  if (p.type === "integer") return "z.number().int()";
-  if (p.type === "number") return "z.number()";
+  // 自由に書く欄に一律の上限を置かない（D-130.1）。契約に書いた欄の形（候補・字の形・字数・値の範囲・メールの形）は入口で確かめる（D-129.42・PM の決め 2026-11-28）
+  if (p.type === "string" && Array.isArray(p.enum) && p.enum.length) return `z.enum(${JSON.stringify(p.enum.map(String))})`;
+  if (p.type === "string") return `${p.format === "email" ? "z.email()" : "z.string()"}${lenOf(p)}${p.pattern !== undefined ? `.regex(new RegExp(${JSON.stringify(p.pattern)}, "u"))` : ""}`;
+  if (p.type === "integer") return `z.number().int()${rangeOf(p)}`;
+  if (p.type === "number") return `z.number()${rangeOf(p)}`;
   if (p.type === "boolean") return "z.boolean()";
-  if (p.type === "array" && p.items === "string" && p.itemsFormat === "uuid") return "z.array(z.uuid())";
-  if (p.type === "array") return p.items === "string" ? "z.array(z.string())" : "z.array(z.unknown())";
+  const items = (p) => `${p.minItems !== undefined ? `.min(${p.minItems})` : ""}${p.maxItems !== undefined ? `.max(${p.maxItems})` : ""}`;
+  if (p.type === "array" && p.items === "string" && p.itemsFormat === "uuid") return `z.array(z.uuid())${items(p)}`;
+  if (p.type === "array" && p.items === "string" && Array.isArray(p.itemsEnum) && p.itemsEnum.length) return `z.array(z.enum(${JSON.stringify(p.itemsEnum.map(String))}))${items(p)}`;
+  if (p.type === "array") return `${p.items === "string" ? "z.array(z.string())" : "z.array(z.unknown())"}${items(p)}`;
   if (p.type === "object") return "z.record(z.string(), z.unknown())";
   return "z.unknown()";
 }
@@ -264,6 +290,16 @@ export const OPENAPI_HASH = "${h}";
     zl.push(`export const ${name} = z.strictObject({\n${props.join("\n")}\n});`);
   }
   zl.push("", `export const SCHEMAS: Record<string, z.ZodType> = { ${Object.keys(comps).filter((n) => n !== "Error").join(", ")} };`, "");
+  // 形全体の決まり（oneOf・anyOf・allOf・not・K-355）。入口（op.ts）が zod の後に packages/contracts/src/rules.ts で確かめる（D-129.42）
+  const tree = parseSchemas(yaml);
+  const rules = {};
+  for (const [name, sc] of Object.entries(tree)) {
+    const r = Object.fromEntries(["allOf", "anyOf", "oneOf", "not"].filter((k) => sc && sc[k] !== undefined).map((k) => [k, sc[k]]));
+    if (Object.keys(r).length) rules[name] = r;
+  }
+  zl.push(`export const INPUT_RULES: Record<string, Record<string, unknown>> = ${JSON.stringify(rules)};`, "");
+  // 口ごとの問い合わせの名前と形（契約の parameters の in: query）。入口が知らない名前と値の形を 422 にする（D-129.42）
+  zl.push(`export const QUERY_RULES: Record<string, Record<string, Record<string, unknown>>> = ${JSON.stringify(parseQueries(yaml))};`, "");
   writeFileSync(join(root, OUT, "schemas.ts"), zl.join("\n"));
   // routes（登録だけ。振る舞いは contract/op.ts・個別は hooks）
   mkdirSync(join(root, ROUTES), { recursive: true });

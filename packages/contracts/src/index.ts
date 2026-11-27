@@ -7,3 +7,4 @@ const UUID = z.uuid();
 /** 正式な uuid か（入口の形 z.uuid() と同じ確かめ：版と variant の桁まで見る・D-129.42・K-144）。道の値と問い合わせの確かめに使う */
 export const isUuid = (v: string): boolean => UUID.safeParse(v).success;
 export * from "./doc.js";
+export { inputRulesOk, matches, queryIssues } from "./rules.js";

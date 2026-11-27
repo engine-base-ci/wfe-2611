@@ -352,12 +352,13 @@ describe("K-954 管理者だけのお知らせ（D-156.57）", () => {
       "select member_id, role from tenant_memberships where tenant_id = $1 and member_id = any($2::uuid[])",
       [w.tenantId, [w.member.id, w.other.id]],
     );
+    // 土台の人（fixture の person）は所属の行を持たないので、無ければ作る（管理者かは所属の行の役で決まる・app.notice_for_member）
     const setRole = (memberId: string, role: string) =>
-      t.f.admin.query("update tenant_memberships set role = $3 where tenant_id = $1 and member_id = $2", [
-        w.tenantId,
-        memberId,
-        role,
-      ]);
+      t.f.admin.query(
+        `insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, $3, 'active')
+         on conflict (tenant_id, member_id) do update set role = excluded.role`,
+        [w.tenantId, memberId, role],
+      );
     try {
       await setRole(w.member.id, "admin");
       await setRole(w.other.id, "member");
@@ -377,6 +378,11 @@ describe("K-954 管理者だけのお知らせ（D-156.57）", () => {
       ).toBe(0);
     } finally {
       for (const x of roles.rows) await setRole(x.member_id, x.role);
+      const had = roles.rows.map((x) => x.member_id);
+      await t.f.admin.query(
+        "delete from tenant_memberships where tenant_id = $1 and member_id = any($2::uuid[]) and not (member_id = any($3::uuid[]))",
+        [w.tenantId, [w.member.id, w.other.id], had],
+      );
     }
   });
 });
