@@ -3,6 +3,7 @@
 //   登録の無い操作のボタンは押せない形（disabledActions）。?do=<キー> で開いた直後に、そのキーの小窓があれば開き、URL から do を消す。
 //   K819-UI-018 が登録の有無を字で読む（行の頭が 2 字下げの「キー:」）ので、DO_DIALOGS の中はこの形を守る
 //   K-821：止める・戻す（SuspendBox・ResumeBox）。確かめ → 口（use-member-state.ts）→ 成功で詳細とメンバーの並びを読み直して知らせ・失敗は上の赤い箱
+//   K-822：外す（RemoveBox）。下見 → 小窓か上の赤い箱 → 外す（use-member-remove.ts）→ 知らせて /members へ
 import { useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, type ComponentType, type ReactNode } from "react";
@@ -11,9 +12,11 @@ import { Callout, PAGE_ERROR, errorCodeOf, useNotify } from "@/components/k";
 import type { CallErr } from "@/lib/api/call";
 import { StepUp } from "@/features/F1/security/step-up";
 import { MEMBERS_KEY } from "@/features/F10/invite/use-members";
+import { RemoveDialog } from "./dialog-remove";
 import { ResumeConfirm, SuspendConfirm } from "./dialogs-confirm";
 import type { MemberAnswer } from "./member-shape";
 import { reloadMember } from "./use-member";
+import { useMemberRemove, type PageNotice } from "./use-member-remove";
 import { useMemberState, type StateKind, type StateResult } from "./use-member-state";
 import type { Action } from "./views";
 
@@ -32,6 +35,7 @@ export const DO_DIALOGS: Partial<Record<Action, ComponentType<DoDialogProps>>> =
   // K-820 が move・also、K-821 が suspend・resume、K-822 が remove を「2 字下げの キー: 部品,」の 1 行で足す
   suspend: SuspendBox,
   resume: ResumeBox,
+  remove: RemoveBox,
 };
 
 const ACTIONS: readonly Action[] = ["move", "also", "suspend", "resume", "remove"];
@@ -138,4 +142,59 @@ function SuspendBox(p: DoDialogProps) {
 }
 function ResumeBox(p: DoDialogProps) {
   return <StateBox {...p} kind="resume" />;
+}
+
+// ---------------------------------------------------------------- 外す（K-822）
+const calloutOf = (n: PageNotice): ReactNode => (
+  <Callout tone="danger" {...(n.title ? { title: n.title } : {})}>
+    {n.text}
+  </Callout>
+);
+
+/** ワークスペースから外す：下見 → 小窓か上の赤い箱 → 外す（取り直しは StepUp で 1 回だけ送り直す）→ 知らせて /members へ。
+ *  自分（answer.member.self）なら下見も呼ばずに閉じる（?do=remove でも開かない・ボタンは入れ物が disabledActions で押せない形にする） */
+function RemoveBox({ id, answer, onClose, onNotice }: DoDialogProps) {
+  const self = Boolean(answer.member.self);
+  useEffect(() => {
+    if (self) onClose();
+  }, [self, onClose]);
+  if (self) return null;
+  return <RemoveFlow id={id} name={answer.member.name} onClose={onClose} onNotice={onNotice} />;
+}
+
+function RemoveFlow({
+  id,
+  name,
+  onClose,
+  onNotice,
+}: Pick<DoDialogProps, "id" | "onClose" | "onNotice"> & { name: string }) {
+  const router = useRouter();
+  const notify = useNotify();
+  const qc = useQueryClient();
+  const r = useMemberRemove({
+    memberId: id,
+    memberName: name,
+    onClose,
+    onNotice: (n) => onNotice(n ? calloutOf(n) : null),
+    onRemoved: (text) => {
+      onClose();
+      notify(text);
+      void qc.invalidateQueries({ queryKey: ["k819", "member", id] });
+      router.push("/members");
+    },
+  });
+  return (
+    <>
+      {r.ready ? <RemoveDialog {...r.dialog} open={r.stepUp === null} /> : null}
+      <StepUp
+        open={r.stepUp !== null}
+        reason={r.reason}
+        withCode={r.stepUp?.withCode ?? false}
+        withPasskey={r.stepUp?.withPasskey ?? false}
+        screenId="member-detail"
+        onDone={r.onStepUpDone}
+        onCancel={r.onStepUpCancel}
+      />
+    </>
+  );
 }
