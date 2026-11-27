@@ -401,6 +401,10 @@ POLICIES: dict[str, list[dict]] = {
     "notice_updates": [{"name": "notice_updates_ops_all", "operation": "all", "role": "ops",
                         "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
                         "rationale": "障害の続報は運営が書く（status_incidents と同じ）。会社の人には一覧の関数が届け先を決めて返す", "source": ["D-156.33", "D-156.10"]}],
+    # 請求書の型（K-1107・D-156.60）：運営の会社に 1 行。会社の人は直に読めない（請求書に載る出す側の値は関数 app.invoice_issuer() だけが返す）
+    "ops_invoice_templates": [{"name": "ops_invoice_templates_ops_all", "operation": "all", "role": "ops",
+                               "predicate": "tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops'",
+                               "rationale": "請求書の型は運営が直す（1 つ）。会社の人は表を読めず、請求書と振込先に載る値だけを関数から受け取る", "source": ["D-156.60", "D-156.59"]}],
 }
 
 # 誰でも（ログイン済みなら）読める・書けるのは本当のマスタだけ。それ以外でまだ直していない表と、直すチケット（zt_gate.py の ZT3 が見る）

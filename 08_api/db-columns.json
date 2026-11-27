@@ -4869,6 +4869,56 @@
     "nullable": true
    }
   },
+  "ops_invoice_templates": {
+   "address": {
+    "type": "text",
+    "nullable": false
+   },
+   "company": {
+    "type": "text",
+    "nullable": false
+   },
+   "contact": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": false
+   },
+   "payee": {
+    "type": "text",
+    "nullable": false
+   },
+   "reg_no": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
   "ops_members": {
    "caps": {
     "type": "text[]",

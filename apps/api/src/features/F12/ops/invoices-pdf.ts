@@ -3,7 +3,7 @@
 //       ② 会社ごとに invoice_id を決め、renderInvoicePdf で作り、その会社の文脈で関門 C4 の置き場に置く（置き場の関門が証跡を書く）
 //       ③ opsTx で app.ops_invoices_issue(月, false, 会社 → { invoice_id, pdf_ref, total })（K-981 の 1 取引）
 //       ④ ② が 1 つでも置けない・③ が例外か断り（changed・nothing_to_issue・month_open）なら、置いた物を全部消してから答える（全部か無しか）
-//   出す側の値は invoiceIssuer(cfg) の 1 か所から読む（今は設定の値。K-1107 が loadInvoiceIssuer(tx, cfg) に替える）。
+//   出す側の値は loadInvoiceIssuer(tx, cfg) の 1 か所から、① と同じ取引で読む（運営が直した請求書の型。保存していない間は設定の値・K-1107）。
 //   出せたら、会社ごとに作った PDF の bytes と宛名・額・期限を答えと一緒に返す（K-1109 のメールが付ける・置いた中身と同じ物）
 //   ログは場所と件数だけ（会社の名前・鍵・額を出さない）
 import { randomUUID } from "node:crypto";
@@ -13,31 +13,17 @@ import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
 import { renderInvoicePdf, type InvoicePdfInput } from "@kaname/billing/invoice-pdf";
 import { opsErrorReply, opsTx } from "./db.js";
+import { issuerFromConfig, loadInvoiceIssuer, type InvoiceIssuerValues } from "../billing/issuer.js";
 import type { HookReply } from "../../../contract/deps.js";
 
 const WHERE = "invoices-pdf";
 
-/** 請求書の PDF の出す側（会社の情報・振込先・備考・登録番号） */
-export interface InvoiceIssuer {
-  name: string;
-  address: string;
-  contact: string;
-  note: string;
-  invoiceNo: string;
-  payeeLines: readonly string[];
-}
+/** 請求書の PDF の出す側（会社の情報・振込先・備考・登録番号）。値の 1 か所は billing/issuer.ts（K-1107） */
+export type InvoiceIssuer = InvoiceIssuerValues;
 
-/** 出す側の値の 1 か所（D-156.60）。今は設定の値から作る */
+/** 設定の値だけの出す側（請求書の型を 1 度も保存していない間の初めの値・K-1107 の issuerFromConfig） */
 export function invoiceIssuer(cfg: Pick<Config, "billing">): InvoiceIssuer {
-  const b = cfg.billing as Partial<Config["billing"]>;
-  return {
-    name: b.issuer ?? "",
-    address: b.issuerAddress ?? "",
-    contact: b.issuerContact ?? "",
-    note: b.note ?? "",
-    invoiceNo: b.invoiceNo ?? "",
-    payeeLines: b.payeeLines ?? [],
-  };
+  return issuerFromConfig(cfg.billing);
 }
 
 /** app.ops_invoice_lines の 1 行（K-981） */
@@ -131,16 +117,15 @@ export async function withInvoicePdfs(
   issue: (cl: pg.PoolClient, pdf: Record<string, unknown>) => Promise<IssueAnswer | undefined>,
 ): Promise<{ answer: IssueAnswer | undefined; pdfs: IssuedPdf[] } | { reply: HookReply }> {
   let lines: Line[];
+  let iss: InvoiceIssuer;
   try {
-    lines = await opsTx(
-      d.appPool,
-      ctx,
-      async (cl) => (await cl.query<{ v: Line[] }>("select app.ops_invoice_lines($1) as v", [month])).rows[0]?.v ?? [],
-    );
+    [lines, iss] = await opsTx(d.appPool, ctx, async (cl) => [
+      (await cl.query<{ v: Line[] }>("select app.ops_invoice_lines($1) as v", [month])).rows[0]?.v ?? [],
+      await loadInvoiceIssuer(cl, d.config.billing),
+    ]);
   } catch (e) {
     return { reply: opsErrorReply(e, WHERE) };
   }
-  const iss = invoiceIssuer(d.config);
   const issuedOn = jstToday();
   const placed: Placed[] = [];
   const pdf: Record<string, unknown> = {};

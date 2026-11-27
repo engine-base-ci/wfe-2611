@@ -430,6 +430,9 @@ SCREEN_API = {
         ("GET", "/ops/invoices", "A72", "invoices", "listOpsInvoices", ["tenants", "subscriptions", "payments"]),
         ("POST", "/ops/invoices/issue", "A72", "invoices", "issueOpsInvoices", ["subscriptions", "plan_versions", "notifications", "ops_audit_events", "audit_events"]),
         ("POST", "/ops/invoices/:id/payments", "A72", "payments", "recordPayment", ["invoices", "ops_audit_events", "audit_events"]),
+        # K-1107 請求書の型（1 つ・D-156.60）：読む・直す（本人確認の取り直し・版で取り合いを止める）
+        ("GET", "/ops/invoice-template", "A72", "ops_invoice_templates", "getOpsInvoiceTemplate", ["members"]),
+        ("PUT", "/ops/invoice-template", "A72", "ops_invoice_templates", "updateOpsInvoiceTemplate", ["ops_audit_events"]),
     ],
     "ops-team": [
         ("GET", "/ops/members", "A134", "ops_members", "listOpsMembers", ["passkeys"]),
@@ -1554,6 +1557,8 @@ PERMS = {
     "listOpsInvoices": ("ops:money", "お金を持つ運営の人", False),
     "issueOpsInvoices": ("ops:money", "同上。下書きを確かめてまとめて出す。全部のワークスペースに届くので本人確認を取り直す", True),
     "recordPayment": ("ops:money", "同上。差があれば未入金のまま残す。顧客の請求書の画面と記録にも出る（D-128.69）", True),
+    "getOpsInvoiceTemplate": ("ops:money", "お金を持つ運営の人（請求書の型・K-1107）", False),
+    "updateOpsInvoiceTemplate": ("ops:money", "同上。これから出す請求書の出す側と振込先が変わるので本人確認を取り直す（K-1107）", True),
     "listOpsMembers": ("ops:ops_people", "運営の人を持つ運営の人", False),
     "addOpsMember": ("ops:ops_people", "同上。足した人はパスキーでしか入れない", True),
     "updateOpsMemberCaps": ("ops:ops_people", "同上。自分のできることは変えられない。値段の案と値段を決めるは分ける（D-128.72）", True),
