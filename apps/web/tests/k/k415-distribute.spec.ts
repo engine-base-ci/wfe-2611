@@ -137,12 +137,14 @@ const aiRow = () =>
   qrow("0193c5a0-0000-7000-8000-00000f841504", {
     ticket_number: "EG-128",
     title: "セイコー様へ 11月分の請求書を送る",
-    from_name: "佐藤のAI",
+    // 字はモックの AI_CARD と同じにする（作った人は「佐藤」で画面が「佐藤のAI が作成」と出す・中身の 1 行は note・K-412 の AI_ROW と同じ）
+    from_name: "佐藤",
     check_summary: "通過 3",
     due_on: "2026-11-24",
     decide_inline: true,
     irreversible: false,
     primary_action: "approve",
+    note: "1,716,000 円 ・ 送り先 山田様（CC 鈴木様）",
   });
 
 /** マネージャー（佐藤）がほかの人（高本）のチケットを開く（DB の handover_kinds は distribute と offer） */
@@ -232,7 +234,13 @@ async function openDistribute(page: Page, target: "鈴木 一郎" | "group") {
 async function expectLikeMock(page: Page, id: string, drive: (p: Page) => Promise<void>) {
   const bad: string[] = [];
   for (const width of MATCH_WIDTHS) {
-    const r = await matchMock(page.context().browser()!, id, width, drive, {
+    // モックは巻いていない頁で読む。幅 375 では下の方の「担当者 ▾」を押すと頁が巻かれ、固定の小窓の y に巻いた分が足されるので、
+    //   読む前に頁を上端へ戻す（巻いていない要素の y は変わらない・段9 の全部の CI・2026-11-27）
+    const top = async (p: Page) => {
+      await drive(p);
+      await p.evaluate(() => window.scrollTo(0, 0));
+    };
+    const r = await matchMock(page.context().browser()!, id, width, top, {
       base: "/dev/mock/f8",
       pairs: HND_PAIRS,
       blur: true,
@@ -626,9 +634,16 @@ test("K415-UI-020 行の「人を決める」→ 相手を選ぶ小窓（1 行�
   onGroupRow(h);
   queueAfterClaim(api, h);
   await openQueue(page);
+  // 下見はその行のチケット（EG-140・G_TICKET）を読む。道具はどのチケットの下見も受けるので、道を試験の中で確かめる（精査 R1127）
+  const pv: string[] = [];
+  page.on("request", (r) => {
+    const p = new URL(r.url()).pathname;
+    if (r.method() === "GET" && p.endsWith("/handover-preview")) pv.push(p);
+  });
   await groupRowOf(page).getByRole("button", { name: "人を決める", exact: true }).click();
   const d = pick(page);
   await expect(d.locator(".k-hnd-intro")).toHaveText(T.assignIntro);
+  expect(pv, "下見はその行のチケットを 1 回").toEqual([`/api/v1/tickets/${G_TICKET}/handover-preview`]);
   await expect(d.getByRole("list", { name: "グループ", exact: true })).toHaveCount(0);
   await d.getByRole("button", { name: /^鈴木 一郎/ }).click();
   await expect(groupRowOf(page)).toHaveCount(0);

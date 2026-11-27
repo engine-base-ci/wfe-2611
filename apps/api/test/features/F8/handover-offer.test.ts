@@ -521,7 +521,7 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
     expect(mails.length).toBe(before);
   });
 
-  it("K408-API-021 申し出が待っている間にチケットが消された × 渡す・断る：どちらも 404 E-PAGE-001（欄なし）。担当者は替わらず・渡しは待ったまま・申し出た人の受け箱とメールは増えない", async () => {
+  it("K408-API-021 申し出が待っている間にチケットが消された × 渡す・断る：どちらも 404 E-PAGE-001（欄なし）。担当者は替わらず・渡しは withdrawn（K-406 の自動の取り消し・D-148.5）・申し出た人の受け箱に結末は出ずメールは増えない", async () => {
     await ready();
     const a = await human("高本 021");
     const b = await human("鈴木 021");
@@ -535,7 +535,7 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
       for (const key of ["field", "details", "detail"]) expect(j, `404 に ${key} を付けない`).not.toHaveProperty(key);
     }
     expect(await assigneeOf(t.id)).toBe(a.id);
-    expect((await handoversOf(t.id))[0]).toMatchObject({ state: "waiting" });
+    expect((await handoversOf(t.id))[0]).toMatchObject({ state: "withdrawn" });
     expect(await notes(b.id, "handover.accepted")).toHaveLength(0);
     expect(await notes(b.id, "handover.declined")).toHaveLength(0);
     expect(mails.length).toBe(before);
