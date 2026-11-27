@@ -233,6 +233,10 @@
    "class": "skeleton",
    "why": "ナレッジの口が使う（K-674）"
   },
+  "knowledge_shares": {
+   "class": "skeleton",
+   "why": "グループを選んで共有の口と見える関数が使う（K-689）"
+  },
   "knowledge_limits": {
    "class": "skeleton",
    "why": "必ず守るの付け外しの口が上限を読む（K-685）"
@@ -244,6 +248,10 @@
   "knowledge_pages": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "knowledge_requests": {
+   "class": "skeleton",
+   "why": "上の棚に上げる頼み（頼む・取り下げる・帯を消す）の口が使う。K-688 の承認・断る、K-689 の共有も同じ表（K-687）"
   },
   "layers": {
    "class": "skeleton",

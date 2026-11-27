@@ -173,6 +173,15 @@ POLICIES: dict[str, list[dict]] = {
     # 必ず守るの上限（K-685・D-152.16）。会社の列を持たない製品共通の設定（role_bundle_defaults と同じ形）。アプリの役は読むだけ
     "knowledge_limits": [{"name": "knowledge_limits_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
                           "rationale": "製品共通の必ず守るの上限（会社 30・グループ 20・自分 10）。どの会社の人にも同じものを見せる。書くのは運営の migration だけ", "source": ["D-152.16"]}],
+    # 上げる・共有の頼み（K-687・D-152.2・D-152.13）。書くのは DB の関数だけ（アプリの役は読むだけ）
+    "knowledge_requests": [{"name": "knowledge_requests_read", "operation": "select", "role": "authenticated",
+                            "predicate": f"tenant_id = {T} AND app.kn_request_visible(id)",
+                            "rationale": "頼んだ人・承認する人（どの状態でも）・承認待ちの頼みは物（ページかフォルダ）が見える人。書くのは app.kn_raise_request・app.kn_request_end（と K-688・K-689 の関数）だけ",
+                            "source": ["D-152.2", "D-152.13"]}],
+    "knowledge_shares": [{"name": "knowledge_shares_read", "operation": "select", "role": "authenticated",
+                          "predicate": f"tenant_id = {T} AND (app.kpage_writable(page_id) OR app.kfolder_writable(folder_id) OR app.kn_group_manager({U}, group_id))",
+                          "rationale": "元を書ける人と共有を受けているグループのマネージャーだけ（共有先のメンバーには行は見えない）。書くのは app.kn_share_set・app.kn_apply_share（K-689）だけ",
+                          "source": ["D-152.6", "D-152.27"]}],
     "knowledge_links": [
         {"name": "knowledge_links_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_visible(from_page_id)",
          "rationale": "元のページを読める人（つないだ先の中身はその先の守りで見る）", "source": ["D-128.52"]},
