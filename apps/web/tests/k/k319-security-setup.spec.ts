@@ -4,7 +4,7 @@
 //   口（getMySecurity・startTwoFactor（体 { password }・15 分の外は 403）・confirmTwoFactor（201 { backup_codes, token }）・changePassword・
 //     setMyPassword（POST /api/v1/me/password・体 { new_password }・201 { ok: true }）・stepUp・signOut・パスキーの部品の口・外枠の口）は網の手前で差し替える。
 //   印の立った人のほかの口は 403・code MFA_REQUIRED（K-321 で決まった）。この試験は 403 を差し替えで作って画面の戻しを確かめる（決め 8）。
-//   2 段階を付けた後は答えの token で画面の印を差し替える（決め 9）。代表の答え ②（パスキーだけの人もパスワードを決めて 2 段階を付けられる）・③（ログアウト）・⑮（戻された知らせ）。
+//   2 段階を付けた後は答えの token で画面の印を差し替える（決め 9）。代表の答え ②（パスキーだけの人もパスワードを決めて 2 段階を付けられる）・③（ログアウト）・⑮（戻されたお知らせ）。
 //   パスキーは CDP の仮の認証器（WebAuthn は IP を RP にできないので localhost の道で開く）。本人の Bridge（127.0.0.1:38617）にも届かせない。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { generateKeyPairSync } from "node:crypto";
@@ -16,6 +16,7 @@ import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { MATCH_WIDTHS, matchMock, type MatchOptions } from "./stage2-match";
 import { replyGate } from "./reply-gate";
 import { reloginOn, seedTokenOnce } from "./seed-token";
+import { shellData } from "./shell-answer";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const ERRORS = (
@@ -231,6 +232,8 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
         workspace_name: "ENGINE BASE",
       });
     else if (p === "/api/v1/scopes") r = { status: 200, body: { data: [], meta: { limit: 200, writable: [] } } };
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [] })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/approvals/queue")
       r = { status: 200, body: { data: [], meta: { limit: 20, counts: { total: 0 }, cursor: null } } };
     else if (p === "/api/v1/bridge/devices") r = ok([]);
@@ -452,7 +455,7 @@ test("K319-UI-006 パスワードの無い人が「付ける」：先にパス�
   expect(m.starts).toEqual([{ password: NEW_PW }]);
 });
 
-test("K319-UI-007 別のタブで先に付けた（409・E-AUTH-017）：小窓が閉じ、知らせに文・読み直して「付けている」", async ({
+test("K319-UI-007 別のタブで先に付けた（409・E-AUTH-017）：小窓が閉じ、お知らせに文・読み直して「付けている」", async ({
   page,
 }) => {
   const m = await mockApi(page, PASSWORD_ONLY, { once: { start: err(409, "E-AUTH-017", msg("E-AUTH-017")) } });
@@ -540,7 +543,7 @@ test("K319-UI-010 ダウンロード・写す・印刷：ファイル名と中�
   expect({ reads: m.reads, confirms: m.confirms.length, starts: m.starts.length }).toEqual(before);
 });
 
-test("K319-UI-011 確かめは通ったが答えにコードが無い：バックアップコードの小窓は出ず、知らせ・札は「付けている」", async ({
+test("K319-UI-011 確かめは通ったが答えにコードが無い：バックアップコードの小窓は出ず、お知らせ・札は「付けている」", async ({
   page,
 }) => {
   await mockApi(page, PASSWORD_ONLY, { once: { confirm: ok({ backup_codes: null, token: null }, 201) } });
@@ -583,7 +586,7 @@ test("K319-UI-013 パスワードを変えるの 3 つの欄：既定は隠す�
   }
 });
 
-test("K319-UI-014 変える：口が 1 回・閉じて知らせ・この画面に残る", async ({ page }) => {
+test("K319-UI-014 変える：口が 1 回・閉じてお知らせ・この画面に残る", async ({ page }) => {
   const m = await mockApi(page, PASSWORD_2FA);
   await openList(page);
   await openPw(page);
@@ -622,7 +625,7 @@ test("K319-UI-015 変えるの入力：11 文字は E-VAL-005・2 つが違う�
   await expect(page).toHaveURL(/\/mfa-setup$/);
 });
 
-test("K319-UI-016 別のタブで先に決めた（決めるが 409・CONFLICT）：小窓を閉じ、知らせに口の文・読み直して札「使っている」・ボタン「変える」", async ({
+test("K319-UI-016 別のタブで先に決めた（決めるが 409・CONFLICT）：小窓を閉じ、お知らせに口の文・読み直して札「使っている」・ボタン「変える」", async ({
   page,
 }) => {
   const already = "パスワードはもう決まっています。変えるときは「変える」から";
@@ -673,7 +676,7 @@ test("K319-UI-018 パスワードの無い人が「決める」：今の欄が�
 
 // ---------------------------------------------------------------- 付けるまで進めない
 
-test("K319-UI-019 印の立った人：外枠（.k-shell）と第 2 ナビ（aside）が無く、入口の枠に h1・札 2 つ・注・ログアウト・足元は困ったとき・戻された知らせは無い", async ({
+test("K319-UI-019 印の立った人：外枠（.k-shell）と第 2 ナビ（aside）が無く、入口の枠に h1・札 2 つ・注・ログアウト・足元は困ったとき・戻されたお知らせは無い", async ({
   page,
 }) => {
   await mockApi(page, PENDING);
@@ -695,7 +698,7 @@ test("K319-UI-019 印の立った人：外枠（.k-shell）と第 2 ナビ（asi
   expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual(["困ったとき"]);
 });
 
-test("K319-UI-020 印の立った人が /tickets・/approvals を開く（ほかの口が 403・MFA_REQUIRED）：/mfa-setup?next=…&back=1 へ移り、戻された知らせ（E-AUTH-019）が出る", async ({
+test("K319-UI-020 印の立った人が /tickets・/approvals を開く（ほかの口が 403・MFA_REQUIRED）：/mfa-setup?next=…&back=1 へ移り、戻されたお知らせ（E-AUTH-019）が出る", async ({
   page,
 }) => {
   await mockApi(page, PENDING);
@@ -839,7 +842,7 @@ const FORCED_PROD: Record<string, string> = {
 };
 for (const [id, path] of Object.entries(FORCED_PROD)) {
   for (const w of MATCH_WIDTHS) {
-    test(`K319-UI-027 ${id} 幅 ${w}：付けるまで進めない（入口の箱・見出し・知らせ・説明・札・注の箱・ログアウト）の値がモックと同じ（共通の道具 matchMock）`, async ({
+    test(`K319-UI-027 ${id} 幅 ${w}：付けるまで進めない（入口の箱・見出し・お知らせ・説明・札・注の箱・ログアウト）の値がモックと同じ（共通の道具 matchMock）`, async ({
       browser,
     }) => {
       const { rows, bad } = await matchMock(browser, id, w, async (page) => {

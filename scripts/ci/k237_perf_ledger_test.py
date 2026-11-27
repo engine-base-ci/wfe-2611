@@ -28,12 +28,13 @@ API_TARGETS = {  # 道 → (文, begin)
     "/api/v1/approvals/queue": (8, 1),
     "/api/v1/bridge/devices": (3, 0),
     "/api/v1/me/setup-tasks": (7, 1),
+    "/api/v1/shell": (9, 1),  # 外枠の口 getShell（K-466・取引 1・台帳の数え方で 9＝口の中の文 4（本人と数と帯・グループと件数・未読・保存した条件）＋入口の 5 文。1 文の口 listTickets・setup-tasks が 6 になるのと同じ数え方）
 }
 SCREEN_TARGETS = {  # 画面の道 → 口の数の上限（直列の段はどれも 1）
-    "/tickets": 8,
-    "/tickets?new=1": 9,
-    "/tickets/:id": 8,  # K-392：やり取りの最初の 20 件（GET /tickets/:id/timeline・タブの読んでいない数）と K-397：決定の一覧（GET /tickets/:id/decisions）を詳細と同時に読む。段は 1 のまま（台帳は K-392 で 7・K-397 で 8）
-    "/approvals": 4,
+    "/tickets": 7,  # K-466：外枠の口 4 本（me・scopes・approvals・devices）が getShell 1 本になった（me は本文が読み、承認待ちは右の列が読む）
+    "/tickets?new=1": 8,
+    "/tickets/:id": 6,  # K-466：外枠の口が getShell 1 本になる（−4＋1）に、K-392 のやり取りの最初の 20 件（timeline）と K-397 の決定の一覧（decisions）を足した 6（shell・/me・詳細・実行・やり取り・決定。K-466 は K-392・K-397 の後に入る）
+    "/approvals": 2,
 }
 STAGING_TARGETS = {  # (住所の名前, 方法, 道) → 答えまでの時間の中央値の上限（ms）
     ("STAGING_BASE_URL", "GET", "/login"): 800,

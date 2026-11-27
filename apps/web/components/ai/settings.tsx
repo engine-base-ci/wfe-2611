@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/k";
 import { ALL_ALLOWED, MODES, type DefaultMode } from "@/lib/agent-modes";
 import { notifyEnabled, setNotify, type NotifyKind } from "@/lib/agent";
 import { agentPermissionRevoke, agentPermissionRules, agentSetDefaultMode, agentUsage } from "@/lib/auth/ext";
@@ -176,25 +177,22 @@ export function NotifyToggles() {
       </h2>
       {!supported ? <p className="text-[13px] text-[var(--on-sv)]">このブラウザは知らせに対応していません。</p> : null}
       {rows.map(([k, label, desc]) => (
-        <label key={k} className="flex items-start gap-3 text-[14px]">
-          <input
-            type="checkbox"
-            className="mt-1"
-            checked={on[k]}
-            disabled={!supported}
-            onChange={async (e) => {
-              const want = e.target.checked;
-              const got = await setNotify(k, want);
-              if (want && !got) toast("ブラウザで知らせが許可されていません。ブラウザの設定で許可してください");
-              setOn((o) => ({ ...o, [k]: got }));
-            }}
-            data-notify={k}
-          />
-          <span>
-            <b>{label}</b>
-            <span className="block text-[12px] text-[var(--on-sv)]">{desc}。その会話を見ている間は知らせません</span>
-          </span>
-        </label>
+        <Checkbox
+          key={k}
+          size="lg"
+          description={`${desc}。その会話を見ている間は知らせません`}
+          checked={on[k]}
+          disabled={!supported}
+          onChange={async (e) => {
+            const want = e.target.checked;
+            const got = await setNotify(k, want);
+            if (want && !got) toast("ブラウザで知らせが許可されていません。ブラウザの設定で許可してください");
+            setOn((o) => ({ ...o, [k]: got }));
+          }}
+          data-notify={k}
+        >
+          <b>{label}</b>
+        </Checkbox>
       ))}
     </section>
   );

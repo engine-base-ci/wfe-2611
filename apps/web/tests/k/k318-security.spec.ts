@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { MATCH_WIDTHS, matchMock, type MatchOptions } from "./stage2-match";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -143,6 +144,8 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
         workspace_name: "ENGINE BASE",
       });
     else if (p === "/api/v1/scopes") r = { status: 200, body: { data: [], meta: { limit: 200, writable: [] } } };
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [] })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/approvals/queue")
       r = { status: 200, body: { data: [], meta: { limit: 20, counts: { total: 0 }, cursor: null } } };
     else if (p === "/api/v1/bridge/devices") r = ok([]);

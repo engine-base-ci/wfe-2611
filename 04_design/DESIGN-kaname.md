@@ -330,6 +330,14 @@ components:
     border: "1px solid {colors.line}"
     rounded: "{rounded.field}"
     padding: "8px 12px"
+  choice:               # 丸い選択・四角い選択の行（K-642）：字は本文 13px・行の高さ 1.6・印と字の間 8px。印は字の 1 行目の真ん中
+    typography: "{typography.body}"
+    lineHeight: 1.6
+    gap: "{spacing.sm}"
+  choice-box:           # 丸・四角の印の大きさと左右の余白（K-642）：13px・左 4px 右 3px（キャンバスの印＝ブラウザの既定と同じ）。上下は箱で真ん中に置く
+    width: "13px"
+    height: "13px"
+    margin: "0 3px 0 4px"
   dialog-check:         # 小窓の中のチェック・選ぶ印の行（12px・行の高さ 1.6・印と字の間 6px）
     typography: "{typography.body-sm}"
     lineHeight: 1.6
@@ -1495,6 +1503,48 @@ components:
     textColor: "{state.progress}"
   f4d-sample-mark:      # 下絵の本文の見本の背景の色（同上。正本の注意の淡い面から選ぶ）
     backgroundColor: "{state.warning-container}"
+  notice-panel:         # ベルから重なって開くお知らせの箱の幅（段 8・f7-bell-*・420）
+    width: "420px"
+  search-panel:         # 探す箱の幅と上端（段 8・f7-search-*・幅 580・帯の下に重ねる上端 144）
+    width: "580px"
+    top: "144px"
+  notice-avatar:        # お知らせの行の丸い印の大きさ（段 8・22）
+    width: "22px"
+    height: "22px"
+  more-menu-min:        # 詳細の「…」の箱の幅の下限（段 8・min-width 220）
+    width: "220px"
+  calendar-day:         # カレンダーの日のセルの高さ（段 8・f7-calendar・112）
+    height: "112px"
+  calendar-day-compact: # スマホのカレンダーの日のセルの高さ（段 8・幅 767 以下・56）
+    height: "56px"
+  calendar-tray:        # カレンダーの期限なしの置き場の重なる箱の幅（段 8・384）
+    width: "384px"
+  f7-dot:               # 種別の色の小さな丸（段 8・カレンダー・6）
+    width: "6px"
+    height: "6px"
+  gantt-body:           # ガントの本体の高さ（段 8・f7-gantt・624）
+    height: "624px"
+  gantt-row:            # ガントの行の高さ（段 8・svar-gantt の cellHeight・36）
+    height: "36px"
+  gantt-scale:          # ガントの目盛りの高さ（段 8・svar-gantt の scaleHeight・28）
+    height: "28px"
+  gantt-cell-day:       # ガントの日のセルの幅（段 8・32）
+    width: "32px"
+  gantt-cell-week:      # ガントの週のセルの幅と左の表の列の幅（段 8・72）
+    width: "72px"
+  gantt-cell-month:     # ガントの月のセルの幅（段 8・96）
+    width: "96px"
+  overview-phone:       # スマホの概要の頁の高さの元（画面の高さ。上の帯と下のタブを引いて使う・段 8）
+    height: "100dvh"
+  saved-nav-group:      # 保存した検索条件の並びの頭のグループの行（段 8・外枠のグループの行と同じ：高さ 30・左右 10）
+    height: "30px"
+    padding: "0 10px"
+  saved-nav-mark:       # 保存した検索条件の並びのグループの札（段 8・外枠のグループの札と同じ 18 の四角）
+    width: "18px"
+    height: "18px"
+  notice-sheet-back:    # スマホのお知らせの頁の「戻る」（段 8・外枠の帯のボタンと同じ 36 の四角）
+    width: "36px"
+    height: "36px"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:
@@ -1644,6 +1694,28 @@ Material Design 3 の役割ベース命名を採用する。加えて Kaname 固
    データ色 ▸ 4px の点 ／ 2px の左罫 ＋ ラベル     （点と線で見せる）
    → 同じ色相でも、面積と形が違うので読み分けられる
 ```
+
+### 見え方の色の段（F7）
+
+段 8 の見え方（概要・カレンダー・ガント）と期限の印が共有する色の段。新しい色は足さず、既存の色トークンを 3 つずつ組にする。部品は `data-f7-tone="<段>"` を付け、`apps/web/features/F7/overview/tones.css`（この表のとおりの CSS）が `--k-f7-tone`（濃い色）・`--k-f7-tone-soft`（淡い面）・`--k-f7-tone-ink`（淡い面の上の字）を与える。
+
+| 段 | 濃い色 | 淡い面 | 淡い面の上の字 |
+|---|---|---|---|
+| `neutral` | `--k-neutral-strong` | `--k-surface-variant` | `--k-on-surface-variant` |
+| `indigo` | `--k-d-indigo` | `--k-primary-container` | `--k-on-primary-container` |
+| `tertiary` | `--k-tertiary` | `--k-tertiary-container` | `--k-on-tertiary-container` |
+| `warning` | `--k-st-warning` | `--k-st-warning-container` | `--k-st-on-warning-container` |
+| `progress` | `--k-st-progress` | `--k-st-progress-container` | `--k-st-on-progress-container` |
+| `amber` | `--k-d-amber` | `--k-st-warning-container` | `--k-st-on-warning-container` |
+| `success` | `--k-st-success` | `--k-st-success-container` | `--k-st-on-success-container` |
+| `danger` | `--k-st-danger` | `--k-st-danger-container` | `--k-st-on-danger-container` |
+| `hold` | `--k-on-surface-variant` | `--k-surface-variant` | `--k-on-surface-variant` |
+| `teal` | `--k-d-teal` | `--k-secondary-container` | `--k-on-secondary-container` |
+| `teal-light` | `--k-d-teal-light` | `--k-secondary-container` | `--k-on-secondary-container` |
+| `lavender` | `--k-d-lavender` | `--k-ai-container` | `--k-on-tertiary-container` |
+| `plum` | `--k-d-plum` | `--k-ai-container` | `--k-on-tertiary-container` |
+| `coral` | `--k-d-coral` | `--k-st-danger-container` | `--k-st-on-danger-container` |
+| `sage` | `--k-d-sage` | `--k-st-success-container` | `--k-st-on-success-container` |
 
 ### Surface & Neutral
 

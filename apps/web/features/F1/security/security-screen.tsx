@@ -6,7 +6,7 @@
 //   mfa_pending（付けるまで進めない・K-319・D-128.141）：外枠も第 2 ナビも出さず、入口の枠の SecurityForced。付け終わって読み直した印が下りたら next（中の道だけ）か / へ。
 //   ?back=1（ほかの画面から戻された・lib/mfa-gate.ts）なら戻された知らせ（口の文・無ければ決まった文）。箱の下のログアウトは signOut を 1 回呼んで /login へ
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { ErrorState, Loading, MeSub, Toaster, useNotify } from "@/components/k";
+import { ErrorState, Loading, MeSub, useNotify } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr, type CallResult } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
@@ -376,7 +376,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   );
   if (forced)
     return (
-      <Toaster>
+      <>
         <SecurityForced
           passkeyUnsupported={unsupported}
           notice={back ? backNotice() : null}
@@ -385,24 +385,20 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
           onSignOut={() => void leave()}
         />
         {dialogs}
-      </Toaster>
+      </>
     );
-  return (
-    <Toaster>
-      {frame(
-        <>
-          <SecurityBody
-            {...state}
-            onAddPasskey={openAdd}
-            onRename={openRename}
-            onRemove={openRemove}
-            onPassword={password.open}
-            onTwoFactor={twoFactor.start}
-            sessionCards={<SessionsArea twoFactor={state.twoFactor} hasPassword={state.hasPassword} />}
-          />
-          {dialogs}
-        </>,
-      )}
-    </Toaster>
+  return frame(
+    <>
+      <SecurityBody
+        {...state}
+        onAddPasskey={openAdd}
+        onRename={openRename}
+        onRemove={openRemove}
+        onPassword={password.open}
+        onTwoFactor={twoFactor.start}
+        sessionCards={<SessionsArea twoFactor={state.twoFactor} hasPassword={state.hasPassword} />}
+      />
+      {dialogs}
+    </>,
   );
 }
