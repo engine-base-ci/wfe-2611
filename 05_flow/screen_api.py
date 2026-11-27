@@ -394,6 +394,8 @@ SCREEN_API = {
     "ops-home": [
         ("GET", "/ops/shell", "A60", "inquiries", "getOpsShell", ["invoices"]),
         ("GET", "/ops/workspaces", "A60", "tenants", "listOpsWorkspaces", ["subscriptions", "usage_meters", "invoices", "sessions", "action_runs"]),
+        # 確定前に去った申し込みの照合落ちをまとめて確かめた（K-1110・D-156.69）
+        ("POST", "/ops/pwned/pending/ack", "A138", "pending_signup", "ackOpsPwnedPending", ["security_events", "ops_audit_events"]),
     ],
     "ops-tenant": [
         ("GET", "/ops/workspaces/:id", "A64", "tenants", "getOpsWorkspace", ["subscriptions", "usage_meters", "action_runs", "credentials", "ops_audit_events"]),

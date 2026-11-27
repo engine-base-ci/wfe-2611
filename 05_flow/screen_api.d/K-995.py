@@ -19,9 +19,10 @@ INPUTS = {
 }
 
 # 一覧の 1 行（会社ごと）：workspace { id, name }・member { id, name } か null（いちばん新しい出来事の人）・last_at（いちばん新しい出来事の時刻）・count（確かめた印より後の出来事の数）
+#   K-1110：確定前に去った申し込みの照合落ちは、workspace・member が null の 1 行にまとめて出す（D-156.69・D-156.79・数と時刻だけ）
 # 確かめた：acknowledged_at（書いた印の時刻）・remaining（確かめた後に残る会社の数＝外枠の pwned.unchecked と同じ）
 RESPONSES = {
-    "listOpsPwned": ("OpsPwnedRow", {"workspace": "object", "member": "object?", "last_at": "string", "count": "integer"}),
+    "listOpsPwned": ("OpsPwnedRow", {"workspace": "object?", "member": "object?", "last_at": "string", "count": "integer"}),
     "ackOpsPwned": ("OpsPwnedAck", {"acknowledged_at": "string", "remaining": "integer"}),
 }
 
