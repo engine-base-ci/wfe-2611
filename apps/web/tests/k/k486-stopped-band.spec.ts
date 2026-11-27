@@ -24,7 +24,6 @@ import {
   TICKET,
   WHO,
   btn,
-  delegateSec,
   errReply,
   mockStopped,
   run,
@@ -197,7 +196,7 @@ test("K486-UI-008 やめる・Esc で閉じて口に 0 回・焦点は「自分�
   expect(s.takeovers).toEqual([]);
 });
 
-test("K486-UI-009 自分で直す（正常）：口に 1 回（体は空）。小窓が閉じ、お知らせ「自分で進めることにしました」・止まった帯が消え、AI に任せるの白い箱（押せる）が出る。口は 実行 1 件への 1 回だけ", async ({
+test("K486-UI-009 自分で直す（正常）：口に 1 回（体は空）。小窓が閉じ、お知らせ「自分で進めることにしました」・止まった帯が消え、題の行の AI に任せる（押せる・K-573）が出る。口は 実行 1 件への 1 回だけ", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED) });
@@ -209,10 +208,10 @@ test("K486-UI-009 自分で直す（正常）：口に 1 回（体は空）。�
   await expect(takeoverDialog(page)).toHaveCount(0);
   await expect(page.getByText("自分で進めることにしました")).toBeVisible();
   await expect(stopSec(page)).toHaveCount(0);
-  await expect(delegateSec(page).getByRole("button", { name: DELEGATE, exact: true })).toBeEnabled();
+  await expect(headDelegate(page)).toBeEnabled(); // 白い箱の中ではなく題の行の AI に任せる（K-573）
 });
 
-test("K486-UI-010 開き直す（再取得）：引き取った後に詳細を開き直しても、止まった帯は出ず AI に任せるの白い箱だけが出る（実行の記録の taken_over_at から決める）", async ({
+test("K486-UI-010 開き直す（再取得）：引き取った後に詳細を開き直しても、止まった帯は出ず題の行の AI に任せる（押せる・K-573）が出る（実行の記録の taken_over_at から決める）", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED) });
@@ -223,7 +222,7 @@ test("K486-UI-010 開き直す（再取得）：引き取った後に詳細を�
   await openTicketSettled(page);
   await expect.poll(() => s.runsReads).toBeGreaterThan(before);
   await expect(stopSec(page)).toHaveCount(0);
-  await expect(delegateSec(page).getByRole("button", { name: DELEGATE, exact: true })).toBeEnabled();
+  await expect(headDelegate(page)).toBeEnabled(); // 白い箱の中ではなく題の行の AI に任せる（K-573）
 });
 
 test("K486-UI-011 二度押し：答えを止めた間に「自分で直す」を押すと口に 1 回届き、確認の小窓のボタンは押せない（busy）・小窓は閉じない。もう 1 回押しても口は 1 回だけ。答えると閉じる", async ({
@@ -273,7 +272,7 @@ test("K486-UI-013 口の断り（今は切り替えられない・409・E-STP-00
   }
 });
 
-test("K486-UI-014 別のタブで先に引き取られた（409・E-STP-003）：赤い箱に正本の文。読み直しで帯が消え、小窓を閉じると AI に任せるの白い箱が出る", async ({
+test("K486-UI-014 別のタブで先に引き取られた（409・E-STP-003）：赤い箱に正本の文。読み直しで帯が消え、小窓を閉じると題の行の AI に任せる（押せる・K-573）が出る", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED) });
@@ -286,7 +285,7 @@ test("K486-UI-014 別のタブで先に引き取られた（409・E-STP-003）�
   await expect(takeoverDialog(page).locator(".k-band-notice")).toHaveText(msg("E-STP-003"));
   await takeoverDialog(page).getByRole("button", { name: "やめる", exact: true }).click();
   await expect(stopSec(page)).toHaveCount(0);
-  await expect(delegateSec(page).getByRole("button", { name: DELEGATE, exact: true })).toBeEnabled();
+  await expect(headDelegate(page)).toBeEnabled(); // 白い箱の中ではなく題の行の AI に任せる（K-573）
 });
 
 test("K486-UI-015 送れない（500）：確認の小窓の上の赤い箱に E-PAGE-007 の 1 文目・小窓は開いたまま。押し直すと 2 回目を送り、通れば閉じる（口は 2 回）", async ({
@@ -340,7 +339,7 @@ test("K486-UI-017 書ける人だが担当者でない人（鈴木）は AI に�
   expect(s.takeovers).toEqual([]);
 });
 
-test("K486-UI-018 もう一度（題の行の AI に任せる・帯には無い answer=d25f2e58bffb）：前からの口を 1 回呼び、止まった帯が前からの「任せました」の帯（題「高本のAI に任せました。」・要約「PC が受け取るのを待っています」・AI と話すは押せない）に替わる", async ({
+test("K486-UI-018 もう一度（題の行の AI に任せる・帯には無い answer=d25f2e58bffb）：前からの口を 1 回呼び、止まった帯が前からの「任せました」の帯（題「高本のAI に任せました。」・要約「PC が受け取るのを待っています」・AI と話すは押せる（K-764・D-153.16））に替わる", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED) });
@@ -351,7 +350,8 @@ test("K486-UI-018 もう一度（題の行の AI に任せる・帯には無い 
   const band = page.locator(".k-detail-bands .k-band").filter({ hasText: "に任せました" });
   await expect(band.getByRole("heading", { level: 3 })).toHaveText(`${WHO} に任せました。`);
   await expect(band.locator(".k-band-sub")).toHaveText("PC が受け取るのを待っています");
-  await expect(band.getByRole("button", { name: "AI と話す", exact: true })).toHaveAttribute("aria-disabled", "true");
+  await expect(band.getByRole("button", { name: "AI と話す", exact: true })).toBeEnabled();
+  await expect(band.getByRole("button", { name: "AI と話す", exact: true })).not.toHaveAttribute("aria-disabled", "true");
   expect(s.runs[0]!.id).toBe(RUN2);
 });
 

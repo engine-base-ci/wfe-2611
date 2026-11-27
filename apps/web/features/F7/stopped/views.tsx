@@ -8,7 +8,6 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Band, BandLine, Button, Confirm, NoticeBox } from "@/components/k";
-import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import { SETUP_BRIDGE, stopCopy, type BrokenCause, type StopKind } from "./stop-copy";
 import "./stopped.css";
 
@@ -101,7 +100,8 @@ export function StopReason({ who, kind, cause, detail, hand, notice, children }:
   );
 }
 
-/** 「AI に任せる」を押した後の帯（前からの帯の「任せました」と同じ字）。PC が眠っていれば起きるのを待つ */
+/** 「AI に任せる」を押した後の帯（前からの帯の「任せました」と同じ字）。PC が眠っていれば起きるのを待つ。
+ *  ［AI と話す］は任せました の間は押せる形（段6 K-764・D-153.16。下絵では押しても何もしない） */
 export function RetryConfirm({ who, waking = false }: { who: string; waking?: boolean }) {
   return (
     <section aria-label="AI に任せる" className="k-f7-stop">
@@ -109,7 +109,7 @@ export function RetryConfirm({ who, waking = false }: { who: string; waking?: bo
         tone="wait"
         title={`${who} に任せました。`}
         sub={waking ? "PC が起きるのを待っています" : "PC が受け取るのを待っています"}
-        acts={<InertButton>AI と話す</InertButton>}
+        acts={<Button variant="outlined">AI と話す</Button>}
       />
     </section>
   );
