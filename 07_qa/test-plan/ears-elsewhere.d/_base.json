@@ -765,6 +765,10 @@
     "test_post_tickets_id_complete_rate_limited": {
      "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
      "mark": "K63-API-045"
+    },
+    "test_post_tickets_id_complete_conflict_2": {
+     "file": "apps/api/test/features/F9/knowledge-complete-guard.test.ts",
+     "mark": "K701-API-001"
     }
    }
   },
