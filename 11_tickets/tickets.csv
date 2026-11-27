@@ -3264,7 +3264,7 @@ PM の決め（作り方）：
 4. 出力の base（G56・G61・G63・G67 などが比べる元）は本線の base のまま。since は出力に出さない
 5. 入力の形が違うとき（since が 40 桁の 16 進でない・コミットでない・rerun を空白で分けた 1 つずつのどれかが行 ID の形 `[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)+` でない。本物の行 ID は K12-API-003・K9-M9-9・K107-J1 の形）は、絞らず全部にも倒さず止める（組を流さない・理由を出す）
 6. rerun の行がチケットの試験のどのファイルにも無いときは、止めずに理由の行に出す（その行は流れない＝ticket-flow の判定で赤のまま）
-7. scope=full のときは rerun・since があっても全部（今と同じ）
+7. scope=full のときは rerun・since があっても全部（今と同じ）。K-1305 の入力 leaves で出す py_tests（段の葉の tests: の .py）も rerun で絞らない
 8. CI の定義は作り手 `05_flow/build_testplan.py` で直す（v3-gate.yml は生成物）。入力 rerun・since（type string・default ''）を足し、ci_scope.py を呼ぶ 5 か所（static の G0・spec・spec-2・spec-3・spec-parts の分かれ目・K-1305 の入力 leaves の env と --leaves はそのまま残す）全部に env `CI_RERUN_INPUT: ${{ inputs.rerun }}`・`CI_SINCE_INPUT: ${{ inputs.since }}` と引数 `--rerun ""$CI_RERUN_INPUT"" --since ""$CI_SINCE_INPUT""` を足す（外から来る値は run の字に直に入れない）
 
 ```search

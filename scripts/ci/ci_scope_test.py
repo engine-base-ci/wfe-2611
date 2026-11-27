@@ -961,10 +961,11 @@ class RerunTest(Base):
     R1 = "apps/x/test/r1.test.ts"
     R2 = "apps/x/test/r2.test.ts"
 
-    def go(self, base: str | None = None, scope: str = "auto", rerun: str | None = None, since: str | None = None, rules: dict | None = None) -> dict:
+    def go(self, base: str | None = None, scope: str = "auto", rerun: str | None = None, since: str | None = None, rules: dict | None = None,
+           leaves: str | None = None) -> dict:
         def lt(files: list[str]) -> dict[str, list[str]]:
             return {f: list(self.LT.get(f, [])) for f in files}
-        kw = {k: v for k, v in (("rerun", rerun), ("since", since)) if v is not None}
+        kw = {k: v for k, v in (("rerun", rerun), ("since", since), ("leaves", leaves)) if v is not None}
         return ci_scope.plan(str(self.r.dir), base or self.r.base, "HEAD", scope, rules=rules or RULES, tickets_dir=str(self.r.dir / "11_tickets"),
                              list_tests=lt, db_tests=lambda: ["packages/a/test/rows.test.ts"], **kw)
 
@@ -1049,10 +1050,15 @@ class RerunTest(Base):
                 self.assertEqual(p["jobs"], {"unit": False, "database": False, "web": False})
 
     def test_K1156_RR_008_scope_full_ignores_rerun(self) -> None:
-        since = self.two_rounds()
-        p = self.go(scope="full", rerun="K1-RR-001", since=since)
+        r4, r5 = "scripts/ci/r4_test.py", "scripts/ci/r5_test.py"
+        since = self.two_rounds(tests=f"[{r4}, {r5}]", ci_wide=["ci"], **{
+            "scripts__ci__r4_test.py": "def test_K1_RR_001_x():\n    pass\n",
+            "scripts__ci__r5_test.py": "def test_y():\n    pass  # K1-RR-002\n"})
+        p = self.go(scope="full", rerun="K1-RR-001", since=since, leaves="K-1")   # stageq が前の回の赤の後に出す形
         self.assertEqual(p["mode"], "full")
         self.assertEqual(p["jobs"], {"unit": True, "database": True, "web": True})
+        self.assertEqual(p["errors"], [])
+        self.assertEqual(p["py_tests"], [r4, r5])   # K-1305 の leaves の py_tests も rerun で絞らない（r5 を落とさない）
 
     def test_K1156_RR_009_row_id_forms_and_edges(self) -> None:
         r3, r4, r5 = "apps/x/test/r3.test.ts", "scripts/ci/r4_test.py", "scripts/ci/r5_test.py"
