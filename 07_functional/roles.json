@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-27",
+  "created_at": "2026-11-28",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -71,7 +71,6 @@
     "rules",
     "work-types",
     "knowledge",
-    "clients",
     "requests",
     "legal",
     "help"
@@ -79,10 +78,8 @@
    "nav": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
-    "work-types",
-    "rules",
+    "clone-chat",
     "knowledge",
     "members",
     "member-detail",
@@ -91,6 +88,7 @@
     "audit",
     "company-settings",
     "billing",
+    "requests",
     "account",
     "credentials",
     "bridge-setup",
@@ -126,7 +124,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-27",
+   "decided_at": "2026-11-28",
    "source": [
     "D-125.1",
     "D-125.135"
@@ -193,7 +191,6 @@
     "rules",
     "work-types",
     "knowledge",
-    "clients",
     "requests",
     "legal",
     "help"
@@ -201,10 +198,8 @@
    "nav": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
-    "work-types",
-    "rules",
+    "clone-chat",
     "knowledge",
     "members",
     "member-detail",
@@ -213,6 +208,7 @@
     "audit",
     "company-settings",
     "billing",
+    "requests",
     "account",
     "credentials",
     "bridge-setup",
@@ -248,7 +244,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-27",
+   "decided_at": "2026-11-28",
    "source": [
     "D-125.16",
     "D-125.117"
@@ -292,10 +288,8 @@
    "nav": [
     "tickets",
     "approvals",
-    "clone-chat",
     "ai-activity",
-    "work-types",
-    "rules",
+    "clone-chat",
     "knowledge",
     "account",
     "credentials",
@@ -332,7 +326,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-27",
+   "decided_at": "2026-11-28",
    "source": [
     "D-125.14",
     "D-125.115"
@@ -340,8 +334,8 @@
   },
   {
    "id": "R4",
-   "name": "依頼を出す取引先の人",
-   "desc": "会社に招待され、依頼を出し、やり取りし、成果物を検収する。クライアントの場所だけを使う",
+   "name": "依頼を出すゲスト",
+   "desc": "会社に招待され、依頼を出し、やり取りし、見せてもらったチケットを見る。クライアントの場所だけを使う",
    "frequency": "依頼のたび",
    "screens": [
     "signup",
@@ -380,8 +374,10 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-27",
+   "decided_at": "2026-11-28",
    "source": [
+    "D-155.35",
+    "D-155.37",
     "D-125.43",
     "D-125.121",
     "D-125.122",
@@ -391,7 +387,7 @@
   {
    "id": "R6",
    "name": "Kaname 運営",
-   "desc": "自分＋身近な数社を支える。問い合わせ・請求と入金・お知らせ・会社を止める／再開・操作と業務の型とひな形。契約で事前に許可を得て会社のデータを見られる",
+   "desc": "自分＋身近な数社を支える。問い合わせ・請求と入金・お知らせ・会社を止める／再開・プランとひな形（操作は版を見るだけ）。契約で事前に許可を得て会社のデータを見られる",
    "frequency": "毎日",
    "screens": [
     "ops-support",
@@ -440,7 +436,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-27",
+   "decided_at": "2026-11-28",
    "source": [
     "D-125.23",
     "D-125.24",
@@ -922,13 +918,6 @@
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
-   "R4": "-",
-   "R6": "-"
-  },
-  "clients": {
-   "R1": "edit",
-   "R2": "edit",
-   "R3": "-",
    "R4": "-",
    "R6": "-"
   },
