@@ -250,7 +250,7 @@ const STOPPED: Band = {
 const RUNS = /\/api\/v1\/tickets\/[^/]+\/runs$/;
 const ONE_RUN = /\/api\/v1\/action_runs\/[^/]+$/;
 
-test("K599-UI-003 止まった帯（AI が止まった詳細・幅 1440）：理由の字が帯に出て、帯のボタンは「自分で直す」だけ（「AI に任せる」「直し方を AI に伝える」は 0 個・answer=d25f2e58bffb）。止まった帯の区画の READY が false のあいだは「自分で直す」「直し方を AI に伝える」は押せない形で、押しても書く口を呼ばず小窓も開かない", async ({
+test("K599-UI-003 止まった帯（AI が止まった詳細・幅 1440）：理由の字が帯に出て、帯のボタンは「自分で直す」だけ（「AI に任せる」「直し方を AI に伝える」は 0 個・answer=d25f2e58bffb）。止まった帯の区画の READY が false のあいだは「自分で直す」は押せない形で、押しても書く口を呼ばず小窓も開かない", async ({
   page,
 }) => {
   const writes: string[] = [];

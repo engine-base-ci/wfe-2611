@@ -54,6 +54,8 @@ const DELEGATE = "AI に任せる";
 const HOW = "直し方を AI に伝える";
 const TAKEOVER = "自分で直す";
 const CONNECT = "PC をつなぐ";
+/** もう一度任せるのは題の行の「AI に任せる」（K-573）。止まった帯の中には無い（帯は［自分で直す］だけ・決める人 answer=d25f2e58bffb） */
+const headDelegate = (page: Page) => page.getByRole("button", { name: DELEGATE, exact: true });
 
 /** 原因ごとの帯の字（部品 stop-copy.ts の字・モックと同じ。1 行目は理由の 1 行・2 行目は直す場所の案内） */
 const BROKEN: Record<string, { kind: ReasonKind; line: () => string; sub: string }> = {
@@ -104,7 +106,7 @@ test("K486-UI-001 確認で落ちた（種類 unknown・理由の全文あり）
 });
 
 for (const c of Object.values(BROKEN)) {
-  test(`K486-UI-002 PC か AI が壊れた（${c.kind}）：題「高本のAI が止まりました」・理由の 1 行と直す場所の案内の字・主は「PC をつなぐ」（/setup/bridge へのリンク）・AI に任せる・自分で直す（どちらも白地）。直し方を AI に伝えるは出ない`, async ({
+  test(`K486-UI-002 PC か AI が壊れた（${c.kind}）：題「高本のAI が止まりました」・理由の 1 行と直す場所の案内の字・主は「PC をつなぐ」（/setup/bridge へのリンク）・自分で直す（白地）。帯に AI に任せる・直し方を AI に伝えるは出ない（answer=d25f2e58bffb・4d049789b537）`, async ({
     page,
   }) => {
     await open(page, { runs: stopped(c.kind, "（内部の文）") });
@@ -113,33 +115,38 @@ for (const c of Object.values(BROKEN)) {
     await expect(stopBox(page).locator(".k-band-sub")).toHaveText(c.sub);
     await expect(setupLink(page, CONNECT)).toHaveAttribute("href", "/setup/bridge");
     await expect(setupLink(page, CONNECT)).toHaveAttribute("data-variant", "primary");
-    await expect(btn(page, DELEGATE)).toHaveAttribute("data-variant", "outlined");
     await expect(btn(page, TAKEOVER)).toBeEnabled();
+    await expect(btn(page, TAKEOVER)).toHaveAttribute("data-variant", "outlined");
+    await expect(btn(page, DELEGATE)).toHaveCount(0);
     await expect(btn(page, HOW)).toHaveCount(0);
   });
 }
 
-test("K486-UI-003 理由が届かない（種類 unknown・「理由は届いていません」の文）：帯の 1 行は「AI が途中で止まりました（理由は届いていません）。もう一度「AI に任せる」を押せます」。理由の文が空（null）でも同じ", async ({
+test("K486-UI-003 理由が届かない（種類 unknown・「理由は届いていません」の文）：帯の 1 行は「AI が途中で止まりました（理由は届いていません）。もう一度「AI に任せる」を押せます」。理由の文が空（null）でも同じ。もう一度は題の行の AI に任せる（押せる）・帯は自分で直すだけ（answer=d25f2e58bffb）", async ({
   page,
 }) => {
   await open(page, { runs: stopped("unknown", NO_REASON) });
   await expect(stopBox(page).locator(".k-band-line")).toHaveText(NO_REASON);
-  await expect(btn(page, DELEGATE)).toBeEnabled();
-  await expect(btn(page, HOW)).toHaveAttribute("aria-disabled", "true");
+  await expect(headDelegate(page)).toBeEnabled();
+  await expect(btn(page, DELEGATE)).toHaveCount(0);
+  await expect(btn(page, HOW)).toHaveCount(0);
+  await expect(btn(page, TAKEOVER)).toBeEnabled();
   await open(page, { runs: stopped("unknown", null) });
   await expect(stopBox(page).locator(".k-band-line")).toHaveText(NO_REASON);
 });
 
-test("K486-UI-004 PC が途中で止まった（種類 pc_closed・文は D-129.47 のとおり）：帯の 1 行は口が返した文のまま（Bridge を開き直す案内を含む）・AI に任せる（主）・直し方・自分で直す", async ({
+test("K486-UI-004 PC が途中で止まった（種類 pc_closed・文は D-129.47 のとおり）：帯の 1 行は口が返した文のまま（Bridge を開き直す案内を含む）・帯は自分で直すだけ・もう一度は題の行の AI に任せる（主・answer=d25f2e58bffb）", async ({
   page,
 }) => {
   await open(page, { runs: stopped("pc_closed", BRIDGE_STOPPED) });
   await expect(stopBox(page).locator(".k-band-line")).toHaveText(BRIDGE_STOPPED);
-  await expect(btn(page, DELEGATE)).toHaveAttribute("data-variant", "primary");
+  await expect(headDelegate(page)).toHaveAttribute("data-variant", "primary");
+  await expect(btn(page, DELEGATE)).toHaveCount(0);
+  await expect(btn(page, HOW)).toHaveCount(0);
   await expect(btn(page, TAKEOVER)).toBeEnabled();
 });
 
-test("K486-UI-005 種類が無い・知らない値（古い口・K-485 より前の答え）：reason_kind の鍵が無い・null・知らない文字のどれでも「止まった」帯は出て、理由の全文を出す（種類を当て推量しない・PC をつなぐは出ない）", async ({
+test("K486-UI-005 種類が無い・知らない値（古い口・K-485 より前の答え）：reason_kind の鍵が無い・null・知らない文字のどれでも「止まった」帯は出て、理由の全文を出す（種類を当て推量しない・PC をつなぐは出ない）。もう一度は題の行の AI に任せる（押せる）", async ({
   page,
 }) => {
   for (const kind of [undefined, null, "なにか新しい種類"] as const) {
@@ -152,7 +159,8 @@ test("K486-UI-005 種類が無い・知らない値（古い口・K-485 より�
     await expect(stopBox(page).getByRole("heading", { level: 3 })).toHaveText(TITLE);
     await expect(stopBox(page)).toContainText(FAILED);
     await expect(setupLink(page, CONNECT)).toHaveCount(0);
-    await expect(btn(page, DELEGATE)).toBeEnabled();
+    await expect(headDelegate(page)).toBeEnabled();
+    await expect(btn(page, TAKEOVER)).toBeEnabled();
   }
 });
 
@@ -300,42 +308,44 @@ test("K486-UI-015 送れない（500）：確認の小窓の上の赤い箱に E
   await expect.poll(() => s.takeovers.length).toBe(2);
 });
 
-test("K486-UI-016 見るだけの人（山口・can.delegate が偽で担当者でもない）：一手の 3 つは押せない形（aria-disabled・指を置くと「押せるのは担当者の高本さんだけです」）。押しても小窓は開かず口を呼ばない。帯と理由は読める", async ({
+test("K486-UI-016 見るだけの人（山口・can.delegate が偽で担当者でもない）：帯の一手（自分で直すだけ・answer=d25f2e58bffb）は押せない形（aria-disabled・指を置くと「押せるのは担当者の高本さんだけです」）。題の行の AI に任せるも出ない（can.delegate 偽）。押しても小窓は開かず口を呼ばない。帯と理由は読める", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED), viewer: "viewer" });
   await expect(stopBox(page).getByRole("heading", { level: 3 })).toHaveText(TITLE);
   await expect(stopBox(page)).toContainText(FAILED);
-  for (const n of [DELEGATE, HOW, TAKEOVER]) {
-    const b = btn(page, n);
-    await expect(b, n).toHaveAttribute("aria-disabled", "true");
-    await b.click({ force: true });
-  }
+  await expect(btn(page, DELEGATE)).toHaveCount(0);
+  await expect(btn(page, HOW)).toHaveCount(0);
+  await expect(headDelegate(page)).toHaveCount(0);
+  await expect(btn(page, TAKEOVER)).toHaveAttribute("aria-disabled", "true");
+  await btn(page, TAKEOVER).click({ force: true });
   await expect(btn(page, TAKEOVER)).toHaveAttribute("title", "押せるのは担当者の高本さんだけです");
   await expect(takeoverDialog(page)).toHaveCount(0);
   expect(s.takeovers).toEqual([]);
   expect(s.delegates).toEqual([]);
 });
 
-test("K486-UI-017 書ける人だが担当者でない人（鈴木）は AI に任せるを押せるか：can.delegate が真ならもう一度の「AI に任せる」は押せ、自分で直すだけが押せない（担当者本人だけ）", async ({
+test("K486-UI-017 書ける人だが担当者でない人（鈴木）は AI に任せるを押せるか：can.delegate が真ならもう一度の「AI に任せる」（題の行・帯には無い answer=d25f2e58bffb）は押せ、帯の自分で直すだけが押せない（担当者本人だけ）", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED), viewer: "other" });
   await expect(btn(page, TAKEOVER)).toHaveAttribute("aria-disabled", "true");
-  await expect(btn(page, DELEGATE)).toBeEnabled();
+  await expect(btn(page, DELEGATE)).toHaveCount(0);
+  await expect(headDelegate(page)).toBeEnabled();
   await btn(page, TAKEOVER).click({ force: true });
   await expect(takeoverDialog(page)).toHaveCount(0);
   expect(s.takeovers).toEqual([]);
-  await btn(page, DELEGATE).click();
+  await headDelegate(page).click();
   await expect.poll(() => s.delegates.length).toBe(1);
   expect(s.takeovers).toEqual([]);
 });
 
-test("K486-UI-018 もう一度（AI に任せる）：前からの口を 1 回呼び、止まった帯が前からの「任せました」の帯（題「高本のAI に任せました。」・要約「PC が受け取るのを待っています」・AI と話すは押せない）に替わる", async ({
+test("K486-UI-018 もう一度（題の行の AI に任せる・帯には無い answer=d25f2e58bffb）：前からの口を 1 回呼び、止まった帯が前からの「任せました」の帯（題「高本のAI に任せました。」・要約「PC が受け取るのを待っています」・AI と話すは押せない）に替わる", async ({
   page,
 }) => {
   const s = await open(page, { runs: stopped("unknown", FAILED) });
-  await btn(page, DELEGATE).click();
+  await expect(btn(page, DELEGATE)).toHaveCount(0);
+  await headDelegate(page).click();
   await expect.poll(() => s.delegates.length).toBe(1);
   await expect(stopSec(page)).toHaveCount(0);
   const band = page.locator(".k-detail-bands .k-band").filter({ hasText: "に任せました" });
@@ -431,7 +441,7 @@ const DRIVE: Record<
     pairs: RETRY_PAIRS,
     go: async (p, w) => {
       const s = await open(p, { runs: stopped("unknown", FAILED) }, w);
-      await btn(p, DELEGATE).click();
+      await headDelegate(p).click();
       await expect.poll(() => s.delegates.length).toBe(1);
       await expect(p.locator(".k-detail-bands .k-band").filter({ hasText: "に任せました" })).toBeVisible();
     },
