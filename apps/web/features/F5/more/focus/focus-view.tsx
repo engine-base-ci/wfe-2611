@@ -30,7 +30,6 @@ const DECIDED: Readonly<Record<Decision, string>> = {
 };
 const DAY_MS = 86_400_000;
 // 全画面の層：画面いっぱいに重ね、小窓（k-backdrop・k-dialog）より下に置く（重なりの段は正本のトークン）
-const LAYER_STYLE = { position: "fixed", inset: 0, overflowY: "auto", zIndex: "var(--k-c-popup-layer-z)" } as const;
 const isGone = (r: CallErr) => r.status === 409 || r.status === 404;
 
 const Key = ({ k }: { k: string }) => <kbd className="k-more-key">{k}</kbd>;
@@ -114,12 +113,11 @@ export function FocusView({ onClose }: FocusViewProps): ReactNode {
   return (
     <div
       ref={root}
-      className="k-more-focus"
+      className="k-more-focus k-more-focus-layer"
       role="dialog"
       aria-modal="true"
       aria-label={TITLE}
       tabIndex={-1}
-      style={LAYER_STYLE}
       {...{ [FOCUS_LAYER_ATTR]: "" }}
     >
       {list.isError ? (

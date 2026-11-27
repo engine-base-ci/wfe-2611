@@ -102,7 +102,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.number)).toEqual([a.number, b.number, c.number]);
     expect(Object.keys(d["tickets"][0]).sort()).toEqual(["handing", "id", "number", "stage", "title"]);
     expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.handing)).toEqual([false, false, true]);
-    expect(d["tickets"][0].stage).toBe("作業中"); // 会社の段の名前（ticket_stages.name）。doing の既定の名前は 0071 から「作業中」
+    expect(d["tickets"][0].stage).toBe("作業中"); // 会社の段の名前（ticket_stages.name）。doing の既定の名前の正本は 0071_tickets.sql の app.ticket_basics（K-3・KN-38）の「作業中」
   });
 
   it("K815-API-002 担当 0 件：200・tickets・handovers_cancelled・approvals_reassigned は空・deleted と kept は出る", async () => {

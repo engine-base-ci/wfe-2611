@@ -9,6 +9,16 @@
    "tests": [
     "apps/api/test/features/F9/knowledge-review.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-review.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_knowledge_review.test.ts"
+   ]
   }
  ]
 }

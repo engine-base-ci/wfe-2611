@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """K-1116 契約 fuzz（G36）で出た前からの口の赤 3 種を、契約と fuzz の設定の側で見る自己試験。
 
-  K1116-CT-001〜002：入力の形を分け合う口どうしで、ほかの口の値域・必須・形全体の決まりが自分の形に漏れない（updateMemory の confidence・kind_id）
+  K1116-CT-002：入力の形を分け合う口どうしで、ほかの口の値域・必須・形全体の決まりが自分の形に漏れない（CT-001 の記憶の口は K-712 が消したので外した）
   K1116-CT-003〜005：パスワードで入る口（signInWithPassword）の契約のメールの形は、口が受ける形（正規化の後の EMAIL_RE と部品 better-auth の z.email()）より広くない
   K1116-CT-006〜007：PC の確かめに答える口（answerCredentialLoginCheck）だけ、作った直後に引けるかの確かめ（ST302）を外す
 
@@ -144,17 +144,7 @@ SIGNIN_SAMPLES = [
 
 
 class FuzzContract(unittest.TestCase):
-    def test_K1116_CT_001_update_memory_has_no_create_ranges(self):
-        upd = _shape_of("updateMemory")
-        # confidence は表の型（numeric）の形に戻る（作る口の numeric(3,2) の値域ではない）。口はこの形で断る（K1116-API-001）
-        self.assertEqual(upd["properties"]["confidence"].get("pattern"), "^-?[0-9]+(\\.[0-9]+)?$", "updateMemory の confidence が表の型の形でない")
-        self.assertNotEqual(upd["properties"]["confidence"].get("pattern"), SA.VALUE_RANGES["createMemory"]["confidence"]["pattern"])
-        self.assertNotIn("enum", upd["properties"]["kind_id"], "updateMemory の kind_id に createMemory の値域が残っている")
-        self.assertEqual(upd["properties"]["body"].get("pattern"), portable("\\S"))   # 自分の値域は残る（作り手が JS と同じ字にして書く・K-1117）
-        crt = _shape_of("createMemory")
-        self.assertEqual(crt["properties"]["confidence"]["pattern"], SA.VALUE_RANGES["createMemory"]["confidence"]["pattern"])
-        self.assertEqual(crt["properties"]["kind_id"]["enum"], ["rule", "preference", "example", None])
-        self.assertNotIn("pattern", crt["properties"]["body"], "createMemory の body に updateMemory の値域が入っている")
+    # K1116-CT-001（記憶を直す口と作る口の形）は外した：段10 の K-712（D-152.1）が記憶の口 5 つを契約から消した（統合の枝・PM の決め：消した側に合わせる）
 
     def test_K1116_CT_002_no_range_leaks_between_sharers(self):
         self.assertEqual(_leaks(), [])

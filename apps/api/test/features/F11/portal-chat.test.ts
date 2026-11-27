@@ -188,7 +188,7 @@ const readMsgs = async (w: World, p: Person, t: string): Promise<Msg[] | null> =
   );
 interface TItem {
   kind: string;
-  actor: { id: string } | null;
+  actor: { member_id: string } | null;
   message: (Record<string, unknown> & { body: string }) | null;
 }
 /** 社内の人が段 7 の読む関数（app.ticket_timeline）で 1 チケットのスレッドを読む */
@@ -666,7 +666,7 @@ describe("K-882 ゲストが書く（postPortalTicketMessage）", () => {
     await post(t, { body: "社内の人にも見える" }, a);
     const items = await timeline(w, w.boss, t);
     const posts = items.filter((x) => x.kind === "post");
-    expect(posts.map((x) => [x.actor?.id, x.message?.body])).toEqual([[a.id, "社内の人にも見える"]]);
+    expect(posts.map((x) => [x.actor?.member_id, x.message?.body])).toEqual([[a.id, "社内の人にも見える"]]);
     expect(Object.keys(posts[0]!.message!), "鍵は増えない").not.toContain("from_request");
     expect(Object.keys(posts[0]!.message!)).not.toContain("guest_visible");
     expect((await timeline(w, w.boss, other)).filter((x) => x.kind === "post")).toEqual([]);

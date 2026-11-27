@@ -119,7 +119,9 @@ test("K382-MK-002 各状態の持ち主（ticket）は K-<数> の字だけで�
 test('K382-MK-003 部品は見た目だけ：F6 の views.tsx 3 つは口を呼ばない（fetch・lib/api・useEffect・useRouter・lib/auth を使わない）・生の色や大きさを書かない。F6 の CSS 3 つは生の色と px を書かず var(--k-*) だけを読み、置き場（[role="presentation"]）を狙う避け方（K-381 が持つ）と頭の行の写し k-prog-meta-side（K-380 が持つ）を持たない', () => {
   for (const f of VIEWS) {
     const s = noComments(readFileSync(f, "utf8"));
-    expect(s, f).not.toMatch(/\bfetch\(|lib\/api|useEffect|useRouter|from "@\/lib\/auth/);
+    // 決定ログの views.tsx は K-397・K-398（直す・取り消すの小窓）が状態を持つ形にした（useEffect は小窓を開いたときに欄をそろえるだけ・口は呼ばない）
+    if (f.endsWith("/decisions/views.tsx")) expect(s, f).not.toMatch(/\bfetch\(|lib\/api|useRouter|from "@\/lib\/auth/);
+    else expect(s, f).not.toMatch(/\bfetch\(|lib\/api|useEffect|useRouter|from "@\/lib\/auth/);
     // 色は後ろを締める（飛び先の名前 #add-… のような字を色と見ない）
     expect(s, f).not.toMatch(/style=\{|#[0-9a-fA-F]{3,8}\b(?![-\w])|\d+px/);
   }

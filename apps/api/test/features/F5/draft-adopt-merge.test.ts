@@ -85,7 +85,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     ]);
     const r = await adopt(p, draft, t);
     expect(r.status, await r.clone().text()).toBe(201);
-    expect((await data(r))).toEqual({ conversation_id: panel, ticket_id: t });
+    expect(await data(r)).toEqual({ conversation_id: panel, ticket_id: t });
     const lines = await bodies(panel);
     expect(lines.slice(0, 4)).toEqual([
       "human:作る画面で聞いた",
@@ -160,7 +160,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
     const draft = await conv(p, "draft", null, [["human", "自分の言葉", 1]]);
     const r = await adopt(p, draft, t);
     expect(r.status, await r.clone().text()).toBe(201);
-    expect((await data(r))).toEqual({ conversation_id: draft, ticket_id: t });
+    expect(await data(r)).toEqual({ conversation_id: draft, ticket_id: t });
     expect(await bodies(theirs)).toEqual(["human:ほかの人の言葉"]);
   });
 
@@ -221,7 +221,7 @@ describe("K-783 作った後に、先に話していた会話とまとめる", (
       open = false;
       const r = await pending;
       expect(r.status, await r.clone().text()).toBe(201);
-      expect((await data(r))).toEqual({ conversation_id: panel, ticket_id: t });
+      expect(await data(r)).toEqual({ conversation_id: panel, ticket_id: t });
     } finally {
       if (open) await other.query("rollback");
       other.release();

@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { withTenant, type TenantContext } from "@kaname/db/context";
-import { makeFixture, type Fixture, type Person } from "../fixture.js";
+import { makeFixture, quietWrite, type Fixture, type Person } from "../fixture.js";
 import {
   asJson,
   failOn,
@@ -140,11 +140,15 @@ async function setup(tag: string, o: { state?: "new" | "asking" | "ticketed" | "
 /** client_requests の edit だけを持ち、tickets の edit を持たない人（グループに書けない 403 の確かめ用） */
 async function limited(w: RW): Promise<Person> {
   const p = await f.person(w.tenantId, w.reqScope, { name: "チケットを作れない人", ticketAbility: null });
-  await f.admin.query(
+  // 会社と届け先のグループに入れるが、役割の束の引き金（0080・member は自分のグループで tickets を edit）は通さない（quietWrite）。
+  //   通すと束で tickets の edit が付き、「チケットを作れない人」にならない。持つ権限は届け先の client_requests の edit だけ
+  await quietWrite(
+    f,
     "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, 'member', 'active')",
     [w.tenantId, p.id],
   );
-  await f.admin.query(
+  await quietWrite(
+    f,
     "insert into scope_memberships (tenant_id, member_id, scope_id, is_primary, role) select $1, $2, $3, true, 'member' where not exists (select 1 from scope_memberships where member_id = $2 and scope_id = $3)",
     [w.tenantId, p.id, w.reqScope],
   );

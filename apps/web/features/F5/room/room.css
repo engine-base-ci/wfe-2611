@@ -1061,6 +1061,10 @@
     display: block;
     padding: var(--k-s-sm) var(--k-s-md) 0;
   }
+  /* 写す帯が 1 つも描かれていない（帯の部品が何も返さない）ときは、余白だけの箱を出さない（下絵の帯なしの形と同じ） */
+  .k-room-mband:not(:has(.k-band, section)) {
+    display: none;
+  }
   .k-room-panel {
     overflow: visible;
     padding-bottom: 0;
@@ -1600,4 +1604,9 @@
   text-wrap: balance;
   /* 日本語は文節の切れ目で折る（語の途中で折らない） */
   word-break: auto-phrase;
+}
+
+/* 会話の並びの上端の見張り（読み足しの合図・字も印も出さない・K-762） */
+.k-room-top {
+  list-style: none;
 }

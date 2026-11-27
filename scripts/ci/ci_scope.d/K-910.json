@@ -10,6 +10,16 @@
     "apps/api/test/features/F11/portal-questions.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/portal-questions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_portal_requests_questions.test.ts"
+   ]
   }
  ],
  "reads_ok": {

@@ -394,12 +394,13 @@ const C_PAIRS: FidelityPair[] = [
 test("K740-UI-016 画面：下絵との突き合わせ（checks-table・checks-failed・checks-queue-column・checks-approve-modal・checks-none）。幅 375・768・1440 で確認の区画・列のセル・小窓の注意と四角の形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いて、狭い幅のモックと 1440 の本番を比べていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>][] = [
     [
       "checks-table",
-      async (p) => {
+      async (p, w) => {
         await mockChecks(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await expect(area(p)).toBeVisible();
       },
     ],
@@ -426,17 +427,17 @@ test("K740-UI-016 画面：下絵との突き合わせ（checks-table・checks-f
     ],
     [
       "checks-approve-modal",
-      async (p) => {
+      async (p, w) => {
         await mockChecks(p, PENDING_ROWS);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openApprove(p);
       },
     ],
     [
       "checks-none",
-      async (p) => {
+      async (p, w) => {
         await mockChecks(p, [], { reason: REASON });
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await expect(area(p)).toBeVisible();
       },
     ],
@@ -449,7 +450,7 @@ test("K740-UI-016 画面：下絵との突き合わせ（checks-table・checks-f
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs: C_PAIRS, blur: true },
       );

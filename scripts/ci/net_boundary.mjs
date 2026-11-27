@@ -19,7 +19,8 @@ export const SCOPES = [
   {
     dir: "apps/web/lib",
     bases: ["apiBase()", "apiBase", "LOCAL"], // LOCAL＝この PC の Bridge の口（127.0.0.1:38617・local.ts）
-    allow: {},
+    // 基点以外の URL を使ってよい 1 か所（Kaname の口が返した URL：C4 が署名した置き場の上げ先と、Kaname の上げ終わりの受け口・X-010・K-953）
+    allow: { "apps/web/lib/upload-net.ts": ["t.upload_url", "t.done_url"] },
   },
 ];
 const SKIP = /\.test\.(ts|tsx|mts)$|(^|\/)tests?\//;

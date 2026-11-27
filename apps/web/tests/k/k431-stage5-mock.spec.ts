@@ -43,8 +43,9 @@ const V2_OWNER: Record<string, string> = {
   "f4v2-create-head": "K-442",
   "f4v2-create-group": "K-442",
   "f4v2-create-missing-types": "K-569",
-  "f4v2-detail-item-edit": "K-569",
-  "f4v2-detail-item-error": "K-569",
+  // 詳細の項目をその場で直す 2 状態は K-1153（後から切った葉・mock: に持つ）に移った
+  "f4v2-detail-item-edit": "K-1153",
+  "f4v2-detail-item-error": "K-1153",
   "f4v2-spec-edit": "K-450",
   "f4v2-spec-add-error": "K-450",
   "f4v2-create-specs": "K-450",

@@ -167,10 +167,23 @@ test("K801-MK-003 外した部品が無い：ws/export.tsx と、できること
   for (const f of files) expect(code(f), `${f} が外した部品を読んでいる`).not.toMatch(re);
 });
 
+const LIVE = [
+  "member/detail-dialogs.tsx",
+  "member/member-page.tsx",
+  "ws/audit-screen.tsx",
+  "ws/settings-screen.tsx",
+  "account/leave-workspace.tsx",
+  "account/me-menu.tsx",
+  "account/notify-screen.tsx",
+  "account/profile-screen.tsx",
+];
 test("K801-MK-004 部品は見た目だけ：F10 の 4 つの置き場の .tsx は口を呼ばず（fetch・lib/api・useRouter・lib/auth）、生の色や大きさを書かない（style=・#色・px）", () => {
   for (const f of PARTS.flatMap((d) => sources(join(F10, d))).filter((p) => p.endsWith(".tsx"))) {
     const src = code(f);
-    expect(src, f).not.toMatch(/\bfetch\(|lib\/api|useRouter|from "@\/lib\/auth/);
+    // 後の画面の葉が口につないだ頁と小窓（口を呼んでよい。生の値の決まりはそのまま）：
+    //   member の頁と小窓 K-820〜K-822・会社の記録 K-825・会社の設定 K-818・K-832・自分の頁と抜ける K-840〜K-844
+    if (!LIVE.some((x) => f.endsWith(`/${x}`)))
+      expect(src, f).not.toMatch(/\bfetch\(|lib\/api|useRouter|from "@\/lib\/auth/);
     expect(src, f).not.toMatch(/style=\{|#[0-9a-fA-F]{3,6}\b|\d+px/);
   }
 });

@@ -337,4 +337,5 @@ export const MIGRATIONS = [
   "20261128041600_kn_share_view_checked.sql",
   "20261128041700_kn_group_manager_names.sql",
   "20261128041800_kn_approver_names.sql",
+  "20261128041900_kn_review_conflicts_plan.sql",
 ] as const;

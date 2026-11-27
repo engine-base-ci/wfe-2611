@@ -25,6 +25,14 @@ import {
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 
 const RUNNING = { stage: "doing", run: { phase: "make", status: "running", pc: "live" } };
+/** 題名の下の帯が何も出ない状態（下絵 tk-talk-panel・empty・working は帯なし）。本番も同じ状態で比べる（土台の既定は承認待ちの帯） */
+const NO_BAND = { stage: "doing", can_delegate: false, approval: null, run: null };
+/** やり取りの口（listTicketTimeline）が読んでいない 1 件を返す（右のパネルの「やり取り」の札が 1） */
+const unreadOne = async (pg: Page): Promise<void> => {
+  await pg.route(/\/api\/v1\/tickets\/[^/]+\/timeline(\?|$)/, (route) =>
+    route.fulfill({ json: { data: [], meta: { new_count: 1, post_count: 1, next_cursor: null } } }),
+  );
+};
 const STOPPED = {
   stage: "doing",
   can_delegate: true,
@@ -400,6 +408,7 @@ async function match(
   id: string,
   o: Parameters<typeof mockTicketTalk>[1],
   after?: (pg: Page) => Promise<void>,
+  before?: (pg: Page) => Promise<void>,
 ) {
   const bad: string[] = [];
   for (const w of MATCH_WIDTHS) {
@@ -409,7 +418,10 @@ async function match(
       w,
       async (pg) => {
         await mockTicketTalk(pg, o);
+        if (before) await before(pg);
         await openTicket(pg, w);
+        // openTicket は高さ 1000 で開く。比べる下絵と同じ画面の大きさ（matchMock：375 は 812・ほかは 900）に戻す
+        await pg.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
         await openAi(pg);
         if (after) await after(pg);
       },
@@ -421,9 +433,11 @@ async function match(
 }
 
 test("K764-UI-017 下絵との突き合わせ：tk-talk-panel・tk-talk-empty・tk-talk-working", async ({ browser }) => {
-  await match(browser, "tk-talk-panel", { session: session() });
-  await match(browser, "tk-talk-empty", { session: EMPTY_SESSION });
+  // 下絵 tk-talk-panel は「やり取り」のタブに読んでいない 1 件の札がある。本番も同じ状態（やり取りの口の new_count 1）で比べる
+  await match(browser, "tk-talk-panel", { band: NO_BAND, session: session() }, undefined, unreadOne);
+  await match(browser, "tk-talk-empty", { band: NO_BAND, session: EMPTY_SESSION });
   await match(browser, "tk-talk-working", {
+    band: NO_BAND,
     session: session({
       messages: [PANEL_MSGS()[0]],
       running_job_id: JOB,
@@ -433,8 +447,9 @@ test("K764-UI-017 下絵との突き合わせ：tk-talk-panel・tk-talk-empty・
 });
 
 test("K764-UI-018 下絵との突き合わせ：tk-talk-band-running・tk-talk-pc-none", async ({ browser }) => {
+  // 下絵 tk-talk-band-running の帯は作っている間の 1 行「見積の金額を確かめています」がある。本番も同じ状態（実行の progress）で比べる
   await match(browser, "tk-talk-band-running", {
-    band: RUNNING,
+    band: { ...RUNNING, run: { ...RUNNING.run, progress: "見積の金額を確かめています" } },
     session: session({
       messages: [
         msgOf({ who: "me", at: at(0, "10:45"), text: "いまどこまで進んだ？" }),
@@ -446,5 +461,10 @@ test("K764-UI-018 下絵との突き合わせ：tk-talk-band-running・tk-talk-p
       ],
     }),
   });
-  await match(browser, "tk-talk-pc-none", { pc: "none", session: EMPTY_SESSION });
+  // 下絵 tk-talk-pc-none は任せる前（作業中・承認なし・実行なし）で PC がまだの帯。本番も同じ状態で比べる
+  await match(browser, "tk-talk-pc-none", {
+    band: { stage: "doing", can_delegate: true, approval: null, run: null },
+    pc: "none",
+    session: EMPTY_SESSION,
+  });
 });

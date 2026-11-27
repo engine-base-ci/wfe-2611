@@ -48,7 +48,7 @@ function HistoryNotice({ anchor }: { anchor: RefObject<HTMLButtonElement | null>
     const body = anchor.current?.closest(".k-ap-body");
     if (!body) return;
     const el = document.createElement("div");
-    el.style.display = "contents"; // 置き場そのものは並びに加わらない（Callout が本文の並びの 1 つ目になる）
+    el.className = "k-more-contents"; // 置き場そのものは並びに加わらない（Callout が本文の並びの 1 つ目になる）
     body.prepend(el);
     setHost(el);
     return () => {

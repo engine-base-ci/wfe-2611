@@ -9,6 +9,27 @@
     "apps/api/test/features/F11/ticket-guest-shares.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/ticket-guest-shares.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-881.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_guest_shares.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/ticket-guest-shares.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id_guest_shares.test.ts"
+   ]
   }
  ],
  "reads_ok": {

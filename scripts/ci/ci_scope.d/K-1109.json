@@ -24,5 +24,8 @@
     "apps/api/test/features/F12/ops-invoices-pdf.test.ts"
    ]
   }
- ]
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F12/billing-ops.harness.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-1109"
+ }
 }

@@ -2,38 +2,6 @@
  "_doc": "design_gate の D8（画面の CSS の生の長さ・K-261）の台帳。鍵は (file, selector, prop, value)・count はその鍵の数。減らすだけ：直したら design_gate.py --raw-lengths --no-base --shrink-ledger で減らす。足すと CI（G72・分かれ目と比べる）が赤",
  "entries": [
   {
-   "file": "apps/web/app/(app)/ai/chat/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "max-w-[920px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(app)/ai/chat/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[13.5px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(app)/ai/chat/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[13px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(app)/ai/chat/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[14px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
    "file": "apps/web/app/(dev)/dev/fake-login/page.tsx",
    "selector": "style 属性",
    "prop": "style",
