@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/audit.ts", "apps/api/src/features/F10/audit/**", "packages/db/migrations/20261126002300_audit_list.sql"], "tests": ["apps/api/test/features/F10/audit-list.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/audit-list.test.ts": "口の登録 apps/api/src/hooks/audit.ts を動的 import で読み（register.make）、契約 08_api/openapi.yaml の listAuditEvents の札と上限を字で読む（K823-API-030）。hooks・口・migration の変更で流れるよう data_links で結ぶ（K-823）"
+ }
+}
