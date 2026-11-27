@@ -582,6 +582,144 @@
    "path": "/api/v1/workspace/ticket-shape",
    "decision": "D-152.20",
    "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（saveTicketShape・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/home",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeHome・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgePages・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/ask",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（askKnowledge・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/ask/feedback",
+   "decision": "D-152.9",
+   "reason": "ホーム・一覧・ことばで聞く・答えの声は下絵 v2 の 25 の状態に無い。ナレッジは木と自由なページ 1 つで受ける（代表の決め 1・9）（sendKnowledgeAnswerFeedback・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/attachments",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（uploadKnowledgeAttachment・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/versions/{v}/restore",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（restoreKnowledgeVersion・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/markdown",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（exportKnowledgeMarkdown・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/usage",
+   "decision": "D-152.9",
+   "reason": "ファイルの添付・版を戻す・書き出し・使われ方は下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeUsage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/links",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（getKnowledgeLinks・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/links",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（linkKnowledgeMention・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/link-targets",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（searchKnowledgeLinkTargets・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/{id}/messages",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgeMessages・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/messages",
+   "decision": "D-152.9",
+   "reason": "つながり・やり取りは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（postKnowledgeMessage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/verifications",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（listKnowledgeVerifications・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/verify",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（verifyKnowledgePage・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/archive",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（archiveKnowledgePage・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/{id}/unarchive",
+   "decision": "D-152.9",
+   "reason": "確かめる期限・しまうは下絵 v2 の 25 の状態に無い。ナレッジは自由なページ 1 つで受ける（代表の決め 1・9）（unarchiveKnowledgePage・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge/proposals",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（listKnowledgeProposals・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/proposals/{id}/accept",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（acceptKnowledgeProposal・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge/proposals/{id}/decline",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（declineKnowledgeProposal・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_imports",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（createKnowledgeImport・K-722）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/knowledge_imports/{id}",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（getKnowledgeImport・K-722）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/knowledge_imports/{id}/commit",
+   "decision": "D-152.9",
+   "reason": "直す案・取り込みは下絵 v2 の 25 の状態に無い。上の棚に上げる・承認は新しい形の口（K-687・K-688）が受ける（代表の決め 1・9）（commitKnowledgeImport・K-722）"
   }
  ]
 }

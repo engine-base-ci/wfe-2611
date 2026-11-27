@@ -198,8 +198,8 @@
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
   "imports": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "ナレッジの取り込みは下絵 v2 に無く使わない（D-152.9・D-152.20）。口もコードも読まない・書かない。表と行は残す"
   },
   "inquiries": {
    "class": "skeleton",
@@ -226,8 +226,20 @@
    "why": "本文が 1 枚になり、区画の形（見出し・必須・並び）を使わない（K-578・D-150.35）。口は読まない・書かない・消さない。DB の関数 2 つ（app.ticket_tool_read・app.bridge_finish_job）がまだ引く。表と行の扱いは段 10 が決める"
   },
   "knowledge_links": {
+   "class": "frozen",
+   "why": "ナレッジのつながりは下絵 v2 に無く使わない（D-152.9・D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "knowledge_folders": {
    "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "why": "ナレッジの口が使う（K-674）"
+  },
+  "knowledge_shares": {
+   "class": "skeleton",
+   "why": "グループを選んで共有の口と見える関数が使う（K-689）"
+  },
+  "knowledge_limits": {
+   "class": "skeleton",
+   "why": "必ず守るの付け外しの口が上限を読む（K-685）"
   },
   "knowledge_folders": {
    "class": "skeleton",
@@ -262,8 +274,8 @@
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
   "learning_candidates": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "覚えたいことの候補は物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
   },
   "ledger_definitions": {
    "class": "frozen",
@@ -310,8 +322,8 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
   "memories": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "AI の記憶は物として無くした（D-152.20）。AI に覚えさせたいことはナレッジのページで受ける。口もコードも読まない・書かない。表と行は残す（AI の「覚えて」の印と道具 remember が DB の関数で書く間は行が増える。読む所は無い・K-712）"
   },
   "memory_digests": {
    "class": "frozen",
@@ -394,8 +406,8 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
   "policies": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "決まり・守ることは物として無くした（D-152.20）。AI に従わせたいことはナレッジのページ（必ず守る）で受ける。口もコードも読まない・書かない。表と行は残す（後のフェーズに送ったはじめの設定の関数 onboard_golive だけが読む）"
   },
   "procedure_steps": {
    "class": "frozen",
@@ -478,16 +490,16 @@
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
   },
   "skill_test_runs": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "業務の型の試しは物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
   },
   "skill_versions": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "業務の型の版は物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
   },
   "skills": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "業務の型は物として無くした（D-152.20）。種別の本文のひな形とナレッジのページで受ける。口もコードも読まない・書かない。表と行は残す"
   },
   "status_incidents": {
    "class": "skeleton",
