@@ -47,7 +47,7 @@ const walk = (nodes: unknown, id: string): Json | null => {
 const inGroup = (tree: Json, group: string, id: string): Json | null =>
   walk(((tree["groups"] as Json[]).find((g) => g["id"] === group) ?? {})["nodes"], id);
 const approvalsCount = async (p: Person): Promise<unknown> =>
-  ((await readTree(p))["admin_counts"] as Json | null)?.["approvals"];
+  ((await readTree(p))["admin_counts"] as Json | null)?.["approvals"] ?? null; // 管理しない人は admin_counts そのものが null（K-676）
 const live = async (w: World, kind: string, p?: Person): Promise<string[]> =>
   (await notices(h, w, kind, p ? { member: p } : {})).map((n) => n.member_id).sort();
 const ids = (...ps: Person[]): string[] => ps.map((p) => p.id).sort();

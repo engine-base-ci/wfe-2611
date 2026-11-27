@@ -13,6 +13,8 @@ const SET_SQL = "select app.kn_share_set($1, $2, $3::uuid[], $4) as r";
 const AUDIT_SQL = "select app.record_audit($1, $2, $3, 'C2', '{}'::jsonb)";
 
 const MESSAGE_MAX = 1000;
+/** 1 回に選べるグループの数（契約 group_ids の maxItems・05_flow/screen_api.d/K-689.py） */
+const GROUPS_MAX = 50;
 const MESSAGE = "入力内容を確認してください";
 
 type Reason =
@@ -54,8 +56,12 @@ const AUDITS: readonly (readonly [keyof SetResult, string, string])[] = [
 const kindOf = (e: unknown): string => (e instanceof Error ? e.name : typeof e);
 const str = (v: unknown): string | null => (typeof v === "string" && v !== "" ? v : null);
 
-/** 入口の形の確かめ（契約）に重ねて、ひとことの NUL と長さを見る。前後の空白は落とし、空は null */
+/** 入口の形の確かめ（契約）に重ねて、契約の zod が持たない決まり（page_id と folder_id のどちらか 1 つ・group_ids は要る並びで 50 個まで）と、
+ *  ひとことの NUL と長さを見る。前後の空白は落とし、空は null */
 function readInput(input: Readonly<Record<string, unknown>>): SharesInput | HookReply {
+  if ((str(input["page_id"]) === null) === (str(input["folder_id"]) === null)) return invalid("page_id", MESSAGE);
+  const g = input["group_ids"];
+  if (!Array.isArray(g) || g.length > GROUPS_MAX) return invalid("group_ids", MESSAGE);
   const m = input["message"];
   if (m !== undefined && m !== null && (typeof m !== "string" || [...m].length > MESSAGE_MAX || m.includes("\u0000")))
     return invalid("message", MESSAGE);

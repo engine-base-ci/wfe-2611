@@ -146,7 +146,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 
 | 口 | 道 | 何をするか | 流れ | 状態 | 持ち主のチケット |
 |---|---|---|---|---|---|
-| `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 作った | K-332,K-877 |
+| `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 作った | K-332 |
 | `confirmInvitationJoin` | POST /api/v1/auth/invitations/confirm | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） | K-422 |
 | `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-313 |
 | `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-314 |
@@ -168,18 +168,18 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-312 |
 | `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-308 |
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 会社の記録を新しい順に読む（札・人・チケット・期間で絞る・50 件ずつ。会社全体は管理者・マネージャーは自分のグループの分） | F10 | 作った | K-823 |
-| `listGuestGroups` | GET /api/v1/guest-groups | 取得（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-874,K-876 |
-| `createGuestGroup` | POST /api/v1/guest-groups | 作成・実行（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-874,K-876 |
-| `updateGuestGroup` | PATCH /api/v1/guest-groups/:id | 更新（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-927,K-928 |
-| `deleteGuestGroup` | DELETE /api/v1/guest-groups/:id | 削除（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-927,K-928 |
-| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-419,K-874,K-876 |
+| `listGuestGroups` | GET /api/v1/guest-groups | 取得（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-876 |
+| `createGuestGroup` | POST /api/v1/guest-groups | 作成・実行（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-876 |
+| `updateGuestGroup` | PATCH /api/v1/guest-groups/:id | 更新（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-927 |
+| `deleteGuestGroup` | DELETE /api/v1/guest-groups/:id | 削除（guest-groups）— 人を招く（層・権限の束） | F10 | 作った | K-927 |
+| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-419 |
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-807 |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-807 |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-421 |
 | `listLayers` | GET /api/v1/layers | 取得（layers）— 層の名前と並びを見る（order_no の順・消した層を含まない・層に入っているグループの数） | F10 | 作った | K-70,K-803 |
-| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-803 |
-| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-803 |
-| `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-833,K-877 |
+| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-803 |
+| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-803 |
+| `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-833 |
 | `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-833 |
 | `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-834 |
 | `requestEmailChange` | POST /api/v1/me/email-change | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-835 |
@@ -197,14 +197,14 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `switchWorkspace` | POST /api/v1/me/workspaces/:id/switch | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-851 |
 | `getMember` | GET /api/v1/members/:id | 取得（members）— メンバーの所属（兼務）・権限を決める | F10 | 作った | K-810 |
 | `updateMemberGroups` | PATCH /api/v1/members/:id/groups | 更新（members）— メンバーの所属（兼務）・権限を決める | F10 | 作った | K-812 |
-| `removeMember` | POST /api/v1/members/:id/remove | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-816,K-848,K-931 |
+| `removeMember` | POST /api/v1/members/:id/remove | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-816,K-848 |
 | `previewMemberRemoval` | GET /api/v1/members/:id/remove-preview | 取得（members）— 抜ける人の依存を片付ける | F10 | 作った | K-815 |
-| `resumeMember` | POST /api/v1/members/:id/resume | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-814,K-931 |
+| `resumeMember` | POST /api/v1/members/:id/resume | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-814 |
 | `updateMemberRole` | PATCH /api/v1/members/:id/role | 更新（members）— メンバーの所属（兼務）・権限を決める | F10 | 作った | K-70,K-811 |
-| `suspendMember` | POST /api/v1/members/:id/suspend | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-814,K-931 |
+| `suspendMember` | POST /api/v1/members/:id/suspend | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-814 |
 | `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-60 |
-| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-802 |
-| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-804 |
+| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-802 |
+| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-804 |
 | `getWorkspaceSettings` | GET /api/v1/workspace | 取得（workspace）— 会社の設定を決める | F10 | 作った | K-827 |
 | `updateWorkspace` | PATCH /api/v1/workspace | 更新（workspace）— 会社の設定を決める | F10 | 作った | K-827 |
 | `requestWorkspaceDeletion` | POST /api/v1/workspace/deletion | 作成・実行（workspace）— 会社の設定を決める | F10 | 作った | K-830 |
@@ -220,7 +220,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `declineClientRequest` | POST /api/v1/client_requests/:id/decline | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） | K-895 |
 | `requestClientRequestDraft` | POST /api/v1/client_requests/:id/draft | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 契約だけ（501） | K-896 |
 | `replyToClientRequest` | POST /api/v1/client_requests/:id/reply | 作成・実行（client_requests）— 届いた依頼を受けてチケットにする／断る | F11 | 作った | K-893 |
-| `getPortalHome` | GET /api/v1/portal | 取得（portal）— 見せてもらったチケットを見る | F11 | 作った | K-906,K-913 |
+| `getPortalHome` | GET /api/v1/portal | 取得（portal）— 見せてもらったチケットを見る | F11 | 作った | K-906 |
 | `uploadPortalAttachment` | POST /api/v1/portal/attachments | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 作った | K-909 |
 | `listPortalNotices` | GET /api/v1/portal/notices | 取得（portal）— 見せてもらったチケットを見る | F11 | 作った | K-906 |
 | `createPortalRequest` | POST /api/v1/portal/requests | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 作った | K-907 |
@@ -229,8 +229,8 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `askPortalRequestQuestions` | POST /api/v1/portal/requests/questions | 作成・実行（portal）— 依頼を出す・やり取りする | F11 | 作った | K-910 |
 | `getPortalTicket` | GET /api/v1/portal/tickets/:id | 取得（portal）— 見せてもらったチケットを見る | F11 | 作った | K-906 |
 | `postPortalTicketMessage` | POST /api/v1/portal/tickets/:id/messages | 作成・実行（portal）— 見せてもらったチケットを見る | F11 | 作った | K-882 |
-| `listTicketGuestShares` | GET /api/v1/tickets/:id/guest-shares | 取得（tickets）— チケットをゲストのグループに見せる | F11 | 作った | K-881,K-905 |
-| `updateTicketGuestShares` | PATCH /api/v1/tickets/:id/guest-shares | 更新（tickets）— チケットをゲストのグループに見せる | F11 | 作った | K-881,K-905 |
+| `listTicketGuestShares` | GET /api/v1/tickets/:id/guest-shares | 取得（tickets）— チケットをゲストのグループに見せる | F11 | 作った | K-881 |
+| `updateTicketGuestShares` | PATCH /api/v1/tickets/:id/guest-shares | 更新（tickets）— チケットをゲストのグループに見せる | F11 | 作った | K-881 |
 | `startOpsSetup` | POST /api/v1/auth/ops-setup | 作成・実行（auth）— 運営の人を足し、できることを決める | F12 | 契約だけ（501） | K-945 |
 | `listMyInquiries` | GET /api/v1/inquiries | 取得（inquiries）— 自分の問い合わせ（新しい順・返事ありの印つき） | F12 | 作った | K-72,K-951 |
 | `createInquiry` | POST /api/v1/inquiries | 作成・実行（inquiries）— 運営に問い合わせる | F12 | 作った | K-72,K-949 |
@@ -296,7 +296,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `updateBillingContact` | PATCH /api/v1/workspace/billing-contact | 更新（workspace）— プラン・利用量・請求書を見る | F12 | 作った | K-72,K-959 |
 | `changePlan` | POST /api/v1/workspace/plan | 作成・実行（workspace）— プラン・利用量・請求書を見る | F12 | 作った | K-72,K-961 |
 | `listWorkspacePlans` | GET /api/v1/workspace/plans | 取得（workspace）— プラン・利用量・請求書を見る | F12 | 作った | K-72,K-961 |
-| `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 作った | K-331,K-877 |
+| `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 作った | K-331 |
 | `requestInvitationResend` | POST /api/v1/auth/invitations/:token/resend-request | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 作った | K-334 |
 | `setBridgeBrowser` | POST /api/v1/bridge/browser | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-366 |
 | `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
@@ -334,9 +334,9 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-60 |
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
-| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-705 |
+| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-705 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限 | F4,F7 | 作った | K-92 |
-| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60,K-905 |
+| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
 | `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -399,16 +399,16 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-383 |
 | `markTicketTimelineSeen` | POST /api/v1/tickets/:id/timeline/seen | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-384 |
 | `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 作った | K-67,K-485 |
-| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分） | F7 | 作った | K-461,K-467 |
-| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-462,K-467 |
-| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-462,K-467 |
+| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分） | F7 | 作った | K-461 |
+| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-462 |
+| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-462 |
 | `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物） | F7 | 作った | K-67,K-475 |
 | `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-475 |
 | `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-476 |
 | `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-476 |
 | `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-477 |
-| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-468,K-471 |
-| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-465,K-466 |
+| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-468 |
+| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-465 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-488 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-487 |
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-489 |

@@ -530,7 +530,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
 
   it("K583-API-017 契約：updateTicket の入力に estimate_minutes（0〜100000 の整数か null）があり、openapi・registry の入力の形が一致する。断りの番号の置き場 errors.d/K-583.json は無い（422・403・404・503 だけ）", () => {
     const yaml = readFileSync(join(ROOT, "08_api", "openapi.yaml"), "utf-8");
-    const at = yaml.indexOf("x-operation: updateTicket");
+    const at = yaml.indexOf("x-operation: updateTicket\n"); // 行の終わりまで（updateTicketKind など頭が同じ口に当てない）
     expect(at, "openapi.yaml に updateTicket の入力の形が在る").toBeGreaterThan(0);
     const around = yaml.slice(Math.max(0, at - 3000), at + 3000);
     expect(around).toContain("estimate_minutes");

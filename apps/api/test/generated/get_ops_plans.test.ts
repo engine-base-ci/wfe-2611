@@ -22,7 +22,7 @@ describe("GET /api/v1/ops/plans", () => {
   // 当てはまらない（入力を受けない GET（問い合わせの値も持たない））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_ops_plans_rejected_422");
   it("test_get_ops_plans_rate_limited", () => {
-    // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+    // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/ops-plans-read.test.ts の「K987-API-010」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F12/ops-plans-read.test.ts", "utf8")).toContain("K987-API-010");
   });
