@@ -8,6 +8,16 @@
    "tests": [
     "apps/api/test/features/F10/admin-scope-create.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/admin-scope-create.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_scopes.test.ts"
+   ]
   }
  ]
 }

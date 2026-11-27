@@ -9,6 +9,28 @@
    "tests": [
     "apps/api/test/features/F10/admin-invite-manage.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/admin-invite-manage.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-800.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_invitations_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/admin-invite-manage.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-800.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_invitations_id_resend.test.ts"
+   ]
   }
  ]
 }

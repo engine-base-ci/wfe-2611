@@ -20,6 +20,24 @@
     "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
     "apps/api/test/features/F12/billing-read.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-invoice-template.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_invoice_template.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-invoice-template.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/put_ops_invoice_template.test.ts"
+   ]
   }
  ]
 }

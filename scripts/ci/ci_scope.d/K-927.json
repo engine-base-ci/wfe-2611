@@ -9,6 +9,26 @@
     "apps/api/test/features/F11/guest-group-edit.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/guest-group-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_guest_groups_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/guest-group-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_guest_groups_id.test.ts"
+   ]
   }
  ],
  "reads_ok": {

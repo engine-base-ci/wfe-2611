@@ -9,6 +9,16 @@
     "apps/api/test/features/F11/portal-chat.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/portal-chat.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_portal_tickets_id_messages.test.ts"
+   ]
   }
  ],
  "reads_ok": {

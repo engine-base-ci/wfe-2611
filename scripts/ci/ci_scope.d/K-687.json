@@ -13,6 +13,40 @@
    "tests": [
     "apps/api/test/features/F9/knowledge-raise.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-raise.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-687.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_knowledge_requests_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-raise.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_pages_id_raise.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-raise.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_requests_id_dismiss.test.ts"
+   ]
   }
- ]
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-687.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-687"
+ }
 }
