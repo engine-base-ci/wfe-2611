@@ -202,7 +202,7 @@ function Members({
 
 export function renderMb(id: string, theme: Theme): ReactNode | null {
   switch (id) {
-    case "mb-list":
+    case "mb-members":
       return <Members theme={theme} />;
     case "mb-guests":
       return <Members theme={theme} guest />;

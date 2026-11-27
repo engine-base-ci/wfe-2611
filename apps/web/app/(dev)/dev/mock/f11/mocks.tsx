@@ -8,7 +8,7 @@ import type { MockEntry } from "./types";
 export type { MockEntry, ProductState } from "./types";
 export const MOCKS: readonly MockEntry[] = [
   {
-    id: "mb-list",
+    id: "mb-members",
     no: "1-1",
     screen: "members",
     ps: "PS2",

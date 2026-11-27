@@ -1,5 +1,5 @@
 // K-874「メンバーの画面に「ゲスト」のタブと、招くの小窓に役割「ゲスト」とゲストのグループの選び肢を足して口につなぐ」の画面の試験（実 Chrome・実装より先に積む）。
-//   正のモック：/dev/mock/f11/mb-list・mb-guests・mb-add・mb-add-group-new・mb-add-created・mb-add-from-group・mb-group-new・mb-group-new-dup
+//   正のモック：/dev/mock/f11/mb-members・mb-guests・mb-add・mb-add-group-new・mb-add-created・mb-add-from-group・mb-group-new・mb-group-new-dup
 //   （本番と同じ部品 features/F10/invite/views.tsx・guest-group-views.tsx。代表の答え answer=9201e2b32d4e・6fe309f41cc1・695325c0630f・6ba09f587792）。
 //   mb-add-pick（選び肢を開いた形）は突き合わせない：選ぶ欄は端末の <select> で、開いた箱は端末が描く（K874-UI-004 が選び肢の中身を見る）。
 //   ログイン・外枠・役（RequireRole）は本物（signupViaApi・loginAs）。メンバーの口 getWorkspaceMembers（K-419）・ゲストのグループの口
@@ -248,7 +248,7 @@ const PAIRS = (
 ).map(([role, sel, props]) => ({ name: role, role, canvas: sel, app: sel, props: [...props] }));
 
 const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
-  "mb-list": async () => {},
+  "mb-members": async () => {},
   "mb-guests": async (page) => {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
@@ -723,7 +723,7 @@ test("K874-UI-021 部品は見た目だけ・写しを消した：features/F10/i
   expect(mb).not.toContain("./stage9/");
 });
 
-test("K874-UI-022 モックの持ち主：mocks.tsx で K-874 の状態はちょうど 9（mb-list・mb-guests・mb-add・mb-add-pick・mb-add-group-new・mb-add-created・mb-add-from-group・mb-group-new・mb-group-new-dup）で、頭の mock: と同じ", async () => {
+test("K874-UI-022 モックの持ち主：mocks.tsx で K-874 の状態はちょうど 9（mb-members・mb-guests・mb-add・mb-add-pick・mb-add-group-new・mb-add-created・mb-add-from-group・mb-group-new・mb-group-new-dup）で、頭の mock: と同じ", async () => {
   const src = readFileSync(join(ROOT, "apps/web/app/(dev)/dev/mock/f11/mocks.tsx"), "utf8");
   const mine = [...src.matchAll(/id:\s*"([^"]+)"[\s\S]*?ticket:\s*"(K-\d+)"/g)]
     .filter((m) => m[2] === "K-874")
@@ -738,7 +738,7 @@ test("K874-UI-022 モックの持ち主：mocks.tsx で K-874 の状態はちょ
       "mb-group-new",
       "mb-group-new-dup",
       "mb-guests",
-      "mb-list",
+      "mb-members",
     ].sort(),
   );
   const head = readFileSync(join(ROOT, "11_tickets/K-874.md"), "utf8")

@@ -1,6 +1,6 @@
-// K-730「段 6 の下絵の部品とモック（/dev/mock/f5 の 95 の状態）を本線に入れ、帯・承認待ち・右のパネルに段 6 の画面の葉の差し込み口を足す（W0）」の試験
+// K-730「段 6 の下絵の部品とモック（/dev/mock/f5 の 94 の状態）を本線に入れ、帯・承認待ち・右のパネルに段 6 の画面の葉の差し込み口を足す（W0）」の試験
 //   （実 Chrome と、ファイルを読む試験・実装より先に積む）。
-//   的：開発用の置き場 /dev/mock/f5（索引と 95 の状態・代表が OK を出した下絵）と、差し込み口の器 features/F5/more/slots.tsx・先 fills/・帯の下の 1 行 trail.ts。
+//   的：開発用の置き場 /dev/mock/f5（索引と 94 の状態・代表が OK を出した下絵）と、差し込み口の器 features/F5/more/slots.tsx・先 fills/・帯の下の 1 行 trail.ts。
 //   差し込み口の先は最初、今の本線と同じ物を返す：本番の画面の行（006〜013・018）は「今と同じ」を見る（前からの土台 approve-complete.harness.ts の mockApi）。
 //   固定の待ちは使わない。name は exact。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { execFileSync } from "node:child_process";
@@ -136,16 +136,16 @@ const overflowX = (page: Page) =>
 
 // ---------------------------------------------------------------- 下絵の置き場
 
-test("K730-UI-001 入口：索引 /dev/mock/f5 の「状態の一覧」に 95 件のリンクが並び、どれを押しても 200 で開き、その状態の中に製品の時点の印 data-ps（PS0・PS2・PS3）と見出し h1 がある", async ({
+test("K730-UI-001 入口：索引 /dev/mock/f5 の「状態の一覧」に 94 件のリンクが並び、どれを押しても 200 で開き、その状態の中に製品の時点の印 data-ps（PS0・PS2・PS3）と見出し h1 がある", async ({
   page,
 }) => {
-  test.setTimeout(240_000); // 95 の状態を開く（段 7 の k382 と同じ程度）
-  expect(STATES.length, "MOCKS が読めない").toBe(95);
+  test.setTimeout(240_000); // 94 の状態を開く（段 7 の k382 と同じ程度）
+  expect(STATES.length, "MOCKS が読めない").toBe(94);
   await guard(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   expect((await page.goto("/dev/mock/f5"))?.status()).toBe(200);
   const links = page.getByRole("region", { name: "状態の一覧", exact: true }).getByRole("link");
-  await expect(links).toHaveCount(95);
+  await expect(links).toHaveCount(94);
   for (const s of STATES) {
     await openState(page, s.id, 1440);
     const root = page.locator(`[data-mock="${s.id}"]`);
@@ -159,11 +159,11 @@ test("K730-UI-001 入口：索引 /dev/mock/f5 の「状態の一覧」に 95 �
 });
 
 for (const w of WIDTHS) {
-  test(`K730-UI-002 画面：95 の状態を幅 ${w} で開くと、どれも横のはみ出しが 0 で「この状態はまだありません」が出ない`, async ({
+  test(`K730-UI-002 画面：94 の状態を幅 ${w} で開くと、どれも横のはみ出しが 0 で「この状態はまだありません」が出ない`, async ({
     page,
   }) => {
     test.setTimeout(240_000);
-    expect(STATES.length).toBe(95);
+    expect(STATES.length).toBe(94);
     await guard(page);
     for (const s of STATES) {
       await openState(page, s.id, w);
@@ -173,7 +173,7 @@ for (const w of WIDTHS) {
   });
 }
 
-test("K730-UI-003 入口：MOCKS の 95 の ticket は切り方.md の画面の葉の持ち主の表と同じで、id の重なりが 0", () => {
+test("K730-UI-003 入口：MOCKS の 94 の ticket は切り方.md の画面の葉の持ち主の表と同じで、id の重なりが 0", () => {
   const ids = STATES.map((s) => s.id);
   expect(new Set(ids).size, "同じ id が 2 つある").toBe(ids.length);
   for (const s of STATES) expect(s.ticket, `${s.id} の持ち主`).toBe(ownerOf(s.id));
@@ -181,7 +181,7 @@ test("K730-UI-003 入口：MOCKS の 95 の ticket は切り方.md の画面の�
   expect(STATES.length, "読めない行がある").toBe(written);
 });
 
-test("K730-UI-004 守り：95 の状態を開く間、口（/api/）にも本人の Bridge（127.0.0.1:38617）にも 1 本も要求が飛ばない", async ({
+test("K730-UI-004 守り：94 の状態を開く間、口（/api/）にも本人の Bridge（127.0.0.1:38617）にも 1 本も要求が飛ばない", async ({
   page,
 }) => {
   test.setTimeout(240_000);

@@ -19,8 +19,7 @@ import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { QueueCard } from "./queue-table";
-import { QueueEmptySlot, QueueFocusSlot, QueueHistorySlot } from "@/features/F5/more/slots";
-import { useQueueQuery } from "@/features/F5/more/fills/queue-tools";
+import { QueueEmptySlot, QueueFocusSlot, QueueHistorySlot, useQueueQuery } from "@/features/F5/more/slots";
 import "./approve.css";
 
 export interface QueueRow {

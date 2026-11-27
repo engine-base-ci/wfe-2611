@@ -17,6 +17,8 @@ import { ApproveChecksFill, ChecksFill, QueueCheckCellFill } from "./fills/check
 import { ArtifactAreaFill, SelfEditActFill } from "./fills/self-edit";
 import { DryRunActFill, DryRunFill } from "./fills/dry-run";
 import { QueueEmptyFill, QueueToolsFill } from "./fills/queue-tools";
+/** 承認待ちの一覧の問い合わせの足し（K-749）。画面のファイルは差し込み口と同じくここから読む（K730-UI-015） */
+export { useQueueQuery } from "./fills/queue-tools";
 import { QueueHistoryFill } from "./fills/queue-history";
 import { QueueFocusFill } from "./fills/queue-focus";
 import { QueueBulkFill } from "./fills/queue-bulk";

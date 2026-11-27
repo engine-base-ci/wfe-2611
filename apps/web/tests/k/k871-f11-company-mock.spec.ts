@@ -33,7 +33,7 @@ const OWNERS: Record<string, number> = {
 const TOTAL = Object.values(OWNERS).reduce((a, b) => a + b, 0);
 /** この葉が描く状態 */
 const MB = [
-  "mb-list",
+  "mb-members",
   "mb-guests",
   "mb-add",
   "mb-add-pick",
@@ -162,7 +162,7 @@ test("K871-MK-004 部品は見た目だけ：share/views.tsx・share/frame.tsx�
 
 test("K871-MK-005 道の一覧：/dev/mock/f11 と /dev/mock/f11/:id が built-routes に在る", () => {
   expect(isBuilt("/dev/mock/f11")).toBe(true);
-  expect(isBuilt("/dev/mock/f11/mb-list")).toBe(true);
+  expect(isBuilt("/dev/mock/f11/mb-members")).toBe(true);
 });
 
 test("K871-MK-006 後ろの葉の物はこの葉が持たない：render-cu-rq.tsx の renderRq と render-cp.tsx の renderCp は在って関数を出す（中身は K-872・K-873 の物で、この葉は形を見ない）。K-871 の mock の状態はちょうど 27（mb-18・tk-9。rq-・pt- は無い。mb-join は K-877 の物なので描かない・見ない）で、どれも mocks.tsx に在る", () => {
@@ -272,13 +272,13 @@ test("K871-UI-009 小窓の確かめ（tk-share-saving・tk-share-failed・tk-un
   await expect(page.getByText("ゲストの画面から、このチケットは消えます。", { exact: true })).toBeVisible();
 });
 
-test("K871-UI-010 メンバーの画面（mb-list・mb-guests）：ゲストのタブはゲストのグループ（セイコー株式会社（ゲスト））ごとにゲストが並び、メンバーのタブには社内の人だけ", async ({
+test("K871-UI-010 メンバーの画面（mb-members・mb-guests）：ゲストのタブはゲストのグループ（セイコー株式会社（ゲスト））ごとにゲストが並び、メンバーのタブには社内の人だけ", async ({
   page,
 }) => {
   await guard(page);
   await openState(page, "mb-guests", 1440);
   await expect(page.getByText(SEIKO, { exact: true }).first()).toBeVisible();
-  await openState(page, "mb-list", 1440);
+  await openState(page, "mb-members", 1440);
   await expect(page.locator("body")).not.toContainText(SEIKO);
 });
 
