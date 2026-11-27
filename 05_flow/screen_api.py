@@ -1195,7 +1195,7 @@ QUERIES = {
     "listCloneActivity": ["kind", "from", "to"],
     "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
-    "listPlanHistory": ["plan_id"],
+    "listPlanHistory": ["plan_key"],
     "getNotificationSettings": ["tenant_id"],
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
@@ -1414,15 +1414,15 @@ PERMS = {
     "listOpsTemplates": ("ops:distribute", "同上", False),
     "getOpsTemplate": ("ops:distribute", "同上", False),
     "releaseOpsTemplate": ("ops:distribute", "同上。使っているワークスペースには知らせが届き、取り込むかは各管理者が選ぶ（D-125.72）", True),
-    "listOpsPlans": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
-    "listPlanProposals": ("ops:plan_propose", "同上", False),
+    "listOpsPlans": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
+    "listPlanProposals": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     "createPlanProposal": ("ops:plan_propose", "値段の案を持つ運営の人。理由が必須", False),
     "updatePlanProposal": ("ops:plan_propose", "案を作った本人（決める人に回す前だけ）", False),
     "getPlanProposalImpact": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     "submitPlanProposal": ("ops:plan_propose", "案を作った本人", False),
     "decidePlanProposal": ("ops:plan_decide", "値段を決めるを持つ運営の人。自分の案は決められない（決められる人が 1 人しかいないときだけ例外）。全部の顧客に効くので本人確認を取り直す（D-128.72）", True),
     "returnPlanProposal": ("ops:plan_decide", "同上（差し戻す理由が必須）", False),
-    "listPlanHistory": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人（消せない記録）", False),
+    "listPlanHistory": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     # ワークスペースの管理（入口は権限のある人だけに出る・D-128.48。招く・役割・外すは管理者と権限を付けた人だけ・D-128.97）
     "getWorkspaceMembers": ("admin", "管理者と、メンバーを直す権限を付けた人", False),
     "createInvitations": ("admin", "管理者と、招く権限を付けた人。マネージャーは招けない（D-128.97）。管理者として招くときは本人確認を取り直す", "admin_role"),

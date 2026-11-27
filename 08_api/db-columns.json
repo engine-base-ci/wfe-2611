@@ -4960,6 +4960,10 @@
     "type": "text",
     "nullable": false
    },
+   "submitted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
