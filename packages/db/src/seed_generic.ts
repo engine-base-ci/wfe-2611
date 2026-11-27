@@ -169,6 +169,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       else if (x.col === "scope_id" && fk) row[x.col] = scopeOf(which);
       // 先方の人を会社の人に結ぶと、その人は「取引先の人」になり会社の人の守りを通れなくなる（app.member_ok・K-6）。種では結ばない
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
+      // 上げる頼み（kind の候補の先頭 raise）はページだけを指す（check knowledge_requests_target：raise はフォルダを持たない・K-687）
+      else if (t === "knowledge_requests" && x.col === "folder_id") row[x.col] = null;
       else if (fk && fk.refTable === "members") row[x.col] = bossOf(which);
       else if (fk && fk.refTable === "tenants") row[x.col] = tenant;
       else if (fk && fk.refTable === "scopes") row[x.col] = scopeOf(which);
