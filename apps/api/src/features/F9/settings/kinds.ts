@@ -42,11 +42,14 @@ const CONFLICTS: Readonly<Record<string, string>> = {
   last_kind: "E-KND-005",
 };
 
+/** 無い・消した・別の会社の種別（404 E-PAGE-001・欄・details なし） */
+const notFoundKind = (): HookReply => bare("E-PAGE-001", 404);
+
 /** DB の関数の答え { error } → 口の答え。知らない言葉は止める側（503） */
 function refusal(r: Body, op: string): HookReply {
   const word = String(r["error"]);
   if (word === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
-  if (word === "not_found") return bare("E-PAGE-001", 404);
+  if (word === "not_found") return notFoundKind();
   if (word === "invalid") return invalid([{ field: "body", message: "入力内容を確認してください" }]);
   const code = CONFLICTS[word];
   if (code) return bare(code, 409, word === "in_use" ? { ticket_count: Number(r["ticket_count"] ?? 0) } : undefined);
@@ -158,6 +161,8 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
       },
     },
     updateTicketKind: {
+      // 入口（op.ts の 4.1・行に結ぶ言葉）が :id の行を見つけられないときも、この口の決め（404 E-PAGE-001・欄なし）で返す（統合の枝）
+      rowMissing: notFoundKind,
       before: async (a) => {
         const raw = await sentBody(a);
         const details: Detail[] = [];
@@ -179,6 +184,8 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
       },
     },
     deleteTicketKind: {
+      // 入口（op.ts の 4.1・行に結ぶ言葉）が :id の行を見つけられないときも、この口の決め（404 E-PAGE-001・欄なし）で返す（統合の枝）
+      rowMissing: notFoundKind,
       before: async (a) =>
         run(appPool, a, "deleteTicketKind", "select app.ticket_kind_delete($1::uuid) as r", [a.id], (data) => ({
           status: 200,

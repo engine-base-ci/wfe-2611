@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Ops } from "@kaname/contracts";
 import { errorCodeOf, PAGE_ERROR } from "@/components/k";
 import { call } from "@/lib/api/call";
+import { postUploadDone, putSignedUpload, type UploadTarget } from "@/lib/upload-net";
 import { FILE_TEXT, type AskContext } from "./ask-shape";
 import { INQUIRIES_KEY } from "./use-help";
 
@@ -12,12 +13,6 @@ const SCREEN = "inquiry";
 
 /** 付けた結果：付いた（id を持つ）か、行に出す理由の字 */
 export type UploadResult = { ok: true; id: string } | { ok: false; text: string };
-
-interface UploadTarget {
-  id: string;
-  upload_url: string;
-  done_url: string;
-}
 
 const isTarget = (v: unknown): v is UploadTarget => {
   const t = v as Partial<UploadTarget> | null;
@@ -42,9 +37,9 @@ export async function uploadAttachment(file: File): Promise<UploadResult> {
     });
     if (!r.ok || !isTarget(r.data)) return { ok: false, text: FILE_TEXT.failed };
     const target = r.data;
-    const put = await fetch(target.upload_url, { method: "PUT", body: file, headers: { "content-type": file.type } });
+    const put = await putSignedUpload(target, file);
     if (!put.ok) return { ok: false, text: FILE_TEXT.failed };
-    const done = await fetch(target.done_url, { method: "POST" });
+    const done = await postUploadDone(target);
     if (done.status !== 200) return { ok: false, text: await doneText(done) };
     return { ok: true, id: target.id };
   } catch {
