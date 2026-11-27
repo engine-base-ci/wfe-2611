@@ -216,7 +216,9 @@ describe("K-62 AI に任せる：PC が取る・様子を返す・終わる（PC
     expect(await runRow(d.run_id)).toMatchObject({ status_id: "done" });
     expect((await runRow(d.run_id))["finished_at"]).not.toBeNull();
     const view = await data<{ checks: { state: string } }>(await k.run(p, d.run_id));
-    expect(view.checks.state).toBe("none"); // 検査なし（まだ流していません・D-128.138）
+    // 確認は確認項目から出す（K-739・0 件なら「検査なし」）。土台のチケットは任せられるように確認項目を 1 件持つ（K-565・K-578）ので、
+    //   まだ済みの無い「0 ／ 1 済み」＝ partial（段の統合で K-62 の「検査なし」と K-739 が重なった）
+    expect(view.checks.state).toBe("partial");
     expect(await k.n("select count(*) as n from ticket_messages where ticket_id = $1 and kind = 'system'", [t])).toBe(
       2,
     );
