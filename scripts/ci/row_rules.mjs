@@ -11,8 +11,6 @@ export const ROW_WORDS = ["self", "read", "write", "assignee", "approver", "reci
 
 /** path の :id が指す表（path の :id の前の段）。段の名前が表の名前と違うものだけ書く */
 export const ID_TABLE = {
-  "/api/v1/work_types": "skills",
-  "/api/v1/rules": "policies",
   "/api/v1/bridge/devices": "sessions",
   "/api/v1/me/sessions": "sessions",
   "/api/v1/me/workspaces": "tenant_memberships",
@@ -29,6 +27,24 @@ export const ROW_EXEMPT = {
 /** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
  *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
 export const ROW_EXEMPT_FIELDS = {
+  withdrawKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  dismissKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  approveKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  declineKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  updateKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  deleteKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },
@@ -54,9 +70,7 @@ export const RULES = {
     credentials: `owner_member_id = ${ME}`,
     export_jobs: `requested_by = ${ME}`,
     inquiries: `opened_by_member_id = ${ME}`,
-    learning_candidates: `owner_member_id = ${ME}`,
     tenant_memberships: `member_id = ${ME}`,
-    memories: `owner_member_id = ${ME}`,
     // 会話の中の発言から作る：自分の会話の発言だけ
     messages: `exists (select 1 from conversations c where c.id = conversation_id and c.owner_member_id = ${ME})`,
     notifications: `member_id = ${ME}`,
@@ -72,7 +86,8 @@ export const RULES = {
   read: {},
   write: {
     tickets: `app.ticket_writable(id)`,
-    knowledge_pages: `app.kpage_writable(id)`,
+    // 消したページは入口を通し、口が deleted_at is null つきの読みで 404 にする（入口で 403 にすると「消した → 404」が口に届かない・K-675）
+    knowledge_pages: `(deleted_at is not null or app.kpage_writable(id))`,
     // 残りは 07_functional/entities.json の update の条件をそのまま使う（RLS と同じ式）
   },
   assignee: {
@@ -107,13 +122,20 @@ export const OP_RULES = {
   returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人・担当者・マネージャー
   stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
-  // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる
-  copyWorkType: `true`,
   // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
   //   ワークスペースの物を別の管理者が直す・消すので持ち主で絞らない。edit の判定（403・E-CRED-007）と、消した物・失効しただけの物の 404 は
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（K-401・D-148.17）。
+  //   状態は見ない（決まった渡しに答えた人には 403 でなく 409・E-HND-005 を口が返す）。RULES.recipient は替えない（ほかの口に効かせない）。
+  //   関数 app.handover_answer_gate も中で同じ判定をする（守りは 2 層）
+  answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 段9:K-406 取り消す・催促するの行はこの下
+
+  // 段9:K-410 人を決めるの行はこの下
+
   // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
   //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
   takeoverActionRun: `true`,

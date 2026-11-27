@@ -324,6 +324,264 @@
    "path": "/api/v1/action_runs/{id}/retry",
    "decision": "D-129.11",
    "reason": "「もう一度」は K-62 の「AI に任せる」（delegateTicket）と同じ働き。契約に重ねて持たない（D-151.17）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/rules",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（listRules・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/rules/{id}",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（getRule・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/rules/check",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（checkRule・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/rules",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（createRule・K-711）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/rules/{id}",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（updateRule・K-711）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/rules/{id}",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（deleteRule・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/workspace/rules",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（getWorkspaceRules・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/workspace/rules",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（createWorkspaceRule・K-711）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/workspace/rules/{id}",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（updateWorkspaceRule・K-711）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/workspace/rules/{id}",
+   "decision": "D-152.20",
+   "reason": "決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（代表の決め 1）（deleteWorkspaceRule・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/workspace/escalation-rules/preview",
+   "decision": "D-152.20",
+   "reason": "上に回す決まりは物として無くした。承認を上げる先は種別の本文のひな形とナレッジのページで受ける（代表の決め 1）（previewEscalationRule・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/workspace/escalation-rules",
+   "decision": "D-152.20",
+   "reason": "上に回す決まりは物として無くした。承認を上げる先は種別の本文のひな形とナレッジのページで受ける（代表の決め 1）（createEscalationRule・K-711）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/workspace/escalation-rules/{id}",
+   "decision": "D-152.20",
+   "reason": "上に回す決まりは物として無くした。承認を上げる先は種別の本文のひな形とナレッジのページで受ける（代表の決め 1）（updateEscalationRule・K-711）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/workspace/escalation-rules/{id}",
+   "decision": "D-152.20",
+   "reason": "上に回す決まりは物として無くした。承認を上げる先は種別の本文のひな形とナレッジのページで受ける（代表の決め 1）（deleteEscalationRule・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/work_types",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（listWorkTypes・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/work_types/{id}",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（getWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/work_types",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（createWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/work_types/{id}/copy",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（copyWorkType・K-711）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/work_types/{id}/draft",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（updateWorkTypeDraft・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/work_types/{id}/versions",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（listWorkTypeVersions・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/work_types/{id}/try",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（tryWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/work_types/{id}/release",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（releaseWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/work_types/{id}/spread-requests",
+   "decision": "D-152.20",
+   "reason": "業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（代表の決め 8）（requestWorkTypeSpread・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ops/work_types",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（listOpsWorkTypes・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ops/work_types/{id}",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（getOpsWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/work_type_uploads",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（uploadWorkTypePackage・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ops/work_type_uploads/{id}",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（getWorkTypeUpload・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/work_types/{id}/versions",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（releaseOpsWorkType・K-711）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/work_types/{id}/versions/{v}/rollback",
+   "decision": "D-152.20",
+   "reason": "運営の業務の型は無くした。運営のひな形は別の口で残る（代表の決め 8）（rollbackOpsWorkType・K-711）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/memories",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（listMemories・K-712）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/memories",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（createMemory・K-712）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/memories/{id}",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（updateMemory・K-712）"
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/memories/{id}",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（deleteMemory・K-712）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/memories/{id}/promote",
+   "decision": "D-152.20",
+   "reason": "記憶は物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 8）（promoteMemoryToRule・K-712）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/clones/me/knows/counts",
+   "decision": "D-152.20",
+   "reason": "知っていることの数は、数える物（決まり・やり方・記憶・覚えたいこと）が無くなった（代表の決め 1・8）（countKnows・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/learning_candidates",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（listLearningCandidates・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/accept",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（acceptLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/dismiss",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（dismissLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/later",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）（postponeLearningCandidate・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/learning_candidates/{id}/exception-request",
+   "decision": "D-152.20",
+   "reason": "覚えたいことは物として無くした。AI に覚えさせたいことはナレッジのページで受ける（代表の決め 1・8）。決まりの例外の頼みも決まりと一緒に無くした（requestRuleException・K-721）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/workspace/ticket-shape",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（getTicketShape・K-721）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/workspace/ticket-shape/preview",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（previewTicketShapeChange・K-721）"
+  },
+  {
+   "method": "PATCH",
+   "path": "/api/v1/workspace/ticket-shape",
+   "decision": "D-152.20",
+   "reason": "チケットの形は種別・状態・項目の口に分けた（代表の決め 13 と K-704・K-705・K-706・K-717）（saveTicketShape・K-721）"
   }
  ]
 }
