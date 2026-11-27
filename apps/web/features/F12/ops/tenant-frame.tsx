@@ -2,10 +2,12 @@
 // 1 社の画面の枠（段 13・領域 ops・キャンバス OpWs の頭とタブとワークスペースの情報）。値を受け取って描くだけ
 //   K-972：頭のボタン（acts）・止めている帯（stopBand・onResume）・頭の下の知らせ（notice）を任意の props で受ける。
 //   渡さない呼び方（モック）は今の見た目のまま
+//   K-971：頭の値（view）・タブの字（tabs）・タブを押したとき（onTab）・右の情報の行（info）を任意の props で受ける
 import type { ReactNode } from "react";
 import { Band, Button, Menu, MenuItem, MenuPopup, MenuTrigger, Tabs } from "@/components/k";
 import { Card, Facts, StatusBadge } from "./ops-parts";
 import { WS_INFO } from "./ops-sample";
+import type { FrameView } from "./ws-tenant-shape";
 
 export type TenantTab = "status" | "members" | "billing" | "inquiries" | "log";
 
@@ -37,6 +39,14 @@ export interface TenantFrameProps {
   notice?: ReactNode;
   /** 再開を送っている間 */
   resuming?: boolean;
+  /** 頭の値（名前・印・状態の札・頭の下の字）。渡さなければ下絵の見本 */
+  view?: FrameView;
+  /** タブの字（数つき）。渡さなければ下絵の字 */
+  tabs?: Partial<Record<TenantTab, string>>;
+  /** タブを押したとき（渡さなければタブは動かない＝下絵） */
+  onTab?: (tab: TenantTab) => void;
+  /** 右の「ワークスペースの情報」の行。渡さなければ下絵の見本 */
+  info?: readonly (readonly [string, string])[];
   /** 開いたタブの中身。ほかのタブの中身は描かない */
   children: ReactNode;
 }
@@ -52,10 +62,20 @@ const TABS: readonly { value: TenantTab; label: string }[] = [
 const NO_ACT = "この操作はできません";
 const SAMPLE_STOP: TenantStopBand = { reason: "請求が払われない", since: "11/09" };
 
-export function WsInfoCard() {
+const SAMPLE_VIEW: FrameView = {
+  name: "合同会社ミナト企画",
+  mark: "ミ",
+  status: "使っている",
+  tone: "success",
+  sub: "チーム ・ 8 人",
+  stopped: false,
+};
+const TAB_VALUES: readonly string[] = TABS.map((t) => t.value);
+
+export function WsInfoCard({ rows = WS_INFO }: { rows?: readonly (readonly [string, string])[] }) {
   return (
     <Card title="ワークスペースの情報">
-      <Facts rows={WS_INFO} />
+      <Facts rows={rows} />
       <p className="k-op-note-text">
         このワークスペースへの運営の操作はすべて「記録」に残り、顧客の「ワークスペースの管理 ›
         記録」にも出る（許可は規約で先にもらっている）
@@ -87,6 +107,10 @@ export function TenantFrame({
   stopBand,
   notice,
   resuming = false,
+  view = SAMPLE_VIEW,
+  tabs,
+  onTab,
+  info,
   children,
 }: TenantFrameProps) {
   const band = stopBand ?? (stopped ? SAMPLE_STOP : null);
@@ -101,15 +125,15 @@ export function TenantFrame({
     <section className="k-root k-page" aria-labelledby="op-ws-title">
       <header className="k-page-head">
         <span className="k-op-ws-mark" aria-hidden="true">
-          ミ
+          {view.mark}
         </span>
-        <h1 id="op-ws-title">合同会社ミナト企画</h1>
+        <h1 id="op-ws-title">{view.name}</h1>
         {band ? (
           <StatusBadge tone="danger">止めている（{band.since}〜）</StatusBadge>
         ) : (
-          <StatusBadge tone="success">使っている</StatusBadge>
+          <StatusBadge tone={view.tone}>{view.status}</StatusBadge>
         )}
-        <p className="k-page-sub">チーム ・ 8 人</p>
+        <p className="k-page-sub">{view.sub}</p>
         <div className="k-page-acts">
           <HeadButton can={acts?.canNotice ?? true} onClick={() => acts?.onNotice()}>
             お知らせを送る
@@ -155,11 +179,16 @@ export function TenantFrame({
             <Tabs
               label="1 社の画面"
               value={tab}
-              items={TABS.map((t) => ({ ...t, panel: t.value === tab ? children : null }))}
+              items={TABS.map((t) => ({
+                ...t,
+                label: tabs?.[t.value] ?? t.label,
+                panel: t.value === tab ? children : null,
+              }))}
+              {...(onTab ? { onValueChange: (v: string) => TAB_VALUES.includes(v) && onTab(v as TenantTab) } : {})}
             />
           </div>
           <aside className="k-op-side" aria-label="ワークスペースの情報">
-            <WsInfoCard />
+            <WsInfoCard {...(info ? { rows: info } : {})} />
           </aside>
         </div>
       </div>
