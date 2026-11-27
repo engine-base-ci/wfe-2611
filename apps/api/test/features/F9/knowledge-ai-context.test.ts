@@ -292,8 +292,9 @@ describe("K-697 AI に渡す物（DB の関数 app.knowledge_context）", () => 
       w.co.tenantId,
     ]);
     expect(viaTicketless.rows[0]!.s).toBe(w.co.rootScope);
+    // 無い会社の id（…0001 は段12・13 の運営の会社 OPS_TENANT_ID として種で入るので使わない）
     const second = await h.admin.query<{ s: string | null }>("select app.kn_company_scope_of($1) as s", [
-      "00000000-0000-4000-8000-000000000001",
+      "00000000-0000-4000-8000-00000000f697",
     ]);
     expect(second.rows[0]!.s).toBeNull();
   });
