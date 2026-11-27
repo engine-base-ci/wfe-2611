@@ -122,7 +122,11 @@ declare
   t record;
   v_id uuid;
 begin
-  if v_tenant is null or v_me is null or not app.guest_ok() or not app.guest_sees_ticket(p_ticket) then
+  -- ゲストの文脈でない人（グループに入っていない・止めた・社内の人の client の文脈）は 42501（hint なし・口が 403）
+  if v_tenant is null or v_me is null or not app.guest_ok() then
+    raise exception 'ゲストでない' using errcode = 'insufficient_privilege';
+  end if;
+  if not app.guest_sees_ticket(p_ticket) then
     raise exception 'この仕事は見られない' using errcode = 'insufficient_privilege', hint = 'E-GST-060';
   end if;
   select x.id, x.number, x.title, x.assignee_member_id into t
