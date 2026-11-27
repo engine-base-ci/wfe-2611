@@ -89,10 +89,11 @@ const breach = async (w: World, page: string, kind: string, daysAgo = 1): Promis
 };
 const ids = (rows: { id: string }[]): string[] => rows.map((r) => r.id).sort();
 /** 公開済みのページを SQL でまとめて入れる（題名は prefix＋md5・本文は md5・days 日前に公開） */
+// 題名は頭の字＋ md5。md5 の種にも頭の字を入れる（入れないと会社の c… と営業の g… が同じ md5 で 1 字違いになり、似ている題名の組として見つかる）
 const bulk = async (w: World, scope: string, owner: Person, n: number, prefix: string, days = 0): Promise<void> => {
   await h.admin.query(
     `insert into knowledge_pages (tenant_id, scope_id, is_personal, owner_member_id, state, is_must, title, summary, position, current_version)
-     select $1, $2, false, $3, 'published', false, $4 || md5(g::text), '', 0, 1 from generate_series(1, $5::int) g`,
+     select $1, $2, false, $3, 'published', false, $4 || md5($4 || g::text), '', 0, 1 from generate_series(1, $5::int) g`,
     [w.co.tenantId, scope, owner.id, prefix, n],
   );
   await h.admin.query(
@@ -104,6 +105,9 @@ const bulk = async (w: World, scope: string, owner: Person, n: number, prefix: s
        from knowledge_pages p where p.tenant_id = $1 and p.title like $2 || '%'`,
     [w.co.tenantId, prefix, owner.id, String(days)],
   );
+  // 本番では、まとめて入った行は自動の統計（autovacuum の analyze）が拾ってから読まれる。試験はすぐ読むので、入れた後に統計を取る
+  //   （統計が無いと planner が 1 万行を小さい表と見て、見える・書けるの関数を全部の行で呼ぶ計画を選ぶ・統合の枝）
+  await h.admin.query("analyze knowledge_pages, knowledge_page_versions");
 };
 const same = (a: string, b: string): Promise<number> =>
   h.admin.query<{ s: number }>("select similarity($1, $2) as s", [a, b]).then((r) => r.rows[0]!.s);
