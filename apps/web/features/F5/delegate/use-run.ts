@@ -25,6 +25,8 @@ export interface RunView {
   reason_kind?: string | null;
   /** 止まった実行を人が引き取った時刻（K-485 が足す・古い答えには無い） */
   taken_over_at?: string | null;
+  /** 片付けに失敗した印（待っている承認の後の実行だけ・K-1191）。無ければ印なし */
+  sweep_failed_at?: string | null;
 }
 /** 走っている（終わっていない）実行の状態 */
 export const ACTIVE = new Set(["queued", "running", "asking"]);
