@@ -1145,12 +1145,19 @@ RESPONSES = {
     "listKnowledgeVerifications": ("KnowledgeVerification", {"page_id": "string", "title": "string", "place": "string", "owner_member_id": "string", "due_on": "string", "interval": "string", "ai_check": "string", "suggested_action": "string", "newer_page_id": "string"}),
     "exportKnowledgeMarkdown": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "getKnowledgeImport": ("KnowledgeImportPreview", {"source": "string", "pages": "integer", "folders": "integer", "links": "integer", "topics": "integer", "images": "integer", "mapping": "object", "warnings": "array"}),
-    "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "string", "name": "string", "admin": "object", "plan": "string", "members": "string", "pc_connected": "string", "runs_month": "integer", "attention": "array", "billing": "string", "state": "string"}),
-    "getOpsWorkspace": ("OpsWorkspace", {"workspace": "object", "pc": "object", "runs": "object", "stopped": "object", "files": "object", "stop_reasons": "array", "recent": "array", "info": "object"}),
-    "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"name": "string", "email": "string", "role": "string", "last_seen_at": "string", "pc": "string", "login": "string"}),
+    # K-1006：1 行は数と種類だけ（中身を返さない・D-156.3）。members は { count, limit }・pc は { connected, total } か null・attention は { kind, label_value } の並び（kind は overdue・stuck・pc・D-156.24・D-156.72）
+    #   billing_state は unpaid・paid・overdue か null・state は active・stopped・closing
+    "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "uuid", "name": "string", "admin_name": "string", "plan_name": "string?", "members": "object", "pc": "object?", "runs_month": "integer?", "attention": "array", "billing_state": "string?", "state": "string", "state_since": "string"}),
+    # K-1006：stop は { reason_key, stop_on, stopped_at, noticed_at } か null（D-156.23）・admin は { name }・runs_month は { count }・stuck_runs は { count_7d, prev_week }・files は { bytes }
+    #   recent は { at, label, detail? } の並び（D-156.47）・peek は自分が開いている中を見る許可 { id, expires_at } か null。上限の割合と上限の値は持たない（D-156.63・D-156.72）
+    "getOpsWorkspace": ("OpsWorkspace", {"id": "uuid", "name": "string", "plan_name": "string?", "state": "string", "stop": "object?", "admin": "object", "members": "object", "inquiries": "object", "pc": "object?", "runs_month": "object", "stuck_runs": "object", "files": "object", "recent": "array", "peek": "object?"}),
+    # K-1006：role_label は 管理者・マネージャー・メンバー・閲覧のみ・ゲスト。pc は connected・paired・never・none。運営は役割も中身も変えない
+    "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"member_id": "uuid", "name": "string", "email": "string?", "role_label": "string", "last_seen_at": "string?", "pc": "string", "login_methods": "string[]", "verified": "boolean"}),
     "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
     "getShell": ("Shell", {"approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object"}),
-    "getOpsShell": ("OpsShell", {"inquiries_unassigned": "integer", "inquiries_mine": "integer", "invoices_overdue": "integer", "banner": "object"}),
+    # K-1006：上の数をここに寄せる（D-156.4）。operator は { member_id, caps }・inbox は { unassigned, mine, waiting, later }・invoices は { overdue_count, overdue_amount } か null（お金を持たない人）
+    #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
+    "getOpsShell": ("OpsShell", {"operator": "object", "inbox": "object", "invoices": "object?", "workspaces": "object", "runs_month": "object", "pwned": "object"}),
     "getTicketShape": ("TicketShape", {"kinds": "array", "stages": "array", "axes": "array", "handover_rules": "array", "limits": "object", "template_updates": "integer"}),
     "previewTicketShapeChange": ("TicketShapeChangePreview", {"removed": "array", "needs_move_to": "array", "affected_tickets": "integer", "over_limits": "array"}),
     # 受信箱の 1 件（K-948・D-156.5）：一覧の 1 行の 10 欄と、やり取り（返事と社内メモ）・付いてきた画面の情報・右のワークスペースの様子
@@ -1174,7 +1181,6 @@ META = {
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
-    "listOpsWorkspaces": {"summary": "object"},
     "listOpsInvoices": {"summary": "object"},
 }
 # 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
@@ -1211,7 +1217,7 @@ QUERIES = {
     "searchKnowledgeLinkTargets": ["q"],
     "listKnowledgeVerifications": ["mine", "soon"],
     "listKnowledgeProposals": ["mine"],
-    "listOpsWorkspaces": ["q", "attention", "state", "plan", "sort"],
+    "listOpsWorkspaces": ["q", "view", "plan", "sort"],
     "listOpsInquiries": ["box", "topic"],   # 箱と何について（K-948・D-156.5）。並びは受けない（LIST_DETAILS）
     "listOpsNotices": ["kind", "state"],
     "listOpsInvoices": ["month", "state"],
