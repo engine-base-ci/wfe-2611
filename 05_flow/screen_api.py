@@ -1121,8 +1121,11 @@ RESPONSES = {
     "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
     "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
     "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
-    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
-    "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
+    # K-1005：画面（ub-plan・ub-bills）が要る欄に作り直した。プランは plan_key（plan_id は uuid でないのでやめる）・upgrade と upcoming は振る舞いの葉 K-961・K-1017 が中を埋める（D-156.43）
+    "listWorkspacePlans": ("PlanChoice", {"plan_key": "string", "name": "string?", "price_monthly": "integer?", "member_limit": "integer?", "current": "boolean", "can_choose": "boolean", "reason": "string?", "effective_from": "string",
+                                          "summary": "string", "recommended": "boolean", "upgrade": "object?", "upcoming": "object?"}),
+    # K-1005：請求書の状態は unpaid・paid・overdue（D-156.29）・請求先は会社名・宛名・メールの 3 欄（D-156.30）・期限を過ぎた分の数と額（無ければ null）
+    "getBilling": ("Billing", {"terms": "string", "payee": "object", "contact": "object", "invoices": "array", "overdue": "object?", "free": "boolean", "can_edit_contact": "boolean"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
     "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
@@ -1153,7 +1156,7 @@ RESPONSES = {
     "getOpsWorkspace": ("OpsWorkspace", {"id": "uuid", "name": "string", "plan_name": "string?", "state": "string", "stop": "object?", "admin": "object", "members": "object", "inquiries": "object", "pc": "object?", "runs_month": "object", "stuck_runs": "object", "files": "object", "recent": "array", "peek": "object?"}),
     # K-1006：role_label は 管理者・マネージャー・メンバー・閲覧のみ・ゲスト。pc は connected・paired・never・none。運営は役割も中身も変えない
     "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"member_id": "uuid", "name": "string", "email": "string?", "role_label": "string", "last_seen_at": "string?", "pc": "string", "login_methods": "string[]", "verified": "boolean"}),
-    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
+    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "members": "object", "payment_terms": "string", "invoices": "array"}),   # K-1005：利用量は人数だけ（D-156.36）
     "getShell": ("Shell", {"approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object"}),
     # K-1006：上の数をここに寄せる（D-156.4）。operator は { member_id, caps }・inbox は { unassigned, mine, waiting, later }・invoices は { overdue_count, overdue_amount } か null（お金を持たない人）
     #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
@@ -1186,7 +1189,6 @@ META = {
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
-    "listOpsInvoices": {"summary": "object"},
 }
 # 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
 RATES = {
