@@ -205,6 +205,8 @@ async function takeExecute(r: Ready): Promise<Job> {
 /** 題の行の「完了にする」を押して完了にする。本文と確認項目に未チェックが残っていれば注意の小窓が出るので「このまま完了にする」を押す
  *  （小窓が無ければそのまま完了・K-572）。→ 帯が「完了しました（名前・日時）」に替わる */
 async function completeAll(page: Page, r: Ready): Promise<void> {
+  const before = await bodyNow(r.t);
+  expect(before, "完了の前の本文に実施事項の行が在る（空どうしの一致で緑にしない）").toContain("見積を作る");
   await completeBtn(page).click();
   const notice = page.getByRole("dialog");
   const done = execBand(page).getByText(/完了しました（.+・\d{1,2}\/\d{1,2} \d{1,2}:\d{2}）/);
@@ -215,8 +217,8 @@ async function completeAll(page: Page, r: Ready): Promise<void> {
   await expect(completeBtn(page), "完了したら「完了にする」は出ない").toHaveCount(0);
   await expect(delegateBtn(page), "完了したチケットは任せられない").toHaveCount(0);
   expect(await ticketState(r.t)).toMatchObject({ stage: "done", completed_by: r.me.memberId });
-  // 完了で本文を書き換えない（D-150.42・K-566。本線の K-1306 は実施事項の区画が元のままかを todoNow で見ていたが、段5 は区画を外すので本文の目的が残るかを bodyNow で見る）
-  expect(await bodyNow(r.t), "完了は本文を書き換えない").toContain(SECTIONS.purpose);
+  // 完了で本文を書き換えない（D-150.42・K-566）。K-1306 と同じく完了の前後で元のままかを見る（段5 は区画が無いので本文の版の文字で比べる）
+  expect(await bodyNow(r.t), "完了の前後で本文は元のまま（書き換えない・D-150.42）").toBe(before);
   expect(await delegatedMark(r.t), "完了したチケットに「AI に任せている」印は残らない").toBe(false);
   // 先に仕事の状態を見る（取る口の「何も動かしていない」は取り残しを片付けるので、後から見ると片付けが閉じた物まで緑になる）
   expect(
@@ -246,6 +248,8 @@ test("K64-M3-01 正常：任せる → PC が作って終える → 承認待ち
   await expect(line.getByRole("button", { name: "承認する" }), "取り消せない操作は行で決めない").toHaveCount(0);
   await line.getByRole("link", { name: "中身を見る" }).click();
   await expect(page).toHaveURL(new RegExp(`/tickets/${r.t}$`));
+  const beforeRun = await bodyNow(r.t);
+  expect(beforeRun, "実行の前の本文に実施事項の行が在る（空どうしの一致で緑にしない）").toContain("見積を作る");
   await approveOnBand(page);
   const exec = await takeExecute(r);
   expect(await r.w.take(), "同じ仕事は二度渡らない").toBeNull();
@@ -261,7 +265,8 @@ test("K64-M3-01 正常：任せる → PC が作って終える → 承認待ち
   await expect(execBand(page).getByText(MSG.completeHint), "実行が終わると完了の案内に替わる").toBeVisible();
   await expect(delegateBtn(page), "終わった後は任せ直す道（ボタン）も並ぶ（D-129.11）").toBeVisible();
   expect(await delegatedMark(r.t), "実行が終わったら印が外れる").toBe(false);
-  expect(await bodyNow(r.t), "AI の実行は本文を書き換えない（人が確かめる・D-125.55）").toContain(SECTIONS.purpose);
+  // AI の実行は本文を書き換えない（D-125.55）。実行の前後で本文の版の文字が元のままかを見る
+  expect(await bodyNow(r.t), "AI の実行の前後で本文は元のまま（人が確かめる・D-125.55）").toBe(beforeRun);
   await completeAll(page, r);
   // 記録：作る段と実行する段が、1 枚のチケットの上で 1 本につながる
   const runs = await runsOf(r.t);
