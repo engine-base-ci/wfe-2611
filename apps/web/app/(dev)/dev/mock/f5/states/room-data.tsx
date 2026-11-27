@@ -171,7 +171,9 @@ const PANEL_ASK: Entry = {
     body: "鈴木さんの書き込みのとおり、10/19 の追加対応は無償だったので外して作り直して",
   },
 };
+// 右のパネルの会話も、本番（talk-words.ts の日の区切り）と同じく最初に日の区切りを置く（PM の決め 2026-11-28：下絵を本番の形に）
 export const PANEL_TALK: readonly Entry[] = [
+  DAY,
   PANEL_ASK,
   {
     kind: "msg",
@@ -184,6 +186,7 @@ export const PANEL_TALK: readonly Entry[] = [
   },
 ];
 export const PANEL_PROGRESS: readonly Entry[] = [
+  DAY,
   { kind: "msg", msg: { id: "p3", who: "me", time: "10:45", body: "いまどこまで進んだ？" } },
   {
     kind: "msg",
@@ -196,6 +199,7 @@ export const PANEL_PROGRESS: readonly Entry[] = [
   },
 ];
 export const PANEL_WORKING: readonly Entry[] = [
+  DAY,
   PANEL_ASK,
   { kind: "work", text: "考えています…（EG-097 の単価を確かめています）" },
 ];

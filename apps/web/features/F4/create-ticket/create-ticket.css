@@ -27,7 +27,8 @@
   overflow: hidden;
 }
 /* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
-.k-create-how > :is(span, button) {
+.k-create-how > span,
+.k-create-how > button {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -41,7 +42,8 @@
   background: var(--k-card);
   color: var(--k-on-surface-variant);
 }
-.k-create-how > :is(span, button)[aria-current="true"] {
+.k-create-how > span[aria-current="true"],
+.k-create-how > button[aria-current="true"] {
   flex: none;
   background: var(--k-primary);
   color: var(--k-on-primary);
@@ -261,4 +263,13 @@
 .k-create-page .k-field > input[aria-hidden="true"][tabindex="-1"] {
   width: 0 !important;
   height: 0 !important;
+}
+
+/* 作る面の器（会話の枠の中・K-777）。並びは中の form（k-f4d-page）が持つ */
+.k-create-wrap {
+  display: block;
+}
+/* AI の案を当てた項目名（後ろに印 FieldMark が付く・K-777）。字は項目名の決まりのまま */
+.k-create-marked {
+  font: inherit;
 }

@@ -398,3 +398,8 @@
     grid-column: 1 / -1;
   }
 }
+
+/* 運営が会社の画面を見ている間の器（上に PeekBar・下に画面・K-970） */
+.k-uh-peek-host {
+  display: block;
+}

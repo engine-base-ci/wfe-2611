@@ -349,12 +349,8 @@ function view(id: string, theme: Theme): ReactNode {
           theme={theme}
           ps="PS0"
           band={
-            <Band
-              tone="wait"
-              title="PC がまだつながっていません"
-              sub="PC をつなぐと、AI に任せたり話したりできます"
-              acts={<Button variant="outlined">PC をつなぐ</Button>}
-            />
+            // 本番は PC がまだでも任せる前の白い箱（題「AI に任せる」・要約・ボタンは題の行・delegate-band.tsx）を出す。下絵も同じ形にした（PM の決め 2026-11-28）
+            <Band tone="plain" title="AI に任せる" sub={`${ME}のAI が実施事項を進め、確かめてから承認を待ちます`} />
           }
           panel={<AiPanel ticket="EG-128" entries={[]} composer={{}} noPc />}
         />
