@@ -2,6 +2,6 @@
  "listAuditEvents": {"file": "apps/api/test/features/F10/audit-list.test.ts",
   "reason": "記録の一覧は、権限（管理者・マネージャー・兼務）・札・絞り・続きで答えが変わる。生成の試験の種では作れない（K-823）。ことば（q）で探すのは apps/api/test/features/F10/audit-search.test.ts（K-850）",
   "covers": {"test_get_audit_events_ok": "K823-API-001", "test_get_audit_events_rejected_401": "K823-API-022",
-             "test_get_audit_events_rejected_403": "K823-API-020", "test_get_audit_events_rejected_422": "K823-API-005", "test_get_audit_events_rejected_422_2": "K823-API-011"},
+             "test_get_audit_events_rejected_403": "K823-API-020", "test_get_audit_events_rejected_422": "K823-API-005", "test_get_audit_events_rejected_422_2": "K823-API-011", "test_get_audit_events_rejected_422_3": {"file": "apps/api/test/features/F10/audit-search.test.ts", "mark": "K850-API-010"}},
   "na": {"test_get_audit_events_rate_limited": "入口の上限は契約の共通の試験が持つ", "test_get_audit_events_terms_pending": "入口の共通の試験が持つ",
          "test_get_audit_events_mfa_pending": "入口の共通の試験が持つ", "test_get_audit_events_session_unresolved": "入口の共通の試験が持つ"}}}}

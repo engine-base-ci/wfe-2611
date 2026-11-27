@@ -80,16 +80,13 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
   };
 
   /** 会話の仕事の会話の種類（K-737：Bridge が作る画面の会話の仕事にだけ draft_propose を見せる）。会話でない仕事は null。
-   *   主キーの読み 1 回（消されていても読む）。会話の表は本人の行だけ見える（RLS）ので、その PC の人の文脈で読む */
-  const talkKindOf = async (ctx: HookArgs["ctx"], job: TakenJob): Promise<string | null> => {
+   *   主キーの読み 1 回（消されていても読む）。会話の表の守り（RLS）は role member だけを通し、PC の印の文脈（device）では行が見えないので、
+   *   その PC が取った仕事かを確かめる関数 app.bridge_job_talk_kind で読む（統合の枝で直した） */
+  const talkKindOf = async (sid: string, job: TakenJob): Promise<string | null> => {
     if (!job.conversation_id) return null;
-    const r = await withTenant(pool, ctx, (cl) =>
-      cl.query<{ talk_kind: string | null }>("select talk_kind from conversations where id = $1", [
-        job.conversation_id,
-      ]),
-    );
-    return r.rows[0]?.talk_kind ?? null;
+    return (await one<string | null>("select app.bridge_job_talk_kind($1, $2) as v", [sid, job.job_id])) ?? null;
   };
+
 
   /** その PC の会社を運営が止めたか（K-1012・D-156.23）：止めた会社の PC には新しい仕事を渡さず（実行待ちは残る）、動いている仕事は止める合図で止める */
   const tenantStopped = async (sid: string): Promise<boolean> =>
@@ -102,7 +99,7 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     const tool_token = wantsTools ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
       (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
-    const talk_kind = await talkKindOf(ctx, job);
+    const talk_kind = await talkKindOf(sid, job);
     // 会社のナレッジ（K-697）：取る瞬間のナレッジを、チケットの仕事は prompt・会話の仕事は決まりの後ろに足す。ログインの試しには足さない
     const canOpen = job.kind === "ticket" || Boolean(job.conversation_id);
     const loaded = job.kind === "login_check" ? undefined : await loadKnowledge(pool, sid, job.job_id);

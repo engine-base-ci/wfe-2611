@@ -4,6 +4,7 @@
 //     箱の外（箱と帯の探す欄の外）を押すと閉じるだけ（続く click は止めて後ろへ通さない）。Esc で閉じたときの焦点は本文（帯の探す欄へ戻すと焦点で開き直すため）。
 //   幅 767 以下：打つのは帯の欄（Shell の仕組み）。↑↓ Enter は帯の欄のキー（onSearchKeyDown）から届く。閉じるのは帯の × と Esc（Shell）。
 //   日本語の変換中の Enter・Esc は何もしない（変換をやめるためのキー）
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MutableRefObject } from "react";
 import { SearchPanel } from "./search-panel";
@@ -112,7 +113,7 @@ export default function SearchLive({ query, onQuery, onClose, focusTick, apiRef 
 
   const openHit = (hit: SearchHitView | undefined) => {
     if (!hit?.href) return;
-    router.push(hit.href);
+    router.push(hit.href as Route);
     onClose("open");
   };
   const move = (step: 1 | -1) => {

@@ -11,6 +11,9 @@
 alter table ticket_messages add column if not exists from_request boolean not null default false;
 alter table ticket_messages add column if not exists guest_visible boolean;
 update ticket_messages set guest_visible = false where guest_visible is null;
+-- null でない印は、検査の制約を not valid で足して確かめてから付ける（表を読む間止めない・G58 Squawk の adding-not-nullable-field・PM の決め 2026-11-28）。検査の制約は NOT NULL と同じ意味で残す（消すと ban-drop-constraint）
+alter table ticket_messages add constraint ticket_messages_guest_visible_nn check (guest_visible is not null) not valid;
+alter table ticket_messages validate constraint ticket_messages_guest_visible_nn;
 alter table ticket_messages alter column guest_visible set not null;
 comment on column ticket_messages.guest_visible is 'ゲストに見える書き込みか。見せたチケットに見せた後で書いた post に引き金が true を付ける（K-882）';
 comment on column ticket_messages.from_request is '依頼から来た書き込み（K-894 が true で入れる・K-882）';
@@ -122,7 +125,11 @@ declare
   t record;
   v_id uuid;
 begin
-  if v_tenant is null or v_me is null or not app.guest_ok() or not app.guest_sees_ticket(p_ticket) then
+  -- ゲストの文脈でない人（グループに入っていない・止めた・社内の人の client の文脈）は 42501（hint なし・口が 403）
+  if v_tenant is null or v_me is null or not app.guest_ok() then
+    raise exception 'ゲストでない' using errcode = 'insufficient_privilege';
+  end if;
+  if not app.guest_sees_ticket(p_ticket) then
     raise exception 'この仕事は見られない' using errcode = 'insufficient_privilege', hint = 'E-GST-060';
   end if;
   select x.id, x.number, x.title, x.assignee_member_id into t

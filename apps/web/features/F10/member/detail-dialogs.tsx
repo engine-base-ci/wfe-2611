@@ -6,6 +6,7 @@
 //   K-822：外す（RemoveBox）。下見 → 小窓か上の赤い箱 → 外す（use-member-remove.ts）→ 知らせて /members へ
 //   K-820：グループを移す（MoveDialogBox）・兼ねるグループを足す外す（AlsoDialogBox）。口と取り直しと失敗の出し分けは use-member-groups.ts。
 //   成功は答えの groups で詳細の区画を差し替え（setQueryData）、並びの鍵に読み直しの印を付ける。もう居ないは閉じてから詳細を読み直す
+import type { Route } from "next";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
@@ -66,7 +67,7 @@ export function useDoParam(open: (a: Action) => void): void {
     const rest = new URLSearchParams(sp.toString());
     rest.delete("do");
     const q = rest.toString();
-    router.replace(q ? `${path}?${q}` : path, { scroll: false });
+    router.replace((q ? `${path}?${q}` : path) as Route, { scroll: false });
   }, [sp, router, path, open]);
 }
 

@@ -23,6 +23,9 @@ const world = async (label: string): Promise<World> => {
   const co = await h.company(label);
   const g1 = await h.group(co.tenantId, co.rootScope, "営業");
   const g2 = await h.group(co.tenantId, co.rootScope, "受託開発");
+  // チケットの番号はグループごとの続き番号＋頭の字で、会社の中で一意（0071・tickets の unique (tenant_id, number)）。
+  //   頭の字の無いグループは両方 T- になり、2 つのグループにチケットを作ると番号が重なるので、グループごとに頭の字を付ける
+  await h.admin.query("update scopes set ticket_prefix = case id when $1 then 'EG' else 'JD' end where id in ($1, $2)", [g1, g2]);
   return {
     co,
     g1,
@@ -290,7 +293,7 @@ describe("K-699 必ず守るのページを確認項目に入れる", () => {
     const w = await world("k699-008");
     await withPc(w, w.mem1);
     const t = await mkTicket(w, w.g1, w.mem1);
-    await pub(w.co.rootScope, w.boss, "あ".repeat(200), "x", { must: true });
+    await pub(w.co.rootScope, w.boss, "あ".repeat(200), "x", { must: true, summary: "長い題名のページ" }); // 説明は 200 字まで（knowledge_pages_summary_len）
     expect((await delegate(w.mem1, t)).ok).toBe(true);
     const title = (await live(t))[0]!.title;
     expect([...title].length).toBeLessThanOrEqual(200);
@@ -514,7 +517,7 @@ describe("K-699 同時・守り・失敗", () => {
     const w = await world("k699-018");
     const t = await mkTicket(w, w.g1, w.mem1);
     await pub(w.co.rootScope, w.boss, "会社の決まり", "x", { must: true });
-    await q("update members set suspended_at = now() where id = $1", [w.mem1.id]);
+    await q("update members set suspended_at = now(), suspended_by = id where id = $1" /* 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は対） */, [w.mem1.id]);
     await expect(q("select app.knowledge_seed_specs($1, $2)", [t, w.mem1.id])).rejects.toThrow();
     expect(await specs(t)).toEqual([]);
     expect(await guardLines(t)).toEqual([]);

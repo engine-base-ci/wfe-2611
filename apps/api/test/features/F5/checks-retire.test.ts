@@ -204,7 +204,7 @@ describe("K-741 使わない確認の口と表を片付ける", () => {
     expect(hit).toHaveLength(1);
     expect(hit[0]!.decision).toBe("D-153.33");
     expect((hit[0]!.reason ?? "").length).toBeGreaterThan(15);
-    expect(read("08_api", "endpoints.json"), "ほかの書き出しの口は残る").toContain('"createExport"');
+    // ほかの書き出しの口（createExport）は段の統合で K-800 が契約から外した（書き出しは作らない・D-154.4）。この葉が外すのは上の 1 口だけ
   });
 
   it("K741-API-012 export_jobs の表は凍結しない（ほかの口が使う・skeleton のまま）。親 K-61.md の apis から exportCloneActivity・tests から post_clones_me_activity_export.test.ts が外れる", () => {

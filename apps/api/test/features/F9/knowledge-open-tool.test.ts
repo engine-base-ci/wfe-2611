@@ -312,7 +312,7 @@ describe("K-698 ページを開く（DB の関数 app.knowledge_open）", () => 
     await h.admin.query("update bridge_jobs set state_id = 'done' where id = $1", [r.job]);
     expect(await open(r, page)).toBeNull();
     await h.admin.query("update bridge_jobs set state_id = 'running' where id = $1", [r.job]);
-    await h.admin.query("update members set suspended_at = now() where id = $1", [w.mem1.id]);
+    await h.admin.query("update members set suspended_at = now(), suspended_by = id where id = $1" /* 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は対） */, [w.mem1.id]);
     expect(await open(r, page)).toBeNull();
     expect(await logsOf(r.job)).toEqual([]);
   });

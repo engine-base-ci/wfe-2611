@@ -1,7 +1,7 @@
 // ワークスペースを消す手続き・取り消す口（K-830）：requestWorkspaceDeletion（POST /api/v1/workspace/deletion）・
 //   cancelWorkspaceDeletion（DELETE /api/v1/workspace/deletion）。D-128.65・D-154.4・D-154.5・D-154.16・D-154.18・D-154.21・D-154.83。
 //   入口（op.ts）が先に確かめる：ログイン（401）・本人確認の取り直し（契約の step_up が always・403 STEP_UP_REQUIRED）・上限・体の形
-//   （strict・confirm_name は 1〜100 字・NUL は 422）。判定と書き込みは 1 つの DB の関数の 1 取引の中（関門 C2）：
+//   （strict・NUL は 422）。confirm_name の必須と 1〜100 字はこの口が 422（契約の x-required-by: hooks）。判定と書き込みは 1 つの DB の関数の 1 取引の中（関門 C2）：
 //   会社ごとの錠 → 押せる人か（app.workspace_can('delete_workspace')・403）→ 名前（409・E-WS-030）→ 状態（409・E-WS-031〜033）
 //   → 時刻・ほかの有効な管理者への受け箱の行・記録。関数が例外（受け箱・記録の書き込み失敗など）なら取引ごと戻り、503・E-PAGE-003。
 //   手続き中も全員いつもどおり使える（人・セッションは何も変えない）。14 日後に消すのは運営で、この口は消さない。書き出しは無い。
@@ -14,6 +14,8 @@ import type { HookDeps } from "../../../hooks/registry.js";
 /** 取り消せる日数（D-128.65・D-154.16） */
 export const DELETION_DAYS = 14;
 const DAY_MS = 86_400_000;
+/** 打つ名前の上限（契約の VALUE_RANGES） */
+const CONFIRM_MAX = 100;
 
 type Answer = { ok?: boolean; status?: number; code?: string; requested_at?: string };
 
@@ -53,7 +55,20 @@ async function run(d: Pick<HookDeps, "appPool">, a: HookArgs, sql: string, param
 
 export function createRequestWorkspaceDeletion(d: Pick<HookDeps, "appPool">) {
   return async (a: HookArgs): Promise<HookReply> => {
-    const confirm = typeof a.input["confirm_name"] === "string" ? a.input["confirm_name"] : "";
+    // 名前の欄は必須・1〜100 字（契約の REQUIRED_INPUTS・VALUE_RANGES は x-required-by: hooks で、入口の zod は読まない）
+    // 名前は打ったとおりに比べる：入口の正規化（NFKC・前後の空白を落とす）の前の値を読む（全角・空白の打ち間違いを 409 にする・K830-API-003。
+    //   パスワードの口と同じ形・K301-API-012）。NUL・知らない欄・型の誤りは入口が正規化の後の値で先に断っている
+    const raw = (await a.c.req.json().catch(() => ({}))) as Record<string, unknown>;
+    const confirm = typeof raw["confirm_name"] === "string" ? raw["confirm_name"] : a.input["confirm_name"];
+    if (typeof confirm !== "string" || confirm.length < 1 || [...confirm].length > CONFIRM_MAX)
+      return {
+        status: 422,
+        body: {
+          error: "validation_failed",
+          code: "VALIDATION_ERROR",
+          details: [{ field: "confirm_name", message: `1〜${CONFIRM_MAX} 字` }],
+        },
+      };
     let v: Answer;
     try {
       v = await run(d, a, "select app.workspace_deletion_request($1) as v", [confirm]);

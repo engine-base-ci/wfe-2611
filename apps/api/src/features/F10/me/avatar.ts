@@ -139,6 +139,16 @@ async function putAvatar(d: Deps, ctx: TenantContext, file: File): Promise<HookR
 
 export function createUploadAvatar(d: Deps) {
   return async (a: HookArgs): Promise<HookReply> => {
+    // 止めた人・抜けた人は 403（K-833 の app.me_usable・置き場に何も置かない・K834-API-012）
+    let usable: boolean;
+    try {
+      usable = await withTenant(d.appPool, a.ctx, async (cl) =>
+        Boolean((await cl.query<{ ok: boolean }>("select app.me_usable() as ok")).rows[0]?.ok),
+      );
+    } catch (e) {
+      return unavailable("呼べる人かの確かめが落ちた", e);
+    }
+    if (!usable) return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
     const body = readForm(a.form);
     if (!body) return badFile("写真のファイルか reset=true のどちらか 1 つを送ってください");
     return "reset" in body ? resetAvatar(d, a.ctx) : putAvatar(d, a.ctx, body.file);

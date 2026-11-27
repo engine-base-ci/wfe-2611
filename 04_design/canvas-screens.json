@@ -149,13 +149,7 @@
    "CpNew"
   ],
   "requests": [
-   "CuRequests",
-   "CuList",
-   "CuPage",
-   "CuShare",
-   "CuReview",
-   "EdClient",
-   "EdContact"
+   "CuRequests"
   ],
   "signup": [
    "AuthSignup",

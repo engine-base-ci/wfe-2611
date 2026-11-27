@@ -52,10 +52,14 @@ async function run(cl: pg.PoolClient, id: string, action: Action, reason: string
   };
 }
 
+/** 断る理由の上限（字・契約の maxLength と同じ） */
+const REASON_MAX = 1000;
+
 /** 断る理由：入口の契約（文字・1,000 字まで・空白だけでない）に重ねて、前後の空白を落とす。空なら 422 */
 function reasonOf(input: Record<string, unknown> | undefined): string | HookReply {
   const v = input?.["reason"];
-  if (typeof v !== "string" || v.trim() === "") return invalid("reason", REASON_MESSAGE);
+  // 1,000 字までは契約（05_flow/screen_api.d/K-688.py の maxLength）に書くだけで、契約の zod は持たない（欄の上限は口が断る・contract.mjs）
+  if (typeof v !== "string" || v.trim() === "" || [...v].length > REASON_MAX) return invalid("reason", REASON_MESSAGE);
   return v.trim();
 }
 

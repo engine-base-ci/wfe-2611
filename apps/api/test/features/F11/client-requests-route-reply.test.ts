@@ -207,23 +207,33 @@ describe("K-893 届け先を変える（updateClientRequest）", () => {
     expect((await patch(rid, { route_id: w.otherScope }, w.staff)).status).toBe(200);
   });
 
-  it("K893-API-008 変えた後の読み：元の届け先の人の読みから消え（404）、新しい届け先の人に出る。変えた本人が新しい届け先を見られなければ 200 のあと 404", async () => {
+  it("K893-API-008 変えた後の読み：元の届け先の人の読みから消え（404）、新しい届け先の人に出る。変えた本人は新しい届け先と同じ権限を持つので、所属していなくても 200 のまま（answer=236f2c6d5560）", async () => {
     const { w, rid } = await setup("008");
     await perm(f, w, w.staff, w.otherScope);
     const view = (p: Person) => f.req("GET", `/client_requests/${rid}`, { headers: f.as(p, "member") });
     expect((await view(w.staff)).status).toBe(200);
+    expect((await view(w.viewer)).status).toBe(200);
     expect((await view(w.outsider)).status).toBe(404);
     expect((await patch(rid, { route_id: w.otherScope }, w.staff)).status).toBe(200);
     expect((await view(w.outsider)).status).toBe(200);
-    expect((await view(w.staff)).status, "営業の人は経理の届け先を見られない").toBe(404);
+    expect((await view(w.staff)).status, "経理と同じ権限を持つ営業の人は、所属していなくても見える").toBe(200);
+    expect((await view(w.viewer)).status, "経理の権限を持たない営業の人は見えない").toBe(404);
   });
 
-  it("K893-API-009 守り（G-14）：変えた直後、元の届け先の人は返事も届け先の変更もできない（404）", async () => {
+  it("K893-API-009 守り（G-14）：変えた直後、元の届け先の人（新しい届け先の権限なし）は返事も届け先の変更もできない（404）", async () => {
     const { w, rid } = await setup("009");
+    // 元の届け先（営業）で書ける、経理の権限を持たない人。変えた本人（w.staff）は経理の権限を持つので見え続ける（answer=236f2c6d5560）
+    const sales = await f.person(w.tenantId, w.reqScope, { name: "営業だけの書ける人" });
+    await f.admin.query(
+      "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, 'member', 'active')",
+      [w.tenantId, sales.id],
+    );
+    await perm(f, w, sales, w.reqScope);
     await perm(f, w, w.staff, w.otherScope);
+    expect((await f.req("GET", `/client_requests/${rid}`, { headers: f.as(sales, "member") })).status).toBe(200);
     await patch(rid, { route_id: w.otherScope }, w.staff);
-    await refused(await reply(rid, { body: "元の届け先から" }, w.staff), 404, "E-GST-100");
-    await refused(await patch(rid, { route_id: w.reqScope }, w.staff), 404, "E-GST-100");
+    await refused(await reply(rid, { body: "元の届け先から" }, sales), 404, "E-GST-100");
+    await refused(await patch(rid, { route_id: w.reqScope }, sales), 404, "E-GST-100");
     expect(await msgs(rid)).toBe(0);
   });
 });

@@ -28,17 +28,13 @@ interface Result {
   ticket_id?: string;
   unchecked?: { body: number; specs: number };
 }
+// 完了の関数は段5 の K-578 で 2 引数（p_ticket・p_confirmed）になった。口（complete.ts）と同じ形で直に呼ぶ
 const doComplete = (who: Person, ticket: string, confirmed = true): Promise<Result> =>
   withTenant(
     h.pool,
     who.ctx,
     async (cl) =>
-      (
-        await cl.query<{ v: Result }>("select app.ticket_complete($1, null::integer[], null::integer, $2) as v", [
-          ticket,
-          confirmed,
-        ])
-      ).rows[0]!.v,
+      (await cl.query<{ v: Result }>("select app.ticket_complete($1, $2) as v", [ticket, confirmed])).rows[0]!.v,
   );
 const stageKey = async (t: string): Promise<string> =>
   (

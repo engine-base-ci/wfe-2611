@@ -3,7 +3,7 @@
 //   DB の関数 app.me_leave を 1 取引で 1 回（関門 C2）：抜けられるかの判定（K-833 の app.me_leave_state）・個人の物を消しセッションと PC を切る
 //   （K-849 の app.member_erase）・会社の記録 member.left・ほかの管理者への受け箱の行を、全部か無しかで書く。
 //   答え：200 { data: { tenant_id, left: true, restorable_until } }。入っていない・抜けた・無い・別の人の会社は同じ 404（欄・details なし）。
-//   最後の管理者は 409・E-ME-051、担当が残っていれば 409・E-ME-050（最後の管理者が先）。DB の失敗は 503・E-PAGE-003。
+//   止めた人（今のセッションの会社で止められている）は 403・FORBIDDEN。最後の管理者は 409・E-ME-051、担当が残っていれば 409・E-ME-050（最後の管理者が先）。DB の失敗は 503・E-PAGE-003。
 //   ログには場所と例外の種類だけを出す（名前・メールを出さない）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -43,6 +43,7 @@ function down(where: string, e: unknown): HookReply {
 
 /** 関数の答えを口の答えにする */
 function replyOf(v: LeaveResult): HookReply {
+  if (v.error === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
   if (v.error === "not_found") return notFound();
   const code = v.error ? CONFLICTS[v.error] : undefined;
   if (code) return catalog(code);

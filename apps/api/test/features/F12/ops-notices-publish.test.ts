@@ -330,6 +330,7 @@ describe("K-978 1 社に送る", () => {
   it("K978-API-019 形の誤り：題が無い・出す場所が空・知らない鍵（kind）は 422 で行を作らない", async () => {
     const before = await sent(b.tenantId);
     const { title: _t, ...noTitle } = body();
+    void _t;
     for (const x of [noTitle, body({ placements: [] }), body({ kind: "incident" })]) {
       expect((await send(b.tenantId, x)).r.status, JSON.stringify(x)).toBe(422);
     }

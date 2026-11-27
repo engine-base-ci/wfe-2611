@@ -47,6 +47,9 @@ export const ROW_EXEMPT_FIELDS = {
   switchWorkspace: {
     id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
   },
+  leaveWorkspace: {
+    id: "道の :id は抜ける会社（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は表の名前のためだけ）。入口の行の確かめを行の守りの中で読むと、どの会社の id も行が見つからず 404 になり抜けられない。入っていない・抜けた・無い・別の人の会社を同じ 404 にするのは DB の関数 app.me_leave（app.me_rows・同じログインの行）と契約の uuid の確かめが持つ（K-838・統合の枝の直し）",
+  },
   revokeMySession: {
     id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
   },
@@ -62,11 +65,32 @@ export const ROW_EXEMPT_FIELDS = {
   deleteGuestGroup: {
     id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
   },
+  restoreTicketItems: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと無い id と同じ 404・NOT_FOUND になり、決めの「消したチケットは 404・E-PAGE-001」（K576-API-013）が成り立たない。この欄の守り（無い・別の会社・見えないは NOT_FOUND・消したは E-PAGE-001・書けない人は 403）は DB の関数 app.ticket_item_restore（ticket_visible・ticket_writable）と契約の uuid の確かめが持つ（PM の決め 2026-11-28）",
+  },
   restoreTicket: {
     id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
   },
   readNotification: {
     id: "知らせは自分宛ての物だけ（D-151.3）。入口の行の確かめは、別の人の行を 404（NOT_FOUND）、行の守りを緩めたときに 403 と答え、口の 404（E-NTF-010・一覧に出ない行も同じ答え）とずれる。持ち主の確かめは口の文（VISIBLE_SQL の member_id = app.user_id()）と行の守り（notifications_self_read・notifications_self_only_write_*）の 2 重で、外れた行はどれも同じ 404・E-NTF-010（K-462）",
+  },
+  getClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_get（K-892） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  updateClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_set_route（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  replyToClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_reply（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  acceptClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_accept（K-894） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  declineClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_decline（K-895） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  requestClientRequestDraft: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_draft_enqueue（K-896） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
   },
 };
 const exemptField = (op, field) => {

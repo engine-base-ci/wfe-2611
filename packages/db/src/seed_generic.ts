@@ -162,6 +162,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
     knowledge_pages: { is_personal: true, folder_id: null }, // 種のフォルダは会社の棚（フォルダと同じ棚の引き金に当たる）
     knowledge_folders: { is_personal: true },
     knowledge_page_versions: { kind: "draft" },
+    // 会社の人が書く頼みの言葉は会社の側（side の候補の先頭は guest・方針 client_request_messages_staff_write は side = 'company' だけ・K-892）
+    client_request_messages: { side: "company" },
   };
   const defaultOf = (x: Col): unknown => {
     if (x.type === "boolean") return false;
@@ -199,6 +201,10 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
       // 上げる頼み（kind の候補の先頭 raise）はページだけを指す（check knowledge_requests_target：raise はフォルダを持たない・K-687）
       else if (t === "knowledge_requests" && x.col === "folder_id") row[x.col] = null;
+      // 共有はページかフォルダのどちらか 1 つだけを指す（check knowledge_shares_target・K-689）。種はページを指す
+      else if (t === "knowledge_shares" && x.col === "folder_id") row[x.col] = null;
+      // インボイスの登録番号は形を DB が守る（check ops_invoice_templates_reg_no_check：T と 13 桁・K-1107）。"seed" では入らない
+      else if (t === "ops_invoice_templates" && x.col === "reg_no") row[x.col] = "T1234567890123";
       // ゲストのグループに入れるのは役割 requester の人だけ（引き金 app.guest_same_tenant・K-876）。代表ではなく先に作ったゲストを使う
       else if (t === "guest_group_members" && x.col === "member_id")
         row[x.col] = guestPool.get(tenant)?.shift() ?? bossOf(which);

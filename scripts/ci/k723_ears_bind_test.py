@@ -48,7 +48,12 @@ class KnowledgeBind(unittest.TestCase):
     def test_K723_BD_007_complete_ticket_409_bound(self) -> None:
         # K-701 が足した completeTicket の 409（E-KNW-240）の名前は _base.json で K701-API-001 に結ぶ（同じ口の断片は _base.json と重なれない）
         base = json.loads(L.read(L.FRAG_DIR / "_base.json"))["ops"]["completeTicket"]
-        ids = {v for k, v in base.get("covers", {}).items() if isinstance(v, str) and "conflict" in k}
+        # 行は別のファイル（features/F9/knowledge-complete-guard.test.ts）に在るので、K-701 は {file, mark} の形で結んだ。どちらの形も数える
+        ids = {
+            v if isinstance(v, str) else v.get("mark")
+            for k, v in base.get("covers", {}).items()
+            if "conflict" in k and isinstance(v, (str, dict))
+        }
         self.assertIn("K701-API-001", ids)
         self.assertIn("K701-API-001", L.leaf_row_ids("K-701"))
         self.assertEqual(L.problems_todo_left(["completeTicket"]), [])

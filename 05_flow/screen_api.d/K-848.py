@@ -1,5 +1,34 @@
 # K-848 外す口 removeMember（POST /members/:id/remove）の断る番号。入力・答えの形は K-800 のまま（MemberRemoveInput・MemberRemoved）
 #   403 の権限と STEP_UP_REQUIRED・422 は入口の共通。404・409 はこの口の DB の関数（app.member_remove）が返す
+# 入力・答えの形は K-800 の「契約」の節で決めた形（MemberRemoveInput・MemberRemoved）。K-800 は本体 screen_api.py に書かず、
+#   この葉も「K-800 のまま」として書かなかったので、契約に形が無く入口が transfer_to_member_id・transfers を知らない欄として 422 にしていた（統合の枝の直し）
+INPUTS = {
+    "removeMember": ("MemberRemoveInput", {"transfer_to_member_id": "uuid", "transfers": "array"}),
+}
+
+# 答えの鍵はちょうど 4 つ（remove.ts の REMOVED_KEYS）
+RESPONSES = {
+    "removeMember": ("MemberRemoved", {"member_id": "uuid", "tickets_moved": "integer", "handovers_cancelled": "integer", "restorable_until": "string"}),
+}
+
+# 外すのは作る口でない（200・dataReply(200, …)）
+SUCCESS_STATUS = {"removeMember": 200}
+
+# transfers は最大 500 件（K-800 の VALUE_RANGES）
+VALUE_RANGES = {
+    "removeMember": {
+        "transfers": {"maxItems": 500,
+                      "items": {"type": "object", "required": ["ticket_id", "to_member_id"], "additionalProperties": False,
+                                "properties": {"ticket_id": {"type": "string", "format": "uuid"},
+                                               "to_member_id": {"type": "string", "format": "uuid"}}}},
+    },
+}
+
+# 全部同じ人（transfer_to_member_id）と 1 件ずつ（transfers）は両方を指せない（入口が 422・K848-API-019）
+INPUT_RULES = {
+    "removeMember": {"not": {"required": ["transfer_to_member_id", "transfers"]}},
+}
+
 ERRORS_4XX = {
     "removeMember": [
         {"status": 404, "code": "E-MEM-002", "body": {"error": "not_found", "code": "E-MEM-002"}, "errors": ["E-MEM-002"],

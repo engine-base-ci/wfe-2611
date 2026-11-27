@@ -23,7 +23,7 @@ const KEYS = [
   "tickets",
 ];
 const preview = (p: P, id: string) => h.call(p, "GET", `/members/${id}/remove-preview`);
-const data = async (r: Response) => (await h.json(r)).data as Record<string, any>;
+const data = async (r: Response) => (await h.json(r)).data as Record<string, unknown>;
 let seq = 0;
 async function ticket(
   w: World,
@@ -39,9 +39,9 @@ async function ticket(
     o.stage ?? "doing",
   ]);
   const number = `EG-${(seq += 1)}`;
-  const r = await h.one<{ id: string }>(
+  const r = await h.one<{ id: string; number: string }>(
     `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, created_by, completed_at, deleted_at)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`,
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id, number`,
     [
       w.tenantId,
       o.scope ?? w.eg,
@@ -55,7 +55,7 @@ async function ticket(
       o.deleted ? new Date() : null,
     ],
   );
-  return { id: r.id, number };
+  return { id: r.id, number: r.number }; // 番号はいつもサーバーが付ける（0071 の ticket_number・入れた値は使わない）
 }
 const handover = (
   w: World,
@@ -76,7 +76,7 @@ const approval = (w: World, t: { id: string }, approver: P, o: { decided?: boole
      values ($1, $2, $3, $4, $5, $6) returning id`,
     [w.tenantId, w.eg, t.id, approver.id, o.decided ? "approve" : null, o.decided ? new Date() : null],
   );
-const count = (d: Record<string, any>, key: string) =>
+const count = (d: Record<string, unknown>, key: string) =>
   (d["deleted"] as { key: string; count: number }[]).find((x) => x.key === key)?.count;
 const before = (w: World) =>
   h.num(
@@ -99,10 +99,10 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     expect(Object.keys(d).sort()).toEqual(KEYS);
     expect(d["member"]).toEqual({ id: w.member.id, name: "鈴木 一郎" });
     expect(d["blocked_by"]).toBeNull();
-    expect((d["tickets"] as any[]).map((x) => x.number)).toEqual([a.number, b.number, c.number]);
+    expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.number)).toEqual([a.number, b.number, c.number]);
     expect(Object.keys(d["tickets"][0]).sort()).toEqual(["handing", "id", "number", "stage", "title"]);
-    expect((d["tickets"] as any[]).map((x) => x.handing)).toEqual([false, false, true]);
-    expect(d["tickets"][0].stage).toBe("進行中");
+    expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.handing)).toEqual([false, false, true]);
+    expect(d["tickets"][0].stage).toBe("作業中"); // 会社の段の名前（ticket_stages.name）。doing の既定の名前の正本は 0071_tickets.sql の app.ticket_basics（K-3・KN-38）の「作業中」
   });
 
   it("K815-API-002 担当 0 件：200・tickets・handovers_cancelled・approvals_reassigned は空・deleted と kept は出る", async () => {
@@ -110,8 +110,8 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     const w = await h.world();
     const d = await data(await preview(w.admin, w.member.id));
     expect([d["tickets"], d["handovers_cancelled"], d["approvals_reassigned"]]).toEqual([[], [], []]);
-    expect((d["deleted"] as any[]).length).toBe(5);
-    expect((d["kept"] as any[]).length).toBe(4);
+    expect((d["deleted"] as Record<string, unknown>[]).length).toBe(5);
+    expect((d["kept"] as Record<string, unknown>[]).length).toBe(4);
   });
 
   it("K815-API-003 数えない担当：完了したチケット・消したチケット・担当の無いチケット・ほかの人のチケット → tickets に出ない", async () => {
@@ -123,7 +123,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     await ticket(w, null);
     await ticket(w, w.mgr);
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["tickets"] as any[]).map((x) => x.number)).toEqual([mine.number]);
+    expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.number)).toEqual([mine.number]);
   });
 
   it("K815-API-004 渡し中の整理：鈴木が渡した 1（相手は佐藤）・鈴木が受ける側の 1（渡したのは管理者）・鈴木がグループに配った 1（to_scope）→ handovers_cancelled は 3 つで side は from・to・from・番号つき", async () => {
@@ -167,7 +167,9 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     await approval(w, b, w.member);
     await approval(w, b, w.member, { decided: true });
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["approvals_reassigned"] as any[]).map((x) => x.number).sort()).toEqual([a.number, b.number].sort());
+    expect((d["approvals_reassigned"] as Record<string, unknown>[]).map((x) => x.number).sort()).toEqual(
+      [a.number, b.number].sort(),
+    );
   });
 
   it("K815-API-007 マネージャーが本人 1 人のグループ：佐藤は営業のマネージャーが 1 人 → 営業が sole_approver に出る・マネージャーが 2 人のグループは出ない・兼務（受託開発のマネージャーを兼ねる）で 2 つの層に出る", async () => {
@@ -178,8 +180,10 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
       [w.tenantId, w.jd, w.mgr.id],
     );
     let d = await data(await preview(w.admin, w.mgr.id));
-    expect((d["sole_approver"] as any[]).map((x) => x.scope_id).sort()).toEqual([w.eg, w.jd].sort());
-    expect((d["sole_approver"] as any[])[0]).toHaveProperty("name");
+    expect((d["sole_approver"] as Record<string, unknown>[]).map((x) => x.scope_id).sort()).toEqual(
+      [w.eg, w.jd].sort(),
+    );
+    expect((d["sole_approver"] as Record<string, unknown>[])[0]).toHaveProperty("name");
     const second = await h.make(w, "sato2", "二人目のマネージャー", {
       scope: w.jd,
       role: "manager",
@@ -187,7 +191,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     });
     expect(second.id).toBeTruthy();
     d = await data(await preview(w.admin, w.mgr.id));
-    expect((d["sole_approver"] as any[]).map((x) => x.scope_id)).toEqual([w.eg]);
+    expect((d["sole_approver"] as Record<string, unknown>[]).map((x) => x.scope_id)).toEqual([w.eg]);
   });
 
   it("K815-API-008 すぐ消える物の数：個人の記憶 2・個人の会話 1・預けたログイン情報 1・PC の接続 1・出した待っている招待 1 → deleted は 5 つ（memories・conversations・credentials・pc・invitations の順）で数が合う・勧めた記憶・ほかの人が入る会話・失効済みは数えない", async () => {
@@ -239,7 +243,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
       ],
     );
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["deleted"] as any[]).map((x) => x.key)).toEqual([
+    expect((d["deleted"] as Record<string, unknown>[]).map((x) => x.key)).toEqual([
       "memories",
       "conversations",
       "credentials",
@@ -256,7 +260,12 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     const w = await h.world();
     const t0 = Date.now();
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["kept"] as any[]).map((x) => x.key)).toEqual(["messages", "decisions", "artifacts", "group_memories"]);
+    expect((d["kept"] as Record<string, unknown>[]).map((x) => x.key)).toEqual([
+      "messages",
+      "decisions",
+      "artifacts",
+      "group_memories",
+    ]);
     expect(Math.abs(new Date(d["restorable_until"]).getTime() - (t0 + 30 * 86_400_000))).toBeLessThan(60_000);
   });
 
@@ -296,7 +305,7 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     const a = await ticket(w, w.member);
     const b = await ticket(w, w.member, { scope: w.jd });
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["tickets"] as any[]).map((x) => x.number)).toEqual([a.number, b.number]);
+    expect((d["tickets"] as Record<string, unknown>[]).map((x) => x.number)).toEqual([a.number, b.number]);
   });
 
   it("K815-API-013 権限：マネージャー・メンバー・閲覧のみ・止めた人 → 403・data なし／ログインしていない → 401／権限を個別に付けたメンバー（members の edit）→ 200", async () => {
@@ -397,6 +406,6 @@ describe("K-815 外す前の下見（previewMemberRemoval）", () => {
     const w = await h.world();
     for (let i = 0; i < 120; i++) await ticket(w, w.member);
     const d = await data(await preview(w.admin, w.member.id));
-    expect((d["tickets"] as any[]).length).toBe(120);
+    expect((d["tickets"] as Record<string, unknown>[]).length).toBe(120);
   });
 });

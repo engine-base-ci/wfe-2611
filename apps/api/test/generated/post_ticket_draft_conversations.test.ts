@@ -30,8 +30,8 @@ describe("POST /api/v1/ticket_draft_conversations", () => {
   });
   it("test_post_ticket_draft_conversations_rejected_403_2", () => {
     // UNWANTED: IF チケットを作る権限が無い人が作る画面の会話を始める・言うなら、Kaname は 403 と E-TALK-062 を返し、何も作らない
-    // 本物の試験：apps/api/test/features/F5/talk-draft.test.ts の「K782-API-001」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F5/talk-draft.test.ts", "utf8")).toContain("K782-API-001");
+    // 本物の試験：apps/api/test/features/F5/talk-draft-perm.test.ts の「K782-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/talk-draft-perm.test.ts", "utf8")).toContain("K782-API-001");
   });
   it("test_post_ticket_draft_conversations_session_unresolved", () => {
     // UNWANTED: IF 作る画面の会話を始める・言う DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も変えない

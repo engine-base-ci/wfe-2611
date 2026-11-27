@@ -46,7 +46,7 @@ type P = Person & { email: string };
 let admin: P, admin2: P, mgr: P, member: P, viewer: P, kenmu: P, stopped: P, outsider: P;
 
 type J = Record<string, unknown> & {
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   details?: { field: string; message: string }[];
   code?: string;
   detail?: Record<string, unknown>;
@@ -55,7 +55,6 @@ const json = async (r: Response) => (await r.clone().json()) as J;
 const auth = (p: Person, su?: number) => ({
   authorization: `Bearer fake:member:${p.tenantId}:${p.id}${su === undefined ? "" : `:su=${su}`}`,
 });
-const MIN = 60_000;
 void refOf;
 const req = (
   method: string,
@@ -77,7 +76,7 @@ const n = async (sql: string, p: unknown[] = []) => Number((await f.admin.query<
 const audits = (action: string) =>
   n("select count(*) n from audit_events where tenant_id = $1 and action = $2", [T.tenantId, action]);
 const tenantRow = async (id = T.tenantId) =>
-  (await f.admin.query("select * from tenants where id = $1", [id])).rows[0] as Record<string, any>;
+  (await f.admin.query("select * from tenants where id = $1", [id])).rows[0] as Record<string, unknown>;
 /** 表への書き込みを 1 回だけわざと失敗させて fn を流す（取引ごと戻るかを見る） */
 async function failOn(table: string, cond: string, fn: () => Promise<void>): Promise<void> {
   const name = `k827_fail_${randomUUID().replaceAll("-", "")}`;
@@ -263,8 +262,8 @@ describe("K-827 設定を読む（getWorkspaceSettings）", () => {
       T.tenantId,
     ]);
     await f.admin.query(
-      "insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, occurred_at) values ($1, $2, 'admin', 'workspace.deletion_requested', 'workspace', $1::text, now() - interval '3 days')",
-      [T.tenantId, admin.id],
+      "insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, occurred_at) values ($1, $2, 'admin', 'workspace.deletion_requested', 'workspace', $3, now() - interval '3 days')",
+      [T.tenantId, admin.id, T.tenantId],
     );
     try {
       const del = (await json(await get(admin))).data!["deletion"];

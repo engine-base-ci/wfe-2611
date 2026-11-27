@@ -21,15 +21,14 @@ interface DeclinedRow {
   readonly decline_reason: string | null;
 }
 
+// 人の名前は security definer の関数で読む（人の行の守りは見えるグループの人だけを通し、会社の管理者が見えないことがある・統合の枝で直した）
 const PENDING_SQL = `select r.id, r.kind, r.requested_by, r.created_at, app.kn_shelf_name(r.to_scope_id, false) as to_name,
-       (select m.display_name from members m
-         where m.id in (select app.kn_approvers_of(r.to_scope_id)) and m.id <> r.requested_by
-         order by m.display_name collate "C", m.id limit 1) as who_name
+       (app.kn_approver_names(r.to_scope_id, r.requested_by))[1] as who_name
   from knowledge_requests r
  where r.page_id = $1 and r.tenant_id = app.tenant_id() and r.state = 'pending' and r.deleted_at is null
  order by r.created_at, r.id`;
 const DECLINED_SQL = `select r.id, r.kind, r.decided_at, r.decline_reason, app.kn_shelf_name(r.to_scope_id, false) as to_name,
-       (select m.display_name from members m where m.id = r.decided_by) as who_name
+       app.kn_request_decider_name(r.id) as who_name
   from knowledge_requests r
  where r.page_id = $1 and r.tenant_id = app.tenant_id() and r.state = 'declined' and r.dismissed_at is null
    and r.requested_by = $2 and r.deleted_at is null

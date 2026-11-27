@@ -29,6 +29,7 @@ import {
   openApprovals,
   approved,
   type Team,
+  NO_SPEC,
 } from "./approve-complete.harness.js";
 
 setupApproveComplete();
@@ -236,7 +237,10 @@ describe("K-1191 片付けに失敗した承認の後の実行を止める（口
     await markAgo(a.execJobId, 61);
     await brokenFor([a.execJobId], queueOk);
     expect((await jobOf(a.execJobId))["state_id"]).toBe("stopped");
-    const d = await req("POST", `/tickets/${t.id}/delegate`, { body: {}, headers: auth(a.by) });
+    const d = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(a.by),
+    });
     expect(d.status, await d.clone().text()).toBe(201);
     expect((await runsOf(t.id, "make")).at(-1)!.status_id).toBe("queued");
   });

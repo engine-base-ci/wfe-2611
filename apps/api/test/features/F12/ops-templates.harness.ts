@@ -6,8 +6,7 @@
 //     ・addVersion：新しい版の中身を DB に直に置く（出す口を通さない準備）。今の版を進める
 //     ・hashOf・itemOf：中身の印と、会社の行の今の中身（K-992 の関数を直に呼ぶ）
 //   試験が進めた版と足した版の行は afterAll で元に戻す（共用の DB・G-10）
-import { afterAll } from "vitest";
-import type { Person } from "../fixture.js";
+import { afterClose, type Person } from "../fixture.js";
 import { OPS_TENANT } from "./ops-ws.harness.js";
 import { startOpsAct, STEP, type OpsAct } from "./ops-act.harness.js";
 
@@ -55,7 +54,8 @@ export async function startOpsTemplates(prefix: string, hookFiles: readonly stri
   const versionsBefore = new Set(
     (await t.f.admin.query<{ id: string }>("select id from distribution_versions")).rows.map((r) => r.id),
   );
-  afterAll(async () => {
+  // 戻しは close の中で流す（fixture.ts の afterClose：beforeAll の中の afterAll は vitest に登録されない）
+  const restore = async (): Promise<void> => {
     for (const r of before.rows)
       await t.f.admin.query("update distributions set current_version = $2 where id = $1", [r.id, r.current_version]);
     const added = (await t.f.admin.query<{ id: string }>("select id from distribution_versions")).rows
@@ -63,7 +63,8 @@ export async function startOpsTemplates(prefix: string, hookFiles: readonly stri
       .filter((id) => !versionsBefore.has(id));
     if (added.length) await t.f.admin.query("delete from distribution_versions where id = any($1::uuid[])", [added]);
     // 運営の記録・会社の記録・安全の記録（ops_audit_events・audit_events・security_events）は追記専用（0003_audit.sql の引き金）なので消さない。試験は前の数との差かその回の印で絞って数える
-  });
+  };
+  afterClose(restore);
 
   const dist: OpsTemplates["dist"] = async (part) => {
     const d = (await t.row<{ id: string; current_version: number }>(

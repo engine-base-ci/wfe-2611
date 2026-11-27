@@ -24,8 +24,11 @@ describe("POST /api/v1/client_requests/:id/accept", () => {
     // 本物の試験：apps/api/test/features/F11/client-requests-accept.test.ts の「K894-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F11/client-requests-accept.test.ts", "utf8")).toContain("K894-API-011");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F11/client-requests-accept.test.ts）：UNWANTED: IF 依頼がもう決まっているか、見せる相手が 20 を超えるなら、Kaname は 409 を返し、チケットを作らず依頼を変えない
-  it.todo("test_post_client_requests_id_accept_conflict");
+  it("test_post_client_requests_id_accept_conflict", () => {
+    // UNWANTED: IF 依頼がもう決まっているか、見せる相手が 20 を超えるなら、Kaname は 409 を返し、チケットを作らず依頼を変えない
+    // 本物の試験：apps/api/test/features/F11/client-requests-accept.test.ts の「K894-API-010」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F11/client-requests-accept.test.ts", "utf8")).toContain("K894-API-010");
+  });
   it("test_post_client_requests_id_accept_rejected_422", () => {
     // UNWANTED: IF 体が形に合わないか、担当か種別が選べないなら、Kaname は 422 を返し、何も残さない
     // 本物の試験：apps/api/test/features/F11/client-requests-accept.test.ts の「K894-API-008」（同じ CI の G3 で流れる）
@@ -58,8 +61,11 @@ describe("POST /api/v1/client_requests/:id/accept", () => {
   });
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_post_client_requests_id_accept_mfa_pending");
-  // 本物の試験はまだ無い（apps/api/test/features/F11/client-requests-accept.test.ts）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_post_client_requests_id_accept_session_unresolved_2");
+  it("test_post_client_requests_id_accept_session_unresolved_2", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_client_requests_id_accept_shape", () => {
     // UBIQUITOUS: POST /api/v1/client_requests/:id/accept の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F11/client-requests-accept.test.ts の「K894-API-001」（同じ CI の G3 で流れる）

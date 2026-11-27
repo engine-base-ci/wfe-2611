@@ -36,6 +36,7 @@ const kindOf = (e: unknown): string => {
 export function replyOfPost(e: unknown): HookReply {
   const { code, hint } = pgInfo(e);
   if (code === "42501" && hint === "E-GST-060") return bare(404, "E-GST-060");
+  if (code === "42501" && hint === "") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } }; // ゲストの文脈でない人
   console.error(`[portal-chat] チャットに書く：例外（${kindOf(e)}）なので止める側に倒した`);
   return bare(503, "E-PAGE-003");
 }
@@ -43,6 +44,16 @@ export function replyOfPost(e: unknown): HookReply {
 export async function postPortalMessage(appPool: pg.Pool, a: HookArgs): Promise<HookReply> {
   if (!a.id) return bare(404, "E-GST-060");
   const body = typeof a.input["body"] === "string" ? a.input["body"].trim() : "";
+  // 欄が無い・前後の空白（全角を含む）を取ると空は 422（入口の zod は欄を optional のまま・必須は口が断る）。何も書かない
+  if (body === "")
+    return {
+      status: 422,
+      body: {
+        error: "validation_failed",
+        code: "VALIDATION_ERROR",
+        details: [{ field: "body", message: "本文を入れてください" }],
+      },
+    };
   try {
     const v = await withTenant(
       appPool,

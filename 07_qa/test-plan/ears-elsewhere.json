@@ -799,6 +799,11 @@
     "test_post_tickets_id_complete_conflict_2": {
      "file": "apps/api/test/features/F9/knowledge-complete-guard.test.ts",
      "mark": "K701-API-001"
+    },
+    "test_post_tickets_id_complete_unavailable": "K63-API-043",
+    "test_post_tickets_id_complete_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
     }
    }
   },
@@ -4755,7 +4760,10 @@
     "test_post_ticket_draft_conversations_rejected_401": "K774-API-005",
     "test_post_ticket_draft_conversations_rate_limited": "K774-API-005",
     "test_post_ticket_draft_conversations_rejected_403": "K774-API-021",
-    "test_post_ticket_draft_conversations_rejected_403_2": "K782-API-001",
+    "test_post_ticket_draft_conversations_rejected_403_2": {
+     "file": "apps/api/test/features/F5/talk-draft-perm.test.ts",
+     "mark": "K782-API-001"
+    },
     "test_post_ticket_draft_conversations_rejected_422_2": "K774-API-004",
     "test_post_ticket_draft_conversations_session_unresolved": "K774-API-018",
     "test_post_ticket_draft_conversations_terms_pending": {
@@ -4786,7 +4794,10 @@
     "test_post_ticket_draft_conversations_id_messages_rejected_401": "K774-API-020",
     "test_post_ticket_draft_conversations_id_messages_rate_limited": "K774-API-020",
     "test_post_ticket_draft_conversations_id_messages_rejected_403": "K774-API-021",
-    "test_post_ticket_draft_conversations_id_messages_rejected_403_2": "K782-API-002",
+    "test_post_ticket_draft_conversations_id_messages_rejected_403_2": {
+     "file": "apps/api/test/features/F5/talk-draft-perm.test.ts",
+     "mark": "K782-API-002"
+    },
     "test_post_ticket_draft_conversations_id_messages_not_found": "K774-API-013",
     "test_post_ticket_draft_conversations_id_messages_conflict": "K774-API-012",
     "test_post_ticket_draft_conversations_id_messages_conflict_2": "K774-API-014",
@@ -5235,7 +5246,11 @@
     "test_get_audit_events_rejected_401": "K823-API-022",
     "test_get_audit_events_rejected_403": "K823-API-020",
     "test_get_audit_events_rejected_422": "K823-API-005",
-    "test_get_audit_events_rejected_422_2": "K823-API-011"
+    "test_get_audit_events_rejected_422_2": "K823-API-011",
+    "test_get_audit_events_rejected_422_3": {
+     "file": "apps/api/test/features/F10/audit-search.test.ts",
+     "mark": "K850-API-010"
+    }
    },
    "na": {
     "test_get_audit_events_rate_limited": "入口の上限は契約の共通の試験が持つ",
@@ -5731,7 +5746,13 @@
     "test_post_members_id_remove_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_post_members_id_remove_conflict": "K848-API-014",
+    "test_post_members_id_remove_not_found_2": "K848-API-006",
+    "test_post_members_id_remove_conflict_2": "K848-API-015",
+    "test_post_members_id_remove_conflict_3": "K848-API-004",
+    "test_post_members_id_remove_conflict_4": "K848-API-007",
+    "test_post_members_id_remove_conflict_5": "K848-API-007"
    },
    "na": {
     "test_post_members_id_remove_rate_limited": "入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験）",
@@ -6055,6 +6076,11 @@
      "mark": "K53-API-005"
     },
     "test_post_client_requests_id_accept_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_client_requests_id_accept_conflict": "K894-API-010",
+    "test_post_client_requests_id_accept_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
@@ -6521,8 +6547,8 @@
     "test_get_inquiries_id_rejected_401": "K951-API-011",
     "test_get_inquiries_id_rejected_403": "K951-API-011",
     "test_get_inquiries_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-980"
+     "file": "apps/api/test/features/contract/k144.d/K-951.ts",
+     "mark": "K144-API-992"
     },
     "test_get_inquiries_id_rate_limited": {
      "file": "apps/api/test/features/F12/inquiry-read.test.ts",
@@ -6574,7 +6600,7 @@
     "test_post_inquiries_id_resolve_rejected_401": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_403": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-952.ts",
      "mark": "K144-API-991"
     },
     "test_post_inquiries_id_resolve_rate_limited": {
@@ -6695,7 +6721,7 @@
     "test_get_invoices_id_pdf_rejected_403": "K958-API-016",
     "test_get_invoices_id_pdf_not_found": "K958-API-014",
     "test_get_invoices_id_pdf_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-958.ts",
      "mark": "K144-API-958"
     },
     "test_get_invoices_id_pdf_rate_limited": "K958-API-012",

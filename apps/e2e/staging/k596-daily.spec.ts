@@ -183,6 +183,8 @@ test("K596-STG-02 会社の分け：別の会社の人は、1 本目の会社の
   // 鈴の数 0 は期待しない：登録の直後の最初のログインは新しい端末のお知らせを出さない（K52-API-025）が、2 段階を付ける道で設定のお知らせが増えるかは
   // K-319・K-321 に書いていない。守りたいのは「1 本目の会社のお知らせが混ざらない」ことなので、箱を開いて 1 本目の行・題名が無いことを見る
   const theirBox = await openBell(page);
-  await expect(theirBox.getByText(MSG.approvalText), "別の会社の鈴に 1 本目の承認待ちのお知らせは出ない").toHaveCount(0);
+  await expect(theirBox.getByText(MSG.approvalText), "別の会社の鈴に 1 本目の承認待ちのお知らせは出ない").toHaveCount(
+    0,
+  );
   await expect(page.getByText(handoff.key!), "別の会社の画面のどこにも 1 本目の印が出ない").toHaveCount(0);
 });

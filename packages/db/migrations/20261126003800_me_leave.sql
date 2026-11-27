@@ -26,6 +26,11 @@ declare
   v_prev_user text := current_setting('app.user_id', true);
   v_at timestamptz := now();
 begin
+  -- ⓪ 今のセッションの人が呼べるか（止めた人・抜けた人は 403。K-833 の app.me_usable と同じ判定・K838-API-012）
+  if not app.me_usable() then
+    return jsonb_build_object('error', 'forbidden');
+  end if;
+
   -- ① 今のログインの人が p_tenant に入っているか（同じログインの行）
   select r.member_id into v_member from app.me_rows() r where r.tenant_id = p_tenant limit 1;
   if v_member is null then

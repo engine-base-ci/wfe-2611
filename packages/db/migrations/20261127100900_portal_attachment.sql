@@ -1,7 +1,8 @@
 -- 20261127100900 ゲストが依頼に付ける添付を足す（K-909・契約の口 uploadPortalAttachment・D-155.12・D-155.53・関門 C2・C4）
 --
 -- 置き場（関門 C4）に置くのは口（apps/api/src/features/F11/portal/attachment.ts）。ここは「空きを見る」と「行と証跡を 1 つの取引で書く」だけ。
--- ① attachments.name は 0041_agent_chat.sql で既にある。列は足さず、空でなく 200 字までの check だけを足す（前からの行は null でよい・not valid で前からの行を見ない）
+-- ① attachments.name は 0041_agent_chat.sql で既にある。列は足さず、空でない check だけを足す（前からの行は null でよい・not valid で前からの行を見ない）。
+--    字数の上限は DB に置かない（会話の資料のファイル名は 300 字も切らずに通す・D-135.5・PM の決め 2026-11-28）。先方の口の 200 字は口が確かめる（attachment.ts の NAME_MAX）
 -- ② app.portal_attachment_room() returns int：ゲスト（app.guest_ok()・K-878）でなければ 42501。
 --      本人の下書き（owner_type portal_draft・owner_id 本人・消していない）の数を 5 から引いて返す（0 より下にしない）
 -- ③ app.portal_attachment_add(p_ref, p_name, p_mime, p_size) returns jsonb：ゲストでなければ 42501。本人ごとの錠を取り、空きを数え直す。
@@ -13,7 +14,7 @@ do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'attachments_name_chk' and conrelid = 'attachments'::regclass) then
     alter table attachments add constraint attachments_name_chk
-      check (name is null or length(btrim(name)) between 1 and 200) not valid;
+      check (name is null or length(btrim(name)) >= 1) not valid;
   end if;
 end $$;
 

@@ -5,13 +5,12 @@
 //     メンテのメール（関門 C6）は材料の mailer を偽物にして、送った宛先・題を数える（fail を真にすると次の送りから例外）。
 //   お知らせは運営の会社（app.ops_tenant_id()）の行。共用の DB なので、ほかの試験の行も一覧に混ざる。
 //   だから答えを見るときは、この回の題の頭（run）が付いた行だけを見る（mine）。終わったらこの回の行を消す（G-10）
-import { afterAll } from "vitest";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { createRepository } from "@kaname/db/repository";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
-import type { Person } from "../fixture.js";
+import { afterClose, type Person } from "../fixture.js";
 import { OPS_TENANT, startOpsWs, type OpsWs, type PlanKey } from "./ops-ws.harness.js";
 
 const HOOKS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "src", "hooks");
@@ -61,7 +60,7 @@ export interface OpsNotices extends OpsWs {
 export async function startOpsNotices(prefix: string, hookFiles: readonly string[]): Promise<OpsNotices> {
   const t = await startOpsWs(prefix, []);
   const made: string[] = [];
-  afterAll(async () => {
+  afterClose(async () => {
     if (!made.length) return;
     const ids = [made];
     await t.f.admin.query("delete from notice_updates where notice_id = any($1::uuid[])", ids);
@@ -71,7 +70,7 @@ export async function startOpsNotices(prefix: string, hookFiles: readonly string
     await t.f.admin.query("delete from notices where id = any($1::uuid[])", ids);
   });
   // 口が作ったお知らせ（題の頭に run）も消す
-  afterAll(async () => {
+  afterClose(async () => {
     const r = await t.f.admin.query<{ id: string }>("select id from notices where tenant_id = $1 and title like $2", [
       OPS_TENANT,
       `${t.run}%`,

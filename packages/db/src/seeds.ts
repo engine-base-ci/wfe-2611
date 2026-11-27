@@ -4,6 +4,32 @@ import type { Seeded } from "./matrix.js";
 import { seedGenericRows } from "./seed_generic.js";
 
 export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
+  // 運営の会社の製品の既定（migration が置くプラン 3 つ・ひな形の配るもの 3 つと版・K-958・K-992）は truncate の cascade で消えるので、
+  //   写しを取って入れ直す（消えたままだと、同じ DB で後に流れる試験のプランを引く準備・会社の種まきが落ちる・統合の枝の CI）
+  //   場合表の種が入れた行（key が seed・k9-…）は写さない（入れ直すと次の種と重なる）。版の行は親が入れ直せたものだけ
+  const OPS_KEY = "tenant_id = app.ops_tenant_id() and key <> 'seed' and key not like 'k9-%'";
+  const KEEP_OPS: readonly [string, string, string][] = [
+    ["plans", OPS_KEY, "true"],
+    [
+      "plan_versions",
+      `plan_id in (select id from plans where ${OPS_KEY})`,
+      "exists (select 1 from plans p where p.id = k.plan_id)",
+    ],
+    ["distributions", OPS_KEY, "true"],
+    [
+      "distribution_versions",
+      `distribution_id in (select id from distributions where ${OPS_KEY})`,
+      "exists (select 1 from distributions d where d.id = k.distribution_id)",
+    ],
+  ];
+  for (const [t] of KEEP_OPS)
+    await c.query(
+      `create temp table if not exists "keep_${t}" on commit preserve rows as select * from "${t}" where false`,
+    );
+  for (const [t, where] of KEEP_OPS) {
+    await c.query(`delete from "keep_${t}"`);
+    await c.query(`insert into "keep_${t}" select * from "${t}" where ${where}`);
+  }
   // 証跡は行の DELETE を許さないが TRUNCATE は行トリガを通らない（テストの種の入れ替えだけに使う）。運営テナントは入れ直す
   await c.query(
     "truncate audit_events, ops_audit_events, security_events, export_jobs, permissions, support_access_grants, members, scopes, layers, tenants cascade",
@@ -311,6 +337,12 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     { tenantA, tenantB, bossA, bossB, scopeRootA, scopeRootB, opsTenant, opsMember: opsId, opsScope },
     new Set(Object.keys(explicit)),
   );
+  await seedKnowledgeForStaff(c, generic, { tenantA, scopeDeptA, staffA });
+  const notices = await withFreshNotices(c, generic);
+  // 運営の会社の製品の既定を入れ直す（種の後：種まきが運営の会社の配るものを「在る行」として使うと版 1 が重なる）
+  await c.query("update keep_distribution_versions set released_by = null"); // 人は truncate で消えた
+  for (const [t, , ok] of KEEP_OPS)
+    await c.query(`insert into "${t}" select k.* from "keep_${t}" k where ${ok} on conflict do nothing`);
   return {
     tenantA,
     tenantB,
@@ -320,6 +352,64 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
     scopeDeptA,
     opsId,
     opsTenant,
-    rows: { ...generic, ...explicit },
+    rows: { ...generic, ...notices, ...explicit },
+  };
+}
+
+/**
+ * 「ログイン済み（会社の人）」で読む表のうち、行の守りが「その人が書けるページ・その人の頼み」で決まる表（K-700・K-687・K-689）。
+ * 汎用の種は代表の物なので担当者からは 0 行になる。種の見える行だけ、担当者の自分の棚の下書きのページと担当者の頼みに付け替える。
+ */
+async function seedKnowledgeForStaff(
+  c: pg.PoolClient,
+  rows: Record<string, { visible: string }>,
+  b: { tenantA: string; scopeDeptA: string; staffA: string },
+): Promise<void> {
+  const page = (
+    await c.query<{ id: string }>(
+      "insert into knowledge_pages (tenant_id, scope_id, is_personal, title, owner_member_id, state) values ($1, $2, true, '担当者の下書き', $3, 'draft') returning id",
+      [b.tenantA, b.scopeDeptA, b.staffA],
+    )
+  ).rows[0]!.id;
+  for (const t of ["knowledge_breaches", "knowledge_shares"]) {
+    const id = rows[t]?.visible;
+    if (id) await c.query(`update "${t}" set page_id = $1 where id = $2`, [page, id]);
+  }
+  const req = rows["knowledge_requests"]?.visible;
+  if (req) await c.query("update knowledge_requests set requested_by = $1 where id = $2", [b.staffA, req]);
+}
+
+/** 1 つのお知らせに 1 人 1 行（一意 notice_deliveries_member_uq・K-954）。見本の行を足すたびに、種のお知らせの写しを 1 つずつ使う */
+const FRESH_NOTICES = 8;
+async function withFreshNotices(
+  c: pg.PoolClient,
+  rows: Record<string, Seeded["rows"][string]>,
+): Promise<Record<string, Seeded["rows"][string]>> {
+  const nd = rows["notice_deliveries"];
+  const seedNotice = rows["notices"]?.visible;
+  if (!nd?.insert || !seedNotice) return {};
+  const cols = (
+    await c.query<{ col: string }>(
+      "select column_name as col from information_schema.columns where table_schema = 'public' and table_name = 'notices' and column_name <> 'id' and is_generated <> 'ALWAYS'",
+    )
+  ).rows
+    .map((r) => `"${r.col}"`)
+    .join(", ");
+  const pool: string[] = [];
+  for (let i = 0; i < FRESH_NOTICES; i++)
+    pool.push(
+      (
+        await c.query<{ id: string }>(
+          `insert into notices (${cols}) select ${cols} from notices where id = $1 returning id`,
+          [seedNotice],
+        )
+      ).rows[0]!.id,
+    );
+  const base = nd.insert;
+  return {
+    notice_deliveries: {
+      ...nd,
+      insert: (tenant: string) => ({ ...base(tenant), ...(pool.length ? { notice_id: pool.shift() } : {}) }),
+    },
   };
 }

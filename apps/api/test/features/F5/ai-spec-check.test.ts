@@ -39,6 +39,21 @@ async function raw(p: Person, title = "見積を作る", tenant = k.T, kind = k.
   return r[0]!.id;
 }
 /** 確認項目を足す（作った順を作った時刻で決める）。checked は付いている印（member＝人・ai＝AI） */
+/** 任せる人の棚（自分だけ）に公開した必ず守るのページを 1 つ置き、確認項目の行（出どころ knowledge）をそのページに結ぶ（段10 の K-700 の種の決め） */
+async function bindMustPage(p: Person, t: string, spec: string, title: string): Promise<void> {
+  const mine = (await k.q<{ id: string }>("select scope_id as id from members where id = $1", [p.id]))[0]!.id;
+  const page = (
+    await k.q<{ id: string }>(
+      "insert into knowledge_pages (tenant_id, scope_id, is_personal, owner_member_id, state, is_must, title, summary, position, current_version) values ($1, $2, true, $3, 'published', true, $4, $4, 0, 1) returning id",
+      [p.tenantId, mine, p.id, title],
+    )
+  )[0]!.id;
+  await k.q(
+    "insert into knowledge_page_versions (tenant_id, page_id, version, kind, body, author_member_id, published_at, published_by) values ($1, $2, 1, 'published', $3::jsonb, $4, now(), $4)",
+    [p.tenantId, page, JSON.stringify({ doc: { type: "doc", content: [] }, text: title }), p.id],
+  );
+  await k.q("update test_specs set source_ref_id = $2 where id = $1 and ticket_id = $3", [spec, page, t]);
+}
 async function addSpec(
   t: string,
   title: string,
@@ -177,7 +192,11 @@ describe("K-736 AI が確認項目にチェックを付ける", () => {
     const { p, pc } = await fresh("守る人");
     const t = await raw(p);
     const manual = await addSpec(t, "人が足した行");
-    const know = await addSpec(t, "請求書は月末までに送る", { source: "knowledge" });
+    const know = await addSpec(t, "『請求書は月末までに送る』を守った", { source: "knowledge" });
+    // 段10 の K-700 から、任せるときに knowledge の行は今の必ず守るのページと突き合わせ、裏の無い行（source_ref_id が空・外れたページ）は消す。
+    //   本物と同じく、任せる人の棚に公開した必ず守るのページを置いて行に結ぶ（題名も種の決め「『題名』を守った」に合わせる）。
+    //   会社の頂点に置くと、同じ会社のほかの試験のチケットにも行が入るので、この試験の人の棚だけに置く
+    await bindMustPage(p, t, know, "請求書は月末までに送る");
     const d = await delegateOk(k, p, t);
     const job = await k.takeJob(pc);
     for (const id of [manual, know]) {

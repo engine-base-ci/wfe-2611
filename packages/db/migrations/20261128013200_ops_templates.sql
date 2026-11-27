@@ -47,7 +47,9 @@ language sql immutable set search_path = public, app, pg_temp as $$
       coalesce(p_item->'name', 'null'::jsonb), coalesce(p_item->'color_key', 'null'::jsonb))
     when 'field' then jsonb_build_array(
       coalesce(p_item->'name', 'null'::jsonb), coalesce(p_item->'field_type', 'null'::jsonb),
-      coalesce(nullif(p_item->'required', 'null'::jsonb), 'false'::jsonb), coalesce(p_item->'description', 'null'::jsonb),
+      coalesce(nullif(p_item->'required', 'null'::jsonb), 'false'::jsonb),
+      -- 説明の空の字と null は同じ（会社に入れるときに空の字を null にする・⑤ と同じ整え）
+      coalesce(to_jsonb(nullif(btrim(coalesce(p_item->>'description', '')), '')), 'null'::jsonb),
       coalesce((select jsonb_agg(case when jsonb_typeof(o) = 'object' then coalesce(o->'name', 'null'::jsonb) else o end order by n)
                   from jsonb_array_elements(case when jsonb_typeof(p_item->'options') = 'array' then p_item->'options' else '[]'::jsonb end)
                        with ordinality as x(o, n)), '[]'::jsonb),

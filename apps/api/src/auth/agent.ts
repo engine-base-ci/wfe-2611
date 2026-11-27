@@ -355,6 +355,11 @@ export function agentRoutes(d: AgentDeps): Hono {
     const reply = typeof b.reply === "string" ? b.reply.slice(0, 200000) : null;
     const r = await q1<{ v: unknown }>("select app.bridge_take_steers($1, $2, $3) as v", [sid, job, reply]);
     if (r?.v === null || r?.v === undefined) return GONE(c);
+    // 無い仕事・この PC の物でない仕事は 404（空の一覧で答えない・K145-API-005・PM の決め 2026-11-28）。動いていない自分の仕事は空の一覧のまま
+    if (Array.isArray(r.v) && r.v.length === 0) {
+      const own = await q1<{ id: string | null }>("select app.bridge_job_kind($1, $2) as id", [sid, job]); // 仕事がこの PC の物なら種類が返る
+      if (!own?.id) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
+    }
     return c.json({ data: { steers: r.v } });
   });
   // 署名 URL の受け口（Bridge が資料を取る）。署名と期限だけで判定し、会社の名前空間の外は出さない

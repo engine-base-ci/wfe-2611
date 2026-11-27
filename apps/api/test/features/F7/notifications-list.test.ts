@@ -416,10 +416,21 @@ describe("K-461 知らせを読む口", () => {
         continue;
       }
       if (href === null) continue;
-      expect(routes, `${kind} の行き先 ${href} が本番の道に無い`).toContain(href);
-      seen.add(href);
+      // 行き先の道は ? の前（段10 のナレッジの種類は /knowledge?view=admin&list=approvals のように一覧の絞りを付けて開く）
+      const path = href.split("?")[0]!;
+      expect(routes, `${kind} の行き先 ${href} が本番の道に無い`).toContain(path);
+      seen.add(path);
     }
-    expect([...seen].sort()).toEqual(["/mfa-setup", "/setup/bridge"]);
+    // 段を合わせると、ほかの段の葉が足した設定・ナレッジの種類の行き先も入る（段10 のナレッジ＝/knowledge・段12・13 の請求＝/billing・
+    //   問い合わせの返事＝/notices・ひな形の新しい版＝/settings/template-updates）
+    expect([...seen].sort()).toEqual([
+      "/billing",
+      "/knowledge",
+      "/mfa-setup",
+      "/notices",
+      "/settings/template-updates",
+      "/setup/bridge",
+    ]);
     expect(hrefOf("invitation_resend_requested", {})).toBeNull();
     // 管理者が受け取る知らせは本人の 2 段階認証の設定の道では用が足りない。取り消し系は押せない行
     expect(hrefOf("security.admin_recovery_requested", { ticket_id: id })).toBeNull();

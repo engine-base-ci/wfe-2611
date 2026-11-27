@@ -36,6 +36,9 @@ export interface Hook {
   rowMissing?: () => HookReply;
   /** 冪等の器に答えを残さない（答えに 1 回だけ渡す秘密が入る口・K-57 の PC の印） */
   noIdempotency?: boolean;
+  /** 体なしの口（K-896 の requestClientRequestDraft）。体が空（0 字）のときだけ {} として読む。空でない JSON でない体は今までどおり 422、
+   *  欄を付けた体は契約の strict な形が 422 にする */
+  noBody?: boolean;
   /** ファイルを受ける口（multipart/form-data・K-828）。在れば入口は体を字でなくバイトのまま maxFileBytes ＋ 余白まで読み、
    *  JSON の読み・NUL・契約の strict な形を飛ばして FormData を HookArgs.form で渡す。余白を超えた体は tooLarge の答え */
   multipart?: { maxFileBytes: number; tooLarge: () => HookReply };
