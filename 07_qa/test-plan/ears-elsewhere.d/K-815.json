@@ -1,0 +1,23 @@
+{
+ "ops": {
+  "previewMemberRemoval": {
+   "file": "apps/api/test/features/F10/admin-member-remove-preview.test.ts",
+   "reason": "外す下見は、渡し中・承認・マネージャー・消える物・外せない理由の組み合わせで答えが変わる。生成の試験の種では作れない（K-815）",
+   "covers": {
+    "test_get_members_id_remove_preview_ok": "K815-API-001",
+    "test_get_members_id_remove_preview_shape": "K815-API-001",
+    "test_get_members_id_remove_preview_rejected_401": "K815-API-013",
+    "test_get_members_id_remove_preview_rejected_403": "K815-API-013",
+    "test_get_members_id_remove_preview_not_found": "K815-API-014",
+    "test_get_members_id_remove_preview_rejected_422": "K815-API-017"
+   },
+   "na": {
+    "test_get_members_id_remove_preview_rate_limited": "入口の共通（429）は契約の op の共通の試験が受ける（K-419 と同じ前例）",
+    "test_get_members_id_remove_preview_terms_pending": "入口の共通（同意し直し）",
+    "test_get_members_id_remove_preview_mfa_pending": "入口の共通（2 段階認証の付け忘れ）",
+    "test_get_members_id_remove_preview_session_unresolved": "入口の共通（セッション）",
+    "test_get_members_id_remove_preview_rejected_422_2": "K815-API-017 が受ける（道の値の uuid は K-800 の K144-API-1109）"
+   }
+  }
+ }
+}

@@ -1094,7 +1094,6 @@ RESPONSES = {
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
     "getMember": ("MemberDetail", {"member": "object", "groups": "array", "role_bundle": "object", "granted": "array", "revoked": "array", "assigned": "object", "clone": "object", "login": "object", "recent_events": "array"}),
-    "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
     "getWorkspaceRules": ("WorkspaceRules", {"rules": "array", "rules_by_layer": "array", "escalations": "array", "work_types": "array"}),
     "previewEscalationRule": ("EscalationPreview", {"matched_last_month": "integer", "examples": "array"}),
     "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
