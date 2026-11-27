@@ -12,6 +12,12 @@
    "ticket": "K-442",
    "decision": "D-150.35",
    "why": "正の絵がキャンバス Create から下絵 v2（/dev/mock/f4v2）に替わり、区画をやめた新しい並びの画面をキャンバスと比べなくなった"
+  },
+  {
+   "group": "ticket-detail",
+   "ticket": "K-571",
+   "decision": "D-150.35",
+   "why": "正の絵がキャンバス TicketDetail から下絵 v2（/dev/mock/f4v2）に替わり、区画をやめた新しい並びの画面をキャンバスと比べなくなった"
   }
  ],
  "groups": [
@@ -507,65 +513,6 @@
      "role": "body",
      "canvas": "main > header + div",
      "app": ".k-list-body",
-     "props": [
-      "padding-top",
-      "padding-left",
-      "width",
-      "x",
-      "y"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "ticket-detail",
-   "kind": "page",
-   "canvas": "TicketDetail",
-   "app": "/tickets/{ticket}",
-   "state": "ticket-detail",
-   "widths": [
-    1440,
-    375
-   ],
-   "owner": "K-226",
-   "enrolled": true,
-   "pairs": [
-    {
-     "name": "見出し",
-     "role": "h1",
-     "canvas": "main article h1",
-     "app": ".k-page-head h1",
-     "props": [
-      "font-size",
-      "font-weight",
-      "line-height",
-      "color",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "見出しの帯",
-     "role": "head",
-     "canvas": "main article > div:has(h1)",
-     "app": ".k-page-head",
-     "props": [
-      "background-color",
-      "border-bottom-color",
-      "border-bottom-width",
-      "padding-top",
-      "padding-left",
-      "height",
-      "width",
-      "x",
-      "y"
-     ]
-    },
-    {
-     "name": "本文の箱",
-     "role": "body",
-     "canvas": "main > div > div:first-child",
-     "app": ".k-page",
      "props": [
       "padding-top",
       "padding-left",
