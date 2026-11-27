@@ -57,7 +57,8 @@ class FlowTest(unittest.TestCase):
     def test_K727_FL_004_navigation(self) -> None:
         """主ナビの「（名前）のAI」は clone-chat・ai-activity だけ（rules・work-types は外れ）。どの役の by_role にも rules・work-types が出ない。ナレッジの第 2 ナビは「ページ」「管理」・チケットの設定は「種別」「状態」「項目」"""
         ai = next(s for s in NAV["sections"] if s["key"] == "ai")
-        self.assertEqual(ai["screens"], ["clone-chat", "ai-activity"])
+        # 並びは K-762 が AI の場所の頭（/ai）を ai-activity にした形（段6）
+        self.assertEqual(ai["screens"], ["ai-activity", "clone-chat"])
         for role, ids in NAV["by_role"].items():
             self.assertTrue({"rules", "work-types"}.isdisjoint(ids), role)
         sub = NAV["sub_by_screen"]
@@ -83,7 +84,8 @@ class FlowTest(unittest.TestCase):
     def test_K727_FL_007_parents(self) -> None:
         """親の入れ物：K-69 の screens は knowledge・masters（画面の葉が本線に入るまで親が持つ・layers は持たない。rules・work-types は K-711 が後のフェーズへ送って外した）・題が新しい形。K-70 の screens に layers が入る"""
         h69 = heads("11_tickets/K-69.md")
-        self.assertEqual(h69["screens"], "[knowledge, masters]")
+        # 画面の葉（knowledge・masters）が入ったので、親は入れ物の形（空）に戻した（K-722・K-705 の合わせ da69aa8196）
+        self.assertEqual(h69["screens"], "[]")
         self.assertIn("ナレッジ", h69["title"])
         self.assertIn("layers", heads("11_tickets/K-70.md")["screens"])
 
