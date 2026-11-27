@@ -476,7 +476,7 @@ describe("K-565 AI に任せる口の直し：承認の一覧・詳細は答え�
     const a = await awaiting("一覧の理由の人", "下書きなので確かめる物が無い");
     const item = await queueItem(a.p, a.t);
     expect(item).not.toHaveProperty("no_spec_reason");
-    expect(item["check_summary"]).toBe("検査なし（まだ流していません）");
+    expect(item["check_summary"]).toBe("検査なし");
     expect((await rowOf(a.t)).no_spec_reason).toBe("下書きなので確かめる物が無い");
     const b = await awaiting("一覧の理由が無い人", null);
     expect(Object.keys(await queueItem(b.p, b.t)).sort()).toEqual(Object.keys(item).sort());
