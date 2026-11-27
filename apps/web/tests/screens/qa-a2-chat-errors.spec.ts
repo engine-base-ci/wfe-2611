@@ -1,8 +1,10 @@
 // QA A2：会話の画面のエラー（E-CHAT・E-CONN・E-LIM・E-GATE）と、止まったときの扱い（BRG-03-033〜038）、
-// 配布の画面の案内（BRG-06-011・BRG-06-013 の画面の側）、作業中の 1 行（CHT-27-005）を実ブラウザで押して確かめる。
+// 作業中の 1 行（CHT-27-005）を実ブラウザで押して確かめる。
 // 期待は正本（packages/errors のエラー一覧・決定ログ D-090／D-104.15／D-104.8・モック）から書く（G-09）。
 // Bridge は本物の輪（apps/bridge の loop）を回し、CLI だけ偽物（scripts/dev/fake-claude-demo.mjs）に差す。
-// D-128.150：自己診断の表・Claude Code のログイン・受け取りの部品を見る試験は、前の「PC をつなぐ」画面（/setup/bridge/legacy）を開く。
+// K-367：前の「PC をつなぐ」画面（T-U-09）を消したので、その画面を開いていた所を片付けた（前の画面が在っても無くても通る形）。
+//   BRG-06-011（OS の警告の越え方）・BRG-06-013（自己診断の表）は消した。E-CONN-010 は PC の画面でログインする所を外し（K361-UI-005・006 が見る）、
+//   E-CONN-012-C は PC の画面の自己診断と入れ直す口を外した（SCR-BRIDGE-SETUP-105・106 の置き換え先は、新しい画面の PC の行の入れ直す一手の行。番号は 11_tickets/K-367.md の表・代表の答え 7cf148a79dc9）。
 //   生きている知らせは K-57 の契約の口（/api/v1/bridge/heartbeat）。仕事を取る口も契約の口（/api/v1/bridge/jobs/take・K-62）
 // 偽の CLI に無い振る舞い（ログインしていない）は、この試験の中で一時フォルダに小さな CLI を書いて差す（本物の行の形・stream.ts の実測）。
 // 本人の本物の Bridge は止めない。画面からだけ見えなくする（hideRealBridge）。
@@ -101,33 +103,6 @@ const myMessages = (memberId: string, text: string) =>
     "select count(*)::int as n from messages m join conversations c on c.id = m.conversation_id where c.owner_member_id = $1 and m.kind = 'human' and m.body = $2",
     [memberId, text],
   );
-/** この PC の口（38617）に、偽の Bridge の答えを返す（本物の Bridge は止めない）。checks は自己診断の中身 */
-async function localBridge(page: Page, checks: () => unknown[], on: Record<string, () => unknown> = {}) {
-  await page.unrouteAll({ behavior: "ignoreErrors" });
-  await page.route("http://127.0.0.1:38617/**", (r) => r.abort("connectionrefused"));
-  await page.route("http://localhost:38617/**", (r) => r.abort("connectionrefused"));
-  const cors = {
-    "access-control-allow-origin": "*",
-    "access-control-allow-headers": "content-type",
-    "access-control-allow-methods": "GET,POST,OPTIONS",
-  };
-  await page.route(
-    /^http:\/\/127\.0\.0\.1:38617\/(ping|check|login-claude|login-code|login-cancel|pair)$/,
-    async (r) => {
-      if (r.request().method() === "OPTIONS") return r.fulfill({ status: 204, headers: cors });
-      const path = new URL(r.request().url()).pathname.slice(1);
-      if (path === "ping")
-        return r.fulfill({
-          headers: cors,
-          json: { app: "kaname-bridge", version: "test", device_label: "MacBook Pro（QA）", connected: true },
-        });
-      if (path === "check") return r.fulfill({ headers: cors, json: { checks: checks() } });
-      const h = on[path];
-      return r.fulfill({ headers: cors, json: h ? h() : {} });
-    },
-  );
-}
-
 // ---------------------------------------------------------------- E-CHAT-001 回線が切れた
 const SAY = /\/api\/auth-ext\/agent\/(say|steer)$/;
 /** 1 回ふつうに話し終えてから、回線を切って書く。送れなかった印が出るまで */
@@ -371,7 +346,7 @@ process.stdin.on("data", () => {
   chmodSync(p, 0o755);
   return p;
 }
-test("E-CONN-010-A E-CONN-010-B E-CONN-010-C ログインしていない PC に仕事を渡すと「ログインできていません」と一手。ログイン済みなら出ない。PC の画面で「ログインする」を押すと直る", async ({
+test("E-CONN-010-A E-CONN-010-B E-CONN-010-C ログインしていない PC に仕事を渡すと「ログインできていません」と一手。ログイン済みなら出ない。ログインし直した PC なら動く（PC の画面でログインする所は K361-UI-005・006）", async ({
   page,
 }) => {
   const u = await ready(page);
@@ -388,47 +363,13 @@ test("E-CONN-010-A E-CONN-010-B E-CONN-010-C ログインしていない PC に�
   await expect(page.locator("[data-stopped-reason]").last(), "A 出る").toHaveText(MSG, { timeout: 30_000 });
   await expect(page.locator('.msg[data-who="ai"]'), "失敗を返事として出さない").toHaveCount(1);
   expect((await jobs(u.memberId)).at(-1)!.state_id).toBe("stopped");
-  // C 内部語が無い。入力欄は開いたまま。一手「Bridge で「ログインする」を押す」→ PC の画面に「ログインする」が出て、押すと入口とコード欄、コードを入れると直る
+  // C 内部語が無い。入力欄は開いたまま（一手の「ログインする」を PC の画面で押す所は K-361 の新しい画面の試験 K361-UI-005・006 が見る）
   const card = (await page.locator("[data-part='stopped']").last().innerText()).replace(/\s+/g, "");
   expect(INTERNAL.test(card.replace("ここで止まりました", "")), `C 内部語: ${card}`).toBe(false);
   await expect(box(page)).toBeEnabled();
-  let loggedIn = false;
-  await localBridge(
-    page,
-    () => [
-      { name: "本人のサブスクの Claude Code がある", ok: true, detail: "/usr/local/bin/claude", fix: null },
-      {
-        name: "Claude Code にログインできている",
-        ok: loggedIn,
-        detail: loggedIn ? "できています" : "まだログインしていません",
-        fix: loggedIn ? null : "login",
-      },
-      { name: "Kaname につながる", ok: true, detail: API },
-    ],
-    {
-      "login-claude": () => ({
-        ok: true,
-        url: "https://claude.com/cai/oauth/authorize?code=true",
-        message: "ブラウザで承認してください。コードが出たら、下に貼って「決定」を押します",
-      }),
-      "login-code": () => ((loggedIn = true), { ok: true, message: "ログインできました。これで仕事を渡せます" }),
-    },
-  );
-  await page.goto("/setup/bridge/legacy");
-  const login = page.locator("[data-login-claude]");
-  await expect(login, "C 一手が押せる").toBeVisible({ timeout: 20_000 });
-  await login.click();
-  const step = page.locator("[data-login-step]");
-  await expect(step).toBeVisible();
-  await step.getByLabel("ブラウザに出たコード").fill("qa-code-123");
-  await step.getByRole("button", { name: "決定" }).click();
-  await expect(page.locator("[data-login-claude]"), "直ったら「ログインする」は消える").toHaveCount(0);
-  await expect(page.locator("[data-need-claude]"), "足りないものの案内も消える").toHaveCount(0);
   // ログインし直した PC（いつもの CLI）でもう一度頼むと動く
   process.env["KANAME_CLAUDE_BIN"] = FAKE;
   runnerMod().forgetClaude();
-  await hideRealBridge(page);
-  await page.goto("/ai/chat");
   await say(page, "続けて");
   await expect.poll(async () => (await jobs(u.memberId)).at(-1)!.state_id, { timeout: 40_000 }).toBe("done");
 });
@@ -497,7 +438,7 @@ test("E-CONN-012-A E-CONN-012-B 約束の版を送らない Bridge には仕事�
   ).toEqual(["queued"]);
 });
 
-test("E-CONN-012-C SCR-BRIDGE-SETUP-105 SCR-BRIDGE-SETUP-106 「Bridge が古い」に内部語が無く、一手で PC の状態へ行き、入れ直す道がある。入れ直すと溜めた分から順に片づき、知らせは消える", async ({
+test("E-CONN-012-C 「Bridge が古い」に内部語が無く、一手で PC の状態（/setup/bridge）へ行く。入れ直すと溜めた分から順に片づき、知らせは消える", async ({
   page,
 }) => {
   const { u, sid, bar } = await outdated(page);
@@ -506,37 +447,14 @@ test("E-CONN-012-C SCR-BRIDGE-SETUP-105 SCR-BRIDGE-SETUP-106 「Bridge が古い
   await expect(page.locator('.msg[data-who="me"], [data-queued]').first()).toBeVisible();
   const text = (await bar.innerText()).replace(/\s+/g, "");
   expect(INTERNAL.test(text), `内部語: ${text}`).toBe(false);
-  await localBridge(page, () => []);
   await bar.getByRole("link", { name: "PC の状態を見る" }).click();
   await expect(page).toHaveURL(/\/setup\/bridge$/);
-  // 自己診断の表と入れ直す受け取り口は、前の画面（/setup/bridge/legacy・D-128.150。K-89〜K-91 が使う）にある。K-57 の新しい画面には無い
-  await page.goto("/setup/bridge/legacy");
-  const row = page.locator("tr[data-check]", { hasText: "Bridge が新しい" });
-  await expect(row).toHaveAttribute("data-check", "ng", { timeout: 20_000 });
-  await expect(row).toContainText("Bridge を入れ直してください");
-  // 入れ直す口（2026-10-01）：理由の帯に macOS 版・Windows 版。押すと受け取りが始まる（置いていない OS は理由が出る）
-  const re = page.locator("[data-bridge-reinstall]");
-  await expect(re, "入れ直すための受け取り口が、この画面から押せる").toBeVisible({ timeout: 5_000 });
-  await expect(re).toContainText("この PC の Bridge が古いので、自分のAI に仕事を渡せません。");
-  const got = page.waitForResponse(
-    (r) => r.url().includes("/api/v1/bridge/releases/mac/file") && r.request().method() === "GET",
-    { timeout: 15_000 },
-  );
-  await re.locator('[data-download="mac"]').click();
-  expect((await got).status(), "macOS 版の受け取りが始まる").toBeLessThan(400);
-  await page.goto("/setup/bridge/legacy");
-  await expect(re).toBeVisible({ timeout: 20_000 });
-  // 今の配布物は macOS 版だけ（apps/bridge/release の目録）。Windows 版は押すと理由が出て、コマンドは出さない
-  await re.locator('[data-download="win"]').click();
-  const why = page.locator("[data-download-msg]");
-  await expect(why, "Windows 版は置いていないと理由が出る").toBeVisible({ timeout: 15_000 });
-  await expect(why).not.toContainText("pnpm");
+  // PC の画面で自己診断の行と入れ直す口を見る所（SCR-BRIDGE-SETUP-105・106）は、前の画面と一緒に消した（新しい画面の PC の行の入れ直す一手は、その葉の試験が見る。番号は 11_tickets/K-367.md の表・代表の答え 7cf148a79dc9）
   // 入れ直した（約束の版を送る Bridge）→ 溜めた分が渡り、知らせは消える
   await bridgeBeat(sid, [{ name: "Kaname につながる", ok: true, detail: API }]);
   const j = await bridgeTake(sid);
   expect(j.json.data?.prompt, "溜めた分から順に片づく").toBe("請求書をまとめて");
   expect((await jobs(u.memberId)).map((x) => x.state_id)).toEqual(["running"]);
-  await hideRealBridge(page);
   await page.goto("/ai/chat");
   await expect(page.locator('[data-part="conversation"]')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator("[data-bridge-outdated]"), "入れ直したら出ない").toHaveCount(0);
@@ -771,64 +689,4 @@ test("CHT-27-005 考えている最中は、作業の行が「考えています
   const line = await page.locator("[data-working]").innerText();
   expect(line, "最後の動きの秒数を出さない").not.toMatch(/最後の動き|秒前/);
   await expect(lastAi(page)).toContainText("考えました", { timeout: 20_000 });
-});
-
-// ---------------------------------------------------------------- 配布（T-B-06）の画面の側
-test("BRG-06-011 署名が済むまでは OS の警告が出るが手順は変えず、越え方だけを案内する（Mac は「完了」→ システム設定 → プライバシーとセキュリティ →「このまま開く」。Windows は「詳細情報」→「実行」）", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 1);
-  await loginAs(page, u.token);
-  await page.goto("/setup/bridge/legacy");
-  const lead = page.locator("[data-install-lead]");
-  await expect(lead.locator("li"), "手順は変えない（3 つ）").toHaveCount(3, { timeout: 15_000 });
-  const w = page.locator("details[data-os-warning]");
-  await expect(w.locator("summary")).toContainText("開いていません");
-  await w.locator("summary").click();
-  const mac = w.locator('[data-os-warning="mac"]');
-  await expect(mac).toBeVisible();
-  const macText = (await mac.innerText()).replace(/\s+/g, "");
-  for (const k of ["完了", "システム設定", "プライバシーとセキュリティ", "このまま開く"])
-    expect(macText, `Mac の越え方に「${k}」`).toContain(k);
-  expect(macText.indexOf("完了"), "順番：完了 → システム設定").toBeLessThan(macText.indexOf("システム設定"));
-  expect(macText.indexOf("プライバシーとセキュリティ")).toBeLessThan(macText.indexOf("このまま開く"));
-  const win = (await w.locator('[data-os-warning="win"]').innerText()).replace(/\s+/g, "");
-  expect(win.indexOf("詳細情報"), "Windows は 詳細情報 → 実行").toBeGreaterThanOrEqual(0);
-  expect(win.indexOf("詳細情報")).toBeLessThan(win.lastIndexOf("実行"));
-  const all = await w.innerText();
-  expect(all, "いまの macOS では越えられない「右クリック → 開く」を案内しない").not.toContain("右クリック");
-  expect(all, "コマンドは出さない").not.toMatch(/xattr|sudo|spctl|terminal|ターミナル|\$ /i);
-});
-
-test("BRG-06-013 Bridge の自己診断で無いもの（Claude Code・Chrome）は、PC の状態の画面に「できません」と理由が出る（黙って落ちない）", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  const sid = await claimBridge(u.token);
-  await setupStep(u.memberId, 6);
-  await loginAs(page, u.token);
-  await bridgeBeat(sid, [
-    {
-      name: "本人のサブスクの Claude Code がある",
-      ok: false,
-      detail: "この PC にありません。下の「Claude Code を入れる」で入れられます",
-    },
-    { name: "Chrome がある（本人のログイン済みプロファイルを使う）", ok: false, detail: "見つかりません" },
-    { name: "Kaname につながる", ok: true, detail: API },
-  ]);
-  await localBridge(page, () => [
-    { name: "本人のサブスクの Claude Code がある", ok: false, detail: "この PC にありません", fix: "install" },
-    { name: "Kaname につながる", ok: true, detail: API },
-  ]);
-  await page.goto("/setup/bridge/legacy");
-  const cc = page.locator("tr[data-check]", { hasText: "本人のサブスクの Claude Code がある" });
-  await expect(cc).toHaveAttribute("data-check", "ng", { timeout: 20_000 });
-  await expect(cc).toContainText("できません");
-  await expect(cc).toContainText("この PC にありません");
-  const ch = page.locator("tr[data-check]", { hasText: "Chrome がある" });
-  await expect(ch).toHaveAttribute("data-check", "ng");
-  await expect(ch).toContainText("見つかりません");
-  await expect(page.locator("tr[data-check]", { hasText: "Kaname につながる" })).toHaveAttribute("data-check", "ok");
-  await expect(page.locator("[data-install-claude]"), "無いものは、その場で入れる一手が出る").toBeVisible();
 });

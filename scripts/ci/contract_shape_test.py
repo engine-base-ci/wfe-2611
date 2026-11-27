@@ -24,6 +24,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "05_flow"))
 sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117）
 from portable_regex import walk as _portable  # noqa: E402  作り手が契約に書くときの直し（\s \S \d \w を JS と同じ字に・K-1117）。表の字はそのまま、比べる前に当てる
 import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
@@ -117,6 +118,9 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},   # K-581：payload.ts の checkLinks
+        "copy": {"maxItems": 6, "uniqueItems": True, "items": {"enum": ["body", "assignee", "fields", "specs", "links", "children"]}},   # K-438：duplicate.ts の COPY_NAMES
         "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）

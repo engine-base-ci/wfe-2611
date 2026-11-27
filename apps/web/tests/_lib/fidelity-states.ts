@@ -6,6 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
+import { shellData } from "../k/shell-answer";
 import { TICKET, executedBand, jst, mockApi, qrow, type Band } from "../features/F5/approve-complete.harness";
 import { mockCreate } from "../k/create-mock";
 
@@ -51,7 +52,39 @@ async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promi
         scope_id: null,
         workspace_name: "ENGINE BASE",
       });
-    else if (p === "/api/v1/scopes")
+    else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）：キャンバス Main と同じ人・会社・承認待ち・グループの件数 18／42／9（営業だけ書ける）・PC は一覧の live から
+      const devs = (o.devices ?? [{ state: "live" }]) as { state?: string }[];
+      r = ok(
+        shellData({
+          approvals,
+          pcConnected: devs.some((d) => d.state === "live"),
+          groups: [
+            {
+              id: "22222222-0000-4000-8000-000000000001",
+              name: "営業",
+              ticket_prefix: "EG",
+              writable: true,
+              open_count: 18,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000002",
+              name: "受託開発",
+              ticket_prefix: "JD",
+              writable: false,
+              open_count: 42,
+            },
+            {
+              id: "22222222-0000-4000-8000-000000000003",
+              name: "経理",
+              ticket_prefix: "KR",
+              writable: false,
+              open_count: 9,
+            },
+          ],
+        }),
+      );
+    } else if (p === "/api/v1/scopes")
       r = ok(
         [
           { id: "22222222-0000-4000-8000-000000000001", name: "営業", ticket_prefix: "EG", tenant_id: WS },
@@ -644,7 +677,9 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
   // prettier-ignore
   "approvals": async (page, path) => {
     await openApprovals(page, path, CANVAS_QUEUE());
-    await expect(page.locator(".k-ap-card table")).toBeVisible();
+    // 幅 767 以下は表を隠して 1 件 1 枚のカード（キャンバス MbApprovals・K-412）。768 以上は表
+    const narrow = (page.viewportSize()?.width ?? 1440) <= 767;
+    await expect(page.locator(narrow ? ".k-hnd-mq" : ".k-ap-card table")).toBeVisible();
   },
   "approvals-empty": async (page, path) => {
     await openApprovals(page, path, []);
@@ -657,11 +692,13 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[data-state="empty"]')).toBeVisible();
     await expect(page.getByRole("region", { name: "はじめにやること" })).toBeVisible();
   },
-  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ
+  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ。767 以下は表と右の列を隠したスマホの本文の 1 件 1 行が見えるまでも待つ（K-478）
   "tickets-main": async (page, path) => {
     await shellApi(page, 3, { tickets: listRows() });
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
+    if ((page.viewportSize()?.width ?? 1440) <= 767)
+      await expect(page.locator(".k-f7-overview-phone .k-f7-overview-mrow").first()).toBeVisible();
   },
   // グループの一覧（K-252・キャンバス List）：営業で絞った 6 件。表の行が出るまで待つ
   "tickets-list": async (page, path) => {

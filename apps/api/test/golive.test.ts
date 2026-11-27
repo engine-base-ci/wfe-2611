@@ -151,9 +151,13 @@ async function goalFor(u: U, to: string[]) {
     );
 }
 async function credential(u: U, service: string, state: string | null) {
-  const c = await json<{ id: string }>(
-    post("/vault/credentials", { service_name: service, login: "qa@example.com", password: "Pass-word-1234" }, u.H),
-  );
+  // K-358：前の道すじ /vault/credentials を消したので、行を直に置く（本番に切り替える判定は行の login_check_state だけを読む・値は要らない）
+  const c = (
+    await admin.query<{ id: string }>(
+      "insert into credentials (tenant_id, scope_id, owner_member_id, service_name, kind_id, vault_ref, created_by) values ($1, $2, $3, $4, 'basic', 'sec_golive_test', $3) returning id",
+      [u.tenant, u.scope, u.member, service],
+    )
+  ).rows[0]!;
   await admin.query("update credentials set login_check_state = $2, login_check_detail = $3 where id = $1", [
     c.id,
     state,

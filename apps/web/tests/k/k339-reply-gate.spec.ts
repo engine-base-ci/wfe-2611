@@ -5,6 +5,7 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { replyGate, type ReplyGate } from "./reply-gate";
 import { seedTokenOnce } from "./seed-token";
+import { shellData } from "./shell-answer";
 
 const WS = "aaaaaaaa-0000-4000-8000-000000000339";
 const ME = "11111111-0000-4000-8000-000000000339";
@@ -53,6 +54,8 @@ async function mockHeld(page: Page, gate: ReplyGate): Promise<{ confirms: unknow
         workspace_name: "ENGINE BASE",
       });
     else if (p === "/api/v1/scopes") r = { status: 200, body: { data: [], meta: { limit: 200, writable: [] } } };
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [] })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/approvals/queue")
       r = { status: 200, body: { data: [], meta: { limit: 20, counts: { total: 0 }, cursor: null } } };
     else if (p === "/api/v1/bridge/devices") r = ok([]);

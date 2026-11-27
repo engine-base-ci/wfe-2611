@@ -233,6 +233,7 @@ describe("K-485 自分で直す：状態 × 入口 × 利用者の状態", () =>
         "started_at",
         "status",
         "stopped_reason",
+        "sweep_failed_at", // K-1191 が足した（片付けに失敗した印の時刻・止まった実行では null）
         "taken_over_at",
         "ticket_id",
       ].sort(),

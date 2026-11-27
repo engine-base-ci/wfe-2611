@@ -879,6 +879,12 @@ button.k-list-tool:hover {
   }
 }
 
+/* 767 以下：ガントは出さないので、見え方のタブからも外す（K-482） */
+@media (max-width: 767px) {
+  .k-list-view[data-view="gantt"] {
+    display: none;
+  }
+}
 /* 右の列は、本文の左の列と並ぶ幅が無いとき（1023 以下）本文の下に折り返す（flex-wrap・キャンバスの aside と同じ） */
 /* 767 以下：数の札は 2 列（キャンバスの 4 列の格子の折り返し）。知らせの鈴は上の帯にあり、見出しの行には置かない（D-147） */
 @media (max-width: 767px) {

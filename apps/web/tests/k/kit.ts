@@ -12,9 +12,11 @@ import { expect, test, type Locator, type Page, type Request } from "@playwright
 import {
   compareFonts,
   compareRows,
+  groupAt,
   loadedFonts,
   mismatches,
   readVals,
+  type FidelityAt,
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
@@ -90,6 +92,8 @@ export interface FidelityGroup {
   pairs: FidelityPair[];
   owner: string;
   enrolled: boolean;
+  /** 幅ごとの絵（K-1301）：その幅だけ比べる絵とセレクタを替える */
+  at?: Record<string, FidelityAt>;
 }
 const readGroups = () =>
   (JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: FidelityGroup[] }).groups;
@@ -115,25 +119,27 @@ export function fidelityCompareTests(rowId: string, id: string, label: string) {
   for (const w of g?.widths ?? [1440, 375]) {
     test(`${rowId} ${id}（${label}）幅 ${w}：組の値と読み込んだ書体がキャンバスと同じ`, async ({ browser }) => {
       expect(g, `組 ${id}`).toBeTruthy();
+      // 幅ごとの絵（組の at・K-1301）：その幅で比べる絵とセレクタ
+      const at = groupAt(g!, w);
       const canvasPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
       await routeCanvasFonts(canvasPage);
-      await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
-      for (const p of g!.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
+      await canvasPage.goto(pathToFileURL(join(ROOT, "04_design/canvas", `${at.canvas}.dc.html`)).href);
+      for (const p of at.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
       await canvasPage.evaluate(() => document.fonts.ready);
-      const canvasVals = await readVals(canvasPage, g!.pairs, "canvas");
+      const canvasVals = await readVals(canvasPage, at.pairs, "canvas");
       const canvasFonts = await loadedFonts(canvasPage);
       await canvasPage.close();
 
       const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
       await appPage.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
       await FIDELITY_STATES[g!.state]!(appPage, g!.app);
-      for (const p of g!.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
+      for (const p of at.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
       await appPage.evaluate(() => document.fonts.ready);
-      const appVals = await readVals(appPage, g!.pairs, "app");
+      const appVals = await readVals(appPage, at.pairs, "app");
       const appFonts = await loadedFonts(appPage);
       await appPage.close();
 
-      const rows = [...compareRows(g!.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
+      const rows = [...compareRows(at.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
       const bad = rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}：キャンバス ${r.canvas} ／ 画面 ${r.app}`);
       expect(mismatches(rows), bad.join("\n")).toBe(0);
     });

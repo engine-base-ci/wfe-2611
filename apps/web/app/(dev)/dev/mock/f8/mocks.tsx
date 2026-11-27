@@ -563,10 +563,13 @@ function Queue({
                       <span>{total} 件</span>
                     </td>
                   </tr>
-                  {rows.map((r) => (
+                  {beforeAi(rows).map((r) => (
                     <HandoverRow key={r.id} row={r} />
                   ))}
                   <AiRow />
+                  {afterAi(rows).map((r) => (
+                    <HandoverRow key={r.id} row={r} />
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -587,10 +590,13 @@ function Queue({
               ))}
             </div>
             <ul className="k-hnd-mcards">
-              {rows.map((r) => (
+              {beforeAi(rows).map((r) => (
                 <QueueCardMobile key={r.id} card={toCard(r)} />
               ))}
               <QueueCardMobile card={AI_CARD} />
+              {afterAi(rows).map((r) => (
+                <QueueCardMobile key={r.id} card={toCard(r)} />
+              ))}
             </ul>
           </section>
         </div>
@@ -610,6 +616,12 @@ const toCard = (r: HandoverQueueRow): QueueCardView => ({
   ...(r.due ? { note: `${r.acts[1] === "自分が持つ" ? "期限" : "返事の期限"} ${r.due}` } : {}),
   acts: r.acts,
 });
+/** 承認待ちは期限の順（D-128.36・本番の QueueCards と表は DUE_GROUPS の順）。AI の成果物の行（EG-128）の期限は 11/24。
+ *  期限がそれより前か同じ日の渡しの行はその前に、後の日・期限の無い行（申し出・グループに配られた行の 11/30）はその後ろに置く
+ *  （段9 の全部の CI・2026-11-27：申し出・配るのカードの並びが本番と逆だった） */
+const AI_DUE = "11/24";
+const beforeAi = (rows: readonly HandoverQueueRow[]) => rows.filter((r) => r.due && r.due.slice(0, 5) <= AI_DUE);
+const afterAi = (rows: readonly HandoverQueueRow[]) => rows.filter((r) => !(r.due && r.due.slice(0, 5) <= AI_DUE));
 const AI_CARD: QueueCardView = {
   id: "ai1",
   number: "EG-128",

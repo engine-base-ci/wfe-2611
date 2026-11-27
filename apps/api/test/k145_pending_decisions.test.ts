@@ -248,30 +248,9 @@ describe("K-145 D-135.3：一言・問い合わせの答え・指示を切らな
 });
 
 describe("K-145 D-135.5：人が打つ資格情報のサービス名と資料のファイル名も黙って切らない（上限も外す・D-130.4）", () => {
-  it("K145-API-019 資格情報を預ける（/vault/credentials）サービス名 300 字と、資料を付ける（/agent/attachments）ファイル名 300 字は、答えと DB から読み戻して一字も欠けない（前は 120・200 字で黙って切った）", async () => {
+  // K-358：資格情報のサービス名の半分は消した（前の道すじ /vault/credentials を消した。名前の形と上限は契約の口 createCredential の K352-API-006 が見る）
+  it("K145-API-019 資料を付ける（/agent/attachments）ファイル名 300 字は、答えと DB から読み戻して一字も欠けない（前は 200 字で黙って切った）", async () => {
     const r = await ready();
-    const service = `サービス${"く".repeat(293)}終わり`;
-    expect([...service].length).toBe(300);
-    const c = await post(
-      "/vault/credentials",
-      { service_name: service, login: "me@example.com", password: "pw-k145-123" },
-      r.H,
-    );
-    expect(
-      c.status,
-      await c
-        .clone()
-        .text()
-        .then((t) => t.slice(0, 120)),
-    ).toBe(201);
-    const created = (await c.json()) as { data: { id: string; service_name: string } };
-    expect(created.data.service_name).toBe(service);
-    const row = (
-      await admin.query<{ service_name: string }>("select service_name from credentials where id = $1", [
-        created.data.id,
-      ])
-    ).rows[0]!;
-    expect(row.service_name).toBe(service);
     const fileName = `${"資料の名前".repeat(59)}末.txt`;
     expect([...fileName].length).toBe(300);
     const fd = new FormData();

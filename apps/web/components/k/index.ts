@@ -23,7 +23,16 @@ export {
 export { Table, type Column, type TableProps } from "./table";
 export { Badge, type BadgeTone } from "./badge";
 export { Tabs, type TabItem, type TabsProps } from "./tabs";
-export { Callout, Toaster, useNotify, type CalloutTone } from "./notice";
+export {
+  Callout,
+  Toaster,
+  dismissNotify,
+  notify,
+  useNotify,
+  type CalloutTone,
+  type NotifyAction,
+  type NotifyOptions,
+} from "./notice";
 export { Dialog, Confirm, type DialogProps, type ConfirmProps } from "./dialog";
 export { ThemeSwitch, applyTheme } from "./theme";
 export { Shell, type ShellProps, type Crumb, type Group } from "./shell";
