@@ -23,8 +23,9 @@ WORDS = {"public", "read", "write", "assignee", "approver", "recipient", "self",
 OPS_CAPS = {"any", "inquiry", "peek", "money", "stop", "notice", "distribute", "plan_propose", "plan_decide", "ops_people"}
 # 本人確認を取り直す操作（D-125.139・D-128.68・D-128.70）。表に出てきたら step_up が要る
 # approveApproval は外した：AI の成果物の承認では本人確認を取り直さない（D-128.177・K-162）
-STEP_UP_REQUIRED = {"createCredential", "updateCredential", "updateMemberRole", "updateMemberPermissions",
-                    "createExport", "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
+# updateMemberPermissions・createExport は外した：人ごとの「できること」と書き出しを作らない（D-154.10・D-154.4・K-800）
+STEP_UP_REQUIRED = {"createCredential", "updateCredential", "updateMemberRole",
+                    "openPeek", "stopWorkspace", "recordPayment", "decidePlanProposal",
                     "startTwoFactor", "disableTwoFactor", "regenerateBackupCodes", "changePassword", "deletePasskey", "resetMemberTwoFactor",
                     "requestEmailChange", "revokeMyDevice", "releaseOpsWorkType", "rollbackOpsWorkType", "releaseOpsTemplate",
                     "updateMemberGroups", "suspendMember", "resumeMember", "removeMember", "updateWorkspacePermissions",
