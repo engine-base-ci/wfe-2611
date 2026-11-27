@@ -108,11 +108,11 @@ test("K599-SL-003 差し込み口は前からのファイルに入っている�
     const c = code(src(file));
     for (const n of needles) if (!c.includes(n)) bad.push(`${file} に ${n} が無い`);
   }
-  // 止まった箱ぜんたいを包む：StoppedHandSlot の中に k-check-stack（RunBox と CheckTable）が入る（自分で直すのボタン 1 つだけを包まない）
+  // 止まった箱ぜんたいを包む：StoppedHandSlot の中に k-check-stack（RunBox と確認の結果の表＝CheckTable か段6 の ChecksSlot）が入る（自分で直すのボタン 1 つだけを包まない）
   const band = code(src("features/F5/delegate/delegate-band.tsx"));
   const m = band.match(/<F7\.StoppedHandSlot[\s\S]*?<\/F7\.StoppedHandSlot>/);
   if (!m) bad.push("delegate-band.tsx に <F7.StoppedHandSlot …>…</F7.StoppedHandSlot> が無い");
-  else if (!/k-check-stack/.test(m[0]) || !/<RunBox/.test(m[0]) || !/<CheckTable/.test(m[0]))
+  else if (!/k-check-stack/.test(m[0]) || !/<RunBox/.test(m[0]) || !/<(CheckTable|ChecksSlot)\b/.test(m[0])) // 表は段6 の K-740 で差し込み口 ChecksSlot に替わった
     bad.push("StoppedHandSlot が止まった箱ぜんたい（k-check-stack・RunBox・CheckTable）を包んでいない");
   // 読み直し onChanged を渡す（包みの開きタグの中＝k-check-stack より前）。K-486 が書き込みの後に呼ぶ
   else if (!/onChanged=\{/.test(m[0].slice(0, m[0].indexOf("k-check-stack"))))
@@ -275,7 +275,7 @@ test("K599-UI-003 止まった帯（AI が止まった詳細・幅 1440）：理
   }
 });
 
-test("K599-UI-004 引き取った実行（止まっていて taken_over_at がある・reason_kind は何でも）は止まった箱を出さない：region「AI に任せる」には白い箱の「AI に任せる」だけが出る（role=alert の止まった箱・理由の字・直し方・自分で直すは出ない）。taken_over_at が無い同じ実行は止まった箱が出る（UI-003）", async ({
+test("K599-UI-004 引き取った実行（止まっていて taken_over_at がある・reason_kind は何でも）は止まった箱を出さない：題の行の「AI に任せる」が出て（K-573）、region「AI に任せる」には止まった箱が出ない（role=alert の止まった箱・理由の字・直し方・自分で直すは出ない）。taken_over_at が無い同じ実行は止まった箱が出る（UI-003）", async ({
   page,
 }) => {
   await mockApi(page, STOPPED);
@@ -284,7 +284,9 @@ test("K599-UI-004 引き取った実行（止まっていて taken_over_at が�
   await page.route(ONE_RUN, (r) => r.fulfill({ json: { data: taken } }));
   await openTicket(page, 1440);
   const band = page.getByRole("region", { name: "AI に任せる" });
-  await expect(band.getByRole("button", { name: "AI に任せる", exact: true })).toBeVisible();
+  // もう一度任せるのは題の行の「AI に任せる」（段6 の K-573・帯は状態の知らせだけ）
+  await expect(band.getByRole("button", { name: "AI に任せる", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "AI に任せる", exact: true })).toBeVisible();
   await expect(band.getByRole("alert")).toHaveCount(0);
   await expect(band).not.toContainText("金額が見積の月額と合いませんでした");
   await expect(band.getByRole("button", { name: "自分で直す", exact: true })).toHaveCount(0);

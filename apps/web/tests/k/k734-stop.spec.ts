@@ -435,7 +435,9 @@ test("K734-UI-017 画面：幅 375・768・1440 で 2 つの小窓は横溢れ 0
         await expect(btn).toBeInViewport();
       if (w === 375) {
         const r = await d.boundingBox();
-        expect(r && Math.abs(812 - (r.y + r.height) - SHEET_GAP) <= 1, "下から出る").toBe(true);
+        // 画面の高さは openTicket が決めた値（approve-complete.harness.ts は 1000）で見る（812 と決め打ちしない）
+        const vh = page.viewportSize()!.height;
+        expect(r && Math.abs(vh - (r.y + r.height) - SHEET_GAP) <= 1, "下から出る").toBe(true);
       }
     }
   }
@@ -444,48 +446,49 @@ test("K734-UI-017 画面：幅 375・768・1440 で 2 つの小窓は横溢れ 0
 test("K734-UI-018 画面：下絵との突き合わせ（stop-running-band・stop-running-confirm・stop-stopped-band・stop-approval-confirm・stop-approval-stopped）。幅 375・768・1440 で帯の箱・題と要約・acts のボタン・小窓の箱と題と足・帯の下の 1 行の形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>, boolean][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いていて、狭い幅のモックと 1440 の本番を比べていた）
+  const drives: [string, (p: Page, w: number) => Promise<void>, boolean][] = [
     [
       "stop-running-band",
-      async (p) => {
+      async (p, w) => {
         await mockStop(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
     [
       "stop-running-confirm",
-      async (p) => {
+      async (p, w) => {
         await mockStop(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await stopBtn(p, "AI に任せる").click();
       },
       true,
     ],
     [
       "stop-stopped-band",
-      async (p) => {
+      async (p, w) => {
         const s = await mockStop(p);
         s.run = runRow({ status: "stopped", stopped_reason: "高本が止めました", finished_at: STOPPED_AT });
         s.m.on.ticket = () => ({ status: 200, body: { data: ticketOf({ stage: "doing", can_delegate: true }) } });
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
     [
       "stop-approval-confirm",
-      async (p) => {
+      async (p, w) => {
         await mockStopApproval(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await stopBtn(p, "承認と実行").click();
       },
       true,
     ],
     [
       "stop-approval-stopped",
-      async (p) => {
+      async (p, w) => {
         await mockStopApproval(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await stopBtn(p, "承認と実行").click();
         await confirmStop(p).click();
         await expect(trailOf(p)).toHaveCount(1);
@@ -501,7 +504,7 @@ test("K734-UI-018 画面：下絵との突き合わせ（stop-running-band・sto
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs: dialog ? DIALOG_PAIRS : BAND_PAIRS, blur: true },
       );

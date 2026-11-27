@@ -2,11 +2,12 @@
 // 片付けに失敗した承認の後の実行の帯（K-1192・K-190 の子）：実行の形の sweep_failed_at が null でない待っている実行のとき、
 //   帯（band.tsx）の ④「実行待ち・PC が閉じています」の代わりに赤い箱（role=alert）を出す。
 //   ［この実行を止める］は担当者だけ（D-190.3 answer=449e47c15ace）。押すと確かめの小窓（components/k の Confirm）。
-//   「止める」で止める口 stopActionRun（K-731）を 1 回呼ぶ。答えを待つ間は主ボタンが処理中（二度押しで 2 回呼ばない）。
+//   「止める」で止める口（K-731・features/F5/stop/stop-call.ts を通す・K-734）を 1 回呼ぶ。答えを待つ間は主ボタンが処理中（二度押しで 2 回呼ばない）。
 //   字は決める人の答え（D-190.4 answer=ed20fcc1483d）。色・大きさは components/k のまま（生の値を書かない）。
 import { useRef, useState } from "react";
 import { Band, BandLine, Button, Confirm } from "@/components/k";
-import { call, type CallErr } from "@/lib/api/call";
+import type { CallErr } from "@/lib/api/call";
+import { callStopRun } from "@/features/F5/stop/stop-call";
 
 export const SWEEP_MSG = {
   title: "片付けに失敗しています",
@@ -38,7 +39,7 @@ export function SweepFailedBand({ runId, canStop, onChanged, onFailed, initialOp
     sending.current = true;
     setBusy(true);
     try {
-      const r = await call("stopActionRun", { params: { id: runId }, body: {}, screenId: "tickets" });
+      const r = await callStopRun(runId); // 止める口は features/F5/stop/ から（K-734）
       setOpen(false);
       if (r.ok) await onChanged();
       else await onFailed(r);

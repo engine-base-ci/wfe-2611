@@ -9,3 +9,7 @@
 .k-f7-stop .k-band-acts a.k-btn {
   text-decoration: none;
 }
+/* 帯の箱の下の確認の結果の表（段6 の ChecksSlot・キャンバス StFailed）は、前からの .k-check-stack と同じ間にする（K228-UI-023） */
+.k-f7-stop > .k-band ~ * {
+  margin-top: calc(var(--k-c-check-stack-gap) - var(--k-c-run-band-gap));
+}
