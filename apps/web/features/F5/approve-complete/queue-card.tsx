@@ -8,7 +8,7 @@
 //   番号の札の右の meta には置かず、題名・中身の 1 行の後の別の行）・
 //   カードの選ぶ四角＝QueueBulkSlot（card・最初は何も出さない）
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Button, useNotify } from "@/components/k";
 import { DeclineFlow } from "@/features/F8/handover/decline-dialog";
 import { formatMoment, targetOfRow, useAnswerCall } from "@/features/F8/handover/answer";
@@ -244,8 +244,26 @@ function RowCard({ row, acts }: { row: QueueRow; acts: RowActs }) {
   return <HandoverCard row={row} />;
 }
 
-/** 承認待ちのスマホの全部のカード。rows は表と同じ並び（期限の順）。区切りの見出しは出さない */
+/** スマホのカードにする幅（handover.css の @media と同じ値） */
+const NARROW = "(max-width: 767px)";
+
+/** 幅 767 以下か。768 以上ではカードを DOM にも置かない（CSS で隠すだけだと、表の行と同じ題名が 2 つ在ることになる） */
+function useNarrow(): boolean {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW);
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
+/** 承認待ちのスマホの全部のカード。rows は表と同じ並び（期限の順）。区切りの見出しは出さない。幅 768 以上では描かない */
 export function QueueCards({ rows, total, acts }: { rows: QueueRow[]; total: number; acts: RowActs }): ReactNode {
+  const narrow = useNarrow();
+  if (!narrow) return null;
   return (
     <section className="k-hnd-mq" aria-label="承認待ちの一覧（スマホ）">
       <QueueToolsSlot total={total} layout="card" />

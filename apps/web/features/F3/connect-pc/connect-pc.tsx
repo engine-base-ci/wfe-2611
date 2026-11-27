@@ -28,7 +28,13 @@ export { safeFrom } from "./safe-from";
 export function ConnectPc({ from }: { from: string | null }) {
   const takeHelp = useTakeHelp();
   const s = useConnectPc(from, { onTaken: takeHelp.onTaken });
-  const rowExtra = usePcRowExtra({ devices: s.devices ?? [], where: s.where, bridge: s.bridge, reload: s.reload });
+  const rowExtra = usePcRowExtra({
+    devices: s.devices ?? [],
+    where: s.where,
+    bridge: s.bridge,
+    reload: s.reload,
+    canPair: s.canPair,
+  });
   const rowMore = usePcRowMore({ reload: s.reload });
 
   if (!s.ready)
@@ -90,6 +96,7 @@ export function ConnectPc({ from }: { from: string | null }) {
         onWake={() => wake()}
         renderExtra={rowExtra}
         renderMore={rowMore.more}
+        canPair={s.canPair}
       />
       {s.live ? <Usage /> : null}
 

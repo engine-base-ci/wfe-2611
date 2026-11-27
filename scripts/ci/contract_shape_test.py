@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "ci"))
 import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117）
 from portable_regex import walk as _portable  # noqa: E402  作り手が契約に書くときの直し（\s \S \d \w を JS と同じ字に・K-1117）。表の字はそのまま、比べる前に当てる
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 
 
 def _load_screen_api():

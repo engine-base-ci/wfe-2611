@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-27 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9064,6 +9064,10 @@ components:
         updated_at:
           type: string
           format: date-time
+        answered_by:
+          type: string
+          format: uuid
+          nullable: true
         created_by:
           type: string
           format: uuid
@@ -9071,6 +9075,18 @@ components:
         deleted_at:
           type: string
           format: date-time
+          nullable: true
+        notify_managers:
+          type: boolean
+        overdue_notified_at:
+          type: string
+          format: date-time
+          nullable: true
+        reminded_at:
+          type: string
+          format: date-time
+          nullable: true
+        switch_applied:
           nullable: true
         updated_by:
           type: string
@@ -10023,6 +10039,11 @@ components:
         password:
           type: string
           nullable: true
+        email:
+          type: string
+          nullable: true
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^@ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+@[^@ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+\.[^@
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
       additionalProperties: false
       x-operation: acceptInvitation
     TicketCompleteInput:
@@ -10033,11 +10054,13 @@ components:
           items:
             type: integer
             minimum: 0
+            maximum: 2147483647
           nullable: true
         todo_version:
           type: integer
           nullable: true
           minimum: 0
+          maximum: 2147483647
         conditions_confirmed:
           type: boolean
           enum:
@@ -10664,6 +10687,219 @@ components:
             pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f]'
         required:
         - reason
+    TicketHandoverCreateInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - pass
+          - offer
+          - distribute
+        to_member_id:
+          type: string
+          format: uuid
+          nullable: true
+        to_scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          nullable: false
+          pattern: ^[^\u0000]*[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f\ufeff][^\u0000]*$
+        ask:
+          type: string
+          nullable: true
+          pattern: ^[^\u0000]*$
+        reply_due:
+          type: string
+          nullable: true
+          format: date-time
+        switch:
+          type: object
+          nullable: true
+          additionalProperties: false
+          properties:
+            children:
+              type: boolean
+            links:
+              type: boolean
+            group:
+              type: boolean
+            axes:
+              type: array
+              items:
+                type: string
+                format: uuid
+        notify_managers:
+          type: boolean
+          nullable: true
+        replaces:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: createTicketHandover
+      required:
+      - kind
+      - reason
+      x-required-by: hooks
+      allOf:
+      - not:
+          allOf:
+          - required:
+            - to_member_id
+            properties:
+              to_member_id:
+                type: string
+          - required:
+            - to_scope_id
+            properties:
+              to_scope_id:
+                type: string
+      - anyOf:
+        - not:
+            required:
+            - kind
+            properties:
+              kind:
+                enum:
+                - offer
+        - properties:
+            to_member_id:
+              nullable: true
+              enum:
+              - null
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
+            reply_due:
+              nullable: true
+              enum:
+              - null
+      - anyOf:
+        - not:
+            required:
+            - kind
+            properties:
+              kind:
+                enum:
+                - pass
+        - properties:
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
+      - anyOf:
+        - not:
+            required:
+            - replaces
+            properties:
+              replaces:
+                type: string
+        - required:
+          - kind
+          properties:
+            kind:
+              enum:
+              - pass
+      - anyOf:
+        - not:
+            anyOf:
+            - required:
+              - kind
+              properties:
+                kind:
+                  enum:
+                  - pass
+            - required:
+              - kind
+              properties:
+                kind:
+                  enum:
+                  - distribute
+        - anyOf:
+          - required:
+            - to_member_id
+            properties:
+              to_member_id:
+                type: string
+          - required:
+            - to_scope_id
+            properties:
+              to_scope_id:
+                type: string
+    TicketHandoverAnswerInput:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum:
+          - accept
+          - decline
+        decline_reason:
+          type: string
+          nullable: true
+          pattern: ^[^\u0000]*$
+        switch:
+          type: object
+          nullable: true
+          additionalProperties: false
+          properties:
+            children:
+              type: boolean
+            links:
+              type: boolean
+            group:
+              type: boolean
+            axes:
+              type: array
+              items:
+                type: string
+                format: uuid
+      additionalProperties: false
+      x-operation: answerTicketHandover
+      required:
+      - decision
+      x-required-by: hooks
+      allOf:
+      - anyOf:
+        - not:
+            required:
+            - decision
+            properties:
+              decision:
+                enum:
+                - decline
+        - required:
+          - decline_reason
+          properties:
+            decline_reason:
+              type: string
+              pattern: ^[^\u0000]*[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f\ufeff][^\u0000]*$
+    HandoverWithdrawInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: withdrawTicketHandover
+    HandoverRemindInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: remindTicketHandover
+    TicketHandoverClaimInput:
+      type: object
+      properties:
+        member_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: claimTicketHandover
+      required:
+      - member_id
+      x-required-by: hooks
     InvitationsCreateInput:
       type: object
       properties:
@@ -10717,6 +10953,17 @@ components:
       required:
       - scope_id
       - role_key
+      x-required-by: hooks
+    InvitationJoinConfirmInput:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+      additionalProperties: false
+      x-operation: confirmInvitationJoin
+      required:
+      - token
       x-required-by: hooks
     TicketBodyInput:
       type: object
@@ -12449,6 +12696,21 @@ components:
           nullable: true
         created_at:
           type: string
+        handover_kind:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        carry_children:
+          type: integer
+          nullable: true
+        to_scope_name:
+          type: string
+          nullable: true
+        ticket_scope_name:
+          type: string
+          nullable: true
       x-operation: listApprovalQueue
     ApprovalDetail:
       type: object
@@ -12955,6 +13217,13 @@ components:
         hold:
           type: object
           nullable: true
+        handover:
+          type: object
+          nullable: true
+        handover_kinds:
+          type: array
+          items:
+            type: string
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -13947,6 +14216,12 @@ components:
           type: string
         next:
           type: string
+        state:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
       x-operation: acceptInvitation
     ServiceStatus:
       type: object
@@ -14164,6 +14439,232 @@ components:
           type: string
           format: uuid
       x-operation: updateTicketDecision
+    HandoverPreview:
+      type: object
+      properties:
+        kinds:
+          type: array
+          items:
+            type: string
+        blocked:
+          type: string
+          nullable: true
+        waiting:
+          type: object
+          nullable: true
+        default_reply_due:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+        children:
+          type: object
+        links:
+          type: object
+        group:
+          type: object
+        candidates:
+          type: array
+          items:
+            type: object
+        groups:
+          type: array
+          items:
+            type: object
+      x-operation: previewTicketHandover
+    HandoverRule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        target:
+          type: string
+        axis_id:
+          type: string
+          format: uuid
+          nullable: true
+        axis_name:
+          type: string
+          nullable: true
+        mode:
+          type: string
+      x-operation: listHandoverRules
+    TicketHandoverCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        switch:
+          type: object
+        switch_applied:
+          type: object
+          nullable: true
+        notify_managers:
+          type: boolean
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+      x-operation: createTicketHandover
+    TicketHandoverAnswered:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        switch:
+          type: object
+        switch_applied:
+          type: object
+          nullable: true
+        notify_managers:
+          type: boolean
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+      x-operation: answerTicketHandover
+    TicketHandover:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        ticket_scope:
+          type: object
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        overdue:
+          type: boolean
+        switch:
+          type: object
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        reminded_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        can:
+          type: object
+      x-operation: listTicketHandovers
+    HandoverWithdrawn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        decided_at:
+          type: string
+      x-operation: withdrawTicketHandover
+    HandoverReminded:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reminded_at:
+          type: string
+      x-operation: remindTicketHandover
+    TicketHandoverClaimed:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        ticket_id:
+          type: string
+          format: uuid
+        assignee_member_id:
+          type: string
+          format: uuid
+      x-operation: claimTicketHandover
     InvitationsSent:
       type: object
       properties:
@@ -14172,6 +14673,17 @@ components:
           items:
             type: object
       x-operation: createInvitations
+    InvitationJoinConfirmed:
+      type: object
+      properties:
+        token:
+          type: string
+        workspace_id:
+          type: string
+          format: uuid
+        next:
+          type: string
+      x-operation: confirmInvitationJoin
     BodySaved:
       type: object
       properties:
@@ -16456,7 +16968,7 @@ paths:
       responses:
         '201':
           description: 成功
-          content:
+          content: &id884
             application/json:
               schema:
                 type: object
@@ -16466,7 +16978,7 @@ paths:
                   meta:
                     type: object
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011））
+          description: VALIDATION_ERROR／E-INV-013（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011））
           content:
             application/json:
               schema:
@@ -16475,12 +16987,6 @@ paths:
           - ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）
           - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
           - 漏れたことのあるパスワード（E-VAL-011）
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '403':
           description: E-AUTH-012／E-INV-005
           content:
@@ -16494,7 +17000,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-INV-006／E-INV-007
+          description: E-INV-006／E-INV-007／E-INV-016
           content:
             application/json:
               schema:
@@ -16523,6 +17029,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '202':
+          description: 受け付けた（まだ決まっていない）
+          content: *id884
   /api/v1/auth/invitations/{token}/resend-request:
     post:
       operationId: requestInvitationResend
@@ -16592,6 +17101,98 @@ paths:
                 $ref: '#/components/schemas/Error'
         '410':
           description: E-INV-002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/invitations/confirm:
+    post:
+      operationId: confirmInvitationJoin
+      summary: 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る）
+      tags:
+      - invitations
+      x-acts:
+      - A03
+      - A96
+      x-screens:
+      - invite-accept
+      x-choke-points:
+      - C2
+      x-source:
+      - D-026
+      - D-037
+      - D-125.121
+      - D-125.150
+      - D-125.152
+      - D-125.162
+      - D-125.167
+      - D-126.18
+      x-permission: public
+      x-permission-scope: 確認のメールのリンクを持つ人。押した時点で参加が決まる（D-148.51）
+      x-step-up: false
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationJoinConfirmInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationJoinConfirmed'
+                  meta:
+                    type: object
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-AUTH-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-INV-006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: E-INV-014
           content:
             application/json:
               schema:
@@ -24853,7 +25454,7 @@ paths:
   /api/v1/handover_rules:
     get:
       operationId: listHandoverRules
-      summary: 取得（handover_rules）— 渡されたものを受ける／断る（理由）
+      summary: 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）
       tags:
       - handover_rules
       x-acts:
@@ -24884,22 +25485,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - axis_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - mode
-          - target
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -24911,7 +25496,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/HandoverRules'
+                      $ref: '#/components/schemas/HandoverRule'
                   meta:
                     type: object
         '401':
@@ -41571,7 +42156,7 @@ paths:
       - D-125.88
       - D-125.90
       x-permission: recipient
-      x-permission-scope: 渡された・判断を仰がれた相手だけ
+      x-permission-scope: 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）
       x-step-up: false
       security:
       - session: []
@@ -41587,7 +42172,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketHandoversInput'
+              $ref: '#/components/schemas/TicketHandoverAnswerInput'
       responses:
         '200':
           description: 成功
@@ -41597,7 +42182,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketHandovers'
+                    $ref: '#/components/schemas/TicketHandoverAnswered'
                   meta:
                     type: object
         '401':
@@ -41607,13 +42192,339 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/claim:
+    post:
+      operationId: claimTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      x-screens:
+      - approvals
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-125.91
+      - D-125.92
+      x-permission: recipient
+      x-permission-scope: グループに配られた渡しの答える人（そのグループを管理する人・app.handover_answerer）だけ。グループの人を担当者に決める（D-125.118）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketHandoverClaimInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketHandoverClaimed'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/remind:
+    post:
+      operationId: remindTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-008.6
+      - D-032
+      - D-058
+      - D-058.8
+      - D-061
+      - D-061.4
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      x-permission: self
+      x-permission-scope: 渡した人だけ（申し出は申し出た人・配るは配った人）。行の決まり from_member_id（K-406）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverRemindInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverReminded'
+                  meta:
+                    type: object
+                    properties:
+                      mail:
+                        type: string
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/withdraw:
+    post:
+      operationId: withdrawTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      - A48
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-008.6
+      - D-024
+      - D-032
+      - D-058
+      - D-058.7
+      - D-058.8
+      - D-061
+      - D-061.3
+      - D-061.4
+      - D-061.5
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      - D-125.94
+      x-permission: self
+      x-permission-scope: 渡した人だけ（申し出は申し出た人・配るは配った人）。行の決まり from_member_id（K-406）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverWithdrawInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverWithdrawn'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
           content:
             application/json:
               schema:
@@ -44894,7 +45805,232 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/handover-preview:
+    get:
+      operationId: previewTicketHandover
+      summary: 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）
+      tags:
+      - tickets
+      x-acts:
+      - A111
+      - A48
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-008.6
+      - D-024
+      - D-032
+      - D-058
+      - D-058.7
+      - D-058.8
+      - D-061
+      - D-061.3
+      - D-061.4
+      - D-061.5
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      - D-125.94
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人のうち、渡す・配る・申し出るのどれかができる人（できなければ 403）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverPreview'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/tickets/{id}/handovers:
+    get:
+      operationId: listTicketHandovers
+      summary: 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A110
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-008.6
+      - D-032
+      - D-058
+      - D-058.8
+      - D-061
+      - D-061.4
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.90
+      x-permission: read
+      x-permission-scope: そのチケットを読める人と、その渡しを渡した人・答える人。別の会社・見えない人には返さない（D-128.115）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - answered_by
+          - ask
+          - created_at
+          - created_by
+          - decided_at
+          - decline_reason
+          - deleted_at
+          - from_member_id
+          - id
+          - kind
+          - notify_managers
+          - overdue_notified_at
+          - reason
+          - reminded_at
+          - reply_due
+          - state
+          - switch
+          - switch_applied
+          - tenant_id
+          - ticket_id
+          - to_member_id
+          - to_scope_id
+          - updated_at
+          - updated_by
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketHandover'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       operationId: createTicketHandover
       summary: 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ
@@ -44935,7 +46071,7 @@ paths:
       - D-125.96
       - D-125.97
       x-permission: write
-      x-permission-scope: 渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者
+      x-permission-scope: 渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・ゲスト・止まっている人はできない（D-148.3・D-148.18）
       x-step-up: false
       security:
       - session: []
@@ -44951,7 +46087,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketHandoversInput'
+              $ref: '#/components/schemas/TicketHandoverCreateInput'
       responses:
         '201':
           description: 成功
@@ -44961,7 +46097,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketHandovers'
+                    $ref: '#/components/schemas/TicketHandoverCreated'
                   meta:
                     type: object
         '401':
@@ -44971,19 +46107,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-HND-004
           content:
             application/json:
               schema:

@@ -299,6 +299,8 @@ export interface EditingPostProps {
   onCancel?: () => void;
   onSave?: () => void;
   saving?: boolean;
+  /** 「直す」を押せない（空白だけのとき・K-394） */
+  saveDisabled?: boolean;
   error?: string;
   mentions?: readonly MentionOption[];
   activeMention?: number;
@@ -316,6 +318,7 @@ export function EditingPost({
   onCancel,
   onSave,
   saving,
+  saveDisabled,
   error,
   mentions,
   activeMention,
@@ -351,7 +354,7 @@ export function EditingPost({
           <Button variant="outlined" size="sm" onClick={onCancel} disabled={saving ?? false}>
             やめる
           </Button>
-          <Button size="sm" onClick={onSave} loading={saving ?? false}>
+          <Button size="sm" onClick={onSave} loading={saving ?? false} disabled={saveDisabled ?? false}>
             直す
           </Button>
         </div>

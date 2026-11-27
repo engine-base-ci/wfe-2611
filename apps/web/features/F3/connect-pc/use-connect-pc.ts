@@ -9,6 +9,7 @@ import { getInstaller, pairViaLocal, useWhere } from "@/lib/bridge-presence";
 import { pollDevices, type Device } from "./devices";
 import type { Os } from "./connect-dialog";
 import { codeWait } from "./code-wait";
+import { canPairHere, pairHintsOf } from "./pair-device";
 import { safeFrom } from "./safe-from";
 import { CATALOG } from "@kaname/errors/catalog";
 
@@ -36,6 +37,11 @@ export function useConnectPc(from: string | null, opts: { onTaken?: (os: Os) => 
   const [devices, setDevices] = useState<Device[] | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const autoTried = useRef(false);
+  /** この端末に Bridge を入れられるか（K-373・開いたとき 1 回だけ読む・null＝まだ読んでいない）。読む所はここだけ（行の区画にも渡す） */
+  const [pairable, setPairable] = useState<boolean | null>(null);
+  useEffect(() => {
+    setPairable(canPairHere(pairHintsOf(navigator)));
+  }, []);
 
   // ログインしていなければログインへ。入ったらこの画面に戻る（戻す先は中の道だけ）
   useEffect(() => {
@@ -95,15 +101,17 @@ export function useConnectPc(from: string | null, opts: { onTaken?: (os: Os) => 
   );
 
   // 開いた最初の 1 回：ブラウザ（Bridge なし）で、つながっている・切れている PC が無ければ、つなぐ小窓を開いてコードを出す。
-  //   Bridge の窓の中は開いた時点で自分でつながる。「あとで」と × で閉じたら、読み直しても開き直さない
+  //   Bridge の窓の中は開いた時点で自分でつながる。「あとで」と × で閉じたら、読み直しても開き直さない。
+  //   Bridge を入れられない端末（スマホ・タブレット・K-373）では小窓を開かず、コードも作らない。見分けを読み終えてから決める
   useEffect(() => {
-    if (!ready || autoTried.current || devices === null || where === "loading") return;
+    if (!ready || autoTried.current || devices === null || where === "loading" || pairable === null) return;
     autoTried.current = true;
     if (where === "web" && !known) {
+      if (!pairable) return;
       setDialogOpen(true);
       void newCode();
     } else if (where === "app" && !live) void connectLocal();
-  }, [ready, where, devices, known, live, newCode, connectLocal]);
+  }, [ready, where, devices, known, live, pairable, newCode, connectLocal]);
 
   // 小窓を閉じたら（「あとで」・×・Esc・つながって自分で閉じた）コードを消す。閉じている間は使える鍵を作らない
   const closeDialog = useCallback(() => {
@@ -167,6 +175,8 @@ export function useConnectPc(from: string | null, opts: { onTaken?: (os: Os) => 
     devices,
     dialogOpen,
     live,
+    /** 読むまでは true（描き直しの食い違いを出さない） */
+    canPair: pairable ?? true,
     newCode,
     connectLocal,
     openDialog,
