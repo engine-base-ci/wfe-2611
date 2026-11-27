@@ -4755,7 +4755,10 @@
     "test_post_ticket_draft_conversations_rejected_401": "K774-API-005",
     "test_post_ticket_draft_conversations_rate_limited": "K774-API-005",
     "test_post_ticket_draft_conversations_rejected_403": "K774-API-021",
-    "test_post_ticket_draft_conversations_rejected_403_2": "K782-API-001",
+    "test_post_ticket_draft_conversations_rejected_403_2": {
+     "file": "apps/api/test/features/F5/talk-draft-perm.test.ts",
+     "mark": "K782-API-001"
+    },
     "test_post_ticket_draft_conversations_rejected_422_2": "K774-API-004",
     "test_post_ticket_draft_conversations_session_unresolved": "K774-API-018",
     "test_post_ticket_draft_conversations_terms_pending": {
@@ -4786,7 +4789,10 @@
     "test_post_ticket_draft_conversations_id_messages_rejected_401": "K774-API-020",
     "test_post_ticket_draft_conversations_id_messages_rate_limited": "K774-API-020",
     "test_post_ticket_draft_conversations_id_messages_rejected_403": "K774-API-021",
-    "test_post_ticket_draft_conversations_id_messages_rejected_403_2": "K782-API-002",
+    "test_post_ticket_draft_conversations_id_messages_rejected_403_2": {
+     "file": "apps/api/test/features/F5/talk-draft-perm.test.ts",
+     "mark": "K782-API-002"
+    },
     "test_post_ticket_draft_conversations_id_messages_not_found": "K774-API-013",
     "test_post_ticket_draft_conversations_id_messages_conflict": "K774-API-012",
     "test_post_ticket_draft_conversations_id_messages_conflict_2": "K774-API-014",
@@ -6521,8 +6527,8 @@
     "test_get_inquiries_id_rejected_401": "K951-API-011",
     "test_get_inquiries_id_rejected_403": "K951-API-011",
     "test_get_inquiries_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-980"
+     "file": "apps/api/test/features/contract/k144.d/K-951.ts",
+     "mark": "K144-API-992"
     },
     "test_get_inquiries_id_rate_limited": {
      "file": "apps/api/test/features/F12/inquiry-read.test.ts",
@@ -6574,7 +6580,7 @@
     "test_post_inquiries_id_resolve_rejected_401": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_403": "K952-API-012",
     "test_post_inquiries_id_resolve_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-952.ts",
      "mark": "K144-API-991"
     },
     "test_post_inquiries_id_resolve_rate_limited": {
@@ -6695,7 +6701,7 @@
     "test_get_invoices_id_pdf_rejected_403": "K958-API-016",
     "test_get_invoices_id_pdf_not_found": "K958-API-014",
     "test_get_invoices_id_pdf_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-958.ts",
      "mark": "K144-API-958"
     },
     "test_get_invoices_id_pdf_rate_limited": "K958-API-012",
