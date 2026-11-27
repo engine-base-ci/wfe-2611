@@ -2,12 +2,13 @@
 //   ここは「作った口」の一覧（生成の試験と目録がこのフォルダを見る）
 import type { Hook } from "../contract/deps.js";
 import { createGetMyInquiry, createListMyInquiries } from "../features/F12/inquiries/read.js";
+import { inquiryMissing } from "../features/F12/inquiries/errors.js";
 import { defineHooks, type HookDeps } from "./registry.js";
 
 export function inquiryReadHooks(d: HookDeps): Record<string, Hook> {
   return {
     listMyInquiries: { before: createListMyInquiries(d.appPool) },
-    getMyInquiry: { before: createGetMyInquiry(d.appPool) },
+    getMyInquiry: { before: createGetMyInquiry(d.appPool), rowMissing: inquiryMissing },
   };
 }
 

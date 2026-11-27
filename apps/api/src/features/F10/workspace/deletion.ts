@@ -56,7 +56,10 @@ async function run(d: Pick<HookDeps, "appPool">, a: HookArgs, sql: string, param
 export function createRequestWorkspaceDeletion(d: Pick<HookDeps, "appPool">) {
   return async (a: HookArgs): Promise<HookReply> => {
     // 名前の欄は必須・1〜100 字（契約の REQUIRED_INPUTS・VALUE_RANGES は x-required-by: hooks で、入口の zod は読まない）
-    const confirm = a.input["confirm_name"];
+    // 名前は打ったとおりに比べる：入口の正規化（NFKC・前後の空白を落とす）の前の値を読む（全角・空白の打ち間違いを 409 にする・K830-API-003。
+    //   パスワードの口と同じ形・K301-API-012）。NUL・知らない欄・型の誤りは入口が正規化の後の値で先に断っている
+    const raw = (await a.c.req.json().catch(() => ({}))) as Record<string, unknown>;
+    const confirm = typeof raw["confirm_name"] === "string" ? raw["confirm_name"] : a.input["confirm_name"];
     if (typeof confirm !== "string" || confirm.length < 1 || [...confirm].length > CONFIRM_MAX)
       return {
         status: 422,

@@ -3378,7 +3378,11 @@
     "verifyEmailChange",
     "listLayers",
     "listMyInvitations",
-    "switchWorkspace"
+    "switchWorkspace",
+    "createLayer",
+    "createScope",
+    "updateLayer",
+    "updateScope"
    ],
    "tests": [
     "apps/api/test/generated/delete_members_id.test.ts",
@@ -60625,7 +60629,9 @@
    "decisions": [
     "D-155.11",
     "D-128.101",
-    "D-092.2"
+    "D-092.2",
+    "D-104.14",
+    "D-107.2"
    ],
    "split": "",
    "choke_points": [

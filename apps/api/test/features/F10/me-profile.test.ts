@@ -91,8 +91,8 @@ describe("K-833 自分を読む・直す（getMe・updateMe）", () => {
     const { co } = await second(w, w.member, "manager");
     // 兼務：受託開発のマネージャーも兼ねる（主の所属は営業のまま・group は主だけ）
     await h.f.admin.query(
-      "insert into scope_memberships (tenant_id, scope_id, member_id, is_primary, role) values ($1, $4, $3, false, 'manager')",
-      [w.tenantId, w.eg, w.member.id, w.jd],
+      "insert into scope_memberships (tenant_id, scope_id, member_id, is_primary, role) values ($1, $3, $2, false, 'manager')",
+      [w.tenantId, w.member.id, w.jd],
     );
     const ws = ((await h.json(await get(w.member))).data!["workspaces"] as Ws[]).sort((a, b) =>
       a.name.localeCompare(b.name),

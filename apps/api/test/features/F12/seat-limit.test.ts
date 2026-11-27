@@ -217,7 +217,14 @@ describe("K-1103 招く口とプランの人数の上限（無料は 3 人まで
     expect(r1.status, await r1.clone().text()).toBe(201);
     const full = await ws("満員でゲスト", 3);
     const to = fresh("guest");
-    const r2 = await invite(full, [to], { role_key: "requester", guest_group_name: "合同会社ミナト企画（ゲスト）" });
+    // ゲストは先にあるゲストのグループに招く（招く口の形は guest_group_id・K-876 の新しい形。前の guest_group_name は無い）
+    const group = (
+      await f.admin.query<{ id: string }>(
+        "insert into guest_groups (tenant_id, name, request_scope_id) values ($1, $2, $3) returning id",
+        [full.tenantId, "合同会社ミナト企画（ゲスト）", full.rootScope],
+      )
+    ).rows[0]!.id;
+    const r2 = await invite(full, [to], { role_key: "requester", guest_group_id: group, scope_id: undefined });
     expect(r2.status, await r2.clone().text()).toBe(201);
     expect(mailsTo([to])).toBe(1);
     expect(

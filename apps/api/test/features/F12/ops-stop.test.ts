@@ -164,7 +164,8 @@ describe("K-970 すぐ止める・止める日が来た", () => {
       expect(s.length).toBe(1);
       expect([s[0]!["title"], new Date(String(s[0]!["from"])).getTime()]).toEqual([
         "規約に反する",
-        new Date(String(m.at)).getTime(),
+        // stopped_at は pg が Date で返す。String(Date) は秒までの字になりミリ秒が落ちるので、Date のまま読む
+        new Date(m.at!).getTime(),
       ]);
     }
     expect(await notices(w, "workspace.stop_scheduled")).toBe(0);

@@ -68,6 +68,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `credentials` | skeleton | F3 |  |  |
 | `custom_field_kinds` | skeleton |  |  |  |
 | `custom_fields` | skeleton | F9 | F4 | ○ |
+| `distribution_versions` | internal |  |  |  |
 | `distributions` | skeleton | F12 |  |  |
 | `error_events` | internal |  |  |  |
 | `export_jobs` | skeleton |  |  |  |
@@ -104,6 +105,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `ops_setup_links` | internal |  |  |  |
 | `payments` | skeleton | F12 |  |  |
 | `permissions` | skeleton | F10 |  |  |
+| `plan_versions` | internal |  |  |  |
 | `plans` | skeleton |  | F12 |  |
 | `reference_logs` | skeleton |  | F4 |  |
 | `saved_views` | skeleton | F7 |  |  |
@@ -138,7 +140,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `ticket_thread_seen` | internal |  |  |  |
 | `tickets` | skeleton | F3,F4,F5,F6,F7 | F11,F8 | ○ |
 
-凍結の表（74）：`acceptances`・`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`checks`・`class_axes`・`class_values`・`client_contacts`・`client_groups`・`clients`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`imports`・`integrations`・`kind_sections`・`knowledge_links`・`learned_procedures`・`learning_candidates`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memories`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`policies`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`skill_test_runs`・`skill_versions`・`skills`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
+凍結の表（72）：`acceptances`・`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`checks`・`class_axes`・`class_values`・`client_contacts`・`client_groups`・`clients`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`imports`・`integrations`・`kind_sections`・`knowledge_links`・`learned_procedures`・`learning_candidates`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memories`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`policies`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`skill_test_runs`・`skill_versions`・`skills`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
 
 ## API の口
 
@@ -175,8 +177,8 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-807 |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-70,K-421 |
 | `listLayers` | GET /api/v1/layers | 取得（layers）— 層の名前と並びを見る（order_no の順・消した層を含まない・層に入っているグループの数） | F10 | 作った | K-70,K-803 |
-| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-803 |
-| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-803 |
+| `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-803 |
+| `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-803 |
 | `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-833 |
 | `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-833 |
 | `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-70,K-834 |
@@ -201,8 +203,8 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `updateMemberRole` | PATCH /api/v1/members/:id/role | 更新（members）— メンバーの所属（兼務）・権限を決める | F10 | 作った | K-70,K-811 |
 | `suspendMember` | POST /api/v1/members/:id/suspend | 作成・実行（members）— 抜ける人の依存を片付ける | F10 | 作った | K-814 |
 | `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-60 |
-| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-802 |
-| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-804 |
+| `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-802 |
+| `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F10 | 作った | K-70,K-804 |
 | `getWorkspaceSettings` | GET /api/v1/workspace | 取得（workspace）— 会社の設定を決める | F10 | 作った | K-827 |
 | `updateWorkspace` | PATCH /api/v1/workspace | 更新（workspace）— 会社の設定を決める | F10 | 作った | K-827 |
 | `requestWorkspaceDeletion` | POST /api/v1/workspace/deletion | 作成・実行（workspace）— 会社の設定を決める | F10 | 作った | K-830 |
