@@ -34,7 +34,8 @@ describe("K-1306 完了で実施事項の区画を書き換えない（中間テ
     await executed(t);
     const before = await versionsOf(t.id);
     expect(before.at(-1)?.text, "作ったときの実施事項").toBe(TODO);
-    const r = await complete(boss, t.id, await completeBody(t, { todo_checked: [0, 1] }));
+    // 段5 の K-578 で完了の口の体から todo_checked・todo_version を外した（契約は strict なので送ると 422）。今の小窓と同じ体（確かめ印だけ）で完了にする
+    const r = await complete(boss, t.id, await completeBody(t));
     expect(r.status, await r.clone().text()).toBe(201);
     expect(await stageKeyOf(t.id)).toBe("done");
     const after = await versionsOf(t.id);
