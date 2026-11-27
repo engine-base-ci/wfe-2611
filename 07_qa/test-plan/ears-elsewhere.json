@@ -6063,6 +6063,11 @@
     "test_post_client_requests_id_accept_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_client_requests_id_accept_conflict": "K894-API-010",
+    "test_post_client_requests_id_accept_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {
