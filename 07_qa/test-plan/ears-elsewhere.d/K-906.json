@@ -15,10 +15,13 @@
     "test_get_portal_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_portal_rejected_422": {
+     "file": "apps/api/test/features/F11/portal-visit.test.ts",
+     "mark": "K913-API-002"
     }
    },
    "na": {
-    "test_get_portal_rejected_422": "体も問い合わせも道の値も持たない口で、形の誤りの出し方が無い（K-906）",
     "test_get_portal_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い・K-906）"
    }
   },

@@ -1,8 +1,11 @@
 "use client";
 // ゲストの場所のホームの読み（K-911）。getPortalHome（GET /api/v1/portal）と listPortalNotices（GET /api/v1/portal/notices）を同時に 1 回ずつ。
 //   ホームの読みは外枠（portal-shell）とホーム（home-page）が同じ問い合わせの鍵を共有する（同じ住所を 2 回呼ばない・StrictMode でも）。
+//   K-913（代表の決め answer=b187f0c59dec）：「初めて」の印はホーム（/portal）を開いたときだけ。ほかの道の外枠は ?visit=elsewhere で読む（印を付けない）。
+//   鍵を道で分ける（ホームは ["portal","home"] のまま・ほかは末尾に "elsewhere"）：同じ道では外枠とホームが同じ鍵で 1 回のまま、ホームへ移ったら visit なしで読み直す（そこで印が付く）。
 //   401 は入り直しへ自動では移さない（期限切れの形を出し、本人が「入り直す」を押す・keepOn401）。読みで first_visit が済みになるので押し直しはしない（retry: false）
 import { useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { call, type CallErr } from "@/lib/api/call";
 
 /** 画面が読む答えの形（11_tickets/K-911.md「読む答えの形」・口は K-906） */
@@ -25,6 +28,12 @@ export type PortalRead<T> = { ok: true; data: T } | { ok: false; err: CallErr };
 
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
 export const PORTAL_HOME_KEY = ["portal", "home"] as const;
+/** ホーム以外の道の外枠の読み（印を付けない）。ホームは visit なし */
+export type PortalVisit = "home" | "elsewhere";
+export const visitOf = (pathname: string | null): PortalVisit => (pathname === "/portal" ? "home" : "elsewhere");
+/** 鍵：ホームの道は PORTAL_HOME_KEY のまま（home-page の setQueryData が同じ鍵を書く）。ほかの道は末尾に "elsewhere" */
+export const homeKeyOf = (visit: PortalVisit): readonly string[] =>
+  visit === "home" ? PORTAL_HOME_KEY : [...PORTAL_HOME_KEY, "elsewhere"];
 const PORTAL_NOTICES_KEY = ["portal", "notices"] as const;
 
 const str = (v: unknown): string => (typeof v === "string" ? v : "");
@@ -58,8 +67,12 @@ export function toHome(raw: unknown): PortalHomeData {
   };
 }
 
-async function readHome(): Promise<PortalRead<PortalHomeData>> {
-  const r = await call("getPortalHome", { keepOn401: true, screenId: "portal" });
+async function readHome(visit: PortalVisit): Promise<PortalRead<PortalHomeData>> {
+  const r = await call("getPortalHome", {
+    keepOn401: true,
+    screenId: "portal",
+    ...(visit === "elsewhere" ? { query: { visit: "elsewhere" } } : {}),
+  });
   return r.ok ? { ok: true, data: toHome(r.data) } : { ok: false, err: r };
 }
 async function readNotices(): Promise<PortalNotice[]> {
@@ -70,8 +83,11 @@ async function readNotices(): Promise<PortalNotice[]> {
     .filter((n) => n.title !== "");
 }
 
-/** ホームの読み（外枠とホームが共有する 1 つの鍵） */
-export const usePortalHome = () => useQuery({ queryKey: PORTAL_HOME_KEY, queryFn: readHome, ...ONCE });
+/** ホームの読み（同じ道では外枠とホームが共有する 1 つの鍵。道がホームかどうかで visit を分ける） */
+export const usePortalHome = () => {
+  const visit = visitOf(usePathname());
+  return useQuery({ queryKey: homeKeyOf(visit), queryFn: () => readHome(visit), ...ONCE });
+};
 /** お知らせ（ホームだけが読む） */
 export const usePortalNotices = (enabled = true) =>
   useQuery({ queryKey: PORTAL_NOTICES_KEY, queryFn: readNotices, enabled, ...ONCE });

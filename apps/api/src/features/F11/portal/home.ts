@@ -1,6 +1,7 @@
 // 先方の場所のホームを読む口（K-906）：getPortalHome（GET /api/v1/portal・D-155.37・D-155.41・D-155.44）。
 //   答えは DB の関数 app.portal_home() が組む（グループの名前・会社の名前・届け先の社内のグループの名前・本人・初めてか・グループの依頼・見せてもらったチケット）。
 //   期限・担当・確認してほしいもの（検収）は返さない。初めての読みのときだけ、同じ取引で証跡 portal.first_visit を 1 行書く。
+//   K-913：問い合わせ visit=elsewhere（ホーム以外の画面の外枠の読み）は印を付けない。ほかの値は DB を呼ぶ前に 422（visitMark）。
 //   ゲストでない人（関数の 42501）→ 403・FORBIDDEN。DB が落ちた → 503・E-PAGE-003（ログには例外の種類だけ・何も残らない）。
 //   Cache-Control: private, no-store は入口の app.ts が全部の答えに付ける。
 //   3 つの読む口（ホーム・1 件・お知らせ）が共に使う「関数を 1 回呼んで答えに倒す」形もここに置く（readPortal）
@@ -46,6 +47,30 @@ export async function readPortal(
   return { status: 200, body: { data: v } };
 }
 
+/**
+ * 問い合わせ visit の読み分け（K-913・代表の決め answer=b187f0c59dec：「初めて」の印はホームを開いたときだけ）。
+ *   無い・空 → ホームの読み（印を付ける）／"elsewhere" → ホーム以外の画面の外枠の読み（印を付けない）／ほか → null（422）。
+ *   入口（contract/op.ts の list の枝）は visit を見ないので、口が DB を呼ぶ前に自分で確かめる
+ */
+export function visitMark(visit: string | undefined): boolean | null {
+  if (visit === undefined || visit === "") return true;
+  if (visit === "elsewhere") return false;
+  return null;
+}
+
+const BAD_VISIT: HookReply = {
+  status: 422,
+  body: {
+    error: "validation_failed",
+    code: "VALIDATION_ERROR",
+    details: [{ field: "visit", message: "elsewhere か、指定なし" }],
+  },
+};
+
 export function createGetPortalHome(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
-  return (a: HookArgs) => readPortal(appPool, a, "select app.portal_home() as v", [], unavailable());
+  return async (a: HookArgs) => {
+    const mark = visitMark(a.c.req.query("visit"));
+    if (mark === null) return BAD_VISIT;
+    return readPortal(appPool, a, "select app.portal_home($1) as v", [mark], unavailable());
+  };
 }
