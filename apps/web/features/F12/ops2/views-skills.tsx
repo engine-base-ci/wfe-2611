@@ -4,7 +4,7 @@
 //   会社が手を付けていない所だけ「こう変わります」と知らせる（代表の答え 2026-11-23・D-156.20）。業務の型は描かない（段 10 の決め）
 //   本番（K-994）は任意の props で値と行き先を渡す。渡さない呼び方（モック）は下絵の見た目のまま
 import { Fingerprint, Plus } from "lucide-react";
-import { Band, Button, Dialog, PageBody, PageHeader } from "@/components/k";
+import { Band, Button, Callout, Dialog, Empty, PageBody, PageHeader } from "@/components/k";
 import { Bullets, Card, Note, StatusBadge } from "@/features/F12/ops/ops-parts";
 import { SkillsNav, type SkillsTab } from "./views-plans";
 import "@/features/F12/ops/ops.css";
@@ -294,7 +294,7 @@ export function OperationsPage({
   );
 }
 
-interface DiffRow {
+export interface DiffRow {
   id: string;
   kind: "足す" | "変える";
   target: string;
@@ -311,33 +311,84 @@ const DIFF_COLS: RespColumn<DiffRow>[] = [
   { key: "detail", header: "中身", cell: (r) => r.detail },
 ];
 
-/** 会社の側（ワークスペースの管理 › 設定）：ひな形がこう変わる。手を付けていない所だけを出し、「そのままにする」か「変える」を選ぶ（D-156.20） */
-export function TemplateUpdatePage() {
+/** 会社の側の頁で選ぶ 2 つ（K-1016：変える＝change・そのままにする＝keep） */
+export type TemplateChoice = "change" | "keep";
+
+export interface TemplateUpdatePageProps {
+  /** 副題（届いた版・出した日）。渡さないと下絵の字 */
+  sub?: string;
+  /** 差の行（手を付けていない所だけ）。渡さないと下絵の 3 行 */
+  rows?: readonly DiffRow[];
+  /** 上の 2 つのボタンを押したとき */
+  onApply?: (choice: TemplateChoice) => void;
+  /** 送っている間（2 つのボタンを押せない） */
+  busy?: boolean;
+  /** 選んだ後の知らせ（role=status） */
+  done?: string;
+  /** 口が断ったときの知らせ（role=alert） */
+  alert?: string;
+}
+
+/** 選んだ後の知らせと断りの知らせ（どちらも無ければ何も描かない） */
+function UpdateNotes({ done, alert }: Pick<TemplateUpdatePageProps, "done" | "alert">) {
+  return (
+    <>
+      {alert ? <Callout tone="danger">{alert}</Callout> : null}
+      {done ? <Callout tone="info">{done}</Callout> : null}
+    </>
+  );
+}
+
+/** 会社の側（ワークスペースの管理 › 設定）：ひな形がこう変わる。手を付けていない所だけを出し、「そのままにする」か「変える」を選ぶ（D-156.20）。
+ *  値を渡さない呼び方（モック）は下絵の字のまま */
+export function TemplateUpdatePage({ sub, rows, onApply, busy, done, alert }: TemplateUpdatePageProps = {}) {
   return (
     <PageBody labelledBy="oq-template-update-title">
       <PageHeader
         id="oq-template-update-title"
         title="ひな形がこう変わります"
-        sub="種別 v3 → v4 ・ 手を付けていない所だけ ・ 出した日 10/20 ・ Kaname 運営より"
+        sub={sub ?? "種別 v3 → v4 ・ 手を付けていない所だけ ・ 出した日 10/20 ・ Kaname 運営より"}
         actions={
           <>
-            <Button variant="outlined">そのままにする</Button>
-            <Button>変える</Button>
+            <Button
+              variant="outlined"
+              disabled={busy === true}
+              {...(onApply ? { onClick: () => onApply("keep") } : {})}
+            >
+              そのままにする
+            </Button>
+            <Button disabled={busy === true} {...(onApply ? { onClick: () => onApply("change") } : {})}>
+              変える
+            </Button>
           </>
         }
       />
       <div className="k-op-body">
+        <UpdateNotes {...(done ? { done } : {})} {...(alert ? { alert } : {})} />
         <Band
           tone="info"
           title="自分で変えた所は、ここに出ません"
           sub="このワークスペースで手を付けていない所だけを出しています。変えても、自分で変えた所はそのまま残ります"
         />
-        <RespTable caption="こう変わります" columns={DIFF_COLS} rows={[...DIFFS]} rowKey={(r) => r.id} />
+        <RespTable caption="こう変わります" columns={DIFF_COLS} rows={[...(rows ?? DIFFS)]} rowKey={(r) => r.id} />
         <Note>
-          「変える」は上の 3
+          「変える」は上の {(rows ?? DIFFS).length}{" "}
           つを新しい既定に変えます（自分で変えた種別・色・本文には触りません）。「そのままにする」は今のまま使います
         </Note>
         <Note>選べるのはワークスペースの管理者だけです。選んだ人と日時は記録に残ります</Note>
+      </div>
+    </PageBody>
+  );
+}
+
+/** 会社の側：届いている新しい版が無いとき（選んだ後・はじめから無い） */
+export function TemplateUpdateEmpty(notes: Pick<TemplateUpdatePageProps, "done" | "alert">) {
+  return (
+    <PageBody labelledBy="oq-template-update-title">
+      <PageHeader id="oq-template-update-title" title="ひな形がこう変わります" />
+      <div className="k-op-body">
+        <UpdateNotes {...notes} />
+        <Empty title="届いている新しい版はありません" />
       </div>
     </PageBody>
   );

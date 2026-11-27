@@ -145,6 +145,8 @@ const KIND_TEXT: Record<string, TextOf> = {
   "workspace.stop_scheduled": () => "ワークスペースを止める日が決まりました。日付は画面の上の帯で確かめられます",
   // 段 13 の問い合わせの返事（K-1007・D-156.73・D-156.28）：決まった字（返事の本文は出さない）。行き先は口の href（/notices）
   "inquiry.replied": () => "運営から問い合わせに返事がありました",
+  // 段 13 のひな形の新しい版（K-1016・D-156.73・D-156.56）：決まった字（版の中身は文に出さない）。行き先は口の href（/settings/template-updates）
+  "template.update": () => "ひな形がこう変わります",
 };
 /** 固有の文が無い種類は札ごとの汎用の文 */
 const TAG_TEXT: Record<NoticeKind, TextOf> = {
