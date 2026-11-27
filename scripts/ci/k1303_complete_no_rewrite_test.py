@@ -32,10 +32,10 @@ def rewrite_expectations(text: str) -> list[int]:
 
 def test_files() -> list[str]:
     out = subprocess.run(
-        ["git", "ls-files", "--", "apps/*.spec.ts", "apps/*.test.ts", "apps/*.spec.tsx", "apps/*.test.tsx", "apps/*/tests/*.ts"],
+        ["git", "ls-files", "-z", "--", "apps/*.spec.ts", "apps/*.test.ts", "apps/*.spec.tsx", "apps/*.test.tsx", "apps/*/tests/*.ts"],
         cwd=ROOT, capture_output=True, text=True, check=True,
-    ).stdout.split()
-    return sorted(set(out))
+    ).stdout.split("\0")
+    return sorted({f for f in out if f})
 
 
 class CompleteNoRewrite(unittest.TestCase):
