@@ -30,7 +30,9 @@ afterAll(async () => {
 });
 
 type Row = Record<string, unknown>;
-const issue = async (body: unknown, who: Who | null = money, step: number | undefined = STEP, ip?: string) => {
+const issue = async (body: unknown, who: Who | null = money, ...opt: [step?: number, ip?: string]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const [step, ip] = [opt.length ? opt[0] : STEP, opt[1]];
   const r = await t.call(who, "POST", "/ops/invoices/issue", body, {
     ...(step === undefined ? {} : { stepUpAgoSec: step }),
     ...(ip ? { ip } : {}),

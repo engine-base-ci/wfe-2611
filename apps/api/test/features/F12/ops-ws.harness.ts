@@ -6,12 +6,11 @@
 //   hooks の材料は appPool・repo・auth（本人確認のメールを送る部品の口だけの偽物・送った宛先を数える）・config。
 //   全社の数（getOpsShell）は DB の全部の会社を数えるので、試験は「足す前と足した後の差」で見る（試験のファイルは直列・vitest の fileParallelism false）。
 //   一覧（listOpsWorkspaces）は名前の頭（run）で探して、自分が作った会社だけを見る。作った会社の行・運営の人の行は afterAll で消す
-import { afterAll } from "vitest";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { createRepository } from "@kaname/db/repository";
-import { makeFixture, type Fixture, type Person } from "../fixture.js";
+import { afterClose, makeFixture, type Fixture, type Person } from "../fixture.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
 
 const HOOKS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "src", "hooks");
@@ -126,7 +125,7 @@ export async function startOpsWs(prefix: string, hookFiles: readonly string[]): 
   const tenants: string[] = [];
   const opsMembers: string[] = [];
   let opsScope: string | null = null;
-  afterAll(async () => {
+  afterClose(async () => {
     const t = [tenants];
     if (tenants.length) {
       // 運営の記録・会社の記録・安全の記録（ops_audit_events・audit_events・security_events）は追記専用（0003_audit.sql の引き金）なので消さない。試験は前の数との差かその回の印で絞って数える
@@ -226,10 +225,15 @@ export async function startOpsWs(prefix: string, hookFiles: readonly string[]): 
   };
 
   const invoice: OpsWs["invoice"] = async (w, o) => {
+    // 出した請求書は会社と月で 1 つ（K-981 の一意 invoices_tenant_period_uq）。同じ会社の 2 枚目からは 1 か月ずつ前の月にする。
+    //   期限は日本の暦の日（期限を過ぎたかは日本の今日で数える。UTC の日付だと日本の朝 9 時前に 1 日ずれる）
     const id = await one(
       `insert into invoices (tenant_id, period_start, period_end, amount, issued_at, due_on, status_id)
-       values ($1, date_trunc('month', now() - interval '1 month')::date, (date_trunc('month', now()) - interval '1 day')::date, $2,
-               now() - interval '20 days', (now() - make_interval(days => $3))::date, $4) returning id`,
+       select $1, (date_trunc('month', now()) - make_interval(months => n + 1))::date,
+              (date_trunc('month', now()) - make_interval(months => n) - interval '1 day')::date, $2,
+              now() - interval '20 days', ((now() at time zone 'Asia/Tokyo') - make_interval(days => $3))::date, $4
+         from (select count(*)::int as n from invoices where tenant_id = $1 and issued_at is not null and deleted_at is null) c
+       returning id`,
       [w.tenantId, o.amount, o.dueDaysAgo, o.paid ? "paid" : "unpaid"],
     );
     return id;

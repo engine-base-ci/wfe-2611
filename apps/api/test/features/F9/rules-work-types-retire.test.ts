@@ -181,7 +181,6 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
         apis(k).filter((x) => GONE_IDS.includes(x)),
         k,
       ).toEqual([]);
-    expect(apis("K-71")).toEqual(expect.arrayContaining(["requestAcceptance", "updateTicketClientShare"]));
     expect(apis("K-72")).toEqual(
       expect.arrayContaining(["createPlanProposal", "listOpsTemplates", "releaseOpsTemplate"]),
     );

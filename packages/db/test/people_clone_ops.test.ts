@@ -235,13 +235,24 @@ describe("値段の案（D-128.72）", () => {
       "insert into ops_plan_proposals (tenant_id, plan_id, reason, proposed_by) values ($1, $2, '原価が上がった', $3) returning id",
       [S.opsTenant, plan, m1],
     );
-    // 決められる人の数で変わる：caps の列（K-10）が無い間は 0 人 → 例外にならない
-    await expect(
-      admin.query(
-        "update ops_plan_proposals set state = 'decided', decided_at = now(), decided_by = proposed_by where id = $1",
+    // 決められる人の数で変わる（K-988 の app.plan_deciders_besides）：作った本人のほかに「値段を決める」を持つ人が居れば止める
+    const d2 = await one("insert into ops_members (tenant_id, caps) values ($1, '{plan_decide}') returning id", [
+      S.opsTenant,
+    ]);
+    const selfDecide =
+      "update ops_plan_proposals set state = 'decided', decided_at = now(), decided_by = proposed_by where id = $1";
+    await expect(admin.query(selfDecide, [p1])).rejects.toThrow(/自分の案は自分で決められない/);
+    // 決められる人が作った本人しかいないときは、本人でも決められる（決める人の答え answer=db9f60296fcc）。記録に本人が決めたと残る
+    await admin.query("update ops_members set revoked_at = now() where id = $1", [d2]);
+    expect(Number(await one("select app.plan_deciders_besides($1)::text as id", [m1]))).toBe(0);
+    await admin.query(selfDecide, [p1]);
+    const done = (
+      await admin.query<{ state: string; decided_by: string }>(
+        "select state, decided_by from ops_plan_proposals where id = $1",
         [p1],
-      ),
-    ).rejects.toThrow(/自分の案は自分で決められない/);
+      )
+    ).rows[0]!;
+    expect(done).toEqual({ state: "decided", decided_by: m1 });
     await expect(
       admin.query(
         "insert into ops_plan_proposals (tenant_id, plan_id, reason, proposed_by) values ($1, $2, '  ', $3)",

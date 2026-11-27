@@ -17,6 +17,7 @@ export function portalRequestMessageHooks(
 
 export const register = defineHooks({
   name: "portalRequestMessageHooks",
-  make: (d) => portalRequestMessageHooks(d.appPool, d.mailer, d.config.webBaseUrl ?? ""),
+  // 試験の土台（portal-world.ts）は config を渡さないので、無ければ空（リンクの頭なし）
+  make: (d) => portalRequestMessageHooks(d.appPool, d.mailer, d.config?.webBaseUrl ?? ""),
   fuzz: "same",
 });

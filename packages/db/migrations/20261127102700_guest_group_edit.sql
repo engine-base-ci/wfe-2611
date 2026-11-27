@@ -72,13 +72,14 @@ begin
   select coalesce(array_agg(gm.member_id), '{}') into v_guests
     from guest_group_members gm
    where gm.tenant_id = v_tenant and gm.guest_group_id = g.id and gm.deleted_at is null;
+  -- セッションは members.deleted_at より先に切る（0004 の引き金 members_revoke_sessions が理由 member_left で先に切ってしまうため）
+  foreach m in array v_guests loop
+    perform app.revoke_all_sessions(m, 'guest_group_deleted');
+  end loop;
   update members set deleted_at = now(), updated_by = v_user
    where id = any(v_guests) and tenant_id = v_tenant and deleted_at is null;
   update tenant_memberships set status = 'left', updated_by = v_user
    where tenant_id = v_tenant and member_id = any(v_guests) and deleted_at is null and status <> 'left';
-  foreach m in array v_guests loop
-    perform app.revoke_all_sessions(m, 'guest_group_deleted');
-  end loop;
   update guest_group_members set deleted_at = now(), updated_by = v_user
    where tenant_id = v_tenant and guest_group_id = g.id and deleted_at is null;
   -- ③ 受けていない・取り消していない招待を取り消す

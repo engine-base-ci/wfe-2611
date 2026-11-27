@@ -91,7 +91,7 @@ describe("K-779 待っている試し打ちの片付け", () => {
     expect((await dryRuns(a.t))[0]).toMatchObject({ status_id: "running" });
     expect(await jobOf(a.job)).toMatchObject({ state_id: "running" });
     expect((await runsOf(a.t.id, "execute")).length).toBe(1);
-    await finish(a.d.pc, a.job, { state: "done", result: "届いた", agent_session_id: null });
+    await finish(a.d.pc, a.job, { state: "done", result: "届いた" });
     expect((await dryRuns(a.t))[0]).toMatchObject({ status_id: "done" });
   });
 
@@ -101,9 +101,10 @@ describe("K-779 待っている試し打ちの片付け", () => {
     await f.admin.query("update bridge_jobs set created_at = now() - interval '25 hours' where id = $1", [old.job]);
     await f.admin.query("update action_runs set created_at = now() - interval '25 hours' where id = $1", [old.run]);
     await f.admin.query("update bridge_jobs set created_at = now() - interval '23 hours' where id = $1", [fresh.job]);
-    // 動いている古い試し打ち
+    // 動いている古い試し打ち：先に PC が取って動かし（running）、それから 25 時間前に置く（待ちのまま古くした物は上の old と同じく止まる）
     const run = await waiting();
     await lastSeen(run.d.pc.sid, 1);
+    expect((await take(run.d.pc))?.id).toBe(run.job);
     await f.admin.query("update bridge_jobs set created_at = now() - interval '25 hours' where id = $1", [run.job]);
     // PC を別々に取る（試験ごとに別の任せた人の PC）
     await lastSeen(old.d.pc.sid, 1);
@@ -115,8 +116,6 @@ describe("K-779 待っている試し打ちの片付け", () => {
     expect(await stageKeyOf(old.t.id)).toBe("awaiting_approval");
     await lastSeen(fresh.d.pc.sid, 1);
     expect((await take(fresh.d.pc))?.id).toBe(fresh.job);
-    await lastSeen(run.d.pc.sid, 1);
-    expect((await take(run.d.pc))?.id).toBe(run.job); // 古い物も取れて動く（まだ止まっていない）
     await f.admin.query("update bridge_jobs set created_at = now() - interval '30 hours' where id = $1", [run.job]);
     await lastSeen(run.d.pc.sid, 1);
     await take(run.d.pc);

@@ -31,7 +31,9 @@ const forbidden = (): HookReply => ({ status: 403, body: { error: "forbidden", c
 const unavailable = (): HookReply => ({ status: 503, body: kanameError("E-PAGE-003").toJSON() });
 const fail = (code: string): HookReply => {
   const e = kanameError(code);
-  return { status: e.status, body: e.toJSON() };
+  const body: Record<string, unknown> = { ...e.toJSON() };
+  delete body["detail"]; // 欄・detail を付けない（在るかを漏らさない）
+  return { status: e.status, body };
 };
 const invalid = (field: string, message: string): HookReply => ({
   status: 422,
@@ -60,10 +62,12 @@ export function checkName(raw: string): string | null {
   return name;
 }
 
-/** 口の前処理（Hook.input）：知っている欄だけを確かめる。足りない欄・知らない欄・形の違いは入口の strict な形が 422 にする */
+/** 口の前処理（Hook.input）：足りない欄と知っている欄の形を確かめる。知らない欄は入口の strict な形が 422 にする */
 export const input: NonNullable<Hook["input"]> = (raw) => {
   if (!isObject(raw)) return { input: raw as Row };
   const body: Record<string, unknown> = { ...raw };
+  // 3 つの欄は必須（入口の zod は欄を optional のままにする作りなので、無いのは口が 422 にする）
+  for (const k of ["name", "content_type", "data"]) if (!(k in body)) return { reply: invalid(k, "必須") };
   if ("name" in body) {
     if (typeof body["name"] !== "string") return { reply: invalid("name", "名前は文字") };
     const name = checkName(body["name"]);
