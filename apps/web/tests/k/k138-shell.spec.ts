@@ -263,13 +263,23 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 作っていない項目（ナレッジ・届いた依頼・ワークスペースの管理）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い", async ({
+test("K138-SH-006 作っていない項目（ナレッジ）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ、届いた依頼は作った道 /requests へ押せる（D-148.49・K-420・K-898）", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
-  for (const name of ["ナレッジ", "届いた依頼", "ワークスペースの管理"]) {
+  // 会社を作った人（R1）もメンバーの画面へ行ける（D-148.49・answer=3d444fc8d59f）。K-420 が /members を作り、R1 の行き先が作った道になる
+  const ws = nav.getByRole("link", { name: /ワークスペースの管理/, disabled: false });
+  await expect(ws).toHaveCount(1);
+  expect(await ws.getAttribute("href")).toBe("/members");
+  // K-898 が /requests を作り、届いた依頼は押せるリンクになる（使えないリンクの形が 0・title に準備中が無い）。押すと /requests に移る（下の並びの後で見る）
+  const rq = nav.getByRole("link", { name: /届いた依頼/, disabled: false });
+  await expect(rq).toHaveCount(1);
+  expect(await rq.getAttribute("href")).toBe("/requests");
+  await expect(nav.getByRole("link", { name: /届いた依頼/, disabled: true })).toHaveCount(0);
+  expect((await rq.getAttribute("title")) ?? "").not.toContain("準備中");
+  for (const name of ["ナレッジ"]) {
     // 押せるリンクは無く、読み上げには「使えないリンク」として届く（role=link・aria-disabled）
     await expect(nav.getByRole("link", { name: new RegExp(name), disabled: false }), name).toHaveCount(0);
     const item = nav.getByRole("link", { name: new RegExp(name), disabled: true });
@@ -287,6 +297,9 @@ test("K138-SH-006 作っていない項目（ナレッジ・届いた依頼・�
     expect(page.url(), name).toBe(before);
   }
   expect(await nav.innerText()).not.toContain("準備中");
+  await rq.click();
+  await page.waitForURL(/\/requests$/);
+  expect(new URL(page.url()).pathname).toBe("/requests");
 });
 
 test("K138-SH-007 左のメニューを押す：承認待ちの画面でチケットを押すと /tickets、/tickets で承認待ちを押すと /approvals", async ({

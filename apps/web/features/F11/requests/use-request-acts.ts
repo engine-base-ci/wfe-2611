@@ -30,9 +30,14 @@ const AGAIN: Record<ActKind, Failure> = {
   decline: { title: "断れませんでした", body: "もう一度押してください。書いた理由は、この小窓に残っています。" },
 };
 
-/** 断られた答え → 出す文。もう決まっていた（409・E-GST-110／E-GST-130）・選べない届け先（404・E-GST-111）は番号の文、ほかは押し直しの文 */
+/** 開いた後に権限を外された（403）：見出しだけを出し、後ろの文は付けない（代表の答え answer=d028c18907ee） */
+const NO_RIGHT: Failure = { title: "この操作をする権限がありません" };
+
+/** 断られた答え → 出す文。もう決まっていた（409・E-GST-110／E-GST-130）・選べない届け先（404・E-GST-111）は番号の文、
+ *  返事・断るの 403（権限を外された直後）は見出しだけ、ほかは押し直しの文 */
 export function failureText(kind: ActKind, e: CallErr): Failure {
   if (e.status === 409) return { body: DECIDED };
+  if (kind !== "route" && e.status === 403) return NO_RIGHT;
   if (kind === "route" && e.status === 404) return { body: "この届け先のグループは選べません" };
   return AGAIN[kind];
 }
