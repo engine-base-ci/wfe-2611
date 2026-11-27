@@ -275,12 +275,13 @@ const R_PAIRS: FidelityPair[] = [
 test("K745-UI-011 画面：下絵との突き合わせ（return-modal・return-modal-self・return-error・return-self-band）。幅 375・768・1440 で小窓（題・欄・丸の組・足・誤りの字）と作業中の箱と帯の下の 1 行の形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>, FidelityPair[]][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いて、狭い幅のモックと 1440 の本番を比べていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>, FidelityPair[]][] = [
     [
       "return-modal",
-      async (p) => {
+      async (p, w) => {
         await mockReturn(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openRet(p);
         await reason(p).fill(REASON);
       },
@@ -288,9 +289,9 @@ test("K745-UI-011 画面：下絵との突き合わせ（return-modal・return-m
     ],
     [
       "return-modal-self",
-      async (p) => {
+      async (p, w) => {
         await mockReturn(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openRet(p);
         await reason(p).fill(REASON);
         await who(p).getByRole("radio", { name: SELF, exact: true }).check();
@@ -299,9 +300,9 @@ test("K745-UI-011 画面：下絵との突き合わせ（return-modal・return-m
     ],
     [
       "return-error",
-      async (p) => {
+      async (p, w) => {
         await mockReturn(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openRet(p);
         await send(p).click();
       },
@@ -309,9 +310,9 @@ test("K745-UI-011 画面：下絵との突き合わせ（return-modal・return-m
     ],
     [
       "return-self-band",
-      async (p) => {
+      async (p, w) => {
         await mockReturn(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openRet(p);
         await reason(p).fill(REASON);
         await who(p).getByRole("radio", { name: SELF, exact: true }).check();
@@ -329,7 +330,7 @@ test("K745-UI-011 画面：下絵との突き合わせ（return-modal・return-m
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs, blur: true },
       );

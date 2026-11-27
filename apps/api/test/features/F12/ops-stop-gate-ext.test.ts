@@ -13,12 +13,11 @@ afterAll(async () => {
   await closeK145();
 });
 
-/** 前の道すじの止める口の代表（AI に話す・会話の一覧・ファイルを読む・記憶を直す・はじめの設定を進める） */
+/** 前の道すじの止める口の代表（AI に話す・会話の一覧・ファイルを読む・はじめの設定を進める）。記憶を直す前の道は段10 の K-712 が道ごと消した（統合の枝） */
 const BLOCKED_EXT: [string, string, unknown?][] = [
   ["POST", "/agent/say", { text: "止めた後に話す" }],
   ["GET", "/agent/conversations"],
   ["GET", "/files/00000000-0000-4000-8000-0000000000ac"],
-  ["PATCH", "/agent/memory/00000000-0000-4000-8000-0000000000ad", { body: "止めた後に直す" }],
   ["POST", "/setup-step", { step: 1 }],
 ];
 

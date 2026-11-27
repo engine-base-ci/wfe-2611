@@ -361,27 +361,28 @@ const E_PAIRS: FidelityPair[] = [
 test("K743-UI-016 画面：下絵との突き合わせ（selfedit-band・selfedit-editing・selfedit-saving・selfedit-saved・selfedit-conflict）。幅 375・768・1440 で承認の帯・直す面・カードの下の 1 行・帯の下の 1 行・帯の上の知らせの形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いて、狭い幅のモックと 1440 の本番を比べていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>][] = [
     [
       "selfedit-band",
-      async (p) => {
+      async (p, w) => {
         await mockEdit(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
     ],
     [
       "selfedit-editing",
-      async (p) => {
+      async (p, w) => {
         await mockEdit(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openEdit(p);
       },
     ],
     [
       "selfedit-saving",
-      async (p) => {
+      async (p, w) => {
         const e = await mockEdit(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openEdit(p);
         await box(p).fill(`${ARTIFACT}。`);
         e.w.hold();
@@ -391,9 +392,9 @@ test("K743-UI-016 画面：下絵との突き合わせ（selfedit-band・selfedi
     ],
     [
       "selfedit-saved",
-      async (p) => {
+      async (p, w) => {
         await mockEdit(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openEdit(p);
         await box(p).fill(`${ARTIFACT}。`);
         await save(p).click();
@@ -402,9 +403,9 @@ test("K743-UI-016 画面：下絵との突き合わせ（selfedit-band・selfedi
     ],
     [
       "selfedit-conflict",
-      async (p) => {
+      async (p, w) => {
         const e = await mockEdit(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openEdit(p);
         e.w.next.push({ status: 409, body: { error: "conflict", code: "E-APR-020", current_version: 2 } });
         await box(p).fill("わたしの直し");
@@ -421,7 +422,7 @@ test("K743-UI-016 画面：下絵との突き合わせ（selfedit-band・selfedi
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs: E_PAIRS, blur: true },
       );

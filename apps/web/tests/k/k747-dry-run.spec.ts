@@ -339,45 +339,46 @@ test("K747-UI-016 画面：下絵との突き合わせ（dry-card・dry-confirm�
     finished_at: STOPPED_AT,
   });
   const doneRun = runRow({ phase: "dry_run", status: "done", finished_at: STOPPED_AT });
-  const drives: [string, (p: Page) => Promise<void>, boolean][] = [
+  // 本番もモックと同じ幅で開く（前は 1440 で開いて、狭い幅のモックと 1440 の本番を比べていた・K734-UI-018 と同じ直し）
+  const drives: [string, (p: Page, w: number) => Promise<void>, boolean][] = [
     [
       "dry-card",
-      async (p) => {
+      async (p, w) => {
         await mockDry(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
     [
       "dry-confirm",
-      async (p) => {
+      async (p, w) => {
         await mockDry(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await openDry(p);
       },
       true,
     ],
     [
       "dry-running",
-      async (p) => {
+      async (p, w) => {
         await mockDry(p, { run: runRow({ phase: "dry_run", status: "running" }) });
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
     [
       "dry-done",
-      async (p) => {
+      async (p, w) => {
         await mockDry(p, { run: doneRun });
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
     [
       "dry-stopped",
-      async (p) => {
+      async (p, w) => {
         await mockDry(p, { run: stoppedRun });
-        await openTicket(p, 1440);
+        await openTicket(p, w);
       },
       false,
     ],
@@ -390,7 +391,7 @@ test("K747-UI-016 画面：下絵との突き合わせ（dry-card・dry-confirm�
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs: dialog ? DIALOG_PAIRS : BAND_PAIRS, blur: true },
       );

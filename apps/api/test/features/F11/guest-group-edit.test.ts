@@ -40,6 +40,9 @@ async function ready(): Promise<void> {
     if (mailFails.value) throw new Error("送り出しが落ちた");
   };
   Object.assign(f.hooks, m.register.make({ appPool: f.pool, mailer } as unknown as HookDeps));
+  // K927-API-020 はグループの一覧（K-876 の listGuestGroups）で消えた後を見るので、その口の hooks も足す
+  const list = (await import(join(HOOKS_DIR, "guest-groups.ts"))) as { register: HookModule };
+  Object.assign(f.hooks, list.register.make({ appPool: f.pool, mailer } as unknown as HookDeps));
   loaded = true;
 }
 beforeAll(async () => {
