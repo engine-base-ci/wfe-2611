@@ -19,7 +19,13 @@
     "test_post_members_id_remove_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_post_members_id_remove_conflict": "K848-API-014",
+    "test_post_members_id_remove_not_found_2": "K848-API-006",
+    "test_post_members_id_remove_conflict_2": "K848-API-015",
+    "test_post_members_id_remove_conflict_3": "K848-API-004",
+    "test_post_members_id_remove_conflict_4": "K848-API-007",
+    "test_post_members_id_remove_conflict_5": "K848-API-007"
    },
    "na": {
     "test_post_members_id_remove_rate_limited": "入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験）",
