@@ -317,8 +317,8 @@ SCREEN_API = {
     "requests": [
         ("GET", "/client_requests", "A122", "client_requests", "listClientRequests", ["client_request_messages"]),
         ("GET", "/client_requests/:id", "A122", "client_requests", "getClientRequest", ["messages", "conversations", "client_contacts", "skills"]),
-        ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes"]),
-        ("POST", "/client_requests/:id/reply", "A122", "messages", "replyToClientRequest", ["client_requests", "notifications"]),
+        ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes", "client_requests", "audit_events"]),
+        ("POST", "/client_requests/:id/reply", "A122", "client_requests", "replyToClientRequest", ["client_request_messages", "notifications", "audit_events"]),
         ("POST", "/client_requests/:id/accept", "A122", "client_requests", "acceptClientRequest", [T, "ticket_sections", "ticket_messages", "ticket_guest_shares", "client_request_messages", "notifications", "audit_events"]),
         ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["notifications", "audit_events"]),
     ],
@@ -1438,8 +1438,8 @@ PERMS = {
     # 取引先（社内・D-128.53・D-128.54）
     "listClientRequests": ("read", "見られる届け先の依頼だけ（ゲストのグループの依頼・届け先の社内のグループが見える人と会社全体の edit を持つ人）", False),
     "getClientRequest": ("read", "同上（見えなければ 404）。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
-    "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
-    "replyToClientRequest": ("write", "同上。返事は先方に見える", False),
+    "updateClientRequest": ("write", "届け先で client_requests を edit できる人（届け先のグループを変える）", False),
+    "replyToClientRequest": ("write", "届け先で client_requests を edit できる人。返事は先方に見える", False),
     "acceptClientRequest": ("write", "届け先で client_requests を edit でき、グループに tickets を edit できる人。受けると普通のチケットになり、依頼のやり取りがチャットの頭に残る", False),
     "declineClientRequest": ("write", "届け先で client_requests を edit できる人（理由は出し手に見える）", False),
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
