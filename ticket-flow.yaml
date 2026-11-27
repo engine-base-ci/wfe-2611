@@ -13,7 +13,7 @@ ci:
   workflow: v3-gate.yml
   artifact: junit
   timeout_min: 30
-  inputs: { scope: scope, ticket: ticket, base: base, web: web }
+  inputs: { scope: scope, ticket: ticket, base: base, web: web, leaves: leaves } # leaves：段の全部の CI の段の葉（stageq が渡す・K-1305）
   # 画面の試験を後回しにする（K-258・決める人 2026-11-16）：チケットの CI は web=defer を渡し、行 ID に -UI- を含む行は取り込んだ後に ci.py web で流す
   web_defer: true
   web_rows: "-UI-"
@@ -63,6 +63,7 @@ changes_ignore:
   - "07_qa/test-specs/errors.json"
   - "07_qa/test-specs/errors.md"
   - "08_api/API-SPEC.md"
+  - "08_api/phase1/合わせた/*.md"
   - "08_api/api-decisions.json"
   - "08_api/api-field-consumption.json"
   - "08_api/api-spec.html"
