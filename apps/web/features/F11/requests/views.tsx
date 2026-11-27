@@ -513,13 +513,25 @@ export function RequestDetail({
         <h1 id="f11q-title">{title}</h1>
         <p className="k-f11c-sub-text">{who} ・ 同じゲストのグループの全員と社内に見えている</p>
       </header>
-      {phase === "accepted" ? (
+      {phase === "accepted" && !data ? (
         <Band
           tone="ok"
           title="チケットを作りました（EG-131）"
           sub="依頼のやり取りは、チケットのチャットの頭に残っています。セイコー株式会社（ゲスト）に見えています。"
           acts={
             <Button size="sm" variant="outlined">
+              チケットを開く
+            </Button>
+          }
+        />
+      ) : null}
+      {phase === "accepted" && data ? (
+        <Band
+          tone="ok"
+          title={data.ticketNumber ? `チケットを作りました（${data.ticketNumber}）` : "チケットを作りました"}
+          sub="依頼のやり取りは、チケットのチャットの頭に残っています。"
+          acts={
+            <Button size="sm" variant="outlined" {...openTicket}>
               チケットを開く
             </Button>
           }

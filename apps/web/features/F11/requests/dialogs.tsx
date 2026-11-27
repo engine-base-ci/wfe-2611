@@ -1,6 +1,7 @@
 "use client";
 // 届いた依頼の小窓：チケットを作る・断る（理由を返す）・返事を送って詳しく聞く。キャンバスには小窓の絵が無い（ボタンの字だけ）ので、字は仮。値を渡して描くだけ
 //   本物の画面は live（開け閉め・送る・押している間・失敗の知らせ）を渡す（K-898）。渡さなければ下絵の見本
+//   チケットを作る小窓は K-930：選び肢（担当・グループ）と押した結果を props で受けるだけ（口は呼ばない）
 import { useState } from "react";
 import { Badge, Button, Callout, Dialog, Select, TextArea, TextField } from "@/components/k";
 import "../choice.css";
@@ -202,9 +203,172 @@ export function AskDialog({ phase = "input", live }: { phase?: "input" | "error"
 
 export type CreatePhase = "input" | "bad" | "saving" | "failed";
 
+/** 小窓の選び肢の 1 つ（担当の人・グループ） */
+export interface CreateChoice {
+  id: string;
+  name: string;
+}
+export type CreateChoicesState = "loading" | "ok" | "failed";
+/** 小窓で入れた値（期限は欄の字のまま。日付に直すのは画面の入れ物） */
+export interface CreateValues {
+  title: string;
+  body: string;
+  assigneeId: string;
+  due: string;
+  scopeId: string;
+}
+/** 本物の画面が渡すチケットを作る小窓の動き（K-930） */
+export interface LiveCreate {
+  open: boolean;
+  onClose: () => void;
+  onCreate: (v: CreateValues) => void;
+  /** 作っている間（作る・やめるを押せない） */
+  creating?: boolean;
+  /** 口が断った知らせ。field があれば欄の下に出す */
+  createError?: { title?: string; body?: string; field?: "assignee" | "due" | "scope" } | null;
+  target: string;
+  initialTitle: string;
+  initialBody: string;
+  /** 期限の初期値（案の期限か、PC なしで手で書いた期限・K-899）。無ければ空 */
+  initialDue?: string;
+  /** 担当の初期値（案の担当を選び肢の人に引き当てた id・K-899）。人が選び直すまで使う */
+  initialAssigneeId?: string | null;
+  /** 依頼を出したゲストのグループ（見せる相手に最初から入る・外せない） */
+  guestGroup: string;
+  members: readonly CreateChoice[];
+  scopes: readonly CreateChoice[];
+  defaultScopeId?: string;
+  choicesState: { members: CreateChoicesState; scopes: CreateChoicesState };
+  onRetryMembers: () => void;
+  onRetryScopes: () => void;
+}
+
+/** 選び肢が読めない欄の知らせと「もう一度」 */
+function Unread({ onRetry }: { onRetry: () => void }) {
+  return (
+    <p className="k-f11c-sub-text">
+      読めませんでした{" "}
+      <Button size="sm" variant="outlined" onClick={onRetry}>
+        もう一度
+      </Button>
+    </p>
+  );
+}
+
+function GuestVisible({ group }: { group: string }) {
+  return (
+    <>
+      <div className="k-f11c-fieldset">
+        <span className="k-label">ゲストに見せる相手</span>
+        <ul className="k-f11v-vis" aria-label="見せる相手">
+          <li>
+            <label>
+              <input type="checkbox" checked disabled readOnly />
+              <span>
+                {group}
+                <span className="k-f11c-sub-text">依頼を出したゲストのグループ。最初から入っている</span>
+              </span>
+            </label>
+          </li>
+        </ul>
+      </div>
+      <p className="k-f11c-sub-text">
+        <Badge tone="progress">ゲストに見える</Badge>{" "}
+        題・本文・詳細・チャットと、段の札だけ。担当・期限などはゲストに見えません。
+        依頼のやり取りは、チケットのチャットの頭に残ります。
+      </p>
+    </>
+  );
+}
+
+/** チケットを作る小窓の本物の形。担当と期限が空なら誤りを出して作らない。断られても入れた値は残る */
+function LiveCreateDialog({ live }: { live: LiveCreate }) {
+  const [title, setTitle] = useState(live.initialTitle);
+  const [body, setBody] = useState(live.initialBody);
+  // 担当は選び肢を読み終えてから引き当たるので、人が選ぶまでは初期値（undefined＝まだ選んでいない）
+  const [picked, setAssignee] = useState<string | null | undefined>(undefined);
+  const assignee = picked === undefined ? (live.initialAssigneeId ?? null) : picked;
+  const [due, setDue] = useState(live.initialDue ?? "");
+  const [scope, setScope] = useState<string | null>(live.defaultScopeId ?? live.scopes[0]?.id ?? null);
+  const [tried, setTried] = useState(false);
+  const busy = Boolean(live.creating);
+  const st = live.choicesState;
+  const scopeId = scope ?? live.defaultScopeId ?? live.scopes[0]?.id ?? null;
+  const noScope = st.scopes === "ok" && live.scopes.length === 0;
+  const fail = live.createError ?? null;
+  const fieldErr = (f: "assignee" | "due" | "scope") => (fail?.field === f ? fail.body : undefined);
+  const create = () => {
+    if (busy) return;
+    setTried(true);
+    if (st.members !== "ok" || st.scopes !== "ok" || noScope) return;
+    if (!assignee || due.trim() === "" || !scopeId) return;
+    live.onCreate({ title, body, assigneeId: assignee, due: due.trim(), scopeId });
+  };
+  return (
+    <Dialog
+      open={live.open}
+      onOpenChange={(o) => {
+        if (!o && !busy) live.onClose();
+      }}
+      title="チケットを作る"
+      target={live.target}
+      actions={
+        <>
+          <Button variant="outlined" disabled={busy} onClick={live.onClose}>
+            やめる
+          </Button>
+          <Button loading={busy} onClick={create}>
+            作る
+          </Button>
+        </>
+      }
+    >
+      {fail && !fail.field ? (
+        <Callout tone="danger" {...(fail.title ? { title: fail.title } : {})}>
+          {fail.body ?? null}
+        </Callout>
+      ) : null}
+      <TextField name="tk-title" label="題" required value={title} onChange={(e) => setTitle(e.target.value)} />
+      <TextArea name="tk-body" label="本文" rows={3} value={body} onChange={(e) => setBody(e.target.value)} />
+      <Select
+        label="担当"
+        name="tk-owner"
+        required
+        placeholder="担当の人を選ぶ"
+        value={assignee}
+        onValueChange={setAssignee}
+        options={live.members.map((m) => ({ value: m.id, label: m.name }))}
+        error={(tried && !assignee ? "担当の人を選んでください" : undefined) ?? fieldErr("assignee")}
+      />
+      {st.members === "failed" ? <Unread onRetry={live.onRetryMembers} /> : null}
+      <TextField
+        name="tk-due"
+        label="期限"
+        required
+        placeholder="例：12/26"
+        value={due}
+        onChange={(e) => setDue(e.target.value)}
+        error={(tried && due.trim() === "" ? "期限を入れてください" : undefined) ?? fieldErr("due")}
+      />
+      <Select
+        label="グループ"
+        name="tk-group"
+        value={scopeId}
+        onValueChange={setScope}
+        disabled={noScope}
+        options={live.scopes.map((g) => ({ value: g.id, label: g.name }))}
+        error={fieldErr("scope")}
+      />
+      {st.scopes === "failed" ? <Unread onRetry={live.onRetryScopes} /> : null}
+      <GuestVisible group={live.guestGroup} />
+    </Dialog>
+  );
+}
+
 /** 届いた依頼から「チケットを作る」小窓。題・本文は依頼から入る。期限・担当など必須の欄は社内が入れる（ゲストには見えない）。
  *  見せる相手は依頼を出したゲストのグループが最初から入っている。普通のチケットを作るだけで、違いは依頼のやり取りがチャットの頭に残ること */
-export function CreateTicketDialog({ phase = "input" }: { phase?: CreatePhase }) {
+export function CreateTicketDialog({ phase = "input", live }: { phase?: CreatePhase; live?: LiveCreate }) {
+  if (live) return <LiveCreateDialog live={live} />;
   const bad = phase === "bad";
   return (
     <Dialog

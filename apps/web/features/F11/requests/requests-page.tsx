@@ -2,17 +2,18 @@
 // 届いた依頼の画面の入れ物（K-898・道 /requests と /requests/:id）。口を読み・押し、値と関数を部品（list・views・dialogs）に渡すだけ。
 //   PC は一覧が左・開いた依頼が右（/requests は先頭のさばいていない依頼）。スマホ（767 以下）は一覧だけ／開いた依頼だけ（data-mobile）。
 //   見えない依頼（404）は「この依頼は見つかりません」だけを出す（題も先方の名前も一覧も出さない＝あるかどうかを伝えない）。
-//   「チケットを作る」は K-930 が入るまで押せない形（隠さない・D-145.9）。分身の案は PC がつながっているときだけ（K-899）。
+//   「チケットを作る」は K-930：小窓を開いたときに担当とグループの選び肢を前からの口で読み、acceptClientRequest を呼ぶ。分身の案は PC がつながっているときだけ（K-899）。
 //   K-899：案があれば題・種別・担当・期限（M/D）・費用・届け先と理由・聞きたいことを出す。PC がつながっていて案が無ければ「案を作る」（use-request-draft）。
 //   PC なしで手で書いた題名と期限、または案の値は、チケットを作る小窓の初期値になる（createInitialOf。小窓に渡すのは K-930 の小窓の props）
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Callout, Empty, ErrorState, Loading, NoAccess, PAGE_ERROR } from "@/components/k";
 import { getToken } from "@/lib/api/client";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
-import { AskDialog, DeclineDialog } from "./dialogs";
+import { AskDialog, CreateTicketDialog, DeclineDialog, type CreateValues } from "./dialogs";
+import { useCreateChoices } from "./use-create-choices";
 import { RequestList, type ReqRow } from "./list";
 import { BackToRequests, RequestDetail, type Phase, type RequestData, type ThreadLine } from "./views";
-import { useRequestActs, type ActKind, type Failure } from "./use-request-acts";
+import { useRequestActs, type ActKind, type CreateFailure, type CreateInput, type Failure } from "./use-request-acts";
 import {
   failureOf,
   useRequestList,
@@ -21,7 +22,16 @@ import {
   type ReqItem,
   type ReqMessage,
 } from "./use-requests";
-import { askOf, DRAFT_TEXT, dueLabel, useRequestDraft, whyOf } from "./use-request-draft";
+import {
+  askOf,
+  createInitialOf,
+  DRAFT_TEXT,
+  dueLabel,
+  ownerIdOf,
+  scopeIdOf,
+  useRequestDraft,
+  whyOf,
+} from "./use-request-draft";
 import "./requests.css";
 
 const CRUMBS = [{ label: "届いた依頼" }];
@@ -39,6 +49,35 @@ const whenOf = (iso: string): string => {
   return Number.isNaN(d.getTime()) ? "" : WHEN.format(d);
 };
 const routed = (route?: string | null): string => (route ? `${route}に届いた` : "届いた");
+
+const TODAY = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+const iso = (y: number, m: number, d: number): string =>
+  `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+const realDate = (y: number, m: number, d: number): boolean => {
+  const t = new Date(Date.UTC(y, m - 1, d));
+  return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+};
+/** 小窓の期限の字（「12/26」か「2026-12-26」）→ 日付。「12/26」は今日（日本時間）から見て次のその日付。形が違えば null */
+export function dueOn(text: string, now: Date = new Date()): string | null {
+  const t = text.trim().replace(/[０-９／]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
+  const full = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  if (full) {
+    const [y, m, d] = [Number(full[1]), Number(full[2]), Number(full[3])];
+    return realDate(y, m, d) ? iso(y, m, d) : null;
+  }
+  const md = /^(\d{1,2})\/(\d{1,2})$/.exec(t);
+  if (!md) return null;
+  const [m, d] = [Number(md[1]), Number(md[2])];
+  const today = TODAY.format(now);
+  const y0 = Number(today.slice(0, 4));
+  for (const y of [y0, y0 + 1]) if (realDate(y, m, d) && iso(y, m, d) >= today) return iso(y, m, d);
+  return null;
+}
 
 const rowOf = (i: ReqItem): ReqRow => ({
   id: i.id,
@@ -125,6 +164,9 @@ export function RequestsPage({ id }: { id?: string }) {
   const [reply, setReply] = useState<{ id: string; text: string } | null>(null);
   const [dialog, setDialog] = useState<{ kind: Exclude<ActKind, "route">; failure: Failure | null } | null>(null);
   const [notice, setNotice] = useState<{ id: string; failure: Failure } | null>(null);
+  const [create, setCreate] = useState<{ failure: CreateFailure | null } | null>(null);
+  const [created, setCreated] = useState<{ id: string; ticketId: string; number: string | null } | null>(null);
+  const choices = useCreateChoices(create !== null);
   const [manual, setManual] = useState<{ id: string; title: string; due: string } | null>(null);
   const refetchOne = one.refetch;
   const reloadDraft = useCallback(async () => Boolean((await refetchOne()).data?.ticket_draft), [refetchOne]);
@@ -198,6 +240,45 @@ export function RequestsPage({ id }: { id?: string }) {
       else setDialog((o) => (o ? { ...o, failure: res } : o));
     };
     const target = `${d.request.title} ・ ${d.request.group_name} ・ ${d.request.from_name}`;
+    // 小窓の初期値：分身の案（題・期限・担当・グループ）か、PC なしで手で書いた題名と期限（K-899・D-155.8）。無ければ依頼の題
+    const init = createInitialOf(d.ticket_draft, d.route_suggestion, manual?.id === cur ? manual : null);
+    const initialTitle = init && init.title.trim() !== "" ? init.title : d.request.title;
+    const initialDue = init?.due ?? "";
+    const initialAssigneeId = init
+      ? ownerIdOf(
+          init.ownerName,
+          choices.members.map((m) => ({ id: m.id, display_name: m.name })),
+        )
+      : null;
+    const routeId = d.routes.find((r) => r.name === d.request.route_name)?.id;
+    const draftScopeId = init ? scopeIdOf(init.routeName, choices.scopes) : null;
+    const defaultScopeId = draftScopeId ?? choices.scopes.find((g) => g.id === routeId)?.id ?? choices.scopes[0]?.id;
+    const made = created?.id === cur ? created : null;
+    const ticketId = made?.ticketId ?? d.request.ticket_id ?? null;
+    const runCreate = async (v: CreateValues) => {
+      const due = dueOn(v.due);
+      if (!due) {
+        setCreate({ failure: { field: "due", body: "期限を入れてください" } });
+        return;
+      }
+      setCreate({ failure: null });
+      const input: CreateInput = {
+        ...(v.title.trim() ? { title: v.title.trim() } : {}),
+        ...(v.body !== d.request.body && v.body.trim() ? { body: v.body } : {}),
+        assignee_member_id: v.assigneeId,
+        due_on: due,
+        scope_id: v.scopeId,
+      };
+      const res = await acts.acceptRun(input);
+      if (res === null) return;
+      if ("ticket_id" in res) {
+        setCreate(null);
+        setCreated({ id: cur, ticketId: res.ticket_id, number: res.number });
+        setPhase({ id: cur, phase: "accepted" });
+        return;
+      }
+      setCreate({ failure: res });
+    };
     const live = (kind: Exclude<ActKind, "route">) => ({
       open: true,
       onClose: () => setDialog(null),
@@ -215,7 +296,10 @@ export function RequestsPage({ id }: { id?: string }) {
           phase={phase?.id === cur ? phase.phase : "idle"}
           canAct={d.can_act}
           {...(d.pc_connected && !d.ticket_draft ? { pcConnected: true } : {})}
-          data={dataOf(d, shown)}
+          data={{
+            ...dataOf(d, shown),
+            ...(made ? { ticketId: made.ticketId, ...(made.number ? { ticketNumber: made.number } : {}) } : {}),
+          }}
           draftControl={{
             ...(waitingDraft ? { onMake: () => void draftActs.make() } : {}),
             making: draftActs.making,
@@ -228,9 +312,10 @@ export function RequestsPage({ id }: { id?: string }) {
           acts={{
             onAsk: () => setDialog({ kind: "reply", failure: null }),
             onDecline: () => setDialog({ kind: "decline", failure: null }),
-            onChangeRoute: (routeId) => void run("route", routeId),
-            ...(d.request.ticket_id
-              ? { onOpenTicket: () => window.location.assign(`/tickets/${encodeURIComponent(d.request.ticket_id!)}`) }
+            onCreate: () => setCreate({ failure: null }),
+            onChangeRoute: (rid) => void run("route", rid),
+            ...(ticketId
+              ? { onOpenTicket: () => window.location.assign(`/tickets/${encodeURIComponent(ticketId)}`) }
               : {}),
             reply: text,
             onReplyChange: (v) => setReply({ id: cur, text: v }),
@@ -238,6 +323,29 @@ export function RequestsPage({ id }: { id?: string }) {
         />
         {dialog?.kind === "reply" ? <AskDialog live={live("reply")} /> : null}
         {dialog?.kind === "decline" ? <DeclineDialog live={live("decline")} /> : null}
+        {create ? (
+          <CreateTicketDialog
+            live={{
+              open: true,
+              onClose: () => setCreate(null),
+              onCreate: (v) => void runCreate(v),
+              creating: acts.busy.accept,
+              createError: create.failure,
+              target: `${d.request.title} ・ ${d.request.from_name}`,
+              initialTitle,
+              initialBody: d.request.body,
+              initialDue,
+              initialAssigneeId,
+              guestGroup: d.request.group_name,
+              members: choices.members,
+              scopes: choices.scopes,
+              ...(defaultScopeId ? { defaultScopeId } : {}),
+              choicesState: { members: choices.membersState, scopes: choices.scopesState },
+              onRetryMembers: choices.retryMembers,
+              onRetryScopes: choices.retryScopes,
+            }}
+          />
+        ) : null}
       </>
     );
   }
