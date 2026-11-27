@@ -70,7 +70,18 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
   };
 
   /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
-  const withExtras = async (sid: string, job: TakenJob) => {
+  /** 会話の仕事の会話の種類（K-737：Bridge が作る画面の会話の仕事にだけ draft_propose を見せる）。会話でない仕事は null。
+   *   主キーの読み 1 回（消されていても読む）。会話の表は本人の行だけ見える（RLS）ので、その PC の人の文脈で読む */
+  const talkKindOf = async (ctx: HookArgs["ctx"], job: TakenJob): Promise<string | null> => {
+    if (!job.conversation_id) return null;
+    const r = await withTenant(pool, ctx, (cl) =>
+      cl.query<{ talk_kind: string | null }>("select talk_kind from conversations where id = $1", [
+        job.conversation_id,
+      ]),
+    );
+    return r.rows[0]?.talk_kind ?? null;
+  };
+  const withExtras = async (ctx: HookArgs["ctx"], sid: string, job: TakenJob) => {
     const memories = job.conversation_id
       ? ((await one<unknown>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id])) ?? [])
       : [];
@@ -78,7 +89,15 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
       job.conversation_id || job.kind === "ticket" ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
       (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
-    return { ...job, memories, tool_token, conventions: job.conversation_id ? AGENT_CONVENTIONS : null, browser };
+    const talk_kind = await talkKindOf(ctx, job);
+    return {
+      ...job,
+      memories,
+      tool_token,
+      conventions: job.conversation_id ? AGENT_CONVENTIONS : null,
+      browser,
+      talk_kind,
+    };
   };
 
   return {
@@ -111,7 +130,12 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
             return {
               status: 201,
               body: {
-                data: { job: await withExtras(sid, job), forbidden_domains: forbidden, next_ms: 0, outdated: false },
+                data: {
+                  job: await withExtras(a.ctx, sid, job),
+                  forbidden_domains: forbidden,
+                  next_ms: 0,
+                  outdated: false,
+                },
               },
             };
           if (Date.now() >= until) break;

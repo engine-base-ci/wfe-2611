@@ -89,7 +89,10 @@ describe("Claude Code に渡す引数（D-107.2）", () => {
     expect(args).toContain("bypassPermissions");
     const i = args.indexOf("--disallowedTools");
     expect(i).toBeGreaterThan(0);
-    expect(args[i + 3]).toBe("--settings");
+    // K-737（2026-11-23）：一覧の後ろに Claude の側に残させない宛先（CLAUDE.md など）が足される。一覧は 1 つにまとまり、その後ろが --settings
+    expect(args.slice(i + 1, i + 3)).toEqual(["WebFetch(domain:mizuhobank.co.jp)", "WebFetch(domain:x.com)"]);
+    expect(args.indexOf("--settings")).toBeGreaterThan(i + 3);
+    expect(args[args.indexOf("--settings") - 1]).toBe("Edit(~/.claude/**)");
     expect(args.indexOf("--allowedTools")).toBeGreaterThan(i);
     expect(args.at(-1)).toBe("Bash(git status)");
     expect(

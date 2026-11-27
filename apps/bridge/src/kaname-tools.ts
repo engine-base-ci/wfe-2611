@@ -23,6 +23,32 @@ export const TOOL_DEFS: ToolDef[] = [
     inputSchema: { type: "object", properties: {} },
   },
   {
+    name: "spec_check",
+    description:
+      "確認項目を確かめて、確かめられた物だけにチェックを付ける。目で見ないと分からない物には使わない。付けたチェックを外す道は無い。チケットの仕事のときだけ使える",
+    inputSchema: {
+      type: "object",
+      properties: {
+        spec_id: s("確認項目の id（ticket_read の specs にある）"),
+        basis: s("確かめた根拠を 1 行（200 字まで）"),
+      },
+      required: ["spec_id", "basis"],
+    },
+  },
+  {
+    name: "guard_report",
+    description:
+      "必ず守るから入った確認項目について、守れていなかったので直したときだけ知らせる。チェックは付けない。チケットの仕事のときだけ使える",
+    inputSchema: {
+      type: "object",
+      properties: {
+        spec_id: s("必ず守るから入った確認項目の id"),
+        note: s("直した内容を 1 行（任意・200 字まで）"),
+      },
+      required: ["spec_id"],
+    },
+  },
+  {
     name: "draft_read",
     description: "いまのたたき台（会社の目標・台帳・担当業務とAI社員）を読む。置く前・直す前に見る",
     inputSchema: { type: "object", properties: {} },
@@ -109,16 +135,61 @@ export const TOOL_DEFS: ToolDef[] = [
       required: ["items"],
     },
   },
+  {
+    name: "draft_propose",
+    description:
+      "チケットを作る人に、題・本文・確認項目の案を出す。人が欄に書いた物を直すときも案として出す。1 つの返事で 1 回・1 つの仕事で 3 回まで。作る画面の会話の仕事のときだけ使える",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: s("チケットの題の案"),
+        body: s("チケットの本文の案"),
+        checks: arr("確認項目の案（1 件 1 つ）"),
+      },
+    },
+  },
 ];
-/** 仕事の種類（K-62）。チケットの仕事は ticket_read だけ、会話の仕事は会話の道具（ticket_read 以外） */
+/** 仕事の種類（K-62）。チケットの仕事はチケットの道具、会話の仕事は会話の道具 */
 export type ToolJobKind = "ticket" | "chat" | "login_check";
-const TICKET_TOOL_NAMES = ["ticket_read"];
+/** 会話の種類（K-737）：draft＝作る画面の会話 */
+export type ToolTalkKind = "clone" | "ticket" | "draft";
+/** 仕事の段（K-746）：dry_run＝試し打ち（確認項目を変えない仕事） */
+export type ToolJobPhase = "make" | "execute" | "dry_run";
+const TICKET_TOOL_NAMES = ["ticket_read", "spec_check", "guard_report"];
+const DRAFT_TOOL_NAMES = ["draft_propose"];
+const pick = (list: readonly string[]) => TOOL_DEFS.filter((t) => list.includes(t.name));
 /** その仕事の種類で自分のAI に見せる道具（呼べない道具は見せない・K62-BRG-012）。手元の口の 403 が 2 層目 */
 export function toolDefsFor(kind: ToolJobKind | null | undefined): ToolDef[] {
-  if (kind === "ticket") return TOOL_DEFS.filter((t) => TICKET_TOOL_NAMES.includes(t.name));
+  if (kind === "ticket") return pick(TICKET_TOOL_NAMES);
   if (kind === "login_check") return [];
-  return TOOL_DEFS.filter((t) => !TICKET_TOOL_NAMES.includes(t.name));
+  return TOOL_DEFS.filter((t) => !TICKET_TOOL_NAMES.includes(t.name) && !DRAFT_TOOL_NAMES.includes(t.name));
 }
+/** 仕事ごとの出し分け（K-737）：作る画面の会話は draft_propose だけ・試し打ちは ticket_read だけ（付けた印を外せない spec_check・
+ *   破られた数を足す guard_report は渡さない）・それ以外は仕事の種類のまま */
+export function toolDefsForJob(job: {
+  kind?: ToolJobKind | null;
+  talk_kind?: ToolTalkKind | string | null;
+  phase?: ToolJobPhase | string | null;
+}): ToolDef[] {
+  const kind = job.kind ?? "chat";
+  if (kind === "chat" && job.talk_kind === "draft") return pick(DRAFT_TOOL_NAMES);
+  if (kind === "ticket" && job.phase === "dry_run") return pick(["ticket_read"]);
+  return toolDefsFor(kind);
+}
+
+/** 3 つの道具（spec_check・guard_report・draft_propose）が断られたときの AI への文。鍵は「道具名:状態コード」。
+ *   403 は 3 つとも「この道具は今は使えません」・422 は欄名つき（台本の中で組む）。内部の番号・状態コードの字は出さない */
+export const TOOL_FAIL_TEXT: Record<string, string> = {
+  "spec_check:404": "その確認項目は見つかりません（ticket_read で確認項目の id を確かめてください）",
+  "spec_check:409": "このチケットはもう完了しているので、チェックは付けられません",
+  "guard_report:404": "その確認項目は見つかりません（必ず守るから入った確認項目の id だけ使えます）",
+  "draft_propose:409": "この仕事で出せる案は 3 回までです。ここまでの案で相談を続けてください",
+  "spec_check:403": "この道具は今は使えません",
+  "guard_report:403": "この道具は今は使えません",
+  "draft_propose:403": "この道具は今は使えません",
+};
+/** 断られたときの文を決めてある道具（422 は欄名つきの文にする） */
+const FAIL_TEXT_TOOLS = ["spec_check", "guard_report", "draft_propose"];
 
 /** 許可のモードに関わらず聞かずに使える道具（本人の会社のたたき台に書くだけ・外に出ない・D-110.4） */
 export const KANAME_TOOL_RULE = "mcp__kaname";
@@ -129,6 +200,8 @@ const ALL_TOOLS = ${JSON.stringify(TOOL_DEFS)};
 // その仕事の道具の名前（KANAME_TOOLS・カンマ区切り）。あればそれだけを見せて呼べる（K-62）
 const ONLY = (process.env.KANAME_TOOLS || "").split(",").map((x) => x.trim()).filter(Boolean);
 const TOOLS = ONLY.length ? ALL_TOOLS.filter((t) => ONLY.includes(t.name)) : ALL_TOOLS;
+const FAIL_TEXT = ${JSON.stringify(TOOL_FAIL_TEXT)};
+const FAIL_TOOLS = ${JSON.stringify(FAIL_TEXT_TOOLS)};
 const API = process.env.KANAME_API_BASE || "";
 const TOKEN = process.env.KANAME_TOOL_TOKEN || "";
 let rest = "";
@@ -144,11 +217,25 @@ async function call(id, name, input) {
       signal: AbortSignal.timeout(20000),
     });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) return reply(id, text("Kaname に置けませんでした：" + (j.message || ("Kaname が " + r.status)), true));
+    if (!r.ok) {
+      const own = failText(name, r.status, j);
+      if (own) return reply(id, text(own, true));
+      return reply(id, text("Kaname に置けませんでした：" + (j.message || ("Kaname が " + r.status)), true));
+    }
     reply(id, text(JSON.stringify(j.data ?? null)));
   } catch (e) {
     reply(id, text("Kaname に届きませんでした（" + (e && e.message ? e.message : "不明") + "）", true));
   }
+}
+// 断られたときの AI への文（K-737・決めてある道具だけ）。422 は欄名つき。決めていない形は null（前の文）
+function failText(name, status, j) {
+  if (!FAIL_TOOLS.includes(name)) return null;
+  if (status === 422) {
+    const ds = Array.isArray(j && j.details) ? j.details : [];
+    const parts = ds.map((d) => String((d && d.field) || "") + "：" + String((d && d.message) || "")).filter((x) => x !== "：");
+    return "入力が正しくありません" + (parts.length ? "：" + parts.join(" / ") : "");
+  }
+  return FAIL_TEXT[name + ":" + status] || null;
 }
 // 成果物を渡す（D-121）：PC のファイルを読んでそのまま Kaname に送る。ホームの中（と一時フォルダ）・20 MB まで。置き場の鍵は持たない
 const fs = require("fs"), path = require("path"), os = require("os");
@@ -232,6 +319,8 @@ export function kanameServer(
   k: KanameTools | null | undefined,
   token: string | null | undefined,
   kind?: ToolJobKind | null,
+  talkKind?: ToolTalkKind | string | null,
+  phase?: ToolJobPhase | string | null,
 ): Record<string, unknown> | null {
   if (!k || !token) return null;
   return {
@@ -240,10 +329,10 @@ export function kanameServer(
     env: {
       KANAME_API_BASE: k.apiBase,
       KANAME_TOOL_TOKEN: token,
-      // 仕事の種類を渡されたら、その仕事の道具の名前だけを道具のサーバーに渡す（tools/list がそれだけを返す・K-62）
+      // 仕事の種類を渡されたら、その仕事の道具の名前だけを道具のサーバーに渡す（tools/list がそれだけを返す・K-62・会話の種類と段は K-737）
       ...(kind
         ? {
-            KANAME_TOOLS: toolDefsFor(kind)
+            KANAME_TOOLS: toolDefsForJob({ kind, talk_kind: talkKind ?? null, phase: phase ?? null })
               .map((t) => t.name)
               .join(","),
           }

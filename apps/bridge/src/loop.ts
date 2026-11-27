@@ -5,7 +5,7 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { readGuardLog, writeHook } from "./guard";
-import { toolDefsFor, writeMcpServer, type KanameTools } from "./kaname-tools";
+import { toolDefsForJob, writeMcpServer, type KanameTools } from "./kaname-tools";
 import { startToolRelay, type RelayJob, type ToolRelay } from "./tool-relay";
 import { dedicatedBrowser } from "./browser";
 import { aiEntries, joinResponse, sessionFile, sizeOf } from "./transcript";
@@ -119,11 +119,13 @@ export function startLoop(d: LoopDeps): () => void {
   let stopped = false;
   // 止めたら待ち受け中の問い合わせも切る（つなぎ直した後に古い輪が仕事を取らない）
   const abort = new AbortController();
+  /** accept：断りでも鍵や接続の話ではない状態（返事の status で呼んだ側が見分ける・写しの 409＝会話の無い仕事・K-760） */
   const call = async <T>(
     path: string,
     body: unknown,
     method: "POST" | "GET" = "POST",
-  ): Promise<{ data: T; next_ms?: number } | null> => {
+    accept: readonly number[] = [],
+  ): Promise<{ data: T; next_ms?: number; status?: number } | null> => {
     const sid = d.sessionId();
     if (!sid || stopped) return null;
     try {
@@ -139,6 +141,7 @@ export function startLoop(d: LoopDeps): () => void {
         ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
         signal: abort.signal,
       });
+      if (!r.ok && accept.includes(r.status)) return { data: null as T, status: r.status };
       if (!r.ok) {
         // 鍵が通らない＝この端末はもう登録されていない（退会・停止・権限変更・つなぎ直し・接続を外した）。
         // 覚えたままにすると「つながっています」と言い続ける（G-14 口座状態の波及）
@@ -296,9 +299,8 @@ export function startLoop(d: LoopDeps): () => void {
       if (!job.conversation_id) return;
       sent = sent
         .then(() =>
-          post("/bridge/entries", {
-            conversation_id: job.conversation_id,
-            job_id: job.job_id,
+          // その仕事の道すじへ（会話は Kaname が仕事から決める・体に会話の id・仕事の id を持たない・K-760）
+          post(jobPath(job.job_id, "conversation-entries"), {
             entries: [{ uuid, text, at: new Date().toISOString() }],
           }),
         )
@@ -373,7 +375,13 @@ export function startLoop(d: LoopDeps): () => void {
     // 道具の鍵がある仕事は、手元の口を今の仕事に向ける（チケットは ticket_read だけ・会話は会話の道具）
     const tools = job.tool_token ? prepareTools(await relayUrl()) : null;
     relayJob = job.tool_token
-      ? { jobId: job.job_id, toolToken: job.tool_token, tools: toolDefsFor(job.kind ?? "chat").map((t) => t.name) }
+      ? {
+          jobId: job.job_id,
+          toolToken: job.tool_token,
+          tools: toolDefsForJob({ kind: job.kind ?? "chat", talk_kind: job.talk_kind, phase: job.phase }).map(
+            (t) => t.name,
+          ),
+        }
       : null;
     const f: Finish = await runClaude(
       { ...job, prompt, browser },
@@ -518,10 +526,17 @@ export function startLoop(d: LoopDeps): () => void {
     mirroring ??= (async () => {
       try {
         // 外から来た値なので配列でなければ何もしない（古い API・試験の偽の API は {} を返す）
-        const got = await post<{ conversation_id: string; agent_session_id: string }[]>("/bridge/mirror-targets", {});
+        const got = (
+          await call<{ conversation_id: string; agent_session_id: string; job_id: string }[]>(
+            "/v1/bridge/mirror-targets",
+            null,
+            "GET",
+          )
+        )?.data;
         const targets = Array.isArray(got) ? got : [];
         for (const t of targets) {
           if (stopped) return;
+          if (typeof t?.job_id !== "string" || typeof t.agent_session_id !== "string") continue; // 写す先の仕事が分からない
           const file = sessionFile(t.agent_session_id);
           if (!file) continue; // 別の PC の記録・消された記録
           const size = sizeOf(file);
@@ -530,10 +545,14 @@ export function startLoop(d: LoopDeps): () => void {
           const list = aiEntries(file);
           let ok = true;
           for (let i = 0; i < list.length; i += 200) {
-            const r = await post("/bridge/entries", {
-              conversation_id: t.conversation_id,
-              entries: list.slice(i, i + 200),
-            });
+            const r = await call(
+              jobPath(t.job_id, "conversation-entries"),
+              { entries: list.slice(i, i + 200) },
+              "POST",
+              [409],
+            );
+            // 409＝会話の無い仕事（E-TALK-030）。送り直しても入らないので、この会話は覚えて送り直さない（K-760）
+            if (r?.status === 409) break;
             if (r === null) ok = false;
           }
           if (ok) seenSize.set(key, size);
