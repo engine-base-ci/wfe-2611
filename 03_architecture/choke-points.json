@@ -72,7 +72,8 @@
           "id": "X-010",
           "path": "apps/web/lib/",
           "reason": "画面が Kaname 自身の API を呼ぶ口。業務の外部送信ではない（D-095.2）。LOCAL は本人の PC の Bridge の口",
-          "compensating_control": "宛先は apiBase() か LOCAL だけ。scripts/ci/net_boundary.mjs（G16b）が検査",
+          "compensating_control": "宛先は apiBase() か LOCAL だけ。scripts/ci/net_boundary.mjs（G16b）が検査。upload-net.ts だけは Kaname の口が返した URL（C4 が署名した置き場の上げ先 upload_url・Kaname の上げ終わりの受け口 done_url）へ送る（K-953・2026-11-28・Bridge の X-009 と同じ扱い。G16b の allow はこの 2 つだけ）",
+          "review_when": "置き場の URL を画面に返す口が増えたとき・上げる体を口に通す形に替えたとき（allow を外す）",
           "expires_at": null,
           "source": [
             "D-095.2"

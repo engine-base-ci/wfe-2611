@@ -109,13 +109,43 @@ async function person(company = "K875 の会社"): Promise<Who> {
     authSessionId: s.id,
   };
 }
+/** 引き金を通さずに書く（session_replication_role = replica）。所属の役割を変えると、役割の束の引き金（0080）が権限の行を作り直し、
+ *  権限の引き金（0092・D-128.121）が画面のセッションを切る。この試験は「役割の答えは毎回その時の所属から引く」を見るので、
+ *  ログイン中のセッションを残したまま所属だけを変える（束の権限の行は消す＝ゲストは束を持たない）。期待は変えない */
+async function quiet(sqls: [string, unknown[]][]): Promise<number> {
+  const c = await admin.connect();
+  let n = 0;
+  try {
+    await c.query("begin");
+    await c.query("set local session_replication_role = replica");
+    for (const [sql, args] of sqls) n += (await c.query(sql, args)).rowCount ?? 0;
+    await c.query("commit");
+  } catch (e) {
+    await c.query("rollback");
+    throw e;
+  } finally {
+    c.release();
+  }
+  return n;
+}
+/** 所属の役割だけを変える（セッションは切らない・quiet） */
+const setRole = (w: Who, role: string): Promise<number> =>
+  quiet([
+    ["update tenant_memberships set role = $3 where tenant_id = $1 and member_id = $2", [w.tenantId, w.memberId, role]],
+  ]);
 /** その人の所属を役割ゲスト（requester）にして、ゲストのグループに入れる。group が false ならグループに入れない */
 async function toGuest(w: Who, o: { group?: boolean; status?: string } = {}): Promise<void> {
-  const up = await admin.query(
-    "update tenant_memberships set role = 'requester', status = $2 where tenant_id = $1 and member_id = $3",
-    [w.tenantId, o.status ?? "active", w.memberId],
-  );
-  if (!up.rowCount)
+  const up = await quiet([
+    [
+      "update tenant_memberships set role = 'requester', status = $2 where tenant_id = $1 and member_id = $3",
+      [w.tenantId, o.status ?? "active", w.memberId],
+    ],
+    [
+      "delete from permissions where tenant_id = $1 and grantee_member_id = $2 and bundle_role is not null",
+      [w.tenantId, w.memberId],
+    ],
+  ]);
+  if (!up)
     await admin.query(
       "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, 'requester', $4)",
       [w.tenantId, w.memberId, w.userId, o.status ?? "active"],
@@ -267,16 +297,10 @@ describe("K-875 ゲストとしてログインする", () => {
     const w = await person();
     await toGuest(w);
     expect((await scopes(w.token)).status).toBe(403);
-    await admin.query("update tenant_memberships set role = 'member' where tenant_id = $1 and member_id = $2", [
-      w.tenantId,
-      w.memberId,
-    ]);
+    await setRole(w, "member");
     expect((await scopes(w.token)).status).toBe(200);
     expect((await portal(w.token)).status).toBe(403);
-    await admin.query("update tenant_memberships set role = 'requester' where tenant_id = $1 and member_id = $2", [
-      w.tenantId,
-      w.memberId,
-    ]);
+    await setRole(w, "requester");
     expect((await scopes(w.token)).status).toBe(403);
     expect([200, 501]).toContain((await portal(w.token)).status);
     await admin.query("update members set deleted_at = now() where id = $1", [w.memberId]);
