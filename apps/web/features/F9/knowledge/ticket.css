@@ -100,3 +100,15 @@
   font-size: var(--k-text-label-md);
   color: var(--k-on-surface-variant);
 }
+/* 印のリンク（K-703）：色は印の字に合わせる */
+.k-f9-spec-from a {
+  color: inherit;
+}
+/* 本番の確認項目の行（F4）では、印を文の下の 2 行目に置く（K-703・下絵 tk-blocked） */
+.k-f4d-spec-list li:has(> .k-f9-spec-from) {
+  flex-wrap: wrap;
+}
+.k-f4d-spec-list li > .k-f9-spec-from {
+  order: 1;
+  flex-basis: 100%;
+}

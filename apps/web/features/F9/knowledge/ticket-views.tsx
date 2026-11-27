@@ -6,6 +6,7 @@
 //   見た目だけ（値は props・口は呼ばない）
 import { BookOpen, ShieldCheck } from "lucide-react";
 import { Button, Callout, Dialog } from "@/components/k";
+import { SpecFrom } from "./spec-from";
 import "./knowledge.css";
 import "./ticket.css";
 
@@ -17,8 +18,31 @@ export interface GuardPage {
   place: string;
 }
 
+/** 新しいタブで開くリンクの属性（やり取りの画面と書きかけの字を残す・K-702） */
+const NEW_TAB = { target: "_blank", rel: "noopener noreferrer" } as const;
+
+/** ページの題名：開く先があれば新しいタブのリンク、無ければ（下絵）今の「#id」、null なら字だけ（K-702） */
+function PageTitle({ page, hrefOf }: { page: GuardPage; hrefOf?: (p: GuardPage) => string | null }) {
+  if (!hrefOf) return <a href={`#${page.id}`}>{page.title}</a>;
+  const href = hrefOf(page);
+  return href ? (
+    <a href={href} {...NEW_TAB}>
+      {page.title}
+    </a>
+  ) : (
+    <span>{page.title}</span>
+  );
+}
+
+export interface GuardListProps {
+  must: readonly GuardPage[];
+  opened: readonly GuardPage[];
+  /** ページの開く先（渡さなければ下絵の「#id」。null を返したページは字だけ・K-702） */
+  hrefOf?: (p: GuardPage) => string | null;
+}
+
 /** ① このチケットで守る物（AI の書き込みの中身） */
-export function GuardList({ must, opened }: { must: readonly GuardPage[]; opened: readonly GuardPage[] }) {
+export function GuardList({ must, opened, hrefOf }: GuardListProps) {
   return (
     <div className="k-f9-guard" aria-label="このチケットで守る物">
       <p className="k-f9-guard-lead">始める前に、このチケットで守る物を並べました。</p>
@@ -31,7 +55,7 @@ export function GuardList({ must, opened }: { must: readonly GuardPage[]; opened
         <ul>
           {must.map((p) => (
             <li key={p.id}>
-              <a href={`#${p.id}`}>{p.title}</a>
+              <PageTitle page={p} hrefOf={hrefOf} />
               <small>{p.place}</small>
             </li>
           ))}
@@ -45,7 +69,7 @@ export function GuardList({ must, opened }: { must: readonly GuardPage[]; opened
         <ul>
           {opened.map((p) => (
             <li key={p.id}>
-              <a href={`#${p.id}`}>{p.title}</a>
+              <PageTitle page={p} hrefOf={hrefOf} />
               <small>{p.place}</small>
             </li>
           ))}
@@ -55,15 +79,32 @@ export function GuardList({ must, opened }: { must: readonly GuardPage[]; opened
   );
 }
 
-/** ② やり取りの 1 行の字：AI が開いたページ */
-export function OpenedText({ ai, title, place }: { ai: string; title: string; place: string }) {
-  return (
-    <>
-      <b>{ai}</b> がナレッジの{" "}
+export interface OpenedTextProps {
+  ai: string;
+  title: string;
+  place: string;
+  /** ページの開く先（渡さなければ下絵の「#page」。null なら字だけ・K-702） */
+  href?: string | null;
+}
+
+/** ② やり取りの 1 行の字：AI が開いたページ（場所が空なら括弧ごと出さない） */
+export function OpenedText({ ai, title, place, href }: OpenedTextProps) {
+  const link =
+    href === undefined ? (
       <a href="#page" className="k-f9-inline-link">
         {title}
       </a>
-      <small className="k-f9-inline-place">（{place}）</small> を開いた
+    ) : href ? (
+      <a href={href} className="k-f9-inline-link" {...NEW_TAB}>
+        {title}
+      </a>
+    ) : (
+      <span>{title}</span>
+    );
+  return (
+    <>
+      <b>{ai}</b> がナレッジの {link}
+      {place ? <small className="k-f9-inline-place">（{place}）</small> : null} を開いた
     </>
   );
 }
@@ -94,12 +135,7 @@ export function SpecList({ rows }: { rows: readonly SpecRow[] }) {
             <input type="checkbox" id={`spec-${r.id}`} defaultChecked={r.done} className="k-f9-checkbox" />
             <label htmlFor={`spec-${r.id}`}>
               <span>{r.text}</span>
-              {r.from ? (
-                <small className="k-f9-spec-from">
-                  <ShieldCheck size={11} aria-hidden="true" />
-                  {`ナレッジ：${r.from}`}
-                </small>
-              ) : null}
+              {r.from ? <SpecFrom title={r.from} /> : null}
               {r.by ? <small className="k-f9-spec-by">{r.by}</small> : null}
             </label>
           </li>
@@ -113,19 +149,33 @@ export function SpecList({ rows }: { rows: readonly SpecRow[] }) {
  * 完了を止める小窓（「完了にする」を押したとき）。止めるのは「必ず守る」から入った確認項目だけ。
  * 人が足した確認項目は止めない（段 5 のとおり注意だけ出す）。left には、チェックの付いていない行を全部渡す
  */
-export function CompleteBlockedDialog({ target, left }: { target: string; left: readonly SpecRow[] }) {
+export interface CompleteBlockedDialogProps {
+  /** 対象の行（「EG-133 11 月分の請求書を送る」）。無ければ出さない */
+  target?: string;
+  left: readonly SpecRow[];
+  /** 「閉じる」・右上の ×・Esc（渡さない呼び方＝下絵は今の見た目のまま・K-703） */
+  onClose?: () => void;
+  /** 「確認項目に戻る」（渡さない呼び方＝下絵は今の見た目のまま・K-703） */
+  onBack?: () => void;
+}
+
+export function CompleteBlockedDialog({ target, left, onClose, onBack }: CompleteBlockedDialogProps) {
   const blocking = left.filter((r) => r.from);
   const caution = left.length - blocking.length;
   return (
     <Dialog
       open
-      onOpenChange={noop}
+      onOpenChange={(open) => {
+        if (!open) (onClose ?? noop)();
+      }}
       title="まだ完了にできません"
-      target={target}
+      {...(target ? { target } : {})}
       actions={
         <>
-          <Button variant="outlined">閉じる</Button>
-          <Button>確認項目に戻る</Button>
+          <Button variant="outlined" {...(onClose ? { onClick: onClose } : {})}>
+            閉じる
+          </Button>
+          <Button {...(onBack ? { onClick: onBack } : {})}>確認項目に戻る</Button>
         </>
       }
     >
