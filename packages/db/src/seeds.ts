@@ -6,13 +6,20 @@ import { seedGenericRows } from "./seed_generic.js";
 export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   // 運営の会社の製品の既定（migration が置くプラン 3 つ・ひな形の配るもの 3 つと版・K-958・K-992）は truncate の cascade で消えるので、
   //   写しを取って入れ直す（消えたままだと、同じ DB で後に流れる試験のプランを引く準備・会社の種まきが落ちる・統合の枝の CI）
-  const KEEP_OPS: readonly [string, string][] = [
-    ["plans", "tenant_id = app.ops_tenant_id()"],
-    ["plan_versions", "plan_id in (select id from plans where tenant_id = app.ops_tenant_id())"],
-    ["distributions", "tenant_id = app.ops_tenant_id()"],
+  //   場合表の種が入れた行（key が seed・k9-…）は写さない（入れ直すと次の種と重なる）。版の行は親が入れ直せたものだけ
+  const OPS_KEY = "tenant_id = app.ops_tenant_id() and key <> 'seed' and key not like 'k9-%'";
+  const KEEP_OPS: readonly [string, string, string][] = [
+    ["plans", OPS_KEY, "true"],
+    [
+      "plan_versions",
+      `plan_id in (select id from plans where ${OPS_KEY})`,
+      "exists (select 1 from plans p where p.id = k.plan_id)",
+    ],
+    ["distributions", OPS_KEY, "true"],
     [
       "distribution_versions",
-      "distribution_id in (select id from distributions where tenant_id = app.ops_tenant_id())",
+      `distribution_id in (select id from distributions where ${OPS_KEY})`,
+      "exists (select 1 from distributions d where d.id = k.distribution_id)",
     ],
   ];
   for (const [t] of KEEP_OPS)
@@ -30,8 +37,6 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   await c.query(
     "insert into tenants (id, tenant_id, name) values (app.ops_tenant_id(), app.ops_tenant_id(), '運営') on conflict do nothing",
   );
-  await c.query("update keep_distribution_versions set released_by = null"); // 人は truncate で消えた
-  for (const [t] of KEEP_OPS) await c.query(`insert into "${t}" select * from "keep_${t}" on conflict do nothing`);
   // truncate は terms_versions（運営のテナントに結ぶ）も消す。版が 1 つも無い状態は作らない（D-128.137）ので、種の第 1 版を入れ直す（migration 0088 と同じ関数）
   await c.query("select app.seed_first_terms()");
   for (const m of ["member_kinds", "target_kinds", "abilities"])
@@ -334,6 +339,10 @@ export async function seedAccessMatrix(c: pg.PoolClient): Promise<Seeded> {
   );
   await seedKnowledgeForStaff(c, generic, { tenantA, scopeDeptA, staffA });
   const notices = await withFreshNotices(c, generic);
+  // 運営の会社の製品の既定を入れ直す（種の後：種まきが運営の会社の配るものを「在る行」として使うと版 1 が重なる）
+  await c.query("update keep_distribution_versions set released_by = null"); // 人は truncate で消えた
+  for (const [t, , ok] of KEEP_OPS)
+    await c.query(`insert into "${t}" select k.* from "keep_${t}" k where ${ok} on conflict do nothing`);
   return {
     tenantA,
     tenantB,
