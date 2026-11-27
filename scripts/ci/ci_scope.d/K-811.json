@@ -1,6 +1,23 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/features/F10/admin/members/role.ts", "packages/db/migrations/20261126001100_member_role.sql"],
-   "tests": ["apps/api/test/features/F10/admin-member-role.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/role.ts",
+    "packages/db/migrations/20261126001100_member_role.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-role.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/admin-member-role.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_members_id_role.test.ts"
+   ]
+  }
  ]
 }

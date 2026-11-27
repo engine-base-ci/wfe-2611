@@ -325,6 +325,22 @@
   {
    "path": "apps/api/test/features/F5/checks-retire.test.ts",
    "reason": "手で書く試験（先頭の「契約と生成物と文書のファイル」は、試験が読む物の説明）。作り手は書かない（K-741）"
+  },
+  {
+   "path": "apps/api/test/features/F11/acceptances-retire.test.ts",
+   "reason": "手で書く試験（K-926。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/knowledge-old-retire.test.ts",
+   "reason": "手で書く試験（K-722。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/memory-retire.test.ts",
+   "reason": "手で書く試験（K-712。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/shape-learning-retire.test.ts",
+   "reason": "手で書く試験（K-721。先頭の言葉は口を外したことを契約と生成物で確かめる説明）"
   }
  ],
  "not_always_written": [

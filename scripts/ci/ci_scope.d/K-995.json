@@ -1,6 +1,43 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/features/F12/ops/pwned.ts", "apps/api/src/hooks/ops-pwned.ts", "packages/db/migrations/20261128013500_ops_pwned.sql"], "tests": ["apps/api/test/features/F12/ops-pwned.test.ts"]},
-  {"paths": ["05_flow/screen_api.d/K-995.py", "scripts/ci/contract_shape.d/K-995.py"], "tests": ["apps/api/test/features/F12/ops-pwned.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/features/F12/ops/pwned.ts",
+    "apps/api/src/hooks/ops-pwned.ts",
+    "packages/db/migrations/20261128013500_ops_pwned.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-995.py",
+    "scripts/ci/contract_shape.d/K-995.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-pwned.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-pwned.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_workspaces_id_pwned_ack.test.ts"
+   ]
+  }
  ]
 }

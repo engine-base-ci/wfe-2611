@@ -9,6 +9,46 @@
     "apps/api/test/features/F9/ticket-kinds-write.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_ticket_kinds_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ticket_kinds_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_kinds.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_kinds_order.test.ts"
+   ]
   }
  ],
  "reads_ok": {

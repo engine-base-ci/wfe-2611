@@ -1,8 +1,27 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/audit.ts", "apps/api/src/features/F10/audit/**", "packages/db/migrations/20261126002300_audit_list.sql"], "tests": ["apps/api/test/features/F10/audit-list.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/hooks/audit.ts",
+    "apps/api/src/features/F10/audit/**",
+    "packages/db/migrations/20261126002300_audit_list.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/audit-list.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/audit-list.test.ts",
+    "apps/api/test/features/F10/audit-search.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_audit_events.test.ts"
+   ]
+  }
  ],
  "reads_ok": {
-  "apps/api/test/features/F10/audit-list.test.ts": "口の登録 apps/api/src/hooks/audit.ts を動的 import で読み（register.make）、契約 08_api/openapi.yaml の listAuditEvents の札と上限を字で読む（K823-API-030）。hooks・口・migration の変更で流れるよう data_links で結ぶ（K-823）"
+  "apps/api/test/features/F10/audit-list.test.ts": "口の登録 apps/api/src/hooks/audit.ts を動的 import で読み（register.make）、契約 08_api/openapi.yaml の listAuditEvents の札と上限を字で読む（K823-API-030）。hooks・口・migration の変更で流れるよう data_links で結ぶ（K-823）",
+  "apps/api/test/features/contract/k144.d/K-823.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-823"
  }
 }
