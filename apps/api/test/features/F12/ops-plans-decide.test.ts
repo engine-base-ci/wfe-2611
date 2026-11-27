@@ -19,12 +19,11 @@ beforeAll(async () => {
 afterAll(async () => t?.close());
 
 const NOTICE = "チームプランの料金を改めます。それまでは今の料金のままです。";
-const decide = (
-  who: Person | null,
-  id: string,
-  body: unknown = { notice_body: NOTICE },
-  step: number | undefined = STEP,
-) => t.act(who, "POST", `${PROPOSALS}/${id}/decide`, body, step === undefined ? {} : { stepUpAgoSec: step });
+const decide = (who: Person | null, id: string, body: unknown = { notice_body: NOTICE }, ...opt: [step?: number]) => {
+  // 送らない（undefined）と既定の STEP を分ける：既定の引数は undefined を渡しても STEP になり、取り直していない場合を作れなかった
+  const step = opt.length ? opt[0] : STEP;
+  return t.act(who, "POST", `${PROPOSALS}/${id}/decide`, body, step === undefined ? {} : { stepUpAgoSec: step });
+};
 const ret = (who: Person | null, id: string, body: unknown = { reason: "上げ幅が大きい" }) =>
   t.act(who, "POST", `${PROPOSALS}/${id}/return`, body);
 const versionRow = (planId: string, version: number) =>

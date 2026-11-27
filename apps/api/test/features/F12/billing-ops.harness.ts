@@ -7,7 +7,6 @@
 //   運営の人は運営の会社の members と ops_members の行（ops-workspace-billing.test.ts の opsWho と同じ作り方）。
 //   請求の月は試験ごとに昔の月（2019 年）を使う：共用の試験の DB にはほかの試験の会社と契約が残るので、昔の月の初日に効いていた契約は
 //   この土台で作った物だけになる。答えの一覧は名前の頭（run）で自分の会社だけを見る。葉の hooks のファイルは最初の要求のときに 1 回だけ読む
-import { afterAll } from "vitest";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ObjectStore, type StorageDriver, type ObjectMeta } from "@kaname/storage";
@@ -18,7 +17,7 @@ import { createApp } from "../../../src/app.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
-import { nextIp } from "../fixture.js";
+import { afterClose, nextIp } from "../fixture.js";
 import { startBilling, PAYEE, TERMS, type Billing, type Who, type World } from "./billing.harness.js";
 
 export { jstDay, jstMonth, isFlat, type Json, type Who, type World } from "./billing.harness.js";
@@ -178,7 +177,7 @@ export async function startBillingOps(prefix: string, hookFiles: readonly string
   });
   const opsIds: string[] = [];
   // 運営の記録・会社の記録・安全の記録（ops_audit_events・audit_events・security_events）は追記専用（0003_audit.sql の引き金）なので消さない。試験は前の数との差かその回の印で絞って数える
-  afterAll(async () => {
+  afterClose(async () => {
     if (opsIds.length) await f.admin.query("delete from ops_members where member_id = any($1::uuid[])", [opsIds]);
   });
   const opsWho: BillingOps["opsWho"] = async (name, caps) => {
