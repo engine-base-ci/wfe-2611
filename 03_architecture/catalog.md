@@ -360,7 +360,7 @@ API 369（作った 97・後のフェーズの行為だけ 20）・前の道す�
 | `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | K-59 |
 | `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | K-59 |
 | `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 作った | K-62 |
-| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61 |
+| `stopActionRun` | POST /api/v1/action_runs/:id/stop | 作成・実行（action_runs）— AI を止める・承認を取り下げる | F5 | 契約だけ（501） | K-61,K-731 |
 | `getApproval` | GET /api/v1/approvals/:id | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-161 |
 | `approveApproval` | POST /api/v1/approvals/:id/approve | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-162 |
 | `editApproval` | POST /api/v1/approvals/:id/edit | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
