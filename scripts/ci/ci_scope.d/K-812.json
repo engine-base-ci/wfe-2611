@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/groups.ts",
+    "packages/db/migrations/20261126001200_member_groups.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-groups.test.ts"
+   ]
+  }
+ ]
+}
