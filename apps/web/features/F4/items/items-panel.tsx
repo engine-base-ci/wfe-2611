@@ -28,6 +28,8 @@ export interface ItemsPanelProps {
   ticketId: string;
   fields: readonly PanelField[];
   slots?: Partial<Record<PanelSlot, ReactNode>>;
+  /** 区に足す class（段 8 の期限の小窓を重ねる印 k-f7-due-anchor を「日付と時間」に付ける・K-599） */
+  sectionClass?: { dates?: string };
   onReload: () => void;
 }
 
@@ -42,16 +44,16 @@ function Item({ k, v }: { k: string; v: ReactNode }) {
   );
 }
 
-function Section({ name, children }: { name: string; children: ReactNode }) {
+function Section({ name, className, children }: { name: string; className?: string; children: ReactNode }) {
   return (
-    <section aria-label={name} className="k-detail-panel-sec">
+    <section aria-label={name} className={className ? `k-detail-panel-sec ${className}` : "k-detail-panel-sec"}>
       <h2>{name}</h2>
       {children}
     </section>
   );
 }
 
-export function ItemsPanel({ ticketId, fields, slots = {}, onReload }: ItemsPanelProps) {
+export function ItemsPanel({ ticketId, fields, slots = {}, sectionClass = {}, onReload }: ItemsPanelProps) {
   const saver = useFieldSave(ticketId);
   const sorted = [...fields].sort((a, b) => a.position - b.position);
   const row = (f: PanelField): ReactNode => (
@@ -66,7 +68,7 @@ export function ItemsPanel({ ticketId, fields, slots = {}, onReload }: ItemsPane
           <Item k="優先度" v={slots.priority} />
         </dl>
       </Section>
-      <Section name="日付と時間">
+      <Section name="日付と時間" {...(sectionClass.dates ? { className: sectionClass.dates } : {})}>
         <dl className="k-detail-fields">
           <Item k="開始日" v={slots.start} />
           <Item k="期限" v={slots.due} />

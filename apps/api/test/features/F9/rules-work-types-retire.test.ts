@@ -1,4 +1,4 @@
-// K-711「決まり・業務の型の口 29 本を契約から外す」の単体の試験（契約と生成物と文書のファイル・口の道は本物の入口で 404 を見る）。
+// K-711「決まり・業務の型の口 29 本を契約から外す」の単体の試験（契約と作り手の出力と文書のファイル・口の道は本物の入口で 404 を見る）。
 // テストの名前の頭の行 ID（K711-API-…）は 11_tickets/K-711.md の行の表に 1 対 1 で結ぶ。
 // テストはチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 //
@@ -9,7 +9,8 @@
 //   業務の型 15：作る側 9（listWorkTypes ほか）と運営 6（listOpsWorkTypes ほか）。段 5 の K-582 が外した listWorkTypeCandidates は数えない
 // 外さないもの：運営ひな形の 2 口（listKindTemplateUpdates・applyKindTemplateUpdate。makeKindTemplateFromTicket は段 13 の K-993 が外した・D-156.20）・運営のひな形の口
 //   （/ops/templates 系）・listHandoverRules・記憶・覚えたいこと・チケットの形・ナレッジの前の口（K-721・K-722 が外す）
-import { existsSync, readFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -55,6 +56,13 @@ const WORK_TYPE_OPS: readonly [string, string, string][] = [
   ["releaseOpsWorkType", "POST", "/ops/work_types/{id}/versions"],
   ["rollbackOpsWorkType", "POST", "/ops/work_types/{id}/versions/{v}/rollback"],
 ];
+interface FlowDoc {
+  backbone: { acts: { id: string; release: string }[] }[];
+  screens: { id: string; release: string }[];
+  deferred: Record<string, string>;
+  act_to_screen: Record<string, string[]>;
+  blueprint: Record<string, { screen?: string }>;
+}
 interface RetiredRow {
   method: string;
   path: string;
@@ -173,7 +181,6 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
         apis(k).filter((x) => GONE_IDS.includes(x)),
         k,
       ).toEqual([]);
-    expect(apis("K-71")).toEqual(expect.arrayContaining(["requestAcceptance", "updateTicketClientShare"]));
     expect(apis("K-72")).toEqual(
       expect.arrayContaining(["createPlanProposal", "listOpsTemplates", "releaseOpsTemplate"]),
     );
@@ -263,5 +270,65 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
       expect((hit[0]!.reason ?? "").trim().length, `${op} の理由`).toBeGreaterThan(0);
     }
     expect(read("01_hearing", "決定ログ_進行中.md"), "根拠の決定が決定ログに在る").toContain("| D-152.20 |");
+  });
+
+  it("K711-API-015 行為 A119（業務の型を作る・広げる）は後のフェーズへ送った：release v2・流れ F9 に無い・DEFERRED に理由（D-152.20）", () => {
+    const flow = JSON.parse(read("05_flow", "flow.json")) as FlowDoc;
+    const act = flow.backbone.flatMap((p) => p.acts).find((a) => a.id === "A119");
+    expect(act?.release, "A119 の release").toBe("v2");
+    const f9 = (JSON.parse(read("05_flow", "flows.json")) as { flows: { id: string; acts: string[] }[] }).flows.find(
+      (x) => x.id === "F9",
+    );
+    expect(f9?.acts, "流れ F9 の行為").not.toContain("A119");
+    expect(flow.deferred["A119"] ?? "", "A119 の送った理由").toContain("D-152.20");
+  });
+
+  it("K711-API-016 行為 A131（ルールを置く）は第 1 フェーズに残る：release v1・act_to_screen と裏側の表の画面が clone-chat", () => {
+    const flow = JSON.parse(read("05_flow", "flow.json")) as FlowDoc;
+    const act = flow.backbone.flatMap((p) => p.acts).find((a) => a.id === "A131");
+    expect(act?.release, "A131 の release").toBe("v1");
+    expect(flow.act_to_screen["A131"], "A131 の画面").toContain("clone-chat");
+    expect(flow.blueprint["A131"]?.screen, "裏側の表の A131 の画面").toBe("clone-chat");
+  });
+
+  it("K711-API-017 第 1 フェーズの画面は 35：rules・work-types は v2 で DEFERRED に理由・spec-dependencies の screen_count_v1 も 35", () => {
+    const flow = JSON.parse(read("05_flow", "flow.json")) as FlowDoc;
+    expect(flow.screens.filter((x) => x.release === "v1").length, "第 1 フェーズの画面の数").toBe(35);
+    for (const sid of ["rules", "work-types"]) {
+      expect(flow.screens.find((x) => x.id === sid)?.release, sid).toBe("v2");
+      expect(flow.deferred[sid] ?? "", `${sid} の送った理由`).toContain("D-152.20");
+    }
+    expect(read("spec-dependencies.yaml")).toMatch(/- id: screen_count_v1\n(?: {2}.*\n)*? {2}expected_value: 35\n/);
+  });
+
+  it("K711-API-018 キャンバスの対応表の later（canvas_gate.py の CV4）：第 1 フェーズの画面・flow に無い画面・空の並びは 2 で終わり、今の対応表は 0", () => {
+    const dir = mkdtempSync(join(tmpdir(), "k711-canvas-"));
+    try {
+      for (const p of [
+        "04_design/canvas",
+        "04_design/canvas-screens.json",
+        "05_flow/flow.json",
+        "apps/web/app/(dev)/dev/mock/f1/mocks.tsx",
+      ])
+        cpSync(join(ROOT, p), join(dir, p), { recursive: true });
+      const map = JSON.parse(read("04_design", "canvas-screens.json")) as { later: Record<string, unknown> };
+      const gate = (later: Record<string, unknown>) => {
+        writeFileSync(join(dir, "04_design/canvas-screens.json"), JSON.stringify({ ...map, later }));
+        return spawnSync("python3", [join(ROOT, "scripts/ci/canvas_gate.py")], { cwd: dir, encoding: "utf-8" });
+      };
+      const ok = gate(map.later);
+      expect(ok.status, ok.stdout + ok.stderr).toBe(0);
+      const v1 = gate({ ...map.later, tickets: ["Main"] });
+      expect(v1.status).toBe(2);
+      expect(v1.stdout).toContain("later の画面が flow の第1フェーズにある");
+      const none = gate({ ...map.later, "k711-no-screen": ["Main"] });
+      expect(none.status).toBe(2);
+      expect(none.stdout).toContain("later の画面が flow に無い");
+      const empty = gate({ ...map.later, today: [] });
+      expect(empty.status).toBe(2);
+      expect(empty.stdout).toContain("later の絵の並びが空");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

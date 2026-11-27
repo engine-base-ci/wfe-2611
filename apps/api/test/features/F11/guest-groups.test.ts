@@ -13,7 +13,7 @@
 //   listGuestGroups    GET /guest-groups → 200 { data: { groups: [{ id, name, request_scope: { id, name } | null, guests: [{ id, name, email, suspended }],
 //                                                                   invitations: [{ id, email, left_days }] }] } }
 //     名前の順。消したグループ・別の会社のグループ・抜けたゲストは出ない。members の view か invite を持つ人（社内の人）だけ
-// DB（migration 20261127097600_guest_groups.sql）:
+// DB（migration 20261127093600_guest_groups.sql）:
 //   guest_groups（name・name_key＝表記ゆらぎをそろえた鍵・消していない物は会社の中で一意・request_scope_id＝依頼が届く社内のグループ）・
 //   guest_group_members（1 人は 1 つのグループ）・invitations.guest_group_id（役割 requester の招待だけ）・
 //   招待が受けられたとき（accepted_member_id）にグループへ入れる引き金・app.invitation_preview2 は requester の招待にゲストのグループの名前を返す・
@@ -314,7 +314,7 @@ describe("K-876 DB：ゲストのグループの置き場", () => {
     const half = `株式会社${stem}`.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
     expect(await dup(half)).toBe("23505");
     expect(await dup(half.toLowerCase())).toBe("23505");
-    expect(await dup(`株式会社 ${half.slice(4)}　`)).toBe("23505");
+    expect(await dup(`株式会社 ${half.slice(4)}\u3000`)).toBe("23505");
     expect(await dup(half, O.tenantId, O.rootScope)).toBe("ok");
     const gone = await group(`消した${randomUUID().slice(0, 6)}`, { deleted: true });
     const goneName = (await one<{ name: string }>("select name from guest_groups where id = $1", [gone])).name;
@@ -402,7 +402,7 @@ describe("K-876 ゲストのグループを作る口（createGuestGroup）", () 
     const stem = `重複${randomUUID().slice(0, 6)}`;
     await group(`株式会社${stem}`);
     const before = await n("select count(*) as n from guest_groups where tenant_id = $1", [T.tenantId]);
-    const r = await mkGroup(admin, { name: ` 株式会社　${stem.toUpperCase()} `, request_scope_id: T.rootScope });
+    const r = await mkGroup(admin, { name: ` 株式会社\u3000${stem.toUpperCase()} `, request_scope_id: T.rootScope });
     expect(r.status, await r.clone().text()).toBe(409);
     const b = await json(r);
     expect(b["code"]).toBe("E-GST-002");

@@ -28,10 +28,14 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "ticket.stage_changed": ticketKind("write"),
   "ticket.decision": ticketKind("write"),
   "ticket.due_changed": ticketKind("write"),
+  // ticket.sort_changed の payload の fields は priority・parent（K-440）／estimate_minutes（K-583）／field:<項目の id>（K-564）のどれか（混ざることもある）。
+  //   fields・url は params に出さない（PARAM_KEYS は message_id だけを通す）。文は K-467 の表（項目を変えました）・K-602
   "ticket.sort_changed": ticketKind("write"),
   // 段 8（K-464・K-463）
   "ticket.stopped": ticketKind("stopped"),
   "approval.requested": ticketKind("approval"),
+  // 段 12（K-881・20261127094100）：チケットを見せる相手に足したグループのゲストへの知らせ。社内の鈴ではチケットが社内の人として見えるときだけ出るので、ゲスト宛てのこの行は社内の鈴に出ない（先方の場所での出し方は先方の場所の葉が持つ）
+  "ticket.guest_shared": ticketKind("write"),
   // 段 9（K-402・K-408・K-409・K-410・K-406）：受ける？の札
   "handover.requested": ticketKind("handover"),
   "handover.offered": ticketKind("handover"),

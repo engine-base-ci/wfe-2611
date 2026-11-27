@@ -28,6 +28,8 @@ import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
 import { agreeCurrentTerms } from "../../../../../packages/db/test/agree-terms.js";
 import { bootApi, type BootOptions } from "../../../src/server.js";
+// K-358：書き直した行の作り物の秘密の値は _fake/secrets.ts に置いて import する（K-328）
+import { K358_K321_PASSWORD } from "../../_fake/secrets.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DB_PKG = join(HERE, "..", "..", "..", "..", "..", "packages", "db");
@@ -284,7 +286,7 @@ describe("K-321 付けるまで進めない：入口の止め", () => {
     expect(await codes()).toBe(before);
   });
 
-  it("K321-API-011 印が立ったセッション × 前の道すじ（/api/auth-ext/*）：PC の様子を読む・資格情報を預けるは 403・MFA_REQUIRED（預けない）。自分の取得（/me）は止めない", async () => {
+  it("K321-API-011 印が立ったセッション × 前の道すじ（/api/auth-ext/*）の PC の様子を読む・契約の口の資格情報を預けるは 403・MFA_REQUIRED（預けない）。自分の取得（/me）は止めない", async () => {
     const p = await person("ext");
     const t = await login(p);
     await expectMfaBlocked(
@@ -295,13 +297,22 @@ describe("K-321 付けるまで進めない：入口の止め", () => {
       (await admin.query("select 1 from credentials where owner_member_id = $1", [p.memberId])).rowCount ?? 0;
     const vaultBefore = await vault();
     await expectMfaBlocked(
+      // K-358：預ける前の道すじ（/api/auth-ext/vault/credentials）を消したので、契約の口 createCredential で止まることを見る（MFA_OPEN_OPS に無い）
       await req(
         "POST",
-        "/api/auth-ext/vault/credentials",
-        { service_name: "k321.example.com", login: "k321", password: "k321-secret-0000", two_factor: "none" },
+        "/api/v1/credentials",
+        {
+          name: "K321_SECRET",
+          layer: "personal",
+          kind: "login",
+          login: "k321",
+          password: K358_K321_PASSWORD,
+          two_factor: "none",
+          destinations: ["k321.example.com"],
+        },
         { headers: bearer(t) },
       ),
-      "POST /vault/credentials",
+      "POST /api/v1/credentials",
     );
     expect(await vault(), "預けない").toBe(vaultBefore);
     await expectNotMfaBlocked(

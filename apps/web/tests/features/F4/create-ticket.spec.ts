@@ -8,6 +8,7 @@ import { expect, missingRows, row, rowsOf } from "../../_lib/row";
 import { WIDTHS } from "../../_lib/api";
 // 期限の入れ方（日付の欄でも小窓のボタンでも通る）は K-431 が create-mock.ts に 1 か所だけ持つ
 import { TEMPLATE_ISSUE, TEMPLATE_TASK, bodyBox, dueIsDialog, fillDue, writeBody } from "../../k/create-mock";
+import { shellData } from "../../k/shell-answer";
 
 const SPEC = join(dirname(fileURLToPath(import.meta.url)), "../../../../../07_qa/test-specs/k/create-ticket.md");
 const ROWS = rowsOf(SPEC);
@@ -174,7 +175,31 @@ async function mockApi(page: Page | BrowserContext, o: { ws?: string; token?: bo
             },
           }
         : { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
-    else if (p === "/api/v1/scopes") reply = m.on.scopes();
+    else if (p === "/api/v1/shell") {
+      // 外枠は getShell 1 本（K-466）。グループの口の答えを写す（認証が無ければ 401・失敗は同じ答え）
+      const sc = m.on.scopes();
+      if (!auth) reply = { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+      else if (sc.status !== 200) reply = sc;
+      else {
+        const b = sc.body as {
+          data: { id: string; name: string; ticket_prefix?: string | null }[];
+          meta?: { writable?: string[] };
+        };
+        const can = new Set(b.meta?.writable ?? []);
+        const data = shellData({
+          roleId: "staff",
+          name: MEMBERS.find((x) => x.id === who.member)?.display_name ?? "人",
+          groups: b.data.map((g) => ({
+            id: g.id,
+            name: g.name,
+            ticket_prefix: g.ticket_prefix ?? null,
+            writable: can.has(g.id),
+            open_count: 0,
+          })),
+        });
+        reply = { status: 200, body: { data, meta: {} } };
+      }
+    } else if (p === "/api/v1/scopes") reply = m.on.scopes();
     else if (p === "/api/v1/ticket_kinds") reply = m.on.kinds();
     else if (p === "/api/v1/members") reply = { status: 200, body: { data: MEMBERS, meta: { limit: 200 } } };
     // 会社の項目のマスタ（K-563・K-569 が種別ごとに読む）。この試験は会社の項目を持たない（0 件）
@@ -716,7 +741,7 @@ row(R["K60-UI-038"], async (page) => {
 
 row(R["K60-UI-039"], async (page) => {
   // 下書きを残す口が 429・500・通信の失敗（fetch が例外）・答えない、のどれでも「作る」でチケットはできる（下書きは作るのを止めない・D-128.62）。
-  //   作る口の答えを止めている間に「残せなかった」と知らせ、開けたら詳細へ移る（作る口は 1 回）
+  //   作る口の答えを止めている間に「残せなかった」とお知らせ、開けたら詳細へ移る（作る口は 1 回）
   for (const how of ["429", "500", "network", "hang"] as const) {
     const ctx = await page.context().browser()!.newContext();
     try {

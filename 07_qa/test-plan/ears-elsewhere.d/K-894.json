@@ -1,0 +1,34 @@
+{
+ "ops": {
+  "acceptClientRequest": {
+   "file": "apps/api/test/features/F11/client-requests-accept.test.ts",
+   "reason": "依頼を受ける口は、依頼の状態・届け先と見る人の権限・グループへの書き込みの権限・ゲストのグループで答えが変わる。生成の試験の種では依頼もゲストのグループも作れない（K-894）",
+   "covers": {
+    "test_post_client_requests_id_accept_ok": "K894-API-001",
+    "test_post_client_requests_id_accept_shape": "K894-API-001",
+    "test_post_client_requests_id_accept_rejected_401": "K894-API-011",
+    "test_post_client_requests_id_accept_rejected_403": "K894-API-011",
+    "test_post_client_requests_id_accept_not_found": "K894-API-011",
+    "test_post_client_requests_id_accept_rejected_422": "K894-API-008",
+    "test_post_client_requests_id_accept_rejected_422_2": "K894-API-009",
+    "test_post_client_requests_id_accept_rate_limited": "K894-API-019",
+    "test_post_client_requests_id_accept_upstream_failed": "K894-API-015",
+    "test_post_client_requests_id_accept_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_client_requests_id_accept_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_client_requests_id_accept_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_client_requests_id_accept_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011 が見る"
+   }
+  }
+ }
+}

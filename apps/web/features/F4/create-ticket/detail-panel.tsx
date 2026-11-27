@@ -6,10 +6,11 @@
 //   口が返さない値（節目・業務の型）は空（嘘の値を書かない）。取引先の行は出さない（answer=4961f0280e9a）。
 //   グループは外枠と同じ問い合わせ（SCOPES_KEY）の答えから引く（口を 2 回呼ばない・G-16）。読めなければグループの行は出さない
 //   差し込み口（K-380）：タブと中身は段 7 の F6.PanelTabsSlot、予定時間・実績時間は F6.EstimateSlot・F6.ActualTimeSlot、
-//   担当者は段 9 の F8.AssigneeSlot、親の行は ParentRowSlot（K-443）、確認項目は K-450 の SpecsItem
+//   担当者は段 9 の F8.AssigneeSlot、親の行は ParentRowSlot（K-443）、確認項目は K-450 の SpecsItem、期限の ▾ は段 8 の F7.DueSlot（K-599）
 import { Bot, PanelRight } from "lucide-react";
 import type { ComponentProps, RefObject } from "react";
 import * as F6 from "@/features/F6/detail-slots";
+import * as F7 from "@/features/F7/detail-slots";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { RunLatest } from "@/features/F5/delegate/run-log";
 import type { RunView } from "@/features/F5/delegate/use-run";
@@ -20,6 +21,7 @@ import { ParentRowSlot } from "./detail-entry-slots";
 import type { SlotTicket } from "./detail-slots";
 import type { DetailField } from "./detail-types";
 import type { ScopeRow } from "./ticket-shell";
+import { GuestShareSection } from "@/features/F11/share/share-section";
 
 export interface PanelTicket {
   scope_id?: string | null;
@@ -73,6 +75,7 @@ export function DetailPanel(p: DetailPanelProps) {
         ticketId={p.ticketId}
         fields={p.fields as unknown as PanelFields}
         onReload={p.onReload}
+        sectionClass={{ dates: "k-f7-due-anchor" }}
         slots={{
           assignee: (
             <F8.AssigneeSlot ticket={p.slot}>
@@ -95,9 +98,11 @@ export function DetailPanel(p: DetailPanelProps) {
             <span data-over={over > 0 || undefined}>
               {t.due_on ? mmddWeek(t.due_on) : ""}
               {over > 0 ? `${over} 日過ぎ` : ""}
-              <InertButton label="期限を変える" size="sm" className="k-detail-due-btn">
-                ▾
-              </InertButton>
+              <F7.DueSlot ticket={p.slot}>
+                <InertButton label="期限を変える" size="sm" className="k-detail-due-btn">
+                  ▾
+                </InertButton>
+              </F7.DueSlot>
             </span>
           ),
           estimate: <F6.EstimateSlot ticket={p.slot}>{""}</F6.EstimateSlot>,
@@ -116,6 +121,8 @@ export function DetailPanel(p: DetailPanelProps) {
           ),
         }}
       />
+      {/* 「ゲストに見せる」の区画（F11・K-905）：区の後・実行の記録の前（answer=9096d8002961） */}
+      <GuestShareSection ticket={p.slot} />
       <RunLatest runs={p.runs} />
     </div>
   );

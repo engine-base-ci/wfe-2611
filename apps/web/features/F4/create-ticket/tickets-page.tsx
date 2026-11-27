@@ -10,9 +10,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
+import { viewReady } from "@/features/F7/list-slots";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { TicketListPage } from "../ticket-list/list-page";
+import type { ListView } from "../ticket-list/use-ticket-list";
 import { TICKET_KINDS_KEY } from "../items/use-ticket-fields";
 import { CreateHead } from "./create-head";
 import { CreateTicket, seedParent, type Choices, type CreateSeed, type KindChoice } from "./create-ticket";
@@ -91,11 +93,18 @@ const withNew = (open: boolean) => {
   window.history.replaceState(null, "", `${u.pathname}${u.search}`);
 };
 
+/** ?view= の読み：all、または区画が本物の見え方（F7 の viewReady が true）ならその名前、それ以外は mine（K-600） */
+const viewOf = (raw: string | null): ListView => {
+  if (raw === "all") return "all";
+  if ((raw === "overview" || raw === "calendar" || raw === "gantt") && viewReady(raw)) return raw;
+  return "mine";
+};
+
 /** 作る面が開いていれば作る面（K-224）、それ以外は一覧（K-251）。書けるグループが無い人には作る面を出さず一覧のまま */
 export function TicketsPage({ openNew }: { openNew: boolean }) {
   const [open, setOpen] = useState(openNew);
   const params = useSearchParams();
-  const view = params.get("view") === "all" ? "all" : "mine";
+  const view = viewOf(params.get("view"));
   const scope = params.get("scope");
   const openNumber = params.get("open") || null;
   // 道の印（K-453 の空の一覧のおすすめ・詳細の「子を足す」）：題名と、uuid の形の親だけを受ける

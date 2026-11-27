@@ -1,8 +1,8 @@
 // 認証の拡張ルート（/api/auth-ext/*・境界 B2 の外側の口）。Better Auth の /api/auth/* に無い「Kaname としての段取り」：
-//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・Bridge の接続コード・資格情報を預ける（関門 C8）
+//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・Bridge の接続コード（資格情報を預ける・取り出す口は契約の口 features/F3/credentials へ移し、前の道すじは K-358 で消した）
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
 import { agentToolRoutes } from "./agent-tools.js";
-import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
+import { ONBOARD_REMEMBER } from "./conventions.js";
 import { Hono } from "hono";
 import { CATALOG } from "@kaname/errors";
 import type pg from "pg";
@@ -11,11 +11,10 @@ import { createDeviceResolver, createSessionResolver, type Resolved } from "@kan
 import { mfaRequired, readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
 import type { Repository } from "@kaname/db/repository";
-import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { ObjectStore } from "@kaname/storage";
 import { agentRoutes, jobOptions, jobOptionsIssue } from "./agent.js";
-import { badId, idOf, idOrNull, isBridgeKeyShape, queryId } from "./ids.js";
+import { badId, idOrNull, isBridgeKeyShape, queryId } from "./ids.js";
 import { agentStreamRoutes } from "./agent-stream.js";
 import type { MemberHub } from "@kaname/db/listen";
 
@@ -337,62 +336,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: r.rows[0]!.s });
   });
 
-  // AI が使うブラウザを、いまの端末について選ぶ（D-120.1）。次の仕事から効く
-  app.post("/agent/browser", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { browser?: unknown };
-    if (!BROWSERS.includes(b.browser as Browser))
-      return bad(c, 422, "VALIDATION_FAILED", "ブラウザは chrome／dedicated／off のどれかです");
-    const r = await d.appPool.query<{ ok: boolean }>("select app.agent_set_browser($1, $2) as ok", [
-      ses.ctx.userId,
-      b.browser,
-    ]);
-    if (!r.rows[0]?.ok) return bad(c, 404, "BRIDGE_NOT_FOUND", "つないだ PC がありません");
-    return c.json({ data: { browser: b.browser } });
-  });
-  // この端末を外す（2026-10-01 QA：モックにあって実装に無かった）。自分の Bridge の端末だけ。外した鍵は次の要求で 410 になり、
-  // Bridge は鍵を捨てて仕事を取りに来なくなる（G-14）。画面の Web ログインのセッションはここでは外さない（kind_id = 'bridge' だけ）
-  app.post("/agent/bridge-revoke", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { session_id?: unknown };
-    const sessionId = idOrNull(b.session_id);
-    if (sessionId === false) return badId(c, "session_id");
-    if (!sessionId) return bad(c, 422, "VALIDATION_FAILED", "外す端末の id が要ります");
-    const n = await withTenant(
-      d.appPool,
-      ses.ctx,
-      async (cl) =>
-        (
-          await cl.query<{ n: number }>(
-            "select coalesce(sum(app.revoke_own_session(s.id, 'logout')), 0)::int as n from sessions s where s.id = $1 and s.kind_id = 'bridge' and s.revoked_at is null",
-            [sessionId],
-          )
-        ).rows[0]!.n,
-    );
-    if (!n) return bad(c, 404, "BRIDGE_NOT_FOUND", "その端末はありません（もう外したか、つないでいない端末です）");
-    return c.json({ data: { revoked: true } });
-  });
-  // もう一度確かめる（D-120.3）：Bridge が小さな仕事で Chrome を本当に使えるか試す。結果は PC の状態（自己診断）に出る
-  app.post("/agent/browser-check", async (c) => {
-    const ses = await resolve(c.req.raw.headers);
-    if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const r = await d.appPool.query<{ id: string | null }>("select app.agent_browser_check($1, $2) as id", [
-      ses.ctx.userId,
-      BROWSER_CHECK_PROMPT,
-    ]);
-    const id = r.rows[0]?.id ?? null;
-    if (!id)
-      return bad(
-        c,
-        409,
-        "BRIDGE_ASLEEP",
-        "PC の Bridge が動いていないので確かめられません。Bridge を起こしてから押してください",
-      );
-    return c.json({ data: { job_id: id } }, 201);
-  });
-
   // ---- Bridge が話す口（T-B-03・D-090）。鍵は claim で受け取った bridge の session id
   // PC の印（K-57）：引き取りで 1 回だけ渡した印のハッシュで、生きている PC の行を引く。sessions の id は鍵にしない（画面の一覧に出る値なので）
   const resolveDevice = createDeviceResolver(d.appPool);
@@ -411,18 +354,6 @@ export function authExt(d: AuthExtDeps): Hono {
   // 仕事を取る・途中の様子・結末を返す・止める合図・道具は契約の口（/api/v1/bridge/jobs/…）に移した（K-62・apps/api/src/features/F5/delegate/）
   const GONE = (c: Parameters<typeof bad>[0]) =>
     bad(c, 410, "SESSION_GONE", "この端末の接続は切れています。つなぎ直してください");
-
-  // Bridge の窓から選び直す（Kaname の画面で変えたのと同じ・D-120.1）
-  app.post("/bridge/browser", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { browser?: unknown };
-    if (!BROWSERS.includes(b.browser as Browser))
-      return bad(c, 422, "VALIDATION_FAILED", "ブラウザは chrome／dedicated／off のどれかです");
-    const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_set_browser($1, $2) as ok", [sid, b.browser]);
-    if (!r.rows[0]?.ok) return GONE(c);
-    return c.json({ data: { browser: b.browser } });
-  });
 
   // 確認（D-093.3）：CLI が「これを実行していいか」と聞いた。画面に出して本人の答えを待つ
   app.post("/bridge/ask", async (c) => {
@@ -525,7 +456,16 @@ export function authExt(d: AuthExtDeps): Hono {
   app.get("/me", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const m = await d.repo.table("members").get(s.ctx, s.ctx.userId);
+    // ゲスト（role client・K-875）は社内の表（members）を読めないので、DB の関数で自分の 1 行（表示名・役割 requester）だけを引く
+    const guest = s.ctx.role === "client";
+    const m = guest
+      ? ((await withTenant(
+          d.appPool,
+          s.ctx,
+          async (cl) =>
+            (await cl.query<{ v: Record<string, unknown> | null }>("select app.guest_me() as v")).rows[0]?.v,
+        )) ?? null)
+      : await d.repo.table("members").get(s.ctx, s.ctx.userId);
     // 今いる会社（セッションの会社）の名前（K-253・D-144.2）。関門 C2 の読むだけで、行の守りが今の会社の行だけを見せる。
     // 消した印のある会社は読めないので null（ほかの欄は返す）
     const t = await d.repo.table("tenants").get(s.ctx, s.ctx.tenantId);
@@ -535,313 +475,12 @@ export function authExt(d: AuthExtDeps): Hono {
         tenant_id: s.ctx.tenantId,
         display_name: m?.["display_name"] ?? null,
         role_id: (m?.["role_id"] as string | null) ?? null,
-        scope_id: m?.["scope_id"] ?? null,
+        scope_id: guest ? null : (m?.["scope_id"] ?? null),
         workspace_name: workspaceName(t?.["name"]),
       },
     });
   });
 
-  // 資格情報を預ける（T-U-10・関門 C8）：平文はここで暗号化して vault へ。表（credentials）には参照 ID だけ。AI には渡らない
-  app.post("/vault/credentials", async (c) => {
-    const s = await resolve(c.req.raw.headers);
-    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    // 預かり先が決まっていない（段階 1・D-097.8）間は、staging／本番で預からない。メモリに置くと再起動・別の実体で消える
-    if ((d.config.env === "staging" || d.config.env === "production") && !d.secrets.durable)
-      return bad(c, 503, "E-SEC-002", "いまはログイン情報を預かれません。預かり先の用意ができたら使えるようになります");
-    const b = (await c.req.json().catch(() => ({}))) as {
-      service_name?: string;
-      service_domain?: string;
-      service_id?: unknown;
-      kind_id?: string;
-      login?: string;
-      password?: string;
-      totp_secret?: string;
-      two_factor?: string;
-    };
-    // 台帳のサービスの id（uuid の列へ書く）は預かり先（関門 C8）に書く前に確かめる（K-145・形違いは 422・何も預けない）
-    const serviceId = idOrNull(b.service_id);
-    if (serviceId === false) return badId(c, "service_id");
-    // 2 段階認証の種類（D-117.2）：なし／認証アプリ（鍵が要る）／SMS／メール／スマホで承認。鍵だけ入れて種類が無ければ認証アプリ
-    const twoFactor = ["none", "totp", "sms", "email", "push"].includes(String(b.two_factor ?? ""))
-      ? String(b.two_factor)
-      : b.totp_secret
-        ? "totp"
-        : "none";
-    if (twoFactor === "totp" && !b.totp_secret)
-      return bad(c, 422, "E-VAL-003", "認証アプリを選んだときは、登録時に出た秘密鍵を貼ってください", {
-        field: "totp_secret",
-      });
-    const login = String(b.login ?? "")
-      .normalize("NFKC")
-      .trim();
-    if (!login || !b.password) return bad(c, 422, "E-VAL-008", "ログイン名とパスワードを入れてください");
-    const kind = b.kind_id ?? (twoFactor === "totp" ? "password_totp" : "basic");
-    // 2 段階認証の秘密鍵は Base32（A〜Z・2〜7）。空白と小文字は直して通す。それ以外は E-VAL-003（G-08：出せるエラー）
-    const totpSecret = b.totp_secret ? b.totp_secret.normalize("NFKC").replace(/\s+/g, "").toUpperCase() : null;
-    if (totpSecret !== null && !/^[A-Z2-7]{16,}=*$/.test(totpSecret))
-      return bad(
-        c,
-        422,
-        "E-VAL-003",
-        "秘密鍵の形式が違います。認証アプリの登録時に出る文字列（英字と 2〜7 の数字・16 文字以上）を貼ってください",
-        { field: "totp_secret" },
-      );
-    const stored = await d.secrets.store(
-      s.ctx,
-      kind,
-      JSON.stringify({ login, password: b.password, totp_secret: totpSecret }),
-    );
-    if (stored.status !== "done") {
-      // 上限に当たった（D-102.5）：待つ秒数を添えて断る。預かったことにしない
-      if ("retryAfterSec" in stored && stored.retryAfterSec)
-        return bad(
-          c,
-          503,
-          "E-SEC-003",
-          `いま混み合っています。${stored.retryAfterSec} 秒ほど待ってからもう一度保存してください`,
-          {
-            retry_after_sec: stored.retryAfterSec,
-          },
-        );
-      // 一手は関門の handoff（「もう一度保存する。続くときは運営に連絡する」）。理由を一手の欄に入れていた（T-B-14 の試験で発覚）
-      return bad(c, 502, "E-SEC-001", "預かり先に保管できませんでした。もう一度試してください", {
-        handoff: "handoff" in stored ? stored.handoff : null,
-      });
-    }
-    const ref = typeof stored.value === "string" ? stored.value : stored.value.ref;
-    const me = await d.repo.table("members").get(s.ctx, s.ctx.userId);
-    // 入れたサービス名と宛先を残し、台帳に同じサービスがあれば結ぶ（D-108.4）
-    // 人が打つサービス名は黙って切らない（D-135.5・D-130.4）
-    const name = String(b.service_name ?? "")
-      .normalize("NFKC")
-      .trim();
-    const domain = hostOf(name) ?? hostOf(String(b.service_domain ?? ""));
-    const svc =
-      serviceId ??
-      (await d.appPool.query<{ id: string | null }>("select app.credential_service($1, $2) as id", [name, domain]))
-        .rows[0]?.id ??
-      null;
-    const row = await d.repo.table("credentials").create(s.ctx, {
-      service_id: svc,
-      service_name: name || null,
-      service_domain: domain,
-      kind_id: kind,
-      vault_ref: ref,
-      owner_member_id: s.ctx.userId,
-      scope_id: me?.["scope_id"] ?? null,
-      two_factor_id: twoFactor,
-    });
-    // 預けたらその場で 1 回だけログインを試す（D-117.1）。禁止・銀行は試さない。Bridge の端末が無ければ積まない
-    const check =
-      (
-        await d.appPool.query<{ id: string | null }>("select app.credential_login_check_enqueue($1, $2) as id", [
-          s.ctx.userId,
-          row["id"],
-        ])
-      ).rows[0]?.id ?? null;
-    return c.json(
-      { data: { id: row["id"], vault_ref: ref, service_name: name || null, login_check_job_id: check } },
-      201,
-    );
-  });
-  // もう一度試す（D-117.5）：10 分返事が無くて止まった・途中で止まった・開けなかった ものを、本人が押したときだけ回す
-  app.post("/vault/credentials/:id/login-check", async (c) => {
-    const s = await resolve(c.req.raw.headers);
-    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const job =
-      (
-        await d.appPool.query<{ id: string | null }>("select app.credential_login_check_retry($1, $2) as id", [
-          s.ctx.userId,
-          id,
-        ])
-      ).rows[0]?.id ?? null;
-    if (!job)
-      return bad(
-        c,
-        409,
-        "LOGIN_CHECK_BUSY",
-        "いまは試せません（試している最中か、禁止のサービスか、PC をつないでいません）",
-      );
-    return c.json({ data: { login_check_job_id: job } }, 201);
-  });
-  // 本人がコードを入れる／スマホで承認したと知らせる（D-117.3）。コードは Bridge が取った時点で消える
-  app.post("/vault/credentials/:id/answer", async (c) => {
-    const s = await resolve(c.req.raw.headers);
-    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const id = idOf(c.req.param("id"));
-    if (!id) return badId(c, "id");
-    const b = (await c.req.json().catch(() => ({}))) as { request_id?: unknown; code?: unknown; approved?: unknown };
-    if (typeof b.request_id !== "string")
-      return bad(c, 422, "VALIDATION_FAILED", "資格情報の id と request_id が要ります");
-    const code =
-      b.approved === true ? "approved" : typeof b.code === "string" ? b.code.normalize("NFKC").replace(/\s+/g, "") : "";
-    if (!code || code.length > 64) return bad(c, 422, "E-VAL-009", "コードを入れてください");
-    const ok = (
-      await d.appPool.query<{ ok: boolean }>("select app.agent_answer_code($1, $2, $3, $4) as ok", [
-        s.ctx.userId,
-        id,
-        b.request_id,
-        code,
-      ])
-    ).rows[0]?.ok;
-    if (!ok) return bad(c, 404, "ASK_NOT_FOUND", "いまは頼まれていません（もう答えたか、止まっています）");
-    return c.json({ data: { ok: true } }, 201);
-  });
-  // Bridge がコードを取る（本人の Bridge・その仕事・その request だけ。取ったら消える）
-  app.post("/bridge/code", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; request_id?: unknown };
-    const job = idOrNull(b.job_id);
-    if (job === false) return badId(c, "job_id");
-    if (!job || typeof b.request_id !== "string")
-      return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
-    const code =
-      (
-        await d.appPool.query<{ v: string | null }>("select app.bridge_take_code($1, $2, $3) as v", [
-          sid,
-          job,
-          b.request_id,
-        ])
-      ).rows[0]?.v ?? null;
-    return c.json({ data: { code } });
-  });
-  // Bridge が 1 回のログインの結果を返す（T-B-38・D-117.1）。本人の Bridge が取った動いている仕事に対してだけ。値は無い（結果の種類と理由だけ）
-  app.post("/bridge/credentials/check-result", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; state?: unknown; detail?: unknown };
-    const states = [
-      "ok",
-      "bad_password",
-      "needs_2fa",
-      "bad_code",
-      "captcha",
-      "unreachable",
-      "no_form",
-      "stopped",
-      "no_answer",
-    ];
-    const job = idOrNull(b.job_id);
-    if (job === false) return badId(c, "job_id");
-    if (!job || typeof b.state !== "string" || !states.includes(b.state))
-      return bad(
-        c,
-        422,
-        "VALIDATION_FAILED",
-        "仕事の id と結果（ok／bad_password／needs_2fa／bad_code／captcha／unreachable／no_form／stopped／no_answer）が要ります",
-      );
-    const detail = typeof b.detail === "string" ? b.detail.slice(0, 400) : "";
-    const r =
-      (
-        await d.appPool.query<{ v: { tenant_id: string; member_id: string; credential_id: string } | null }>(
-          "select app.bridge_login_check_result($1, $2, $3, $4) as v",
-          [sid, job, b.state, detail],
-        )
-      ).rows[0]?.v ?? null;
-    if (!r) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
-    await d.repo.audit(
-      { tenantId: r.tenant_id, userId: r.member_id, role: "member" },
-      "credential.login_check",
-      "credentials",
-      r.credential_id,
-      "C1",
-      { job_id: job, state: b.state },
-    );
-    return c.json({ data: { ok: true } });
-  });
-  // Bridge が「いま動いている仕事」のために資格情報 1 件を受け取る（T-B-05・D-102.2・D-017.1・関門 C8）。
-  //   本人の Bridge の鍵・本人の動いている仕事・本人の資格情報、の 3 つがそろったときだけ。解くのは関門（caller=executor）で、証跡に残す。
-  //   値はこの応答にだけ載る（表・ログ・AI の道具には載らない）
-  app.post("/bridge/credentials/resolve", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; credential_id?: unknown };
-    const job = idOrNull(b.job_id);
-    if (job === false) return badId(c, "job_id");
-    const cred = idOrNull(b.credential_id);
-    if (cred === false) return badId(c, "credential_id");
-    if (!job || !cred) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資格情報の id が要ります");
-    const row = (
-      await d.appPool.query<{
-        tenant_id: string;
-        member_id: string;
-        vault_ref: string | null;
-        service_name: string | null;
-        service_domain: string | null;
-        two_factor: string;
-        revoked: boolean;
-        job_ok: boolean;
-      }>("select * from app.bridge_credential($1, $2, $3)", [sid, job, cred])
-    ).rows[0];
-    if (!row || !row.vault_ref) return bad(c, 404, "CREDENTIAL_NOT_FOUND", "預けたログイン情報が見つかりません");
-    const ctx = { tenantId: row.tenant_id, userId: row.member_id, role: "member" as const };
-    if (!row.job_ok) {
-      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", cred, "C8", {
-        job_id: job,
-        reason: "job_not_running",
-      });
-      return bad(c, 403, "JOB_NOT_RUNNING", "動いている仕事のためにだけ受け取れます", { handoff: "仕事を始めてから" });
-    }
-    if (row.revoked) {
-      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", cred, "C8", {
-        job_id: job,
-        reason: "revoked",
-      });
-      return bad(c, 403, "CREDENTIAL_REVOKED", "このログイン情報は失効しています。預け直してください", {
-        handoff: "預け直す",
-      });
-    }
-    const o = await d.secrets.resolve(row.vault_ref, { ...ctx, caller: "executor" });
-    if (o.status !== "done") {
-      // 届かない・混んでいる・読めない：成功にしない。理由に値は無い
-      return bad(
-        c,
-        o.status === "denied" ? 403 : 502,
-        o.status === "denied" ? "CREDENTIAL_DENIED" : "E-SEC-001",
-        o.reason,
-        {
-          handoff: o.handoff,
-          ...("retryAfterSec" in o && o.retryAfterSec ? { retry_after_sec: o.retryAfterSec } : {}),
-        },
-      );
-    }
-    let v: { login?: unknown; password?: unknown; totp_secret?: unknown };
-    try {
-      v = JSON.parse(o.value) as typeof v;
-    } catch {
-      return bad(c, 502, "E-SEC-001", "預かった情報が読めません。安全のため、もう一度預け直してください", {
-        handoff: "預け直す",
-      });
-    }
-    // 受け取った仕事と資格情報の結びつきだけを証跡に（値は書かない）
-    await d.repo.audit(ctx, "credential.bridge_resolve", "credentials", cred, "C8", {
-      job_id: job,
-      service_name: row.service_name,
-    });
-    return c.json({
-      data: {
-        login: typeof v.login === "string" ? v.login : "",
-        password: typeof v.password === "string" ? v.password : "",
-        totp_secret: typeof v.totp_secret === "string" ? v.totp_secret : null,
-        service_name: row.service_name,
-        service_domain: row.service_domain,
-        two_factor: row.two_factor,
-      },
-    });
-  });
-  // 預けたものの一覧（D-108.3）：サービス名・台帳の可否・状態・預かり先の番号の頭だけ。中身は返さない
-  app.get("/vault/credentials", async (c) => {
-    const s = await resolve(c.req.raw.headers);
-    if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const r = await d.appPool.query<{ v: unknown }>("select app.my_credentials($1) as v", [s.ctx.userId]);
-    return c.json({ data: r.rows[0]?.v ?? [] });
-  });
   // たたき台（D-108.5）：目標（今の版の名前）・台帳・担当業務とAI社員を 1 回で
   app.get("/onboard/draft", async (c) => {
     const s = await resolve(c.req.raw.headers);

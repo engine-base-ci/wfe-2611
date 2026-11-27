@@ -227,15 +227,6 @@
    "x": 0,
    "y": 2480
   },
-  "CpReview.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "cu",
-   "title": "【先方の画面】検収（OK／直してほしい）",
-   "w": 1440,
-   "x": 1520,
-   "y": 2480
-  },
   "Create.dc.html": {
    "expand": "fill",
    "h": 1950,
@@ -245,50 +236,14 @@
    "x": 1520,
    "y": 1560
   },
-  "CuList.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "cu",
-   "title": "取引先 ← 左のメニュー「取引先」",
-   "w": 1440,
-   "x": 0,
-   "y": 0
-  },
-  "CuPage.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "cu",
-   "title": "取引先のページ › いま ← 一覧・チケットの「取引先の 1 社を開く」",
-   "w": 1440,
-   "x": 1520,
-   "y": 0
-  },
   "CuRequests.dc.html": {
    "expand": "fill",
    "h": 1000,
    "page": "cu",
-   "title": "届いた依頼 ← 左のパネル・取引先のいま「さばく」",
+   "title": "届いた依頼 ← 左のパネル・ゲストから届いた依頼を「さばく」",
    "w": 1440,
    "x": 3040,
    "y": 0
-  },
-  "CuReview.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "cu",
-   "title": "検収を頼む ← チケットの成果物「先方に確かめてもらう」",
-   "w": 1440,
-   "x": 1520,
-   "y": 1240
-  },
-  "CuShare.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "cu",
-   "title": "人と見せ方 ← 取引先のページのタブ",
-   "w": 1440,
-   "x": 0,
-   "y": 1240
   },
   "EdApproval.dc.html": {
    "expand": "fill",
@@ -298,24 +253,6 @@
    "w": 1440,
    "x": 1520,
    "y": 2480
-  },
-  "EdClient.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "ed",
-   "title": "取引先を足す ← 取引先の「＋ 取引先」",
-   "w": 1440,
-   "x": 3040,
-   "y": 0
-  },
-  "EdContact.dc.html": {
-   "expand": "fill",
-   "h": 1000,
-   "page": "ed",
-   "title": "先方の人を招く ← 人と見せ方 の「＋ 先方の人を招く」",
-   "w": 1440,
-   "x": 0,
-   "y": 1240
   },
   "EdDeleteWs.dc.html": {
    "x": 3040,
@@ -710,14 +647,6 @@
    "title": "スマホ｜1 件ずつ裁く",
    "page": "tickets"
   },
-  "MbClients.dc.html": {
-   "x": 5860,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜取引先 ← メニュー",
-   "page": "tickets"
-  },
   "MbCreate.dc.html": {
    "x": 4920,
    "y": 1560,
@@ -926,15 +855,6 @@
    "w": 390,
    "x": 3040,
    "y": 1560
-  },
-  "OnClients.dc.html": {
-   "x": 0,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "取引先（まだない）",
-   "expand": "fill",
-   "page": "on"
   },
   "OnError.dc.html": {
    "x": 3040,
@@ -2004,18 +1924,11 @@
   "KnNew.dc.html",
   "KnLinks.dc.html",
   "KnImport.dc.html",
-  "CuList.dc.html",
-  "CuPage.dc.html",
   "CuRequests.dc.html",
-  "CuShare.dc.html",
-  "CuReview.dc.html",
   "CpHome.dc.html",
   "CpNew.dc.html",
-  "CpReview.dc.html",
   "EdRule.dc.html",
   "EdMemory.dc.html",
-  "EdClient.dc.html",
-  "EdContact.dc.html",
   "EdMemberMenu.dc.html",
   "EdMemberRemove.dc.html",
   "EdGroup.dc.html",
@@ -2044,7 +1957,6 @@
   "OnHome.dc.html",
   "OnRoom.dc.html",
   "OnKnowledge.dc.html",
-  "OnClients.dc.html",
   "OnLoading.dc.html",
   "OnError.dc.html",
   "ErrNotFound.dc.html",
@@ -2097,7 +2009,6 @@
   "WsMember.dc.html",
   "MeInquiry.dc.html",
   "MbKnowledge.dc.html",
-  "MbClients.dc.html",
   "OpTemplates.dc.html",
   "AuthVerifying.dc.html",
   "AuthVerifyExpired.dc.html",
@@ -2156,7 +2067,7 @@
   },
   {
    "id": "cu",
-   "name": "取引先"
+   "name": "届いた依頼とゲスト"
   },
   {
    "id": "ws",

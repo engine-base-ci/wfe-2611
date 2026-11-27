@@ -1,7 +1,9 @@
 // メールで招く口（K-419）：createInvitations（POST /api/v1/invitations・D-148.1・D-148.23・D-148.29・D-148.47）。
 //   入口（op.ts）が先に確かめる：ログイン・権限（members の invite・会社全体＝管理者の束と個別に付けた人。マネージャーは招けない）・
-//   上限・冪等・体の形（emails・scope_id・role_key・message。知らない項目は 422）。順：
-//   ⓪ 欠け・決まった値の外（宛てが無い・役割が 4 つの外・ひとこと 501 文字）は 422・VALIDATION_ERROR（契約の VALUE_RANGES と同じ）
+//   上限・冪等・体の形（emails・scope_id・guest_group_id・role_key・message。知らない項目は 422）。順：
+//   ⓪ 欠け・決まった値の外（宛てが無い・役割が 5 つの外・ひとこと 501 文字）は 422・VALIDATION_ERROR（契約の VALUE_RANGES と同じ）。
+//      役割 requester（ゲスト・K-876）はゲストのグループ guest_group_id がちょうど 1 つ要り、依頼の届け先 scope_id を持てない。
+//      ほかの役は scope_id が要り guest_group_id を持てない（契約の INPUT_RULES の oneOf と同じ）
 //   ① 送られた並びの数（重なりを落とす前）が 51 以上 → 422・E-INV-012（契約の maxItems 50 と同じ）
 //   ② 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる（そろえるのは ④ の形の確かめの後）
 //   ③ 管理者として招く（role_key admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
@@ -9,7 +11,7 @@
 //      形の誤りだけを 422 で返し、DB の中身で決まる断りは ⑤ の 409・404 に分ける（口が断る番号の決め・answer=431fc50df51b）
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
 //      取引の頭で、ゲスト（role_key requester）でなければ席を確かめる（app.seat_check・K-1103）。プランの人数の上限を超える → 409・E-PLAN-003（何も作らない・メールも送らない）
-//      グループが会社に無い・消した → 404・E-INV-011。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
+//      グループが会社に無い・消した → 404・E-INV-011。ゲストのグループが会社に無い・消した・別の会社 → 404・E-GST-001。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
 //   ⑥ 取引が終わってから宛てごとに 1 通（関門 C6）。送れたら mail "sent"・送れなかったら "failed" と証跡 invitation.mail_failed。
 //      証跡を書けなければログに招待の id だけ（宛てのメールは出さない・ドメインだけを証跡に書く）
 //   ⑦ 201 { invitations: [{ id, email, expires_at, mail }] }
@@ -25,8 +27,10 @@ import { INVITE_EMAIL_MAX_LENGTH, INVITE_EMAIL_PATTERN } from "./patterns.js";
 
 /** 一度に招ける人数 */
 export const INVITE_MAX = 50;
-/** 役割（契約の role_key は決まった 4 つ）とひとことの長さ（invitations_message_len と同じ 500 文字） */
-const ROLES = ["member", "manager", "viewer", "admin"] as const;
+/** 役割（契約の role_key は決まった 4 つとゲストの requester・K-876）とひとことの長さ（invitations_message_len と同じ 500 文字） */
+const ROLES = ["member", "manager", "viewer", "admin", "requester"] as const;
+/** ゲスト（ゲストのグループを選び、依頼の届け先を持たない・D-155.40） */
+const GUEST = "requester";
 const MESSAGE_MAX = 500;
 /** トークンの長さ（バイト）。DB には sha256 だけを置く（packages/auth/src/invitations.ts と同じ形） */
 const TOKEN_BYTES = 32;
@@ -40,6 +44,7 @@ interface Created {
 interface Facts {
   workspace_name: string | null;
   inviter_name: string | null;
+  /** メールに載せるグループの名前。ゲストの招待はゲストのグループの名前（社内のグループの名前を外の人に見せない・K-876） */
   group_name: string | null;
 }
 
@@ -84,15 +89,31 @@ const badField = (field: string, message: string): HookReply => ({
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
 });
 
-/** 入力の欠け・決まった値の外を 422 にする（宛て・グループ・役割は必須。ひとことは 500 文字まで） */
+const given = (v: unknown): boolean => v !== undefined && v !== null;
+const nonEmpty = (v: unknown): boolean => typeof v === "string" && v !== "";
+
+/** グループの指定を役割で分けて確かめる：ゲストはゲストのグループだけ・ほかの役は社内のグループだけ（K-876） */
+function checkGroup(input: Record<string, unknown>, role: string): HookReply | null {
+  if (role === GUEST) {
+    if (given(input["scope_id"])) return badField("scope_id", "ゲストの招待には依頼の届け先を付けられません");
+    if (!nonEmpty(input["guest_group_id"])) return badField("guest_group_id", "ゲストのグループを選んでください");
+    return null;
+  }
+  if (given(input["guest_group_id"]))
+    return badField("guest_group_id", "ゲストのグループを付けられるのはゲストの招待だけです");
+  if (!nonEmpty(input["scope_id"])) return badField("scope_id", "グループを選んでください");
+  return null;
+}
+
+/** 入力の欠け・決まった値の外を 422 にする（宛て・役割とグループの指定は必須。ひとことは 500 文字まで） */
 function checkInput(input: Record<string, unknown>): HookReply | null {
   const emails = input["emails"];
   if (!Array.isArray(emails) || emails.length === 0 || emails.some((v) => typeof v !== "string"))
     return badField("emails", "宛てを 1 つ以上入れてください");
-  if (typeof input["scope_id"] !== "string" || input["scope_id"] === "")
-    return badField("scope_id", "グループを選んでください");
   if (typeof input["role_key"] !== "string" || !(ROLES as readonly string[]).includes(input["role_key"]))
     return badField("role_key", ROLES.join("／"));
+  const group = checkGroup(input, input["role_key"]);
+  if (group) return group;
   const m = input["message"];
   if (m !== undefined && m !== null && (typeof m !== "string" || Array.from(m).length > MESSAGE_MAX))
     return badField("message", `${MESSAGE_MAX} 文字まで`);
@@ -112,6 +133,7 @@ function refused(e: unknown): HookReply {
     return { status: 409, body: kanameError("E-PLAN-003", seatLimitDetail(dt)).toJSON() };
   // 404 と 409 は field・details を付けない（控え帳 20:50・PM の決め 2026-11-21 03:00）。無いグループと見えないグループは同じ答え
   if (code === "42501" && hint === "E-INV-011") return { status: 404, body: kanameError("E-INV-011").toJSON() };
+  if (code === "42501" && hint === "E-GST-001") return { status: 404, body: kanameError("E-GST-001").toJSON() };
   if (code === "42501") return forbidden();
   if (code === "22023" && hint === "E-INV-010")
     return {
@@ -168,22 +190,25 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
     a: HookArgs,
     emails: string[],
     tokens: string[],
-    scope: string,
+    group: { scope: string | null; guestGroup: string | null },
     role: string,
     message: string | null,
   ): Promise<{ rows: Created[]; facts: Facts }> =>
     withTenant(d.appPool, a.ctx, async (cl: pg.PoolClient) => {
       // 席の確かめ（K-1103）：ゲストは数えず止めない（D-156.51）。送り直す宛ては招待中に数えない
       if (role !== "requester") await cl.query("select app.seat_check($1::int, $2::text[])", [emails.length, emails]);
+      // ゲストの招待はゲストのグループの名前だけを読む（社内のグループの名前は読まない）
       const f = await cl.query<Facts>(
         `select (select t.name from tenants t where t.id = app.tenant_id()) as workspace_name,
                 (select m.display_name from members m where m.id = app.user_id()) as inviter_name,
-                (select s.name from scopes s where s.id = $1 and s.deleted_at is null) as group_name`,
-        [scope],
+                case when $3::boolean
+                     then (select g.name from guest_groups g where g.id = $2::uuid and g.deleted_at is null)
+                     else (select s.name from scopes s where s.id = $1::uuid and s.deleted_at is null) end as group_name`,
+        [group.scope, group.guestGroup, role === GUEST],
       );
       const r = await cl.query<Created>(
-        "select invitation_id, email, expires_at from app.create_invitations($1::text[], $2::uuid, $3, $4, $5::text[])",
-        [emails, scope, role, message, tokens.map(sha256)],
+        "select invitation_id, email, expires_at from app.create_invitations($1::text[], $2::uuid, $3, $4, $5::text[], $6::uuid)",
+        [emails, group.scope, role, message, tokens.map(sha256), group.guestGroup],
       );
       return { rows: r.rows, facts: f.rows[0] ?? { workspace_name: null, inviter_name: null, group_name: null } };
     });
@@ -238,8 +263,12 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
     const bad = checkInput(a.input);
     if (bad) return bad;
     const raw = a.input["emails"] as string[]; // checkInput が文字の並びだと確かめ済み
-    const scope = String(a.input["scope_id"] ?? "");
     const role = String(a.input["role_key"] ?? "");
+    // checkInput が役割ごとに確かめ済み：ゲストはゲストのグループだけ・ほかの役は社内のグループだけ
+    const group =
+      role === GUEST
+        ? { scope: null, guestGroup: String(a.input["guest_group_id"]) }
+        : { scope: String(a.input["scope_id"]), guestGroup: null };
     const rawMessage = a.input["message"];
     const message = typeof rawMessage === "string" && rawMessage !== "" ? rawMessage : null;
     if (raw.length > INVITE_MAX) return invalid("E-INV-012", [detail("E-INV-012", "emails")]);
@@ -254,7 +283,7 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
     const tokens = emails.map(() => randomBytes(TOKEN_BYTES).toString("base64url"));
     let stored: { rows: Created[]; facts: Facts };
     try {
-      stored = await store(a, emails, tokens, scope, role, message);
+      stored = await store(a, emails, tokens, group, role, message);
     } catch (e) {
       return refused(e);
     }

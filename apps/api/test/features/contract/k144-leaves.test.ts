@@ -95,7 +95,7 @@ const stops = async (t: Tmp, ...words: string[]) => {
 };
 
 // ---- 本体の字から拾う物（本物の置き場を読むときの本体の行と体）
-const UUID_ROW = /\["(K144-API-\d{3})",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]/g;
+const UUID_ROW = /\["(K144-API-\d{3,4})",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]/g;
 const rowsIn = (text: string): K144UuidCase[] =>
   [...text.matchAll(UUID_ROW)].map((m) => [m[1]!, m[2]!, m[3] as "path" | "query", m[4]!] as const);
 const bodyText = () => readFileSync(BODY, "utf8");
@@ -284,14 +284,14 @@ describe("K-378 ② 置き場の決まりに合わない物は、黙って飛ば
     await stops(place({ "K-9.ts": `${OK}export const extra = 1;\n` }), "K-9.ts", "extra");
   });
 
-  it("K378-KL-010 行の形：4 つの字でない・道か問い合わせかが path／query でない・行 ID が K144-API-<3 けた> でない、は止める（文にファイルの名前）", async () => {
+  it("K378-KL-010 行の形：4 つの字でない・道か問い合わせかが path／query でない・行 ID が K144-API-<3 か 4 けた> でない、は止める（文にファイルの名前）", async () => {
     const bad: Record<string, string> = {
       "3 つしか無い": '    ["K144-API-841", "opC", "path"],',
       "5 つ在る": '    ["K144-API-841", "opC", "path", "id", "x"],',
       "path でも query でもない": '    ["K144-API-841", "opC", "body", "id"],',
       値の名前が字でない: '    ["K144-API-841", "opC", "path", 5],',
       "行 ID が 2 けた": '    ["K144-API-84", "opC", "path", "id"],',
-      "行 ID が 4 けた": '    ["K144-API-8411", "opC", "path", "id"],',
+      "行 ID が 5 けた": '    ["K144-API-84111", "opC", "path", "id"],',
       "行 ID の頭が違う": '    ["K145-API-841", "opC", "path", "id"],',
     };
     for (const [why, line] of Object.entries(bad)) {
@@ -301,7 +301,7 @@ describe("K-378 ② 置き場の決まりに合わない物は、黙って飛ば
     }
   });
 
-  it("K378-KL-011 行は字のまま書く：字から拾った行（契約の形の検査 K144-SHAPE-017 と同じ拾い方）と、動く行が同じでなければ止める（組み立てた行・注にした行）。字のまま書いた行は読める", async () => {
+  it("K378-KL-011 行は字のまま書く：字から拾った行（契約の形の検査 K144-SHAPE-017 と同じ拾い方）と、動く行が同じでなければ止める（組み立てた行・注にした行）。字のまま書いた行は読める（行 ID が 4 けたでも・K-906 の 1206・K-907 の 1207）", async () => {
     const built =
       'const id = "K144-API-" + "851";\nexport const leaf = {\n  UUID_PARAM_CASES: [[id, "opD", "path", "id"]],\n};\n';
     await stops(place({ "K-9.ts": built }), "K-9.ts");
@@ -309,12 +309,12 @@ describe("K-378 ② 置き場の決まりに合わない物は、黙って飛ば
     await stops(place({ "K-9.ts": commented }), "K-9.ts");
     const plain = await read(
       place({
-        "K-9.ts": leaf(rows(`${row(854, "opD")} // K-9（行の後ろの注）`, row(855, "opE", "query", "ticket_id"))),
+        "K-9.ts": leaf(rows(`${row(854, "opD")} // K-9（行の後ろの注）`, row(1855, "opE", "query", "ticket_id"))),
       }),
     );
     expect(plain.UUID_PARAM_CASES).toEqual([
       ["K144-API-854", "opD", "path", "id"],
-      ["K144-API-855", "opE", "query", "ticket_id"],
+      ["K144-API-1855", "opE", "query", "ticket_id"],
     ]);
   });
 

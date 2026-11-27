@@ -30,15 +30,11 @@ const LABELS = [
   "実行の記録を見る",
   "消す",
 ];
-/** 押せない 6 つ（名前は字の頭で引く。「種別を変える」「ひな形にする」は下に補足の字がつく） */
-const INERT = [
-  /^ほかのグループへ移す/,
-  /^種別を変える/,
-  /^ひな形にする/,
-  /^リンクをコピー/,
-  /^実行の記録を見る/,
-  /^消す/,
-];
+/** 押せない 5 つ（名前は字の頭で引く。「種別を変える」「ひな形にする」は下に補足の字がつく）。
+ *  「消す」は段 8 の K-590 が DetailMore に onDelete を渡して押せる項目にした（K-590 が carry して替えた・2026-11-27）ので、ここに入れない */
+const INERT = [/^ほかのグループへ移す/, /^種別を変える/, /^ひな形にする/, /^リンクをコピー/, /^実行の記録を見る/];
+/** 押せる 3 つ（「複製する」「版と差分を見る」は K-458・「消す」は K-590） */
+const USABLE = ["複製する", "版と差分を見る", "消す"];
 
 const more = (p: Page) => p.getByRole("button", { name: "ほかの操作", exact: true });
 const menu = (p: Page) => p.getByRole("menu");
@@ -85,14 +81,16 @@ test("K458-UI-001 入口：詳細の頭の「…」（名前「ほかの操作�
   expect(post.posts).toEqual([]);
 });
 
-test("K458-UI-002 対象の状態：使えるのは「複製する」と「版と差分を見る」の 2 つだけ。ほかの 6 つは aria-disabled・薄さ 0.55・title「まだ使えません」で、隠さずに出る。⌘D・⌘L の字と「準備中」の字は出ない（動かないキーの字を出さない・D-150.25）", async ({
+test("K458-UI-002 対象の状態：使えるのは「複製する」「版と差分を見る」「消す」の 3 つ（「消す」は段 8 の K-590 が onDelete を渡して押せる）。ほかの 5 つは aria-disabled・薄さ 0.55・title「まだ使えません」で、隠さずに出る。⌘D・⌘L の字と「準備中」の字は出ない（動かないキーの字を出さない・D-150.25）", async ({
   page,
 }) => {
   await setupMore(page);
   await openDetail(page);
   await openMenu(page);
-  for (const name of ["複製する", "版と差分を見る"]) {
+  for (const name of USABLE) {
+    await expect(item(page, name), name).toHaveCount(1);
     await expect(item(page, name), name).not.toHaveAttribute("aria-disabled", "true");
+    expect(await opacityOf(item(page, name)), `${name} の薄さ`).toBeCloseTo(1, 3);
   }
   for (const re of INERT) {
     const it = item(page, re);
@@ -100,12 +98,12 @@ test("K458-UI-002 対象の状態：使えるのは「複製する」と「版�
     await expect(it, String(re)).toHaveAttribute("aria-disabled", "true");
     expect(await opacityOf(it), `${re} の薄さ`).toBeCloseTo(0.55, 3);
   }
-  await expect(menu(page).locator(`[title="${INERT_TITLE}"]`)).toHaveCount(6);
+  await expect(menu(page).locator(`[title="${INERT_TITLE}"]`)).toHaveCount(5);
   await expect(menu(page)).not.toContainText("⌘");
   await expect(menu(page)).not.toContainText("準備中");
 });
 
-test("K458-UI-003 操作の揺れ：押せない 6 つを 1 つずつ押しても、Enter を押しても、何も起きない（小窓は開かず・メニューは開いたまま・道は変わらず・口は 1 回も呼ばれない）", async ({
+test("K458-UI-003 操作の揺れ：押せない 5 つ（「消す」は K-590 で押せる物になったので外す。押したときの動きは K590-UI-001・002 が見る）を 1 つずつ押しても、Enter を押しても、何も起きない（小窓は開かず・メニューは開いたまま・道は変わらず・口は 1 回も呼ばれない）", async ({
   page,
 }) => {
   const { v, post } = await setupMore(page);
@@ -371,7 +369,9 @@ const M_PAIRS = mk([
     ["width", "height", "x", "background-color", "border-top-color", "border-top-left-radius"],
   ],
   ["item", ".k-f4-more-item", ["width", "height", "x", "background-color", "texts"]],
-  ["inert", ".k-f4-more-item[data-disabled]", ["opacity", "texts"]],
+  // 押せない形の組は「消す」を除いた 5 つで比べる：モック f4-more-menu（K-458 の下絵）は onDelete を渡さないので「消す」が押せない形のまま、
+  // 本番は K-590 が onDelete を渡して押せる。「消す」の字と色は danger の組、箱の幅と高さは item の組で比べ続ける（K-590 が carry して替えた）
+  ["inert", ".k-f4-more-item[data-disabled]:not(:has(.k-f4-more-danger))", ["opacity", "texts"]],
   ["label", ".k-f4-more-main > span", TXT],
   ["sub", ".k-f4-more-main small", TXT],
   ["danger", ".k-f4-more-danger", ["color", "texts"]],
@@ -386,7 +386,7 @@ async function driveMenu(page: Page, width: number): Promise<void> {
   await openMenu(page);
 }
 
-test("K458-UI-015 見た目：モック f4-more-menu と本番の同じ状態を幅 375・768・1440 で比べる：「…」の箱・開いた一覧の箱・項目の幅と高さ・項目の字と補足の字・押せない項目の薄さ・「消す」の色・区切り線の値が同じ（px は ±2）", async ({
+test("K458-UI-015 見た目：モック f4-more-menu と本番の同じ状態を幅 375・768・1440 で比べる：「…」の箱・開いた一覧の箱・項目の幅と高さ・項目の字と補足の字・押せない項目の薄さ（本番で押せる「消す」を除いた 5 つ）・「消す」の色・区切り線の値が同じ（px は ±2）", async ({
   browser,
 }) => {
   test.setTimeout(180_000);

@@ -6,6 +6,7 @@
 //     ・D-130.2 DB の決まりに合わず断るときの文は「入力内容を確認してください」（2 層目・22P02）
 //     ・D-130.4 人が自由に書く欄（会話の名前・記憶・一言・指示）を黙って切らない
 //   K-62 が消す口（/bridge/take・finish・progress・control・tool）はここでは触らない
+// K-358：預けたログイン情報の前の道すじ（/vault/credentials・/bridge/code・/bridge/credentials/*）を消したので、その行を外した（id の形の確かめは契約の入口が持つ・K354-API-013・K355-API-024）
 import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { request as httpRequest } from "node:http";
@@ -74,8 +75,6 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", (id) => `/agent/artifacts/${id}/versions`, { text: "x" }],
       ["POST", (id) => `/agent/artifacts/${id}/revert`, { version: 1 }],
       ["GET", (id) => `/agent/artifacts/${id}/download`, undefined],
-      ["POST", (id) => `/vault/credentials/${id}/login-check`, {}],
-      ["POST", (id) => `/vault/credentials/${id}/answer`, { request_id: "r1", code: "123456" }],
     ];
     for (const [method, path, body] of routes)
       for (const bad of BAD_PATH_IDS) {
@@ -99,7 +98,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
     }).toEqual(before);
   }, 120_000);
 
-  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／bridge-revoke の session_id／undo の memory_id／send の target_scope_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-135.4・k145_pending_decisions.test.ts）", async () => {
+  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／undo の memory_id／send の target_scope_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-135.4・k145_pending_decisions.test.ts）", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
     const conv = await newConversation(r.H);
@@ -112,7 +111,6 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", "/agent/resume", "job_id", (bad) => ({ job_id: bad, how: "continue" })],
       ["POST", "/agent/new", "conversation_id", (bad) => ({ conversation_id: bad })],
       ["POST", "/agent/answer", "job_id", (bad) => ({ job_id: bad, request_id: "r1", allow: true })],
-      ["POST", "/agent/bridge-revoke", "session_id", (bad) => ({ session_id: bad })],
       ["POST", "/agent/stop", "job_id", (bad) => ({ job_id: bad })],
       ["POST", "/agent/steer", "job_id", (bad) => ({ job_id: bad, text: "直して" })],
       ["POST", "/agent/answer2", "job_id", (bad) => ({ job_id: bad, request_id: "r1", allow: true })],
@@ -120,13 +118,6 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", "/agent/artifacts", "message_id", (bad) => ({ message_id: bad, text: "# 表\n中身" })],
       ["POST", "/onboard/testrun/cancel", "run_id", (bad) => ({ run_id: bad })],
       ["POST", "/onboard/golive/pause", "employee_id", (bad) => ({ employee_id: bad, paused: true })],
-      // 資格情報を預ける口の service_id（確かめ無しで credentials.service_id〔uuid の列〕へ書いていた・精査 R 回 1 #1）
-      [
-        "POST",
-        "/vault/credentials",
-        "service_id",
-        (bad) => ({ service_name: "発注ナビ", login: "me@example.com", password: "pw-k145-123", service_id: bad }),
-      ],
     ];
     const creds = await count("select count(*) as n from credentials where owner_member_id = $1", [r.member]);
     // 預かり先（関門 C8・vault）にも書かない：形の確かめは d.secrets.store より前（store も store_failed も証跡が増えない・精査 R 回 1 の気づき）
@@ -193,7 +184,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
 });
 
 describe("K-145 PC の口（x-bridge-session）の id も同じ部品で確かめる", () => {
-  it("K145-API-004 ask・answer・partial・steers・answer2・code・check-result の job_id、entries の conversation_id・job_id、attachment の job_id・attachment_id、credentials/resolve の job_id・credential_id が形違いなら 422・その欄。出来事・証跡は増えない（形違いの id と印の順は K145-API-018）", async () => {
+  it("K145-API-004 ask・answer・partial・steers・answer2 の job_id、entries の conversation_id・job_id、attachment の job_id・attachment_id が形違いなら 422・その欄。出来事・証跡は増えない（形違いの id と印の順は K145-API-018）", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
     const events = await eventsOf(job.job_id);
@@ -204,14 +195,10 @@ describe("K-145 PC の口（x-bridge-session）の id も同じ部品で確か�
       ["/bridge/partial", "job_id", (bad) => ({ job_id: bad, text: "途中" })],
       ["/bridge/steers", "job_id", (bad) => ({ job_id: bad })],
       ["/bridge/answer2", "job_id", (bad) => ({ job_id: bad, request_id: "r1" })],
-      ["/bridge/code", "job_id", (bad) => ({ job_id: bad, request_id: "r1" })],
-      ["/bridge/credentials/check-result", "job_id", (bad) => ({ job_id: bad, state: "ok" })],
       ["/bridge/entries", "conversation_id", (bad) => ({ conversation_id: bad, entries: [] })],
       ["/bridge/entries", "job_id", (bad) => ({ conversation_id: job.conversation_id, job_id: bad, entries: [] })],
       ["/bridge/attachment", "job_id", (bad) => ({ job_id: bad, attachment_id: randomUUID() })],
       ["/bridge/attachment", "attachment_id", (bad) => ({ job_id: job.job_id, attachment_id: bad })],
-      ["/bridge/credentials/resolve", "job_id", (bad) => ({ job_id: bad, credential_id: randomUUID() })],
-      ["/bridge/credentials/resolve", "credential_id", (bad) => ({ job_id: job.job_id, credential_id: bad })],
     ];
     for (const [path, field, body] of cases)
       for (const bad of BAD_IDS)
@@ -238,7 +225,9 @@ describe("K-145 PC の口（x-bridge-session）の id も同じ部品で確か�
     }
     // 外した直後（0 秒）
     expect((await post("/bridge/mirror-targets", {}, r.B)).status).toBe(200);
-    expect((await post("/agent/bridge-revoke", { session_id: r.sid }, r.H)).status).toBe(200);
+    // 外す前の道すじ（画面の auth-ext の外す口）は K-367 で消した（契約の口 revokeMyDevice は K-362 の試験が見る）。ここでは行を直に外す。
+    //   理由は前の口が書いていた値（logout）のまま：新しい理由の値（K-362 の migration が足す）に依らず、その migration の前の木でも後の木でも通る
+    await admin.query("update sessions set revoked_at = now(), revoke_reason_id = 'logout' where id = $1", [r.sid]);
     const gone = await post("/bridge/mirror-targets", {}, r.B);
     expect(gone.status).toBe(410);
     expect(await count("select count(*) as n from bridge_job_events where tenant_id = $1", [r.tenant])).toBe(events);
@@ -340,7 +329,6 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       ["POST", "/agent/say", { text: "x", conversation_id: bad }],
       ["POST", "/agent/answer", { job_id: bad, request_id: "r1", allow: true }],
       ["GET", `/agent/state?conversation_id=${encodeURIComponent(bad)}`, undefined],
-      ["POST", "/vault/credentials", { login: "a", password: "b", service_id: bad }],
     ] as const) {
       const x = await req(method, path, body);
       expect(x.status, `${method} ${path}`).toBe(401);
@@ -352,7 +340,6 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       ["/bridge/ask", (id) => ({ job_id: id, request_id: "r1", tool: "Bash", summary: "ls" })],
       ["/bridge/partial", (id) => ({ job_id: id, text: "途中" })],
       ["/bridge/answer2", (id) => ({ job_id: id, request_id: "r1" })],
-      ["/bridge/credentials/resolve", (id) => ({ job_id: id, credential_id: randomUUID() })],
     ];
     for (const [path, body] of pcCases) {
       expect((await post(path, body(bad))).status, `${path} 頭なし`).toBe(401);
@@ -360,7 +347,9 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       expect((await post(path, body(bad), r.B)).status, `${path} 生きている印`).toBe(422);
     }
     // 外した印（形は合う）→ 形違いの id でも 410（Bridge は印を捨てる）
-    expect((await post("/agent/bridge-revoke", { session_id: r.sid }, r.H)).status).toBe(200);
+    // 外す前の道すじ（画面の auth-ext の外す口）は K-367 で消した（契約の口 revokeMyDevice は K-362 の試験が見る）。ここでは行を直に外す。
+    //   理由は前の口が書いていた値（logout）のまま：新しい理由の値（K-362 の migration が足す）に依らず、その migration の前の木でも後の木でも通る
+    await admin.query("update sessions set revoked_at = now(), revoke_reason_id = 'logout' where id = $1", [r.sid]);
     for (const [path, body] of pcCases) {
       const x = await post(path, body(bad), r.B);
       expect(x.status, `${path} 外した印`).toBe(410);

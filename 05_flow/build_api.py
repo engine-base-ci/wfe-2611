@@ -99,9 +99,10 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["implementation_path"] = f"apps/api/src/routes/{tname}.ts::" + (e["operation_id"] if e.get("operation_id") else f"{m.lower()}{''.join(w.capitalize() for w in tname.split('_'))}{'ById' if ':id' in p else ''}")
     if e.get("operation_id") in getattr(_sa, "PERMS", {}):   # 誰が呼べるか（ZT1）
         _pm = _sa.PERMS[e["operation_id"]]; e["permission"] = {"who": _pm[0], "scope": _pm[1], "step_up": _pm[2]}
-    e["path_params"] = params; e["returns_list"] = (m == "GET" and (e["operation_id"].startswith(("list", "search")) or e["operation_id"] in getattr(_sa, "LIST_OPS", set()))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
+    e["path_params"] = params; e["returns_list"] = (m == "GET" and (e["operation_id"].startswith(("list", "search")) or e["operation_id"] in getattr(_sa, "LIST_OPS", set())) and e["operation_id"] not in getattr(_sa, "OBJECT_OPS", set())) if e.get("operation_id") else (m == "GET" and ":id" not in p)
     e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH", "PUT") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
-    e["outputs_2xx"] = {"status": getattr(_sa, "SUCCESS_STATUS", {}).get(e.get("operation_id"), 201 if m == "POST" else 200), "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if e['returns_list'] else ''}, meta?: {{ cursor, limit, total }} }}"}
+    _many = e["returns_list"] or e.get("operation_id") in getattr(_sa, "LIST_RESULT_OPS", {})   # 一覧でないのに答えが並びの口（K-705）
+    e["outputs_2xx"] = {"status": getattr(_sa, "SUCCESS_STATUS", {}).get(e.get("operation_id"), 201 if m == "POST" else 200), "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if _many else ''}, meta?: {{ cursor, limit, total }} }}"}
     _ld = getattr(_sa, "LIST_DETAILS", {}).get(e.get("operation_id"))   # 一覧の口の細目（K-92）：問い合わせと答えの meta をその口の形に
     if _ld:
         e["inputs"]["query"] = list(_sa.QUERIES.get(e["operation_id"], ["scope_id"])) + ["cursor", "limit"] + (["sort"] if _ld.get("sort", True) else [])
@@ -299,11 +300,13 @@ for e in endpoints:
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     _in = _in_of.get(op["operationId"]) or getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH", "PUT"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
-    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
+    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if (e["returns_list"] or op["operationId"] in getattr(_sa, "LIST_RESULT_OPS", {})) else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
     if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"]["application/octet-stream"] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
+    for _st in getattr(_sa, "ALSO_2XX", {}).get(op["operationId"], []):   # 同じ口がもう 1 つ返す成功の番号（K-422：リンクの参加は 202）。形は同じ答えの型
+        op["responses"].setdefault(str(_st), {**ok, "description": "受け付けた（まだ決まっていない）"})
     _unx = getattr(_sa, "UNEXPRESSIBLE_422", {}).get(op["operationId"])   # 契約に書けない値の決まり（K-144 ㉑）：口の振る舞いのまま 422
     if _unx:
         if "422" not in op["responses"]: raise SystemExit(f"{op['operationId']} に 422 が無いのに UNEXPRESSIBLE_422 がある")

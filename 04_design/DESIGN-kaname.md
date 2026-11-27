@@ -989,7 +989,7 @@ components:
     gap: "{spacing.sm}"
   pc-note-mark:         # 共用の PC の注意の「!」（濃い橙）
     textColor: "{state.on-warning-container}"
-  pc-wait:              # 足の「アプリからの返事を待っています…」（12px・灰・点との間 6）
+  pc-wait:              # コードの段の下の「アプリからの返事を待っています…」（足の帯には置かない・answer=8d3ada64dcbd）（12px・灰・点との間 6）
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
     gap: "6px"
@@ -1495,6 +1495,48 @@ components:
     textColor: "{state.progress}"
   f4d-sample-mark:      # 下絵の本文の見本の背景の色（同上。正本の注意の淡い面から選ぶ）
     backgroundColor: "{state.warning-container}"
+  notice-panel:         # ベルから重なって開くお知らせの箱の幅（段 8・f7-bell-*・420）
+    width: "420px"
+  search-panel:         # 探す箱の幅と上端（段 8・f7-search-*・幅 580・帯の下に重ねる上端 144）
+    width: "580px"
+    top: "144px"
+  notice-avatar:        # お知らせの行の丸い印の大きさ（段 8・22）
+    width: "22px"
+    height: "22px"
+  more-menu-min:        # 詳細の「…」の箱の幅の下限（段 8・min-width 220）
+    width: "220px"
+  calendar-day:         # カレンダーの日のセルの高さ（段 8・f7-calendar・112）
+    height: "112px"
+  calendar-day-compact: # スマホのカレンダーの日のセルの高さ（段 8・幅 767 以下・56）
+    height: "56px"
+  calendar-tray:        # カレンダーの期限なしの置き場の重なる箱の幅（段 8・384）
+    width: "384px"
+  f7-dot:               # 種別の色の小さな丸（段 8・カレンダー・6）
+    width: "6px"
+    height: "6px"
+  gantt-body:           # ガントの本体の高さ（段 8・f7-gantt・624）
+    height: "624px"
+  gantt-row:            # ガントの行の高さ（段 8・svar-gantt の cellHeight・36）
+    height: "36px"
+  gantt-scale:          # ガントの目盛りの高さ（段 8・svar-gantt の scaleHeight・28）
+    height: "28px"
+  gantt-cell-day:       # ガントの日のセルの幅（段 8・32）
+    width: "32px"
+  gantt-cell-week:      # ガントの週のセルの幅と左の表の列の幅（段 8・72）
+    width: "72px"
+  gantt-cell-month:     # ガントの月のセルの幅（段 8・96）
+    width: "96px"
+  overview-phone:       # スマホの概要の頁の高さの元（画面の高さ。上の帯と下のタブを引いて使う・段 8）
+    height: "100dvh"
+  saved-nav-group:      # 保存した検索条件の並びの頭のグループの行（段 8・外枠のグループの行と同じ：高さ 30・左右 10）
+    height: "30px"
+    padding: "0 10px"
+  saved-nav-mark:       # 保存した検索条件の並びのグループの札（段 8・外枠のグループの札と同じ 18 の四角）
+    width: "18px"
+    height: "18px"
+  notice-sheet-back:    # スマホのお知らせの頁の「戻る」（段 8・外枠の帯のボタンと同じ 36 の四角）
+    width: "36px"
+    height: "36px"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:
@@ -1577,9 +1619,9 @@ dark:
 
 **「Kaname ── バラバラのものが、一点に集まる」**（製品名の表記は Kaname だけ。D-011.4）
 
-Kaname は、仕事を「チケット」に集め、人と、その人の分身（「高本のAI」のように名前つきで呼ぶ AI）がいっしょに進める場所（D-125・D-128.38）。営業も経理も取引先とのやり取りも、人も AI も、一つのチケットとワークスペースの決まりに集まる。扇の要 ── 抜けると全部バラバラになる中心の金具 ── がブランドの核である。
+Kaname は、仕事を「チケット」に集め、人と、その人の分身（「高本のAI」のように名前つきで呼ぶ AI）がいっしょに進める場所（D-125・D-128.38）。営業も経理もゲストとのやり取りも、人も AI も、一つのチケットとワークスペースの決まりに集まる。扇の要 ── 抜けると全部バラバラになる中心の金具 ── がブランドの核である。
 
-このデザインシステムは **業務データを長時間見るための情報設計**として組む。読み物ではなく、チケット・承認待ち・取引先・ナレッジが密度高く並ぶ画面が主戦場になる（土台は Backlog の作り・D-128.7）。したがって装飾を削り、余白と罫線で構造を出し、数値と状態が一目で読めることを最優先する。
+このデザインシステムは **業務データを長時間見るための情報設計**として組む。読み物ではなく、チケット・承認待ち・届いた依頼・ナレッジが密度高く並ぶ画面が主戦場になる（土台は Backlog の作り・D-128.7）。したがって装飾を削り、余白と罫線で構造を出し、数値と状態が一目で読めることを最優先する。
 
 姉妹製品 Atelier（工房の静謐・暖かい生成り紙）とは意図的に差別化する。Atelier が「作る場所」なら Kaname は「束ねる中心」であり、扱うものも読み物から数値へ移る。ただし ENGINE BASE の共通作法 ── **絵文字を使わず Lucide で統一する / Material Design 3 の役割ベース命名 / 日本語主体** ── は揃える。
 
@@ -1645,6 +1687,28 @@ Material Design 3 の役割ベース命名を採用する。加えて Kaname 固
    → 同じ色相でも、面積と形が違うので読み分けられる
 ```
 
+### 見え方の色の段（F7）
+
+段 8 の見え方（概要・カレンダー・ガント）と期限の印が共有する色の段。新しい色は足さず、既存の色トークンを 3 つずつ組にする。部品は `data-f7-tone="<段>"` を付け、`apps/web/features/F7/overview/tones.css`（この表のとおりの CSS）が `--k-f7-tone`（濃い色）・`--k-f7-tone-soft`（淡い面）・`--k-f7-tone-ink`（淡い面の上の字）を与える。
+
+| 段 | 濃い色 | 淡い面 | 淡い面の上の字 |
+|---|---|---|---|
+| `neutral` | `--k-neutral-strong` | `--k-surface-variant` | `--k-on-surface-variant` |
+| `indigo` | `--k-d-indigo` | `--k-primary-container` | `--k-on-primary-container` |
+| `tertiary` | `--k-tertiary` | `--k-tertiary-container` | `--k-on-tertiary-container` |
+| `warning` | `--k-st-warning` | `--k-st-warning-container` | `--k-st-on-warning-container` |
+| `progress` | `--k-st-progress` | `--k-st-progress-container` | `--k-st-on-progress-container` |
+| `amber` | `--k-d-amber` | `--k-st-warning-container` | `--k-st-on-warning-container` |
+| `success` | `--k-st-success` | `--k-st-success-container` | `--k-st-on-success-container` |
+| `danger` | `--k-st-danger` | `--k-st-danger-container` | `--k-st-on-danger-container` |
+| `hold` | `--k-on-surface-variant` | `--k-surface-variant` | `--k-on-surface-variant` |
+| `teal` | `--k-d-teal` | `--k-secondary-container` | `--k-on-secondary-container` |
+| `teal-light` | `--k-d-teal-light` | `--k-secondary-container` | `--k-on-secondary-container` |
+| `lavender` | `--k-d-lavender` | `--k-ai-container` | `--k-on-tertiary-container` |
+| `plum` | `--k-d-plum` | `--k-ai-container` | `--k-on-tertiary-container` |
+| `coral` | `--k-d-coral` | `--k-st-danger-container` | `--k-st-on-danger-container` |
+| `sage` | `--k-d-sage` | `--k-st-success-container` | `--k-st-on-success-container` |
+
 ### Surface & Neutral
 
 サイドバーは `#EEF0F4`（本文 `surface` より半段暗い中間色）に右の罫線 1 本。文字は `on-surface-variant`、選択中は白い面＋罫線で `on-surface`。紺（primary）の面は使わない（D-072）。
@@ -1698,7 +1762,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 
 | 段 | 大きさ | 使う所 |
 |---|---|---|
-| `h1` | 20px | ページの題（チケット・ナレッジ・取引先） |
+| `h1` | 20px | ページの題（チケット・ナレッジ・届いた依頼） |
 | `h2` | 18px | 管理の画面の題・数の札の数字 |
 | `h3` | 15px | 小窓の題・カードの題 |
 | `page-title` | 18px | ページの型の見出しの帯の h1（行 1.6・K-217） |
@@ -1730,7 +1794,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 ```
 
 - **バーとパネルは端から端まで**伸ばす（上下とも画面いっぱい。高本さんの指示 2026-11-02）。中身だけを真ん中に寄せない
-- **左のバー**：ワークスペース名と切り替え・＋ チケットを作る・チケット／承認待ち／高本のAI／ナレッジ／取引先・グループ・下に ワークスペースの管理 と PC の状態。開閉できる（畳むと 56px のアイコン）
+- **左のバー**：ワークスペース名と切り替え・＋ チケットを作る・チケット／承認待ち／高本のAI／ナレッジ／届いた依頼・グループ・下に ワークスペースの管理 と PC の状態。開閉できる（畳むと 56px のアイコン）
 - **上の帯**：いまの場所（パンくず）・探す・知らせ（ベル）・自分のメニュー（顔）。左右で別々の帯を持たない
   - 幅 767 以下も上の帯を出す（会社の印と名前・探す・知らせ・自分のアイコン。いまの場所は出さない・D-147）。探すは虫眼鏡のボタンで、押すと帯の幅いっぱいに開く。知らせの鈴は帯の 1 つだけで、本文の見出しの右には置かない。自分のメニューは帯の自分のアイコンから開く（下のタブの「メニュー」の引き出しには置かない）
 - **2 つめのパネル**（`kn-sub`）：その場所の中の行き先。灰の面（`line-soft`）に、いま開いている項目だけ白いカードが浮く。**中身が無いときは出さない**（D-128.66）
@@ -1741,7 +1805,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 
 | もの | 値 |
 |---|---|
-| 一覧の 1 行 | 36px（チケットの一覧）／ 48px（2 行の名前を持つ表：取引先・運営） |
+| 一覧の 1 行 | 36px（チケットの一覧）／ 48px（2 行の名前を持つ表：届いた依頼・運営） |
 | 左のバーの項目 | 30〜32px |
 | 本文 | 13px |
 | 数の札 | 数字 18px・説明 11px |
@@ -1755,7 +1819,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 | 768〜1023px | 56px | 右のパネルは重ねて開く |
 | 767px 以下 | **下のタブ**：チケット・承認・＋作る・AI・メニュー（D-128.12） | 2 つめのパネルは上で横に並ぶ |
 
-**スマホで機能が落ちてはならない。** 承認と会話は外出先で使われる中心機能。書く・直すの重い作業は PC に寄せてよい（スマホのナレッジ・取引先は 読む・探す・さばく まで）。**横スクロールは `document.scrollWidth - clientWidth` で数値検証する。**
+**スマホで機能が落ちてはならない。** 承認と会話は外出先で使われる中心機能。書く・直すの重い作業は PC に寄せてよい（スマホのナレッジ・届いた依頼は 読む・探す・さばく まで）。**横スクロールは `document.scrollWidth - clientWidth` で数値検証する。**
 
 ## Elevation & Depth
 

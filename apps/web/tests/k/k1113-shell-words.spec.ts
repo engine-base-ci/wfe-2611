@@ -39,7 +39,7 @@ async function openMock(page: Page, id: string, width: number) {
 const leftNav = (page: Page) => page.getByRole("navigation", { name: "メニュー", exact: true });
 const canvasFiles = () => readdirSync(CANVAS).filter((f) => f.endsWith(".dc.html"));
 
-test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール）：項目は チケット・承認待ち・高本のAI・ナレッジ・ワークスペースの管理 の 5 つで、「取引先」は押せない形でも無い（字・title・読み上げのどれにも無い）。幅 375 の引き出し「メニュー（全部）」にも無い", async ({
+test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール）：項目は チケット・承認待ち・高本のAI・ナレッジ・届いた依頼・ワークスペースの管理 の 6 つで（届いた依頼は段 12 の K-870 が足す）、「取引先」は押せない形でも無い（字・title・読み上げのどれにも無い）。幅 375 の引き出し「メニュー（全部）」にも無い", async ({
   page,
 }) => {
   await guard(page);
@@ -50,7 +50,14 @@ test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール�
     const titles = await items.evaluateAll((es) =>
       es.map((e) => (e.getAttribute("title") ?? "").replace(/（準備中）$/, "")),
     );
-    expect(titles, `幅 ${w}`).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"]);
+    expect(titles, `幅 ${w}`).toEqual([
+      "チケット",
+      "承認待ち",
+      "高本のAI",
+      "ナレッジ",
+      "届いた依頼",
+      "ワークスペースの管理",
+    ]);
     await expect(nav.getByRole("link", { name: /取引先/ }), `幅 ${w}`).toHaveCount(0);
     expect(await nav.evaluate((e) => e.outerHTML), `幅 ${w}`).not.toContain("取引先");
   }
