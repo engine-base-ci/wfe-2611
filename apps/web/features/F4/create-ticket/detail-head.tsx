@@ -1,12 +1,15 @@
 "use client";
 // チケットの詳細の頭（K-226・キャンバス TicketDetail）：頭の行（種別の札・番号・番号をコピー・作成・開始日・期限・段の札）と
-//   題名の行（h1・右に 複製・〈見ている人〉のAI と話す・ほかの操作）。
+//   題名の行（h1・右に 複製・版と差分・AI に任せる・完了にする・ほかの操作＝下絵 v2・K-571）。
 //   本当の値が無い字は空にする（「—」を出さない・作成者の名前は口が返さないので出さない）。
-//   複製・AI と話す・ほかの操作はまだ使えない：押せない形で出す（D-145.9）。番号のコピーは手元のクリップボードだけ
+//   複製・版と差分は入口の差し込み口（detail-entry-slots.tsx・中身は K-446・K-449）。ほかの操作は「…」のメニュー（detail-more/more-menu.tsx・K-458。slot の無い下絵の呼び手は押せない形のまま・D-145.9）。番号のコピーは手元のクリップボードだけ
 //   段の札は StagePill。詳細の本体は段 7 の差し込み口（F6.StageSlot）で包んだ札を stageSlot に渡す（K-380）
 import { Bot, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
+import { DetailMore } from "@/features/F4/detail-more/more-menu";
+import { DuplicateEntry, VersionsEntry } from "./detail-entry-slots";
+import type { SlotTicket } from "./detail-slots";
 
 const DAY_MS = 86_400_000;
 const JST_MS = 9 * 3_600_000;
@@ -158,8 +161,21 @@ export function DetailMeta({
   );
 }
 
-/** 題名の行。me は見ている人の名前（読めるまで AI と話すは出さない） */
-export function DetailTitle({ title, me }: { title: string; me: string }) {
+/** 題名の行（下絵 v2）。右に 複製・版と差分（入口の差し込み口）・acts（AI に任せる・完了にするの差し込み口）・ほかの操作。
+ *  slot が無い呼び手（段 7・段 9 の下絵 f6・f8）は前の並び（複製・〈名前〉のAI と話す・ほかの操作）のまま描く */
+export function DetailTitle({
+  title,
+  me,
+  slot,
+  acts,
+}: {
+  title: string;
+  me: string;
+  /** 差し込み口に渡す値（K-380）。本物の詳細は必ず渡す */
+  slot?: SlotTicket;
+  /** 題の行の「AI に任せる」「完了にする」の差し込み口（K-573・K-572） */
+  acts?: ReactNode;
+}) {
   return (
     <header className="k-page-head">
       <div className="k-detail-title">
@@ -168,16 +184,27 @@ export function DetailTitle({ title, me }: { title: string; me: string }) {
         </h1>
       </div>
       <div className="k-page-acts">
-        <InertButton>複製</InertButton>
-        {me ? (
-          <InertButton>
-            <Bot size={13} aria-hidden="true" />
-            {`${me}のAI と話す`}
-          </InertButton>
-        ) : null}
-        <InertButton label="ほかの操作" className="k-detail-more">
-          …
-        </InertButton>
+        {slot ? (
+          <>
+            <DuplicateEntry ticket={slot} />
+            <VersionsEntry ticket={slot} />
+            {acts}
+            <DetailMore ticket={slot} />
+          </>
+        ) : (
+          <>
+            <InertButton>複製</InertButton>
+            {me ? (
+              <InertButton>
+                <Bot size={13} aria-hidden="true" />
+                {`${me}のAI と話す`}
+              </InertButton>
+            ) : null}
+            <InertButton label="ほかの操作" className="k-detail-more">
+              …
+            </InertButton>
+          </>
+        )}
       </div>
     </header>
   );
