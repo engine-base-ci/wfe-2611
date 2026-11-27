@@ -2,7 +2,7 @@
 // 困ったとき・お知らせ・問い合わせ（段 13・領域 user・下絵）。値を受け取って描くだけ（口は呼ばない・欄は読むだけ・押す関数は props で受けるが下絵では渡さない）。
 //   画面：困ったとき・お知らせ（help）／お知らせ 1 件／問い合わせる小窓／問い合わせ 1 件のやり取り。
 //   帯・止められた画面・運営が見ている間の帯は status-parts.tsx。キャンバス MeHelp・EdInquiry・MeInquiry を写す。
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import {
   Badge,
   Button,
@@ -287,6 +287,15 @@ export interface AskFile {
   size: string;
   /** 大きすぎて断られた */
   tooBig?: boolean;
+  /** 付けられなかった理由の字（行に出す・送る体に入れない・K-953） */
+  error?: string;
+  /** 上げている途中（付け終わるまで「送る」を押せない・K-953） */
+  pending?: boolean;
+}
+/** 小窓の上の赤い箱（口が断った・K-953）。code は正本の番号 */
+export interface AskNotice {
+  code: string;
+  text: string;
 }
 export interface AskDialogProps {
   open?: boolean;
@@ -296,52 +305,171 @@ export interface AskDialogProps {
   files?: readonly AskFile[];
   withScreen?: boolean;
   errors?: { title?: string; body?: string };
+  /** 以下は本番の入れ物（K-953）が渡す。渡さなければ下絵の読むだけの形のまま */
+  onKind?: (v: string) => void;
+  onTitle?: (v: string) => void;
+  onBody?: (v: string) => void;
+  onWithScreen?: (v: boolean) => void;
+  onPickFiles?: (files: File[]) => void;
+  onSend?: () => void;
+  onCancel?: () => void;
+  /** 送る答えを待っている間・上げている間（「送る」を押せない） */
+  sending?: boolean;
+  notice?: AskNotice | null;
 }
 
 const KINDS = ["使い方", "うまく動かない", "お金・プラン", "ほか"].map((v) => ({ value: v, label: v }));
+/** 付けられる種類（画像・PDF・zip・D-156.26） */
+const ACCEPT = "image/png,image/jpeg,image/gif,image/webp,application/pdf,application/zip";
+const TOO_BIG = "大きすぎて付けられません（1 つ 10MB まで・5 つまで）";
 
-export function AskDialog({ open = true, kind, title, body, files = [], withScreen = true, errors }: AskDialogProps) {
+/** 何について：下絵と本番で同じ部品の Select（本番は onKind で選んだ値を受け取る） */
+function KindField({ kind, onKind }: { kind: string; onKind?: ((v: string) => void) | undefined }) {
+  return (
+    <Select
+      label="何について"
+      name="kind"
+      options={KINDS}
+      value={kind}
+      {...(onKind ? { onValueChange: (v: string | null) => v && onKind(v) } : {})}
+    />
+  );
+}
+
+function AskFileRow({ f }: { f: AskFile }) {
+  const why = f.error ?? (f.tooBig ? TOO_BIG : null);
+  return (
+    <li className="k-uh-file" data-bad={why ? "true" : undefined}>
+      <span className="k-uh-file-name">
+        {f.name}（{f.size}）
+      </span>
+      {why ? (
+        <span role="alert">{why}</span>
+      ) : f.pending ? (
+        <Badge tone="progress">付けている</Badge>
+      ) : (
+        <Badge tone="success">付いた</Badge>
+      )}
+    </li>
+  );
+}
+
+export function AskDialog({
+  open = true,
+  kind,
+  title,
+  body,
+  files = [],
+  withScreen = true,
+  errors,
+  onKind,
+  onTitle,
+  onBody,
+  onWithScreen,
+  onPickFiles,
+  onSend,
+  onCancel,
+  sending = false,
+  notice,
+}: AskDialogProps) {
+  const live = Boolean(onSend);
+  const picker = useRef<HTMLInputElement>(null);
+  const pickButton = (
+    <Button
+      variant="outlined"
+      size="sm"
+      {...(onPickFiles
+        ? { onClick: () => picker.current?.click() }
+        : { tabIndex: -1, "aria-disabled": "true" as const })}
+    >
+      ＋ ファイル・画面の写し
+    </Button>
+  );
   return (
     <Dialog
       open={open}
+      {...(onCancel ? { onOpenChange: (o: boolean) => (o ? undefined : onCancel()) } : {})}
       title="問い合わせる"
       subtitle="Kaname の運営に届く。返事はここと画面のお知らせに届く"
       actions={
         <>
-          <Button variant="outlined">やめる</Button>
-          <Button variant="primary">送る</Button>
+          <Button variant="outlined" {...(onCancel ? { onClick: onCancel } : {})}>
+            やめる
+          </Button>
+          <Button variant="primary" disabled={sending} {...(onSend ? { onClick: onSend } : {})}>
+            送る
+          </Button>
         </>
       }
     >
       <div className="k-uh-form">
-        <Select label="何について" name="kind" options={KINDS} value={kind} />
-        <TextField label="題" name="title" required defaultValue={title} readOnly error={errors?.title} />
-        <TextArea label="内容" name="body" required rows={4} defaultValue={body} readOnly error={errors?.body} />
+        {notice ? (
+          <div className="k-band-notice" data-tone="danger" role="alert" data-code={notice.code}>
+            {notice.text}
+          </div>
+        ) : null}
+        <KindField kind={kind} onKind={onKind} />
+        {live ? (
+          <>
+            <TextField
+              label="題"
+              name="title"
+              required
+              value={title}
+              onChange={(e) => onTitle?.(e.target.value)}
+              error={errors?.title}
+            />
+            <TextArea
+              label="内容"
+              name="body"
+              required
+              rows={4}
+              value={body}
+              onChange={(e) => onBody?.(e.target.value)}
+              error={errors?.body}
+            />
+          </>
+        ) : (
+          <>
+            <TextField label="題" name="title" required defaultValue={title} readOnly error={errors?.title} />
+            <TextArea label="内容" name="body" required rows={4} defaultValue={body} readOnly error={errors?.body} />
+          </>
+        )}
         <div className="k-uh-attach">
-          <Inert>
-            <Button variant="outlined" size="sm" tabIndex={-1} aria-disabled="true">
-              ＋ ファイル・画面の写し
-            </Button>
-          </Inert>
+          {onPickFiles ? (
+            <>
+              {pickButton}
+              <input
+                ref={picker}
+                type="file"
+                multiple
+                accept={ACCEPT}
+                hidden
+                onChange={(e) => {
+                  const picked = Array.from(e.target.files ?? []);
+                  e.target.value = "";
+                  if (picked.length) onPickFiles(picked);
+                }}
+              />
+            </>
+          ) : (
+            <Inert>{pickButton}</Inert>
+          )}
           {files.length ? (
             <ul className="k-uh-list" aria-label="付けたファイル">
-              {files.map((f) => (
-                <li key={f.name} className="k-uh-file" data-bad={f.tooBig ? "true" : undefined}>
-                  <span className="k-uh-file-name">
-                    {f.name}（{f.size}）
-                  </span>
-                  {f.tooBig ? (
-                    <span role="alert">大きすぎて付けられません（1 つ 10MB まで・5 つまで）</span>
-                  ) : (
-                    <Badge tone="success">付いた</Badge>
-                  )}
-                </li>
+              {files.map((f, i) => (
+                <AskFileRow key={`${i}-${f.name}`} f={f} />
               ))}
             </ul>
           ) : null}
         </div>
         <label className="k-uh-check">
-          <input type="checkbox" checked={withScreen} readOnly aria-describedby="uh-check-note" />
+          <input
+            type="checkbox"
+            checked={withScreen}
+            {...(onWithScreen ? { onChange: (e) => onWithScreen(e.target.checked) } : { readOnly: true })}
+            aria-describedby="uh-check-note"
+          />
           <span id="uh-check-note">
             <b>いま見ている画面の情報を付ける</b>
             画面の場所・時刻・ブラウザ・PC がつながっているか。チケットの中身や会話は付けない
@@ -363,6 +491,12 @@ export interface MessageView {
   text: string;
   attach?: string;
 }
+export type ThreadStateView = "waiting" | "replied" | "done";
+/** 口が断ったときの赤い箱（code は正本の番号） */
+export interface ThreadNotice {
+  code: string;
+  text: string;
+}
 export interface ThreadProps {
   title: string;
   kind: string;
@@ -370,23 +504,76 @@ export interface ThreadProps {
   messages: readonly MessageView[];
   done?: boolean;
   draft?: string;
+  /** 以下は本番の入れ物（K-1007）が渡す。渡さなければ下絵の読むだけの形のまま */
+  /** 見出しの札（done が優先。既定は「返事あり」） */
+  state?: ThreadStateView;
+  onDraft?: (v: string) => void;
+  onSend?: () => void;
+  onResolve?: () => void;
+  /** 書く答えを待っている間（「送る」「解決したので済みにする」を押せない） */
+  sending?: boolean;
+  /** 済みにする答えを待っている間（同上） */
+  resolving?: boolean;
+  /** 欄の下の赤字（空・長すぎる） */
+  replyError?: string | null;
+  /** 書く欄の上の赤い箱（書けなかった） */
+  notice?: ThreadNotice | null;
+  /** 見出しの下の赤い箱（済みにできなかった） */
+  resolveNotice?: ThreadNotice | null;
 }
 
-export function Thread({ title, kind, sentAt, messages, done, draft = "" }: ThreadProps) {
-  const head = done ? (
-    <Badge tone="neutral">済み</Badge>
-  ) : (
-    <>
-      <Badge tone="progress">返事あり</Badge>
-      <Button variant="outlined">解決したので済みにする</Button>
-    </>
+function NoticeLine({ n }: { n: ThreadNotice }) {
+  return (
+    <div className="k-band-notice" data-tone="danger" role="alert" data-code={n.code}>
+      {n.text}
+    </div>
   );
+}
+
+function ThreadBadge({ state }: { state: ThreadStateView }) {
+  if (state === "done") return <Badge tone="neutral">済み</Badge>;
+  if (state === "waiting") return <Badge tone="warning">返事を待っている</Badge>;
+  return <Badge tone="progress">返事あり</Badge>;
+}
+
+export function Thread({
+  title,
+  kind,
+  sentAt,
+  messages,
+  done,
+  draft = "",
+  state,
+  onDraft,
+  onSend,
+  onResolve,
+  sending = false,
+  resolving = false,
+  replyError,
+  notice,
+  resolveNotice,
+}: ThreadProps) {
+  const shown: ThreadStateView = done ? "done" : (state ?? "replied");
+  const busy = sending || resolving;
+  const head =
+    shown === "done" ? (
+      <ThreadBadge state="done" />
+    ) : (
+      <>
+        <ThreadBadge state={shown} />
+        <Button variant="outlined" disabled={busy} {...(onResolve ? { onClick: onResolve } : {})}>
+          解決したので済みにする
+        </Button>
+      </>
+    );
+  const label = shown === "done" ? "もう一度聞く" : "返事を書く";
   return (
     <PageBody labelledBy="thread-title">
       <PageHeader id="thread-title" title={title} sub={`${kind} ・ ${sentAt} に送った`} actions={head} />
       <div className="k-uh-thread-grid">
         <div className="k-uh-top">
-          {done ? (
+          {resolveNotice ? <NoticeLine n={resolveNotice} /> : null}
+          {shown === "done" ? (
             <Callout tone="info" title="済みにしました">
               あとから書き込むと、もう一度開きます。
             </Callout>
@@ -409,21 +596,36 @@ export function Thread({ title, kind, sentAt, messages, done, draft = "" }: Thre
             ))}
           </ul>
           <div className="k-uh-compose">
-            <TextArea
-              label={done ? "もう一度聞く" : "返事を書く"}
-              name="reply"
-              rows={3}
-              defaultValue={draft}
-              readOnly
-              description="返事は運営の受信箱に届く"
-            />
+            {notice ? <NoticeLine n={notice} /> : null}
+            {onDraft ? (
+              <TextArea
+                label={label}
+                name="reply"
+                rows={3}
+                value={draft}
+                onChange={(e) => onDraft(e.target.value)}
+                error={replyError}
+                description="返事は運営の受信箱に届く"
+              />
+            ) : (
+              <TextArea
+                label={label}
+                name="reply"
+                rows={3}
+                defaultValue={draft}
+                readOnly
+                description="返事は運営の受信箱に届く"
+              />
+            )}
             <div className="k-uh-compose-foot">
               <Inert>
                 <Button variant="outlined" size="sm" tabIndex={-1} aria-disabled="true">
                   ＋ ファイル
                 </Button>
               </Inert>
-              <Button variant="primary">{done ? "もう一度聞く" : "送る"}</Button>
+              <Button variant="primary" disabled={busy} {...(onSend ? { onClick: onSend } : {})}>
+                {shown === "done" ? "もう一度聞く" : "送る"}
+              </Button>
             </div>
           </div>
         </div>
@@ -444,11 +646,11 @@ export function Thread({ title, kind, sentAt, messages, done, draft = "" }: Thre
   );
 }
 
-export function ThreadNotFound() {
+export function ThreadNotFound({ backHref = "/help" }: { backHref?: string }) {
   return (
     <PageBody labelledBy="thread-missing">
       <div className="k-uh-top">
-        <ErrorState code={PAGE_ERROR.notFound} acts={["/help"]} heading={1} />
+        <ErrorState code={PAGE_ERROR.notFound} acts={[backHref]} heading={1} />
       </div>
     </PageBody>
   );

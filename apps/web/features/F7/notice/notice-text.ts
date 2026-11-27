@@ -143,6 +143,8 @@ const KIND_TEXT: Record<string, TextOf> = {
   "billing.overdue_week": () => "お支払いの期限から 1 週間たった請求書があります。このままだと止めることがあります",
   // 段 13 の止める日（K-1008・D-156.73・D-156.23）：決まった字（日付は params に通らないので文に出さない・上の帯で確かめる）。行き先は口の href（無ければ押せない行）
   "workspace.stop_scheduled": () => "ワークスペースを止める日が決まりました。日付は画面の上の帯で確かめられます",
+  // 段 13 の問い合わせの返事（K-1007・D-156.73・D-156.28）：決まった字（返事の本文は出さない）。行き先は口の href（/notices）
+  "inquiry.replied": () => "運営から問い合わせに返事がありました",
 };
 /** 固有の文が無い種類は札ごとの汎用の文 */
 const TAG_TEXT: Record<NoticeKind, TextOf> = {
