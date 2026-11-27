@@ -40,7 +40,7 @@ const TOO_LARGE = "送る内容が大きすぎます";
 const FORM_ID = "k-create-form";
 /** キャンバスの振り分けに在って、まだ使えない欄（D-145.9）。並びはキャンバスの順 */
 const OFF_BEFORE_DUE = ["AI に任せる", "業務の型"] as const;
-const OFF_AFTER_START = ["予定", "分類", "節目", "取引先"] as const;
+const OFF_AFTER_START = ["予定", "分類", "節目"] as const;
 const todayJst = () => new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10);
 const EMPTY: DraftBody = { priority: "mid", sections: {}, notify_member_ids: [] };
 

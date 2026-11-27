@@ -39,7 +39,7 @@ export const ROLE_LABEL: Record<InviteRole, string> = {
   manager: "マネージャー",
   member: "メンバー",
   viewer: "閲覧のみ",
-  requester: "依頼する側",
+  requester: "ゲスト",
 };
 
 /** 赤の知らせの文（K-335）。口が失敗しても画面は移らず、押し直せる */

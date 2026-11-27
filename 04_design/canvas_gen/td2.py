@@ -45,7 +45,7 @@ dr = ('<div style="display: flex; align-items: center; gap: 10px; padding: 14px 
   + run("請求書を作り、確認を流した", "高本のAI ・ 11/01 09:00 → 09:12（12 分）・ 高本の MacBook", "通った", OK, steps, True)
   + run("確認 ② AI の判定（2 回目）", "高本のAI（別のセッション）・ 11/01 09:10 ・ 1 分", "通った", OK, "")
   + run("確認 ② AI の判定（1 回目）", "高本のAI（別のセッション）・ 11/01 09:08 ・ CC が抜けていた → 直して流し直し", "落ちた", NG, "")
-  + '<div style="font-size: 12px; color: %s">使ったもの：ナレッジ「請求のルール」版 4 ・ 取引先のルール：セイコー様 ・ 5 時間の枠の 3%%</div></div>' % MUTED
+  + '<div style="font-size: 12px; color: %s">使ったもの：ナレッジ「請求のルール」版 4 ・ 先方との決まり：セイコー様 ・ 5 時間の枠の 3%%</div></div>' % MUTED
   + '<div style="padding: 12px 18px; border-top: 1px solid #EDF0F4; display: flex; gap: 8px">' + btn("記録を書き出す") + btn("この実行について分身と話す", "", "StAiPanel.dc.html") + '</div>')
 save("TdRunLog.dc.html", "実行の記録", drawer(BASE, dr, 540, "実行の記録"))
 
@@ -68,6 +68,12 @@ s = modal(BASE, mhead("決定にする", icon("決", "#186F69", 30), "書き込�
   + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("決めた人") + field("鈴木 一郎（先方と合意）") + '</div><div>' + lab("理由") + field("先方の都合による作業のため") + '</div></div>'
   + '<div style="display: flex; gap: 8px; align-items: center; background: #FFF8EE; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + icon("!", "#B45309", 22) + '<span>本文の「請求の内訳」と食い違う（追加対応 2 回）。決定にしたあと、分身が本文を直す案を出す</span></div>')
   + mfoot(btn("やめる", "", "TicketDetail.dc.html"), btn("決定にする", "p", "StAiPanel.dc.html")), 600, "決定にする")
+# K-916：取引先を持たなくなった（D-155.35）。小窓の後ろに敷いた詳細の本文の印の字を「先方との決まり」に（ルールの物は段 10 が外す）。
+#   元の字は linkfix の表（行き先が KnPage の「…：セイコー様」）から引く。本文の印は linkfix と同じ KnPage へ先につなぐ（字が変わると linkfix が拾えないため）
+import linkfix
+_mark = next(k for k, v in linkfix.G if v == "KnPage.dc.html" and k.endswith("：セイコー様") and not k[0].isdigit())
+_old = _mark.split("：")[0]
+s = re.sub(r'href="#"(\s[^>]*>)' + re.escape(_mark) + '</a>', r'href="KnPage.dc.html"\1先方との決まり：セイコー様</a>', s).replace(_old, "先方との決まり")
 save("TdDecision.dc.html", "決定にする", s)
 
 # 11 preview deliverable
@@ -92,7 +98,7 @@ sug = lambda t, kind, why, on=True: '<div style="display: flex; gap: 10px; align
 s = modal(BASE, mhead("抜けを点検する", icon("AI", NAVY, 30), "分身が完了の条件・業務の型・過去の差し戻しと見比べた")
   + mbody('<div style="display: flex; gap: 8px; font-size: 12px">' + pill("足りないかも 3", "#FFF4E0", "#7A4A05") + pill("今ので足りている 4", "#E8F5EC", "#166534") + '</div>'
   + sug("支払期日が「月末締め翌月末」になっている", "① 機械", "前提と制約にあるのに、確認の項目にない")
-  + sug("PDF のファイル名が取引先の決まりどおり", "② AI", "セイコー様は「請求書_年月_社名.pdf」を求めている（取引先のルール）")
+  + sug("PDF のファイル名が取引先の決まりどおり", "② AI", "セイコー様は「請求書_年月_社名.pdf」を求めている（先方との決まり）")
   + sug("前月の請求と金額が大きく違わない", "② AI", "10 月に金額の打ち間違いで差し戻しが 1 回あった（EG-112）", False)
   + '<div>' + lab("自分で項目を足す") + '<div style="display: grid; grid-template-columns: 1fr 120px; gap: 8px">' + field("確認すること（例：振込先が正しい）", True) + field("① 機械 ▾") + '</div><div style="font-size: 11px; color: %s; margin-top: 4px">① 機械：決まった調べ方で白黒つく ・ ② AI：別のセッションが根拠つきで判定 ・ ③ 人：人が見て決める</div></div>' % MUTED
   + '<div style="display: flex; gap: 8px; align-items: center; background: #F7F8FA; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + check("", False).replace('padding: 4px 0', 'padding: 0') + '<span>足した項目を業務の型「請求書を作る」にも入れる（次から最初から入る）</span></div>')

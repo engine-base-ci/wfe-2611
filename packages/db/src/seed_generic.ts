@@ -15,10 +15,20 @@ export interface GenericBase {
   opsMember: string;
   opsScope: string;
 }
-type Col = { table: string; col: string; type: string; udt: string; nullable: boolean; def: string | null };
+type Col = {
+  table: string;
+  col: string;
+  type: string;
+  udt: string;
+  nullable: boolean;
+  def: string | null;
+  generated: boolean;
+};
 type Fk = { table: string; col: string; refTable: string; refCol: string };
 type SeedRow = Seeded["rows"][string];
 const rnd = () => Math.random().toString(36).slice(2, 8);
+/** ゲストのグループに入れる人（役割 requester）を会社ごとに先に作る数。1 人は 1 つのグループなので、足す行ごとに別の人を使う（K-876） */
+const GUEST_POOL = 8;
 
 export async function seedGenericRows(
   c: pg.PoolClient,
@@ -27,7 +37,7 @@ export async function seedGenericRows(
 ): Promise<Record<string, SeedRow>> {
   const cols = (
     await c.query<Col>(
-      "select table_name as table, column_name as col, data_type as type, udt_name as udt, (is_nullable = 'YES') as nullable, column_default as def from information_schema.columns where table_schema = 'public' order by table_name, ordinal_position",
+      "select table_name as table, column_name as col, data_type as type, udt_name as udt, (is_nullable = 'YES') as nullable, column_default as def, (is_generated = 'ALWAYS') as generated from information_schema.columns where table_schema = 'public' order by table_name, ordinal_position",
     )
   ).rows;
   const fks = (
@@ -117,6 +127,23 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
   const seeded2 = new Map<string, string>(); // 2 行目の種
   const masterKey = new Map<string, string>();
   const out: Record<string, SeedRow> = {};
+  const guestPool = new Map<string, string[]>(); // 会社 → 役割 requester の人（K-876）
+  const makeGuests = async (tenant: string, scope: string): Promise<string[]> => {
+    const ids: string[] = [];
+    for (let i = 0; i < GUEST_POOL; i++) {
+      const m = await c.query<{ id: string }>(
+        "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', 'ゲスト') returning id",
+        [tenant, scope],
+      );
+      const id = m.rows[0]!.id;
+      await c.query(
+        "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'requester', 'active')",
+        [tenant, id],
+      );
+      ids.push(id);
+    }
+    return ids;
+  };
   const tenantOf = (t: string, which: "A" | "B" | "ops") =>
     which === "A" ? b.tenantA : which === "B" ? b.tenantB : b.opsTenant;
   const bossOf = (which: "A" | "B" | "ops") => (which === "A" ? b.bossA : which === "B" ? b.bossB : b.opsMember);
@@ -160,6 +187,7 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
         continue;
       }
       if (["created_at", "updated_at", "deleted_at", "created_by", "updated_by"].includes(x.col)) continue;
+      if (x.generated) continue; // 生成列（guest_groups.name_key 等）は入れられない
       const fk = fkOf(t, x.col);
       if (x.col === "tenant_id") row[x.col] = tenant;
       // 業務の型の種は運営の全社向け（グループなし・D-126.23）。グループを入れると会社の人が読む全社向けにならない
@@ -171,6 +199,9 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       else if (t === "client_contacts" && x.col === "member_id") row[x.col] = null;
       // 上げる頼み（kind の候補の先頭 raise）はページだけを指す（check knowledge_requests_target：raise はフォルダを持たない・K-687）
       else if (t === "knowledge_requests" && x.col === "folder_id") row[x.col] = null;
+      // ゲストのグループに入れるのは役割 requester の人だけ（引き金 app.guest_same_tenant・K-876）。代表ではなく先に作ったゲストを使う
+      else if (t === "guest_group_members" && x.col === "member_id")
+        row[x.col] = guestPool.get(tenant)?.shift() ?? bossOf(which);
       else if (fk && fk.refTable === "members") row[x.col] = bossOf(which);
       else if (fk && fk.refTable === "tenants") row[x.col] = tenant;
       else if (fk && fk.refTable === "scopes") row[x.col] = scopeOf(which);
@@ -293,6 +324,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       out[t] = { visible: id, hiddenLayer: null, other: id, insert: () => build(t, "ops", true) };
       continue;
     }
+    if (t === "guest_group_members")
+      for (const w of ["A", "B"] as const) guestPool.set(tenantOf(t, w), await makeGuests(tenantOf(t, w), scopeOf(w)));
     const idA = await insertRow(t, build(t, "A", false));
     const idB = await insertRow(t, build(t, "B", false));
     seeded.set(`${t}:${b.tenantA}`, idA);

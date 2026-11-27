@@ -5,9 +5,9 @@
 import { spawn } from "node:child_process";
 import { childEnv, bridgeEnv } from "./env";
 import { ask } from "./proc";
-import { existsSync, readdirSync, statSync } from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { existsSync, mkdtempSync, readdirSync, rmSync, statSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
+import { basename, join } from "node:path";
 import { CONVENTIONS, memoryPrompt, type JobMemory } from "./conventions";
 import { guardArgs, guardEnv, type Blocked } from "./guard";
 import { KANAME_TOOL_RULE, kanameServer, mcpArgs, type KanameTools } from "./kaname-tools";
@@ -139,6 +139,7 @@ export interface Job {
   permission_mode?: string | null;
   model?: string | null;
   effort?: string | null;
+  /** 使う道具。空の配列＝道具を使わない仕事（K-910・K-929・K-1302）。null は選んでいない（今のまま） */
   tools?: string[] | null;
   allowed_tools?: string[] | null;
   /** 付けた資料（D-104.11）。中身は Bridge が署名 URL で取りに行く */
@@ -153,8 +154,9 @@ export interface Job {
   conventions?: string | null;
   /** AI が使うブラウザ（D-119）：chrome＝本人の Chrome（Claude in Chrome）／off＝使わない。無ければ使わない（古い Kaname） */
   browser?: "chrome" | "dedicated" | "off" | null;
-  /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。無ければ会話 */
-  kind?: "chat" | "login_check" | "ticket" | null;
+  /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。
+   *  client_request_draft＝届いた依頼の分身の案を道具なしで 1 回作る（K-929）。無ければ会話 */
+  kind?: "chat" | "login_check" | "ticket" | "client_request_draft" | null;
   /** チケットの仕事（K-62）：任されたチケットと段（make＝成果物を作る・execute＝承認の後の実行） */
   ticket_id?: string | null;
   phase?: "make" | "execute" | null;
@@ -274,6 +276,16 @@ function addUsage(a: Usage | null, b: Usage | null): Usage | null {
   };
 }
 
+/** 道具を使わない仕事か（K-1302）：tools が空の配列のときだけ。null・欄なし・中身ありは今のまま */
+const noTools = (job: Job): boolean => Array.isArray(job.tools) && job.tools.length === 0;
+/** 道具なしの仕事で、組み込みの道具・本人の設定の MCP・スキル・本人の CLAUDE.md と記憶を外す引数（K-1302・D-128.101） */
+const NO_TOOL_ARGS = ["--tools", "", "--strict-mcp-config", "--disable-slash-commands", "--safe-mode"] as const;
+/** 道具なしの仕事の一時の作業の場所の名前の頭（OS の一時の置き場の直下・git の外） */
+const NONE_PREFIX = "kaname-none-";
+/** 結末が決まってから CLI が閉じるのを待つ長さ。過ぎたら止めて、閉じてから場所を消す（K-1302） */
+const NONE_CLOSE_WAIT_MS = 5_000;
+export const NONE_DIR_FAILED_REASON = "一時の作業の場所を作れなかったので、AI を起こしませんでした";
+
 /** 起動の引数。未改変の公式 CLI に、本人が選んだものだけを渡す（D-092.2・D-104） */
 export function buildArgs(
   job: Job,
@@ -295,13 +307,16 @@ export function buildArgs(
   ];
   if (job.agent_session_id) args.push("--resume", job.agent_session_id);
   args.push(...modeArgs(job.permission_mode));
+  // 道具なしの仕事（K-1302）：道具・MCP・スキル・本人の作り込みを外す。可変長の --tools の値（空）のすぐ後ろは -- の引数
+  const none = noTools(job);
+  if (none) args.push(...NO_TOOL_ARGS);
   // 本人の Chrome を使う（Claude in Chrome・D-119）。可変長の引数より前に置く
-  const chrome = job.browser === "chrome";
+  const chrome = !none && job.browser === "chrome";
   if (chrome) args.push("--chrome");
   // Kaname の道具（D-110）と Bridge 専用のブラウザ（D-119）を 1 本の設定で渡す。
   // --mcp-config は可変長なので、すぐ後ろに別の引数（--append-system-prompt 等）が来る位置に置く
-  const kaname = kanameServer(tools, job.tool_token, job.kind ?? "chat");
-  const own = job.browser === "dedicated" && dedicated ? dedicatedServer(dedicated) : null;
+  const kaname = none ? null : kanameServer(tools, job.tool_token, job.kind ?? "chat");
+  const own = !none && job.browser === "dedicated" && dedicated ? dedicatedServer(dedicated) : null;
   args.push(...mcpArgs({ kaname, [DEDICATED_SERVER]: own }));
   // 会話の仕事にだけ Kaname の書き方を渡す（記憶のまとめなど会話の無い仕事は、渡した文の指示だけで動く）
   if (job.conversation_id) {
@@ -309,7 +324,7 @@ export function buildArgs(
     const rules = job.conventions?.trim() ? job.conventions : CONVENTIONS;
     args.push("--append-system-prompt", mem ? `${rules}\n\n${mem}` : rules);
   }
-  for (const d of extraDirs) args.push("--add-dir", d);
+  if (!none) for (const d of extraDirs) args.push("--add-dir", d);
   // 禁止の宛先（D-107.2・D-107.3）：使わない道具（可変長）の後ろには必ず --settings を置く
   if (guard && job.blocked?.length) args.push(...guardArgs(job.blocked, guard.hookPath, guard.nodeBin));
   // 可変長の引数（--allowedTools）は最後に置く（後ろの引数を飲み込ませない）
@@ -319,7 +334,7 @@ export function buildArgs(
     ...(chrome ? [CHROME_TOOL_RULE] : []),
     ...(own ? [DEDICATED_TOOL_RULE] : []),
   ];
-  const allowed = extra.length ? [...(job.allowed_tools ?? []), ...extra] : (job.allowed_tools ?? null);
+  const allowed = none ? null : extra.length ? [...(job.allowed_tools ?? []), ...extra] : (job.allowed_tools ?? null);
   args.push(...optionArgs({ model: job.model ?? null, effort: job.effort ?? null, allowed_tools: allowed }));
   return args;
 }
@@ -385,7 +400,19 @@ function runOnce(
     // 軒並み「見つかりません」で落ちる。実例：SessionEnd hook で `/bin/sh: node: command not found`
     // 環境は許可リストだけ（ANTHROPIC_API_KEY 等を渡すとサブスクではなく API の料金で動きうる）
     const env = childEnv(shellPath(), guard && job.blocked?.length ? guardEnv(job.blocked, guard.log) : {});
-    const p = spawn(bin, args, { stdio: ["pipe", "pipe", "pipe"], env });
+    // 道具なしの仕事（K-1302）は、毎回新しく作る中身の無い一時の場所で起こす（本人の作業の場所の道・git の名前を AI の前に置かない）
+    let scratch: string | null = null;
+    if (noTools(job)) {
+      try {
+        scratch = mkdtempSync(join(tmpdir(), NONE_PREFIX));
+      } catch {
+        // 道・投げた字は出さない
+        current = null;
+        resolve({ state: "stopped", reason: NONE_DIR_FAILED_REASON, agent_session_id: job.agent_session_id });
+        return;
+      }
+    }
+    const p = spawn(bin, args, { stdio: ["pipe", "pipe", "pipe"], env, ...(scratch ? { cwd: scratch } : {}) });
     let session: string | null = job.agent_session_id;
     const started = new Map<string, { name: string; target: string; at: number }>(); // 道具の呼び出し中（id → 始めた時刻）
     let err = "";
@@ -397,6 +424,21 @@ function runOnce(
     let usage: Usage | null = null;
     let partial = "";
     let limits: { window: string; utilization: number; resets_at: number }[] = [];
+    // 道具なしの仕事は、CLI が閉じてから一時の場所を消し、その後で返す（消してから返す・K-1302）
+    let pending: Outcome | null = null;
+    let released = false;
+    let closeWait: ReturnType<typeof setTimeout> | undefined;
+    const release = (): void => {
+      if (!scratch || released || !pending) return;
+      released = true;
+      clearTimeout(closeWait);
+      try {
+        rmSync(scratch, { recursive: true, force: true });
+      } catch {
+        console.error("[bridge] 一時の作業の場所を消せませんでした", basename(scratch));
+      }
+      resolve(pending);
+    };
     const done = (f: Outcome): void => {
       if (settled) return;
       settled = true;
@@ -407,7 +449,11 @@ function runOnce(
       } catch {
         /* もう閉じている */
       }
-      resolve({ ...f, usage: addUsage(usage, f.usage ?? null) });
+      const out: Outcome = { ...f, usage: addUsage(usage, f.usage ?? null) };
+      if (!scratch) return resolve(out);
+      pending = out;
+      // 閉じない CLI は止める。閉じたら close が場所を消して返す
+      closeWait = setTimeout(() => p.kill("SIGTERM"), NONE_CLOSE_WAIT_MS);
     };
     // 止める目安は「何も進まない時間」。本人の答えを待っている間は数えない（待っている間に止めると、
     // 答えようとした問い合わせごと消える・2026-09-28 実例）。答えを待つ長さは loop が別に持つ（ANSWER_WAIT_MS）
@@ -562,7 +608,7 @@ function runOnce(
       }
     });
     p.stderr.on("data", (c: Buffer) => (err += c.toString()));
-    p.on("error", (e: NodeJS.ErrnoException) =>
+    p.on("error", (e: NodeJS.ErrnoException) => {
       done({
         state: "stopped",
         reason:
@@ -570,8 +616,9 @@ function runOnce(
             ? "このPCに Claude Code が見つかりません。入れてログインしてください"
             : `Claude Code を起動できませんでした（${e.message}）`,
         agent_session_id: session,
-      }),
-    );
+      });
+      release();
+    });
     p.on("close", (code) => {
       if (rest.trim()) {
         const e = parseLine(rest);
@@ -585,6 +632,7 @@ function runOnce(
           reason: code === 0 && !err.trim() ? NO_SIGNAL_REASON : whyStopped("", err, code),
           agent_session_id: session,
         });
+      release();
     });
     // 人が言ったことを渡す。入力はこの後も開けたままにする（確認の答え・止めずに直す一言を渡すため）
     p.stdin.on("error", () => undefined);

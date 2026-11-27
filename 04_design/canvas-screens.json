@@ -29,14 +29,6 @@
    "MePC",
    "MePCInstalled"
   ],
-  "clients": [
-   "CuList",
-   "CuPage",
-   "CuShare",
-   "CuReview",
-   "EdClient",
-   "EdContact"
-  ],
   "clone-chat": [
    "AiChat",
    "Room",
@@ -154,11 +146,16 @@
   ],
   "portal": [
    "CpHome",
-   "CpNew",
-   "CpReview"
+   "CpNew"
   ],
   "requests": [
-   "CuRequests"
+   "CuRequests",
+   "CuList",
+   "CuPage",
+   "CuShare",
+   "CuReview",
+   "EdClient",
+   "EdContact"
   ],
   "signup": [
    "AuthSignup",
@@ -231,7 +228,6 @@
   "_doc": "どの画面でも使う絵（外枠・4 つの状態・エラー・スマホ・ワークスペースの切り替え）。画面ごとの絵ではない",
   "boards": [
    "OnError",
-   "OnClients",
    "OnKnowledge",
    "OnRoom",
    "ErrDown",
@@ -243,7 +239,6 @@
    "MbAI",
    "MbApprovals",
    "MbApproveOne",
-   "MbClients",
    "MbCreate",
    "MbKnowledge",
    "MbMenu",

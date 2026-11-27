@@ -29,6 +29,8 @@ export interface MessageView {
   decided: boolean;
   can_edit: boolean;
   can_delete: boolean;
+  /** 依頼から作ったチケットの、依頼のやり取りの書き込み（K-882 の鍵・true の行にだけ付く。K-905 の頭の札と区切り） */
+  from_request?: true;
 }
 export interface ChangeView {
   field: string;

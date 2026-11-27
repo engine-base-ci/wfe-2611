@@ -223,18 +223,18 @@ test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が 
   await mockApi(page, { role: "owner" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R1");
-  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"]);
+  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "届いた依頼", "ワークスペースの管理"]);
   await expect.poll(() => navLabels(page)).toEqual(want);
   const canvas = await canvasSigs(browser, "Main", ".kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))", 1440);
-  expect(canvas).toHaveLength(5);
+  expect(canvas).toHaveLength(6);
   expect(await svgSigs(page, ".k-nav > .k-nav-item:not(:has(.k-group-mark))")).toEqual(canvas);
 });
 
-test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（取引先が無い）", async ({ page }) => {
+test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（届いた依頼が無い）", async ({ page }) => {
   await mockApi(page, { role: "staff" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R3");
-  expect(want).not.toContain("取引先");
+  expect(want).not.toContain("届いた依頼");
   await expect.poll(() => navLabels(page)).toEqual(want);
 });
 
@@ -280,7 +280,7 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 R1 の左に押せない項目は 0 件で取引先は出ない（K-1113 で取引先を外した）・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ（K-420）、ナレッジは作った道 /knowledge へ押せる（K-682）（D-148.49・D-152.11）", async ({
+test("K138-SH-006 R1 の左に押せない項目は 0 件で取引先は出ない（K-1113 で取引先を外した）・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ（K-420）、ナレッジは作った道 /knowledge へ（K-682）、届いた依頼は作った道 /requests へ押せる（K-898）（D-148.49・D-152.11）", async ({
   page,
 }) => {
   await mockApi(page);
@@ -290,6 +290,12 @@ test("K138-SH-006 R1 の左に押せない項目は 0 件で取引先は出な�
   const ws = nav.getByRole("link", { name: /ワークスペースの管理/, disabled: false });
   await expect(ws).toHaveCount(1);
   expect(await ws.getAttribute("href")).toBe("/members");
+  // K-898 が /requests を作り、届いた依頼は押せるリンクになる（使えないリンクの形が 0・title に準備中が無い）。押すと /requests に移る（下の並びの後で見る）
+  const rq = nav.getByRole("link", { name: /届いた依頼/, disabled: false });
+  await expect(rq).toHaveCount(1);
+  expect(await rq.getAttribute("href")).toBe("/requests");
+  await expect(nav.getByRole("link", { name: /届いた依頼/, disabled: true })).toHaveCount(0);
+  expect((await rq.getAttribute("title")) ?? "").not.toContain("準備中");
   // ナレッジは K-682 が /knowledge を作り、押せるリンクになる（段 10・K-682）
   const kn = nav.getByRole("link", { name: /ナレッジ/, disabled: false });
   await expect(kn).toHaveCount(1);
@@ -302,6 +308,9 @@ test("K138-SH-006 R1 の左に押せない項目は 0 件で取引先は出な�
   const text = await nav.innerText();
   expect(text).not.toContain("取引先");
   expect(text).not.toContain("準備中");
+  await rq.click();
+  await page.waitForURL(/\/requests$/);
+  expect(new URL(page.url()).pathname).toBe("/requests");
 });
 
 test("K138-SH-007 左のメニューを押す：承認待ちの画面でチケットを押すと /tickets、/tickets で承認待ちを押すと /approvals", async ({

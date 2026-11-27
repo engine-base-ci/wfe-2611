@@ -362,7 +362,7 @@ def returns_raw(text: str) -> bool:
 
 K144 = "apps/api/test/features/contract/k144-contract.test.ts"
 K144_LEAVES = "apps/api/test/features/contract/k144.d"   # 葉ごとのファイル（K-<番号>.ts）の置き場（K-378）
-UUID_ROW = re.compile(r'\["K144-API-\d{3}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]')
+UUID_ROW = re.compile(r'\["K144-API-\d{3,4}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]')
 
 
 def k144_uuid_rows(root: pathlib.Path = ROOT) -> list[tuple[str, str, str, str]]:
