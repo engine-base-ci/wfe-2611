@@ -9,6 +9,8 @@ import { opsErrorReply, opsTx } from "./db.js";
 export const VIEWS = ["all", "attention", "stopped", "closing"] as const;
 export const PLANS = ["free", "team", "business"] as const;
 export const SORTS = ["attention", "members", "runs"] as const;
+/** 契約の問い合わせの名前（listOpsWorkspaces） */
+const QUERY_KEYS: ReadonlySet<string> = new Set(["q", "view", "plan", "sort", "cursor", "limit"]);
 /** q の上限（送られたままの字で数える・K-1006 の QUERY_RANGES と同じ） */
 export const Q_MAX = 100;
 
@@ -41,6 +43,8 @@ export function parseWorkspacesQuery(
   raw: Record<string, string>,
 ): { ok: true; value: WorkspacesQuery } | { ok: false; details: Issue[] } {
   const issues: Issue[] = [];
+  // 契約に無い問い合わせの名前は 422（入口は問い合わせの名前を見ない）
+  for (const k of Object.keys(raw)) if (!QUERY_KEYS.has(k)) issues.push({ field: k, message: "知らない問い合わせ" });
   const qRaw = raw["q"] ?? "";
   if ([...qRaw].length > Q_MAX) issues.push({ field: "q", message: `${Q_MAX} 字まで` });
   const view = pick(raw["view"], VIEWS, "view", issues) ?? "all";

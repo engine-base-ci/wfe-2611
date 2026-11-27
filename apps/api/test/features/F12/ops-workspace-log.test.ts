@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import { startOpsWs, isFlat, AUDIT_KEYS, INQ_KEYS, OPS_TENANT, type OpsWs, type Ws } from "./ops-ws.harness.js";
-import type { Person } from "../fixture.js";
+import { quietWrite, type Person } from "../fixture.js";
 
 let t: OpsWs;
 let opsAll: Person;
@@ -41,12 +41,13 @@ const record = async (
   const ctx: TenantContext = { tenantId: null, userId: by.id, role: "ops" };
   const id = await withTenant(t.f.pool, ctx, async (c) => {
     const r = await c.query<{ id: string }>(
-      "select app.record_ops_audit($1, $2, 'tenants', $1::text, null, $3) as id",
+      "select app.record_ops_audit($1::uuid, $2, 'tenants', $1::uuid::text, null, $3) as id",
       [ws.tenantId, action, o.payload ?? {}],
     );
     return r.rows[0]!.id;
   });
-  if (o.at) await t.f.admin.query("update ops_audit_events set occurred_at = $2 where id = $1", [id, o.at]);
+  // 記録は追記専用（引き金が UPDATE を止める）。時刻を置くのは準備なので引き金を通さずに書く（fixture の quietWrite）
+  if (o.at) await quietWrite(t.f, "update ops_audit_events set occurred_at = $2 where id = $1", [id, o.at]);
   return id;
 };
 

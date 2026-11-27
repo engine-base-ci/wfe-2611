@@ -187,7 +187,7 @@ describe("K-963 全社の一覧（listOpsWorkspaces）", () => {
   });
 
   it("K963-API-009 並びの既定（sort なし・attention）：気にかけるのある会社が上で、期限を過ぎた請求 → 止まった実行 → PC の順。1 社に 2 つあれば attention もその順。ほかは名前の順（上限の 95% の会社も、気にかけるの無い会社として名前の順）", async () => {
-    const sub = `${t.run}-並び`;
+    const sub = `${t.run} 並び`; // 土台の会社の名前は run と字の間が空白（ops-ws.harness.ts）
     const make = (l: string, o: { createdDaysAgo?: number } = {}) => t.ws(`並び ${l}`, o);
     const z = await make("ん 何もない");
     await t.pc(z, z.admin);
@@ -210,7 +210,7 @@ describe("K-963 全社の一覧（listOpsWorkspaces）", () => {
   });
 
   it("K963-API-010 view：attention は気にかけるのある会社だけ・stopped は止めた会社だけ・closing はやめる手続き中だけ・all は全部", async () => {
-    const sub = `${t.run}-見方`;
+    const sub = `${t.run} 見方`; // 土台の会社の名前は run と字の間が空白（ops-ws.harness.ts）
     const ok = await t.ws("見方 ふつう");
     await t.pc(ok, ok.admin);
     const care = await t.ws("見方 気にかける");
@@ -233,7 +233,7 @@ describe("K-963 全社の一覧（listOpsWorkspaces）", () => {
   });
 
   it("K963-API-011 plan：free・team・business のどれかの会社だけ", async () => {
-    const sub = `${t.run}-プラン`;
+    const sub = `${t.run} プラン`; // 土台の会社の名前は run と字の間が空白（ops-ws.harness.ts）
     const f = await t.ws("プラン 無料", { plan: "free" });
     const b = await t.ws("プラン ビジネス", { plan: "business" });
     const got = async (p: string) =>
@@ -257,7 +257,7 @@ describe("K-963 全社の一覧（listOpsWorkspaces）", () => {
   });
 
   it("K963-API-013 sort：members は人数の多い順・runs は今月の実行の多い順（同じなら名前の順）", async () => {
-    const sub = `${t.run}-順`;
+    const sub = `${t.run} 順`; // 土台の会社の名前は run と字の間が空白（ops-ws.harness.ts）
     const a = await t.ws("順 あ", { members: 1 });
     const b = await t.ws("順 い", { members: 4 });
     const c = await t.ws("順 う", { members: 2 });
