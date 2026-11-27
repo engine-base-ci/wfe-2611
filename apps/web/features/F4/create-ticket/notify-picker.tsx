@@ -4,7 +4,7 @@
 //   作る口に送るのは今のまま notify_member_ids（選んだ人の id）
 //   label・placeholder：絞る欄の見出しと案内の字（K-393 のやり取りの小窓が渡す。無ければ作る画面の今の字）
 import { useState } from "react";
-import { Checkbox, TextField } from "@/components/k";
+import { TextField } from "@/components/k";
 
 export interface Person {
   id: string;
@@ -72,14 +72,10 @@ export function NotifyPicker({
       ) : null}
       <div className="k-create-people" role="group" aria-label="知らせる人の候補">
         {shown.map((p) => (
-          <Checkbox
-            key={p.id}
-            className="k-create-check"
-            checked={picked.has(p.id)}
-            onChange={(e) => set(p.id, e.target.checked)}
-          >
+          <label key={p.id} className="k-create-check">
+            <input type="checkbox" checked={picked.has(p.id)} onChange={(e) => set(p.id, e.target.checked)} />
             {p.display_name}
-          </Checkbox>
+          </label>
         ))}
         {q && shown.length === 0 ? <span className="k-desc">合う人がいません</span> : null}
       </div>

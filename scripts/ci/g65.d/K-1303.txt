@@ -1,1 +1,0 @@
-python3 scripts/ci/k1303_complete_no_rewrite_test.py

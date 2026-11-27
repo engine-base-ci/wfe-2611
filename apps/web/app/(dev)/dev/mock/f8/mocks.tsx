@@ -9,7 +9,7 @@
 //   上へ上げる（A112）は今回切らない。キャンバスに在るのは承認待ちの絞り込みの札（上位の承認・判断を仰がれた）だけで、今の本線どおりグレー
 import { Bot, PanelRight } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
-import { Button, Checkbox, DocTools, Prose, Shell, Toaster, useNotify, type Crumb, type Group } from "@/components/k";
+import { Button, DocTools, Prose, Shell, Toaster, useNotify, type Crumb, type Group } from "@/components/k";
 import { DetailMeta, DetailTitle, InertButton } from "@/features/F4/create-ticket/detail-head";
 import "@/features/F4/create-ticket/ticket-detail.css";
 import "@/features/F5/approve-complete/approve.css";
@@ -450,7 +450,7 @@ function AiRow() {
   return (
     <tr>
       <td>
-        <Checkbox disabled aria-label="まとめて承認に入れる" />
+        <input type="checkbox" disabled aria-label="まとめて承認に入れる" />
       </td>
       <td>
         <span className="k-ap-kind">AI の成果物</span>
@@ -543,7 +543,7 @@ function Queue({
                 <thead>
                   <tr>
                     <th scope="col">
-                      <Checkbox disabled aria-label="まとめて選べるものをすべて選ぶ" />
+                      <input type="checkbox" disabled aria-label="まとめて選べるものをすべて選ぶ" />
                     </th>
                     {HEADERS.map((h) => (
                       <th key={h} scope="col">

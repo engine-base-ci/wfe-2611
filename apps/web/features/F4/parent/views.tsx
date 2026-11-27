@@ -3,9 +3,8 @@
 //   決め（代表に聞くことのおすすめ）：親は 3 段まで（3 段目の子は選べない）・親の期限より後にはできない（小窓に注意）・
 //   「親の担当・節目を写す」のチェックは既定で入っている・合うチケットが無くても親なしで作れる。
 //   探して 1 つ選ぶ並び（PickList・PickSearch）は、複製の元を選ぶ小窓も使う
-import { useId } from "react";
-import { X } from "lucide-react";
-import { Button, Callout, Checkbox, Dialog, NoticeBox, Radio, RadioGroup, TextField } from "@/components/k";
+import { Check, X } from "lucide-react";
+import { Button, Callout, Dialog, NoticeBox, TextField } from "@/components/k";
 import "./parent.css";
 
 /** 探して選ぶ並びの 1 行 */
@@ -55,38 +54,28 @@ export function PickList({
   items: readonly PickItem[];
   onPick?: (id: string) => void;
 }) {
-  // 丸い選択は共通の部品（K-642）。カードの見た目は label（k-f4-pick-item）に重ねる
-  const name = useId();
-  const chosen = items.find((it) => it.selected)?.id ?? "";
   return (
-    <RadioGroup
-      className="k-f4-pick"
-      legend={label}
-      hideLegend
-      name={name}
-      value={chosen}
-      onValueChange={(id) => onPick?.(id)}
-    >
+    <div className="k-f4-pick" role="radiogroup" aria-label={label}>
       {items.map((it) => (
-        <Radio
+        <button
           key={it.id}
+          type="button"
+          role="radio"
           className="k-f4-pick-item"
-          value={it.id}
-          disabled={Boolean(it.blocked)}
-          description={
-            <>
-              <span className="k-f4-pick-meta">
-                <span className="k-f4-pick-lead">{it.lead}</span>
-                {it.meta ? ` ・ ${it.meta}` : null}
-              </span>
-              {it.blocked ? <span className="k-f4-pick-why">{it.blocked}</span> : null}
-            </>
-          }
+          aria-checked={Boolean(it.selected)}
+          {...(it.blocked ? { "aria-disabled": true, tabIndex: -1 } : {})}
+          onClick={() => (it.blocked ? undefined : onPick?.(it.id))}
         >
+          <span className="k-f4-pick-lead">{it.lead}</span>
           <span className="k-f4-pick-title">{it.title}</span>
-        </Radio>
+          <span className="k-f4-pick-mark" aria-hidden="true">
+            {it.selected ? <Check size={14} /> : null}
+          </span>
+          {it.meta ? <span className="k-f4-pick-meta">{it.meta}</span> : null}
+          {it.blocked ? <span className="k-f4-pick-why">{it.blocked}</span> : null}
+        </button>
       ))}
-    </RadioGroup>
+    </div>
   );
 }
 
@@ -166,9 +155,15 @@ export function ParentDialog(p: ParentDialogProps) {
         </p>
         {p.lateNote ? <Callout tone="warn">{p.lateNote}</Callout> : null}
         {p.mode === "detail" ? null : (
-          <Checkbox size="sm" checked={p.copyChecked} readOnly={!p.onCopy} onChange={(e) => p.onCopy?.(e.target.checked)}>
+          <label className="k-dialog-check">
+            <input
+              type="checkbox"
+              checked={p.copyChecked}
+              readOnly={!p.onCopy}
+              onChange={(e) => p.onCopy?.(e.target.checked)}
+            />
             親の担当・節目を写す
-          </Checkbox>
+          </label>
         )}
       </div>
     </Dialog>

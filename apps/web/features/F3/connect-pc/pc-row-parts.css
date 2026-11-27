@@ -94,7 +94,24 @@
   font-weight: var(--k-fw-label-md);
   color: var(--k-on-surface);
 }
-/* 選ぶ行の並べ方・印のそろえ方は共通の部品（.k-choice・K-642）。ここは答えを待つ間の指の形だけ */
+.k-pc-choice {
+  display: flex;
+  gap: var(--k-c-dialog-check-gap);
+  align-items: flex-start;
+  min-width: 0;
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+  cursor: pointer;
+}
+.k-pc-choice input {
+  flex: none;
+  /* 丸を 1 行目の字の真ん中にそろえる（箱の高さを行の高さに・丸は箱の真ん中に描かれる）。
+     行の高さ＝この行の字の大きさ × 行の高さの割合（上の .k-pc-choice と同じ 2 つのトークン。生の 1lh は書かない・D8） */
+  height: calc(var(--k-c-dialog-check-text) * var(--k-c-dialog-check-lh));
+  margin-block: 0;
+  accent-color: var(--k-primary);
+}
+.k-pc-choice input:disabled,
 .k-pc-browser[aria-busy="true"] .k-pc-choice {
   cursor: not-allowed;
 }

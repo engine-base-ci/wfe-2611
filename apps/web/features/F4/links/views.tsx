@@ -3,7 +3,7 @@
 //   代表に聞くことのおすすめ：つながりは「関連」「派生元」の 2 つだけ（絵の提案文「これが終わったら始める」は使わない）。
 //   子チケットは「子チケットを作る」から（親の担当・期限を写せる）。つながりは今あるチケットを探して足す／外す（チケットは消えない）。
 import type { ChangeEvent, ReactNode, Ref } from "react";
-import { Badge, Button, Confirm, Dialog, Radio, Tabs, TextField, type BadgeTone } from "@/components/k";
+import { Badge, Button, Confirm, Dialog, Tabs, TextField, type BadgeTone } from "@/components/k";
 import "./links.css";
 
 const noop = (): void => undefined;
@@ -277,10 +277,13 @@ function LinkPanel({ p }: { p: LinkAddDialogProps }) {
         <legend>つながりの種類</legend>
         <div className="k-f4-links-types">
           {(["related", "derived"] as const).map((k) => (
-            <Radio key={k} size="sm" name="link-kind" checked={p.kind === k} onChange={() => p.onKind?.(k)}>
-              {LINK_KIND_LABEL[k]}
-              <small>{LINK_KIND_HELP[k]}</small>
-            </Radio>
+            <label key={k} className="k-dialog-check">
+              <input type="radio" name="link-kind" checked={p.kind === k} onChange={() => p.onKind?.(k)} />
+              <span>
+                {LINK_KIND_LABEL[k]}
+                <small>{LINK_KIND_HELP[k]}</small>
+              </span>
+            </label>
           ))}
         </div>
       </fieldset>

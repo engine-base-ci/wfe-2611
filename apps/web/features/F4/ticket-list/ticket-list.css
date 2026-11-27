@@ -423,13 +423,16 @@ button.k-list-tool:hover {
   padding: 0;
   list-style: none;
 }
-/* 列の行（並べ方と印は共通の部品 .k-choice・K-642。ここは押せる高さ・余白・押せないときの色） */
 .k-list-columns-item {
-  gap: var(--k-c-list-columns-item-gap); /* 部品の本文の間と同じ 8 */
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-list-columns-item-gap);
   min-height: var(--k-c-list-target-height);
   padding: var(--k-c-list-columns-item-pad);
+  cursor: pointer;
 }
-.k-list-columns-item[data-disabled] {
+.k-list-columns-item:has(input:disabled) {
+  cursor: not-allowed;
   color: var(--k-on-surface-variant);
 }
 .k-list-columns-group {
