@@ -380,7 +380,7 @@ SCREEN_API = {
         ("POST", "/portal/requests/questions", "A124", "client_requests", "askPortalRequestQuestions", ["bridge_jobs"]),
         ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["conversations", "attachments", "notifications", "bridge_jobs"]),
         ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["messages"]),
-        ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_requests", "notifications"]),
+        ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_request_messages", "client_requests", "notifications"]),   # K-908
         ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
         ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", [T, "ticket_sections", "ticket_messages"]),
         ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
@@ -1502,7 +1502,7 @@ PERMS = {
     "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
     "createPortalRequest": ("client", "「依頼できる」の人だけ。同じ取引先の人に見える", False),
     "getPortalRequest": ("client", "自分の取引先の依頼だけ", False),
-    "postPortalRequestMessage": ("client", "「依頼できる」の人だけ。自分の取引先の依頼だけ", False),
+    "postPortalRequestMessage": ("client", "ゲスト。自分のゲストのグループの依頼で、まだ決まっていない物だけ", False),
     "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
     "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
     "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
