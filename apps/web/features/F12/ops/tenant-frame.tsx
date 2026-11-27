@@ -1,5 +1,7 @@
 "use client";
 // 1 社の画面の枠（段 13・領域 ops・キャンバス OpWs の頭とタブとワークスペースの情報）。値を受け取って描くだけ
+//   K-972：頭のボタン（acts）・止めている帯（stopBand・onResume）・頭の下の知らせ（notice）を任意の props で受ける。
+//   渡さない呼び方（モック）は今の見た目のまま
 import type { ReactNode } from "react";
 import { Band, Button, Menu, MenuItem, MenuPopup, MenuTrigger, Tabs } from "@/components/k";
 import { Card, Facts, StatusBadge } from "./ops-parts";
@@ -7,10 +9,34 @@ import { WS_INFO } from "./ops-sample";
 
 export type TenantTab = "status" | "members" | "billing" | "inquiries" | "log";
 
+/** 頭のボタンの関数と、押せるか（持たない人には押せない形で出す・隠さない・D-145.9） */
+export interface TenantActs {
+  onNotice: () => void;
+  onPeek: () => void;
+  onStop: () => void;
+  onResume: () => void;
+  canNotice: boolean;
+  canPeek: boolean;
+  canStop: boolean;
+}
+/** 止めている帯の値（理由の字・止めた日 M/DD） */
+export interface TenantStopBand {
+  reason: string;
+  since: string;
+}
+
 export interface TenantFrameProps {
   tab: TenantTab;
   /** 止めている 1 社（札が赤・上に帯・メニューが「再開する」） */
   stopped?: boolean;
+  /** 頭のボタンの関数（渡さなければ押しても何もしない） */
+  acts?: TenantActs;
+  /** 止めている帯の値（渡せば stopped と同じ形で、この値の字を出す） */
+  stopBand?: TenantStopBand | null;
+  /** 頭の下の知らせ（「送りました」など・role=status） */
+  notice?: ReactNode;
+  /** 再開を送っている間 */
+  resuming?: boolean;
   /** 開いたタブの中身。ほかのタブの中身は描かない */
   children: ReactNode;
 }
@@ -22,6 +48,9 @@ const TABS: readonly { value: TenantTab; label: string }[] = [
   { value: "inquiries", label: "問い合わせ 1" },
   { value: "log", label: "記録" },
 ];
+
+const NO_ACT = "この操作はできません";
+const SAMPLE_STOP: TenantStopBand = { reason: "請求が払われない", since: "11/09" };
 
 export function WsInfoCard() {
   return (
@@ -35,8 +64,39 @@ export function WsInfoCard() {
   );
 }
 
+/** 頭のボタン 1 つ：できない人には押せない形（aria-disabled・押しても何もしない） */
+function HeadButton({ can, onClick, children }: { can: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <Button
+      variant="outlined"
+      {...(can ? {} : { "aria-disabled": true, title: NO_ACT })}
+      onClick={() => {
+        if (can) onClick();
+      }}
+    >
+      {children}
+    </Button>
+  );
+}
+
 /** 頭（印・名前・状態・操作）→ 帯 → タブ → 中身と情報 */
-export function TenantFrame({ tab, stopped = false, children }: TenantFrameProps) {
+export function TenantFrame({
+  tab,
+  stopped = false,
+  acts,
+  stopBand,
+  notice,
+  resuming = false,
+  children,
+}: TenantFrameProps) {
+  const band = stopBand ?? (stopped ? SAMPLE_STOP : null);
+  const isStopped = band !== null;
+  const canStop = acts?.canStop ?? true;
+  const toggle = () => {
+    if (!acts || !canStop) return;
+    if (isStopped) acts.onResume();
+    else acts.onStop();
+  };
   return (
     <section className="k-root k-page" aria-labelledby="op-ws-title">
       <header className="k-page-head">
@@ -44,39 +104,52 @@ export function TenantFrame({ tab, stopped = false, children }: TenantFrameProps
           ミ
         </span>
         <h1 id="op-ws-title">合同会社ミナト企画</h1>
-        {stopped ? (
-          <StatusBadge tone="danger">止めている（11/09〜）</StatusBadge>
+        {band ? (
+          <StatusBadge tone="danger">止めている（{band.since}〜）</StatusBadge>
         ) : (
           <StatusBadge tone="success">使っている</StatusBadge>
         )}
         <p className="k-page-sub">チーム ・ 8 人</p>
         <div className="k-page-acts">
-          <Button variant="outlined">お知らせを送る</Button>
-          <Button variant="outlined">中を見る</Button>
+          <HeadButton can={acts?.canNotice ?? true} onClick={() => acts?.onNotice()}>
+            お知らせを送る
+          </HeadButton>
+          <HeadButton can={acts?.canPeek ?? true} onClick={() => acts?.onPeek()}>
+            中を見る
+          </HeadButton>
           <Menu>
             <MenuTrigger label="そのほかの操作" className="k-op-more">
               ⋯
             </MenuTrigger>
             <MenuPopup>
-              <MenuItem>{stopped ? "再開する" : "止める"}</MenuItem>
+              <MenuItem disabled={!canStop} onSelect={toggle}>
+                {isStopped ? "再開する" : "止める"}
+              </MenuItem>
             </MenuPopup>
           </Menu>
         </div>
       </header>
       <div className="k-op-body">
-        {stopped ? (
+        {band ? (
           <Band
             tone="danger"
             role="alert"
             title="このワークスペースは止めています"
-            sub="理由：請求が払われない ・ 止めた日 11/09。メンバーは入ると止められた画面になり、分身の実行も止まっています。チケット・記録・分身の記憶はそのまま残っています"
+            sub={`理由：${band.reason} ・ 止めた日 ${band.since}。メンバーは入ると止められた画面になり、分身の実行も止まっています。チケット・記録・分身の記憶はそのまま残っています`}
             acts={
-              <Button size="sm" variant="primary">
+              <Button
+                size="sm"
+                variant="primary"
+                loading={resuming}
+                {...(canStop ? {} : { "aria-disabled": true, title: NO_ACT })}
+                onClick={toggle}
+              >
                 再開する
               </Button>
             }
           />
         ) : null}
+        {notice}
         <div className="k-op-cols">
           <div className="k-op-main">
             <Tabs
