@@ -5,7 +5,7 @@
 //   今日は引数で受ける（時計に触らない）。日付の計算は ./dates
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useId } from "react";
-import { Button, Dialog, TextArea } from "@/components/k";
+import { Button, Dialog, TextArea, TextField } from "@/components/k";
 import { WEEKDAYS, mmdd, mmddWeek, monthLabel, monthWeeks, quickDates, shiftMonth, spoken } from "./dates";
 import "./due.css";
 
@@ -29,6 +29,8 @@ export interface DueDialogProps {
   reason?: string;
   reasonError?: string;
   onPick?: (ymd: string) => void;
+  /** 今日より前の日を押したとき（選ばない。赤い理由を出すのは呼び手） */
+  onPast?: () => void;
   onMonth?: (month: string) => void;
   onReason?: (v: string) => void;
   onClose?: () => void;
@@ -101,7 +103,7 @@ function Calendar({ p }: { p: DueDialogProps }) {
                 aria-pressed={p.selected === c.ymd}
                 aria-current={c.ymd === p.today ? "date" : undefined}
                 {...off(c.ymd < p.today)}
-                onClick={() => (c.ymd < p.today ? undefined : p.onPick?.(c.ymd))}
+                onClick={() => (c.ymd < p.today ? p.onPast?.() : p.onPick?.(c.ymd))}
               >
                 {c.day}
               </button>
@@ -162,8 +164,44 @@ export function DueDialog(p: DueDialogProps) {
   );
 }
 
-/** 作る面の振り分けの行の「期限」の欄（押すと小窓）。value が無ければ「日付を選ぶ」 */
-export function DueField({ value, error, onOpen }: { value: string | null; error?: string; onOpen?: () => void }) {
+export interface DueFieldViewProps {
+  value: string | null;
+  error?: string;
+  onOpen?: () => void;
+  /** 欄に直に打ったとき（bare の形だけ） */
+  onType?: (ymd: string) => void;
+  /** 項目の表の「期限」の行の中：箱と見える名前を出さず、日付の欄（読み上げの名前「期限」）と右の「期限の早見」 */
+  bare?: boolean;
+}
+
+/** 項目の表の「期限」の行の中身：日付の欄（直に打てる）と右の早見のボタン（押すと小窓） */
+function BareDueField({ value, error, onOpen, onType }: DueFieldViewProps) {
+  return (
+    <div className="k-f4d-inline">
+      <TextField
+        label="期限"
+        name="due_on"
+        type="date"
+        aria-required
+        value={value ?? ""}
+        readOnly={!onType}
+        onChange={(e) => onType?.(e.target.value)}
+        {...(error ? { error } : {})}
+      />
+      <Button variant="outlined" size="sm" aria-haspopup="dialog" onClick={onOpen}>
+        期限の早見
+      </Button>
+    </div>
+  );
+}
+
+/** 作る面の振り分けの行の「期限」の欄（押すと小窓）。value が無ければ「日付を選ぶ」。bare なら項目の表の行の形 */
+export function DueField(props: DueFieldViewProps) {
+  if (props.bare) return <BareDueField {...props} />;
+  return <BoxDueField {...props} />;
+}
+
+function BoxDueField({ value, error, onOpen }: DueFieldViewProps) {
   const id = useId();
   return (
     <div className="k-create-assign-row">
