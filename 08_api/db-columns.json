@@ -6915,6 +6915,14 @@
    "updated_by": {
     "type": "uuid",
     "nullable": true
+   },
+   "who_billing": {
+    "type": "text",
+    "nullable": false
+   },
+   "who_delete_workspace": {
+    "type": "text",
+    "nullable": false
    }
   },
   "terms_consents": {
