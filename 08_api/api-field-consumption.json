@@ -4078,6 +4078,20 @@
   },
   {
    "entity": "bridge_jobs",
+   "field": "sweep_failed_at",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "PC（Bridge）に仕事を渡す内部の順番待ち。画面には実行（action_runs）として出る（D-121.2）"
+  },
+  {
+   "entity": "bridge_jobs",
+   "field": "sweep_error_code",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "PC（Bridge）に仕事を渡す内部の順番待ち。画面には実行（action_runs）として出る（D-121.2）"
+  },
+  {
+   "entity": "bridge_jobs",
    "field": "permission_mode",
    "consumed_by_screens": [],
    "internal": true,
