@@ -101,7 +101,13 @@ async function stoppedReply(cl: pg.PoolClient, x: SharesInput, ended: readonly s
       data: {
         target: { page_id: x.page, folder_id: x.folder, title: "" },
         from_group_name: "",
-        groups: rows.map((g) => ({ group_id: g.group_id, name: g.name, manager_name: "", checked: false, state: "ended" })),
+        groups: rows.map((g) => ({
+          group_id: g.group_id,
+          name: g.name,
+          manager_name: "",
+          checked: false,
+          state: "ended",
+        })),
       },
     },
   };
