@@ -1,0 +1,6 @@
+{
+  "reads_ok": {
+    "apps/api/test/features/F9/knowledge-old-retire.test.ts": "契約と生成物（08_api/*・packages/contracts/src/*・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・scripts/ci/row_rules.mjs・08_api/phase1/09_ナレッジ.md・01_hearing/決定ログ_進行中.md・11_tickets/K-69.md を readFileSync で読み、git grep で外した操作 ID と凍結する表の読み手を探し、scripts/ci/zt_gate.py を流す（K722-API-001〜011）",
+    "scripts/ci/k722_flow_test.py": "05_flow/flow.json・flows.json・03_architecture/db-catalog.json・ER図.md・11_tickets/K-69.md・K-71.md・K-72.md を読み、flow_gate.py・flow_db_gate.py を流す（K722-FL-001〜007）"
+  }
+}

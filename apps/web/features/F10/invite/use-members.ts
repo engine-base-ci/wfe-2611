@@ -15,15 +15,13 @@ export interface Person {
   name: string;
   email: string;
   role: string;
-  /** そのグループでの役（scope_memberships.role・無ければ null・K-710 のマネージャーの行） */
+  /** そのグループでの役（scope_memberships.role・無ければ null・K-710 のマネージャーの行／K-419・K-818：無ければ会社の役割で字を決める） */
   group_role?: string | null;
   primary?: boolean;
   other_groups?: string[];
   self?: boolean;
   pc?: "ok" | "away" | "never" | "none";
   pc_days_away?: number | null;
-  /** そのグループでの役割（K-419・無ければ会社の役割で字を決める・K-818） */
-  group_role?: string | null;
   /** 一時的に止めている人（K-818） */
   suspended?: boolean;
   /** 最後に使ってからの日数（K-808・まだ使っていなければ null） */
