@@ -207,6 +207,8 @@ export interface MembersPageProps {
   onEditGroup?: (key: string) => void;
   /** 頭の「並びを替える」（K-806） */
   onReorder?: () => void;
+  /** 見出しの下の差し込み口（メンバー／ゲストのタブ・K-874）。渡さなければ何も出さない */
+  tabs?: ReactNode;
 }
 
 /** メンバーの画面の本文（上の 1 行・グループの並び） */
@@ -227,6 +229,7 @@ export function MembersPage({
   addGroupDisabled,
   onEditGroup,
   onReorder,
+  tabs,
   ...inv
 }: MembersPageProps) {
   return (
@@ -258,6 +261,7 @@ export function MembersPage({
           </Button>
         </div>
       </header>
+      {tabs}
       <div className="k-inv-body k-f10m-body">
         {notice}
         {failure ? (

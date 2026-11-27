@@ -21,6 +21,7 @@ import { ParentRowSlot } from "./detail-entry-slots";
 import type { SlotTicket } from "./detail-slots";
 import type { DetailField } from "./detail-types";
 import type { ScopeRow } from "./ticket-shell";
+import { GuestShareSection } from "@/features/F11/share/share-section";
 
 export interface PanelTicket {
   scope_id?: string | null;
@@ -120,6 +121,8 @@ export function DetailPanel(p: DetailPanelProps) {
           ),
         }}
       />
+      {/* 「ゲストに見せる」の区画（F11・K-905）：区の後・実行の記録の前（answer=9096d8002961） */}
+      <GuestShareSection ticket={p.slot} />
       <RunLatest runs={p.runs} />
     </div>
   );

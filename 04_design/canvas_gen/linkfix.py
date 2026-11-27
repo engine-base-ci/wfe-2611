@@ -17,7 +17,7 @@ G = [  # 文字の頭 → 行き先（どの画面でも）
  ("ワークスペース全体", "KnHome.dc.html"), ("請求", "KnHome.dc.html"), ("取引先ごとの宛名の決め方", "KnPage.dc.html"), ("請求の取り消しと出し直し", "KnPage.dc.html"), ("チケット 17 件をすべて見る", "List.dc.html"),
  ("使われ方", "KnPage.dc.html"), ("つながり", "KnLinks.dc.html"), ("版 4", "KnPage.dc.html"), ("やり取り 2", "KnPage.dc.html"),
  ("1 取引先のルール：セイコー様", "KnPage.dc.html"), ("いいえ（直す案にする）", "KnProposal.dc.html"),
- ("京 京蟻システム", "CuPage.dc.html"), ("ミ 合同会社ミナト", "CuPage.dc.html"), ("セイコー様 保守契約の範囲", "KnPage.dc.html"),
+ ("京 京蟻システム", "CuRequests.dc.html"), ("ミ 合同会社ミナト", "CuRequests.dc.html"), ("セイコー様 保守契約の範囲", "KnPage.dc.html"),
  ("署 ", "EdRule.dc.html"), ("締 ", "EdRule.dc.html"), ("禁 ", "EdRule.dc.html"), ("秘 ", "EdRule.dc.html"), ("字 ", "EdRule.dc.html"), ("経 経費の申請", "RoomType.dc.html"), ("応 求人の応募文", "RoomType.dc.html"),
  ("PC をつけているのに実行待ち", "MeInquiry.dc.html"), ("ナレッジの取り込みの形式", "MeInquiry.dc.html"), ("＋ 種別を足す", "EdKind.dc.html"), ("＋ 区画を足す", "EdSection.dc.html"),
  ("{{t.title}}", "TicketDetail.dc.html"), ("鍵 バックアップコードで入る", "Auth2FA.dc.html"),
@@ -30,7 +30,7 @@ G = [  # 文字の頭 → 行き先（どの画面でも）
  ("EG-112", "TicketDetail.dc.html"), ("支払期日は月末締め", "TicketDetail.dc.html"), ("請求のルール", "KnPage.dc.html"), ("PC をつなぐ", "EdPC.dc.html"),
  ("子チケットを作る", "Create.dc.html"), ("困ったとき・お知らせ", "MeHelp.dc.html"), ("ログアウト", "AuthLogin.dc.html"),
  ("高 高本 聖斗 自分だけ", "Main.dc.html"), ("京 京蟻システム株式会社 メンバー", "Main.dc.html"), ("ミ 合同会社ミナト クライアントの場所", "CpHome.dc.html"), ("届いた招待", "AuthInvite.dc.html"),
- ("チケット 4", "List.dc.html"), ("決まり 3", "EdClient.dc.html"), ("親チケットを決める", "EdParent.dc.html"),
+ ("チケット 4", "List.dc.html"), ("決まり 3", "CuRequests.dc.html"), ("親チケットを決める", "EdParent.dc.html"),
 ]
 F = {("MbTalk", "高本のAI"): "MbAI.dc.html"}
 B = [  # ボタン → 行き先（文字が同じとき）

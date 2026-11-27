@@ -151,6 +151,10 @@
   font-size: var(--k-text-label-md);
   color: var(--k-on-surface-variant);
 }
+/* 文の中のリンク（「ログインして入る」など）は 1 語なので折らない（段 12 の崩れの検査・幅 375 で 2 行に折れていた） */
+.k-auth-alt a {
+  white-space: nowrap;
+}
 .k-auth-alt {
   margin: 0;
   padding: var(--k-c-auth-alt-pad);

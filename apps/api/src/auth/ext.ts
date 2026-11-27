@@ -452,7 +452,16 @@ export function authExt(d: AuthExtDeps): Hono {
   app.get("/me", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const m = await d.repo.table("members").get(s.ctx, s.ctx.userId);
+    // ゲスト（role client・K-875）は社内の表（members）を読めないので、DB の関数で自分の 1 行（表示名・役割 requester）だけを引く
+    const guest = s.ctx.role === "client";
+    const m = guest
+      ? ((await withTenant(
+          d.appPool,
+          s.ctx,
+          async (cl) =>
+            (await cl.query<{ v: Record<string, unknown> | null }>("select app.guest_me() as v")).rows[0]?.v,
+        )) ?? null)
+      : await d.repo.table("members").get(s.ctx, s.ctx.userId);
     // 今いる会社（セッションの会社）の名前（K-253・D-144.2）。関門 C2 の読むだけで、行の守りが今の会社の行だけを見せる。
     // 消した印のある会社は読めないので null（ほかの欄は返す）
     const t = await d.repo.table("tenants").get(s.ctx, s.ctx.tenantId);
@@ -462,7 +471,7 @@ export function authExt(d: AuthExtDeps): Hono {
         tenant_id: s.ctx.tenantId,
         display_name: m?.["display_name"] ?? null,
         role_id: (m?.["role_id"] as string | null) ?? null,
-        scope_id: m?.["scope_id"] ?? null,
+        scope_id: guest ? null : (m?.["scope_id"] ?? null),
         workspace_name: workspaceName(t?.["name"]),
       },
     });

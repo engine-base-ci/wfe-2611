@@ -27,7 +27,6 @@ sys.path.insert(0, str(ROOT / "scripts" / "ci"))
 import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 import email_patterns as _EP  # noqa: E402  登録・ログインのメールの形（K-1117）
 from portable_regex import walk as _portable  # noqa: E402  作り手が契約に書くときの直し（\s \S \d \w を JS と同じ字に・K-1117）。表の字はそのまま、比べる前に当てる
-import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432・K-437）
 
 
 def _load_screen_api():
@@ -370,7 +369,7 @@ def returns_raw(text: str) -> bool:
 
 K144 = "apps/api/test/features/contract/k144-contract.test.ts"
 K144_LEAVES = "apps/api/test/features/contract/k144.d"   # 葉ごとのファイル（K-<番号>.ts）の置き場（K-378）
-UUID_ROW = re.compile(r'\["K144-API-\d{3}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]')
+UUID_ROW = re.compile(r'\["K144-API-\d{3,4}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]')
 
 
 def k144_uuid_rows(root: pathlib.Path = ROOT) -> list[tuple[str, str, str, str]]:
