@@ -303,7 +303,12 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       //   ops：運営の人だけ ／ client：取引先の人だけ（/portal/ の API）／ device：PC の印だけ（/bridge/ の API）
       //   member：社内の人。取引先の人と PC の印は通さない。運営は「中を見る」の許可がある間だけ
       if (def.auth === "ops" && ctx.role !== "ops") return err(c, 403, "forbidden", "FORBIDDEN");
-      if (def.auth === "client" && ctx.role !== "client") return err(c, 403, "forbidden", "FORBIDDEN");
+      // 先方の口（/portal/）は、正しくない uuid の道の値・問い合わせを「先方の人でない」より先に 422 にする（入口で厳しく確かめる・D-129.42・PM の決め 2026-11-28）
+      if (def.auth === "client" && ctx.role !== "client") {
+        const badIdsFirst = uuidParamIssues(c, def);
+        if (badIdsFirst.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badIdsFirst });
+        return err(c, 403, "forbidden", "FORBIDDEN");
+      }
       if (def.auth === "device" && ctx.role !== "device") return err(c, 403, "forbidden", "FORBIDDEN");
       if (def.auth === "member") {
         // PC の印は、本人か PC の印で呼べる口（self_or_device）だけ通す

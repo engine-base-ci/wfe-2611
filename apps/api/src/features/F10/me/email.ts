@@ -44,6 +44,8 @@ function down(where: string, e: unknown): HookReply {
 }
 
 const forbidden = (): HookReply => ({ status: 403, body: { error: "forbidden", code: "FORBIDDEN" } });
+/** リンクの印の上限（契約の VALUE_RANGES） */
+const TOKEN_MAX = 200;
 const hashOf = (token: string): string => createHash("sha256").update(token).digest("hex");
 
 /** 新しい宛ての伏せ字（古いアドレスへの知らせに出す・名前の頭 2 字とドメインだけ） */
@@ -175,7 +177,16 @@ export function meEmailFeature(d: MeEmailDeps) {
 
   const verify = async (a: HookArgs): Promise<HookReply> => {
     const token = a.input["token"];
-    if (typeof token !== "string" || token.length === 0) return reply(409, "E-PAGE-006");
+    // リンクの印は必須・1〜200 字（契約の REQUIRED_INPUTS・VALUE_RANGES。x-required-by: hooks で入口の zod は読まない・K835-API-012）
+    if (typeof token !== "string" || token.length === 0 || token.length > TOKEN_MAX)
+      return {
+        status: 422,
+        body: {
+          error: "validation_failed",
+          code: "VALIDATION_ERROR",
+          details: [{ field: "token", message: `1〜${TOKEN_MAX} 字` }],
+        },
+      };
     let v: VerifyResult;
     try {
       v = await withTenant(d.appPool, a.ctx, async (cl) => {

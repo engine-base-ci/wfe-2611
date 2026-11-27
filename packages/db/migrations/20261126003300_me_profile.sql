@@ -54,6 +54,8 @@ language sql stable security definer set search_path = public, app, pg_temp as $
   )
 $$;
 revoke all on function app.me_usable() from public;
+-- 口の頭で「止めた人・抜けた人は 403」を見る（顔の写真・端末の一覧など・K834-API-012・K836-API-011）。自分のことだけの真偽
+grant execute on function app.me_usable() to kaname_app;
 
 -- 今の会社の自分の行（口が member の形に直す。顔は avatar_ref のまま）
 create or replace function app.me_member_row() returns jsonb

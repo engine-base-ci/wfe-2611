@@ -7,7 +7,7 @@ import type { TenantContext } from "@kaname/db/context";
 import { describe, expect, it } from "vitest";
 import { image, msg, setupMe, type P } from "./me.harness.js";
 
-const h = setupMe("me-avatar.ts");
+const h = setupMe("me-avatar.ts", { extraHooks: ["me-profile.ts"] }); // 読み直す GET /me は K-833 の hooks
 const MB5 = 5 * 1024 * 1024;
 const ctxOf = (p: P): TenantContext => ({ tenantId: p.tenantId, userId: p.id, role: "member", stepUpAt: null });
 const form = (bytes: Uint8Array | string | null, type = "image/png", name = "face.png", reset?: string) => {

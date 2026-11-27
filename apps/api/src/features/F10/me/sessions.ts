@@ -58,10 +58,13 @@ export function createListMySessions(d: SessionsDeps) {
       const who = await whoAmI(d.auth, a);
       if (!who) return unauthenticated;
       const data = await withTenant(d.appPool, a.ctx, async (cl) => {
+        // 止めた人・抜けた人は 403（K-833 の app.me_usable・K836-API-011）
+        if (!(await cl.query<{ ok: boolean }>("select app.me_usable() as ok")).rows[0]?.ok) return null;
         const s = await cl.query<{ v: unknown }>("select app.me_sessions_list($1) as v", [who.sid]);
         const e = await cl.query<{ v: unknown }>("select app.me_security_events() as v");
         return { sessions: s.rows[0]!.v, events: e.rows[0]!.v };
       });
+      if (!data) return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
       return { status: 200, body: { data } };
     } catch (e) {
       console.error(`[me-sessions] 端末の一覧を読めなかった（${kindOf(e)}）`);
