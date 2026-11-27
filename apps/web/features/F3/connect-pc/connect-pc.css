@@ -392,8 +392,7 @@
   cursor: not-allowed;
 }
 
-/* ---- 前の設定の画面への導線・知らせ ---- */
-.k-pc-legacy,
+/* ---- 本文の知らせ ---- */
 .k-pc-note {
   margin: 0;
   font-size: var(--k-text-body-sm);
