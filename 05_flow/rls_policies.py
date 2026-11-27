@@ -182,6 +182,11 @@ POLICIES: dict[str, list[dict]] = {
                           "predicate": f"tenant_id = {T} AND (app.kpage_writable(page_id) OR app.kfolder_writable(folder_id) OR app.kn_group_manager({U}, group_id))",
                           "rationale": "元を書ける人と共有を受けているグループのマネージャーだけ（共有先のメンバーには行は見えない）。書くのは app.kn_share_set・app.kn_apply_share（K-689）だけ",
                           "source": ["D-152.6", "D-152.27"]}],
+    # 破られた数（K-700・D-152.24）。追記だけ・書くのは DB の関数だけ（アプリの役は読むだけ）
+    "knowledge_breaches": [{"name": "knowledge_breaches_read", "operation": "select", "role": "authenticated",
+                            "predicate": f"tenant_id = {T} AND app.kpage_writable(page_id)",
+                            "rationale": "そのページを書ける人だけ（管理者は会社の棚・マネージャーは自分のグループ・本人は自分の棚）。書くのは app.knowledge_record_breach・app.knowledge_breach_scan と引き金だけ",
+                            "source": ["D-152.24"]}],
     "knowledge_links": [
         {"name": "knowledge_links_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_visible(from_page_id)",
          "rationale": "元のページを読める人（つないだ先の中身はその先の守りで見る）", "source": ["D-128.52"]},
