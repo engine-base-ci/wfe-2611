@@ -50,7 +50,7 @@
     "test_delete_knowledge_requests_id_conflict": "K687-API-011",
     "test_delete_knowledge_requests_id_rate_limited": "K687-API-025",
     "test_delete_knowledge_requests_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-687.ts",
      "mark": "K144-API-121"
     },
     "test_delete_knowledge_requests_id_terms_pending": {

@@ -11,7 +11,7 @@
     "test_get_knowledge_shares_not_found": "K689-API-003",
     "test_get_knowledge_shares_rate_limited": "K689-API-020",
     "test_get_knowledge_shares_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-689.ts",
      "mark": "K144-API-140"
     },
     "test_get_knowledge_shares_terms_pending": {
