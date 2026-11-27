@@ -35,6 +35,9 @@ export const ROW_EXEMPT_FIELDS = {
   restoreTicket: {
     id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
   },
+  readNotification: {
+    id: "知らせは自分宛ての物だけ（D-151.3）。入口の行の確かめは、別の人の行を 404（NOT_FOUND）、行の守りを緩めたときに 403 と答え、口の 404（E-NTF-010・一覧に出ない行も同じ答え）とずれる。持ち主の確かめは口の文（VISIBLE_SQL の member_id = app.user_id()）と行の守り（notifications_self_read・notifications_self_only_write_*）の 2 重で、外れた行はどれも同じ 404・E-NTF-010（K-462）",
+  },
 };
 const exemptField = (op, field) => {
   const why = ROW_EXEMPT_FIELDS[op]?.[field];
@@ -117,6 +120,18 @@ export const OP_RULES = {
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（K-401・D-148.17）。
+  //   状態は見ない（決まった渡しに答えた人には 403 でなく 409・E-HND-005 を口が返す）。RULES.recipient は替えない（ほかの口に効かせない）。
+  //   関数 app.handover_answer_gate も中で同じ判定をする（守りは 2 層）
+  answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 段9:K-406 取り消す・催促するの行はこの下
+  // 渡した人だけ（申し出は申し出た人・配るは配った人・K-406）。状態は見ない（決まった渡しは口が 409 にする）。関数 app.handover_withdraw・app.handover_remind も中で同じ判定をする（守りは 2 層）
+  withdrawTicketHandover: `from_member_id = ${ME}`,
+  remindTicketHandover: `from_member_id = ${ME}`,
+
+  // 段9:K-410 人を決めるの行はこの下
+
   // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
   //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
   takeoverActionRun: `true`,

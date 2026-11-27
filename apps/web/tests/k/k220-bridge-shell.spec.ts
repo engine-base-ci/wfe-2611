@@ -19,6 +19,7 @@ import {
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -63,6 +64,8 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     else if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
     else if (p === "/api/v1/scopes") r = ok([], { limit: 200, writable: [] });
+    // 外枠の口 getShell（K-466）。承認待ち 2・グループ無し。PC の印は PC の画面が自分で読んだ値を外枠へ渡す
+    else if (p === "/api/v1/shell") r = ok(shellData({ approvals: 2, groups: [] }));
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: 2 }, cursor: null });
     else if (p === "/api/v1/bridge/devices") {
       if (m.holdDevices) return never();
@@ -135,7 +138,7 @@ test("K220-UI-002 上の帯のいまの場所：「自分の設定 › PC と使
   await expect(page).toHaveURL(/\/setup\/bridge$/);
 });
 
-test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワークスペースごと。項目は プロフィール・ログインと安全・PC と使った量・預けたログイン情報・知らせ の順で、PC と使った量 が今いる項目（aria-current=page・白い地・600）", async ({
+test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワークスペースごと。項目は プロフィール・ログインと安全・PC と使った量・預けたログイン情報・お知らせ の順で、PC と使った量 が今いる項目（aria-current=page・白い地・600）", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
@@ -145,7 +148,7 @@ test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワーク�
   for (const h of ["アカウント", "分身", "ワークスペースごと"])
     await expect(sub.getByText(h, { exact: true })).toBeVisible();
   const names = (await sub.locator(".k-me-sub-t").allInnerTexts()).map((x) => x.trim());
-  expect(names).toEqual(["プロフィール", "ログインと安全", "PC と使った量", "預けたログイン情報", "知らせ"]);
+  expect(names).toEqual(["プロフィール", "ログインと安全", "PC と使った量", "預けたログイン情報", "お知らせ"]);
   expect(await sub.evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(237, 240, 244)");
   expect(await sub.evaluate((e) => getComputedStyle(e).borderRightColor)).toBe("rgb(221, 226, 233)");
   const head = sub.locator(".k-me-sub-h").first();
@@ -175,12 +178,12 @@ test("K220-UI-004 第 2 ナビの作った画面：ログインと安全は /mfa
   await expect(page).toHaveURL(/\/mfa-setup$/);
 });
 
-test("K220-UI-005 第 2 ナビのまだ無い画面（プロフィール・知らせ）：出すが押せない（aria-disabled・href なし・薄さ 0.55）。押しても Enter でも移らず、Tab で止まらない", async ({
+test("K220-UI-005 第 2 ナビのまだ無い画面（プロフィール・お知らせ）：出すが押せない（aria-disabled・href なし・薄さ 0.55）。押しても Enter でも移らず、Tab で止まらない", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
-  for (const name of ["プロフィール", "知らせ"]) {
+  for (const name of ["プロフィール", "お知らせ"]) {
     const it = subItem(page, name);
     await expect(it, name).toHaveAttribute("aria-disabled", "true");
     expect(await it.getAttribute("href"), name).toBeNull();
@@ -204,12 +207,12 @@ test("K220-UI-006 預けたログイン情報の件数：本当の数を返す�
   expect(t).not.toMatch(/\d/);
 });
 
-test("K220-UI-007 第 2 ナビの注：「アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと」は 11px で一番下", async ({
+test("K220-UI-007 第 2 ナビの注：「アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと」は 11px で一番下", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
-  const note = page.locator(SUB).getByText("アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと");
+  const note = page.locator(SUB).getByText("アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと");
   expect(await note.evaluate((e) => getComputedStyle(e).fontSize)).toBe("11px");
   const last = await rect(page, `${SUB} a >> nth=-1`);
   expect((await note.boundingBox())!.y).toBeGreaterThan(last.y);
@@ -271,15 +274,16 @@ test("K220-UI-009 本文の箱と見出し：箱は x 448・幅 956（中身の�
   expect(d.x).toBeGreaterThan(h.x + h.width - 1);
 });
 
-test("K220-UI-010 外枠の口は 1 画面で 1 回ずつ（自分・承認待ちの数）。左のメニューの下の PC の状態は「つながっている」", async ({
+test("K220-UI-010 外枠の口は 1 画面で 1 回（getShell・K-466）：自分の口と承認待ちの口は外枠のために読まない。左のメニューの下の PC の状態は「つながっている」", async ({
   page,
 }) => {
   const m = await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
   await expect(page.getByRole("navigation", { name: "メニュー", exact: true })).toContainText("PC つながっている");
-  await expect.poll(() => m.reads["/api/auth-ext/me"] ?? 0).toBeGreaterThanOrEqual(1);
-  expect(m.reads["/api/auth-ext/me"]).toBe(1);
-  expect(m.reads["/api/v1/approvals/queue"] ?? 0).toBeLessThanOrEqual(1);
+  await expect.poll(() => m.reads["/api/v1/shell"] ?? 0).toBeGreaterThanOrEqual(1);
+  expect(m.reads["/api/v1/shell"]).toBe(1);
+  expect(m.reads["/api/auth-ext/me"] ?? 0).toBe(0);
+  expect(m.reads["/api/v1/approvals/queue"] ?? 0).toBe(0);
 });
 
 test("K220-UI-011 PC の一覧を読んでいる間（D-144.8）：外枠と見出し「PC と使った量」はすぐ出る。「読み込んでいます…」は 2.9 秒では出ず 3 秒を過ぎて出る", async ({
@@ -337,7 +341,8 @@ test("K220-UI-013 幅 375：本文の一番下まで送ると、本文の一番�
     ),
   );
   expect(bottom).toBeGreaterThan(0);
-  expect(bottom).toBeLessThanOrEqual(t.y);
+  // 文書の高さは整数に丸められ、本文の高さが端数だと最後の 1px 未満までは送れない。被りは 1px からを数える（K-1114・K138-SH-019 と同じ）
+  expect(bottom).toBeLessThan(t.y + 1);
 });
 
 interface Group {
@@ -404,7 +409,7 @@ test("K220-UI-016 この画面で PC がつながったら（待っている →
   await expect(nav).not.toContainText("PC つながっている");
   await page.clock.fastForward(6_000);
   await expect(nav).toContainText("PC つながっている");
-  expect(m.reads["/api/auth-ext/me"]).toBe(1);
+  expect(m.reads["/api/v1/shell"]).toBe(1);
 });
 
 test("K220-UI-017 PC の一覧の口が 403（権限なし）：外枠の中に「この画面を見る権限がありません」が出る（外枠の外に出さない）", async ({

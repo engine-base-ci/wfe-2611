@@ -3,21 +3,22 @@
 //   本体（svar-gantt）はブラウザ専用なので next/dynamic で読む。棒の並びは親の下に子（行の parentId）。節目の旗は 1 行として並べる。
 //   「開始・期限が無い N 件」のボタンを押すと、すぐ下に小窓（NoDateTray の gantt 型）が開く。
 //   スマホ（767 以下）はガントを出さない（キャンバス MobileList のとおり）。直接開いたときは一言（案）を出し、横に溢れさせない。
+//   道具・棒を動かす・指を置く・小窓の開け閉めは口（on…）で画面（gantt-view.tsx・K-482）に渡す。口が無ければ押しても何も起きない（下絵のまま）
 import dynamic from "next/dynamic";
 import type { ITask } from "@svar-ui/react-gantt";
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, type ReactNode, type SyntheticEvent } from "react";
 import "../../F4/ticket-list/ticket-list.css";
 import { STAGE_TONE } from "../overview/head";
 import "../overview/tones.css";
 import "./gantt.css";
-import type { GanttScale } from "./gantt-inner";
+import type { GanttMove, GanttScale } from "./gantt-inner";
 
 const GanttInner = dynamic(() => import("./gantt-inner"), {
   ssr: false,
   loading: () => <div className="k-f7-gantt-loading">読み込んでいます…</div>,
 });
 
-export type { GanttScale } from "./gantt-inner";
+export type { GanttMove, GanttScale } from "./gantt-inner";
 
 export interface GanttRow {
   id: string;
@@ -80,13 +81,35 @@ export interface GanttChartProps {
   assignee: string;
   /** 開始・期限が無い件数 */
   noDateCount: number;
+  /** 読んだ行のほかにもまだある（「N 件以上」） */
+  noDateMore?: boolean;
   noDateOpen?: boolean;
   /** ボタンの下に開く小窓（NoDateTray の gantt 型） */
   tray?: ReactNode;
   /** 表の下に出す案内（保留を指したときの出し方など） */
   hint?: ReactNode;
   readonly?: boolean;
-  onMove?: (id: string, start: Date, end: Date) => void;
+  /** 担当者の選び（id と名前）。無ければ「すべて」だけ */
+  people?: readonly { id: string; name: string }[];
+  onMove?: (id: string, move: GanttMove) => void;
+  onScale?: (scale: GanttScale) => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  onToday?: () => void;
+  /** 担当者を選んだ（空は「すべて」） */
+  onAssignee?: (id: string) => void;
+  onNoDateToggle?: () => void;
+  /** Esc で小窓を閉じる。偽を返したら閉じない（上に別の小窓が開いているとき） */
+  onNoDateEscape?: () => boolean;
+  /** 棒に指・焦点を置いた（行の id。棒の外へ出たら null） */
+  onHoverBar?: (id: string | null) => void;
+}
+
+/** 指・焦点を置いた棒の svar の id（棒の外なら null） */
+function barIdOf(e: SyntheticEvent): number | null {
+  const el = (e.target as HTMLElement | null)?.closest?.(".wx-bar[data-task-id]");
+  const raw = el?.getAttribute("data-task-id");
+  return raw ? Number(raw) : null;
 }
 
 export function GanttChart(p: GanttChartProps) {
@@ -97,58 +120,89 @@ export function GanttChart(p: GanttChartProps) {
   const moved = useMemo(
     () =>
       onMove
-        ? (id: number, s: Date, e: Date) => {
+        ? (id: number, m: GanttMove) => {
             const row = back.get(id);
-            if (row) onMove(row, s, e);
+            if (row) onMove(row, m);
           }
         : undefined,
     [onMove, back],
   );
+  const noDateBtn = useRef<HTMLButtonElement>(null);
+  const { noDateOpen, onNoDateEscape } = p;
+  useEffect(() => {
+    if (!noDateOpen || !onNoDateEscape) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || !onNoDateEscape()) return;
+      noDateBtn.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [noDateOpen, onNoDateEscape]);
+  const hover = (e: SyntheticEvent) => {
+    if (!p.onHoverBar) return;
+    const id = barIdOf(e);
+    p.onHoverBar(id === null ? null : (back.get(id) ?? null));
+  };
   return (
     <div className="k-list-body">
       <section className="k-list-main" aria-labelledby="tickets-title">
         <div className="k-f7-gantt-card">
           <div className="k-f7-gantt-tools" role="group" aria-label="ガントの道具">
-            <button type="button" className="k-list-tool">
+            <button type="button" className="k-list-tool" onClick={p.onToday}>
               今日
             </button>
             <span className="k-f7-gantt-nav">
-              <button type="button" className="k-list-tool" aria-label="前へ">
+              <button type="button" className="k-list-tool" aria-label="前へ" onClick={p.onPrev}>
                 ‹
               </button>
-              <button type="button" className="k-list-tool" aria-label="次へ">
+              <button type="button" className="k-list-tool" aria-label="次へ" onClick={p.onNext}>
                 ›
               </button>
             </span>
             <span className="k-f7-gantt-seg" role="group" aria-label="目盛り">
               {(Object.keys(SCALE_LABEL) as GanttScale[]).map((s) => (
-                <button key={s} type="button" aria-pressed={s === p.scale}>
+                <button key={s} type="button" aria-pressed={s === p.scale} onClick={() => p.onScale?.(s)}>
                   {SCALE_LABEL[s]}
                 </button>
               ))}
             </span>
             <label className="k-f7-gantt-pick">
               まとめ方
-              <select className="k-f7-gantt-select" defaultValue={p.groupBy}>
-                <option>親子</option>
-                <option>担当者</option>
-                <option>節目</option>
+              <select className="k-f7-gantt-select" value={p.groupBy} onChange={() => undefined}>
+                <option value="親子">親子</option>
+                <option value="担当者" disabled title="担当者でまとめる（準備中）">
+                  担当者
+                </option>
+                <option value="節目" disabled title="節目でまとめる（準備中）">
+                  節目
+                </option>
               </select>
             </label>
             <label className="k-f7-gantt-pick">
               担当者
-              <select className="k-f7-gantt-select" defaultValue={p.assignee}>
-                <option>すべて</option>
+              <select
+                className="k-f7-gantt-select"
+                value={p.people ? p.assignee : "すべて"}
+                onChange={(e) => p.onAssignee?.(e.target.value)}
+              >
+                {p.people ? <option value="">すべて</option> : <option>すべて</option>}
+                {(p.people ?? []).map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
               </select>
             </label>
             <span className="k-f7-gantt-anchor">
               <button
+                ref={noDateBtn}
                 type="button"
                 className="k-list-tool"
                 aria-expanded={p.noDateOpen ?? false}
                 aria-haspopup="dialog"
+                onClick={p.onNoDateToggle}
               >
-                開始・期限が無い {p.noDateCount} 件
+                開始・期限が無い {p.noDateCount} 件{p.noDateMore ? "以上" : ""}
               </button>
               <button
                 type="button"
@@ -174,7 +228,7 @@ export function GanttChart(p: GanttChartProps) {
               期限切れ
             </li>
           </ul>
-          <div className="k-f7-gantt-body">
+          <div className="k-f7-gantt-body" onMouseOver={hover} onFocus={hover}>
             <GanttInner
               tasks={tasks}
               scale={p.scale}

@@ -7,7 +7,8 @@ import type { ReactNode } from "react";
 export interface NumberCard {
   key: string;
   label: string;
-  value: number;
+  /** 数（口が数を返さないときは undefined：字を出さない・0 と書かない・D-144.3） */
+  value?: number | undefined;
   tone: "danger" | "neutral" | "warning";
   /** 札の字の前の印（期限切れの炎など） */
   icon?: ReactNode;
@@ -40,7 +41,7 @@ export function NumberCards({ cards, pressed = null, onPress, pressedNote }: Num
               {c.icon}
               {c.label}
             </span>
-            <span className="k-f7-due-card-value">{c.value}</span>
+            <span className="k-f7-due-card-value">{c.value ?? "\u00a0"}</span>
           </button>
         ))}
       </div>
@@ -62,7 +63,15 @@ export interface MineChip {
   pending?: boolean;
 }
 
-export function MineChips({ chips, current }: { chips: readonly MineChip[]; current: string }) {
+export interface MineChipsProps {
+  chips: readonly MineChip[];
+  /** 押している札の key（どれも押していなければ、どれとも合わない値） */
+  current: string;
+  /** 札を押したとき（押せない札では呼ばない） */
+  onPick?: (key: string) => void;
+}
+
+export function MineChips({ chips, current, onPick }: MineChipsProps) {
   return (
     <span className="k-f7-due-chips" role="group" aria-label="絞りの札">
       {chips.map((c) => (
@@ -71,6 +80,7 @@ export function MineChips({ chips, current }: { chips: readonly MineChip[]; curr
           type="button"
           className="k-f7-due-chip"
           aria-pressed={c.key === current}
+          onClick={c.pending ? undefined : () => onPick?.(c.key)}
           {...(c.pending ? { "aria-disabled": true, tabIndex: -1, title: `${c.label}（準備中）` } : {})}
         >
           {c.label}

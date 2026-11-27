@@ -66,3 +66,28 @@ export function buildMonthCells({ year, month, today, byDay }: MonthInput): CalC
   }
   return cells;
 }
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const ymdOf = (d: Date) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+
+/** 格子の最初と最後の日（YYYY-MM-DD・前後の月の日も含む）。月の口の due_from・due_to に使う（K-481） */
+export function gridRange(year: number, month: number): { from: string; to: string } {
+  const first = new Date(year, month - 1, 1);
+  const days = new Date(year, month, 0).getDate();
+  const total = Math.ceil((first.getDay() + days) / 7) * 7;
+  const start = new Date(year, month - 1, 1 - first.getDay());
+  const end = new Date(year, month - 1, 1 - first.getDay() + total - 1);
+  return { from: ymdOf(start), to: ymdOf(end) };
+}
+
+/** セルの鍵（「2026-11-5」）→ YYYY-MM-DD */
+export function ymdOfKey(key: string): string {
+  const [y, m, d] = key.split("-").map(Number);
+  return `${y}-${pad2(m ?? 1)}-${pad2(d ?? 1)}`;
+}
+
+/** YYYY-MM-DD → 小窓の題「11/5（木）」 */
+export function dayTitle(ymd: string): string {
+  const d = new Date(Number(ymd.slice(0, 4)), Number(ymd.slice(5, 7)) - 1, Number(ymd.slice(8, 10)));
+  return `${d.getMonth() + 1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
+}

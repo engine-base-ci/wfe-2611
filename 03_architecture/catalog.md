@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 98・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 266・部品 56・設定 41
+API 375（作った 113・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 307・部品 68・設定 41
 
 ## 共通の処理
 
@@ -132,12 +132,12 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `ticket_imports` | skeleton | F4 |  |  |
 | `ticket_kinds` | skeleton | F9 | F4 | ○ |
 | `ticket_links` | skeleton | F4 |  |  |
-| `ticket_messages` | skeleton | F6 | F11 | ○ |
-| `ticket_section_versions` | skeleton | F4 |  |  |
+| `ticket_messages` | skeleton | F6 | F11,F4 | ○ |
+| `ticket_section_versions` | skeleton |  | F4 |  |
 | `ticket_sections` | skeleton | F4 |  |  |
 | `ticket_stages` | skeleton |  | F4 |  |
 | `ticket_thread_seen` | internal |  |  |  |
-| `tickets` | skeleton | F11,F3,F4,F5,F6,F7 |  | ○ |
+| `tickets` | skeleton | F11,F3,F4,F5,F6,F7 | F8 | ○ |
 
 凍結の表（60）：`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`class_axes`・`class_values`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`integrations`・`learned_procedures`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
 
@@ -146,6 +146,7 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | 口 | 道 | 何をするか | 流れ | 状態 | 持ち主のチケット |
 |---|---|---|---|---|---|
 | `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 作った | K-332 |
+| `confirmInvitationJoin` | POST /api/v1/auth/invitations/confirm | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） | K-422 |
 | `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-313 |
 | `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-314 |
 | `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-305 |
@@ -328,7 +329,7 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | K-59 |
 | `listMyTicketDrafts` | GET /api/v1/me/ticket-drafts | 取得（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
 | `saveMyTicketDraft` | POST /api/v1/me/ticket-drafts | 作成・実行（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
-| `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-60,K-397 |
+| `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-60 |
 | `updateTestSpec` | PATCH /api/v1/test_specs/:id | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 作った | K-435 |
 | `deleteTestSpec` | DELETE /api/v1/test_specs/:id | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 作った | K-435 |
 | `listTicketFields` | GET /api/v1/ticket-fields | 取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢） | F4 | 作った | K-563 |
@@ -340,13 +341,14 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限 | F4,F7 | 作った | K-92 |
-| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60,K-397 |
+| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
 | `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `updateTicketBody` | PATCH /api/v1/tickets/:id/body | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-432 |
 | `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
+| `listTicketItemChanges` | GET /api/v1/tickets/:id/item-changes | 取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る | F4 | 作った | K-433 |
 | `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children | F4 | 作った | K-59,K-441 |
 | `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
@@ -355,8 +357,8 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 作った | K-59,K-434 |
 | `lintTestSpecs` | POST /api/v1/tickets/:id/test-specs/lint | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
-| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59,K-433 |
-| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59,K-433 |
+| `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない） | F4 | 作った | K-59,K-433 |
+| `restoreTicketVersion` | POST /api/v1/tickets/:id/versions/:v/restore | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-433 |
 | `listWorkTypeCandidates` | GET /api/v1/tickets/:id/work-type-candidates | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数なら選ぶ） | F4 | 契約だけ（501） | K-59 |
 | `bulkUpdateTickets` | POST /api/v1/tickets/bulk | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F7 | 契約だけ（501） | K-59 |
 | `getActionRun` | GET /api/v1/action_runs/:id | 取得（action_runs）— AI に任せる | F5 | 作った | K-62 |
@@ -399,28 +401,32 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
 | `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
 | `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
-| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した） | F6 | 作った | K-390,K-397 |
-| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-390,K-397 |
+| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した） | F6 | 作った | K-390 |
+| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-390 |
 | `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-385 |
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-383 |
 | `markTicketTimelineSeen` | POST /api/v1/tickets/:id/timeline/seen | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-384 |
 | `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 作った | K-67,K-485 |
 | `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分） | F7 | 作った | K-461,K-467 |
-| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67,K-462,K-467 |
-| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67,K-462,K-467 |
+| `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-67,K-462,K-467 |
+| `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 作った | K-67,K-462,K-467 |
 | `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物） | F7 | 作った | K-67,K-475 |
 | `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-475 |
-| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67,K-476 |
-| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67,K-476 |
+| `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-476 |
+| `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-476 |
 | `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-477 |
 | `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-67,K-468,K-471 |
-| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67,K-465,K-466 |
+| `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 作った | K-67,K-465,K-466 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-488 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-487 |
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-489 |
-| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68,K-401 |
-| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68,K-401 |
-| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68,K-401 |
+| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-68,K-401 |
+| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-68,K-401 |
+| `remindTicketHandover` | POST /api/v1/ticket_handovers/:id/remind | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替 | F8 | 作った | K-406 |
+| `withdrawTicketHandover` | POST /api/v1/ticket_handovers/:id/withdraw | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-406 |
+| `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |
+| `listTicketHandovers` | GET /api/v1/tickets/:id/handovers | 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで） | F8 | 作った | K-405 |
+| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-68,K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -650,3 +656,15 @@ API 369（作った 98・後のフェーズの行為だけ 20）・前の道す�
 | `ua-parser-js` | 記録にある名前のまま |
 | `vitest` | 記録にある名前のまま |
 | `zod` | 記録にある名前のまま |
+| `@tiptap/core` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/react` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/pm` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/starter-kit` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-highlight` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-table` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-task-list` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-task-item` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-text-align` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-text-style` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-superscript` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-subscript` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |

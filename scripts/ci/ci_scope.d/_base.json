@@ -49,6 +49,7 @@
   "package_paths": ["apps/*/vercel.json"],
   "paths": [
    "05_flow/*.py",
+   "05_flow/build_api.d/**",
    "05_flow/*.json",
    "05_flow/*.html",
    "04_design/**",
@@ -616,7 +617,7 @@
   "apps/web/tests/k/kit.ts": "画面の試験の汎用の道具。突き合わせの設定 04_design/fidelity.json とキャンバスの絵を読む・K-257",
   "apps/web/tests/k/k227-band-approval.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組 band-approval の持ち主と enrolled）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-227",
   "apps/web/tests/k/k228-bands.spec.ts": "07_qa/test-specs/k/delegate.md・approve-complete.md（操作要素の表）と 04_design/fidelity.json（6 組の持ち主と enrolled）・キャンバス（detail-kit.ts 経由）を読む。どれも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-228",
-  "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
+  "apps/web/tests/k/k226-ticket-detail.spec.ts": "台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226（突き合わせの組 ticket-detail は K-571 で外した）",
   "apps/web/tests/k/k316-login.spec.ts": "ログインの画面のファイル apps/web/features/F1/login/login-form.tsx を読む（部品の世代：views の部品と契約の口だけを使うか・K316-UI-019）。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-316",
   "apps/web/tests/k/k317-login-passkey.spec.ts": "lib/auth/session.tsx・lib/auth/client.ts・features/F1/login/login-form.tsx を読み（部品の世代・K317-UI-023）、list-mock.ts を通して 04_design/fidelity.json を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-317",
   "apps/web/tests/k/k318-security.spec.ts": "07_qa/test-specs/errors.json を読み（エラーの文）、app/(outside)/mfa-setup と features/F1/security のファイルを読む（部品の 2 段階の口を直に呼ばない・K318-UI-006）。stage2-match.ts を通してモックの頁を開き、scripts/ci/fidelity_compare.mjs を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-318",

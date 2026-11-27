@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-25
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-26
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -53,7 +53,7 @@
 | E-036 | `triggers` | 5. 実行・統制 | scope_layered | 3 | D-010 |
 | E-037 | `policies` | 5. 実行・統制 | scope_layered | 3 | D-060 |
 | E-038 | `approvals` | 5. 実行・統制 | scope_layered | 4 | D-010 |
-| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
+| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 D-151.6 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
@@ -154,7 +154,7 @@
 | E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 D-155.37 |
 | E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
 | E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
-| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 |
+| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
@@ -205,7 +205,7 @@
 
 | ID | ロール | 画面数 | 制約 |
 |---|---|---|---|
-| R1 | 自分で全部回している人 | 57 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
+| R1 | 自分で全部回している人 | 59 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R2 | 数人の会社の代表 | 59 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R3 | 配られた仕事をする人 | 28 | 権限なしで自由 ／ 見える層だけ ／ 権限＝誰に×何に×どの層で×できること |
 | R4 | 依頼を出す取引先の人 | 18 | 共有された範囲を見るだけ（書き込まない） |
@@ -217,7 +217,7 @@
 |---|---|---|---|---|---|---|---|
 | signup | アカウントを作る | A01 A96 | 2 | 1 | 6 | 7 | R1 R2 R3 R4 |
 | verify-email | メールを確認する | A02 | 5 | 3 | 4 | 9 | R1 R2 |
-| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 4 | 10 | R3 R4 |
+| invite-accept | 招待を受けて参加する | A03 | 3 | 0 | 6 | 11 | R3 R4 |
 | mfa-setup | 安全の設定 | A04 A97 | 3 | 1 | 15 | 10 | R1 R2 R3 R4 |
 | billing-setup | 支払い方法を登録する | A05 | 4 | 0 | 1 | 9 | R1 R2 |
 | login | ログインする | A13 | 3 | 3 | 10 | 12 | R1 R2 R3 R4 |
@@ -229,7 +229,7 @@
 | onboard-testrun | テストで動かす | A11 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 1 | 0 | 1 | 10 | R1 R2 |
 | today | 今日 | A14 A55 A56 A92 | 1 | 0 | 4 | 6 | R1 R2 R3 R4 |
-| approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 15 | R1 R2 R3 |
+| approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 16 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
 | clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 78 | 22 | R1 R2 R3 R4 |
@@ -248,7 +248,7 @@
 | automation-repair | 覚え直させる | A32 | 1 | 0 | 1 | 2 | R1 R2 |
 | audit | 記録 | A33 A34 A38 A40 A66 | 6 | 45 | 49 | 9 | R1 R2 |
 | policies | ルール | A35 | 1 | 0 | 1 | 7 | R1 R2 R3 R4 |
-| members | メンバー | A36 | 7 | 46 | 53 | 10 | R2 |
+| members | メンバー | A36 | 7 | 46 | 53 | 10 | R1 R2 |
 | ai-staff | AI社員 | A37 | 1 | 0 | 1 | 10 | R1 R2 |
 | ai-staff-detail | AI社員の1体 | A46 A81 | 1 | 0 | 2 | 12 | R1 R2 |
 | security-brief | この製品でできること・できないこと | A39 | 1 | 0 | 1 | 5 | R1 R2 |
@@ -276,8 +276,8 @@
 | ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 57 | 27 | R6 |
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
-| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 85 | 44 | R1 R2 R3 R4 |
+| member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R1 R2 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 96 | 44 | R1 R2 R3 R4 |
 | masters | 決まり | A118 A120 | 1 | 0 | 14 | 18 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |
