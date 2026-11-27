@@ -263,30 +263,28 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 作っていない項目（ナレッジ・ワークスペースの管理）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い", async ({
+test("K138-SH-006 R1 の左に押せない項目は 0 件で取引先は出ない（K-1113 で取引先を外した）・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ（K-420）、ナレッジは作った道 /knowledge へ押せる（K-682）（D-148.49・D-152.11）", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
-  for (const name of ["ナレッジ", "ワークスペースの管理"]) {
-    // 押せるリンクは無く、読み上げには「使えないリンク」として届く（role=link・aria-disabled）
-    await expect(nav.getByRole("link", { name: new RegExp(name), disabled: false }), name).toHaveCount(0);
-    const item = nav.getByRole("link", { name: new RegExp(name), disabled: true });
-    await expect(item, name).toHaveCount(1);
-    expect(await item.getAttribute("title"), name).toContain("準備中");
-    expect(await item.evaluate((e) => getComputedStyle(e).opacity), name).toBe(DISABLED_OPACITY);
-    const before = page.url();
-    await item.click({ force: true });
-    expect(page.url(), name).toBe(before);
-    // キーボード：Tab で止まり（tabindex 0・title の準備中に届く）、Enter を押しても移らない
-    await expect(item, name).toHaveAttribute("tabindex", "0");
-    await item.focus();
-    await expect(item, name).toBeFocused();
-    await page.keyboard.press("Enter");
-    expect(page.url(), name).toBe(before);
-  }
-  expect(await nav.innerText()).not.toContain("準備中");
+  // 会社を作った人（R1）もメンバーの画面へ行ける（D-148.49・answer=3d444fc8d59f）。K-420 が /members を作り、R1 の行き先が作った道になる
+  const ws = nav.getByRole("link", { name: /ワークスペースの管理/, disabled: false });
+  await expect(ws).toHaveCount(1);
+  expect(await ws.getAttribute("href")).toBe("/members");
+  // ナレッジは K-682 が /knowledge を作り、押せるリンクになる（段 10・K-682）
+  const kn = nav.getByRole("link", { name: /ナレッジ/, disabled: false });
+  await expect(kn).toHaveCount(1);
+  expect(await kn.getAttribute("href")).toBe("/knowledge");
+  // 取引先は K-1113 で左から外した（D-152.11・answer=4961f0280e9a）。ナレッジが作った道になり、R1 の左の主の項目に押せない物は残らない
+  // （数えるのは SH-001 と同じ主の項目だけ。グループ「営業」「経理」の押せない行は SH-009 が見る）
+  const main = page.locator(".k-nav > .k-nav-item:not(:has(.k-group-mark))");
+  await expect(main).not.toHaveCount(0);
+  expect(await main.evaluateAll((els) => els.filter((e) => e.getAttribute("aria-disabled") === "true").length)).toBe(0);
+  const text = await nav.innerText();
+  expect(text).not.toContain("取引先");
+  expect(text).not.toContain("準備中");
 });
 
 test("K138-SH-007 左のメニューを押す：承認待ちの画面でチケットを押すと /tickets、/tickets で承認待ちを押すと /approvals", async ({
