@@ -14,7 +14,7 @@
 // DB（migration 20261125014400_ticket_kind_settings.sql）:
 //   ticket_kinds.color_key（8 つの check）・app.tone_hex(text)・引き金で color（16 進）を color_key に合わせる・app.ticket_kind_color_key_from_hex(text)・
 //   一意の索引 (tenant_id, name) where deleted_at is null・app.ticket_kind_create / update / delete / reorder（security definer・答えは jsonb。断りは { error: <言葉> }）
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import { isFlat, startSettings, type Json, type Settings, type World } from "./settings.harness.js";
 
@@ -33,6 +33,14 @@ beforeAll(async () => {
 });
 afterAll(async () => {
   await s.close();
+});
+// 種別は会社に 10 まで（0071）。新しい会社には最初から 4 つ（タスク・課題・QA・会議）在り、試験ごとに A に足した種別が残ると途中で上限に当たる。
+//   試験ごとに、その試験が A に足した種別を片付ける（最初の 4 つと、後の試験が使う「請求」「問い合わせ」（K704-API-001・002）は残す・行の守りの外で消した印を付ける）
+afterEach(async () => {
+  await s.f.admin.query(
+    "update ticket_kinds set deleted_at = now() where tenant_id = $1 and deleted_at is null and not is_builtin and name not in ('請求', '問い合わせ')",
+    [A.tenantId],
+  );
 });
 const create = (w: World, body: unknown, who = w.admin) => s.call(who, "POST", "/ticket_kinds", body);
 const update = (w: World, id: string, body: unknown, who = w.admin) =>
