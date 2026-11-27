@@ -224,11 +224,9 @@ export function DelegateBand({ ticket, run, onRun, onChanged, slot }: Props) {
     if (showRun) clearBand(ticket.id);
   }, [showRun, ticket.id]);
 
-  /** 実行の一覧と今の実行を読み直してから、詳細を読み直す（止まった箱の差し込み口が書き込みの後に呼ぶ・K-599） */
-  const reload = async () => {
-    await qc.invalidateQueries({ queryKey: ["k62"] });
-    await onChanged();
-  };
+  /** 実行の一覧と今の実行・詳細を読み直す（止まった箱の差し込み口が書き込みの後に呼ぶ・K-599）。詳細の画面の onChanged が
+   *  実行の一覧（runs.reload＝["k62"] の読み直し）と詳細を 1 回ずつ読むので、ここで ["k62"] を先に読み直すと一覧を 2 回読む（K486-UI-022） */
+  const reload = onChanged;
   if (!canDelegate && !showRun && !showMade && !notice && !hasMore) return null;
   const stopped = showRun && !!run && !active;
   /** AI が動いている・承認待ちの間だけ data-busy（押している間の busy とは別・K-620） */

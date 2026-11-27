@@ -4,7 +4,6 @@
 //   （AI が動いている・承認待ちでも押せ、訳は小窓に出す・D-148.24）。役の名前では決めない（入口は getTicket の handover_kinds・K-400 の entryOf）。
 //   名前の下の「→ 〇〇（返事待ち）」は note があるときだけ
 import { useState, type ReactNode } from "react";
-import { Toaster } from "@/components/k";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { PassFlow } from "./pass-dialog";
 import type { HandoverEntry } from "./use-handovers";
@@ -38,8 +37,8 @@ export function AssigneeAction({ ticket, entry, note, blocked, fallback }: Assig
   if (name === null) return fallback;
   const canOpen = entry === "pass" || entry === "distribute";
   return (
-    // 「渡しました」の小さな知らせの置き場（詳細の画面には前から無い）
-    <Toaster>
+    // 「渡しました」の小さな知らせは画面の外枠（ticket-shell.tsx の Toaster・段8 K-466）に出す。ここに置き場を足すと同じ知らせが 2 つ出る
+    <>
       <AssigneeValue
         name={name}
         mode={canOpen ? (blocked ? "blocked" : "can") : "plain"}
@@ -55,6 +54,6 @@ export function AssigneeAction({ ticket, entry, note, blocked, fallback }: Assig
           onClose={() => setOpen(false)}
         />
       ) : null}
-    </Toaster>
+    </>
   );
 }
