@@ -123,6 +123,8 @@ export const WS_ROWS: readonly WsRow[] = [
 ];
 
 export interface PwnedRow {
+  /** 入れ物が渡す行の鍵（会社の id か確定前の pending・K-1019）。下絵は持たない */
+  id?: string;
   at: string;
   ws: string;
   person: string;
