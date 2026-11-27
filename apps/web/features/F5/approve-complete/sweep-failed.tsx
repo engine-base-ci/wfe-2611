@@ -4,7 +4,7 @@
 //   ［この実行を止める］は担当者だけ（D-190.3 answer=449e47c15ace）。押すと確かめの小窓（components/k の Confirm）。
 //   「止める」で止める口 stopActionRun（K-731）を 1 回呼ぶ。答えを待つ間は主ボタンが処理中（二度押しで 2 回呼ばない）。
 //   字は決める人の答え（D-190.4 answer=ed20fcc1483d）。色・大きさは components/k のまま（生の値を書かない）。
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Band, BandLine, Button, Confirm } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 
@@ -32,14 +32,22 @@ export interface SweepFailedBandProps {
 export function SweepFailedBand({ runId, canStop, onChanged, onFailed, initialOpen = false }: SweepFailedBandProps) {
   const [open, setOpen] = useState(initialOpen);
   const [busy, setBusy] = useState(false);
+  const sending = useRef(false); // 答えが来るまで 2 本目を送らない（描き直しを待たずに守る）
   const stop = async () => {
-    if (busy) return;
+    if (sending.current) return;
+    sending.current = true;
     setBusy(true);
-    const r = await call("stopActionRun", { params: { id: runId }, body: {}, screenId: "tickets" });
-    setBusy(false);
-    setOpen(false);
-    if (r.ok) await onChanged();
-    else await onFailed(r);
+    try {
+      const r = await call("stopActionRun", { params: { id: runId }, body: {}, screenId: "tickets" });
+      setOpen(false);
+      if (r.ok) await onChanged();
+      else await onFailed(r);
+    } finally {
+      // 網が切れて投げても、処理中の印を外して小窓を閉じる（閉じ込めない）
+      sending.current = false;
+      setBusy(false);
+      setOpen(false);
+    }
   };
   return (
     <>
