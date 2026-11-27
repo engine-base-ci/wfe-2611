@@ -1055,7 +1055,6 @@ RESPONSES = {
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "desc": "string", "done": "boolean", "href": "string?", "available": "boolean", "optional": "boolean", "skipped": "boolean"}),
     # K-250：閉じる・飛ばすの後の今の状態（箱を閉じたか・飛ばした項目）
     "dismissSetupTasks": ("SetupTasksDismissed", {"dismissed": "boolean", "skipped": "string[]"}),
-    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
     "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null
     "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string", "device_label": "string"}),
@@ -1177,7 +1176,7 @@ QUERIES = {
     "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
     "listPlanHistory": ["plan_id"],
-    "getNotificationSettings": ["tenant_id"],
+    "getNotificationSettings": ["workspace_id"],   # 読むワークスペース（無ければ今の会社・K-837）
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
