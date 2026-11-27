@@ -44,7 +44,10 @@ const hooked = new Set(
 const isBuilt = (e: EndpointDef) =>
   hooked.has(e.operationId) || (e.generic && (TABLES as readonly string[]).includes(e.table));
 const builtRest = rest.filter((e) => isBuilt(e) && !ELSEWHERE.has(e.operationId));
-const todoRest = rest.filter((e) => !isBuilt(e));
+// 作っていない口（it.todo）。ほかの試験が持つ口（ELSEWHERE）は除く：振る舞いを hooks の外（apps/api/src/features/…）に置く口
+//   （createTicketKind・reorderTicketKinds・acceptClientRequest ほか）は上の hooked の拾い方に当たらず、作っていない側と ELSEWHERE の両方に
+//   数えられて合計が合わなかった（統合の枝で 5 口）
+const todoRest = rest.filter((e) => !isBuilt(e) && !ELSEWHERE.has(e.operationId));
 
 // 口 → 作るチケット（11_tickets の apis。無ければ画面を持つまとまり）
 const T = (

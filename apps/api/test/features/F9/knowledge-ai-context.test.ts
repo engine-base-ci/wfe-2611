@@ -456,13 +456,14 @@ describe("K-697 取るときの読み込み口と、やり取りの 1 行の書�
       cl.release();
     }
     const at = (
-      await h.admin.query<{ f: string; at: Date }>(
-        "select changes->0->>'field' as f, created_at as at from ticket_messages where ticket_id = $1 order by created_at, id",
+      // 時刻はマイクロ秒で比べる（JS の Date はミリ秒までなので、同じミリ秒の中で足した 2 行が同じ値に見えて揺れる）
+      await h.admin.query<{ f: string; us: string }>(
+        "select changes->0->>'field' as f, (extract(epoch from created_at) * 1000000)::bigint::text as us from ticket_messages where ticket_id = $1 order by created_at, id",
         [t2],
       )
     ).rows;
     expect(at.map((r) => r.f)).toEqual(["guard_list", "knowledge_breach"]);
-    expect(at[1]!.at.getTime()).toBeGreaterThan(at[0]!.at.getTime());
+    expect(BigInt(at[1]!.us) > BigInt(at[0]!.us), "後に足した行の時刻が後").toBe(true);
     expect(
       Number(
         (await h.admin.query<{ n: string }>("select count(*) as n from ticket_messages where ticket_id = $1", [t]))
