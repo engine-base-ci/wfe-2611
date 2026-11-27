@@ -355,38 +355,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1197 ／ 内部専用 305 ／ どの画面にも出ない 31
-  - ★ learned_procedures.duty_id
-  - ★ learned_procedures.target_service_id
-  - ★ learned_procedures.status_id
-  - ★ learned_procedures.run_count
-  - ★ learned_procedures.avg_ms
-  - ★ learned_procedures.fail_count
-  - ★ learned_procedures.last_verified_at
-  - ★ procedure_steps.procedure_id
-  - ★ procedure_steps.order_no
-  - ★ procedure_steps.intent_ja
-  - ★ procedure_steps.is_variable
-  - ★ notice_updates.notice_id
-  - ★ notice_updates.state
-  - ★ notice_updates.body
-  - ★ class_axes.key
-  - ★ class_axes.name
-  - ★ class_axes.is_builtin
-  - ★ class_axes.position
-  - ★ class_values.axis_id
-  - ★ class_values.label
-  - ★ class_values.color
-  - ★ class_values.position
-  - ★ acceptances.ticket_id
-  - ★ acceptances.artifact_version_id
-  - ★ acceptances.contact_id
-  - ★ acceptances.due_on
-  - ★ acceptances.message
-  - ★ acceptances.result
-  - ★ acceptances.comment
-  - ★ acceptances.decided_at
-  - ★ acceptances.reminded_at
+- 検査したフィールド 1197 ／ 内部専用 336 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 
