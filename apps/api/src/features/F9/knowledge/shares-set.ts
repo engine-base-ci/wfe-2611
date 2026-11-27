@@ -82,7 +82,29 @@ async function run(cl: pg.PoolClient, x: SharesInput): Promise<HookReply> {
   if (!r.ok) return (REFUSAL[r.reason ?? "denied"] ?? forbidden)();
   for (const [key, action, table] of AUDITS)
     for (const id of (r[key] as readonly string[] | undefined) ?? []) await cl.query(AUDIT_SQL, [action, table, id]);
-  return viewReply(await readShareView(cl, x.page, x.folder));
+  const view = await readShareView(cl, x.page, x.folder);
+  // 共有を受けている側のマネージャーが自分のグループの分を止めると、もう中身（題名・ほかのグループ）は見えない。
+  //   止めた人の画面には「止めました」と残す（決める人の答え answer=2b578da80a62）：200・題名は空・groups は止めたグループの行だけ（checked false・state ended）
+  if (!view.ok && (r.ended_ids?.length ?? 0) > 0) return stoppedReply(cl, x, r.ended_ids!);
+  return viewReply(view);
+}
+
+const ENDED_GROUPS_SQL = `select s.id as group_id, s.name from knowledge_shares k join scopes s on s.id = k.group_id
+ where k.id = any($1::uuid[]) and k.tenant_id = app.tenant_id() order by s.name collate "C", s.id`;
+
+/** 受け側が止めた後の答え（中身なし・止めたグループだけ） */
+async function stoppedReply(cl: pg.PoolClient, x: SharesInput, ended: readonly string[]): Promise<HookReply> {
+  const rows = (await cl.query<{ group_id: string; name: string }>(ENDED_GROUPS_SQL, [ended])).rows;
+  return {
+    status: 200,
+    body: {
+      data: {
+        target: { page_id: x.page, folder_id: x.folder, title: "" },
+        from_group_name: "",
+        groups: rows.map((g) => ({ group_id: g.group_id, name: g.name, manager_name: "", checked: false, state: "ended" })),
+      },
+    },
+  };
 }
 
 export function createSetKnowledgeShares(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {

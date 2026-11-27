@@ -86,6 +86,9 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // メンバーが抜けた（段11 K-838・D-154.25）：その会社のほかの有効な管理者に。押すと設定のメンバーの画面（決める人の答え answer=730d094adf6a）。
   //   6 つの札にメンバー・会社の動きの札は無いので、いちばん近い setting（管理者が受け取る会社の設定の動き・請求先や止める日と同じ）
   "member.left": settingKind("/members"),
+  // 外された人の担当を引き継いだ（段11 K-848・D-154.6）：引き継ぎ先に。チケットに結ばず、押しても別の画面へは行かない（お知らせの一覧に留まる・
+  //   決める人の答え answer=dd1a8dae13a0「お知らせでいい」）。札は handover（担当の受け渡し）
+  "member.tickets_received": { tag: "handover", ticket: false, href: null },
 };
 
 /** 鈴に出してよい種類（表の鍵） */
