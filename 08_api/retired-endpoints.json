@@ -522,6 +522,12 @@
    "path": "/api/v1/ops/invoices/export",
    "decision": "D-156.13",
    "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsInvoices・K-948）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_kinds/{id}/template-from-ticket",
+   "decision": "D-156.20",
+   "reason": "チケットからひな形を作る口は外す（代表の言い直し）"
   }
  ]
 }

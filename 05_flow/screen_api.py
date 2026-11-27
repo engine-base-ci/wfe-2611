@@ -36,7 +36,6 @@ SCREEN_API = {
         ("PATCH", "/tickets/:id/body", "A101", "ticket_sections", "updateTicketBody", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
         ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_section_versions", "restoreTicketVersion", ["ticket_sections"]),
-        ("POST", "/ticket_kinds/:id/template-from-ticket", "A101", "kind_sections", "makeKindTemplateFromTicket", [T]),
         # テスト仕様と確認
         ("GET", "/tickets/:id/test-specs", "A102", "test_specs", "listTestSpecs", []),
         ("POST", "/tickets/:id/test-specs", "A102", "test_specs", "createTestSpec", []),
@@ -290,7 +289,7 @@ SCREEN_API = {
         ("POST", "/workspace/ticket-shape/preview", "A118", "ticket_kinds", "previewTicketShapeChange", ["tickets", "ticket_class_values"]),
         ("PATCH", "/workspace/ticket-shape", "A118", "ticket_kinds", "saveTicketShape", ["kind_sections", "ticket_stages", "class_axes", "class_values", "handover_rules", "tickets", "ticket_class_values", "ticket_messages", "distributions", "audit_events"]),
         ("GET", "/ticket_kinds/template-updates", "A120", "tenant_distributions", "listKindTemplateUpdates", ["distributions"]),
-        ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "kind_sections", "applyKindTemplateUpdate", ["tenant_distributions", "ticket_kinds"]),
+        ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "tenant_distributions", "applyKindTemplateUpdate", ["ticket_kinds", "ticket_stages", "custom_fields", "audit_events"]),
     ],
     "audit": [
         ("GET", "/audit_events", "A33", "audit_events", "listAuditEvents", ["members", "tickets"]),
@@ -1240,7 +1239,6 @@ PERMS = {
     "updateTicketBody": ("write", "そのグループの人", False),
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
-    "makeKindTemplateFromTicket": ("admin", "チケットの形を直せる人（D-128.48・D-128.83）", False),
     "listTestSpecs": ("read", "そのチケットを見られる人", False),
     "createTestSpec": ("write", "そのグループの人", False),
     "updateTestSpec": ("write", "そのグループの人。OFF にするときは理由が必須", False),
