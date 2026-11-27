@@ -135,8 +135,9 @@ describe("K-1190 承認の後の実行の片付けを 1 件ずつ受ける（口
     await f.admin.query("update bridge_jobs set sweep_failed_at = now(), sweep_error_code = 'P0001' where id = $1", [
       a.execJobId,
     ]);
-    // 直に呼んだ分は後に残さない（1 つのトランザクションで呼んで戻す）
-    const cl = await f.pool.connect();
+    // 直に呼んだ分は後に残さない（1 つのトランザクションで呼んで戻す）。印を消す update は行の守り（bridge_jobs の self_only_write・
+    //   member の文脈だけ）を通らないとアプリの接続では 0 行になるので、管理の接続の 1 つの取引で呼ぶ（渡す関数は security definer で同じ）
+    const cl = await f.admin.connect();
     try {
       await cl.query("begin");
       const held = await cl.query<{ job_id: string | null }>("select job_id from app.bridge_take_job($1)", [tm.pc.sid]);
