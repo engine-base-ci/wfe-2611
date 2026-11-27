@@ -147,6 +147,8 @@ describe("K-838 ワークスペースから抜ける（leaveWorkspace）", () =>
     const rec = await mem(co.tenantId, co.rootScope, mine, "recommended");
     const mineElsewhere = await mem(w.tenantId, w.eg, w.member, "self");
     await tasks(co.tenantId, co.rootScope, mine, true);
+    // 名前はそのまま（抜ける前のその会社の行の名前。試験の道具 alsoIn はその会社の行に別の名前を付ける）
+    const nameBefore = (await h.one<{ n: string }>("select display_name as n from members where id = $1", [mine.id])).n;
     expect((await leave(w.member, co.tenantId)).status).toBe(200);
     const del = async (id: string) =>
       (await h.one<{ d: Date | null }>("select deleted_at as d from memories where id = $1", [id])).d;
@@ -160,7 +162,7 @@ describe("K-838 ワークスペースから抜ける（leaveWorkspace）", () =>
       ]),
     ).toBe(1);
     expect((await h.one<{ n: string }>("select display_name as n from members where id = $1", [mine.id])).n).toBe(
-      w.member.name,
+      nameBefore,
     );
   });
 

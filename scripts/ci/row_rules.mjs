@@ -47,6 +47,9 @@ export const ROW_EXEMPT_FIELDS = {
   switchWorkspace: {
     id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
   },
+  leaveWorkspace: {
+    id: "道の :id は抜ける会社（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は表の名前のためだけ）。入口の行の確かめを行の守りの中で読むと、どの会社の id も行が見つからず 404 になり抜けられない。入っていない・抜けた・無い・別の人の会社を同じ 404 にするのは DB の関数 app.me_leave（app.me_rows・同じログインの行）と契約の uuid の確かめが持つ（K-838・統合の枝の直し）",
+  },
   revokeMySession: {
     id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
   },
