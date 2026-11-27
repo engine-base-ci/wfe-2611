@@ -8,8 +8,10 @@ import { openTicket, bandOf, k62Band } from "../features/F5/approve-complete.har
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 import { err, msg, overflowX, WIDTHS_ALL } from "./room-mock";
 import { JOB, msgOf, at, sse } from "./talk-mock";
+import { item } from "./list-mock";
 import {
   EMPTY_SESSION,
+  TICKET,
   PANEL_MSGS,
   TCONV,
   aiRegion,
@@ -323,6 +325,16 @@ test("K764-UI-022 横の詳細（一覧の右に開く詳細）：帯の［AI �
   page,
 }) => {
   await mockTicketTalk(page, { band: RUNNING });
+  // ?open=<番号> は一覧の口を q=<番号>・view=all で引いて id を決める（K-252）。土台の mockApi は一覧に答えないので、EG-133 の 1 行を返す
+  await page.route(
+    (u) => u.pathname === "/api/v1/tickets",
+    (route) =>
+      route.request().method() === "GET"
+        ? route.fulfill({
+            json: { data: [item(0, { id: TICKET, number: "EG-133", title: "セイコー様へ 11 月分の請求書を送る" })], meta: { next_cursor: null } },
+          })
+        : route.fallback(),
+  );
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/tickets?open=EG-133");
   const b = page.getByRole("region", { name: "AI に任せる" }).getByRole("button", { name: "AI と話す", exact: true });

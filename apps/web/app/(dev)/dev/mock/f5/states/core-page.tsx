@@ -1,6 +1,7 @@
 "use client";
 // 段 6 core の下絵の外枠：チケットの詳細（題名の下の帯の並び）と承認待ちの頁。本番と同じ部品（Shell・DetailTitle・DocTools・approve.css の表）で並べる。
 //   詳細の並びは段 7 のモック（mock/f6/mocks.tsx）と同じクラス。帯の中身・小窓は features/F5/more/ の部品。
+import { Bot, PanelRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button, DocTools, Shell, Toaster } from "@/components/k";
 import { BodyText, TICKET_BODY } from "./room-pages";
@@ -40,6 +41,49 @@ function Meta({ stage }: { stage: StageKey }) {
         <StagePill stage={{ key: stage, name: STAGES[stage] }} />
       </span>
     </div>
+  );
+}
+
+/** 詳細の右のパネル（本番の詳細は段5 の K-571・K-1153 で右のパネルが在る形。本番と同じクラスと並びで描くだけ・PM の決め 2026-11-28） */
+function Panel({ stage }: { stage: StageKey }) {
+  const secs: [string, [string, string][]][] = [
+    ["担当", [["担当者", "高本 聖斗"], ["段", STAGES[stage]]]],
+    ["日付と時間", [["開始日", "10/30（金）"], ["期限", "11/01（日）"]]],
+    ["分類", [["グループ", "営業（EG）"], ["優先度", "中"]]],
+  ];
+  return (
+    <aside aria-label="チケットのパネル" className="k-detail-panel">
+      <button type="button" className="k-detail-panel-close" aria-label="パネルを閉じる" title="パネルを閉じる">
+        <PanelRight size={16} aria-hidden="true" />
+      </button>
+      <nav aria-label="パネルのタブ" className="k-detail-tabs">
+        <button type="button" aria-current="page">
+          属性
+        </button>
+        <button type="button" aria-disabled="true" tabIndex={-1} title="まだ使えません">
+          やり取り
+        </button>
+        <button type="button" aria-disabled="true" tabIndex={-1} title="まだ使えません">
+          <Bot size={14} aria-hidden="true" />
+          {`${ME}のAI`}
+        </button>
+      </nav>
+      <div className="k-detail-panel-body">
+        {secs.map(([label, rows]) => (
+          <section key={label} aria-label={label} className="k-detail-panel-sec">
+            <h2>{label}</h2>
+            <dl className="k-detail-fields">
+              {rows.map(([k, v]) => (
+                <div key={k} className="k-detail-field">
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+    </aside>
   );
 }
 
@@ -95,6 +139,7 @@ export function TicketPage({ theme, ps, stage, band, below, dialog }: TicketPage
               </div>
             </article>
           </section>
+          <Panel stage={stage} />
         </div>
       </Shell>
       {dialog}

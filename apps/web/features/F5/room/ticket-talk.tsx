@@ -26,14 +26,12 @@ export function TicketMobileBar({ ticket, title, onBack }: { ticket: string; tit
   );
 }
 
-/** パネルのタブ（PC：項目・やり取り・〈名〉のAI／スマホ：本文・やり取り・〈名〉のAI）。ここでは「〈名〉のAI」が選ばれた形 */
+/** パネルのタブ（項目・やり取り・〈名〉のAI。本番の詳細の右のパネル〈段5 K-1153〉と同じ字と並び・PM の決め 2026-11-28 で下絵を本番の形に合わせた）。
+ *  ここでは「〈名〉のAI」が選ばれた形 */
 export function AiPanelTabs({ me, count }: { me: string; count?: number }) {
   return (
-    <nav aria-label="パネルのタブ" className="k-detail-tabs k-room-ptabs">
-      <button type="button">
-        <span className="k-room-tab-pc">項目</span>
-        <span className="k-room-tab-mb">本文</span>
-      </button>
+    <nav aria-label="パネルのタブ" className="k-detail-tabs">
+      <button type="button">項目</button>
       <button type="button">
         やり取り
         {count ? (

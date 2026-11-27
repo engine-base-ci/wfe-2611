@@ -61,8 +61,10 @@
   line-height: var(--k-c-check-empty-lh);
 }
 
-/* ---- 帯のすぐ下に残る 1 行（止めた・取り下げた・使わなかった・試し打ち） ---- */
-.k-more-trail {
+/* ---- 帯のすぐ下に残る 1 行（止めた・取り下げた・使わなかった・試し打ち） ----
+   帯の区画（.k-section）の中に描くときも、区画の本文の段落（page.css の .k-section p）でなくこの形にする */
+.k-more-trail,
+.k-section .k-more-trail {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

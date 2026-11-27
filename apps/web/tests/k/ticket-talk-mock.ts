@@ -118,6 +118,8 @@ export async function mockTicketTalk(
       }
       if (/\/conversations\/[^/]+\/stream$/.test(p)) {
         t.streams.push(p.split("/").at(-2)!);
+        // 流れを開いたまま（答えを返さない）にする：区画を閉じたときに画面が要求を取り消すかを見る（K764-UI-013）
+        if (t.hang) return;
         const body = t.on.stream();
         return body === null
           ? json(route, { status: 503, body: { error: "error", code: "E-TALK-020" } })

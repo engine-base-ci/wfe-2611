@@ -288,7 +288,8 @@ test("K735-UI-011 画面：幅 375・768・1440 で小窓は横溢れ 0・足の
       await expect(b).toBeInViewport();
     if (w === 375) {
       const r = await confirmOf(page).boundingBox();
-      expect(r && Math.abs(812 - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
+      // 画面の高さは openTicket が決めた値（approve-complete.harness.ts は 1000）で見る（812 と決め打ちしない）
+      expect(r && Math.abs(page.viewportSize()!.height - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
     }
   }
 });
@@ -315,30 +316,30 @@ test("K735-UI-012 守り：開く・小窓を開く・やめるだけでは書�
 test("K735-UI-013 画面：下絵との突き合わせ（withdraw-band・withdraw-confirm・withdraw-done）。幅 375・768・1440 で帯の箱・題と要約・acts・小窓の箱と題と足・帯の下の 1 行の形が下絵と同じ", async ({
   browser,
 }) => {
-  const drives: [string, (p: Page) => Promise<void>, boolean][] = [
+  const drives: [string, (p: Page, w: number) => Promise<void>, boolean][] = [
     [
       "withdraw-band",
-      async (p) => {
+      async (p, w) => {
         await mockWithdraw(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await expect(btn(p)).toBeVisible();
       },
       false,
     ],
     [
       "withdraw-confirm",
-      async (p) => {
+      async (p, w) => {
         await mockWithdraw(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await btn(p).click();
       },
       true,
     ],
     [
       "withdraw-done",
-      async (p) => {
+      async (p, w) => {
         await mockWithdraw(p);
-        await openTicket(p, 1440);
+        await openTicket(p, w);
         await btn(p).click();
         await go(p).click();
         await expect(trailOf(p)).toHaveCount(1);
@@ -354,7 +355,7 @@ test("K735-UI-013 画面：下絵との突き合わせ（withdraw-band・withdra
         w,
         async (p) => {
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
-          await drive(p);
+          await drive(p, w);
         },
         { base: "/dev/mock/f5", pairs: dialog ? DIALOG_PAIRS : BAND_PAIRS, blur: true },
       );

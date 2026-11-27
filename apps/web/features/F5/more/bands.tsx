@@ -111,12 +111,8 @@ export function StoppedBand({ title, sub, line }: { title: string; sub: string; 
       tone="plain"
       title={title}
       sub={sub}
-      acts={
-        <>
-          <InertButton>自分で直す</InertButton>
-          <Button>AI に任せる</Button>
-        </>
-      }
+      // もう一度任せるのは題の行の「AI に任せる」（段6 K-573・本番の形）。帯の acts は［自分で直す］だけ（K734-UI-008）
+      acts={<InertButton>自分で直す</InertButton>}
     >
       {line ? <BandLine>{line}</BandLine> : null}
     </Band>

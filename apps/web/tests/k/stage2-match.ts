@@ -95,7 +95,8 @@ export async function matchMock(
   const mock = await browser.newPage({ viewport: vp, colorScheme: "light", reducedMotion: "reduce" });
   await blockBridge(mock);
   expect((await mock.goto(`${opts.base ?? "/dev/mock/f1"}/${id}`))?.status(), `モック ${id}`).toBe(200);
-  await expect(mock.locator(`[data-mock="${id}"] h1`).first()).toBeVisible();
+  // 描き終わりの目印：状態の中の見出し（スマホの「〈名〉のAI」の全画面のように頁の h1 を隠す状態は、見えている h1〜h3 か右のパネル（aside）で待つ）
+  await expect(mock.locator(`[data-mock="${id}"] :is(h1, h2, h3, aside):visible`).first()).toBeVisible();
   await mock.evaluate(() => document.fonts.ready);
   await mock.mouse.move(0, 0);
   await settle(mock);
