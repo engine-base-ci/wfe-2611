@@ -77,6 +77,8 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------- 依頼をゲストのグループの物にもできる形に
+-- 外す訳：K-878（D-155.35・取引先を持たない。依頼はゲストのグループの物にもなる。どちらかが要るのは client_requests_party_check が守る）
+-- squawk-ignore ban-drop-not-null
 alter table client_requests alter column client_id drop not null;
 alter table client_requests add column if not exists guest_group_id uuid references guest_groups(id);
 do $$ begin

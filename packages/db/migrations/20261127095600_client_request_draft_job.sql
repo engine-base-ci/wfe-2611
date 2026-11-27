@@ -16,6 +16,8 @@
 -- ①
 alter table bridge_jobs add column if not exists client_request_id uuid references client_requests(id);
 create index if not exists bridge_jobs_client_request_idx on bridge_jobs (client_request_id) where client_request_id is not null;
+-- 消す訳：K-896（仕事の種類の候補に client_request_draft を足すため、同じ名前の check を次の行で広げて作り直す）
+-- squawk-ignore ban-drop-constraint
 alter table bridge_jobs drop constraint if exists bridge_jobs_kind_check;
 alter table bridge_jobs add constraint bridge_jobs_kind_check check (kind in ('chat', 'login_check', 'ticket', 'client_request_draft'));
 
