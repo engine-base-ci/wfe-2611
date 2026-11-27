@@ -10,6 +10,7 @@ import { issueToolToken } from "../../../auth/agent-tools.js";
 import { AGENT_CONVENTIONS } from "../../../auth/conventions.js";
 import { parseDigest, takeRemember } from "../../../auth/memory.js";
 import { BRIDGE_PROTOCOL_MIN } from "../../F3/connect-pc/hooks.js";
+import { knowledgeExtras, loadKnowledge, renderKnowledgeSection } from "../../F9/knowledge/ai/context.js";
 import { PROGRESS_KINDS, REPLY_MAX, charLength, progressPayload, type ProgressKind } from "./records.js";
 
 /** 待ち受けは最長 20 秒・中で 1 秒ごとに見る・動いていないときは 5 秒あける（前の道すじと同じ・D-097） */
@@ -69,16 +70,18 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     }
   };
 
-  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
+  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
   const withExtras = async (sid: string, job: TakenJob) => {
-    const memories = job.conversation_id
-      ? ((await one<unknown>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id])) ?? [])
-      : [];
     const tool_token =
       job.conversation_id || job.kind === "ticket" ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
       (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
-    return { ...job, memories, tool_token, conventions: job.conversation_id ? AGENT_CONVENTIONS : null, browser };
+    // 会社のナレッジ（K-697）：取る瞬間のナレッジを、チケットの仕事は prompt・会話の仕事は決まりの後ろに足す。ログインの試しには足さない
+    const canOpen = job.kind === "ticket" || Boolean(job.conversation_id);
+    const loaded = job.kind === "login_check" ? undefined : await loadKnowledge(pool, sid, job.job_id);
+    const knowledge = loaded === undefined ? "" : loaded === null ? null : renderKnowledgeSection(loaded, { canOpen });
+    const extra = knowledgeExtras(job, knowledge, job.conversation_id ? AGENT_CONVENTIONS : null);
+    return { ...job, tool_token, prompt: extra.prompt, conventions: extra.conventions, browser };
   };
 
   return {

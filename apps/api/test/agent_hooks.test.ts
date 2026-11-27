@@ -1,4 +1,4 @@
-// 会話・記憶の契約の口（/api/v1/conversations・/api/v1/memories/:id）が、画面の口と同じ本体（DB の関数）を通ることの試験。
+// 会話の契約の口（/api/v1/conversations）が、画面の口と同じ本体（DB の関数）を通ることの試験（K-712：記憶を直す口は外した）。
 // 本番（server.ts）と同じ agentHooks を差し込み、表に直接書く汎用の道を通らないことを、作った行の中身で確かめる
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import pg from "pg";
@@ -56,25 +56,5 @@ describe("会話の契約の口は画面の口と同じ本体を通る", () => {
     const r = await h.call(endpointOf("updateConversation"), "boss", { id, body: { title: "   " } });
     expect(r.status).toBe(422);
     expect((await row("conversations", id))["title"]).toBeNull();
-  });
-});
-
-describe("記憶の契約の口は自分の記憶だけ直せる", () => {
-  it("本人は直せる・ほかの人は直せない・中身が空なら 422", async () => {
-    const m = await admin.query(
-      "insert into memories (tenant_id, scope_id, owner_member_id, title, body, kind_id) select tenant_id, scope_id, id, '前の名前', '前の中身', 'preference' from members where id = $1 returning id",
-      [h.S.bossA],
-    );
-    const id = m.rows[0].id as string;
-    const mine = await h.call(endpointOf("updateMemory"), "boss", { id, body: { body: "新しい中身" } });
-    expect(mine.status, await mine.clone().text()).toBe(200);
-    expect((await row("memories", id))["body"]).toBe("新しい中身");
-
-    const other = await h.call(endpointOf("updateMemory"), "staff", { id, body: { body: "書き換え" } });
-    expect([403, 404]).toContain(other.status);
-    expect((await row("memories", id))["body"]).toBe("新しい中身");
-
-    const empty = await h.call(endpointOf("updateMemory"), "boss", { id, body: { body: "" } });
-    expect(empty.status).toBe(422);
   });
 });

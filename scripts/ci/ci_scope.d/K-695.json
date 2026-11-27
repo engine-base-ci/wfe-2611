@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-review.ts",
+    "apps/api/src/features/F9/knowledge/review.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/review-count.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-review.test.ts"
+   ]
+  }
+ ]
+}

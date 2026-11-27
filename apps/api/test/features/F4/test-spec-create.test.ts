@@ -18,7 +18,7 @@ import { BARE, bareKeys, setupSpecs, type Json, type World } from "./test-spec.h
 
 const h = setupSpecs(["test-specs-create"]);
 
-const KEYS = ["checked", "id", "position", "source", "title", "version"];
+const KEYS = ["checked", "id", "position", "source", "source_page", "title", "version"];
 interface Item {
   id: string;
   title: string;

@@ -18,11 +18,11 @@ VALUE_RANGES = {
 
 UNEXPRESSIBLE_422 = {}   # 決まりは全部 VALUE_RANGES で契約に書いた（検査の例外は足さない）
 
-# 答えの行は文とチェックと並びと出どころ（鍵ちょうど 6）。version は行の版（画面が updateTestSpec に送る）。source_ref_id は答えに出さない
+# 答えの行は文とチェックと並びと出どころ（鍵ちょうど 7・source_page は K-726 が足した出どころのページ { id, title } か null）。version は行の版（画面が updateTestSpec に送る）。source_ref_id は答えに出さない
 _ITEM = {"id": "uuid", "title": "string", "checked": "boolean", "position": "integer", "source": "string", "version": "integer"}
 RESPONSES = {
-    "listTestSpecs": ("TestSpecItem", dict(_ITEM)),
-    "createTestSpec": ("TestSpecItem", dict(_ITEM)),
+    "listTestSpecs": ("TestSpecItem", {**_ITEM, "source_page": "object?"}),
+    "createTestSpec": ("TestSpecItem", {**_ITEM, "source_page": "object?"}),
 }
 
 # 一覧は並べ替え・絞り込みを受けない（作った順に全部・上限 500）。答えの meta：件数 count・limit・書けて完了していないかの can_edit

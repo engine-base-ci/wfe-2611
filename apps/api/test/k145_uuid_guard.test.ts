@@ -35,8 +35,6 @@ import {
   jsonOf,
   newConversation,
   newJob,
-  newMemory,
-  newProposal,
   post,
   ready,
   req,
@@ -47,7 +45,7 @@ beforeAll(bootK145, 60_000);
 afterAll(closeK145);
 
 describe("K-145 画面の口（ログインの要る前の道すじ）の id は正式な uuid で確かめる（D-129.42）", () => {
-  it("K145-API-001 道の値 :id（会話・一言・許可・まとめ・記憶・候補・成果物・資格情報）が正式な uuid でない 7 種は 422・field id・理由 uuid。500 にならず、行は増えない・変わらない", async () => {
+  it("K145-API-001 道の値 :id（会話・一言・許可・成果物・資格情報）が正式な uuid でない形は 422・field id・理由 uuid。500 にならず、行は増えない・変わらない", async () => {
     const r = await ready();
     const conv = await newConversation(r.H);
     const before = {
@@ -63,12 +61,6 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", (id) => `/agent/conversations/${id}/read`, {}],
       ["DELETE", (id) => `/agent/steer/${id}`, undefined],
       ["DELETE", (id) => `/agent/permission-rules/${id}`, undefined],
-      ["POST", (id) => `/agent/memory/digest/${id}/undo`, { memory_id: randomUUID() }],
-      ["POST", (id) => `/agent/memory/digest/${id}/pick`, { index: 0 }],
-      ["PATCH", (id) => `/agent/memory/${id}`, { body: "覚える" }],
-      ["DELETE", (id) => `/agent/memory/${id}`, undefined],
-      ["POST", (id) => `/agent/memory/proposals/${id}/send`, {}],
-      ["POST", (id) => `/agent/memory/proposals/${id}/decide`, { accept: true }],
       ["GET", (id) => `/agent/artifacts/${id}`, undefined],
       ["PATCH", (id) => `/agent/artifacts/${id}`, { title: "x" }],
       ["POST", (id) => `/agent/artifacts/${id}/versions`, { text: "x" }],
@@ -99,7 +91,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
     }).toEqual(before);
   }, 120_000);
 
-  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／bridge-revoke の session_id／undo の memory_id／send の target_scope_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-135.4・k145_pending_decisions.test.ts）", async () => {
+  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／bridge-revoke の session_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-135.4・k145_pending_decisions.test.ts）", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
     const conv = await newConversation(r.H);
@@ -116,7 +108,6 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", "/agent/stop", "job_id", (bad) => ({ job_id: bad })],
       ["POST", "/agent/steer", "job_id", (bad) => ({ job_id: bad, text: "直して" })],
       ["POST", "/agent/answer2", "job_id", (bad) => ({ job_id: bad, request_id: "r1", allow: true })],
-      ["POST", `/agent/memory/digest/${randomUUID()}/undo`, "memory_id", (bad) => ({ memory_id: bad })],
       ["POST", "/agent/artifacts", "message_id", (bad) => ({ message_id: bad, text: "# 表\n中身" })],
       ["POST", "/onboard/testrun/cancel", "run_id", (bad) => ({ run_id: bad })],
       ["POST", "/onboard/golive/pause", "employee_id", (bad) => ({ employee_id: bad, paused: true })],
@@ -250,14 +241,12 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
     const me = await ready();
     const other = await ready();
     const theirs = await newConversation(other.H);
-    const theirMem = await newMemory(other);
     for (const id of [...GOOD_IDS, theirs]) {
       const r1 = await req("PATCH", `/agent/conversations/${id}`, { title: "乗っ取り" }, me.H);
       expect(r1.status, id).toBe(404);
       expect((await jsonOf(r1)).code).toBe("CONVERSATION_NOT_FOUND");
       expect((await req("DELETE", `/agent/conversations/${id}`, undefined, me.H)).status, id).toBe(404);
       expect((await req("GET", `/agent/artifacts/${id}`, undefined, me.H)).status, id).toBe(404);
-      expect((await post(`/agent/memory/proposals/${id}/send`, {}, me.H)).status, id).toBe(404);
       const m = await req(
         "GET",
         `/agent/messages?conversation_id=${id}&before=${encodeURIComponent(new Date().toISOString())}`,
@@ -266,8 +255,6 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       );
       expect(m.status, id).toBe(404);
     }
-    expect((await req("PATCH", `/agent/memory/${theirMem}`, { body: "書き換え" }, me.H)).status).toBe(404);
-    expect((await admin.query("select body from memories where id = $1", [theirMem])).rows[0]!.body).toBe("前の本文");
     expect((await req("PATCH", `/agent/conversations/${theirs}`, { title: "乗っ取り" }, me.H)).status).toBe(404);
     expect(await data<unknown[]>(req("GET", `/agent/artifacts?conversation_id=${theirs}`, undefined, me.H))).toEqual(
       [],
@@ -493,44 +480,13 @@ describe("K-145 送る量の守り（D-130.1・G-16）を前の道すじと node
 });
 
 describe("K-145 人が書く欄を黙って切らない（D-130.4）", () => {
-  it("K145-API-013 会話の名前 300 字（PATCH /agent/conversations/:id）と記憶の題 300 字・本文 5000 字（PATCH /agent/memory/:id）は、一覧と DB から読み戻して一字も欠けない", async () => {
+  it("K145-API-013 会話の名前 300 字（PATCH /agent/conversations/:id）は、一覧から読み戻して一字も欠けない（記憶の題・本文の分は K-712 で記憶を直す道ごと外した）", async () => {
     const r = await ready();
     const conv = await newConversation(r.H);
     const title = `会話の名前${"長".repeat(290)}終`;
     expect((await req("PATCH", `/agent/conversations/${conv}`, { title }, r.H)).status).toBe(200);
     const list = await data<{ id: string; title: string }[]>(req("GET", "/agent/conversations", undefined, r.H));
     expect(list.find((c) => c.id === conv)?.title).toBe(title);
-    const mem = await newMemory(r);
-    const mTitle = `題${"い".repeat(298)}末`;
-    const mBody = `本文${"あ".repeat(4996)}末尾`;
-    expect([...mBody].length).toBe(5000);
-    expect((await req("PATCH", `/agent/memory/${mem}`, { title: mTitle, body: mBody }, r.H)).status).toBe(200);
-    const row = (
-      await admin.query<{ title: string; body: string }>("select title, body from memories where id = $1", [mem])
-    ).rows[0]!;
-    expect(row.title).toBe(mTitle);
-    expect(row.body).toBe(mBody);
-  }, 60_000);
-
-  it("K145-API-014 候補の確認（POST /agent/memory/proposals/:id/decide）の本文 5000 字は、上の層の記憶に一字も欠けずに入る", async () => {
-    const r = await ready();
-    const proposal = await newProposal(r);
-    const body = `上の層の決まり${"う".repeat(4990)}おわり`;
-    const x = await post(`/agent/memory/proposals/${proposal}/decide`, { accept: true, body }, r.H);
-    expect(
-      x.status,
-      await x
-        .clone()
-        .text()
-        .then((t) => t.slice(0, 120)),
-    ).toBe(200);
-    const row = (
-      await admin.query<{ body: string }>(
-        "select body from memories where source_type_id = 'proposal' and source_ref_id = $1",
-        [proposal],
-      )
-    ).rows[0];
-    expect(row?.body).toBe(body);
   }, 60_000);
 });
 

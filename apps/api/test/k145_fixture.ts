@@ -162,24 +162,6 @@ export async function newJob(r: Ready, state: "queued" | "running" | "asking" = 
   if (state !== "queued") await admin.query("update bridge_jobs set state_id = $2 where id = $1", [s.job_id, state]);
   return s;
 }
-/** 自分の記憶を 1 つ置く */
-export const newMemory = async (r: Ready) =>
-  (
-    await admin.query<{ id: string }>(
-      "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'preference', $3, 'K-145', '前の本文') returning id",
-      [r.tenant, r.scope, r.member],
-    )
-  ).rows[0]!.id;
-/** 自分が確認者の候補（sent）を 1 つ置く */
-export async function newProposal(r: Ready) {
-  const mem = await newMemory(r);
-  return (
-    await admin.query<{ id: string }>(
-      "insert into memory_proposals (tenant_id, scope_id, memory_id, target_scope_id, proposer_member_id, reviewer_member_id, state_id) values ($1, $2, $3, $2, $4, $4, 'sent') returning id",
-      [r.tenant, r.scope, mem, r.member],
-    )
-  ).rows[0]!.id;
-}
 export const eventsOf = (job: string) => count("select count(*) as n from bridge_job_events where job_id = $1", [job]);
 export const jobsOf = (member: string) => count("select count(*) as n from bridge_jobs where member_id = $1", [member]);
 
