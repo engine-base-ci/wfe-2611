@@ -28,3 +28,8 @@ QUERY_RANGES = {
     "listPlanProposals": {"state": {"enum": ["draft", "waiting", "decided", "returned"]}},
     "listPlanHistory": {"plan_key": {"enum": list(_PLAN_KEYS)}},
 }
+
+# 上限はチケットの G-16 どおり 60/min/user（運営の一覧の口と同じ・K-985・K-1010。GET の既定 120 にしない・K987-API-010）
+RATES = {
+    "listOpsPlans": "60/min/user",
+}
