@@ -13,9 +13,11 @@ export interface TableProps<R> {
   columns: Column<R>[];
   rows: R[];
   rowKey: (row: R) => string;
+  /** 行の要素に付ける data-* の印（例：data-invalid）。渡さなければ付けない */
+  rowAttrs?: (row: R) => Record<`data-${string}`, string | undefined>;
 }
 
-export function Table<R>({ caption, columns, rows, rowKey }: TableProps<R>) {
+export function Table<R>({ caption, columns, rows, rowKey, rowAttrs }: TableProps<R>) {
   return (
     <div className="k-table-wrap">
       <table className="k-table">
@@ -31,7 +33,7 @@ export function Table<R>({ caption, columns, rows, rowKey }: TableProps<R>) {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={rowKey(r)}>
+            <tr key={rowKey(r)} {...(rowAttrs?.(r) ?? {})}>
               {columns.map((c) => (
                 <td key={c.key} data-num={c.num || undefined}>
                   {c.cell(r)}

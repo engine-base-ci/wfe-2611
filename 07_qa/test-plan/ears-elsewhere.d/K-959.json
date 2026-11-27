@@ -1,0 +1,27 @@
+{
+ "ops": {
+  "updateBillingContact": {
+   "file": "apps/api/test/features/F12/billing-contact.test.ts",
+   "reason": "能力の行と管理者の所属の行で、お知らせの宛先と答えが変わる。種では作れない（K-959）",
+   "covers": {
+    "test_patch_workspace_billing_contact_ok": "K959-API-001",
+    "test_patch_workspace_billing_contact_shape": "K959-API-001",
+    "test_patch_workspace_billing_contact_rejected_401": "K959-API-008",
+    "test_patch_workspace_billing_contact_rejected_403": "K959-API-008",
+    "test_patch_workspace_billing_contact_rejected_422": "K959-API-003",
+    "test_patch_workspace_billing_contact_rate_limited": "K959-API-010",
+    "test_patch_workspace_billing_contact_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_workspace_billing_contact_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_patch_workspace_billing_contact_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  }
+ }
+}

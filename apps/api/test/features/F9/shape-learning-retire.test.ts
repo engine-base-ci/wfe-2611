@@ -6,7 +6,7 @@
 //   覚えたいこと 5：listLearningCandidates・acceptLearningCandidate・dismissLearningCandidate・postponeLearningCandidate・requestRuleException
 //   知っていることの数 1：countKnows
 //   チケットの形 3：getTicketShape・previewTicketShapeChange・saveTicketShape（種別・状態・項目は K-704・K-705・K-706・K-717 の口が持つ）
-// 外さないもの：運営ひな形の 3 口・listHandoverRules・上の 4 つの葉の口・listTicketFields
+// 外さないもの：運営ひな形の 2 口（makeKindTemplateFromTicket は段 13 の K-993 が外した・D-156.20）・listHandoverRules・上の 4 つの葉の口・listTicketFields
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,7 +55,6 @@ const KEPT_OPS = [
   "deleteTicketField",
   "reorderTicketFields",
   "listTicketFields",
-  "makeKindTemplateFromTicket",
   "listKindTemplateUpdates",
   "applyKindTemplateUpdate",
   "listHandoverRules",
@@ -141,7 +140,7 @@ describe("K-721 覚えたいこと・数・チケットの形の口を契約か�
     }
   });
 
-  it("K721-API-006 残す口：種別・状態・項目の 15 の口（K-704・K-705・K-706・K-717・K-563）・運営ひな形の 3 口・渡すときの読む口が endpoints.json に在る（外す作業が代わりの口を巻き込んでいない）", () => {
+  it("K721-API-006 残す口：種別・状態・項目の 15 の口（K-704・K-705・K-706・K-717・K-563）・運営ひな形の 2 口・渡すときの読む口が endpoints.json に在る（外す作業が代わりの口を巻き込んでいない）", () => {
     const e = read("08_api", "endpoints.json");
     for (const op of KEPT_OPS) expect(e, `${op} は残る`).toContain(`"${op}"`);
   });

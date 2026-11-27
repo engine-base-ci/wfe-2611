@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-notices-incident.ts",
+    "apps/api/src/features/F12/ops/notices/incident.ts",
+    "packages/db/migrations/20261128011900_ops_notices_incident.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-notices-incident.test.ts",
+    "apps/api/test/features/F12/notices-read.test.ts",
+    "apps/api/test/features/F12/service-status-member.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-notices-incident.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_notices_id_updates.test.ts"
+   ]
+  }
+ ]
+}

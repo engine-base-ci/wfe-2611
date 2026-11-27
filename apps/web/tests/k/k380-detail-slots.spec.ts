@@ -225,16 +225,18 @@ test("K380-UI-001 幅 1440・作業中（帯なし）：頭の行・題名・パ
   await expect(part(page, "stage")).toHaveText("作業中");
   await expect(part(page, "start")).toContainText("開始日 10/30");
   const tabs = panel(page).getByRole("navigation", { name: "パネルのタブ" });
-  await expect(tabs.getByRole("button")).toHaveText(["属性", "やり取り", "高本のAI"]);
-  // やり取りが押せるかは見ない（押せない形は前からの K226-UI-008 が見て、押せる形にする K-392 がそちらを替える）
+  await expect(tabs.getByRole("button")).toHaveText(["項目", "やり取り", "高本のAI"]);
+  // やり取りが押せるかは見ない（K-392 で押せる形になった。押せることは K226-UI-008 が見る）
   const field = (k: string) =>
     panel(page)
       .locator(".k-detail-field")
       .filter({ has: page.locator(`dt:text-is("${k}")`) });
   await expect(field("担当者").locator("dd .k-detail-who")).toContainText("高本");
-  await expect(field("予定").locator("dd")).toHaveText("");
-  await expect(field("実績").locator("dd")).toHaveText("");
-  await expect(page.locator("article.k-detail-card .k-detail-doc > section.k-section")).toHaveCount(3);
+  await expect(field("予定時間").locator("dd")).toHaveText("");
+  await expect(field("実績時間").locator("dd")).toHaveText("");
+  // 本文は 1 枚の読む形（K-571・K-577）：区画（section.k-section）の並びではなく、本文の字がそのまま出る
+  await expect(page.locator("article.k-detail-card .k-detail-doc")).toContainText("月末の請求を出す");
+  await expect(page.locator("article.k-detail-card .k-detail-doc > section.k-section")).toHaveCount(0);
   await expect(bands(page)).toHaveCount(1);
   expect(await bands(page).evaluate((e) => e.childElementCount)).toBe(0);
   await expect(bands(page)).not.toHaveAttribute("data-shown", /.*/);

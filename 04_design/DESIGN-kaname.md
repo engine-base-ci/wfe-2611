@@ -330,14 +330,6 @@ components:
     border: "1px solid {colors.line}"
     rounded: "{rounded.field}"
     padding: "8px 12px"
-  choice:               # 丸い選択・四角い選択の行（K-642）：字は本文 13px・行の高さ 1.6・印と字の間 8px。印は字の 1 行目の真ん中
-    typography: "{typography.body}"
-    lineHeight: 1.6
-    gap: "{spacing.sm}"
-  choice-box:           # 丸・四角の印の大きさと左右の余白（K-642）：13px・左 4px 右 3px（キャンバスの印＝ブラウザの既定と同じ）。上下は箱で真ん中に置く
-    width: "13px"
-    height: "13px"
-    margin: "0 3px 0 4px"
   dialog-check:         # 小窓の中のチェック・選ぶ印の行（12px・行の高さ 1.6・印と字の間 6px）
     typography: "{typography.body-sm}"
     lineHeight: 1.6

@@ -33,6 +33,7 @@ import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
 import { docOf, useComplete } from "./use-complete";
 import { SweepFailedBand } from "./sweep-failed";
+import { docOf, useComplete } from "./use-complete";
 
 export type { BandApproval } from "./decide";
 export const BAND_LABEL = "承認と実行";
@@ -80,6 +81,8 @@ export interface BandTicket {
   approval?: BandApproval | null;
   can?: { complete?: boolean } | null;
   completed?: Completed | null;
+  /** 確認項目を使わない理由（K-560 の getTicket の no_spec_reason・承認のカードの要約に足す・K-573） */
+  no_spec_reason?: string | null;
 }
 interface Props<T extends BandTicket> {
   ticketId: string;
@@ -187,6 +190,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
           onFailed={failed}
           onStart={() => setNotice(null)}
           {...(target ? { target } : {})}
+          noSpecReason={ticket.no_spec_reason ?? null}
         />,
       );
     if (approval && ticket.assignee === null) return busyBody(<Band tone="approval" title={MSG.noAssignee} />); // 箱は 1 つ（K-62 の帯は出さない）

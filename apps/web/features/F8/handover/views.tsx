@@ -9,7 +9,7 @@
 //   （ボタンは押しても何もしない・欄は読むだけ）。本物の画面の葉はこのファイルを触らず、props を渡して口とつなぐ
 import { Check, ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
-import { Band, BandLine, Button, Callout, Checkbox, Confirm, Dialog, NoticeBox, SearchField } from "@/components/k";
+import { Band, BandLine, Button, Callout, Confirm, Dialog, NoticeBox, SearchField } from "@/components/k";
 import "./handover.css";
 
 /** 相手を選ぶ小窓の 1 人 */
@@ -324,9 +324,6 @@ function TextBox({
   );
 }
 
-/** 1 行の欄の形（文字・日付・日時）。丸・四角はここで描かない */
-export type LineType = "text" | "date" | "datetime-local";
-
 function LineBox({
   label,
   value,
@@ -337,17 +334,15 @@ function LineBox({
   label: string;
   value: string;
   error?: string | undefined;
-  type?: LineType;
+  type?: string;
   onChange?: ((value: string) => void) | undefined;
 }) {
-  // 型で文字の欄に限る（丸・四角は共通の部品 Checkbox・Radio だけ・K-642）
-  const kind = { type };
   return (
     <label className="k-field">
       <span className="k-label">{label}</span>
       <input
         className="k-input"
-        {...kind}
+        type={type}
         value={value}
         aria-invalid={error ? true : undefined}
         {...(onChange ? { onChange: (e) => onChange(e.target.value) } : { readOnly: true })}
@@ -407,7 +402,7 @@ export interface HandoverDialogProps {
   /** 答えを待っている間（決めるが処理中・やめるも押せず閉じない） */
   busy?: boolean;
   /** 返事の期限の欄の type（既定 text。本物は日時の欄） */
-  dueType?: LineType;
+  dueType?: string;
   /** 小窓の上の橙の文（口が 409 で断ったときなど）。無ければ出さない */
   callout?: string;
   /** 頭の下の対象の行（既定はモックの字） */
@@ -455,27 +450,28 @@ export function HandoverDialog({
           <fieldset className="k-dialog-group">
             <legend>一緒に切り替えるもの（ワークスペースの決まりで選ばれている）</legend>
             {carry.map((c, i) => (
-              <Checkbox
-                key={c.label}
-                size="sm"
-                checked={c.checked}
-                {...(onCarryChange && !c.fixed
-                  ? { onChange: (e) => onCarryChange(i, e.target.checked) }
-                  : { readOnly: true })}
-                {...(c.fixed ? { disabled: true, "aria-disabled": true } : {})}
-              >
-                {c.label}
-              </Checkbox>
+              <label key={c.label} className="k-dialog-check">
+                <input
+                  type="checkbox"
+                  checked={c.checked}
+                  {...(onCarryChange && !c.fixed
+                    ? { onChange: (e) => onCarryChange(i, e.target.checked) }
+                    : { readOnly: true })}
+                  {...(c.fixed ? { disabled: true, "aria-disabled": true } : {})}
+                />
+                <span>{c.label}</span>
+              </label>
             ))}
           </fieldset>
         ) : null}
-        <Checkbox
-          size="sm"
-          checked={notifyManagers}
-          {...(onNotifyChange ? { onChange: (e) => onNotifyChange(e.target.checked) } : { readOnly: true })}
-        >
-          上の層（マネージャー）にも知らせる
-        </Checkbox>
+        <label className="k-dialog-check">
+          <input
+            type="checkbox"
+            checked={notifyManagers}
+            {...(onNotifyChange ? { onChange: (e) => onNotifyChange(e.target.checked) } : { readOnly: true })}
+          />
+          <span>上の層（マネージャー）にも知らせる</span>
+        </label>
         <p className="k-hnd-note">相手が受けるまで担当者はあなたのまま（渡し中）。断られたら理由つきで戻ってきます。</p>
       </div>
     </Dialog>

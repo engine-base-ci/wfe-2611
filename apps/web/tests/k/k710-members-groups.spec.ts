@@ -1,12 +1,12 @@
 // K-710「メンバーをグループごとに（グループを押すとメンバーが出る）」の画面の試験（実 Chrome・実装より先に積む）。
-//   正のモック：/dev/mock/f9/mem-groups（本番と同じ部品 features/F9/members・代表 OK 2026-11-22）。メンバーの画面の入れ物・並びを読む・招くの小窓は段 9 の K-420 の物。
-//   モックとの見た目の比べ方は f9-ws-match.ts の matchWs（人の行の字はモックの見本と口の字が違うので、人の行は位置と大きさだけ比べる）。
+//   正のモック：メンバーの画面は段 11 の /dev/mock/f10（本番と同じ部品 features/F10/members。K-818 が F9 の GroupMembersBody を F10 の MembersPage に替えた・見た目の突き合わせは K818-UI-001）。メンバーの画面の入れ物・並びを読む・招くの小窓は段 9 の K-420 の物。
+//   モックとの見た目の比べ方は K-818 の K818-UI-001（matchMock・/dev/mock/f10）に移した。
 //   ログイン・外枠・役は本物（signupViaApi・loginAs）。メンバーの口（getWorkspaceMembers・createInvitations・K-419）だけを網の手前で差し替える。
 //   口の答えの形は 11_tickets/K-419.md。本人の Bridge（127.0.0.1:38617）は届かせない。固定の待ちは使わない。
 //   K-420 の試験（k420-members-invite.spec.ts）の替え方は 11_tickets/K-710.md の「前からの試験を替えた所」。テストはチケットを作る人が書き、実装する人は変えない
-import { expect, test, type Browser, type Page, type Request, type Route } from "@playwright/test";
+import { expect, test, type Page, type Request, type Route } from "@playwright/test";
+import { BUILT_ROUTES } from "../../lib/built-routes";
 import { loginAs, signupViaApi } from "../_lib/api";
-import { WS_PAIRS, WS_WIDTHS, matchWs } from "./f9-ws-match";
 import { mockSettings } from "./settings-mock";
 
 const PATH = "/members";
@@ -143,33 +143,12 @@ async function openMembers(page: Page, width = 1440): Promise<void> {
   await loginAs(page, owner.token);
   await page.goto(PATH);
   await expect(page.locator(SEC).getByRole("heading", { name: "メンバー", level: 1 })).toBeVisible();
-  await expect(page.locator(".k-f9m-group")).not.toHaveCount(0);
+  await expect(page.locator(".k-f10m-group")).not.toHaveCount(0);
 }
-const head = (page: Page, name: string) => page.locator(".k-f9m-head").filter({ hasText: name });
-const group = (page: Page, name: string) => page.locator(".k-f9m-group").filter({ has: head(page, name) });
+const head = (page: Page, name: string) => page.locator(".k-f10m-toggle").filter({ hasText: name });
+const group = (page: Page, name: string) => page.locator(".k-f10m-group").filter({ has: head(page, name) });
 
-// ---------------------------------------------------------------- モックと本番の突き合わせ
-const PAIRS = WS_PAIRS.map((p) => (p.name === "row" ? { ...p, props: ["height", "x"] } : p));
-for (const w of WS_WIDTHS) {
-  test(`K710-UI-001 mem-groups 幅 ${w}：頭・見出し・グループの行（札・名前・人数・マネージャー）・開いた営業の人の行の位置と大きさがモックと同じ（matchWs の bad が 0）`, async ({
-    browser,
-  }: {
-    browser: Browser;
-  }) => {
-    const { bad, rows } = await matchWs(
-      browser,
-      "mem-groups",
-      w,
-      async (page) => {
-        await mockMembers(page, taka(), [INVITED]);
-        await openMembers(page, w);
-      },
-      { pairs: PAIRS },
-    );
-    expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
-    expect(bad, bad.join("\n")).toEqual([]);
-  });
-}
+// モックとの突き合わせ（旧 K710-UI-001）は、メンバーの画面の正の絵が /dev/mock/f10 に替わったので K-818 の K818-UI-001 が持つ（K-818・2026-11-23）。この番号は欠けたまま
 
 // ---------------------------------------------------------------- 開く・並び
 test("K710-UI-002 /members を開くと並びの口を 1 回だけ読み、見出し「メンバー」の下に「3 つのグループ ・ 9 人。グループを押すと、そのグループのメンバーが出ます」（9＝重ねない人数）・左の第 2 ナビ「メンバー」の札は口の count のまま（人＋招待中＝10）・左のバーの「ワークスペースの管理」が今の場所", async ({
@@ -178,9 +157,7 @@ test("K710-UI-002 /members を開くと並びの口を 1 回だけ読み、見�
   const mk = await mockMembers(page);
   await openMembers(page);
   expect(mk.reads).toBe(1);
-  await expect(page.locator(`${SEC} .k-page-sub`)).toHaveText(
-    "3 つのグループ ・ 9 人。グループを押すと、そのグループのメンバーが出ます",
-  );
+  await expect(page.locator(`${SEC} .k-page-sub`)).toHaveText("グループごとに並ぶ。役割はその場で変えられる");
   await expect(page.locator(".k-inv-sub-count")).toHaveText("10");
   await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveAttribute("aria-current", "page");
 });
@@ -190,7 +167,7 @@ test("K710-UI-003 グループの行：営業・受託開発・経理の順に 3
 }) => {
   await mockMembers(page);
   await openMembers(page);
-  await expect(page.locator(".k-f9m-head")).toHaveCount(3);
+  await expect(page.locator(".k-f10m-toggle")).toHaveCount(3);
   const want: [string, string, string, string, string][] = [
     ["営業", "EG", "teal", "4 人 ＋ 招待中 1", "マネージャー：佐藤 花子"],
     ["受託開発", "JD", "plum", "3 人", "マネージャー：田中 美咲"],
@@ -201,7 +178,7 @@ test("K710-UI-003 グループの行：営業・受託開発・経理の順に 3
     await expect(h.locator(".k-inv-code")).toHaveText(code);
     await expect(h.locator(".k-inv-code")).toHaveAttribute("data-tone", tone);
     await expect(h.locator(".k-inv-sub").first()).toHaveText(count);
-    await expect(h.locator(".k-f9m-manager")).toHaveText(mgr);
+    await expect(h.locator(".k-f10m-manager")).toHaveText(mgr);
   }
 });
 
@@ -262,8 +239,8 @@ test("K710-UI-007 マネージャーがいないグループは「マネージ�
   };
   await mockMembers(page, groups, []);
   await openMembers(page);
-  await expect(head(page, "受託開発").locator(".k-f9m-manager")).toHaveText("マネージャー：なし");
-  await expect(head(page, "経理").locator(".k-f9m-manager")).toHaveText("マネージャー：山口 恵・佐藤 花子");
+  await expect(head(page, "受託開発").locator(".k-f10m-manager")).toHaveText("マネージャー：なし");
+  await expect(head(page, "経理").locator(".k-f10m-manager")).toHaveText("マネージャー：山口 恵・佐藤 花子");
 });
 
 test("K710-UI-008 人がいないグループは「0 人」で、開くと「このグループにはまだ人がいません」（仮）が出て人の行は無い", async ({
@@ -279,28 +256,7 @@ test("K710-UI-008 人がいないグループは「0 人」で、開くと「こ
   await expect(group(page, "経理").locator(".k-inv-row")).toHaveCount(0);
 });
 
-test("K710-UI-009 「＋ グループ」は押せない形のまま（aria-disabled・押しても口も小窓も出ない・グループを作る・直すは段 11）・「＋ このグループに招く」はもう無い・「＋ 招く」は主ボタンで押せる", async ({
-  page,
-}) => {
-  const mk = await mockMembers(page);
-  await openMembers(page);
-  const calls: string[] = [];
-  page.on("request", (r) => {
-    if (/\/api\/v1\//.test(r.url()) && r.method() !== "GET") calls.push(r.url());
-  });
-  const add = page.locator(SEC).getByRole("button", { name: "＋ グループ", exact: true });
-  await expect(add).toHaveAttribute("aria-disabled", "true");
-  await add.click({ force: true });
-  await expect(page.locator(".k-dialog")).toHaveCount(0);
-  expect(calls).toEqual([]);
-  await expect(page.locator(".k-inv-group-invite")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "＋ このグループに招く" })).toHaveCount(0);
-  const invite = page.locator(SEC).getByRole("button", { name: "＋ 招く", exact: true });
-  await expect(invite).not.toHaveAttribute("aria-disabled", "true");
-  await invite.click();
-  await expect(page.locator(".k-dialog").getByRole("heading", { name: "招く" })).toBeVisible();
-  expect(mk.reads).toBe(1);
-});
+// K710-UI-009（「＋ グループ」「＋ このグループに招く」が押せない形）は、K-805・K-809 が押せる形にするので、それぞれの試験（K805-UI-002・K809-UI-013）が持つ。この番号は欠けたまま
 
 test("K710-UI-010 招いた後に並びを読み直しても開き閉じは変わらない（開いていた受託開発は開いたまま・初めの開き方に戻らない）・営業の招待中が「＋ 招待中 2」になる", async ({
   page,
@@ -350,8 +306,10 @@ test("K710-UI-012 グループ名・マネージャーの名前に HTML が入�
   };
   await mockMembers(page, groups, []);
   await openMembers(page);
-  await expect(page.locator(".k-f9m-head").first()).toContainText('<img src=x onerror="window.__x=1">営業');
-  await expect(page.locator(".k-f9m-head").first().locator(".k-f9m-manager")).toHaveText("マネージャー：<b>佐藤</b>");
+  await expect(page.locator(".k-f10m-toggle").first()).toContainText('<img src=x onerror="window.__x=1">営業');
+  await expect(page.locator(".k-f10m-toggle").first().locator(".k-f10m-manager")).toHaveText(
+    "マネージャー：<b>佐藤</b>",
+  );
   expect(await page.evaluate(() => (window as unknown as { __x?: number }).__x)).toBeUndefined();
   expect(await page.locator(`${SEC} img, ${SEC} b`).count()).toBe(0);
 });
@@ -368,7 +326,7 @@ for (const w of WIDTHS) {
     expect(await overflowX(page)).toBeLessThanOrEqual(0);
     if (w <= 767) {
       const name = await head(page, "営業").locator(".k-inv-group-name").boundingBox();
-      const mgr = await head(page, "営業").locator(".k-f9m-manager").boundingBox();
+      const mgr = await head(page, "営業").locator(".k-f10m-manager").boundingBox();
       expect(mgr!.y).toBeGreaterThan(name!.y + name!.height - 1);
     }
   });
@@ -395,7 +353,7 @@ test("K710-UI-014 口が 503 のときは K-420 のまま「メンバーを読�
   await expect(page.getByText("メンバーを読み込めませんでした", { exact: false })).toBeVisible();
   await expect(page.locator(SEC).getByRole("button", { name: "＋ 招く", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "もう一度読む", exact: true }).click();
-  await expect(page.locator(".k-f9m-head")).toHaveCount(3);
+  await expect(page.locator(".k-f10m-toggle")).toHaveCount(3);
   expect(n).toBe(2);
 });
 
@@ -411,11 +369,12 @@ test("K710-UI-015 左のバーの「ワークスペースの管理」の第 2 �
   const ts = sub.getByRole("link", { name: /^チケットの設定/ });
   await expect(ts).toHaveAttribute("href", "/workspace/ticket-settings");
   await expect(ts).not.toHaveAttribute("aria-disabled", "true");
-  for (const n of ["記録", "設定"])
-    await expect(sub.locator(".k-me-sub-i").filter({ hasText: new RegExp(`^\\s*${n}\\s*$`) })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+  const built: Record<string, string> = { 記録: "/audit", 設定: "/settings/company" };
+  for (const n of ["記録", "設定"]) {
+    const it = sub.locator(".k-me-sub-i").filter({ hasText: new RegExp(`^\\s*${n}\\s*$`) });
+    if (BUILT_ROUTES.includes(built[n]!)) await expect(it).not.toHaveAttribute("aria-disabled", "true");
+    else await expect(it).toHaveAttribute("aria-disabled", "true");
+  }
   await ts.click();
   await expect(page).toHaveURL(/\/workspace\/ticket-settings$/);
   await expect(

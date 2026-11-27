@@ -66,6 +66,19 @@
   opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
 }
+/* 切り替えが載った外枠（K-844）：▾ と会社の印は押せる引き金（薄くしない・ボタンの地を出さない） */
+button.k-ws-switch {
+  opacity: 1;
+  cursor: pointer;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.k-ws-mark[role="button"] {
+  cursor: pointer;
+}
 .k-nav-star {
   /* 押せる的は 24px（全体の決まり）のまま、見出しの高さはキャンバスどおり（字の行より伸びた分を上下で吸収） */
   display: inline-grid;

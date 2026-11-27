@@ -1,30 +1,53 @@
 "use client";
-// メンバー（K-420・画面 members・道 /members）。外枠（TicketShell）の中に、ワークスペースの管理の頭（WsHead）・第 2 ナビ（WsSub）・本文（MembersBody）。
+// メンバー（K-420・K-818・画面 members・道 /members）。外枠（TicketShell）の中に、ワークスペースの管理の頭（WsHead）・第 2 ナビ（WsSub）・本文（F10 の MembersPage）。
+//   K-818：本文を段 11 の部品 features/F10/members に替えた。グループごとの行（初めは自分の主のグループだけ開く・読み直しでは触らない）・役割の ▾（use-role-change.ts）・
+//   行の「⋯」（行き先はメンバーの 1 人の画面 /members/<id>・?do=…）・最後に使った日・上の 1 行（members-shape.ts）。見られない人（管理者でない）は外枠の中に NoAccess（並びの口を呼ばない）
 //   見た目はモック /dev/mock/f8/inv-* と同じ部品（views.tsx）。動き：getWorkspaceMembers（K-419）を 1 回読む → グループごとの並び。
 //   「＋ 招く」の小窓：足す（宛てをそろえて形を見る）・外す・グループと役割・ひとこと・リンク。送るのは createInvitations（K-419）、リンクは createInvitationLink（K-421）。
 //   管理者として招く（口が 403・STEP_UP_REQUIRED）なら本人確認の取り直し（step-up.tsx）を出し、通ったら止まった操作を 1 回だけ送り直す。
 //   口の断り方の出し分けは状態でなく答えの code と details：宛てごとの文（E-INV-009・010）と 51 人以上（E-INV-012）は欄の下、ほか（404・503 など）は小窓の上の赤い箱。書いた中身は残す。
+//   K-809：招待中の行の「送り直す」「取り消す」（use-invite-rows.ts・取り消す前に Confirm）と、各グループの「＋ このグループに招く」（招く小窓をそのグループを選んだ形で開く）。
+//   K-805：「＋ グループ」→ グループを足す小窓（use-group-add.ts・GroupDialog）。並びが読めない間は押せない。
+//   K-806：グループの見出しの「直す」・頭の「並びを替える」・層の名前と並びを直す小窓（use-group-edit.ts）。層の小窓は足す小窓の層 ▾ から開き、閉じたら足す小窓へ戻る。
 //   K-931（段 12）：ゲストの人の行の「⋯」から 1 人だけ止める・戻す・外す（確かめと送るは guest-tab.tsx の useGuestGroupEditing）。
 //   K-874（段 12）：見出しの下のタブ（メンバー／ゲスト・URL ?tab=guests）。開いたとき getWorkspaceMembers と listGuestGroups（K-876）を並べて 1 回ずつ読む。
+//   メンバーのタブは段 11 の本文（F10/members の MembersPage）の差し込み口 tabs に載せ、ゲストのタブは invite/views の MembersBody（guest）。
 //   ゲストを招く（役割 requester・guest_group_id・scope_id は送らない・D-155.38）・ゲストのグループを作る小窓（createGuestGroup・K-876）。
 //   同じ中身の押し直しは同じ Idempotency-Key（中身を変えたら新しい鍵）。
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useRef, useState } from "react";
 import type { Ops } from "@kaname/contracts";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Loading, Toaster, useNotify } from "@/components/k";
+import { Band, Callout, Confirm, Loading, NoAccess, Toaster, useNotify } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { me } from "@/lib/auth/ext";
+import { useMyRoles } from "@/lib/auth/role";
 import { StepUp } from "@/features/F1/security/step-up";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
+import { isEmail, MEMBERS_KEY, SCREEN, splitEmails, useMembers } from "./use-members";
 import { GuestGroupDialog } from "./guest-group-views";
 import { GuestTabContent, useGuestGroupEditing } from "./guest-tab";
 import { createGuestGroup, GUEST_GROUPS_KEY, GuestGroupsError, useGuestGroups } from "./use-guest-groups";
-import { isEmail, MEMBERS_KEY, SCREEN, splitEmails, useMembers } from "./use-members";
-import { GUEST_ROLE, InviteDialog, MembersBody, WsHead, WsSub, type InviteValues, type MemberGroup } from "./views";
+import {
+  GUEST_ROLE,
+  InviteDialog,
+  MembersBody as GuestsBody,
+  WsHead,
+  WsSub,
+  type InviteValues,
+  type MemberGroup,
+} from "./views";
+import { bandOf, initialOpen, toGroups } from "@/features/F10/members/members-shape";
+import { useRoleChange, type RoleResult } from "@/features/F10/members/use-role-change";
+import type { MoreAction } from "@/features/F10/members/person-row";
+import { useInviteRows } from "@/features/F10/members/use-invite-rows";
+import { GroupDialog, LayersDialog, ReorderDialog } from "@/features/F10/members/group-dialogs";
+import { peopleOf, useGroupAdd } from "@/features/F10/members/use-group-add"; // K-805
+import { useGroupEdit } from "@/features/F10/members/use-group-edit"; // K-806
+import { MembersPage as MembersBody, groupKey, type GroupData, type PendingButton } from "@/features/F10/members/views";
 
 const LOAD_FAILED = "メンバーを読み込めませんでした";
 const NEED_ONE = "メールを 1 つ以上入れてください";
@@ -49,8 +72,30 @@ const GUEST_SUB =
 const created = (name: string): string => `ゲストのグループ「${name}」を作りました`;
 const newKey = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+const EMPTY_GROUP = "このグループにはまだ人がいません";
+/** まだ押せない入口（無い。「＋ グループ」は K-805・「並びを替える」「直す」は K-806・「＋ このグループに招く」は K-809 でつないだ） */
+const PENDING: readonly PendingButton[] = [];
+/** 見られる役（管理者・R1・R2） */
+const CAN_SEE = ["R1", "R2"];
+/** 「⋯」の行き先（メンバーの 1 人の画面・小窓は K-819 の ?do=） */
+const DO_OF: Record<Exclude<MoreAction, "role">, string> = {
+  tickets: "",
+  move: "?do=move",
+  also: "?do=also",
+  suspend: "?do=suspend",
+  resume: "?do=resume",
+  remove: "?do=remove",
+};
+/** 赤い箱と並びの読み直しが要る断り方（相手かグループがもう変わった） */
+const STALE = ["E-MEM-002", "E-MEM-006", "E-MEM-007"];
 
 const EMPTY: InviteValues = { typing: "", emails: [], group: "", role: "member", message: "" };
+
+/** 招待中の行に招待の id を持たせる（送り直す・取り消すが指す・K-809） */
+const withInvitedId = (g: GroupData): GroupData => ({
+  ...g,
+  rows: g.rows.map((r) => (r.invitedLeft ? { ...r, invitedId: r.id } : r)),
+});
 
 /** 欄に打った字を足す。形の違う字は並びに入れず、欄に残して理由を返す（同じ宛ては 1 つ） */
 function absorb(v: InviteValues): { values: InviteValues; error: string | null } {
@@ -151,7 +196,41 @@ function Tabs({ guest, members, guests }: { guest: boolean; members: number; gue
   );
 }
 
+/** 見られる人かを先に見る（見られない人には並びの口を呼ばない） */
 export function MembersPage() {
+  const router = useRouter();
+  const { roles } = useMyRoles();
+  if (roles === undefined)
+    return (
+      <Toaster>
+        <TicketShell
+          screen="members"
+          crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}
+        >
+          <Loading />
+        </TicketShell>
+      </Toaster>
+    );
+  if (!roles.some((r) => CAN_SEE.includes(r)))
+    return (
+      <Toaster>
+        <TicketShell screen="members" crumbs={[{ label: "メンバー" }]}>
+          <section aria-label="メンバー">
+            <NoAccess acts={[() => router.back(), "/tickets"]} />
+          </section>
+        </TicketShell>
+      </Toaster>
+    );
+  return <MembersScreen />;
+}
+
+interface RoleNote {
+  title?: string;
+  text: string;
+}
+
+function MembersScreen() {
+  const router = useRouter();
   const qc = useQueryClient();
   const notify = useNotify();
   const members = useMembers();
@@ -179,20 +258,86 @@ export function MembersPage() {
   const [busy, setBusy] = useState(false);
   const [linkBusy, setLinkBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
+  const rows = useInviteRows({ reload: () => void qc.invalidateQueries({ queryKey: MEMBERS_KEY }) });
   const sending = useRef(false);
+  const people = useMemo(() => peopleOf(view?.answer.groups), [view]); // K-805
+  const groupAdd = useGroupAdd({ people }); // K-805
+  const addDialog = groupAdd.dialog;
+  // K-806：層の小窓は足す小窓の層 ▾ から開き、閉じたら足す小窓（書きかけのまま）へ戻る。名前を直した層を選んでいたら新しい名前に付け替える
+  const groupEdit = useGroupEdit({
+    people,
+    onLayersClosed: (renamed) => {
+      const now = renamed?.[addDialog.values.layer];
+      if (now) addDialog.onLayer(now);
+    },
+    onAddLayer: () => addDialog.onNewLayer(""),
+  });
   const pending = useRef<Req | null>(null);
+
+  // ---- グループの開き閉じ（鍵はグループの id・初めは自分の主のグループだけ・読み直しでは触らない）
+  const answer = view?.answer;
+  const groups = useMemo<GroupData[]>(() => (answer ? toGroups(answer).map(withInvitedId) : []), [answer]);
+  const [openGroups, setOpenGroups] = useState<string[] | null>(null);
+  const opened = openGroups ?? (answer ? initialOpen(groups, answer) : []);
+  const toggle = (key: string) =>
+    setOpenGroups(opened.includes(key) ? opened.filter((k) => k !== key) : [...opened, key]);
+  const band = answer ? bandOf(answer) : null;
+  const suspended = useMemo(
+    () => new Set((answer?.groups ?? []).flatMap((g) => g.members.filter((p) => p.suspended).map((p) => p.id))),
+    [answer],
+  );
+
+  // ---- 役割を変える（結果の出し分けは答えの code で決める）
+  const [roleNote, setRoleNote] = useState<RoleNote | null>(null);
+  const reread = () => void qc.invalidateQueries({ queryKey: MEMBERS_KEY });
+  const onRoleResult = (r: RoleResult) => {
+    const { name, to } = r.target;
+    if (r.ok) {
+      notify(`${name}の役割を ${to} にしました`);
+      return reread();
+    }
+    if (!r.error) return setRoleNote({ text: msgOf(PAGE_ERROR.offline) });
+    if (r.error.code === "E-MEM-004")
+      return setRoleNote({
+        title: "役割を変えられません",
+        text: `${name}は、いまの管理者の最後の 1 人です。先にほかの人を管理者にしてから、変えてください`,
+      });
+    setRoleNote({ text: noticeOf(r.error) });
+    if (STALE.includes(r.error.code)) reread();
+  };
+  const role = useRoleChange({ onResult: onRoleResult });
+  const rowActs = {
+    busy: role.busy,
+    suspended,
+    hrefOf: (row: { id: string }) => `/members/${row.id}`,
+    onRole: (g: GroupData, row: GroupData["rows"][number], to: GroupData["rows"][number]["role"]) => {
+      if (row.role === to) return;
+      setRoleNote(null);
+      role.change({
+        key: `${groupKey(g)}:${row.id}`,
+        id: row.id,
+        name: row.name,
+        groupId: g.id ?? "",
+        from: row.role,
+        to,
+      });
+    },
+    onMore: (_g: GroupData, row: { id: string }, a: MoreAction) => {
+      if (a !== "role") router.push(`/members/${row.id}${DO_OF[a]}`);
+    },
+  };
 
   const company = (who.data as { workspace_name?: string | null } | undefined)?.workspace_name?.trim() ?? "";
 
   const reset = () => {
-    setDone(null);
-    setCompanyErr(null);
     setLocalErr(null);
     setNoteErr(null);
     setServerErr(null);
     setNotice(null);
     setLink(null);
     setMore(false);
+    setDone(null);
+    setCompanyErr(null);
   };
   /** 中身を変えたら新しい冪等の鍵（同じ中身の押し直しは同じ鍵・K874-UI-011） */
   const edit = (f: (v: InviteValues) => InviteValues) => {
@@ -201,20 +346,32 @@ export function MembersPage() {
   };
   const inboxOf = (id: string): string | undefined =>
     gview?.raw.find((g) => g.id === id)?.request_scope?.name ?? undefined;
-  const openDialog = (preset?: MemberGroup) => {
+  /** 招く小窓を開く。
+   *   社内のグループの id（string）を渡せばそのグループを選んだ形（変えられる・K-809）。
+   *   ゲストのグループ（MemberGroup）を渡すか、ゲストのタブから開けば役割「ゲスト」（K-874）。何も渡さなければ先頭のグループ */
+  const openDialog = (preset?: string | MemberGroup) => {
     reset();
     idem.current = newKey();
-    const guest = guestTab || Boolean(preset);
-    const base: InviteValues = { ...EMPTY, group: view?.scopes[0]?.id ?? "" };
+    const guestPreset = typeof preset === "object" ? preset : undefined;
+    const groupId = typeof preset === "string" ? preset : undefined;
+    const guest = guestTab || Boolean(guestPreset);
+    const base: InviteValues = { ...EMPTY, group: groupId ?? view?.scopes[0]?.id ?? "" };
     setForm(
       !guest
         ? base
-        : preset?.id
-          ? withCompany({ ...base, role: GUEST_ROLE }, preset.name, preset.id, inboxOf(preset.id))
+        : guestPreset?.id
+          ? withCompany({ ...base, role: GUEST_ROLE }, guestPreset.name, guestPreset.id, inboxOf(guestPreset.id))
           : { ...base, role: GUEST_ROLE, company: "" },
     );
     setOpen(true);
   };
+  const inviteGroup = (key: string) => {
+    const g = groups.find((x) => groupKey(x) === key);
+    if (g?.id) openDialog(g.id);
+  };
+  /** 招待の id → 宛て（知らせと確かめの字） */
+  const emailOf = (id: string): string =>
+    groups.flatMap((g) => g.rows).find((r) => r.invitedLeft && r.id === id)?.email ?? "";
   const close = () => {
     if (sending.current) return;
     setOpen(false);
@@ -239,8 +396,9 @@ export function MembersPage() {
     setLink(null); // 作ったリンクは選んだグループと役割のもの（変えたら出さない）
     edit((f) => ({ ...f, ...patch }));
   };
-  /** 役割を変える：ゲストとほかの間を移るときはゲストのグループの選びを消す（K874-UI-017） */
+  /** 役割を変える：ゲストとほかの間を移るときはゲストのグループの選びを消す（K874-UI-017）。作ったリンクも出さない */
   const pickRole = (role: string) => {
+    setLink(null);
     setCompanyErr(null);
     setDone(null);
     edit((f) => {
@@ -285,8 +443,8 @@ export function MembersPage() {
         pending.current = null;
         if (req.kind === "link") return setLink((r.data as unknown as { url?: string }).url ?? null);
         const sent = (r.data as unknown as { invitations?: Sent[] }).invitations ?? [];
-        setOpen(false);
         idem.current = newKey();
+        setOpen(false);
         const failed = failedText(sent);
         notify(sentText(sent, req.body.emails.length), failed ? { description: failed } : {});
         void qc.invalidateQueries({ queryKey: req.guest ? GUEST_GROUPS_KEY : MEMBERS_KEY });
@@ -344,7 +502,6 @@ export function MembersPage() {
       false,
     );
   };
-
   // ---- ゲストのグループを作る（K-874・口は K-876 の createGuestGroup）
   const openCreate = (fromInvite: boolean) => {
     createKey.current = newKey();
@@ -427,7 +584,7 @@ export function MembersPage() {
             <div className="k-me-wrap">
               <WsSub members={view?.count ?? 0} />
               {guestTab ? (
-                <MembersBody
+                <GuestsBody
                   groups={gview?.groups ?? []}
                   guest
                   title={GUEST_TITLE}
@@ -454,10 +611,44 @@ export function MembersPage() {
                 />
               ) : (
                 <MembersBody
-                  groups={view?.groups ?? []}
+                  groups={groups}
                   tabs={tabs}
+                  open={opened}
+                  onToggle={toggle}
+                  band={band ? <Band tone="wait" title={band.title} {...(band.sub ? { sub: band.sub } : {})} /> : null}
+                  emptyText={EMPTY_GROUP}
+                  disabledButtons={PENDING}
                   inviteDisabled={!view}
                   onInvite={() => openDialog()}
+                  onAddGroup={groupAdd.open /* K-805 */}
+                  addGroupDisabled={!view /* K-805：並びが読めない間は押せない */}
+                  onEditGroup={groupEdit.openEdit /* K-806：鍵は groupKey */}
+                  onReorder={groupEdit.openOrder /* K-806 */}
+                  rowActs={rowActs}
+                  {...(roleNote || rows.notice || groupEdit.pageNotice
+                    ? {
+                        notice: (
+                          <>
+                            {
+                              groupEdit.pageNotice ? (
+                                <Callout tone="danger">{groupEdit.pageNotice}</Callout>
+                              ) : null /* K-806 */
+                            }
+                            {rows.notice ? <Callout tone={rows.notice.tone}>{rows.notice.text}</Callout> : null}
+                            {roleNote ? (
+                              <Callout tone="danger" {...(roleNote.title ? { title: roleNote.title } : {})}>
+                                {roleNote.text}
+                              </Callout>
+                            ) : null}
+                          </>
+                        ),
+                      }
+                    : {})}
+                  onInviteGroup={inviteGroup}
+                  onResend={(id) => void rows.resend(id, emailOf(id))}
+                  onRevoke={(id) => rows.askRevoke(id, emailOf(id))}
+                  resentIds={rows.resentIds}
+                  busyId={rows.busyId}
                   {...(members.isError
                     ? { failure: { text: LOAD_FAILED, onRetry: () => void members.refetch() } }
                     : {})}
@@ -511,6 +702,34 @@ export function MembersPage() {
           onInbox={(inbox) => editCreate({ inbox })}
           onCreate={() => void submitCreate()}
           onCancel={cancelCreate}
+        />
+        <GroupDialog
+          {...addDialog}
+          open={addDialog.open && !groupEdit.layers.open /* K-806：層の小窓の間は隠す（書きかけは残る） */}
+          editLayersOption={addDialog.editLayersOption === "hide" ? "hide" : "show" /* K-806 */}
+          onEditLayers={groupEdit.openLayers /* K-806 */}
+        />
+        <GroupDialog {...groupEdit.edit} /* K-806 */ />
+        <ReorderDialog {...groupEdit.order} /* K-806 */ />
+        <LayersDialog {...groupEdit.layers} /* K-806 */ />
+        <Confirm
+          open={rows.ask !== null}
+          title="招待を取り消しますか"
+          description={`${rows.ask?.email ?? ""} に送った招待は使えなくなります。招待のリンクも使えなくなります`}
+          confirmLabel="招待を取り消す"
+          busy={rows.revoking}
+          onOpenChange={(o) => {
+            if (!o) rows.cancelRevoke();
+          }}
+          onConfirm={() => void rows.revoke()}
+        />
+        <StepUp
+          open={role.stepUp.open}
+          reason={role.stepUp.reason}
+          withCode={role.stepUp.withCode}
+          withPasskey={role.stepUp.withPasskey}
+          onDone={role.stepUp.onDone}
+          onCancel={role.stepUp.onCancel}
         />
         <StepUp
           open={stepUp !== null}

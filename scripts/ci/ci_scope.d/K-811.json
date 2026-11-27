@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F10/admin/members/role.ts", "packages/db/migrations/20261126001100_member_role.sql"],
+   "tests": ["apps/api/test/features/F10/admin-member-role.test.ts"]}
+ ]
+}

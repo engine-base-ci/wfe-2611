@@ -1,0 +1,32 @@
+{
+ "ops": {
+  "addIncidentUpdate": {
+   "file": "apps/api/test/features/F12/ops-notices-incident.test.ts",
+   "reason": "お知らせの種類・出したか・今の状態で答えが変わり、続報と今の状態と運営の記録を書く。種では作れない（K-979）",
+   "covers": {
+    "test_post_ops_notices_id_updates_ok": "K979-API-001",
+    "test_post_ops_notices_id_updates_shape": "K979-API-001",
+    "test_post_ops_notices_id_updates_not_found": "K979-API-009",
+    "test_post_ops_notices_id_updates_conflict": "K979-API-005",
+    "test_post_ops_notices_id_updates_rejected_401": "K979-API-010",
+    "test_post_ops_notices_id_updates_rejected_403": "K979-API-010",
+    "test_post_ops_notices_id_updates_rejected_422": "K979-API-008",
+    "test_post_ops_notices_id_updates_rate_limited": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_updates_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_notices_id_updates_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_notices_id_updates_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  }
+ }
+}

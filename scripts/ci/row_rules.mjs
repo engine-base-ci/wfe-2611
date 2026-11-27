@@ -43,6 +43,15 @@ export const ROW_EXEMPT_FIELDS = {
   deleteKnowledgeFolder: {
     id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
   },
+  switchWorkspace: {
+    id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
+  },
+  revokeMySession: {
+    id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
+  },
+  markNoticeRead: {
+    id: "運営のお知らせの行は運営だけが読める（行の守り notices_ops_all）ので、入口が行の守りの中で :id を読むと会社の人にはどのお知らせも無い（404・NOT_FOUND）になる。見える（届け先・出したか・管理者だけ）は口が DB の関数 app.member_notice_read（app.notice_for_member → app.notice_for_tenant の 1 か所）で決め、見えなければ 404 E-PAGE-001・何も書かない（K-954）",
+  },
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },

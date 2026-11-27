@@ -1,0 +1,38 @@
+{
+ "ops": {
+  "openPeek": {
+   "file": "apps/api/test/features/F12/ops-peek.test.ts",
+   "reason": "今の許可・本人確認の取り直し・問い合わせの持ち主で答えが変わり、運営の記録と会社の記録を書く。種では作れない（K-969）",
+   "covers": {
+    "test_post_ops_workspaces_id_peeks_ok": "K969-API-001",
+    "test_post_ops_workspaces_id_peeks_shape": "K969-API-001",
+    "test_post_ops_workspaces_id_peeks_not_found": "K969-API-005",
+    "test_post_ops_workspaces_id_peeks_rejected_401": "K969-API-007",
+    "test_post_ops_workspaces_id_peeks_rejected_403": "K969-API-007",
+    "test_post_ops_workspaces_id_peeks_rejected_422": "K969-API-008",
+    "test_post_ops_workspaces_id_peeks_rejected_422_2": "K969-API-008",
+    "test_post_ops_workspaces_id_peeks_rate_limited": "K969-API-017",
+    "test_post_ops_workspaces_id_peeks_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"},
+    "test_post_ops_workspaces_id_peeks_session_unresolved": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"}
+   },
+   "na": {
+    "test_post_ops_workspaces_id_peeks_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
+   }
+  },
+  "closePeek": {
+   "file": "apps/api/test/features/F12/ops-peek.test.ts",
+   "reason": "許可を開いた本人か・もう閉じたかで答えが変わる。種では作れない（K-969）",
+   "covers": {
+    "test_delete_ops_peeks_id_ok": "K969-API-009",
+    "test_delete_ops_peeks_id_shape": "K969-API-009",
+    "test_delete_ops_peeks_id_not_found": "K969-API-010",
+    "test_delete_ops_peeks_id_rejected_401": "K969-API-007",
+    "test_delete_ops_peeks_id_rejected_403": "K969-API-007",
+    "test_delete_ops_peeks_id_rejected_422": "K969-API-008",
+    "test_delete_ops_peeks_id_rate_limited": {"file": "apps/api/test/features/F12/ops-peek.test.ts", "mark": "K969-API-017"},
+    "test_delete_ops_peeks_id_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"},
+    "test_delete_ops_peeks_id_session_unresolved": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"}
+   }
+  }
+ }
+}

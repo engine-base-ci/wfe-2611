@@ -1,0 +1,74 @@
+{
+ "ops": {
+  "createPlanProposal": {
+   "file": "apps/api/test/features/F12/ops-plans-write.test.ts",
+   "reason": "今の版と開いた案で答えが変わり、運営の記録を書く。種では作れない（K-988）",
+   "covers": {
+    "test_post_ops_plan_proposals_ok": "K988-API-001",
+    "test_post_ops_plan_proposals_shape": "K988-API-001",
+    "test_post_ops_plan_proposals_rejected_401": "K988-API-010",
+    "test_post_ops_plan_proposals_rejected_403": "K988-API-010",
+    "test_post_ops_plan_proposals_rejected_422": "K988-API-008",
+    "test_post_ops_plan_proposals_rate_limited": "K988-API-013",
+    "test_post_ops_plan_proposals_conflict": "K988-API-003",
+    "test_post_ops_plan_proposals_conflict_2": "K988-API-004",
+    "test_post_ops_plan_proposals_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_plan_proposals_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
+    "test_post_ops_plan_proposals_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
+    "test_post_ops_plan_proposals_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
+   }
+  },
+  "updatePlanProposal": {
+   "file": "apps/api/test/features/F12/ops-plans-write.test.ts",
+   "reason": "作った人と案の状態で答えが変わる（K-988）",
+   "covers": {
+    "test_patch_ops_plan_proposals_id_ok": "K988-API-005",
+    "test_patch_ops_plan_proposals_id_shape": "K988-API-005",
+    "test_patch_ops_plan_proposals_id_not_found": "K988-API-009",
+    "test_patch_ops_plan_proposals_id_rejected_401": "K988-API-010",
+    "test_patch_ops_plan_proposals_id_rejected_403": "K988-API-006",
+    "test_patch_ops_plan_proposals_id_rejected_422": "K988-API-008",
+    "test_patch_ops_plan_proposals_id_rate_limited": "K988-API-013",
+    "test_patch_ops_plan_proposals_id_conflict": "K988-API-006",
+    "test_patch_ops_plan_proposals_id_conflict_2": "K988-API-004",
+    "test_patch_ops_plan_proposals_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_patch_ops_plan_proposals_id_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
+    "test_patch_ops_plan_proposals_id_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
+    "test_patch_ops_plan_proposals_id_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
+   }
+  },
+  "submitPlanProposal": {
+   "file": "apps/api/test/features/F12/ops-plans-write.test.ts",
+   "reason": "作った人と案の状態で答えが変わる（K-988）",
+   "covers": {
+    "test_post_ops_plan_proposals_id_submit_ok": "K988-API-007",
+    "test_post_ops_plan_proposals_id_submit_shape": "K988-API-007",
+    "test_post_ops_plan_proposals_id_submit_not_found": "K988-API-009",
+    "test_post_ops_plan_proposals_id_submit_rejected_401": "K988-API-010",
+    "test_post_ops_plan_proposals_id_submit_rejected_403": "K988-API-007",
+    "test_post_ops_plan_proposals_id_submit_rate_limited": "K988-API-013",
+    "test_post_ops_plan_proposals_id_submit_conflict": "K988-API-007",
+    "test_post_ops_plan_proposals_id_submit_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ops_plan_proposals_id_submit_rejected_422": "体を受けない（道の id の形は K988-API-008）",
+    "test_post_ops_plan_proposals_id_submit_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
+    "test_post_ops_plan_proposals_id_submit_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
+    "test_post_ops_plan_proposals_id_submit_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
+   }
+  }
+ }
+}

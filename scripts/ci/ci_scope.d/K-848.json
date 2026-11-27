@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F10/admin/members/remove.ts", "packages/db/migrations/20261126004800_member_remove.sql"], "tests": ["apps/api/test/features/F10/admin-member-remove.test.ts"]}
+ ]
+}

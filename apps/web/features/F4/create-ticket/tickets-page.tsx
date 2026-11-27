@@ -6,7 +6,7 @@
 //   一覧には URL の印 ?scope=<グループ>（グループの一覧）と ?open=<番号>（右に開く詳細）を渡す（K-252）
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
@@ -15,8 +15,9 @@ import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { TicketListPage } from "../ticket-list/list-page";
 import type { ListView } from "../ticket-list/use-ticket-list";
-import { CreateHead, type SaveView } from "./create-head";
-import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
+import { TICKET_KINDS_KEY } from "../items/use-ticket-fields";
+import { CreateHead } from "./create-head";
+import { CreateTicket, seedParent, type Choices, type CreateSeed, type KindChoice } from "./create-ticket";
 import { readDraftList } from "./draft";
 import { ONCE, TicketShell, fetchScopes } from "./ticket-shell";
 
@@ -52,6 +53,12 @@ export async function loadChoices(qc: QueryClient): Promise<Load> {
   }
   for (const r of [kinds, members]) if (!r.ok) return { state: "error", code: errorCodeOf(r) };
   if (!kinds.ok || !members.ok) return { state: "error", code: PAGE_ERROR.loadFailed };
+  // 種別の口の答えは項目の表（K-569 の useTicketKinds）と同じ鍵に置く（会社の項目は各種別の fields・同じ口を 2 回呼ばない・K442-UI-026）
+  const kindRows = kinds.data as unknown as (KindChoice & { fields?: unknown })[];
+  qc.setQueryData(
+    TICKET_KINDS_KEY,
+    kindRows.map((k) => ({ id: k.id, name: k.name, fields: Array.isArray(k.fields) ? k.fields : [] })),
+  );
   const all = scopes.value.rows;
   const writableIds = new Set(scopes.value.writable);
   return {
@@ -62,7 +69,7 @@ export async function loadChoices(qc: QueryClient): Promise<Load> {
       member: String(who.value.member_id),
       drafts,
       scopes: all.filter((s) => writableIds.has(s.id)).map((s) => ({ id: s.id, name: s.name })),
-      kinds: kinds.data as unknown as KindChoice[],
+      kinds: kindRows.map((k) => ({ id: k.id, name: k.name, body_template: k.body_template ?? null })),
       // 担当者に選べるのは、抜けていない・止められていない人だけ
       members: (
         members.data as unknown as {
@@ -100,6 +107,13 @@ export function TicketsPage({ openNew }: { openNew: boolean }) {
   const view = viewOf(params.get("view"));
   const scope = params.get("scope");
   const openNumber = params.get("open") || null;
+  // 道の印（K-453 の空の一覧のおすすめ・詳細の「子を足す」）：題名と、uuid の形の親だけを受ける
+  const seedTitle = params.get("title") ?? undefined;
+  const seedParentId = seedParent(params.getAll("parent"));
+  const seed = useMemo<CreateSeed>(
+    () => ({ ...(seedTitle ? { title: seedTitle } : {}), ...(seedParentId ? { parent: seedParentId } : {}) }),
+    [seedTitle, seedParentId],
+  );
   const show = useCallback((v: boolean) => {
     setOpen(v);
     withNew(v);
@@ -111,17 +125,15 @@ export function TicketsPage({ openNew }: { openNew: boolean }) {
       crumbs={[{ label: "チケット", href: "/tickets" }, { label: "作る" }]}
       onCreate={() => show(true)}
     >
-      <CreateBody show={show} />
+      <CreateBody show={show} seed={seed} />
     </TicketShell>
   );
 }
 
-function CreateBody({ show }: { show: (v: boolean) => void }) {
+function CreateBody({ show, seed }: { show: (v: boolean) => void; seed: CreateSeed }) {
   const [ready, setReady] = useState(false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [expired, setExpired] = useState(false);
-  /** 作る面の帯の下書きの保存の状態（帯は読み込みの前後で同じものを使い続ける） */
-  const [save, setSave] = useState<SaveView>({ kind: "none" });
   const qc = useQueryClient();
   const here = "/tickets?new=1";
 
@@ -149,22 +161,24 @@ function CreateBody({ show }: { show: (v: boolean) => void }) {
     return (
       <ErrorState code={PAGE_ERROR.sessionExpired} heading={1} acts={[`/login?next=${encodeURIComponent(here)}`]} />
     );
-  // 作る面：帯を先に出し、選ぶ欄を読み終えたら本文（K-224・D-144.8）。帯は読み込みの前後で同じものを使い続ける
+  // 作る面：読み込み中と読めなかったときは空の保存の状態の帯を先に出し、読めたら作る面が帯ごと描く（K-224・D-144.8・K-442）
   return (
     <div className="k-root k-create-page">
-      <CreateHead save={save} />
       {load.state === "ok" ? (
         <CreateTicket
           choices={load.choices}
+          seed={seed}
           onCreated={(id) => window.location.assign(`/tickets/${id}`)}
           onClose={() => show(false)}
           onExpired={() => setExpired(true)}
-          onSave={setSave}
         />
       ) : (
-        <div className="k-create-body">
-          {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
-        </div>
+        <>
+          <CreateHead save={{ kind: "none" }} />
+          <div className="k-create-body">
+            {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
+          </div>
+        </>
       )}
     </div>
   );

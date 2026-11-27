@@ -299,5 +299,28 @@ class Repo(unittest.TestCase):
             self.assertTrue(cut_check._common(p), p)
         self.assertNotIn("05_flow/screen_api.d/", cut_check.COMMON_ENTRIES)
 
+
+class NamedShape(Tmp):
+    """K-990 が registry_d に足した「名前で指す」書き方（行は 11_tickets/K-990.md の K990-REG-001・002）"""
+
+    def test_K990_REG_001_name_resolves_to_shape_in_same_table(self) -> None:
+        self.put("K-1.py", 'RESPONSES = {"listA": ("Shape", {"id": "string", "n": "integer"})}\n')
+        self.put("K-2.py", 'RESPONSES = {"decideA": "Shape"}\n')
+        target = {"RESPONSES": {"base": ("Base", {"x": "string"})}}
+        registry_d.merge_py(target, self.d, names=["RESPONSES"])
+        self.assertEqual(target["RESPONSES"]["decideA"], ("Shape", {"id": "string", "n": "integer"}))
+        self.assertIs(target["RESPONSES"]["decideA"], target["RESPONSES"]["listA"])
+        self.assertEqual(target["RESPONSES"]["base"], ("Base", {"x": "string"}))
+
+    def test_K990_REG_002_unknown_name_stops(self) -> None:
+        self.put("K-1.py", 'RESPONSES = {"listA": ("Shape", {"id": "string"})}\n')
+        self.put("K-2.py", 'RESPONSES = {"decideA": "Missing"}\n')
+        with self.assertRaises(registry_d.RegistryConflict) as cm:
+            registry_d.merge_py({"RESPONSES": {}}, self.d, names=["RESPONSES"])
+        msg = str(cm.exception)
+        for word in ("K-2.py", "RESPONSES", "decideA", "Missing"):
+            self.assertIn(word, msg)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

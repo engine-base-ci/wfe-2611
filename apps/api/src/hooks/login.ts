@@ -4,12 +4,12 @@ import type { Hook } from "../contract/deps.js";
 import { loginFeature, type LoginDeps } from "../features/F1/login/sign-in.js";
 import { signInCodeFeature } from "../features/F1/login/sign-in-code.js";
 import { signOutFeature } from "../features/F1/login/sign-out.js";
-import { memberGoneCheck } from "../features/F1/login/shared.js";
+import { memberStateCheck } from "../features/F1/login/shared.js";
 import { defineHooks } from "./registry.js";
 
 export function loginHooks(d: LoginDeps): Record<string, Hook> {
   const f = loginFeature(d);
-  const code = signInCodeFeature(d, memberGoneCheck(d));
+  const code = signInCodeFeature(d, memberStateCheck(d));
   const out = signOutFeature(d);
   return {
     signInWithPassword: { input: f.input, before: f.signIn, noIdempotency: true },

@@ -70,6 +70,10 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     }
   };
 
+  /** その PC の会社を運営が止めたか（K-1012・D-156.23）：止めた会社の PC には新しい仕事を渡さず（実行待ちは残る）、動いている仕事は止める合図で止める */
+  const tenantStopped = async (sid: string): Promise<boolean> =>
+    (await one<boolean>("select app.bridge_tenant_stopped($1) as v", [sid])) === true;
+
   /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
   const withExtras = async (sid: string, job: TakenJob) => {
     const tool_token =
@@ -98,6 +102,12 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
           return {
             status: 201,
             body: { data: { job: null, forbidden_domains: [], next_ms: TAKE_IDLE_MS, outdated: true } },
+          };
+        // 止めた会社の PC（K-1012）：仕事を取らず「仕事が無い」と答える（実行待ちは消さずに残る・再開したらまた渡す）
+        if (await tenantStopped(sid))
+          return {
+            status: 201,
+            body: { data: { job: null, forbidden_domains: [], next_ms: TAKE_IDLE_MS, outdated: false } },
           };
         // 「いま何も動かしていない」：その PC が受け取ったまま残った仕事だけ理由つきで止める（D-128.163）
         if (a.input["idle"] === true) await pool.query("select app.bridge_sweep_orphans($1)", [sid]);
@@ -162,6 +172,9 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
           a.id,
         ]);
         if (!v) return notFound();
+        // 止めた会社の PC（K-1012）：動いている仕事は区切りまで進めて止める（progress・finish の口は止めない）
+        if (await tenantStopped(sid))
+          return { status: 200, body: { data: { stop: true, reason: "workspace_stopped", steers: [] } } };
         return { status: 200, body: { data: { stop: v.stop === true, reason: v.reason ?? null, steers: [] } } };
       },
     },

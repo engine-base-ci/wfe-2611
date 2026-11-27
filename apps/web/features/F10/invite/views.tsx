@@ -49,8 +49,8 @@ interface SubItem {
 const WS_ITEMS: readonly SubItem[] = [
   { key: "members", label: "メンバー", icon: Users, href: "#members" },
   { key: "rules", label: "チケットの設定", icon: SlidersHorizontal, href: "/workspace/ticket-settings" },
-  { key: "log", label: "記録", icon: ClipboardList, href: "/workspace/log" },
-  { key: "settings", label: "設定", icon: Settings, href: "/workspace/settings" },
+  { key: "log", label: "記録", icon: ClipboardList, href: "/audit" },
+  { key: "settings", label: "設定", icon: Settings, href: "/settings/company" },
 ];
 
 /** 項目ごとの上書き（字・アイコン・道）。無い所は WS_ITEMS のまま */

@@ -136,6 +136,17 @@ const KIND_TEXT: Record<string, TextOf> = {
     (n) => `${n} の渡しが取り消されました`,
   ),
   "security.new_device": () => "新しい PC からログインがありました。心当たりが無いときは設定で確かめてください",
+  // 段 13 の請求（K-960・D-156.73・D-156.83）：決まった字（月・額・期限は params に通らないので文に出さない）。行き先は口の href（/billing）
+  "billing.contact_changed": () => "請求先が変わりました",
+  "billing.invoice_issued": () => "新しい請求書が届きました",
+  "billing.overdue": () => "お支払いの期限を過ぎた請求書があります",
+  "billing.overdue_week": () => "お支払いの期限から 1 週間たった請求書があります。このままだと止めることがあります",
+  // 段 13 の止める日（K-1008・D-156.73・D-156.23）：決まった字（日付は params に通らないので文に出さない・上の帯で確かめる）。行き先は口の href（無ければ押せない行）
+  "workspace.stop_scheduled": () => "ワークスペースを止める日が決まりました。日付は画面の上の帯で確かめられます",
+  // 段 13 の問い合わせの返事（K-1007・D-156.73・D-156.28）：決まった字（返事の本文は出さない）。行き先は口の href（/notices）
+  "inquiry.replied": () => "運営から問い合わせに返事がありました",
+  // 段 13 のひな形の新しい版（K-1016・D-156.73・D-156.56）：決まった字（版の中身は文に出さない）。行き先は口の href（/settings/template-updates）
+  "template.update": () => "ひな形がこう変わります",
 };
 /** 固有の文が無い種類は札ごとの汎用の文 */
 const TAG_TEXT: Record<NoticeKind, TextOf> = {

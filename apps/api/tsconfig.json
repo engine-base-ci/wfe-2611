@@ -9,6 +9,7 @@
     { "path": "../../packages/errors" },
     { "path": "../../packages/config" },
     { "path": "../../packages/storage" },
+    { "path": "../../packages/billing" },
     { "path": "../../packages/actions" }
   ]
 }

@@ -11,6 +11,7 @@
     "@hono/node-server": "^2.1.1",
     "@kaname/actions": "workspace:*",
     "@kaname/auth": "workspace:*",
+    "@kaname/billing": "workspace:*",
     "@kaname/config": "workspace:*",
     "@kaname/contracts": "workspace:*",
     "@kaname/db": "workspace:*",

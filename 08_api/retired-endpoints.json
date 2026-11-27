@@ -816,6 +816,36 @@
    "path": "/api/v1/portal/acceptances/{id}/answer",
    "decision": "D-155.44",
    "reason": "検収を作らない（代表の決め）。チケットはチケットとして見せる相手（ゲストのグループ）を選ぶだけ・完了の条件にもしない（D-155.41・D-155.44）（answerAcceptance・K-924・K-926 から前へ移した）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/tickets/{id}/work-type-candidates",
+   "decision": "D-150.60",
+   "reason": "業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。チケットの側の候補の口は要らない（K-582）"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/class_axes",
+   "decision": "D-150.46",
+   "reason": "分類の軸は会社が足す項目の「1 つ選ぶ」にまとめた。軸を読む口は listTicketFields に置き換えた（K-563 が外した口の記録・K-582 で足す）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/workspaces/export",
+   "decision": "D-156.13",
+   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsWorkspaces・K-948）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ops/invoices/export",
+   "decision": "D-156.13",
+   "reason": "書き出し（持ち出し）は作らない（代表 2026-11-22・answer=3781e90d23e0）（exportOpsInvoices・K-948）"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_kinds/{id}/template-from-ticket",
+   "decision": "D-156.20",
+   "reason": "チケットからひな形を作る口は外す（代表の言い直し）"
   }
  ]
 }

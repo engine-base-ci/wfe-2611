@@ -7,7 +7,7 @@
 import { countryOf } from "@kaname/auth/device";
 import { EMAIL_RE, normalizeEmail, signInWithLock, type SignInResult } from "@kaname/auth/signup";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { kindOf, memberGoneCheck, reply, type LoginDeps } from "./shared.js";
+import { kindOf, memberStateCheck, reply, type LoginDeps } from "./shared.js";
 
 export type { LoginDeps } from "./shared.js";
 
@@ -41,9 +41,9 @@ export function loginFeature(d: LoginDeps) {
   const blocked = (b: { code: string; status: number }): HookReply =>
     reply(b.status, b.code, b.code === "E-AUTH-007" ? { detail: { ops_email: d.config.opsEmail } } : {});
 
-  /** 入ったのに会社の人が 1 人も無い：その場で閉じて 403・E-AUTH-007（ログインの印を渡さない）。
-   *  抜けた人は止めの 1 か所（K-303）が先に断るので、ここに来るのは会社に属していない利用者（登録の途中など）だけ */
-  const memberGone = memberGoneCheck(d);
+  /** 入ったのに会社の人が 1 人も無い：体の招待の印が本人宛てで使えれば印を渡す（招待の口だけに使う・K-852）。
+   *  そうでなければその場で閉じて 403・E-AUTH-007（ログインの印を渡さない） */
+  const memberState = memberStateCheck(d);
 
   const signIn = async (a: HookArgs): Promise<HookReply> => {
     // パスワードは入口の正規化（前後の空白を落とす）の前の値を使う（打ったとおりに比べる・K301-API-012）
@@ -66,7 +66,8 @@ export function loginFeature(d: LoginDeps) {
         return { status: 201, body: { data: { token: null, two_factor: true, pending: r.pending } } };
       }
       if (!r.token) throw new Error("ログインの印が無い");
-      if (await memberGone(r.token, ua)) return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
+      if ((await memberState(r.token, ua, a.input["invitation"])) === "gone")
+        return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
       return { status: 201, body: { data: { token: r.token, two_factor: false, pending: null } } };
     } catch (e) {
       // DB が落ちた・セッションを写す所で失敗した：パスワードの失敗には数えず 500（部品の側で半分だけ入ったセッションは消してある）

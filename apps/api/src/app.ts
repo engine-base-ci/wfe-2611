@@ -4,7 +4,7 @@ import { cors } from "hono/cors";
 import { MIGRATIONS, checkMigrationOrder } from "@kaname/db";
 import type { Repository } from "@kaname/db/repository";
 import { tenantContext, type SessionResolver, type Vars } from "./middleware/tenant.js";
-import type { Auth } from "@kaname/auth";
+import { INVITATION_HEADER, type Auth } from "@kaname/auth";
 import { DEVICE_TOKEN_HEADER, type Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
@@ -116,7 +116,8 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
           "x-tenant-id",
           "x-signup-token",
           CHALLENGE_HEADER,
-        ], // x-signup-token：登録の申し込みの印（K-51）。x-passkey-challenge：パスキーのチャレンジ（K-304）
+          INVITATION_HEADER,
+        ], // x-signup-token：登録の申し込みの印（K-51）。x-passkey-challenge：パスキーのチャレンジ（K-304）。x-kaname-invitation：招待の印（K-852）
         exposeHeaders: ["set-auth-token", "content-disposition"], // 成果物を落とすときのファイル名（D-106.7）
         credentials: true,
         maxAge: 600,
@@ -174,11 +175,15 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
     ? async (c) => {
         const r = await opts.resolve!(c.req.raw.headers);
         if (!r) return null;
-        // 抜けた人の答え（memberLeft）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
+        // 抜けた人の答え（memberLeft）と止めた会社の答え（tenantStopped・K-1012）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
         const mfaPending = r.mfaPending === true; // 付けるまで進めないの印（K-321・入口 op.ts が止める）
-        return r.memberLeft === undefined
-          ? { ctx: r.ctx, termsPending: r.termsPending, mfaPending }
-          : { ctx: r.ctx, termsPending: r.termsPending, mfaPending, memberLeft: r.memberLeft };
+        return {
+          ctx: r.ctx,
+          termsPending: r.termsPending,
+          mfaPending,
+          ...(r.memberLeft === undefined ? {} : { memberLeft: r.memberLeft }),
+          ...(r.tenantStopped === undefined ? {} : { tenantStopped: r.tenantStopped }),
+        };
       }
     : legacy
       ? async (c) => {

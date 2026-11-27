@@ -67,6 +67,8 @@ export interface SecurityBodyProps extends SecurityState {
   /** まだ押せない（K-319 が入るまでの 2 段階の「付ける」とパスワードの「変える／決める」・D-145.9）。グレーで出し title「（準備中）」 */
   pendingTwoFactor?: boolean;
   pendingPassword?: boolean;
+  /** 「入っている端末」「最近の安全の記録」の代わりに描く物（本番は K-842 の SessionsArea）。渡さないとき（モック・段 2）はグレーの 2 区画 */
+  sessionCards?: ReactNode;
 }
 
 /** 本文（外枠の中のログインと安全）。題と補足は外枠の見出しの行（呼ぶ側） */
@@ -174,6 +176,15 @@ export function SecurityBody(p: SecurityBodyProps) {
           ))}
         </SettingCard>
       ) : null}
+      {p.sessionCards ?? <PendingSessionCards />}
+    </>
+  );
+}
+
+/** 「入っている端末」「最近の安全の記録」の準備中の形（差し込み口を渡さない呼び方） */
+function PendingSessionCards() {
+  return (
+    <>
       <SettingCard
         title="入っている端末"
         labelledBy="sec-sessions"

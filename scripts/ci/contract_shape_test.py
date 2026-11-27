@@ -129,8 +129,8 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
         "password": {"minLength": 12},
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
-    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009）
-    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
+    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009。invitation は任意・空白だけ・512 文字を超えると 422・K852-API-024）
+    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012。invitation は任意・512 文字まで・K852-API-024）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
     "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # apps/api/src/features/F5/delegate/people.ts・app.ticket_delegate（使わない理由・1〜500 字・K-565）

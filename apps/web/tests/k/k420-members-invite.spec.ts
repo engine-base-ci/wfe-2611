@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import { PW, loginAs, signupViaApi, viewerViaApi } from "../_lib/api";
+import { BUILT_ROUTES } from "../../lib/built-routes";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { ROOT } from "./kit";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
@@ -225,7 +226,6 @@ const INV_PAIRS: FidelityPair[] = [
   ["sub", ".k-me-sub", ["width", "x"]],
   ["sub-item", ".k-me-sub-i", ["height", "opacity", "texts"]],
   ["h1", `${SEC} h1`, ["x", ...TEXT]],
-  ["acts", `${SEC} .k-page-acts button`, CTRL],
   ["group-name", ".k-inv-group-name", TEXT],
   ["dialog", DLG, ["width", "x", "y", "background-color", "border-top-left-radius"]],
   ["dialog-title", `${DLG} h2`, ["x", "y", ...TEXT]],
@@ -343,13 +343,13 @@ test("K420-UI-003 並び：グループごとに人が 1 人 1 行・状態の�
   await expect(sales.locator(".k-inv-row").filter({ hasText: "kimura@engine-base.example" })).toContainText(
     "招待中 ・ あと 7 日",
   );
-  await page.locator(".k-f9m-head").filter({ hasText: "受託開発" }).click();
+  await page.locator(".k-f10m-toggle").filter({ hasText: "受託開発" }).click();
   const dev = group("受託開発");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "佐藤 花子" })).toContainText("兼ねている");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "山口 健" }).locator(".k-inv-state")).toHaveText(
     "分身なし（見るだけ）",
   );
-  await expect(dev.locator(".k-f9m-head .k-inv-sub").first()).toHaveText("3 人");
+  await expect(dev.locator(".k-f10m-toggle .k-inv-sub").first()).toHaveText("3 人");
 });
 
 test("K420-UI-004 PC をまだつないでいない人の状態の字は「PC をまだつないでいない」（代表に聞くこと 4 の勧め）", async ({
@@ -367,7 +367,7 @@ test("K420-UI-004 PC をまだつないでいない人の状態の字は「PC �
   );
 });
 
-test("K420-UI-005 グレーの物（役割の ▾・⋯・＋ グループ・送り直す・第 2 ナビの記録／設定の 6 つ）は押せない形で、押しても口を呼ばず画面も変わらない。第 2 ナビの「チケットの設定」は K-710 で押せるリンクになった（道 /workspace/ticket-settings）", async ({
+test("K420-UI-005 第 2 ナビの「記録」「設定」は、その画面の道（/audit・/settings/company）が作られるまで押せない形（aria-disabled）・作られたら押せるリンク。第 2 ナビの「チケットの設定」は K-710 で押せるリンク（道 /workspace/ticket-settings）。役割の ▾・⋯・＋ グループ・送り直す・このグループに招くは K-818・K-805・K-809 が押せる形にしたので、それぞれの試験が持つ", async ({
   page,
 }) => {
   const mk = await mockMembers(page);
@@ -377,19 +377,15 @@ test("K420-UI-005 グレーの物（役割の ▾・⋯・＋ グループ・送
   page.on("request", (r) => {
     if (/\/api\/v1\//.test(r.url()) && r.method() !== "GET") calls.push(`${r.method()} ${r.url()}`);
   });
-  const inert = [
-    page.locator(".k-inv-role").first(),
-    page.locator(".k-inv-more button").first(),
-    page.locator(SEC).getByRole("button", { name: "＋ グループ" }),
-    page.locator(".k-inv-more").getByRole("button", { name: "送り直す" }),
-    page.locator(".k-me-sub-i").filter({ hasText: "記録" }),
-    page.locator(".k-me-sub-i").filter({ hasText: /^\s*設定\s*$/ }),
-  ];
-  expect(inert).toHaveLength(6);
-  await expect(page.locator(".k-inv-group-invite")).toHaveCount(0);
-  for (const el of inert) {
-    await expect(el).toHaveAttribute("aria-disabled", "true");
-    await el.click({ force: true });
+  const built: Record<string, string> = { 記録: "/audit", 設定: "/settings/company" };
+  for (const n of ["記録", "設定"]) {
+    const el = page.locator(".k-me-sub-i").filter({ hasText: new RegExp(`^\\s*${n}\\s*$`) });
+    if (BUILT_ROUTES.includes(built[n]!)) {
+      await expect(el).not.toHaveAttribute("aria-disabled", "true");
+    } else {
+      await expect(el).toHaveAttribute("aria-disabled", "true");
+      await el.click({ force: true });
+    }
   }
   const ts = page.locator(".k-me-sub-i").filter({ hasText: "チケットの設定" });
   await expect(ts).toHaveAttribute("href", "/workspace/ticket-settings");
@@ -400,7 +396,6 @@ test("K420-UI-005 グレーの物（役割の ▾・⋯・＋ グループ・送
   await expect(page.locator(DLG)).toHaveCount(0);
 });
 
-// ---------------------------------------------------------------- 招くの小窓
 test("K420-UI-006 「＋ 招く」で小窓が開き、メールの欄に焦点。グループは営業・受託開発、役割はメンバー・マネージャー・閲覧のみ・管理者・ゲスト（K-874 で足した・既定は今のグループの営業・メンバー）", async ({
   page,
 }) => {
@@ -780,14 +775,14 @@ test("K420-UI-018 やめる・Esc で閉じて口を呼ばない・焦点は「�
 });
 
 // ---------------------------------------------------------------- 守り・失敗・幅
-test("K420-UI-019 閲覧のみの人が /members を直に開く：「いまの権限では開けません」・並びの口を呼ばない・左のバーに「ワークスペースの管理」が出ない", async ({
+test("K420-UI-019 閲覧のみの人が /members を直に開く：「この画面を見る権限がありません」・並びの口を呼ばない・左のバーに「ワークスペースの管理」が出ない", async ({
   page,
 }) => {
   const v = await viewerViaApi();
   const mk = await mockMembers(page);
   await loginAs(page, v.token);
   await page.goto(PATH);
-  await expect(page.getByText("いまの権限では開けません")).toBeVisible();
+  await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
   expect(mk.reads).toBe(0);
   await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveCount(0);
 });
@@ -815,7 +810,7 @@ test("K420-UI-020 並びを読めない（503）：本文に「メンバーを�
 });
 
 for (const w of WIDTHS)
-  test(`K420-UI-021 幅 ${w}：横のはみ出し 0（数値）・小窓を開いても 0・スマホ（767 以下）は 1 人 1 行で状態の列と ⋯ を出さない`, async ({
+  test(`K420-UI-021 幅 ${w}：横のはみ出し 0（数値）・小窓を開いても 0・スマホ（767 以下）は 1 人 1 行で状態の列を出さず、⋯ は押せる形で出す（D-154.13・K-818）`, async ({
     page,
   }) => {
     await mockMembers(page);
@@ -824,7 +819,7 @@ for (const w of WIDTHS)
     expect(await over()).toBe(0);
     if (w < 768) {
       await expect(page.locator(".k-inv-state").first()).toBeHidden();
-      await expect(page.locator(".k-inv-more").first()).toBeHidden();
+      await expect(page.locator(".k-inv-more").first()).toBeVisible();
     } else await expect(page.locator(".k-inv-state").first()).toBeVisible();
     await openDialog(page);
     expect(await over()).toBe(0);

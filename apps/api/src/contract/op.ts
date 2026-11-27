@@ -1,4 +1,7 @@
 // 契約の 1 operation を Hono の handler にする。順序は固定：送る量（413・1MB）→ 上限（429）→ 認証（401）→ 認可（403）→ 入力の検証（422・表記ゆらぎの正規化）→ 冪等（409／再送は最初の結果）→ hooks.before → 副作用（hooks.effect・失敗は 502 で記録しない）→ 記録（関門 C2）→ hooks.after
+//   multipart の道（hooks に multipart を持つ口だけ・K-828）：送る量はファイルの上限＋余白 64 KB までをバイトのまま読み（超えたら hooks の tooLarge の答え）、
+//   入力の検証では multipart/form-data でなければ・読めなければ 422（欄 body）。JSON の読み・NUL・契約の strict な形は飛ばし、FormData を HookArgs.form で渡す（input は {}）。
+//   冪等の比べは欄ごとの中身（ファイルは中身の sha256）。multipart を持たない口の道は今のまま
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
 import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
@@ -9,6 +12,8 @@ import type { ContractDeps, Hook, HookArgs, HookReply } from "./deps.js";
 import type { TenantContext } from "@kaname/db/context";
 import { checkFor, stepUpFresh, stepUpOrFreshLogin } from "./permissions.js";
 import { kanameError } from "@kaname/errors";
+import { OPS_TENANT_ID } from "@kaname/db/id";
+import { STOP_OPEN_OPS } from "./stop-open.js";
 export type { ContractDeps } from "./deps.js";
 
 const LIMIT_DEFAULT = 50;
@@ -64,7 +69,12 @@ export function nulIssues(v: unknown, path: string): { field: string; message: s
 // 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・K-35）
 //   鍵の文字列（base64url の 1〜200 字）を受けると宣言した口（KEY_CURSOR_OPS）だけは、鍵の文字列も通す。中身（鍵の形）はその口が確かめる（D-131.9・K-161）。
 //   宣言の無い一覧の口は今までどおり位置の数だけ（契約の生成器 05_flow/build_api.py の KEY_CURSOR_OPS と同じ集まり）
-export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set(["listApprovalQueue", "listNotifications", "listTickets"]);
+export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set([
+  "listApprovalQueue",
+  "listAuditEvents",
+  "listNotifications",
+  "listTickets",
+]);
 const encodeCursor = (n: number) => String(n);
 const decodeCursor = (s: string | undefined, keyed = false): number | null => {
   if (!s) return 0;
@@ -159,6 +169,45 @@ export async function readBodyLimited(c: Pick<Context, "req">): Promise<string |
   }
   return new TextDecoder().decode(Buffer.concat(chunks));
 }
+/** multipart の口の送る量の余白（K-828）：境の印と頭の分だけ体はファイルより長い。ファイルの大きさの判定は口が file.size で行う */
+export const MULTIPART_MARGIN = 64 * 1024;
+/** readBodyLimited と同じ読みながら数える形で、体をバイトのまま返す（multipart の口・K-828）。max を超えたら読むのをやめて null。
+ *  content-length の頭が max を超えていれば 1 バイトも読まない */
+export async function readBytesLimited(c: Pick<Context, "req">, max: number): Promise<Uint8Array<ArrayBuffer> | null> {
+  const declared = Number(c.req.header("content-length"));
+  if (Number.isFinite(declared) && declared > max) return null;
+  const stream = c.req.raw.body;
+  if (!stream) return new Uint8Array(0);
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  return new Uint8Array(Buffer.concat(chunks));
+}
+/** multipart の体の冪等の比べ（K-828）：欄の名前 → 字の値か、ファイルの中身の sha256（境の印は送るたびに変わるので生のバイトで比べない） */
+async function formDigest(form: FormData): Promise<Record<string, string[]>> {
+  const out: Record<string, string[]> = {};
+  for (const [k, v] of form.entries()) {
+    const d =
+      typeof v === "string"
+        ? v
+        : `sha256:${createHash("sha256")
+            .update(new Uint8Array(await v.arrayBuffer()))
+            .digest("hex")}`;
+    (out[k] ??= []).push(d);
+  }
+  return out;
+}
+
 /** 体の確かめの理由：uuid の形で落ちた欄は "uuid"（道の値と同じ。zod の英語の文を出さない）。ほかは zod のまま */
 const issueMessage = (i: { code: string; message: string; format?: string }) =>
   i.code === "invalid_format" && i.format === "uuid" ? "uuid" : i.message;
@@ -210,13 +259,22 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     // 0) 送る量の守り（D-130.1・K-144 ㉚㊱）：上限・認証・権限・501 より前の一番最初。超えたら振る舞いに届かず何も書かない。
     //    読んだ体は 4) の JSON の読みに使い（2 回読まない）、hooks が c.req.json() で読んでも同じ中身になるよう Hono の器に入れる
     let bodyText: string | null = null;
-    if (def.kind === "create" || def.kind === "update") {
+    //    multipart の口（K-828）：ファイルの上限＋余白までをバイトのまま読む。超えたら口の答え（tooLarge）。体は 4) で FormData に読む
+    const multipart = deps.hooks[operationId]?.multipart;
+    let bodyBytes: Uint8Array<ArrayBuffer> | null = null;
+    if (multipart && (def.kind === "create" || def.kind === "update")) {
+      bodyBytes = await readBytesLimited(c, multipart.maxFileBytes + MULTIPART_MARGIN);
+      if (bodyBytes === null) {
+        const r = multipart.tooLarge();
+        return c.json(r.body, r.status as 413);
+      }
+    } else if (def.kind === "create" || def.kind === "update") {
       bodyText = await readBodyLimited(c);
       if (bodyText === null) return c.json(TOO_LARGE, 413);
       (c.req.bodyCache as unknown as { text?: Promise<string> }).text = Promise.resolve(bodyText);
     }
     const perMinute = deps.limits?.[operationId] ?? def.rateLimit.perMinute;
-    const ctx = c.get("ctx");
+    let ctx = c.get("ctx");
     const repo = c.get("repo");
     // 1) 上限
     //    PC の印で来た要求は PC ごとに数える（同じ人の PC が何台あっても 1 台ずつの上限・代表の答え answer=431fc50df51b・K-355）
@@ -245,7 +303,18 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
         // PC の印は、本人か PC の印で呼べる口（self_or_device）だけ通す
         if (ctx.role === "client" || (ctx.role === "device" && def.perm.word !== "self_or_device"))
           return err(c, 403, "forbidden", "FORBIDDEN");
-        if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
+        if (ctx.role === "ops") {
+          // 運営が会社の人の口を呼ぶのは「中を見る」の読む口（GET）だけ。書く口は許可があっても 403・何も書かない
+          //   （D-125.128「見るだけ」・K-1001。行の守りの 1 層に入口の 1 層を足す・G-02）
+          if (def.method !== "GET") return err(c, 403, "forbidden", "FORBIDDEN");
+          if (!(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
+        }
+      }
+      // 2.58) 運営の口は会社の文脈で動かない（D-156.3・K-1001）：x-tenant-id を付けても文脈の tenantId を null にしてから振る舞いに渡す。
+      //       運営が会社を触る道は security definer の関数だけ（会社の id は道の :id で引数に渡す）。以後の段と hooks は書き換えた文脈を読む
+      if (def.auth === "ops") {
+        c.set("ctx", { ...ctx, tenantId: null });
+        ctx = c.get("ctx");
       }
       // 2.6) 会社から抜けた人（members.deleted_at・セッションは残っている）は、行に結ぶ確かめ（4.1）より前に 403 で止める
       //      （404 でない・何も書かない・全部の口・D-131.7 ②・K-166）。止められた人はここでは見ない（各関数が 403）。判定できなければ 503。
@@ -258,6 +327,18 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
           return guardDown(c, operationId, "抜けた人の確かめ", ex);
         }
         if (left) return err(c, 403, "forbidden", "FORBIDDEN");
+      }
+      // 2.65) 運営が止めた会社（K-970・K-1012・D-156.23）の会社の人は、止められた画面が使う口（stop-open.ts の STOP_OPEN_OPS）のほかを 403 E-OPS-007 で止める
+      //      （体は error と code だけ・何も書かない）。運営の人（role ops）と PC（role device）はここでは止めない（PC は仕事の口で止める）。
+      //      引くのは 2.6 と同じ 1 回の答え（middleware/tenant.ts）。判定できなければ 503（通す側に倒さない・G-15）。getter が無いアプリでは止めない
+      if (ctx.role === "member" && !STOP_OPEN_OPS.has(operationId)) {
+        let stopped: boolean;
+        try {
+          stopped = (await c.get("tenantStopped")?.()) === true;
+        } catch (ex) {
+          return guardDown(c, operationId, "止めた会社の確かめ", ex);
+        }
+        if (stopped) return err(c, 403, "workspace_stopped", "E-OPS-007");
       }
     }
     // 3.0) 入口の uuid（D-129.42・K-144）：道の値と問い合わせの id を、id で行を引く権限の確かめ（3.1・4.1）とまだ作っていない口の 501 より前に
@@ -272,6 +353,10 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       ),
     ];
     if (badNul.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badNul });
+    // 3.0c) 1 社を指す運営の口（perm.scope ops_tenant）で :id が運営の会社なら 404（D-156.3・D-156.12・K-1001）。
+    //       運営の会社は顧客のワークスペースでない。欄・details を付けず在るかを漏らさない。501 と入力の確かめより前（何を送っても 404）
+    if (def.perm.scope === "ops_tenant" && c.req.param("id") === OPS_TENANT_ID)
+      return err(c, 404, "not_found", "NOT_FOUND");
     // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
@@ -305,7 +390,19 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       if (r === "denied" || r === "gone") return err(c, 403, "forbidden", "FORBIDDEN"); // gone：会社から抜けた人（D-131.7）
     }
     let input: Row = {};
-    if (def.kind === "create" || def.kind === "update") {
+    let form: FormData | undefined;
+    if (bodyBytes !== null) {
+      // multipart の口（K-828）：multipart/form-data でなければ・読めなければ 422（欄 body）。JSON の読み・NUL・strict な形は飛ばす
+      const type = c.req.header("content-type") ?? "";
+      const badBody = (message: string) =>
+        err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message }] });
+      if (!/^multipart\/form-data\s*;/i.test(type)) return badBody("multipart");
+      try {
+        form = await new Response(bodyBytes, { headers: { "content-type": type } }).formData();
+      } catch {
+        return badBody("multipart");
+      }
+    } else if (def.kind === "create" || def.kind === "update") {
       let raw: unknown;
       try {
         raw = normalize(JSON.parse(bodyText ?? ""));
@@ -355,7 +452,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     const idem =
       def.kind === "create" && !deps.hooks[operationId]?.noIdempotency ? c.req.header("idempotency-key") : undefined;
     const idemKey = idem ? `${ctx.tenantId}:${ctx.userId}:${def.path}:${idem}` : null;
-    const inputHash = hashOf(input);
+    const inputHash = hashOf(form ? { multipart: await formDigest(form) } : input);
     if (idemKey) {
       const pending = INFLIGHT.get(idemKey); // 同期で見る（await を挟むと同時の要求がすり抜ける）
       const seen = deps.idempotency.get(idemKey) ?? (pending ? await pending : undefined);
@@ -372,6 +469,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       id,
       c,
       ...stepUpGuards(ctx),
+      ...(form ? { form } : {}),
     };
     const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
     if (idemKey)

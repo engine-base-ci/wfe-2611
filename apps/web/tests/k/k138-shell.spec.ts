@@ -754,7 +754,8 @@ test("K138-SH-028 名前が無い（display_name が null）：自分の札と�
   await expect.poll(() => navLabels(page)).toContain("チケット");
   await expect(page.locator(".k-bar .k-me .k-avatar")).toHaveText("");
   await page.getByRole("button", { name: "自分のメニュー" }).click();
-  await expect(page.locator(".k-menu-head")).toHaveText("");
+  // K-844：箱の中身は自分のメニューの部品（誰かの名前は .k-f10a-who の太字）。getMe はこの試験では 501 なので外枠の名前（空）のまま
+  await expect(page.getByRole("menu").locator(".k-f10a-who b").first()).toHaveText("");
   await page.keyboard.press("Escape");
   const labels = await navLabels(page);
   // 決める人の答え（D-145.17・answer=f0b42d2edbed）
@@ -767,7 +768,7 @@ test("K138-SH-028 名前が無い（display_name が null）：自分の札と�
   ).toHaveText("AI");
 });
 
-test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_name）が在れば頭文字と会社名、無ければどちらも出さない（紺の四角だけ）。会社の切り替え ▾ はグレーで押せない", async ({
+test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_name）が在れば頭文字と会社名、無ければどちらも出さない（紺の四角だけ）。会社の ▾ は押せる引き金「ワークスペースを切り替える」で、押すと一覧の箱が開く（K-844）", async ({
   page,
 }) => {
   await mockApi(page, { workspaceName: "ENGINE BASE" });
@@ -775,13 +776,13 @@ test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_n
   const top = leftNav(page).locator(".k-nav-top");
   await expect(top.locator(".k-ws-mark")).toHaveText("E");
   await expect(top.locator(".k-ws-name")).toContainText("ENGINE BASE");
-  const sw = top.getByRole("button", { name: /会社を切り替える/, disabled: true });
-  await expect(sw).toHaveText("▾");
-  expect(await sw.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+  const sw = top.getByRole("button", { name: "ワークスペースを切り替える", exact: true });
+  await expect(sw).toContainText("▾");
   const before = page.url();
-  await sw.click({ force: true });
+  await sw.click();
   expect(page.url()).toBe(before);
-  await expect(page.getByRole("menu")).toHaveCount(0);
+  await expect(page.getByRole("menu", { name: "ワークスペースを切り替える", exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
 
   await mockApi(page, { workspaceName: null });
   await open(page, PATHS.tickets);

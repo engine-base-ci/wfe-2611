@@ -1,0 +1,16 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-plans-write.ts",
+    "apps/api/src/features/F12/ops/plans/write.ts",
+    "packages/db/migrations/20261128012800_ops_plans_write.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-plans-write.test.ts",
+    "apps/api/test/features/F12/ops-plans-read.test.ts",
+    "packages/db/test/people_clone_ops.test.ts"
+   ]
+  }
+ ]
+}

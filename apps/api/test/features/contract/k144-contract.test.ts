@@ -521,7 +521,7 @@ const BODIES: Record<string, unknown> = {
   finishBridgeJob: { state: "stopped" },
   // 承認して完了する（K-63 の孫）：必須の欄を入れて、正しい uuid では 422 にならない体（無い承認・チケットは 404）・このコメントは先に入る K-185 が持つ // K-185
   returnApproval: { note: "直してください" }, // K-163
-  completeTicket: { todo_checked: [], todo_version: 1, conditions_confirmed: true }, // K-165
+  completeTicket: { conditions_confirmed: true }, // K-165・K-578（todo_* は契約から外した）
   renamePasskey: { name: "仕事の Mac" }, // K-309
 };
 // K-378：これから口を作る葉は、上の並びと体に行を足さず、置き場 k144.d に K-<自分の番号>.ts を置く（試験を集める時に 1 回読む・重なりは読む所が止める）
@@ -892,8 +892,6 @@ export const RANGE_CASES: RangeCase[] = [
   ["createTicket", "estimate_minutes", 1.5, false],
   ["createTicket", "estimate_minutes", "1.5", false],
   ["createTicket", "estimate_minutes", true, false],
-  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施"}, true],
-  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施", "Bad": "a"}, false],
   ["createTicket", "body", {"doc": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "本文"}]}]}}, true], // K-437
   ["createTicket", "body", {"doc": {"type": "doc", "content": []}, "text": "x"}, false], // K-437
   ["createTicket", "fields", {}, true], // K-437

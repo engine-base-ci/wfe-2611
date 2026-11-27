@@ -1,0 +1,12 @@
+{"ops": {
+ "leaveWorkspace": {"file": "apps/api/test/features/F10/me-leave.test.ts",
+  "reason": "抜ける口は、会社の指し方・担当が残る・最後の管理者・セッションと PC を切る・本人確認・同時で答えが変わる。生成の試験の種では作れない（K-838）",
+  "covers": {"test_delete_me_workspaces_id_ok": "K838-API-001", "test_delete_me_workspaces_id_shape": "K838-API-001",
+             "test_delete_me_workspaces_id_rejected_401": "K838-API-012", "test_delete_me_workspaces_id_rejected_403": "K838-API-002",
+             "test_delete_me_workspaces_id_not_found": "K838-API-009", "test_delete_me_workspaces_id_rejected_422": "K838-API-009",
+             "test_delete_me_workspaces_id_conflict": "K838-API-003", "test_delete_me_workspaces_id_conflict_2": "K838-API-004"},
+  "na": {"test_delete_me_workspaces_id_rate_limited": "入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験）",
+         "test_delete_me_workspaces_id_terms_pending": "規約の同意し直しが要る人を止める入口の共通の 403 で、この口の振る舞いではない",
+         "test_delete_me_workspaces_id_mfa_pending": "2 段階を付けるまで進めない入口の共通の断り（K-319）で、この口の振る舞いではない",
+         "test_delete_me_workspaces_id_session_unresolved": "セッションが引けない要求を止める入口の共通の 401 で、この口に届かない",
+         "test_delete_me_workspaces_id_rejected_422_2": "道の id の NUL を断る入口の共通の 422 で、この口に届かない（uuid の形は K838-API-009 と k144 の K144-API-1181）"}}}}

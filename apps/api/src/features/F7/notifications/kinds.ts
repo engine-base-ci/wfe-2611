@@ -67,6 +67,20 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "knowledge.share_approved": { tag: "write", ticket: false, href: "/knowledge" },
   "knowledge.share_declined": { tag: "write", ticket: false, href: "/knowledge" },
   "knowledge.share_ended": { tag: "write", ticket: false, href: "/knowledge" },
+  // 請求先（K-959・D-156.30・D-156.41）：請求先を変えたら管理者全員に。押すと請求書の画面
+  "billing.contact_changed": settingKind("/billing"),
+  // 段 13（K-975）：運営が問い合わせに返した（問い合わせた本人だけ・D-156.28）。札に合う物が無いので setting。
+  //   行き先は 困ったとき・お知らせ の一覧（1 件の道 /inquiry/<id> は表の行き先が固定なので組めない・申し送り）
+  "inquiry.replied": settingKind("/notices"),
+  // 運営が止める日を決めた（K-970・D-156.23）：その会社の管理者に。押せない行（止める日は画面の上の帯で確かめる）
+  "workspace.stop_scheduled": settingKind(null),
+  // 運営のひな形（K-1010・D-156.56）：既定のまま使っている会社の管理者だけに、ひな形の新しい版が届いたことを知らせる。行き先は選ぶ頁（K-1016）
+  "template.update": settingKind("/settings/template-updates"),
+  // 運営の請求（K-983・D-156.54）：期限を過ぎた・期限から 7 日の知らせ（管理者だけ・一覧を開いたときに追いついて出す）。文は画面の葉 K-960
+  "billing.overdue": settingKind("/billing"),
+  "billing.overdue_week": settingKind("/billing"),
+  // 運営の請求（K-981・D-156.53）：運営が月の請求書を出したことを管理者に知らせる。行き先は請求書の画面（K-960）
+  "billing.invoice_issued": settingKind("/billing"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */

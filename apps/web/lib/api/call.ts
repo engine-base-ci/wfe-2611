@@ -20,6 +20,9 @@ export type CallArgs<K extends OpName> = ([Ops[K]["params"]] extends [never]
     headers?: Record<string, string>;
     /** 401 でも入り直しへ送らない（ログインしていない画面が「今ログインしているか」を確かめるとき・K-51） */
     keepOn401?: boolean;
+    /** ファイルを送る口（multipart・ロゴ K-831・顔の写真 K-839）。あれば体はこの FormData（body は使わない）で、
+     *  content-type は付けない（境の印は fetch が作る）。冪等キー・画面の印・答えの扱いは JSON の呼び方と同じ */
+    form?: FormData;
   };
 export interface CallOk<K extends OpName> {
   ok: true;
@@ -88,10 +91,11 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
   const write = e.method !== "GET";
   const headers: Record<string, string> = { accept: "application/json", ...(args.headers ?? {}) };
   const token = getToken();
-  if (token) headers["authorization"] = `Bearer ${token}`;
+  // 呼ぶ側が頭に印を渡したときはそれを使う（運営のパスキーを付けるだけのセッションを閉じる・K-1003）
+  if (token && headers["authorization"] === undefined) headers["authorization"] = `Bearer ${token}`;
   if (args.screenId) headers["x-screen-id"] = args.screenId;
   if (write) {
-    headers["content-type"] = "application/json";
+    if (!args.form) headers["content-type"] = "application/json";
     headers["idempotency-key"] = args.idempotencyKey ?? newKey();
   }
   const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
@@ -100,7 +104,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     {
       method: e.method,
       headers,
-      ...(write ? { body: JSON.stringify(args.body ?? {}) } : {}),
+      ...(write ? { body: args.form ?? JSON.stringify(args.body ?? {}) } : {}),
       ...(args.signal ? { signal: args.signal } : {}),
     },
   );

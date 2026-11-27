@@ -79,3 +79,9 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "updateTicket"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-823：記録を探す口の続きの印も鍵の文字列（base64url）。形（pattern）は合っていても、ほどけない・中身が 時刻（マイクロ秒）_uuid でない印は
+#   422・E-AUD-002（欄 cursor）で断る。形だけでは書けない決まりなので、K-161 の listApprovalQueue と同じく 422 を受け付けとして数えない
+[[operations]]
+include-operation-id = "listAuditEvents"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]

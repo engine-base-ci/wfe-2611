@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F12/ops/**",
+    "apps/api/src/hooks/ops-peek.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-peek.test.ts",
+    "apps/api/test/features/F12/service-status-member.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-peek.test.ts",
+    "apps/api/test/features/F12/ops-act.harness.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-969.json"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_workspaces_id_peeks.test.ts",
+    "apps/api/test/generated/delete_ops_peeks_id.test.ts"
+   ]
+  }
+ ]
+}

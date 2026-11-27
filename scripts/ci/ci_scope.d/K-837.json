@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-notify.ts",
+    "apps/api/src/features/F10/me/notify.ts",
+    "apps/api/src/features/F10/me/notify-events.ts",
+    "packages/db/migrations/20261126003700_me_notify.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-notify.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-notify.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_notification_settings.test.ts",
+    "apps/api/test/generated/patch_me_notification_settings.test.ts",
+    "apps/api/test/generated/post_me_notification_settings_copy.test.ts"
+   ]
+  }
+ ]
+}

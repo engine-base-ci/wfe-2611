@@ -5,15 +5,17 @@
 //   3. どちらも 0 → 小窓なしで完了の口。1 つでもあれば小窓（戻って付ける／このまま完了にする）
 //   完了の口は { conditions_confirmed: true } だけを送る（押したこと自体が確かめ）。201 は閉じて読み直す。
 //   422 E-VAL-024（終わっていない子）は小窓の中に出す（小窓なしの完了なら注意なしの小窓を開く）。ほかの断りは閉じて知らせ・読み直す。401 は入り直し（共通の扱い）
+//   口に届かない（回線が切れた・fetch が投げた）ときも、読んでいる・送っているのまま残さず、閉じて「読み込めなかった」の知らせ（E-PAGE-007）
 //   流れの状態は頁の中の store（チケット id ごと）に置き、題の行のボタン（complete-act.tsx）と帯（band.tsx の小窓と知らせ）が同じ物を読む。
 //   更新は新しい値を作って入れ替える
 //   K-703：読んだ確認項目に「必ず守る」から入った未チェックの行（source_page が在る）があれば、口を呼ばず段 5 の小窓も出さず、
 //   小窓「まだ完了にできません」（F9 の CompleteBlockedDialog）を出す。完了の口が 409 E-KNW-240 を返したときも、読めれば同じ小窓（読めなければ前の知らせ）
 import { useCallback, useSyncExternalStore } from "react";
 import { isUuid } from "@kaname/contracts";
+import { PAGE_ERROR } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import type { Problem } from "./complete-model";
-import { messageOf } from "./message";
+import { catalogMessage, messageOf } from "./message";
 import { uncheckedSpecs, uncheckedTasks } from "./unchecked";
 import { blockingOf, dialogRows, leftFromConflict, type DialogRow } from "@/features/F9/knowledge/spec-guard-shape";
 
@@ -93,13 +95,30 @@ async function refused(d: CompleteDeps, r: CallErr, reload: boolean): Promise<vo
   if (reload) await d.onChanged();
 }
 
+/** 口に届かなかった（call が投げた）：流れを閉じて、帯に「読み込めなかった」の知らせ。小窓も閉じる（押せないまま残さない） */
+function unreachable(ticketId: string): void {
+  write(ticketId, { ...IDLE, notice: catalogMessage(PAGE_ERROR.loadFailed) });
+}
+
+/** 口を呼ぶ。届かなければ（投げたら）null */
+async function reach<T>(run: () => Promise<T>): Promise<T | null> {
+  try {
+    return await run();
+  } catch {
+    return null;
+  }
+}
+
 async function send(d: CompleteDeps, fromDialog: boolean): Promise<void> {
   write(d.ticketId, { phase: "sending", dialog: fromDialog });
-  const r = await call("completeTicket", {
-    params: { id: d.ticketId },
-    body: { conditions_confirmed: true },
-    screenId: "tickets",
-  });
+  const r = await reach(() =>
+    call("completeTicket", {
+      params: { id: d.ticketId },
+      body: { conditions_confirmed: true },
+      screenId: "tickets",
+    }),
+  );
+  if (!r) return unreachable(d.ticketId);
   if (r.ok) {
     write(d.ticketId, { ...IDLE });
     await d.onChanged();
@@ -123,7 +142,8 @@ async function send(d: CompleteDeps, fromDialog: boolean): Promise<void> {
 async function start(d: CompleteDeps): Promise<void> {
   if (read(d.ticketId).phase !== "idle") return; // 読んでいる・送っている間の 2 回目は送らない
   write(d.ticketId, { ...IDLE, phase: "reading" });
-  const r = await call("listTestSpecs", { params: { id: d.ticketId }, screenId: "tickets" });
+  const r = await reach(() => call("listTestSpecs", { params: { id: d.ticketId }, screenId: "tickets" }));
+  if (!r) return unreachable(d.ticketId);
   if (!r.ok) return refused(d, r, r.status === 404);
   const rows: readonly unknown[] = Array.isArray(r.data) ? r.data : [];
   // 必ず守るから入った未チェックの行があれば、口を呼ばずに止める小窓（段 5 の小窓より前・K-703）

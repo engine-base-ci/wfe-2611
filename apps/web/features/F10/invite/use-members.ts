@@ -9,7 +9,7 @@ import type { InviteGroup, MemberGroup, MemberRow } from "./views";
 export const MEMBERS_KEY = ["k420", "members"] as const;
 export const SCREEN = "members";
 
-/** 口の答え（K-419 の形）。契約の型は中身を持たないので、ここで読む形を決める */
+/** 口の答え（K-419・K-808 の形）。契約の型は中身を持たないので、ここで読む形を決める */
 export interface Person {
   id: string;
   name: string;
@@ -22,6 +22,12 @@ export interface Person {
   self?: boolean;
   pc?: "ok" | "away" | "never" | "none";
   pc_days_away?: number | null;
+  /** そのグループでの役割（K-419・無ければ会社の役割で字を決める・K-818） */
+  group_role?: string | null;
+  /** 一時的に止めている人（K-818） */
+  suspended?: boolean;
+  /** 最後に使ってからの日数（K-808・まだ使っていなければ null） */
+  last_used_days?: number | null;
 }
 export interface GroupAnswer {
   id: string;
@@ -48,7 +54,7 @@ export interface MembersView {
   /** 招くの小窓のグループの選ぶ欄 */
   scopes: InviteGroup[];
   count: number;
-  /** 口の答えのまま（グループの行のマネージャー・初めに開く物・重ねない人数を作る・K-710） */
+  /** 口の答えそのもの（メンバーの画面の行の値は features/F10/members/members-shape.ts が読む・K-818） */
   answer: MembersAnswer;
 }
 

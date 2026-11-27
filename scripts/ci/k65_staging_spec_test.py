@@ -24,8 +24,10 @@ FAKE = ROOT / "scripts" / "dev" / "fake-claude-demo.mjs"
 ROW = r"K65-STG-\d{2}"
 WITH_TEST = [f"K65-STG-0{n}" for n in range(1, 8)]      # 試験を持つ行
 NO_TEST = ["K65-STG-08", "K65-STG-09"]                    # staging では作れない行（理由つきで試験を持たない）
+# STAGING_OPS_PASSKEY_*：staging の試験だけの運営の人のパスキー（K-1101 の人の準備・K-1102 が site.ts で読む・値は Environment staging の秘密）
+OPS_PASSKEY_NAMES = {"STAGING_OPS_PASSKEY_KEY", "STAGING_OPS_PASSKEY_ID", "STAGING_OPS_PASSKEY_USER"}
 ENV_NAMES = {"STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_RESEND_READ_KEY",
-             "PLAYWRIGHT_JUNIT_OUTPUT_NAME", "RUNNER_TEMP", "KANAME_CLAUDE_BIN"}
+             "PLAYWRIGHT_JUNIT_OUTPUT_NAME", "RUNNER_TEMP", "KANAME_CLAUDE_BIN"} | OPS_PASSKEY_NAMES
 MAX_TEST_MS = 480_000
 # 伏せる台本を試す作りものの DB の URL。秘密の検査（G43）の形に当たらないよう、実行時に組み立てる（検査は弱めない）
 PLANTED_DB_URL = "postgresql://reader:" + "planted-pass-99" + "@db.k65-shape.example.test:6543/postgres?sslmode=verify-full"
@@ -131,7 +133,7 @@ class StagingSpecShape(unittest.TestCase):
             self.assertNotRegex(text, r"process\.env\.[A-Za-z_]", f"{p.name}：環境の値は名前の字で読む（検査が名前を拾える形）")
         self.assertLessEqual(seen, ENV_NAMES, "読む環境の値の名前は決めた物だけ")
         needs = set(re.findall(r'(?:need|site)\("([A-Z0-9_]+)"\)', code(LIB / "site.ts")))
-        self.assertEqual(needs, {"STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_RESEND_READ_KEY"})
+        self.assertEqual(needs, {"STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_RESEND_READ_KEY"} | OPS_PASSKEY_NAMES)
         run = [s for s in steps("staging-e2e.yml", "e2e") if str(s.get("run", "")).strip() == "pnpm e2e:staging"]
         self.assertEqual(len(run), 1, "統合テストの段は 1 つ")
         self.assertLessEqual(needs | {"PLAYWRIGHT_JUNIT_OUTPUT_NAME"}, set(run[0].get("env", {})), "試験が要る名前は、統合テストの段が渡している")

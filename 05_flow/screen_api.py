@@ -21,7 +21,6 @@ SCREEN_API = {
         ("POST", "/tickets", "A99|A98|A129", T, "createTicket", ["ticket_sections", "test_specs", "conversations"]),
         ("PATCH", "/tickets/:id", "A103|A17|A115|A113", T, "updateTicket", ["ticket_class_values", "ticket_messages"]),
         ("GET", "/tickets/:id/kind-change-preview", "A103", T, "previewTicketKindChange", ["kind_sections", "ticket_sections"]),
-        ("GET", "/tickets/:id/work-type-candidates", "A130", "skills", "listWorkTypeCandidates", ["skill_versions"]),
         ("GET", "/tickets/:id/delete-preview", "A116", T, "previewTicketDelete", ["attachments", "artifacts"]),
         ("DELETE", "/tickets/:id", "A116", T, "deleteTicket", ["audit_events"]),
         ("POST", "/tickets/:id/restore", "A116", T, "restoreTicket", ["audit_events"]),
@@ -38,7 +37,7 @@ SCREEN_API = {
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
         ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_sections", "restoreTicketVersion", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/item-changes", "A101", "ticket_messages", "listTicketItemChanges", []),
-        ("POST", "/ticket_kinds/:id/template-from-ticket", "A101", "kind_sections", "makeKindTemplateFromTicket", [T]),
+        ("POST", "/tickets/:id/item-changes/restore", "A101", "ticket_messages", "restoreTicketItems", ["tickets", "ticket_field_values"]),
         # テスト仕様と確認
         ("GET", "/tickets/:id/test-specs", "A102", "test_specs", "listTestSpecs", []),
         ("POST", "/tickets/:id/test-specs", "A102", "test_specs", "createTestSpec", []),
@@ -171,9 +170,6 @@ SCREEN_API = {
         ("POST", "/me/backup-codes", "A04", "security_events", "regenerateBackupCodes", []),
         ("PATCH", "/me/password", "A97", "security_events", "changePassword", ["sessions"]),
         ("POST", "/me/password", "A97", "security_events", "setMyPassword", ["sessions"]),   # K-312：パスワードの無い人（パスキーだけ）が決める（代表の答え ②）
-        ("GET", "/me/sessions", "A74", "sessions", "listMySessions", []),
-        ("DELETE", "/me/sessions/:id", "A74", "sessions", "revokeMySession", ["security_events"]),
-        ("POST", "/me/sessions/revoke-others", "A74", "sessions", "revokeOtherSessions", ["security_events"]),
         ("POST", "/members/:id/two-factor/reset", "A04", "security_events", "resetMemberTwoFactor", ["members", "audit_events", "notifications"]),
     ],
     # ---------------------------------------------------------------- 自分の設定（08_api/phase1/05_自分の設定とPC.md）
@@ -181,6 +177,9 @@ SCREEN_API = {
         ("GET", "/me", "A74", "members", "getMe", ["tenant_memberships", "tenants"]),
         ("PATCH", "/me", "A74", "members", "updateMe", []),
         ("POST", "/me/avatar", "A74", "members", "uploadAvatar", ["attachments"]),
+        ("GET", "/me/sessions", "A74", "sessions", "listMySessions", []),
+        ("DELETE", "/me/sessions/:id", "A74", "sessions", "revokeMySession", ["security_events"]),
+        ("POST", "/me/sessions/revoke-others", "A74", "sessions", "revokeOtherSessions", ["security_events"]),
         ("POST", "/me/email-change", "A74", "security_events", "requestEmailChange", []),
         ("POST", "/me/email-change/verify", "A74", "security_events", "verifyEmailChange", ["members"]),
         ("DELETE", "/me/workspaces/:id", "A74", "tenant_memberships", "leaveWorkspace", ["tickets", "approvals", "memories"]),
@@ -240,9 +239,9 @@ SCREEN_API = {
         ("POST", "/ops/plan_proposals", "A133", "ops_plan_proposals", "createPlanProposal", ["plans"]),
         ("PATCH", "/ops/plan_proposals/:id", "A133", "ops_plan_proposals", "updatePlanProposal", []),
         ("GET", "/ops/plan_proposals/:id/impact", "A133", "ops_plan_proposals", "getPlanProposalImpact", ["subscriptions", "tenants"]),
-        ("POST", "/ops/plan_proposals/:id/submit", "A133", "ops_plan_proposals", "submitPlanProposal", ["notifications"]),
+        ("POST", "/ops/plan_proposals/:id/submit", "A133", "ops_plan_proposals", "submitPlanProposal", []),   # 運営の人へ鈴を出さない（待っている案は 配るもの › プラン の数で見る・K-988）
         ("POST", "/ops/plan_proposals/:id/decide", "A133", "ops_plan_proposals", "decidePlanProposal", ["plan_versions", "notices", "ops_audit_events"]),
-        ("POST", "/ops/plan_proposals/:id/return", "A133", "ops_plan_proposals", "returnPlanProposal", ["notifications"]),
+        ("POST", "/ops/plan_proposals/:id/return", "A133", "ops_plan_proposals", "returnPlanProposal", ["ops_audit_events"]),
         ("GET", "/ops/plan_history", "A133", "ops_audit_events", "listPlanHistory", ["ops_plan_proposals"]),
     ],
     # ---------------------------------------------------------------- ワークスペースの管理（08_api/phase1/07_ワークスペースの管理.md）
@@ -253,16 +252,14 @@ SCREEN_API = {
         ("POST", "/invitations/:id/resend", "A36", "invitations", "resendInvitation", ["notifications"]),
         ("DELETE", "/invitations/:id", "A36", "invitations", "revokeInvitation", ["audit_events"]),
         ("PATCH", "/members/:id/role", "A61", "members", "updateMemberRole", ["tenant_memberships", "scope_memberships", "audit_events"]),
-        ("POST", "/members/:id/nudge", "A36", "notifications", "nudgeMember", ["sessions"]),
     ],
     "member-detail": [
         ("GET", "/members/:id", "A61", "members", "getMember", ["scope_memberships", "permissions", "tickets", "clients", "sessions", "passkeys", "agent_usage_snapshots", "audit_events"]),
         ("PATCH", "/members/:id/groups", "A61", "scope_memberships", "updateMemberGroups", ["audit_events"]),
-        ("PATCH", "/members/:id/permissions", "A61", "permissions", "updateMemberPermissions", ["abilities", "audit_events"]),
         ("POST", "/members/:id/suspend", "A62", "members", "suspendMember", ["tenant_memberships", "sessions", "bridge_jobs", "audit_events"]),
         ("POST", "/members/:id/resume", "A62", "members", "resumeMember", ["tenant_memberships", "audit_events"]),
         ("GET", "/members/:id/remove-preview", "A62", "members", "previewMemberRemoval", ["tickets", "ticket_handovers", "approvals", "credentials", "memories"]),
-        ("DELETE", "/members/:id", "A62", "members", "removeMember", ["tickets", "ticket_handovers", "approvals", "memories", "conversations", "credentials", "sessions", "invitations", "account_events", "audit_events"]),
+        ("POST", "/members/:id/remove", "A62", "members", "removeMember", ["tickets", "ticket_handovers", "approvals", "memories", "conversations", "credentials", "sessions", "invitations", "account_events", "audit_events"]),
         ("POST", "/members/:id/two-factor/reset", "A04", "security_events", "resetMemberTwoFactor", ["members", "audit_events", "notifications"]),
     ],
     "layers": [
@@ -275,13 +272,11 @@ SCREEN_API = {
     "masters": [
         # チケットの形（種別と区画・作業の段・分類の軸・担当を渡すとき・D-128.95）
         ("GET", "/ticket_kinds/template-updates", "A120", "tenant_distributions", "listKindTemplateUpdates", ["distributions"]),
-        ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "kind_sections", "applyKindTemplateUpdate", ["tenant_distributions", "ticket_kinds"]),
+        ("POST", "/ticket_kinds/template-updates/:id/apply", "A120", "tenant_distributions", "applyKindTemplateUpdate", ["ticket_kinds", "ticket_stages", "custom_fields", "audit_events"]),
     ],
     "audit": [
         ("GET", "/audit_events", "A33", "audit_events", "listAuditEvents", ["members", "tickets"]),
         ("POST", "/tickets/:id/restore", "A116", T, "restoreTicket", ["audit_events"]),
-        ("POST", "/exports", "A40", "export_jobs", "createExport", ["audit_events"]),
-        ("GET", "/exports/:id", "A40", "export_jobs", "getExport", []),
     ],
     "company-settings": [
         ("GET", "/workspace", "A75", "tenants", "getWorkspaceSettings", ["subscriptions", "plans", "notices", "permissions", "account_events"]),
@@ -290,9 +285,8 @@ SCREEN_API = {
         ("PATCH", "/workspace/permissions", "A75", "permissions", "updateWorkspacePermissions", ["abilities", "audit_events"]),
         ("GET", "/workspace/plans", "A69", "plans", "listWorkspacePlans", ["subscriptions", "usage_meters"]),
         ("POST", "/workspace/plan", "A69", "subscriptions", "changePlan", ["plan_change_requests", "invoices", "audit_events"]),
-        ("POST", "/workspace/deletion", "A75", "account_events", "requestWorkspaceDeletion", ["export_jobs", "notifications", "audit_events"]),
+        ("POST", "/workspace/deletion", "A75", "account_events", "requestWorkspaceDeletion", ["notifications", "audit_events"]),
         ("DELETE", "/workspace/deletion", "A75", "account_events", "cancelWorkspaceDeletion", ["audit_events"]),
-        ("POST", "/exports", "A40", "export_jobs", "createExport", ["audit_events"]),
     ],
     "billing": [
         ("GET", "/workspace/billing", "A69", "invoices", "getBilling", ["subscriptions", "payments"]),
@@ -337,7 +331,8 @@ SCREEN_API = {
     "ops-home": [
         ("GET", "/ops/shell", "A60", "inquiries", "getOpsShell", ["invoices"]),
         ("GET", "/ops/workspaces", "A60", "tenants", "listOpsWorkspaces", ["subscriptions", "usage_meters", "invoices", "sessions", "action_runs"]),
-        ("POST", "/ops/workspaces/export", "A60", "export_jobs", "exportOpsWorkspaces", ["ops_audit_events"]),
+        # 確定前に去った申し込みの照合落ちをまとめて確かめた（K-1110・D-156.69）
+        ("POST", "/ops/pwned/pending/ack", "A138", "pending_signup", "ackOpsPwnedPending", ["security_events", "ops_audit_events"]),
     ],
     "ops-tenant": [
         ("GET", "/ops/workspaces/:id", "A64", "tenants", "getOpsWorkspace", ["subscriptions", "usage_meters", "action_runs", "credentials", "ops_audit_events"]),
@@ -365,18 +360,20 @@ SCREEN_API = {
         ("POST", "/ops/notices", "A71", "notices", "createOpsNotice", ["status_incidents"]),
         ("GET", "/ops/notices/:id", "A71", "notices", "getOpsNotice", ["status_incidents", "notice_deliveries"]),
         ("PATCH", "/ops/notices/:id", "A71", "notices", "updateOpsNotice", []),
-        ("POST", "/ops/notices/:id/publish", "A71", "notices", "publishOpsNotice", ["notice_deliveries", "notifications", "ops_audit_events"]),
+        ("POST", "/ops/notices/:id/publish", "A71", "notices", "publishOpsNotice", ["notice_deliveries", "ops_audit_events"]),
         ("POST", "/ops/notices/:id/updates", "A71", "status_incidents", "addIncidentUpdate", ["notices", "ops_audit_events"]),
     ],
     "ops-billing": [
         ("GET", "/ops/invoices", "A72", "invoices", "listOpsInvoices", ["tenants", "subscriptions", "payments"]),
         ("POST", "/ops/invoices/issue", "A72", "invoices", "issueOpsInvoices", ["subscriptions", "plan_versions", "notifications", "ops_audit_events", "audit_events"]),
         ("POST", "/ops/invoices/:id/payments", "A72", "payments", "recordPayment", ["invoices", "ops_audit_events", "audit_events"]),
-        ("POST", "/ops/invoices/export", "A72", "export_jobs", "exportOpsInvoices", ["ops_audit_events"]),
+        # K-1107 請求書の型（1 つ・D-156.60）：読む・直す（本人確認の取り直し・版で取り合いを止める）
+        ("GET", "/ops/invoice-template", "A72", "ops_invoice_templates", "getOpsInvoiceTemplate", ["members"]),
+        ("PUT", "/ops/invoice-template", "A72", "ops_invoice_templates", "updateOpsInvoiceTemplate", ["ops_audit_events"]),
     ],
     "ops-team": [
         ("GET", "/ops/members", "A134", "ops_members", "listOpsMembers", ["passkeys"]),
-        ("POST", "/ops/members", "A134", "ops_members", "addOpsMember", ["invitations", "ops_audit_events"]),
+        ("POST", "/ops/members", "A134", "ops_members", "addOpsMember", ["ops_audit_events"]),   # 招待の表は使わない。リンクの表 ops_setup_links は関数だけが触る裏の表で ER 図の対象の外（K-985）
         ("PATCH", "/ops/members/:id", "A134", "ops_members", "updateOpsMemberCaps", ["ops_audit_events"]),
         ("DELETE", "/ops/members/:id", "A134", "ops_members", "removeOpsMember", ["sessions", "ops_audit_events"]),
     ],
@@ -413,9 +410,9 @@ INPUTS = {
     # 再設定のメールを頼む（K-313）：メールだけ。登録の有無に関わらず同じ答え（D-042）
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
-    "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
+    "signInWithPassword": ("SignInInput", {"email": "string", "password": "string", "invitation": "string?"}),   # invitation：招待のリンクの印（K-852・使える会社が無い人の門をその招待だけに開ける）
     # 確認のコードで入る（K-302）：待ちの印と、6 けたかバックアップコードのどちらか 1 つ（strict・trust_device を含むほかの欄は 422）
-    "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?"}),
+    "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?", "invitation": "string?"}),   # invitation：K-852
     # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
     "signOut": ("SignOutInput", {}),
     # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
@@ -918,8 +915,8 @@ VALUE_RANGES = {
         "password": {"minLength": 12},
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
-    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
-    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
+    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
+    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}, "invitation": {"pattern": "\\S", "maxLength": 512}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
@@ -1014,7 +1011,6 @@ RESPONSES = {
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "desc": "string", "done": "boolean", "href": "string?", "available": "boolean", "optional": "boolean", "skipped": "boolean"}),
     # K-250：閉じる・飛ばすの後の今の状態（箱を閉じたか・飛ばした項目）
     "dismissSetupTasks": ("SetupTasksDismissed", {"dismissed": "boolean", "skipped": "string[]"}),
-    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
     "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null
     "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string", "device_label": "string"}),
@@ -1047,15 +1043,14 @@ RESPONSES = {
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
-    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
+    "getPlanProposalImpact": ("PlanProposalImpact", {"customers": "integer", "stopped": "integer", "monthly_revenue_diff": "integer", "immediate": "boolean", "existing_from": "string?", "new_from": "string?", "by_workspace": "array"}),   # K-989：7 欄（K-991 の影響の区画の正本）
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
-    "getMember": ("MemberDetail", {"member": "object", "groups": "array", "role_bundle": "object", "granted": "array", "revoked": "array", "assigned": "object", "clone": "object", "login": "object", "recent_events": "array"}),
-    "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
-    "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
-    "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
-    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
-    "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
+    # K-1005：画面（ub-plan・ub-bills）が要る欄に作り直した。プランは plan_key（plan_id は uuid でないのでやめる）・upgrade と upcoming は振る舞いの葉 K-961・K-1017 が中を埋める（D-156.43）
+    "listWorkspacePlans": ("PlanChoice", {"plan_key": "string", "name": "string?", "price_monthly": "integer?", "member_limit": "integer?", "current": "boolean", "can_choose": "boolean", "reason": "string?", "effective_from": "string",
+                                          "summary": "string", "recommended": "boolean", "upgrade": "object?", "upcoming": "object?"}),
+    # K-1005：請求書の状態は unpaid・paid・overdue（D-156.29）・請求先は会社名・宛名・メールの 3 欄（D-156.30）・期限を過ぎた分の数と額（無ければ null）
+    "getBilling": ("Billing", {"terms": "string", "payee": "object", "contact": "object", "invoices": "array", "overdue": "object?", "free": "boolean", "can_edit_contact": "boolean"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "routes": "array", "can_act": "boolean", "pc_connected": "boolean", "ticket_draft": "object?", "questions": "array", "reply_draft": "string?", "route_suggestion": "object?"}),   # K-892：案は draft_state が ready のときだけ（無ければ null）
     "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "requests": "array", "tickets": "array"}),
@@ -1064,14 +1059,28 @@ RESPONSES = {
     "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
     "getKnowledgeTree": ("KnowledgeTree", {"company_name": "string", "company_nodes": "array", "groups": "array", "my_nodes": "array", "can_write": "object", "admin_counts": "object?", "truncated": "boolean"}),   # K-675（土台 3.1）
     "getKnowledgePage": ("KnowledgePageDetail", {"id": "uuid", "title": "string", "desc": "string", "state": "string", "must": "boolean", "must_blocked": "string?", "place": "object", "acts": "string[]", "body": "object?", "draft": "object?", "request": "object?", "copied_from": "object?", "shared_from": "object?", "raise_to": "object?", "foot": "object"}),   # K-675（土台 3.1）
-    "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "string", "name": "string", "admin": "object", "plan": "string", "members": "string", "pc_connected": "string", "runs_month": "integer", "attention": "array", "billing": "string", "state": "string"}),
-    "getOpsWorkspace": ("OpsWorkspace", {"workspace": "object", "pc": "object", "runs": "object", "stopped": "object", "files": "object", "stop_reasons": "array", "recent": "array", "info": "object"}),
-    "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"name": "string", "email": "string", "role": "string", "last_seen_at": "string", "pc": "string", "login": "string"}),
-    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "usage": "object", "payment_terms": "string", "invoices": "array"}),
+    # K-1006：1 行は数と種類だけ（中身を返さない・D-156.3）。members は { count, limit }・pc は { connected, total } か null・attention は { kind, label_value } の並び（kind は overdue・stuck・pc・D-156.24・D-156.72）
+    #   billing_state は unpaid・paid・overdue か null・state は active・stopped・closing
+    "listOpsWorkspaces": ("OpsWorkspaceRow", {"id": "uuid", "name": "string", "admin_name": "string", "plan_name": "string?", "members": "object", "pc": "object?", "runs_month": "integer?", "attention": "array", "billing_state": "string?", "state": "string", "state_since": "string"}),
+    # K-1006：stop は { reason_key, stop_on, stopped_at, noticed_at } か null（D-156.23）・admin は { name }・runs_month は { count }・stuck_runs は { count_7d, prev_week }・files は { bytes }
+    #   recent は { at, label, detail? } の並び（D-156.47）・peek は自分が開いている中を見る許可 { id, expires_at } か null。上限の割合と上限の値は持たない（D-156.63・D-156.72）
+    "getOpsWorkspace": ("OpsWorkspace", {"id": "uuid", "name": "string", "plan_name": "string?", "state": "string", "stop": "object?", "admin": "object", "members": "object", "inquiries": "object", "pc": "object?", "runs_month": "object", "stuck_runs": "object", "files": "object", "recent": "array", "peek": "object?"}),
+    # K-1006：role_label は 管理者・マネージャー・メンバー・閲覧のみ・ゲスト。pc は connected・paired・never・none。運営は役割も中身も変えない
+    "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"member_id": "uuid", "name": "string", "email": "string?", "role_label": "string", "last_seen_at": "string?", "pc": "string", "login_methods": "string[]", "verified": "boolean"}),
+    "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "members": "object", "payment_terms": "string", "invoices": "array"}),   # K-1005：利用量は人数だけ（D-156.36）
     "getShell": ("Shell", {"member": "object", "approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object", "saved_views": "array?"}),
-    "getOpsShell": ("OpsShell", {"inquiries_unassigned": "integer", "inquiries_mine": "integer", "invoices_overdue": "integer", "banner": "object"}),
-    "getOpsInquiry": ("OpsInquiryDetail", {"inquiry": "object", "messages": "array", "context": "object", "workspace": "object"}),
-    "getOpsNotice": ("OpsNoticeDetail", {"notice": "object", "updates": "array", "affects": "object", "placements": "array"}),
+    # K-1006：上の数をここに寄せる（D-156.4）。operator は { member_id, caps }・inbox は { unassigned, mine, waiting, later }・invoices は { overdue_count, overdue_amount } か null（お金を持たない人）
+    #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
+    "getOpsShell": ("OpsShell", {"operator": "object", "inbox": "object", "invoices": "object?", "workspaces": "object", "runs_month": "object", "pwned": "object"}),
+    # 受信箱の 1 件（K-948・D-156.5）：一覧の 1 行の 10 欄と、やり取り（返事と社内メモ）・付いてきた画面の情報・右のワークスペースの様子
+    "getOpsInquiry": ("OpsInquiryDetail", {"id": "uuid", "title": "string", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
+                                           "owner": "object?", "later_until": "string?", "created_at": "string", "last_message_at": "string?",
+                                           "messages": "array", "context": "object", "workspace_status": "object"}),
+    # お知らせの 1 件（K-1004・D-156.5）：一覧の 1 行の 11 欄と本文・メンテ・影響・続報・届く数（16 欄）。作る・直す・出す・続報・1 社に送るも同じ形（断片 K-1004）
+    "getOpsNotice": ("OpsNoticeDetail", {"id": "uuid", "kind": "string", "title": "string", "audience": "object", "state": "string",
+                                         "placements": "string[]", "publish_at": "string?", "published_at": "string?", "author_name": "string?",
+                                         "incident_state": "string?", "admins_only": "boolean", "body": "string", "maintenance": "object?",
+                                         "impact": "string?", "updates": "array", "reach": "object"}),
     # いまの様子（K-307・誰でも）：直っていない障害（公開したお知らせに結んだもの）といま中のメンテナンスだけ。ログイン後の口の型 ServiceStatus とは分ける
     "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),
     # 招待の下見（K-331）：表の写し（token_hash まで出る）でなく、画面が形を決める欄だけ。signed_in はログイン中だけ { email, email_matches, already_member }
@@ -1080,16 +1089,14 @@ RESPONSES = {
                                             "account_exists": "boolean", "signed_in": "object?"}),
     # 招待で参加した（K-332）：ログインの印（部品のセッションの token）・入ったワークスペース・次に移る画面（入った直後は /mfa-setup）
     "acceptInvitation": ("InvitationAccepted", {"token": "string", "workspace_id": "string", "next": "string", "state": "string?", "email": "string?"}),   # K-422：リンクの招待で新しく入る人の 202 は { state, email } だけ（確認のメールを送った・まだ参加していない）
-    "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
+    # ログイン後の稼働状況（K-1004・D-156.10）：部分ごとの様子・上の帯（障害・メンテ・止める日・中を見られている間を 1 つの並びに）・いま中のメンテ。型の名前は ServiceStatus のまま（K307-API-016）
+    "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "bands": "array", "maintenance_now": "object?"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
 META = {
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
-    "listOpsWorkspaces": {"summary": "object"},
-    "listOpsInquiries": {"counts": "object"},
-    "listOpsInvoices": {"summary": "object"},
 }
 # 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
 RATES = {
@@ -1110,14 +1117,14 @@ QUERIES = {
     "listCloneActivity": ["kind", "from", "to"],
     "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
-    "listPlanHistory": ["plan_id"],
-    "getNotificationSettings": ["tenant_id"],
+    "listPlanHistory": ["plan_key"],
+    "getNotificationSettings": ["workspace_id"],   # 読むワークスペース（無ければ今の会社・K-837）
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
-    "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
+    "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],   # q はことばで探す（K-850・1〜100 字。値域は screen_api.d/K-823.py の QUERY_RANGES）
     "listScopes": ["layer_id"],
     "listClientRequests": ["state"],
-    "listOpsWorkspaces": ["q", "attention", "state", "plan", "sort"],
-    "listOpsInquiries": ["box", "kind", "sort"],
+    "listOpsWorkspaces": ["q", "view", "plan", "sort"],
+    "listOpsInquiries": ["box", "topic"],   # 箱と何について（K-948・D-156.5）。並びは受けない（LIST_DETAILS）
     "listOpsNotices": ["kind", "state"],
     "listOpsInvoices": ["month", "state"],
     "listOpsWorkspaceAudit": ["from", "to"],
@@ -1136,7 +1143,6 @@ PERMS = {
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
     "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。段・実績・保留（段 7）と期限・開始日（段 8・期限を変えるときは理由が必須）だけ。担当は渡す口（F8）で変える。ほかの欄は E-VAL-018", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
-    "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る", False),
@@ -1151,7 +1157,7 @@ PERMS = {
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
     "listTicketItemChanges": ("read", "そのチケットを見られる人", False),
-    "makeKindTemplateFromTicket": ("admin", "チケットの形を直せる人（D-128.48・D-128.83）", False),
+    "restoreTicketItems": ("write", "そのチケットを書ける人", False),
     "listTestSpecs": ("read", "そのチケットを見られる人", False),
     "createTestSpec": ("write", "そのグループの人", False),
     "updateTestSpec": ("write", "そのグループの人。OFF にするときは理由が必須", False),
@@ -1259,8 +1265,8 @@ PERMS = {
     "changePassword": ("self", "本人。変えたら今の画面だけ残し、全部のワークスペースのほかの端末と Bridge を切る（D-128.141）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "setMyPassword": ("self", "本人。パスワードの無い人（パスキーだけ）だけ。ある人は 409（代表の答え ②）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "listMySessions": ("self", "自分の端末だけ", False),
-    "revokeMySession": ("self", "自分の端末だけ", False),
-    "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", False),
+    "revokeMySession": ("self", "自分の端末だけ", True),
+    "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", True),
     "resetMemberTwoFactor": ("admin", "ワークスペースの管理者が、本人を確かめてから戻す。記録に残り、本人に知らせる（D-125.138）", True),
     # 自分の設定
     "getMe": ("self", "自分のものだけ", False),
@@ -1312,15 +1318,15 @@ PERMS = {
     "listOpsTemplates": ("ops:distribute", "同上", False),
     "getOpsTemplate": ("ops:distribute", "同上", False),
     "releaseOpsTemplate": ("ops:distribute", "同上。使っているワークスペースには知らせが届き、取り込むかは各管理者が選ぶ（D-125.72）", True),
-    "listOpsPlans": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
-    "listPlanProposals": ("ops:plan_propose", "同上", False),
+    "listOpsPlans": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
+    "listPlanProposals": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     "createPlanProposal": ("ops:plan_propose", "値段の案を持つ運営の人。理由が必須", False),
     "updatePlanProposal": ("ops:plan_propose", "案を作った本人（決める人に回す前だけ）", False),
-    "getPlanProposalImpact": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人", False),
+    "getPlanProposalImpact": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     "submitPlanProposal": ("ops:plan_propose", "案を作った本人", False),
     "decidePlanProposal": ("ops:plan_decide", "値段を決めるを持つ運営の人。自分の案は決められない（決められる人が 1 人しかいないときだけ例外）。全部の顧客に効くので本人確認を取り直す（D-128.72）", True),
     "returnPlanProposal": ("ops:plan_decide", "同上（差し戻す理由が必須）", False),
-    "listPlanHistory": ("ops:plan_propose", "値段の案か値段を決めるを持つ運営の人（消せない記録）", False),
+    "listPlanHistory": ("ops:any", "値段の案か値段を決めるを持つ運営の人（関数の中で見る）", False),
     # ワークスペースの管理（入口は権限のある人だけに出る・D-128.48。招く・役割・外すは管理者と権限を付けた人だけ・D-128.97）
     "getWorkspaceMembers": ("admin", "管理者と、メンバーを直す権限を付けた人", False),
     "createInvitations": ("admin", "管理者と、招く権限を付けた人。マネージャーは招けない（D-128.97）。管理者として招くときは本人確認を取り直す", "admin_role"),
@@ -1328,10 +1334,8 @@ PERMS = {
     "resendInvitation": ("admin", "同上", False),
     "revokeInvitation": ("admin", "同上。取り消すとリンクはすぐ使えなくなる", False),
     "updateMemberRole": ("admin", "管理者と、役割を変える権限を付けた人。自分の役割と、最後の管理者は変えられない", True),
-    "nudgeMember": ("admin", "管理者と、メンバーを直す権限を付けた人（知らせを送るだけ）", False),
     "getMember": ("admin", "同上。本人のものは自分の設定で見る", False),
     "updateMemberGroups": ("admin", "管理者と、役割を変える権限を付けた人（グループを移す・兼ねる）。見えるものが変わるので本人確認を取り直す", True),
-    "updateMemberPermissions": ("admin", "管理者と、権限を付ける権限を持つ人。自分に足すことはできない", True),
     "suspendMember": ("admin", "管理者と、外す権限を付けた人。自分と最後の管理者は止められない", True),
     "resumeMember": ("admin", "同上", True),
     "previewMemberRemoval": ("admin", "同上", False),
@@ -1345,16 +1349,14 @@ PERMS = {
     "applyKindTemplateUpdate": ("admin", "同上（取り込むかは管理者が選ぶ・D-125.72）", False),
     "listHandoverRules": ("read", "ワークスペースのメンバー（渡すときに読む）", False),
     "listAuditEvents": ("read", "自分の操作と、自分が関わるチケットの記録は誰でも。ワークスペース全体は管理者と権限を付けた人（D-125.132）", False),
-    "createExport": ("admin", "書き出す権限のある人（既定は管理者とマネージャー。マネージャーは自分のグループの分だけ）。本人確認を取り直す", True),
-    "getExport": ("self", "頼んだ本人だけ。受け取りは期限つきの署名 URL", False),
-    "getWorkspaceSettings": ("admin", "管理者と、設定の権限を付けた人", False),
-    "updateWorkspace": ("admin", "同上（名前・取引先の既定）", False),
+    "getWorkspaceSettings": ("write", "管理者と、口の中で workspace_can が可の人（D-154.83）。どちらでもなければ 403", False),
+    "updateWorkspace": ("admin", "管理者だけ（名前。可になったマネージャーも名前は直せない・D-154.83）", False),
     "uploadWorkspaceLogo": ("admin", "同上", False),
     "updateWorkspacePermissions": ("admin", "管理者だけ（権限を付けた人でも「誰ができるか」は変えられない）", True),
     "listWorkspacePlans": ("admin", "プランと支払いの権限のある人（既定は管理者）", False),
     "changePlan": ("admin", "同上。上げるとすぐ・下げると次の請求日から。人数が上限を超えるときは下げられない（D-128.65）", True),
-    "requestWorkspaceDeletion": ("admin", "ワークスペースを消す権限のある人（既定は管理者）。名前を打って確かめる。14 日は取り消せる（D-128.65）", True),
-    "cancelWorkspaceDeletion": ("admin", "同上（14 日のあいだ）", False),
+    "requestWorkspaceDeletion": ("write", "口の中で消す権限（workspace_can の delete_workspace）を見る（既定は管理者・D-154.83）。名前を打って確かめる。14 日は取り消せる（D-128.65）。どちらでもなければ 403", True),
+    "cancelWorkspaceDeletion": ("write", "同上（14 日のあいだ・始めた人でなくてもよい）。本人確認を取り直す（D-154.18）", True),
     "getBilling": ("admin", "プランと支払いの権限のある人", False),
     "downloadInvoicePdf": ("admin", "同上（期限つきの署名 URL）", False),
     "updateBillingContact": ("admin", "同上", False),
@@ -1385,7 +1387,6 @@ PERMS = {
     # 運営の残り（運営の人で、そのできることを持つ人だけ・D-128.70。ops:any は運営の人なら誰でも）
     "getOpsShell": ("ops:any", "運営の人なら誰でも（左のメニューの数だけ。お金の数はお金を持つ人にだけ出す）", False),
     "listOpsWorkspaces": ("ops:any", "運営の人なら誰でも。数と種類だけで中身（チケット・会話）は出さない", False),
-    "exportOpsWorkspaces": ("ops:any", "同上（名前・プラン・数だけ。管理者のメールは入れない）。書き出したことは運営の記録に残る", False),
     "getOpsWorkspace": ("ops:any", "同上。止まった理由は種類と数だけ", False),
     "listOpsWorkspaceMembers": ("ops:inquiry", "問い合わせを持つ運営の人（名前・役割・最後に入った・PC・入り方だけ）。運営は役割も中身も変えない", False),
     "resendOpsVerification": ("ops:inquiry", "同上（本人確認のメールを送り直すだけ）。顧客の記録にも残る", False),
@@ -1412,7 +1413,8 @@ PERMS = {
     "listOpsInvoices": ("ops:money", "お金を持つ運営の人", False),
     "issueOpsInvoices": ("ops:money", "同上。下書きを確かめてまとめて出す。全部のワークスペースに届くので本人確認を取り直す", True),
     "recordPayment": ("ops:money", "同上。差があれば未入金のまま残す。顧客の請求書の画面と記録にも出る（D-128.69）", True),
-    "exportOpsInvoices": ("ops:money", "同上", False),
+    "getOpsInvoiceTemplate": ("ops:money", "お金を持つ運営の人（請求書の型・K-1107）", False),
+    "updateOpsInvoiceTemplate": ("ops:money", "同上。これから出す請求書の出す側と振込先が変わるので本人確認を取り直す（K-1107）", True),
     "listOpsMembers": ("ops:ops_people", "運営の人を持つ運営の人", False),
     "addOpsMember": ("ops:ops_people", "同上。足した人はパスキーでしか入れない", True),
     "updateOpsMemberCaps": ("ops:ops_people", "同上。自分のできることは変えられない。値段の案と値段を決めるは分ける（D-128.72）", True),

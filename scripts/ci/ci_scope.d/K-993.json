@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/kind-template-updates.ts",
+    "apps/api/src/features/F9/settings/template-updates.ts",
+    "packages/db/migrations/20261128013300_kind_template_updates.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/kind-template-updates.test.ts"
+   ]
+  }
+ ]
+}

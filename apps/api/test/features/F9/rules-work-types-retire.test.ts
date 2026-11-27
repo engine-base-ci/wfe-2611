@@ -7,7 +7,7 @@
 //             updateWorkspaceRule・deleteWorkspaceRule（/workspace/rules 系）・previewEscalationRule・createEscalationRule・
 //             updateEscalationRule・deleteEscalationRule（/workspace/escalation-rules 系）
 //   業務の型 15：作る側 9（listWorkTypes ほか）と運営 6（listOpsWorkTypes ほか）。段 5 の K-582 が外した listWorkTypeCandidates は数えない
-// 外さないもの：運営ひな形の 3 口（makeKindTemplateFromTicket・listKindTemplateUpdates・applyKindTemplateUpdate）・運営のひな形の口
+// 外さないもの：運営ひな形の 2 口（listKindTemplateUpdates・applyKindTemplateUpdate。makeKindTemplateFromTicket は段 13 の K-993 が外した・D-156.20）・運営のひな形の口
 //   （/ops/templates 系）・listHandoverRules・記憶・覚えたいこと・チケットの形・ナレッジの前の口（K-721・K-722 が外す）
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -89,9 +89,8 @@ const asked = (method: string): { body?: object } => (method === "GET" || method
 const concrete = (path: string): string =>
   path.replace("{id}", "0193c5a0-0000-7000-8000-00000000d001").replace("{v}", "1");
 
-/** 残す口：運営ひな形の 3 口と運営のひな形の口・渡すときの読む口 */
+/** 残す口：運営ひな形の 2 口（K-993 がチケットからひな形を作る口を外した）と運営のひな形の口・渡すときの読む口 */
 const KEPT_OPS = [
-  "makeKindTemplateFromTicket",
   "listKindTemplateUpdates",
   "applyKindTemplateUpdate",
   "listOpsTemplates",
@@ -161,10 +160,10 @@ describe("K-711 決まり・業務の型の口を契約から外す", () => {
     }
   });
 
-  it("K711-API-006 残す物は触らない：運営ひな形の 3 口・運営のひな形の口・渡すときの読む口が endpoints.json に在る", () => {
+  it("K711-API-006 残す物は触らない：運営ひな形の 2 口・運営のひな形の口・渡すときの読む口が endpoints.json に在る（チケットからひな形を作る口は K-993 が外した）", () => {
     const e = read("08_api", "endpoints.json");
     for (const op of KEPT_OPS) expect(e, `${op} は残る`).toContain(`"${op}"`);
-    expect(read("05_flow", "screen_api.py")).toContain('"makeKindTemplateFromTicket"');
+    expect(read("05_flow", "screen_api.py")).not.toContain('"makeKindTemplateFromTicket"');
   });
 
   it("K711-API-007 親の md：K-69.md の apis に決まり・業務の型の口が無く、K-71.md の apis から listRules・createRule が、K-72.md の apis から運営の業務の型の 6 つが外れ、ほかの口は残る", () => {

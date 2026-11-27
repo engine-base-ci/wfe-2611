@@ -1,0 +1,24 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-item-restore.ts",
+    "apps/api/src/features/F4/versions/item-restore.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-item-restore.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-item-restore.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_tickets_id_item_changes_restore.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F4/ticket-item-restore.test.ts": "K576-API-025 が契約の 4xx を確かめるために 08_api/endpoints.json を読む（生成物・書かない）"
+ }
+}
