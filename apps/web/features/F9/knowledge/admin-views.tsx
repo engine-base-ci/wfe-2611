@@ -2,7 +2,7 @@
 // ナレッジの管理の面（管理者・マネージャー）：承認待ち／見直すページ（使われていない・食い違い・よく破られる）。
 //   見た目だけ（値は props・口は呼ばない）
 import { ArrowRight, ArrowUpToLine, Share2 } from "lucide-react";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, type ChangeEvent, type ReactNode } from "react";
 import { Badge, Button, Callout, TextArea } from "@/components/k";
 import type { ApprovalItem, BrokenRow, ConflictRow, UnusedRow } from "./types";
 import "./knowledge.css";
@@ -12,7 +12,35 @@ export type { ApprovalItem, BrokenRow, ConflictRow, UnusedRow };
 
 // ---------------------------------------------------------------- 承認待ち
 
-function ApprovalCard({ a }: { a: ApprovalItem }) {
+/** 承認待ちの動き（渡さなければ見た目だけ・下絵と同じ） */
+export interface ApprovalHandlers {
+  approve: (id: string) => void;
+  startDecline: (id: string) => void;
+  cancelDecline: (id: string) => void;
+  decline: (id: string) => void;
+  reason: (id: string, text: string) => void;
+  toggleBody: (id: string) => void;
+}
+
+interface CardProps {
+  a: ApprovalItem;
+  handlers?: ApprovalHandlers | undefined;
+  busy: boolean;
+  open: boolean;
+  body?: ReactNode;
+}
+
+function ApprovalCard({ a, handlers, busy, open, body }: CardProps) {
+  const declineBtn = useRef<HTMLButtonElement>(null);
+  const wasDeclining = useRef(Boolean(a.declining));
+  // 断るをやめたら焦点を「断る…」に戻す
+  useEffect(() => {
+    if (wasDeclining.current && !a.declining) declineBtn.current?.focus();
+    wasDeclining.current = Boolean(a.declining);
+  }, [a.declining]);
+  const on = (fn: ((id: string) => void) | undefined) => (fn ? { onClick: () => fn(a.id) } : {});
+  // 本文が無い頼み（フォルダの共有）には「中身を見る」を出さない。動きを渡さない呼び方（下絵）は今の見た目のまま
+  const showBody = !handlers || body !== undefined;
   return (
     <li className="k-f9-ap" aria-label={`${a.from}：${a.title}`}>
       <div className="k-f9-ap-head">
@@ -42,36 +70,53 @@ function ApprovalCard({ a }: { a: ApprovalItem }) {
           {a.similar}
         </Callout>
       ) : null}
+      {open && body !== undefined ? (
+        <div role="region" aria-label="中身">
+          {body}
+        </div>
+      ) : null}
       {a.declining ? (
         <div className="k-f9-ap-decline">
           <TextArea
             label="断る理由"
             name={`decline-${a.id}`}
             value={a.declining.reason}
-            readOnly
+            {...(handlers
+              ? {
+                  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => handlers.reason(a.id, e.target.value),
+                  autoFocus: true,
+                }
+              : { readOnly: true })}
             required
             rows={2}
             error={a.declining.error}
             description="頼んだ人のページに、この理由が出ます。"
           />
           <div className="k-f9-ap-acts">
-            <Button variant="outlined" size="sm">
+            <Button variant="outlined" size="sm" {...on(handlers?.cancelDecline)}>
               やめる
             </Button>
-            <Button variant="danger" size="sm">
+            <Button variant="danger" size="sm" disabled={busy} {...on(handlers?.decline)}>
               断る
             </Button>
           </div>
         </div>
       ) : (
         <div className="k-f9-ap-acts">
-          <Button variant="ghost" size="sm">
-            中身を見る
-          </Button>
-          <Button variant="outlined" size="sm">
+          {showBody ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              {...(handlers ? { "aria-expanded": open } : {})}
+              {...on(handlers?.toggleBody)}
+            >
+              {open ? "中身を閉じる" : "中身を見る"}
+            </Button>
+          ) : null}
+          <Button ref={declineBtn} variant="outlined" size="sm" disabled={busy} {...on(handlers?.startDecline)}>
             断る…
           </Button>
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm" disabled={busy} {...on(handlers?.approve)}>
             承認する
           </Button>
         </div>
@@ -80,7 +125,19 @@ function ApprovalCard({ a }: { a: ApprovalItem }) {
   );
 }
 
-export function ApprovalsView({ items }: { items: readonly ApprovalItem[] }) {
+export interface ApprovalsViewProps {
+  items: readonly ApprovalItem[];
+  /** 押したときの動き（渡さなければ見た目だけ） */
+  handlers?: ApprovalHandlers | undefined;
+  /** 口の答えを待っている行 */
+  busyIds?: ReadonlySet<string> | undefined;
+  /** 中身を開いている行 */
+  openIds?: ReadonlySet<string> | undefined;
+  /** 行の id → 本文（本文の無い行は持たない） */
+  bodies?: Readonly<Record<string, ReactNode>> | undefined;
+}
+
+export function ApprovalsView({ items, handlers, busyIds, openIds, bodies }: ApprovalsViewProps) {
   return (
     <section className="k-f9-admin" aria-labelledby="kn-admin-title">
       <header className="k-f9-admin-head">
@@ -92,7 +149,14 @@ export function ApprovalsView({ items }: { items: readonly ApprovalItem[] }) {
       {items.length ? (
         <ul className="k-f9-ap-list">
           {items.map((a) => (
-            <ApprovalCard key={a.id} a={a} />
+            <ApprovalCard
+              key={a.id}
+              a={a}
+              handlers={handlers}
+              busy={Boolean(busyIds?.has(a.id))}
+              open={Boolean(openIds?.has(a.id))}
+              body={bodies?.[a.id]}
+            />
           ))}
         </ul>
       ) : (

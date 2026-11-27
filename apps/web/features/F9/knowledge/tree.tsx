@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { MouseEvent, ReactNode } from "react";
 import { Button } from "@/components/k";
+import { adminHref } from "./approvals-shape";
 import type { AdminCounts, ShelfKind, TreeData, TreeGroup, TreeNode, TreePage } from "./types";
 import "./knowledge.css";
 
@@ -240,7 +241,14 @@ export interface KnowledgeTreeProps {
   truncated?: boolean | undefined;
   /** 面を替える（ページ／管理）。渡さない間は、動き（acts）を持つ本番では「管理」を押せない形にする */
   onView?: ((view: "pages" | "admin") => void) | undefined;
+  /** 管理の入口を押した */
+  onAdminList?: ((key: "approvals" | "review") => void) | undefined;
+  /** 一覧の登録が無い管理の入口（押せない形） */
+  inertLists?: readonly ("approvals" | "review")[] | undefined;
 }
+
+type View = "pages" | "admin";
+type AdminList = "approvals" | "review";
 
 function ViewSwitch({
   view,
@@ -248,20 +256,20 @@ function ViewSwitch({
   onView,
   inert,
 }: {
-  view: "pages" | "admin";
+  view: View;
   admin: AdminCounts;
-  onView?: ((view: "pages" | "admin") => void) | undefined;
+  onView?: ((view: View) => void) | undefined;
   inert: boolean;
 }) {
   const n = admin.approvals + admin.review;
-  const act = (v: "pages" | "admin") =>
+  const press = (v: View) =>
     onView ? { onClick: () => onView(v) } : inert && v !== view ? { "aria-disabled": true as const } : {};
   return (
-    <div className="k-f9-switch" role="group" aria-label="ナレッジの面">
-      <button type="button" aria-pressed={view === "pages"} {...act("pages")}>
+    <div className="k-f9-switch" role="tablist" aria-label="ナレッジの面">
+      <button type="button" role="tab" aria-selected={view === "pages"} {...press("pages")}>
         ページ
       </button>
-      <button type="button" aria-pressed={view === "admin"} {...act("admin")}>
+      <button type="button" role="tab" aria-selected={view === "admin"} {...press("admin")}>
         管理
         {n ? <span className="k-f9-count">{n}</span> : null}
       </button>
@@ -269,16 +277,44 @@ function ViewSwitch({
   );
 }
 
-function AdminNav({ admin, active }: { admin: AdminCounts; active: "approvals" | "review" }) {
-  const items: readonly { key: "approvals" | "review"; label: string; n: number; desc: string }[] = [
+function AdminNav({
+  admin,
+  active,
+  onAdminList,
+  inertLists = [],
+}: {
+  admin: AdminCounts;
+  active: AdminList;
+  onAdminList?: ((key: AdminList) => void) | undefined;
+  inertLists?: readonly AdminList[] | undefined;
+}) {
+  const items: readonly { key: AdminList; label: string; n: number; desc: string }[] = [
     { key: "approvals", label: "承認待ち", n: admin.approvals, desc: "上の棚に上げる・共有の頼み" },
     { key: "review", label: "見直すページ", n: admin.review, desc: "使われていない・食い違い・よく破られる" },
   ];
+  const linkOf = (key: AdminList) => {
+    if (!onAdminList) return { href: `#${key}` };
+    // 一覧の登録が無い入口は押せない形（数は出す・押しても道は変わらない）
+    if (inertLists.includes(key))
+      return {
+        href: adminHref(key),
+        "aria-disabled": true,
+        onClick: (e: MouseEvent<HTMLAnchorElement>) => e.preventDefault(),
+      };
+    return {
+      href: adminHref(key),
+      onClick: (e: MouseEvent<HTMLAnchorElement>) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        onAdminList(key);
+      },
+    };
+  };
   return (
     <ul className="k-f9-adminnav">
       {items.map((it) => (
         <li key={it.key}>
-          <a href={`#${it.key}`} className="k-f9-adminnav-i" aria-current={it.key === active ? "page" : undefined}>
+          <a className="k-f9-adminnav-i" aria-current={it.key === active ? "page" : undefined} {...linkOf(it.key)}>
             <span className="k-f9-adminnav-t">
               {it.label}
               {it.n ? <span className="k-f9-count">{it.n}</span> : null}
@@ -320,6 +356,8 @@ export function KnowledgeTree({
   onCloseDrawer,
   truncated = false,
   onView,
+  onAdminList,
+  inertLists,
 }: KnowledgeTreeProps) {
   return (
     <>
@@ -340,7 +378,7 @@ export function KnowledgeTree({
         </div>
         {admin ? <ViewSwitch view={view} admin={admin} onView={onView} inert={acts !== undefined} /> : null}
         {view === "admin" && admin ? (
-          <AdminNav admin={admin} active={adminList} />
+          <AdminNav admin={admin} active={adminList} onAdminList={onAdminList} inertLists={inertLists} />
         ) : state === "loading" ? (
           <div className="k-f9-tree-skel" role="status" aria-label="木を読み込んでいます">
             <span />

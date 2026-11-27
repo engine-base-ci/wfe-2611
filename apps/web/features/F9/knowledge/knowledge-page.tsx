@@ -4,14 +4,18 @@
 //   操作の動きは後ろの葉が page-slots.ts の PAGE_SLOTS に 1 行ずつ足す。動きの無い操作は押せない形で出す
 import { BookOpen } from "lucide-react";
 import type { Route } from "next";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Doc } from "@kaname/contracts";
-import { Button, Empty, Loading, PAGE_ERROR, Toaster, errorText, useNotify } from "@/components/k";
+import { Button, Empty, Loading, Toaster, useNotify } from "@/components/k";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { useMyRoles } from "@/lib/auth/role";
 import { NAV } from "@/lib/nav";
+import { AdminMain } from "./admin-main";
+import { ADMIN_LISTS, registeredLists, type AdminCtx } from "./admin-lists";
+import { adminHref, adminState, isListReady, type AdminState } from "./approvals-shape";
 import { KnowledgeLayout } from "./knowledge-layout";
+import { LoadFailed, PageNoAccess } from "./states";
 import { CopyBand, DeclinedBand, PageView, SharedBand, WaitingBand, type BandHandlers } from "./page-views";
 import { MUST_BLOCKED_TOO_LONG } from "./must-shape";
 import { PAGE_SLOTS, mergeSlots, type MergedSlots, type PageCtx } from "./page-slots";
@@ -43,58 +47,17 @@ const EMPTY_TREE: TreeData = {
   canWrite: { company: false, group: [], me: false },
 };
 const hrefOf = (id: string): string => `/knowledge/${encodeURIComponent(id)}`;
+const ADMIN_LABEL = { approvals: "承認待ち", review: "見直すページ" } as const;
+const LIST_KEYS = ["approvals", "review"] as const;
+
+/** いまの面（管理の面は /knowledge の問い合わせで持つ・ページを開いているときは木の面） */
+function useAdminState(pageId: string | undefined): AdminState {
+  const sp = useSearchParams();
+  const st = adminState({ view: sp.get("view"), list: sp.get("list") });
+  return pageId ? { ...st, view: "pages" } : st;
+}
 
 // ---------------------------------------------------------------- 状態の箱
-/** 読めなかった旨と「もう一度読む」（正本の 1 件の文・下絵の ErrorState と同じ形。一手の読み上げは「もう一度読む」） */
-function LoadFailed({ code, onRetry }: { code: string; onRetry: () => void }) {
-  const t = errorText(code);
-  const danger = t.entry.severity === "critical" || t.entry.cls === "permission";
-  return (
-    <section
-      className="k-state"
-      data-state="error"
-      data-code={code}
-      role={danger ? "alert" : undefined}
-      aria-labelledby={`k-err-${code}`}
-    >
-      <h2 id={`k-err-${code}`} className="k-state-title">
-        {t.title}
-      </h2>
-      {t.body ? <p className="k-state-body">{t.body}</p> : null}
-      <div className="k-state-actions">
-        <Button variant="primary" onClick={onRetry} aria-label="もう一度読む">
-          {t.actions[0] ?? "もう一度"}
-        </Button>
-      </div>
-      <p className="k-state-code">番号：{t.entry.support_code}</p>
-    </section>
-  );
-}
-
-/** 見られないページ（正本 E-PAGE-002・下絵 kn-noaccess と同じ形。どれかを知らせない）。一手は 2 つ（代表の答え answer=21b765e5e0c8）：
- *  「マネージャーに頼む」は頼む口がまだ無いので押せない形・「戻る」は /knowledge へ */
-function PageNoAccess({ onBack }: { onBack: () => void }) {
-  const code = PAGE_ERROR.forbidden;
-  const t = errorText(code);
-  return (
-    <section className="k-state" data-state="error" data-code={code} role="alert" aria-labelledby={`k-err-${code}`}>
-      <h2 id={`k-err-${code}`} className="k-state-title">
-        {t.title}
-      </h2>
-      {t.body ? <p className="k-state-body">{t.body}</p> : null}
-      <div className="k-state-actions">
-        <Button variant="primary" aria-disabled>
-          {t.actions[0]}
-        </Button>
-        <Button variant="outlined" onClick={onBack}>
-          {t.actions[1]}
-        </Button>
-      </div>
-      <p className="k-state-code">番号：{t.entry.support_code}</p>
-    </section>
-  );
-}
-
 /** 役が合わない人（画面の導出 §6：無言の空画面にしない） */
 function Forbidden() {
   return (
@@ -184,9 +147,12 @@ export function KnowledgePage({ pageId }: { pageId?: string }) {
   const { roles } = useMyRoles();
   const allowed = roles === undefined ? undefined : roles.some((r) => NAV.screens.knowledge.roles.includes(r));
   const page = useKnowledgePage(pageId, allowed === true);
+  const admin = useAdminState(pageId);
   const crumbs = [
     { label: "ナレッジ", href: "/knowledge" },
-    ...crumbsOf(pageId ? page.data : undefined).map((label) => ({ label })),
+    ...(admin.view === "admin"
+      ? [{ label: "管理" }, { label: ADMIN_LABEL[admin.list] }]
+      : crumbsOf(pageId ? page.data : undefined).map((label) => ({ label }))),
   ];
   return (
     <Toaster>
@@ -203,6 +169,7 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
   const tree = useKnowledgeTree(ready);
   const page = useKnowledgePage(pageId, ready);
   const reload = useReloadKnowledge(pageId);
+  const admin = useAdminState(pageId);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditingRaw] = useState(false);
   const [openFolders, setOpenFolders] = useState<ReadonlySet<string>>(new Set());
@@ -258,6 +225,8 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
       if (ids.length) setOpenFolders((cur) => new Set([...cur, ...ids]));
     },
   };
+  const adminCtx: AdminCtx = { tree: tree.data, go, reload, notify: (text, o) => notify(text, o ?? {}) };
+  const registered = registeredLists();
   // 後ろの葉の差し込み（hook として毎回同じ順で呼ぶ・ページが無い間も呼ぶ）
   const slots = PAGE_SLOTS.map((use) => use(ctx));
   const merged = mergeSlots(slots);
@@ -269,6 +238,14 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
     drawerOpen,
     state: tree.data ? "ready" : "loading",
     truncated: Boolean(tree.data?.truncated),
+    view: admin.view,
+    adminList: admin.list,
+    onView: (v) => go(v === "admin" ? adminHref("approvals") : "/knowledge"),
+    onAdminList: (key) => {
+      setDrawerOpen(false);
+      go(adminHref(key));
+    },
+    inertLists: LIST_KEYS.filter((k) => !isListReady(k, registered)),
     onCloseDrawer: () => setDrawerOpen(false),
     acts: {
       hrefOf,
@@ -287,7 +264,12 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
     },
   };
 
-  const place = page.data ? [page.data.place.shelf_name, ...page.data.place.folders].join(" › ") : "ナレッジ";
+  const place =
+    admin.view === "admin"
+      ? `管理 › ${ADMIN_LABEL[admin.list]}`
+      : page.data
+        ? [page.data.place.shelf_name, ...page.data.place.folders].join(" › ")
+        : "ナレッジ";
   const retryTree = () => reload({ tree: true });
 
   if (tree.isError) {
@@ -303,22 +285,53 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
   return (
     <>
       <KnowledgeLayout tree={treeProps} place={place} onOpenDrawer={() => setDrawerOpen(true)}>
-        <Main
-          pageId={pageId}
-          tree={tree.data}
-          page={page}
-          merged={merged}
-          editing={editing}
-          setEditing={setEditingRaw}
-          onBack={() => go("/knowledge")}
-          onRetryPage={() => reload({ page: true })}
-        />
+        {admin.view === "admin" ? (
+          <AdminBody tree={tree.data} list={admin.list} ctx={adminCtx} onBack={() => go("/knowledge")} />
+        ) : (
+          <Main
+            pageId={pageId}
+            tree={tree.data}
+            page={page}
+            merged={merged}
+            editing={editing}
+            setEditing={setEditingRaw}
+            onBack={() => go("/knowledge")}
+            onRetryPage={() => reload({ page: true })}
+          />
+        )}
       </KnowledgeLayout>
       {merged.overlays.map((o, i) => (
         <Fragment key={i}>{o}</Fragment>
       ))}
     </>
   );
+}
+
+/** 管理の面の本文：木を読む前は読み込み中・承認できない人（admin_counts が無い）は見られない（承認待ちの口は呼ばない） */
+function AdminBody({
+  tree,
+  list,
+  ctx,
+  onBack,
+}: {
+  tree: ReturnType<typeof useKnowledgeTree>["data"];
+  list: AdminState["list"];
+  ctx: AdminCtx;
+  onBack: () => void;
+}): ReactNode {
+  if (!tree)
+    return (
+      <Card>
+        <Loading delayMs={0} />
+      </Card>
+    );
+  if (!tree.admin_counts)
+    return (
+      <Card>
+        <PageNoAccess onBack={onBack} />
+      </Card>
+    );
+  return <AdminMain list={list} ctx={ctx} lists={ADMIN_LISTS} />;
 }
 
 interface MainProps {
