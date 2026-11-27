@@ -3249,6 +3249,32 @@ PM の決め（作り方）：
 - [ ] 替えた前からの試験（`ticket_order_gate_test.py` の K159-CI-013・014・015・028、`k643_merge_not_impl_test.py` の K643-CI-003、`k341_order_gate_speed_test.py` の K341-CI-003）が緑
 - [ ] 替えない前からの試験（`k210_gate_holes_test.py`・`ci_scope_test.py`・`ci_lean_test.py` と、上の 3 本の替えない行）が緑
 - [ ] チケットの範囲の CI が緑。K-711 の枝の G56 が ecc6788c6d で赤にならない（PM が確かめる）"
+K-1156,直し：チケットの CI で赤を直した回は、前の回で赤だった行（rerun）と前の回から変えたファイル（since..先頭）に関わる行だけを流す（v3-gate.yml の入力 rerun・since と、範囲の台本 scripts/ci/ci_scope.py の --rerun・--since）。全部の CI（scope=full）は全部・入力が無ければ今と同じ・PM の直し,タスク,K-324,未着手,実装,2026-11-24,共通・CI,"チケットの CI が赤で、担当が直してもう 1 回流すとき、今は前の回と同じ範囲（チケットの試験の全部＋本線から変えた物に関わる物の全部）をまた流している。
+
+代表の決め（2026-11-24）：赤を直した回は、前の回で赤だった行と、前の回から変えたファイルに関わる行だけを流す。流れなかった緑の行は ticket-flow が前の回の記録を使う（スキル側は作った：ci.py の prev_red・carry_green・takes_rerun。入力 rerun＝前の回で赤だった行 ID を空白区切り・since＝前の回の版 40 桁）。段の全部の CI（scope=full）は全部流す。
+
+Kaname の側で要る直し：CI の定義（v3-gate.yml）が入力 rerun・since を受けて範囲の台本に渡し、範囲の台本（ci_scope.py）がそれで絞る。ticket-flow の設定（ticket-flow.yaml の ci.inputs）に名前を書く（書かないと ci.py が渡さない）。
+
+PM の決め（作り方）：
+1. 絞るのは **rerun に行 ID が 1 つ以上あり、かつ since が 40 桁のコミットのとき** だけ（両方あるとき）。片方だけ・どちらも無いときは今までと全く同じ（絞らない＝前の回と同じ範囲で、結果は大きい側に安全）
+2. 絞る回は 2 回決める：
+   - **確かめ**（今までどおり base で）：base…先頭の差分・件名のチケットの番号（base..先頭）・affects と ci_wide の食い違い・中間と統合の試験・試験の無いコード・止める理由。どれかが赤なら絞らずにそのまま止める（今と同じ答え）
+   - **選ぶ**（since で）：since と先頭の木の差分（`git diff since 先頭`・取り込んだ本線の分も入る）から、関わる試験・検査（unit の試験・DB の範囲・組・重い検査 gates・migration の lint・画面の組）を選ぶ。チケットの番号は確かめの答えを使い、since..先頭の件名では裁かない
+3. チケットの試験（tests: と、このチケットでそろう中間・統合の試験）は、rerun の行 ID を中身に持つファイルだけにする。行 ID は `-` の形（K12-API-003）と `_` の形（test_K12_API_003）のどちらでも当てる。左が英数字の続き・右が数字の続き（K12-API-0031・test_K12_API_0031_x）には当てない。右に `_` と名前が続く形（test_K12_API_003_name）には当てる
+4. 出力の base（G56・G61・G63・G67 などが比べる元）は本線の base のまま。since は出力に出さない
+5. 入力の形が違うとき（since が 40 桁の 16 進でない・コミットでない・rerun を空白で分けた 1 つずつのどれかが行 ID の形 `[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)+` でない。本物の行 ID は K12-API-003・K9-M9-9・K107-J1 の形）は、絞らず全部にも倒さず止める（組を流さない・理由を出す）
+6. rerun の行がチケットの試験のどのファイルにも無いときは、止めずに理由の行に出す（その行は流れない＝ticket-flow の判定で赤のまま）
+7. scope=full のときは rerun・since があっても全部（今と同じ）。K-1305 の入力 leaves で出す py_tests（段の葉の tests: の .py）も rerun で絞らない
+8. CI の定義は作り手 `05_flow/build_testplan.py` で直す（v3-gate.yml は生成物）。入力 rerun・since（type string・default ''）を足し、ci_scope.py を呼ぶ 5 か所（static の G0・spec・spec-2・spec-3・spec-parts の分かれ目・K-1305 の入力 leaves の env と --leaves はそのまま残す）全部に env `CI_RERUN_INPUT: ${{ inputs.rerun }}`・`CI_SINCE_INPUT: ${{ inputs.since }}` と引数 `--rerun ""$CI_RERUN_INPUT"" --since ""$CI_SINCE_INPUT""` を足す（外から来る値は run の字に直に入れない）
+
+```search
+git grep -n -e 'scripts/ci/ci_scope.py --base' af99a29f19 -- .github 05_flow/build_testplan.py
+7
+```
+
+（直す前の本線 af99a29f19 で数えた。v3-gate.yml の 5 か所（K-1307 の spec-parts で 1 つ増えた）と、作り手の SCOPE_STEP・SPEC_SCOPE_STEP の 2 か所。v3-gate.yml の run-unit・run-merge・run-squawk・check-count は範囲を決めないので入力を渡さない）","- [ ] 下の表の行（K1156-RR-001〜014）が緑：`scripts/ci/k1156_rerun_test.py`（G65 の並びに scripts/ci/g65.d/K-1156.txt で足す）
+- [ ] 前からの試験（下の「前からの試験を替えた所」の節）が緑のまま
+- [ ] チケットの範囲の CI が緑"
 K-1304,CI を速く：段の全部の CI の画面の試験の組（web）を、置き場の変数 WEB_SHARDS の数に分けて同時に流す（G48 を --shard で N 組・G59・G70・G73 を別の組・試験は 1 本も減らさず、記録と照らしは今と同じ 1 回）・変数が無ければ今と同じ 1 組・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"段の全部の CI（流す置き場 engine-base-ci/wfe-2611）の画面の試験の組（web）が 1 台で 90 分以上かかる。実測（段9）：取り出し〜部品 1 分・DB 10 秒・`playwright install --with-deps chromium` 2.5 分・API 5 秒・`build:test` 1.3 分・画面を立てる 2 秒、そのあと 1 台で順に G48（75 分以上）→ G59（約 3.7 分）→ G70（約 1.8 分）→ G73（約 10 秒）。
 
 代表の決め（2026-11-26・PM 経由）：**流す試験を 1 本も減らさず**、同じ試験を何台かに分けて同時に流し、段の CI を **10 分前後** にする。置き場の組織は今 Enterprise のお試しで GitHub の台を同時に多く使える。**今だけの設定**なので、分ける数は置き場の変数で持ち、変数が無いときは今と全く同じ動き（1 台）にする。
