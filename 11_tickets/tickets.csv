@@ -324,7 +324,7 @@ K-65,統合テスト：歩く骨格を端から端まで（登録 → メール 
 - [ ] 承認の直後から帯が替わるまでの秒（K65-STG-04 が JUnit の記録に書く）を、K-194 に渡す"
 K-66,段 7 F6 自分で進める・話す・決める（まだ切っていない）,タスク,,未着手,未定,2026-12-04,段・流れ,流れ F6「自分で進める・話す・決める」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。,"- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている
 - [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている
-- [ ] この流れの統合テスト：K-399（段 7 の通しと F5 との流れをまたぐ試験 3 つ・本物のブラウザと口と DB・`apps/web/tests/skeleton/k399-own-ticket-talk-decide.spec.ts`）が緑。中の分岐は各葉の単体の試験が持つ。staging の通しは K-1152"
+- [ ] この流れの中間テストの組と統合テストが決まっている"
 K-67,段 8 F7 毎日見る・探す・片付ける（まだ切っていない）,タスク,,未着手,未定,2026-12-11,段・流れ,流れ F7「毎日見る・探す・片付ける」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。,"- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている
 - [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている
 - [ ] この流れの中間テストの組と統合テストが決まっている"
@@ -2134,6 +2134,21 @@ D-117：預けた・上書きした後に PC が 1 回ログインして確か�
 正の絵はモック `/dev/mock/f3/cred-checking・cred-no-pc・cred-forbidden・cred-edit・cred-remove・cred-code`（代表 OK answer=0a262be577b2・answer=e34268dbfbac で cred-edit をログイン情報の上書き（ID とパスワード）にし、行の中身の字を表に在る値にそろえた）と、行の操作が押せる形の cred-list。","- [ ] 下の表の行（K357-UI-001〜024）が緑：`apps/web/tests/k/k357-credentials-edit-check.spec.ts`
 - [ ] K-356・K-372 の試験（k356-credentials-list-add.spec.ts・k372-credentials-add.spec.ts）が緑のまま（行の操作が押せる形でも通る作り）
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-358,預けたログイン情報の前の道すじ（/api/auth-ext/vault/*・/bridge/credentials/*・/bridge/code）を消し、それを使う前からの試験を契約の口と行の直置きに移す（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-28,F3・預けたログイン情報,"預けたログイン情報の前の道すじ（apps/api/src/auth/ext.ts）を消す（08_api/phase1/05_自分の設定とPC.md §3 の行き先：`/vault/credentials` の 4 本 → `/credentials` の口（K-351〜K-353・K-355）、`/bridge/credentials/resolve`・`/bridge/credentials/check-result`・`/bridge/code` → resolveCredential・reportCredentialCheck（K-354・K-355））。
+
+| 消す口 | 行き先 |
+|---|---|
+| `GET /api/auth-ext/vault/credentials` | listCredentials（K-351） |
+| `POST /api/auth-ext/vault/credentials` | createCredential（K-352） |
+| `POST /api/auth-ext/vault/credentials/:id/login-check` | checkCredentialLogin（K-355） |
+| `POST /api/auth-ext/vault/credentials/:id/answer` | answerCredentialLoginCheck（K-355） |
+| `POST /api/auth-ext/bridge/code` | reportCredentialCheck の waiting（K-355） |
+| `POST /api/auth-ext/bridge/credentials/check-result` | reportCredentialCheck（K-355） |
+| `POST /api/auth-ext/bridge/credentials/resolve` | resolveCredential（K-354） |
+
+前の道すじは、値を平文で返す・宛先を確かめない・本人確認の取り直しが無い（D-128.57・D-125.139）。契約の口と新しい画面（K-356・K-357）と Bridge（K-354）が入った後は、使う所は前からの試験だけなので、それらを移してから消す（段 3 の K-337 と同じ形）。","- [ ] 下の表の 2 行（K358-API-001・002）が緑：`apps/api/test/features/F3/legacy-credential-routes.test.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」・切る段で替えて carry で運ぶ）が緑。消す試験のファイル 3 本が無い
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-359,Bridge の側で Claude Code の自己診断と直し方を整える（無い・本体が落ちてきていない・ログインしていない／入れる作業の重なりと時間切れと途中の行・ログインの待ち・この PC の口）（K-89 の葉 ①）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89「Claude Code を入れてログインする」の Bridge（PC 側）の分。画面（K-361）が PC の行に「足りない物と直し方」を出し、押した後の様子を見せられるように、Bridge の側を整える。
 
 - 自己診断の Claude Code の 2 行（ある・ログインできている）を、electron を読まずに試せる関数 `claudeChecks()` に外へ出し、直し方（fix：install／repair／login）とエラーの ID（code：repair は E-CONN-011・login は E-CONN-010）を付ける
@@ -2213,6 +2228,16 @@ PC の印で呼ぶので、その PC 自身の値だけが変わる（他の PC 
 - [ ] 契約に口 `setBridgeBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_browser.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-366.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-367,前の「PC をつなぐ」画面 /setup/bridge/legacy と、もう使わない前の道すじ（/api/auth-ext/agent/bridge-revoke・/agent/browser・/agent/browser-check・/bridge/browser）を消し、台帳・画面の正本・前からの試験を片付け、K-96 を閉じる（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-28,F3・画面,"前の「PC をつなぐ」画面（T-U-09・道 /setup/bridge/legacy・802 行）を消す。この画面は D-128.150・D-128.164 で「Claude Code を入れてログインする（K-89）・AI が使うブラウザを選ぶ（K-90）・端末を外す（K-91）が新しい画面に移るまで」残していた。
+3 つが移った後（K-361・K-363・K-365・K-366）は、使うのは前からの試験と、新しい画面の「前の設定の画面」のリンクだけになるので、それらを片付けてから消す。前の画面にだけあった「OS の警告の越え方」と「Bridge が古いときの入れ直す口」も、K-374・K-375 が新しい画面へ移してから消す（代表の答え answer=7cf148a79dc9・2026-11-19）。前の画面だけが呼ぶ前の道すじ `POST /api/auth-ext/agent/bridge-revoke` と画面の口 `agentRevokeBridge` も消す（外すのは契約の口 revokeMyDevice・K-362）。あわせて、契約の口に移った後は誰も呼ばない前のブラウザの道すじ `POST /api/auth-ext/agent/browser`・`/agent/browser-check`（画面の選ぶ欄と会話のその場の一手は K-368 が契約の口へ）・`/bridge/browser`（Bridge の窓は K-366 が setBridgeBrowser へ）と画面の口 `agentSetBrowser`・`agentBrowserCheck` を消す（2026-11-19 まとめ役）。
+あわせて K-96（前の画面が接続コードを 2 回出す）を閉じる（直す先の画面が無くなるので・PM の決め 2026-11-18 ②）。
+
+段 3 の K-337（前の道すじを消す・前からの試験と道具を切る段で替えて carry で運ぶ）と同じ形。","- [ ] 下の表の行（K367-API-001・002・K367-UI-001・002）が緑
+- [ ] 前からの試験（下の「前からの試験を替えた所」・切る段で替えて carry で運ぶ）が緑
+- [ ] 生の値の台帳・画面の正本・絵の作り手の検査が緑（G72・k257_canvas_boards_test）
+- [ ] 結果の台帳（07_qa/test-plan/result-ledger.json）から、正本で BLOCKED にした行（53 行）を外し、`ci_results.py check`（台帳込み）が緑
+- [ ] 11_tickets/K-96.md が閉じている（stage 完了・閉じた訳）
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-368,PC の行で AI が使うブラウザを選ぶ欄と、Chrome とつながらないときのその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を契約の口につなぐ。会話の 1 行の一手も同じ口へ（K-90 の葉 ④・画面）,タスク,K-56,未着手,実装,2026-11-27,F3・画面,"「PC と使った量」（/setup/bridge・K-57 の `features/F3/connect-pc`）の「つないでいる PC」の行に、**その PC で AI が使うブラウザ**を選ぶ欄（自分の Chrome（既定）／Bridge 専用のブラウザ／使わない・D-119・D-120）を出し、押すと口 `updateMyDevice`（K-364）をその PC の id で呼ぶ。今の値は一覧 `listMyDevices` の `browser`（K-364）。
 
 その PC の自己診断の Chrome の行が ✗ で、選んでいるのが自分の Chrome のときだけ、選ぶ欄の下にその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を出す。「もう一度確かめる」は口 `checkMyDeviceBrowser`（K-365）をその PC の id で呼び、一覧のその PC の `health_at`（K-360）が新しくなるのを待って（上限 90 秒）結果を出す。
@@ -2240,6 +2265,33 @@ K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブ�
 - [ ] K369-UI-017（人が確かめる）：代表が下絵を見て OK と言う。前からの 24 の状態 × 3 幅は済み（2026-11-19 の会話・PM の決定の控えに記録。K-350 の書き方と同じで、答え ID は求めない）。answer=7cf148a79dc9 で足した 7 つ（pc-os-warning*・pc-bridge-*）は代表に見てもらうのを待っている（まとめ役が聞く）
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-370,預けたログイン情報の通しの画面の試験（qa-b-* の 4 本・K-356 が止めた）を、新しい画面と契約の口と本物の Bridge で書き直す。新しい葉の試験と重なる行は置き換え先つきで外し、止めを外す（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-28,F3・預けたログイン情報,"K-356 が `/settings/credentials` を新しい画面（契約の口 listCredentials・createCredential）に作り替えたので、前の画面の作りで預けて本物の Bridge で確かめていた通しの画面の試験 4 本（`apps/web/tests/screens/qa-b-credential-vault.spec.ts`・`qa-b-infisical.spec.ts`・`qa-b-login-check.spec.ts`・`qa-b-two-factor.spec.ts`・計 774 行・17 本）は、ファイルの頭の `test.fixme` で止まっている。その間の守りは、口の葉（K-351〜K-355）と画面の葉（K-356・K-372・K-357）の単体の試験だけになる。
+
+この葉は、4 本の観点を 1 つずつ、新しい葉の試験と突き合わせて：
+
+- **重ならない観点だけを残して書き直す**：新しい画面で預け → 本物の API → 確かめの仕事 → **本物の Bridge の輪（apps/bridge/dist）→ 本物の Chrome → 的のログイン画面** を通して、結果が画面の札に出るまで（新しい葉の試験はどれも、Bridge を偽の Kaname で、画面を口の差し替えで試すので、端から端までの道を通す試験はこの葉だけ）。**この通しの 8 本は、CI の画面の組の専用の段 G73 が流す**（K-379 が足した段：Bridge を組み立ててから `scripts/ci/web_run.py gate 73` で流す。この葉が通しの 2 本を段の試験の一覧に足す・下の「前提と制約」）。ファイルを読むだけの 2 行（K370-SRC-001・K370-DOC-001）は G48（e2e:k の一覧）が流す
+- **重なる観点は置き換え先の行 ID つきで外す**（行は消さず、正本の行を BLOCKED にして置き換え先を書く）
+- 止め（test.fixme・K-356 が qa-b-credential-vault・qa-b-infisical の頭に付けた 2 つ）を外し、K-356 が付けた「置き換え先 K-370」の止めを正本から外す。qa-b-login-check・qa-b-two-factor は K-356 が運ばないので（本線の版＝前の画面を開く版のまま残る）、この葉が書き直した版を tests: で運ぶ（2026-11-19 切る段：K-356 が運ぶと共通の道具 credential-e2e.ts が無くて型の検査が赤になるため。K-379 の専用の段の一覧に足すと、試験の持ち主の検査 test_owner_gate.py が CI の定義の `web_run.py gate 73` からこの 2 本を「試験」と数えるので、tests: に書ける。共通の道具 credential-e2e.ts は試験でないので carry:）","- [ ] 下の表の行 K370-SRC-001・K370-DOC-001 が緑：`apps/web/tests/k/k370-credential-e2e-docs.spec.ts`（CI の画面の組の e2e:k が流す・実ブラウザを開かない）
+- [ ] K370-E2E-001〜008 が緑：`apps/web/tests/screens/qa-b-login-check.spec.ts`・`qa-b-two-factor.spec.ts` の 8 本。CI の画面の組の専用の段 G73 が流して判定する（画面の行なので、取り込んだ後の画面の回 `ci.py web`）。出す前に、手元の実ブラウザ（自分の番号の口と画面・組み立てた apps/bridge/dist・Chrome。本人の Bridge は使わない）で 1 回流して 8 本とも通ることを見る
+- [ ] K370-HC-001（人が確かめる）：staging で Infisical の会社の置き場に暗号文だけ・別の会社の置き場から読めないことを見た記録を残した
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-371,前の預けたログイン情報とブラウザの DB の関数（app.my_credentials・bridge_take_code ほか 6 つと agent_set_browser・agent_browser_check）を migration で消す。使う所が残っていないことを機械で見る（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-28,F3・預けたログイン情報,"前の預けたログイン情報の道すじ（`/api/auth-ext/vault/*`・`/bridge/credentials/*`・`/bridge/code`）は K-358 が、前のブラウザの道（`/api/auth-ext/agent/browser`・`/agent/browser-check`）は K-367 が消す。その道すじだけが呼んでいた DB の関数は、K-358・K-367 では重さの決まり（db と web を 1 本で触らない）で残した（K-358 の「前提と制約」・K-367 の 51 行目）。この葉はそれを migration で消し、使う所が残っていないことを機械で見る。
+
+消す 8 つ（引数は最後の版）：
+
+| 関数 | 作った所 | 呼んでいた道 | 消す葉 |
+|---|---|---|---|
+| `app.my_credentials(uuid)` | 0047・0065・0066 | GET /api/auth-ext/vault/credentials | K-358 |
+| `app.bridge_credential(uuid, uuid, uuid)` | 0064・0065・0066 | POST /api/auth-ext/bridge/credentials/resolve | K-358 |
+| `app.credential_login_check_retry(uuid, uuid)` | 0066 | POST /api/auth-ext/vault/credentials/:id/login-check | K-358 |
+| `app.agent_answer_code(uuid, uuid, text, text)` | 0066 | POST /api/auth-ext/vault/credentials/:id/answer | K-358 |
+| `app.bridge_take_code(uuid, uuid, text)` | 0066 | POST /api/auth-ext/bridge/code | K-358 |
+| `app.bridge_login_check_result(uuid, uuid, text, text)` | 0065・0066 | POST /api/auth-ext/bridge/credentials/check-result | K-358 |
+| `app.agent_set_browser(uuid, text)` | 0057 | POST /api/auth-ext/agent/browser | K-367 |
+| `app.agent_browser_check(uuid, text)` | 0057 | POST /api/auth-ext/agent/browser-check | K-367 |","- [ ] 下の表の行（K371-DB-001〜005・K371-SRC-001）が緑：`packages/db/test/legacy_credential_functions.test.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・db と shared の組）が緑"
 K-372,預けたログイン情報の画面の「預ける」小窓（本人確認して保存）を契約の口 createCredential につなぎ、はじめの設定の段 4 を通す（K-56 の葉・K-356 から分けた）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"預けたログイン情報の画面（`/settings/credentials`・入れ物は K-356）の「預ける」を押せるようにし、小窓（ログイン情報／API キー・値・預ける先・2 段階の種類・使える場所・期限）を契約の口 createCredential（K-352）につなぐ。
 口が本人確認の取り直しを求めたら段 2 の取り直し（StepUp・K-318）をはさみ、同じ体で 1 回だけ送り直す。はじめの設定の途中の人が 1 件預けたら段 4（D-089・「ログイン情報を 1 件預ける」）を通す。
 正の絵はモック `/dev/mock/f3/cred-add-login`・`cred-add-key`・`cred-add-error`・`cred-stepup`（代表 OK answer=0a262be577b2）。
@@ -2248,6 +2300,14 @@ K-372,預けたログイン情報の画面の「預ける」小窓（本人確�
 - [ ] 切る段で替えた通しの試験 j02 の J02-05（carry で運ぶ）が緑
 - [ ] K-356 の試験（k356-credentials-list-add.spec.ts）が緑のまま（「預ける」が押せる形でも通る作り）
 - [ ] 正本の行（credentials.md の保存・取り直し・段の帯の行）の置き換え先が K372 の行 ID になっている
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-373,スマホ・タブレットで開いた「PC と使った量」では「＋ PC をつなぐ」を押せない形にして理由を 1 行出し、PC の行の Claude Code の区画をモック /dev/mock/f3-pc と突き合わせる（K-56 の葉・K-361 から分けた）,タスク,K-56,未着手,実装,2026-11-29,F3・画面,"「PC と使った量」（/setup/bridge・`features/F3/connect-pc`）を、Bridge を入れられない端末（スマホ・タブレット）で開いたとき、見出しの行の「＋ PC をつなぐ」は隠さず押せない形で出し、すぐ下に理由「つなぐ PC で、この画面を開いてください」を 1 行出す。押しても接続のコードの口を呼ばず、開いた最初の 1 回のつなぐ小窓も開かない。スマホで見えるのは PC の様子と、行の操作（ブラウザを選ぶ・外す・もう一度確かめる＝リモコン・K-363・K-368 の物）。見分けは画面の幅ではなく端末の OS（代表の決め 2026-11-19）。
+
+あわせて、K-361 が作る PC の行の Claude Code の区画（と行の中の知らせ）を、正の絵のモック /dev/mock/f3-pc と見た目で突き合わせる（pc-claude-* の 9 つと pc-asleep・pc-phone の 11 個 × 幅 375・768・1440）。
+
+この葉は K-361 から分けた（2026-11-19 PM の決め・K-361 の見込みが 1.5 時間で上限 1 時間を超えたため）。行は消さずに移し、行 ID を K361-UI-021〜024 から K373-UI-001〜004 に振り直した（下の表の「元」）。","- [ ] 下の表の 4 行（K373-UI-001〜004・004 はモック 11 個 × 幅 3 つ）が緑：`apps/web/tests/k/k373-pc-row-phone-match.spec.ts`（実 Chrome・口の差し替えは K-361 が持つ共通の道具 `apps/web/tests/k/claude-code-mock.ts`）
+- [ ] K-361 の試験（k361-claude-code.spec.ts）が緑のまま（机の Chrome では「＋ PC をつなぐ」は今のまま押せる）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-374,「PC をつなぐ」の小窓の受け取る段に、受け取った後だけ OS の警告の越え方（Mac は「このまま開く」・Windows は「詳細情報 → 実行」）を出す（K-56 の葉・代表の答え 7cf148a79dc9 ①）,タスク,K-56,未着手,実装,2026-11-27,F3・画面,"「PC と使った量」（/setup/bridge・`features/F3/connect-pc`）の「PC をつなぐ」の小窓（`ConnectDialog`）で、常駐アプリ（Kaname Bridge）の入れ物を受け取った人が、OS の警告（Mac「""Kaname Bridge"" は開いていません」・Windows「Windows によって PC が保護されました」）で止まらないように、受け取る段（1 段目）の中、受け取るの字のリンクの下に、越え方の案内を出す。
 
@@ -2726,12 +2786,12 @@ K-437,作る口 createTicket を新しい形に（本文 body.doc・会社の項
 1. **入力**：`body`（`{ doc }`・任意・無ければ空の本文）・`fields`（会社の項目の値 `{ ""<項目の id>"": 値 }`）・`specs`（確認項目の文の並び・文字の並び・0〜50 件）。**`sections`（前の区画の入力）は K-578 が契約と口から外すまで今までどおり受ける**（途中の本線を壊さない。実画面と画面試験の準備が `sections` を送る間がある）。`body` と `sections` の扱い（PM の勧め・正本に無い作り方の決め）：**`body` があれば `body` だけを使い `sections` は捨てる**（口は DB の関数へ `sections` を渡さない・DB の関数も両方来れば `body` だけを書く＝K-561 の決め）／`body` が無く `sections` だけなら前の区画の道（必須の区画が空なら今までどおり 422・E-VAL-013）／どちらも無ければ空の本文（`{ doc: 空の木 }`）で作る。**種別の既定の確認項目を写す物は作らない**（前の版の `default_test_specs` を写す関数・`kind_sections` を読む処理は無し。作るときは `specs[]` だけ）。業務の型（`work_type_id`・`work_type_version`）は受けない（入力に付けると 422・列は凍結。D-150.60・K-582 が契約と文書を外して、この葉が足していないことを確かめる）。作るときにつなぐ `links` は K-581 が足す
 2. **書く先**（同じ取引で全部）：チケット・本文 1 枚（`ticket_sections` の鍵 `body`・位置 0・版 1・`ticket_section_versions` に版 1）・項目の値（`app.ticket_fields_set(p_ticket, p, true)` が `ticket_field_values` に書く・K-564）・確認項目（`test_specs`：文・チェック無し・出どころ `manual`・`check_kind` なし）・担当者と知らせる人の受け箱の行・下書きの片付け（つながりは K-581 が同じ取引の中に足す）。**text は口が doc から作る**（`docToText`・K-561）。画面から text は受けない
 3. **作るときに止める物**は 題名・種別・担当者・期限・会社が必須にした項目だけ（D-150.49）。本文は空でも作れる。**`body` の道では「必須の区画が空」（E-VAL-013）で止めない**（`sections` だけで来た作り方では今までどおり出る。番号ごと外すのは K-578）
-4. **断りの番号**（控え帳 2026-11-20 16:51・20:50・21 日 01:15）：選べない・見えない選び先（種別・担当者・知らせる人・親・項目の id）は **404・E-PAGE-001・欄なし**／親子が 3 段を超える（E-VAL-015）・期限が今日より前（E-VAL-012）・開始が期限より後（新しい E-VAL-028）は **409・欄なし**／**会社の項目の 409 は K-564 の 4 つ・欄なし（D-150.51・マスタで決まる）：E-FLD-001 その種別に出ない項目・E-FLD-002 選択肢に無い値・E-FLD-003 項目の型と合わない値・E-FLD-004 必須が空**／無い・消した・別の会社の項目の id は 404・E-PAGE-001／**422 は契約に書ける形の誤りだけ**（`fields` の鍵が uuid でない・値が文字・数・真偽・id の並び・null のどれでもない・本文の木の形・確認項目の文の誤り）で欄つき。E-VAL-014（404 で使う形）は口がもう出さないので正本から外す。E-VAL-013 は `sections` だけで来た作り方が今も出すので残す（外すのは K-578）
+4. **断りの番号**（控え帳 2026-11-20 16:51・20:50・21 日 01:15）：選べない・見えない選び先（種別・担当者・知らせる人・親・項目の id）は **404・E-PAGE-001・欄なし**／親子が 3 段を超える（E-VAL-015）・期限が今日より前（E-VAL-012）・開始が期限より後（新しい E-VAL-028）は **409・欄なし**／**会社の項目の 409 は K-564 の 4 つ・欄なし（D-150.51・マスタで決まる）：E-FLD-001 その種別に出ない項目・E-FLD-002 選択肢に無い値・E-FLD-003 項目の型と合わない値・E-FLD-004 必須が空**／無い・消した・別の会社の項目の id は 404・E-PAGE-001／**422 は契約に書ける形の誤りだけ**（`fields` の鍵が uuid でない・値が文字・数・真偽・id の並び・null のどれでもない・本文の木の形・確認項目の文の誤り）で欄つき。E-VAL-014（404 で使う形）は口がもう出さない（正本からは外さない。外すのは画面の比べ 1 行と一緒に画面の葉 K-442・PM 2026-11-24）。E-VAL-013 は `sections` だけで来た作り方が今も出すので残す（外すのは K-578）
 5. **契約の借り（前の決めのまま）**：期限が今日より前＝409 E-VAL-012・開始が期限より後＝409 E-VAL-028・優先度「高」の理由が空は契約の oneOf（422・欄 priority_reason）・暦に無い日付は `format: date`・題名は NFKC で整えず前後の空白だけ落とし長さは生の字で数える（契約の `maxLength` と口が同じ定数 `TITLE_MAX`・200）。段 8 の K-483 が同じ番号 E-VAL-012・E-VAL-028 を定義なしで使う
 
 作るときの担当者は書ける人なら誰でも指定できる（D-150.7）。担当者と期限は必須のまま（PM の決め 2026-11-21 23:10）。やり取りの更新の行は**作ったときは足さない**（K-60 の決めのまま。本文・項目・確認項目を付けて作っても `ticket_messages` の kind `change` は 0 行）。複製（`duplicate_of`・`copy[]`）は K-438 が同じ関数の上に足す。","- [ ] 下の表の 30 行（K437-API-001〜030）が緑：`apps/api/test/features/F4/create-ticket-defaults.test.ts`（001〜026・030）と、前の道（sections）の `apps/api/test/features/F4/create-ticket-legacy-sections.test.ts`（027〜029・K-578 がファイルごと消す）
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり替えた版（carry）が緑（K60-API-001・020・035・036 と、作る口を `body` で呼ぶ土台 6 本）
-- [ ] 契約の口 `createTicket` の入力に `body`・`fields`・`specs` があり（`sections` は K-578 まで残る・`links` は K-581 が足す）・4xx に 404 E-PAGE-001・403・409 E-VAL-015・E-VAL-012・E-VAL-028・E-FLD-001〜004 があり 404 の E-VAL-014 は無い。正本（errors.json）から E-VAL-014 が消えている（E-VAL-013 と `sections` は前の道のため K-578 まで残り、K437-API-029 が見る）（K437-API-020）。生成の試験 `post_tickets.test.ts` の it.todo が、na（理由つき）を除いて増えていない（`ears-elsewhere.d/K-437.json` の covers）
+- [ ] 契約の口 `createTicket` の入力に `body`・`fields`・`specs` があり（`sections` は K-578 まで残る・`links` は K-581 が足す）・4xx に 404 E-PAGE-001・403・409 E-VAL-015・E-VAL-012・E-VAL-028・E-FLD-001〜004 があり 404 の E-VAL-014 は無い。正本（errors.json）の E-VAL-014 は残す（口はもう出さない。正本から消すのは画面の比べ 1 行と一緒に K-442・PM 2026-11-24）（E-VAL-013 と `sections` は前の道のため K-578 まで残り、K437-API-029 が見る）（K437-API-020）。生成の試験 `post_tickets.test.ts` の it.todo が、na（理由つき）を除いて増えていない（`ears-elsewhere.d/K-437.json` の covers）
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-440,updateTicket の優先度（高は理由つき）・親の組（K-387 の「欄ごとの処理の表」に 1 組足す。期限は段 8 の K-483 が持つ。担当者・段・実績・保留は入れない）（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-26,F4・チケット,"詳細の「親を決める」小窓（K-443）と優先度の選びが呼ぶ契約の口 `updateTicket`（PATCH /api/v1/tickets/:id）に、**優先度と親**の 2 つを足す。口と欄ごとの処理の表（`TICKET_FIELD_GROUPS`）は段 7 の K-387 が作る（段・実績・保留の組）。この葉は、その表に組を **1 つ**（`ticketSort`）足すだけで、口は新しく作らない（D-145.9 の押せない形を動く形にする）。
@@ -3258,6 +3318,21 @@ K-1112,共通の台帳の本体（screen_api.py の表・08_api/phase1 の口の
 - [ ] screen_api.py の生成物（機能の分解・API の契約）が 1 バイトも変わらない（本体も .d も変えない）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
 - [ ] CI（このチケットの範囲）が緑"
+K-1113,外枠の字をそろえる：名詞の「知らせ」を「お知らせ」に（上の帯の鈴・自分の設定の第 2 ナビとその注・Bridge の入れ直しの行）・左のメニューから「取引先」を外す（キャンバスも作り手から作り直す・PM の直し）,タスク,K-66,未着手,実装,2026-11-23,共通・画面,"本線にある共通の外枠に、どの葉も持っていない古い字が 2 つ残っている。
+
+1. **名詞の「知らせ」**：画面に出る名詞は「お知らせ」と書く（D-152.11・K-400 と同じ直し・flow.json の画面の名前も「お知らせ」）。外枠の上の帯の鈴（読み上げ「知らせ」・指を置くと「知らせ（準備中）」）、自分の設定の第 2 ナビの項目「知らせ」と注「…預けたログイン情報と知らせはワークスペースごと」、Bridge の入れ直しの行（K-375／K-369）の「…この知らせは自分で消えます」が古いまま
+2. **左のメニューの「取引先」**：取引先は持たない（代表の答え answer=4961f0280e9a・2026-11-23）。ゲスト（先方の人）はメンバーの画面のタブ（段 12）が作る。ここでは左の項目を外すだけ（押せない形でも出さない）
+
+正の絵（04_design/canvas）にも同じ古い字が全部の絵（183 枚）の外枠に入っている。絵は作り手 `04_design/canvas_gen` が全部の絵にそろえの処理をかけて作るので、作り手を直して `shellfix.py` で作り直す（絵だけを手で直すと、次に回したとき戻る）。
+
+PM の決め（作り方）：
+1. 左の項目は並べ方の正 `05_flow/phase1.py` の NAV_SECTIONS_BY_ROLE（R1・R2）から clients を外し、flow.json → lib/nav.ts を作り直す。画面 clients・requests の定義は消さない（直に URL で来たときの扱いは今のまま）
+2. 動詞の「知らせる」（知らせる人・80% を超えたら知らせる など）は変えない
+3. キャンバスは EdPC だけでなく、外枠を持つ全部の絵を作り手から作り直す（左のメニューの項目の字は G70 の shell-nav が Main の絵と、第 2 ナビの字は bridge-shell が MePC の絵と突き合わせるので、EdPC だけでは赤になる）","- [ ] 下の表の行（K1113-UI-001〜009）が緑：`apps/web/tests/k/k1113-shell-words.spec.ts`
+- [ ] 前からの試験（下の「## 前からの試験を替えた所」）が緑
+- [ ] G70 の突き合わせ shell-nav（Main・左のメニューの項目の字）と bridge-shell（MePC・第 2 ナビの字）が緑（`apps/web/tests/fidelity/fidelity.spec.ts`・替えない）
+- [ ] flow_gate（G1〜G10）・生成物が最新（G38 generated_gate）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-1114,直し：画面の試験を全部流す回（G48）で本線のまま赤になる 3 種を直す（登録の口の回数の上限に当たる準備・組み立てた画面の置き場を読む D8・文書の高さの丸めで 0.39px 被ると数える）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"K-1105 の CI（run 45106396961）で G48 が画面の試験を全部流し、K-1105 が触っていない画面の試験 39 本が赤だった。種類は 3 つで、どれも本線（claude/modest-lamport-77ue02 の先頭 eb836a1ac）のままで赤になる。段を本線に入れる全部の CI（画面の試験を全部流す回）で必ず赤になるので、ここで直す。
 
 | 種類 | 赤の本数 | 原因 | 分け |
@@ -3385,3 +3460,80 @@ K-1152,統合テスト（段 7・staging）：自分でやるチケットを作�
 - [ ] 形の試験 11 行（K1152-FM-001〜011・`scripts/ci/k1152_staging_spec_test.py`）が緑。チケットの CI（枝）で見るのはこの 11 行と lint・型だけ（staging には当てない）
 - [ ] チケットの CI が緑
 - [ ] 前からの形の試験 `scripts/ci/k65_staging_spec_test.py` が替えずに緑"
+K-1154,直し：取り込む順の検査 G56（scripts/ci/ticket_order_gate.py）を、葉のコミット 1 つ 1 つでなく「枝の先頭に depends_on の葉の実装が入っているか」だけで見る形にする（依存より先に始めた葉が、後で依存を取り込めば緑）・PM の直し,タスク,K-324,未着手,実装,2026-11-24,共通・CI,"検査 G56（取り込む順・`scripts/ci/ticket_order_gate.py`・K-94・K-159）は今、START..HEAD の実装のコミット 1 つ 1 つについて「そのコミットの祖先に depends_on の葉の実装のコミットが在るか」を見る。そのため、依存の葉より先に実装を始めた葉（重ねて始める形・切る段で試験を先にコミットする形）は、後で依存の枝を取り込んで依存の実装が枝に入っても、依存の取り込みより前のコミットが必ず赤のまま残る。
+
+実例（K-711）：枝 t/K-711 の `ecc6788c6d K-711 test: 切る段（c/段10）のチケットと試験` は、依存の葉の実装を取り込む前のコミットなので、依存を取り込んだ後も G56 が赤になる。
+
+代表の決め（answer=ee72b1756f5d・2026-11-24）：「入れるときだけ見る」。G56 は「枝の先頭に、depends_on の葉の実装が入っているか」だけで見る。依存の実装が枝に無いまま入れようとしたら今までどおり赤（入れる順は守る）。
+
+PM の決め（作り方）：
+1. 裁くのは枝の先頭だけ：実装のコミット（親 1 つ・文書だけでない）か取り込みのコミットの件名に持ち主として出るチケットごとに、**枝の先頭（rev）の版の** `11_tickets/tickets.json` の depends_on の 1 つずつが、START..rev のどれかの実装のコミットか取り込みのコミット（満たす側は件名の全部の番号・今のまま）に在れば緑。コミットの順（依存より前か後か）は見ない
+2. コミットごとの裁き（各コミットの版の depends_on・外して戻した依存の覚え・祖先のビット）は消す。各コミットの版の tickets.json は読まない（比べる元 `--base-ref` の子を数える版は今のまま読む）
+3. 変えない物：持ち主の決め方（owners_of）・文書だけのコミットと ai-team.yaml は実装に数えない・取り込みのコミットは裁かず満たす側に数える・決まりの前に入った依存・人の準備で完了・子が全部済んだ親（外した子を数える K-210）・rev の一覧が読めなければ止める・赤の文の形「<先頭の 10 字> 枝の先頭：<チケット> は <依存> に依存するが…」・出力の「実装のコミット N 本・順の違反 M 件」と PASS／FAIL の行・`--start`・`--base-ref`・CI の段の命令
+4. `--selftest` に K-711 の形（依存より先に試験と実装をコミットし、後で依存の枝を取り込む → 緑）を足す。頭の説明（docstring）のコミットごとの説明を、先頭だけで見る説明に直す
+5. 共有の部品（is_doc_only・_not_impl・generated_outputs・generator_scripts・commit_log・ancestry・read_versions）は消さず、名前と引数を変えない（ci_scope.py・ci_lean_test.py・K-341 の試験が使う）","- [ ] 下の表の行（K1154-OG-001〜009）が緑
+- [ ] 替えた前からの試験（`ticket_order_gate_test.py` の K159-CI-013・014・015・028、`k643_merge_not_impl_test.py` の K643-CI-003、`k341_order_gate_speed_test.py` の K341-CI-003）が緑
+- [ ] 替えない前からの試験（`k210_gate_holes_test.py`・`ci_scope_test.py`・`ci_lean_test.py` と、上の 3 本の替えない行）が緑
+- [ ] チケットの範囲の CI が緑。K-711 の枝の G56 が ecc6788c6d で赤にならない（PM が確かめる）"
+K-1304,CI を速く：段の全部の CI の画面の試験の組（web）を、置き場の変数 WEB_SHARDS の数に分けて同時に流す（G48 を --shard で N 組・G59・G70・G73 を別の組・試験は 1 本も減らさず、記録と照らしは今と同じ 1 回）・変数が無ければ今と同じ 1 組・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"段の全部の CI（流す置き場 engine-base-ci/wfe-2611）の画面の試験の組（web）が 1 台で 90 分以上かかる。実測（段9）：取り出し〜部品 1 分・DB 10 秒・`playwright install --with-deps chromium` 2.5 分・API 5 秒・`build:test` 1.3 分・画面を立てる 2 秒、そのあと 1 台で順に G48（75 分以上）→ G59（約 3.7 分）→ G70（約 1.8 分）→ G73（約 10 秒）。
+
+代表の決め（2026-11-26・PM 経由）：**流す試験を 1 本も減らさず**、同じ試験を何台かに分けて同時に流し、段の CI を **10 分前後** にする。置き場の組織は今 Enterprise のお試しで GitHub の台を同時に多く使える。**今だけの設定**なので、分ける数は置き場の変数で持ち、変数が無いときは今と全く同じ動き（1 台）にする。
+
+PM の決め（作り方）：
+1. 分ける数は置き場の変数 `WEB_SHARDS`（無ければ 1）。static の組が env で受けて（命令の文字に入れない）`web_run.py shards` で `web_shards`（数）と `web_parts`（web の組の matrix の一覧）を出す。1 なら `[""all""]`、2 以上なら `[""g48-1""…""g48-N"", ""g59"", ""g70"", ""g73""]`（専用の段は ci_scope.json の web_select.gates から）。数でない・1〜40 の外は赤（黙って 1 にしない）
+2. web の組は matrix `part` で走る。**all の 1 組は今と全く同じ**（組の名前 web・段・命令・上げる物 ci-results と junit-web）。2 以上なら組ごとに自分の DB・API・画面を立て（準備の段は今のまま）、どの段を流すかは `web_run.py` が env `WEB_PART` で決める（G48・G59・G70・G73 の段の名前・if・命令は変えない。この組で流さない段は 0 で終わる）
+3. G48 の組 `g48-<i>` は、今と同じ試験の一覧（e2e:k。範囲の回は選んだ試験）に `--shard=<i>/<N> --reporter=list,blob --pass-with-no-tests` を付けて流し、blob の報告と終わりの番号を `web-part/` に残して `web-part-<組>` で上げる。G59・専用の段の組は今の命令で JUnit（junit/web-skeleton.xml など）を書き、同じく `web-part-<組>` で上げる
+4. 新しい組 `web-report`（needs: static・web。web が飛ばされたら飛ぶ・`WEB_SHARDS` が 1 か無ければ飛ぶ）が `web-part-*` を取り、`web_run.py g48-report` で、N 組の blob と終わりの番号がそろうかを見て、`playwright merge-reports --reporter=json,junit` で 1 つの報告（apps/web/pw-reports/k.json）と JUnit（junit/web.xml）にまとめ、**今と同じ** `ci_results.py record` と `op_gate.py` を 1 回流す。そろわない（落ちた組がある）なら何も作らず赤。どれかの組の試験が赤なら JUnit はまとめ、記録と照らしは流さず赤（今の 1 組で G48 が赤の回と同じ）。`ci-results` と `junit-web` を上げる
+5. junit の組は web-report も待つ（always()）。artifact「junit」にそろう JUnit のファイルの名前（web.xml・web-skeleton.xml・web-fidelity.xml・web-bridge.xml）と置き場は今と同じ
+6. 準備を縮める：GitHub の台だけ（`runner.environment == 'github-hosted'`）ブラウザの取り込み（~/.cache/ms-playwright）を actions/cache で使い回す。自分の台（VM）は像に残るので上げ下ろししない（K-172）。`playwright install --with-deps chromium` の命令は変えない（字体と apt の部品は今までどおり毎回そろう・K-641）。`build:test` は組ごとに作る（作った物を渡すと上げ下ろしの時間が作る時間と変わらず、組の準備が全部終わるまで試験を始められない）
+7. 見込み：分ける数 20 で、組 1 つの準備 約 4.5〜5 分＋G48 の 1 組 約 4 分（75 分÷20・一番重いファイル 3.4 分）＋web-report 約 1.5 分 ＝ 約 10 分。G59 の組は準備＋3.7 分で G48 の組より先に終わる。Playwright は分ける単位がファイル（fullyParallel: false）で、ファイルの数で均すので組の長さはばらつく。最初の回の実測で数を変える（変数だけで変わる）","- [ ] 下の表の行（K1304-CI-001〜012）が緑
+- [ ] 替えた前からの試験（`k258_web_defer_test.py` の K258-CI-005）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない 16 本）が緑
+- [ ] 段の全部の CI で、変数 WEB_SHARDS が無い回は web の組が 1 つで今と同じ段・同じ JUnit、20 の回は G48 が 20 組で流れ、まとめた JUnit（web.xml）の testcase の数が 1 組の回と同じ（PM が置き場で確かめる）"
+K-1305,CI を直す：段の全部の CI で毎回赤になるプロジェクト側の元 2 つ（全部の回でも段の葉（stageq が渡す入力 leaves）の .py の試験を JUnit に載せる・G64 が CI の置き場に無い控えの枝の sha を見て赤のとき、置き場に上げる枝を出して確かめる道具を足す）・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"代表の決め（2026-11-26・PM 経由）「完璧に直しましょう」。段の全部の CI（scope=full）で毎回赤になる、プロジェクト側の元を 2 つ直す。
+
+1. **全部の回で .py の試験が JUnit に載らない。** `scripts/ci/ci_scope.py` の全部の回は `_full_plan` で返り、`py_tests` が空のまま。spec の組の「チケットの Python の試験」の段は `junit/spec-py.xml` に `<testsuites />`（0 本）を書く（実測：段の回 45801811744・`CI_PY_TESTS: []`）。G65 の段では試験は流れるが JUnit に書かないので、.py の試験だけで確かめる葉（K-1304・K-1156）は段の CI で毎回「流れていない」になる
+2. **G64 が CI の置き場に無い sha を見て赤。** G64 の `ticket_process_test.py`（K146-CI-008）は、着手前の K-63・K-64 の突き合わせの表（`01_hearing/聞くこと_K-146.md` の「ファイル:行@sha」）の sha が git に在るかを見る。K-64 の 87970598 は控えの枝 k64-make にしか無く、置き場 engine-base-ci/wfe-2611 の写しに k64-make が無かった（ci・ci2 の置き場には在る）。赤の文は「控えの枝を消した？」で、どの枝を置き場に上げればよいかを言わない
+
+PM の決め（作り方）：
+1. 全部の回でも、段の葉の `tests:` のうち `.py` を `py_tests` に出す。**段の葉は、取り込みの機械（ticket-flow の stageq）が段の全部の CI に渡す入力 `leaves`（空白区切りの番号）だけで決める。** 木の形（取り込みのコミットの件名・親）から推し量らない・2 本立てにしない（PM の決め 2026-11-26 テスター Q 回 1：推し量りは重ねた葉を見分けられず、形の分からないコミットで黙って葉が減る）。ほかの段の葉の .py は入れない（その葉の段の CI が流す）。全部の回で入力 `leaves` が無い・空・番号（K-<数字>）の形でない語がある・名指しした葉のチケットの md が無い → errors にして**全部の回を止める**（組を流さず終わりの番号 1）。名指しした葉の `tests:` が何にも当たらない → 止めずに理由（その葉の行だけが記録に無く照らしで赤）。葉を出すのに base は使わない。チケットの回（scope=ticket）は `leaves` を見ず今と同じ
+2. CI の定義（作り手 `05_flow/build_testplan.py`・生成物 `v3-gate.yml`）の workflow_dispatch に入力 `leaves`（string・既定 ''）を足し、`ci_scope.py` を流す 4 つの段（static・spec・spec-2・spec-3）の env に `CI_LEAVES_INPUT: ${{ inputs.leaves }}`、run に `--leaves ""$CI_LEAVES_INPUT""`。`ticket-flow.yaml` の `ci.inputs` に `leaves: leaves`（ci.py は入力の名前を ci.inputs で引く）。スキル側（stageq の full_ci が fields に leaves を渡す・ci-contract・setup.py check）は別の担当が直す
+3. G64 は緩めない：着手前の間は sha とファイル:行の在りかまで見るのは今のまま。置き場が写しでも同じ中身を見る。直すのは「置き場に要る枝が分かる」こと：ページの「<K-番号> は枝 <枝> の <sha>」（控えの枝の宣言）を読む道具 `scripts/ci/prior_refs.py` を足し、無い sha の赤の文に枝の名前と上げ方を出す。着手前のチケットに宣言が無いのは赤。表の sha が宣言の sha と違い、取り出した木の履歴（HEAD の先祖・どの写しにも在る。K-64.md:48@38aee79b は本線の版）にも無いときは「宣言と違う」の赤（git に無くても、宣言の枝を上げても直らないので git push の文は出さない）。置き場の枝の先頭が手元に無いときは git fetch を案内する赤。確かめは `prior_refs.commit_problems` の 1 か所にし、K146-CI-008 はそれを呼ぶ
+4. G65 の中で `k425_decision_log_test.py` が赤で止まり後ろの .py の試験が走らない形（`&&` でつなぐ）は替えない：決まり（ai-driven-process §9「検査の繋ぎは && で」）どおりで、1 の直しで葉の .py の行は G65 と別の段（G64・G65 より前・`!cancelled()`）で JUnit に載るので、G65 が途中で止まっても照らしの行は落ちない（K1305-CI-007 で見る）。k425 の赤そのもの（決定ログの answer が答えの記録に無い 5 件）は別の元で、この葉では直さない","- [ ] 下の表の行（K1305-CI-001〜018）が緑
+- [ ] 運ぶ前からの試験（`ticket_process_test.py` の K146-CI-001〜009）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない物）が緑
+- [ ] **順**：K-1305 の入った木（この葉の段の枝）で段の全部の CI を流す前に、PM がスキル側の直し（stageq の full_ci が fields に `""leaves"": "" "".join(sorted(rows_by))` を渡す・ci-contract.md の入口に leaves・setup.py check が入力 leaves の無い workflow を赤にする）を入れる。入れないと、K-1305 自身の段の CI が範囲の段（static・spec・spec-2・spec-3）で全部止まる
+- [ ] **順**：K-1305 の段の全部の CI の前に、PM が主の作業場所の設定の ci.inputs に `leaves: leaves` を足す（stageq は主の作業場所の ci.inputs に leaves が在るときだけ leaves を渡す。本線の ticket-flow.yaml に入るのは K-1305 が本線に入った後なので、それまでは足りない）。2026-11-26 21:10 に PM が `.ticket-flow/local.yaml` で済ませた。本線の ticket-flow.yaml にも K-1305 で足す（流す版の workflow が leaves を受けるときだけ渡る）
+- [ ] 段の全部の CI の前に、PM が着手前のチケットの控えの枝を CI の置き場に上げる（`python3 scripts/ci/prior_refs.py check --remote <置き場>` が緑。wfe-2611＝ci3 の k64-make は 2026-11-26 20:35 に PM が上げた）。上げないと K1305-CI-011（本物の K146-CI-008）と G64 が置き場で赤
+- [ ] 段の全部の CI で、artifact junit の spec-py.xml に入力 leaves の葉の .py の行が出て、ほかの段の葉の .py は出ない（PM が置き場で確かめる）"
+K-1306,中間テスト 3（K-64）の古い期待を替える：完了で実施事項を全部「- [x]」の版にする期待を、完了で本文を書き換えない決め（D-150.42・K-566）に合わせて「元のまま」にする（K64-M3-01・04・07）・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・QA,"段の全部の CI の中間テスト（G59）で、`apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts` の K64-M3-01・04・07 が、完了の確かめ（`completeAll` の 197 行）「実施事項は全部済みの印の版になる」で赤。本線のままでも赤（段9 の CI でも同じ。run 45816366366 の web (g59)）。
+
+- 期待：`""- [x] 見積を作る\n- [x] 先方に送る""`
+- 受けた物：`""- 見積を作る\n- 先方に送る""`（チケットを作ったときの実施事項 `SECTIONS.todo` のまま）
+
+元：K-566（コミット 6877d1c29c「完了の口の直し：未チェックは数えて返すだけ・完了で本文を書き換えない」）が、代表の決め **D-150.42**（実施事項は本文の中に自由に書く・完了で未チェックが残っても止めない・answer=bc94ad5fd8fd）に合わせて、完了の関数 `app.ticket_complete` から実施事項を全部「- [x]」に書き換える処理を外した（K-566 の目的 2「完了で本文を書き換えない：実施事項の区画も本文の行も、完了の前後で版・字・doc が同じ」）。K-566 は前からの試験 `approve-complete-complete.test.ts` の 5 件は替えたが、同じ期待を持つ中間テスト 3（K-64）を替える物に入れていなかった。**製品の不具合ではなく、試験が古い**。","- [ ] 下の表の行 K1306-API-001 が緑（`apps/api/test/features/F5/k1306-complete-todo-versions.test.ts`・本物の DB と口・中間テスト 3 と同じ入力で、口の層で先に見る）
+- [ ] 替えた K-64 の行（K-64 の M3-01・04・07）が段の全部の CI の G59 で緑（試験の持ち主は K-64 のまま・carry:）
+- [ ] ほかの K64-M3 の行（02・03・05・06）は替えずに緑
+- [ ] K-64 のチケットの文（行の表・閉じ方の節・状態の表）から「完了で全部 `- [x]`」が消え、「元のまま（D-150.42）」になっている"
+K-1307,CI を速く：段の全部の CI の spec の組の重い段（G57・G65）を別の組 spec-parts にして同時に流し、G65 は中の試験を置き場の変数 SPEC_SHARDS の数に分ける（試験は 1 本も減らさず・組の中は && と同じく赤で止まる）・変数が無ければ今と同じ spec の組・PM の直し,タスク,K-324,未着手,実装,2026-11-26,共通・CI,"K-1304 で web の組を分けた後、段の全部の CI（流す置き場 engine-base-ci/wfe-2611・回 45816366366・2026-11-26）でいちばん長いのは spec の組で 約 25 分（12:07:49〜12:32:42）。
+1 台で順に流れていて、中身は G65（CI の形の試験）840 秒・G57（チケットの CI の範囲の台本の試験）374 秒・ほかの段 約 3 分・準備（checkout・部品・Python・DB・分かれ目）約 80 秒。
+G65 の中（75 本）の実測：k248 の試験 370 秒・k625 165 秒・k1121 44 秒・k622 33 秒・k172 20 秒・ほか 70 本で 約 190 秒。
+
+代表の決め（2026-11-26・PM 経由）：**流す試験も照らしも 1 本も減らさず**、段の全部の CI を **10 分前後** にする。分ける数は置き場の変数で持ち、変数が無いときは今と全く同じ流れ（今だけの設定。K-1304 と同じ）。
+
+PM の決め（作り方・K-1304 にそろえる）：
+1. 分ける数は置き場の変数 `SPEC_SHARDS`（無ければ 1・1〜20 の整数。数でない・範囲の外は赤で黙って 1 にしない）。static の段 `id: spec_shards` が env で受け（命令の文字に入れない）、`spec_run.py shards` で `spec_shards`（数）と `spec_parts`（新しい組の matrix の一覧）を出す。1 なら `[""off""]`（組は飛ぶ。空の matrix は GitHub が赤にするので印を置く）、2 以上なら `[""g57"", ""g65-1""…""g65-N""]`
+2. **1 か無い回は今と全く同じ**：spec の組が G57・G65 を今の名前・今の命令（G65 は今の && の並び）で流す。spec の組は static の出力を見ない決まり（static が赤でも spec の段は流す・K-143）なので、spec の組は自分の段 `id: spec_shards`（static と同じ命令と変数・if は `!cancelled()`・チケットの Python の試験の後）で数を出し、G57・G65 の段の条件に `fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2` を足すだけ（出力が空でも 1＝spec の組で流す。変数が読めない回は static と spec のこの段が赤で、G57・G65 は spec の組が流し、spec-parts は飛ぶ）
+3. 2 以上の回は、spec の組は G57・G65 を流さず（ほかの段は今のまま）、新しい組 `spec-parts`（matrix part・fail-fast: false・needs: [static]・if は `> 1`）が流す。組ごとに spec と同じ準備（部品・Python・DB・本線との分かれ目 scope の段）を持つ
+   - `g57`：段 `G57.p …` が spec の G57 と同じ命令・同じ範囲の条件（scope=full か gates に 57）
+   - `g65-<i>`：段 `G65.p …` が `spec_run.py g65`（env SPEC_PART・SPEC_SHARDS）。並びは作り手と同じ部品（gate_cmds.commands・最後は G65_LAST）から作り、N 組に分けた i 番目を元の順に流す。流す前に junit/ を作る（spec の組では前の段「チケットの Python の試験」が作る置き場で、k216 の node の試験はそこに書く。無いと node は書けず赤）
+   - G65.p の後に spec と同じ時間切れの見分けの段（K-193・hook_note）を置く（分けた回の k216 の JUnit は spec-parts にだけ在る）
+   - static の spec_shards の段は if `!cancelled()`（static の前の段が赤でも流し、spec の組の自分の段と同じ数を出す。飛ぶと spec-parts は 1 と見て飛び、spec の組は 3 と見て G57・G65 を流さず、どこでも流れない）
+   - 段の名前を `G57.p`・`G65.p` にするのは、spec の G57・G65 と同じ番号の段を 2 つ数えないため（単体の試験の `G3.<i>` と同じ印）
+4. **G65 の止まり方は分けても同じにする（訳）**：1 組の G65 は命令を `&&` でつなぐので、1 つが赤ならその後ろは流れず段は赤。分けた組も、自分の組の命令を元の並びの順に流し、1 つが赤ならその組の残りは流さず、その番号で赤で終わる。G65 が緑になるのは、どちらの形でも「並びの命令が全部 0 で終わった」ときだけ（分けた組の和は並びとちょうど同じで、足し引きも重なりも無い）。分けた形が赤を緑にすることは無く、違うのは赤の回にほかの組の命令が流れて赤を多く見せることだけ（赤を全部いっぺんに見る決まりと同じ向き）
+5. 分け方：実測の重さ（spec_run.py の SECONDS・上の回の実測。載っていない命令は 2 秒）で、重い順にいちばん軽い組へ入れる（同じ重さは前の組）。k248 の試験（G65_LAST・決まり K248-G57-016）は最後の組に置き、並びの最後なのでその組の最後になる。どの組も元の並びの順を保つ
+6. JUnit：G65 で JUnit を書くのは k216 の node の試験 1 本（junit/spec-k216-mjs.xml・置き場の名前は今のまま）。spec-parts は JUnit を書いた組だけ（`hashFiles('junit/*.xml') != ''`）`junit-spec-parts-<組>` を上げ（空なら赤・赤の組でも always()）、junit の組は spec-parts も待つ。artifact「junit」にそろうファイルの名前と中身は今と同じなので、ticket-flow の照らしと ci_results の記録は今と同じ行を見る。チケットの Python の試験（junit/spec-py.xml）は spec の組のまま
+7. 見込み（上の回の実測から）：SPEC_SHARDS=3 で G65 の組は 約 245 秒・244 秒・370 秒（k248 が 1 つで 1 組）、G57 の組は 374 秒。組の準備 約 80 秒を足して spec の家族でいちばん長い組は 約 7.6 分（今 25 分）、spec の組は 約 4.7 分。段の全部の CI は static 2.5 分＋7.6 分＝**約 10 分**（web の組は K-1304 で 約 10 分）。2 だと G65 の組が 約 430 秒で 約 8.5 分、4 以上は k248（370 秒）と G57（374 秒）が床で縮まらない。**すすめる数は 3**（組は 4 つ増える）","- [ ] 下の表の行（K1307-CI-001〜012）が緑
+- [ ] 替えた前からの試験（`k323_spec_split_test.py` の K323-CI-001・003・`k1305_full_py_junit_test.py` の K1305-CI-018）が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」の替えない 30 本）が緑
+- [ ] 段の全部の CI で、変数 SPEC_SHARDS が無い回は spec の組が今と同じ段で G57・G65 を流し spec-parts が飛ぶ。3 の回は spec-parts が 4 組で流れ、spec の家族でいちばん長い組が 8 分前後、artifact「junit」のファイルの名前が 1 組の回と同じ（PM が置き場で確かめる）"

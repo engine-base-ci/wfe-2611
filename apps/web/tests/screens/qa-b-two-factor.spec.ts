@@ -1,132 +1,85 @@
-// T-B-39 2 段階認証（D-117.2〜D-117.5・D-017.2・D-017.4）を、画面 → API → 本物の Bridge の輪（dist）→ 本物の Chrome → 的（/dev/fake-login）で通す。
-//   種類を選んで預ける／認証アプリは鍵から自動／SMS はこの画面でコードを入れる（Bridge だけに渡る）／一度通したら次は聞かれない／返事が無ければ止まり「もう一度試す」。
-//   テストの名前に正本の行 ID を持つ（op_gate.py）。本人の Bridge は使わない
+// K-370「預けたログイン情報の通しの画面の試験を、新しい画面と契約の口で書き直す」の試験（2/2：2 段階認証）。
+//   T-B-39（D-117.2〜D-117.5・D-017.2・D-017.4）を、新しい画面（預ける小窓 K-372・コードを入れる小窓 K-357）→ 本物の API（K-352・K-355）
+//   → 本物の Bridge の輪（apps/bridge/dist・頼む・待つ・結果は契約の口・K-354）→ 本物の Chrome → 的（/dev/fake-login）で通す。
+//   認証アプリは鍵から Bridge が 6 桁を作って入れる（頼まない）／SMS は画面でコードを入れる（Bridge だけに渡る）／一度通したら次は聞かれない／スマホのアプリで承認。
+//   選ぶ欄の形（認証アプリのときだけ鍵の欄）は K372-UI-004、返事が無いときに止まるのは K354-BRG-008・K355-API-019・K357-UI-012 が受ける（ここでは通さない）。
+//   名前の頭は 11_tickets/K-370.md の行 ID、続けて正本の行 ID（op_gate.py が読む）。本人の Bridge は使わない。固定の待ちは使わない。
+//   流すのは CI の画面の組の専用の段 G73（Bridge を組み立てた後・scripts/ci/web_run.py gate 73・K-379）。e2e:k の一覧（G48）には入れない（Bridge の組み立てが要る）。
+//   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type Page } from "@playwright/test";
-import { admin, loginAs, setupDone, signupViaApi } from "../_lib/api";
-import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
+import { admin, signupViaApi } from "../_lib/api";
+import { row } from "../k/credentials-mock";
+import {
+  SMS_CODE,
+  TOTP_KEY,
+  aimAtFake,
+  cleanUp,
+  deposit,
+  dev,
+  fakeUrl,
+  openFresh,
+  runBridge,
+  settled,
+  stopBridges,
+} from "./credential-e2e";
 
-const WEB = process.env["BASE_URL"] ?? "http://127.0.0.1:3124";
-const PASSWORD = "S3cret-Plain!";
-const SMS_CODE = "246810";
-/** 的の「端末」を試験ごとに分ける（覚えた Cookie が他の試験に効かないように） */
-const dev = () => `&dev=${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
-// 1 本の試験で本物の Chrome のログインを 2〜3 回通す（1 回 10〜20 秒）
-test.setTimeout(240_000);
-let bridges: AgentBridge[] = [];
-test.afterEach(() => {
-  for (const b of bridges) b.stop();
-  bridges = [];
-});
-async function open(page: Page) {
-  const u = await signupViaApi();
-  await setupDone(u);
-  bridges.push(await startAgentBridge(u.token, {}));
-  await loginAs(page, u.token);
-  await page.goto("/settings/credentials");
-  await expect(page.locator("[data-state='ge']")).toContainText("まだ資格情報がありません", { timeout: 15_000 });
-  return u;
-}
-/** 画面で預ける（2 段階の種類つき） */
-async function store(page: Page, service: string, twoFactor: string, secret?: string) {
-  const listed = page.locator("[data-state='n']");
-  if (await listed.count()) await listed.getByRole("button", { name: "追加する" }).click();
-  else await page.getByRole("button", { name: "追加する" }).click();
-  await page.getByLabel("サービス").fill(service);
-  await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
-  await page.getByLabel("メールアドレス（ログイン名）").fill("me@example.com");
-  await page.getByLabel("パスワード", { exact: true }).fill(PASSWORD);
-  await page.locator("[data-two-factor]").selectOption(twoFactor);
-  if (secret) await page.getByLabel("認証アプリの秘密鍵").fill(secret);
-  await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号", { timeout: 15_000 });
-}
-const cell = (page: Page, i = 0) => page.locator("[data-login-check]").nth(i);
-async function settled(page: Page, i = 0) {
-  await expect(cell(page, i)).not.toHaveAttribute("data-login-check", /pending|running/, { timeout: 90_000 });
-  return (await cell(page, i).getAttribute("data-login-check")) ?? "";
-}
+// 1 本の試験で本物の Chrome のログインを 1〜3 回通す（1 回 10〜20 秒）
+test.setTimeout(300_000);
+test.afterEach(() => cleanUp());
 
-test("CHT-39-001 SCR-CREDENTIALS-054 SCR-CREDENTIALS-055 預けるときに 2 段階の種類を選べる。認証アプリのときだけ鍵の欄が出て、鍵から Bridge が 6 桁を作って入れる（頼まない）", async ({
-  page,
-}) => {
-  const u = await open(page);
-  await page.getByRole("button", { name: "追加する" }).click();
-  await page.getByLabel("サービス").fill(`${WEB}/dev/fake-login?mode=totp`);
-  await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
-  // 種類の選択：5 つ。既定は なし。認証アプリを選んだときだけ鍵の欄
-  const sel = page.locator("[data-two-factor]");
-  await expect(sel).toHaveValue("none");
-  expect(await sel.locator("option").allTextContents()).toEqual([
-    "なし",
-    "認証アプリ（Google Authenticator など）",
-    "SMS で届くコード",
-    "メールで届くコード",
-    "スマホで承認",
-  ]);
-  await expect(page.getByLabel("認証アプリの秘密鍵")).toHaveCount(0);
-  await sel.selectOption("sms");
-  await expect(page.getByLabel("認証アプリの秘密鍵")).toHaveCount(0);
-  await sel.selectOption("totp");
-  await expect(page.getByLabel("認証アプリの秘密鍵")).toBeVisible();
-  // 鍵なしで保存 → 文言
-  await page.getByLabel("メールアドレス（ログイン名）").fill("me@example.com");
-  await page.getByLabel("パスワード", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "秘密鍵" })).toContainText("秘密鍵を貼ってください");
-  await page.getByLabel("認証アプリの秘密鍵").fill("JBSW Y3DP EHPK 3PXP");
-  await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.locator("[data-state='n']")).toContainText("預かり先の番号", { timeout: 15_000 });
-  expect(
+const codeDialog = (page: Page, name: string) => page.getByRole("dialog", { name: `${name} のコードを入れる` });
+/** 行の札が「コードが要る」になるまで待ち（画面は 3 秒ごとに読み直す・K357-UI-004）、「コードを入れる」で小窓を開く */
+async function openCode(page: Page, name: string) {
+  await expect(row(page, name)).toContainText("コードが要る", { timeout: 90_000 });
+  await row(page, name).getByRole("button", { name: "コードを入れる", exact: true }).click();
+  await expect(codeDialog(page, name)).toBeVisible();
+  return codeDialog(page, name);
+}
+const asksOf = async (memberId: string) =>
+  Number(
     (
-      await admin<{ two_factor_id: string; kind_id: string }>(
-        "select two_factor_id, kind_id from credentials where tenant_id = $1",
-        [u.tenantId],
-      )
-    )[0],
-  ).toEqual({ two_factor_id: "totp", kind_id: "password_totp" });
-  // Bridge が 6 桁を作って入れる：本人に頼まない（asking が出ない）→ ログインできました
-  expect(await settled(page)).toBe("ok");
-  await expect(cell(page)).toContainText("ログインできました");
-  await expect(page.locator("[data-asking]")).toHaveCount(0);
-  const asks = await admin<{ n: string }>(
-    "select count(*) as n from bridge_job_events where member_id = $1 and kind = 'ask'",
-    [u.memberId],
+      await admin<{ n: string }>("select count(*) as n from bridge_job_events where member_id = $1 and kind = 'ask'", [
+        memberId,
+      ])
+    )[0]!.n,
   );
-  expect(Number(asks[0]!.n)).toBe(0);
-});
 
-test("CHT-39-002 SCR-CREDENTIALS-052 SCR-CREDENTIALS-053 SMS：Bridge がコードの画面で止まり、この画面に「コードを入れてください」が出る。入れたコードで通り、コードは会話にも記録にも証跡にも無い", async ({
+test("K370-E2E-005 CHT-39-001 SCR-CREDENTIALS-054 SCR-CREDENTIALS-055 2 段階「認証アプリ（鍵を預ける）」で鍵ごと預けると、行は two_factor totp で、Bridge が鍵から 6 桁を作って入る：本人に頼まない（頼みの出来事 0・コードを入れる が出ない）で「使える」", async ({
   page,
 }) => {
-  const u = await open(page);
-  await store(page, `${WEB}/dev/fake-login?mode=sms${dev()}`, "sms");
-  const ask = page.locator("[data-asking='code']");
-  await expect(ask).toBeVisible({ timeout: 60_000 });
-  await expect(ask).toContainText("SMSのコードを入れてください");
-  await expect(cell(page)).toHaveAttribute("data-login-check", "running");
-  // 空で送る → 文言。正しいコードで送る → 頼みが消え、ログインできました
-  await ask.getByRole("button", { name: "送る" }).click();
-  await expect(ask.getByRole("alert")).toContainText("届いたコードを入れてください");
-  await ask.getByLabel("届いたコード").fill(SMS_CODE);
-  await ask.getByRole("button", { name: "送る" }).click();
-  await expect(page.locator("[data-asking]")).toHaveCount(0, { timeout: 15_000 });
-  expect(await settled(page)).toBe("ok");
-  await expect(cell(page)).toContainText("ログインできました");
-  // コードは AI の会話にも記録にも出ない：仕事の出来事・証跡・メッセージのどこにも無い
+  const u = await openFresh(page);
+  const id = await deposit(page, { name: "K370_TOTP", twoFactor: "認証アプリ（鍵を預ける）", totp: TOTP_KEY });
+  expect(
+    (await admin<{ two_factor_id: string }>("select two_factor_id from credentials where id = $1", [id]))[0],
+  ).toEqual({ two_factor_id: "totp" });
+  await aimAtFake(id, fakeUrl("totp"));
+  await runBridge(u);
+  expect(await settled(page, id, "K370_TOTP")).toBe("ok");
+  await expect(row(page, "K370_TOTP")).toContainText("使える");
+  await expect(row(page, "K370_TOTP").getByRole("button", { name: "コードを入れる", exact: true })).toHaveCount(0);
+  expect(await asksOf(u.memberId)).toBe(0);
+});
+
+test("K370-E2E-006 CHT-39-002 SCR-CREDENTIALS-052 SCR-CREDENTIALS-053 SMS：Bridge がコードの画面で止まり、行が「コードが要る」。小窓「K370_SMS のコードを入れる」に届いたコードを入れて「PC に渡す」→「使える」。コードは仕事の出来事・証跡・会話のどこにも残らず、証跡は 答えた → 確かめ の順", async ({
+  page,
+}) => {
+  const u = await openFresh(page);
+  const id = await deposit(page, { name: "K370_SMS", twoFactor: "SMS" });
+  await aimAtFake(id, fakeUrl("sms"));
+  await runBridge(u);
+  const d = await openCode(page, "K370_SMS");
+  await expect(d).toContainText("SMS で届いた");
+  await d.getByLabel("コード").fill(SMS_CODE);
+  await d.getByRole("button", { name: "PC に渡す" }).click();
+  await expect(d).toHaveCount(0);
+  expect(await settled(page, id, "K370_SMS")).toBe("ok");
+  await expect(row(page, "K370_SMS")).toContainText("使える");
   const dump = JSON.stringify([
     await admin("select payload from bridge_job_events where member_id = $1", [u.memberId]),
     await admin("select payload from audit_events where tenant_id = $1", [u.tenantId]),
     await admin("select body from messages where tenant_id = $1", [u.tenantId]),
   ]);
   expect(dump).not.toContain(SMS_CODE);
-  const ans = await admin<{ payload: Record<string, unknown> }>(
-    "select payload from bridge_job_events where member_id = $1 and kind = 'answer'",
-    [u.memberId],
-  );
-  expect(ans).toHaveLength(1);
-  expect(ans[0]!.payload).toMatchObject({ taken: true });
-  expect(ans[0]!.payload["code"]).toBeUndefined();
-  // 証跡：答えたこと（C6）と、入った（C1）
   const a = await admin<{ action: string }>(
     "select action from audit_events where tenant_id = $1 and action in ('credential.two_factor_answered', 'credential.login_check') order by created_at",
     [u.tenantId],
@@ -134,65 +87,41 @@ test("CHT-39-002 SCR-CREDENTIALS-052 SCR-CREDENTIALS-053 SMS：Bridge がコー�
   expect(a.map((x) => x.action)).toEqual(["credential.two_factor_answered", "credential.login_check"]);
 });
 
-test("CHT-39-003 一度通したサービスは、次はコードを聞かれない（Bridge のブラウザがログインを覚えている）。スマホで承認は「承認した」で進む", async ({
+test("K370-E2E-007 CHT-39-003 一度通した的（同じ端末の印）は、次に預けたときコードを聞かれない（Bridge のブラウザがログインを覚えている）：2 人目の確かめは頼みの出来事 0 で「使える」", async ({
   page,
 }) => {
-  const u = await open(page);
   const device = dev();
-  await store(page, `${WEB}/dev/fake-login?mode=sms${device}`, "sms");
-  const ask = page.locator("[data-asking='code']");
-  await expect(ask).toBeVisible({ timeout: 60_000 });
-  await ask.getByLabel("届いたコード").fill(SMS_CODE);
-  await ask.getByRole("button", { name: "送る" }).click();
-  expect(await settled(page)).toBe("ok");
-  // 2 回目：もう一度試す → 頼まれずに ok（別の口座で預けても、同じ PC の Bridge は同じログインの状態）
-  const second = await signupViaApi();
-  await setupDone(second);
-  bridges.push(await startAgentBridge(second.token, {}));
-  await loginAs(page, second.token);
-  await page.goto("/settings/credentials");
-  await expect(page.locator("[data-state='ge']")).toBeVisible({ timeout: 15_000 });
-  await store(page, `${WEB}/dev/fake-login?mode=sms${device}`, "sms");
-  expect(await settled(page)).toBe("ok");
-  await expect(page.locator("[data-asking]")).toHaveCount(0);
-  const asks = await admin<{ n: string }>(
-    "select count(*) as n from bridge_job_events where member_id = $1 and kind = 'ask'",
-    [second.memberId],
-  );
-  expect(Number(asks[0]!.n)).toBe(0);
-  // スマホで承認
-  await store(page, `${WEB}/dev/fake-login?mode=push`, "push");
-  const approve = page.locator("[data-asking='approve']");
-  await expect(approve).toBeVisible({ timeout: 60_000 });
-  await expect(approve).toContainText("スマホで承認してください");
-  await approve.getByRole("button", { name: "スマホで承認した" }).click();
-  expect(await settled(page, 1)).toBe("ok");
-  await expect(cell(page, 1)).toContainText("ログインできました");
-  void u;
+  const first = await openFresh(page);
+  const a = await deposit(page, { name: "K370_SMS_ONCE", twoFactor: "SMS" });
+  await aimAtFake(a, fakeUrl("sms", device));
+  await runBridge(first);
+  const d = await openCode(page, "K370_SMS_ONCE");
+  await d.getByLabel("コード").fill(SMS_CODE);
+  await d.getByRole("button", { name: "PC に渡す" }).click();
+  expect(await settled(page, a, "K370_SMS_ONCE")).toBe("ok");
+  stopBridges();
+
+  // 2 回目：別の口座で同じ的を預ける（同じ PC の試験の輪は同じログインの状態を持つ）
+  const second = await openFresh(page, await signupViaApi());
+  const b = await deposit(page, { name: "K370_SMS_AGAIN", twoFactor: "SMS" });
+  await aimAtFake(b, fakeUrl("sms", device));
+  await runBridge(second);
+  expect(await settled(page, b, "K370_SMS_AGAIN")).toBe("ok");
+  await expect(row(page, "K370_SMS_AGAIN")).toContainText("使える");
+  expect(await asksOf(second.memberId)).toBe(0);
 });
 
-test("CHT-39-004 コードを頼んだまま返事が無ければ、理由つきで止まり「もう一度試す」が出る。勝手には試さない。押すと 1 回だけ試し直す", async ({
+test("K370-E2E-008 CHT-39-003 スマホのアプリで承認：行が「コードが要る」になり、小窓は欄の無い「スマホのアプリで「承認」を押してから」で「PC に渡す」→「使える」", async ({
   page,
 }) => {
-  const u = await open(page);
-  await store(page, `${WEB}/dev/fake-login?mode=sms${dev()}`, "sms");
-  await expect(page.locator("[data-asking='code']")).toBeVisible({ timeout: 60_000 });
-  // 答えない（試験の Bridge は 20 秒で諦める。本人の PC では 10 分）
-  expect(await settled(page)).toBe("no_answer");
-  await expect(cell(page)).toContainText("返事が無かったので止めました");
-  await expect(cell(page)).toContainText("10 分");
-  await expect(page.locator("[data-asking]")).toHaveCount(0);
-  await page.waitForTimeout(3_000);
-  let n = await admin<{ n: string }>("select count(*) as n from bridge_jobs where member_id = $1", [u.memberId]);
-  expect(Number(n[0]!.n)).toBe(1);
-  // 本人が押す → もう 1 回だけ（今度は答える）
-  await cell(page).getByRole("button", { name: "もう一度試す" }).click();
-  await expect(cell(page)).toHaveAttribute("data-login-check", /pending|running/, { timeout: 10_000 });
-  const ask = page.locator("[data-asking='code']");
-  await expect(ask).toBeVisible({ timeout: 60_000 });
-  await ask.getByLabel("届いたコード").fill(SMS_CODE);
-  await ask.getByRole("button", { name: "送る" }).click();
-  expect(await settled(page)).toBe("ok");
-  n = await admin<{ n: string }>("select count(*) as n from bridge_jobs where member_id = $1", [u.memberId]);
-  expect(Number(n[0]!.n)).toBe(2);
+  const u = await openFresh(page);
+  const id = await deposit(page, { name: "K370_PUSH", twoFactor: "スマホのアプリで承認" });
+  await aimAtFake(id, fakeUrl("push"));
+  await runBridge(u);
+  const d = await openCode(page, "K370_PUSH");
+  await expect(d).toContainText("スマホのアプリで「承認」を押してから");
+  await expect(d.getByLabel("コード")).toHaveCount(0);
+  await d.getByRole("button", { name: "PC に渡す" }).click();
+  expect(await settled(page, id, "K370_PUSH")).toBe("ok");
+  await expect(row(page, "K370_PUSH")).toContainText("使える");
 });
