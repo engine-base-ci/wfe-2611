@@ -1,7 +1,7 @@
 // 預けた後のログインの確かめの口（K-355・D-117・関門 C2）：
 //   checkCredentialLogin（本人・もう一度確かめる）・answerCredentialLoginCheck（本人・PC が頼んだコードに答える）・
 //   reportCredentialCheck（PC・途中と結果を知らせる）。前の道すじ（apps/api/src/auth/ext.ts の /vault/credentials/:id/login-check・
-//   /vault/credentials/:id/answer・/bridge/credentials/check-result・/bridge/code）の中身を、契約の口へ移した（前の道すじは K-358 まで残る）。
+//   /vault/credentials/:id/answer・/bridge/credentials/check-result・/bridge/code）の中身を、契約の口へ移した（前の道すじは K-358 で消した）。
 //   書くのはどれも DB の関数 1 回（1 つの取引・20261119120600）。人の口は本人（ctx の member）で、PC の口は ctx.sessionId（入口 op.ts が x-bridge-session から入れる）で呼ぶ。
 //   コードは答えの行に一時的に置き、PC が取った時点で消える。答え・ログ・証跡にコードと文を出さない（ログは場所と例外の種類だけ）。
 //   Cache-Control: private, no-store は入口（app.ts）が全部の答えに付ける

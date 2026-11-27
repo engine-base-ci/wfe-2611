@@ -77,7 +77,7 @@ export const verifySignup = async (token: string) => {
 };
 // ログイン（パスワード・確認のコード）は契約の口（signInWithPassword・verifySignInCode）を features/F1/login が直に呼ぶ。前の道すじの呼び手は K-316 で消した
 // 招待の下見と参加は契約の口を features/F2/invite が直に呼ぶ。前の道すじ（/invitations/*）の呼び手は K-335 で消した
-// 預けたログイン情報の一覧は契約の口（listCredentials）を features/F3/credentials が直に呼ぶ。前の道すじ（/vault/credentials）の画面の呼び手は K-356 で消した
+// 預けたログイン情報は契約の口（listCredentials など）を features/F3/credentials が直に呼ぶ。前の道すじの画面の呼び手は K-356・K-357 で消し、口そのものは K-358 で消した
 /** 自分のこと（役割）。一覧では自分の行が返らないことがあるので専用の口から（D-086） */
 export const me = () =>
   ext<{ member_id: string; tenant_id: string; display_name: string | null; role_id: string | null }>(
@@ -296,13 +296,6 @@ export async function agentAttach(file: File): Promise<{ id: string; name: strin
   return json.data;
 }
 export const bridgeState = () => ext<BridgeState>("/bridge/state", undefined, "GET");
-/** AI が使うブラウザを、いまの端末について選ぶ（D-120.1）。次の仕事から効く */
-export const agentSetBrowser = (browser: AgentBrowser) => ext<{ browser: AgentBrowser }>("/agent/browser", { browser });
-/** もう一度確かめる（D-120.3）。Bridge が小さな仕事で Chrome を本当に使えるか試す。結果は PC の状態に出る */
-export const agentBrowserCheck = () => ext<{ job_id: string }>("/agent/browser-check", {});
-/** この端末を外す（自分の Bridge の端末だけ）。外した Bridge は次の要求で鍵を捨て、仕事を取りに来なくなる */
-export const agentRevokeBridge = (session_id: string) =>
-  ext<{ revoked: boolean }>("/agent/bridge-revoke", { session_id });
 /** 「新しい会話」（D-062）。いまの 1 本を閉じる。前のやりとりは消えない */
 export const agentNew = (conversation_id?: string | undefined) =>
   ext<{ closed: boolean }>("/agent/new", conversation_id ? { conversation_id } : {});

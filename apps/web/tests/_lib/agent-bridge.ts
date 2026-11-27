@@ -50,10 +50,21 @@ export async function startAgentBridge(
   };
   const sid = await claimBridge(token);
   // 使うブラウザは Kaname が正本（D-120.1）。browser を渡したら、その値を Kaname に選んでおき、自己診断も Kaname から届いた値で返す
+  //   K-367：前の道すじ（/api/auth-ext/agent/browser）を消したので、契約の口 updateMyDevice（PATCH /api/v1/bridge/devices/:id・K-364）で
+  //   いまつないだ PC（一覧でいちばん新しくつないだ生きている行）を選ぶ
   if (opts.browser) {
-    const r = await fetch(`${API}/api/auth-ext/agent/browser`, {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+    const auth = { "content-type": "application/json", authorization: `Bearer ${token}` };
+    const l = await fetch(`${API}/api/v1/bridge/devices`, { headers: auth });
+    if (!l.ok) throw new Error(`PC の一覧を読めない: ${l.status}`);
+    const devices = (
+      (await l.json()) as { data: { id: string; connected_at: string; revoke_reason: string | null }[] }
+    ).data
+      .filter((d) => !d.revoke_reason)
+      .sort((a, b) => b.connected_at.localeCompare(a.connected_at));
+    if (!devices[0]) throw new Error("つないだ PC が一覧に無い");
+    const r = await fetch(`${API}/api/v1/bridge/devices/${devices[0].id}`, {
+      method: "PATCH",
+      headers: auth,
       body: JSON.stringify({ browser: opts.browser }),
     });
     if (!r.ok) throw new Error(`ブラウザを選べない: ${r.status}`);

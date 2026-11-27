@@ -991,7 +991,7 @@ components:
     gap: "{spacing.sm}"
   pc-note-mark:         # 共用の PC の注意の「!」（濃い橙）
     textColor: "{state.on-warning-container}"
-  pc-wait:              # 足の「アプリからの返事を待っています…」（12px・灰・点との間 6）
+  pc-wait:              # コードの段の下の「アプリからの返事を待っています…」（足の帯には置かない・answer=8d3ada64dcbd）（12px・灰・点との間 6）
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
     gap: "6px"

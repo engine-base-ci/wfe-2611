@@ -11,7 +11,6 @@ import { BridgeReinstallRow, isOutdated } from "./bridge-reinstall";
 import { BrowserRow, browserOf } from "./browser-row";
 import { ClaudeCodeFix, claudeFixOf, LOGGED_IN_TEXT } from "./claude-code";
 import type { Device } from "./devices";
-import { canPairHere, pairHintsOf } from "./pair-device";
 import { RowNote } from "./pc-row-parts";
 
 export interface PcRowCtx {
@@ -19,6 +18,8 @@ export interface PcRowCtx {
   where: Where0["where"];
   bridge: Where0["bridge"];
   reload: () => Promise<void>;
+  /** この端末に Bridge を入れられるか（K-373：読む所は画面の hook use-connect-pc.ts の 1 つだけ） */
+  canPair: boolean;
 }
 
 export function usePcRowExtra(ctx: PcRowCtx): ((d: Device) => ReactNode) | undefined {
@@ -33,11 +34,6 @@ export function usePcRowExtra(ctx: PcRowCtx): ((d: Device) => ReactNode) | undef
   const [loggedIn, setLoggedIn] = useState<readonly string[]>([]);
   const recheck = useCallback(async (): Promise<void> => {
     setChecks(await localChecks());
-  }, []);
-  /** この端末に Bridge を入れられるか（開いたとき 1 回だけ読む・読むまでは true で描き直しの食い違いを出さない） */
-  const [canPair, setCanPair] = useState(true);
-  useEffect(() => {
-    setCanPair(canPairHere(pairHintsOf(navigator)));
   }, []);
   useEffect(() => {
     if (hasMine) void recheck(); // 開いたとき（mine の行があるときだけ）
@@ -54,7 +50,7 @@ export function usePcRowExtra(ctx: PcRowCtx): ((d: Device) => ReactNode) | undef
 
   return (d: Device): ReactNode => {
     // Bridge が古い行は入れ直す区画だけ（古い Bridge には仕事を渡さないので、先に直す物だけ・眠っている行でも出す）
-    if (isOutdated(d.health)) return <BridgeReinstallRow key={d.id} canInstall={canPair} />;
+    if (isOutdated(d.health)) return <BridgeReinstallRow key={d.id} canInstall={ctx.canPair} />;
     const mine = d.id === thisId;
     // この PC の行は、この PC の口の新しい自己診断を先に使う（読む前は出さない・読めなければ一覧の health）
     const local = mine ? (checks ?? null) : null;

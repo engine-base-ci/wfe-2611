@@ -305,6 +305,8 @@ for e in endpoints:
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
+    for _st in getattr(_sa, "ALSO_2XX", {}).get(op["operationId"], []):   # 同じ口がもう 1 つ返す成功の番号（K-422：リンクの参加は 202）。形は同じ答えの型
+        op["responses"].setdefault(str(_st), {**ok, "description": "受け付けた（まだ決まっていない）"})
     _unx = getattr(_sa, "UNEXPRESSIBLE_422", {}).get(op["operationId"])   # 契約に書けない値の決まり（K-144 ㉑）：口の振る舞いのまま 422
     if _unx:
         if "422" not in op["responses"]: raise SystemExit(f"{op['operationId']} に 422 が無いのに UNEXPRESSIBLE_422 がある")

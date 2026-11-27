@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import type { Device } from "./devices";
+import { AddPcButton, AddPcReason } from "./pc-row-parts";
 
 const JST: Intl.DateTimeFormatOptions = { timeZone: "Asia/Tokyo", month: "2-digit", day: "2-digit" };
 
@@ -155,18 +156,17 @@ export interface PcListProps {
   renderExtra?: ((d: Device) => ReactNode) | undefined;
   /** 行の「…」の代わりに出す物（K-349・pc-row-more.tsx）。無ければ今の押せない「…」 */
   renderMore?: ((d: Device) => ReactNode) | undefined;
+  /** この端末に Bridge を入れられるか（K-373・pair-device.ts の canPairHere）。false なら「＋ PC をつなぐ」は押せない形で、すぐ下に理由。無ければ true */
+  canPair?: boolean | undefined;
 }
-export function PcList({ devices, onAdd, onWake, renderExtra, renderMore }: PcListProps) {
+export function PcList({ devices, onAdd, onWake, renderExtra, renderMore, canPair = true }: PcListProps) {
   return (
     <section className="k-pc-card" aria-labelledby="pc-list-title">
       <div className="k-pc-card-head">
         <h2 id="pc-list-title">つないでいる PC</h2>
-        {onAdd ? (
-          <Button variant="outlined" className="k-pc-btn" onClick={onAdd}>
-            ＋ PC をつなぐ
-          </Button>
-        ) : null}
+        {onAdd ? <AddPcButton canPair={canPair} onAdd={onAdd} /> : null}
       </div>
+      {onAdd ? <AddPcReason canPair={canPair} /> : null}
       {devices.length ? (
         <ul className="k-pc-list">
           {devices.map((d, i) => (

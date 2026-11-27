@@ -926,7 +926,7 @@ VALUE_RANGES = {
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
     },
     "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # K-565：app.ticket_delegate が最後の砦（REASON_INVALID）
-    "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
+    "updateConversation": {"title": {"pattern": "\\S", "nullable": False}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
         "email": {"pattern": _EP.LOGIN_EMAIL},   # 部品 better-auth の z.email() の形を前後の空白で挟んだ物（口も z.email() で見る・K-1117）
         "name": {"pattern": "\\S", "maxLength": 100},

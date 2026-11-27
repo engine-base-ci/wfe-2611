@@ -18,6 +18,7 @@ import { ActionGateway, RateLimiter } from "@kaname/actions";
 import type { Config } from "@kaname/config";
 import { randomBytes } from "node:crypto";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
+import { applyFuzzLimits, recordEntryLimited } from "./limits.js";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
@@ -65,14 +66,18 @@ const fuzzDeps: HookDeps = {
   config: fuzzConfig,
 };
 Object.assign(h.hooks, buildHooks(HOOK_MODULES, fuzzDeps, "fuzz"));
+// 口の回数の上限は的だけ大きくする（K-424）。1 人・1 つの IP から数千例を送るので、契約の上限のままだと入口の 429 で奥に届かない。
+//   本番のサーバーは契約の上限のまま。上限の 429 は生成の試験が口ごとに見る。入口の 429 が出たら FUZZ_LIMITED に記録し、fuzz.sh が赤にする
+applyFuzzLimits(h, ENDPOINTS);
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(
   (e) => h.hooks[e.operationId] || (e.generic && h.repo.hasColumn(e.table as TableName, "id")),
 );
 if (process.env["FUZZ_BUILT"])
   writeFileSync(process.env["FUZZ_BUILT"], JSON.stringify(built.map((e) => e.operationId)));
-const srv = serve({ fetch: h.fetch, port, hostname: "127.0.0.1" }, () =>
-  console.log(`[fuzz] 的を立てた http://127.0.0.1:${port}`),
+const srv = serve(
+  { fetch: recordEntryLimited(h.fetch, process.env["FUZZ_LIMITED"]), port, hostname: "127.0.0.1" },
+  () => console.log(`[fuzz] 的を立てた http://127.0.0.1:${port}`),
 );
 const stop = async () => {
   srv.close();

@@ -9,14 +9,7 @@ import { fetchFile } from "@/lib/api/call";
 /** この PC の Bridge を起こす（D-015.8）。インストーラが OS に登録した kaname-bridge:// を叩く。
  *  入っていなければ何も起きないので、呼んだ側が数秒見て「見つからない」と言う（黙って待たせない） */
 const SEEN = "kaname.bridge.seen";
-/** この PC で Bridge を一度でも見たか。見たことが無ければ「起こす」は出さない（押しても何も起きないため） */
-export function everSeen(): boolean {
-  try {
-    return window.localStorage.getItem(SEEN) === "1";
-  } catch {
-    return false;
-  }
-}
+/** この PC で Bridge を一度でも見たかを覚える（入っていると分かった時に書く） */
 const remember = (): void => {
   try {
     window.localStorage.setItem(SEEN, "1");
