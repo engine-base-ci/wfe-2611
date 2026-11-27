@@ -1,6 +1,6 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 71 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 72 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
-# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ spec-parts（置き場の変数 SPEC_SHARDS が 2 以上の回だけ G57 と G65 を分けて同時に・K-1307）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
 # G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
 #   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
@@ -18,7 +18,11 @@ on:
         type: string
         default: ''
       base:
-        description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        description: "比べる元（40 桁のコミット。チケットの回の範囲と、全部の回の migration の lint に使う）"
+        type: string
+        default: ''
+      leaves:
+        description: "段の葉の番号（空白区切り）。scope=full のとき ticket-flow の stageq が渡す。無い全部の回は止める（K-1305）"
         type: string
         default: ''
       target:
@@ -55,6 +59,10 @@ jobs:
       web_g59: ${{ steps.scope.outputs.web_g59 }}
       web_gates: ${{ steps.scope.outputs.web_gates }}
       web_tasks: ${{ steps.scope.outputs.web_tasks }}
+      web_shards: ${{ steps.shards.outputs.web_shards }}
+      web_parts: ${{ steps.shards.outputs.web_parts }}
+      spec_shards: ${{ steps.spec_shards.outputs.spec_shards }}
+      spec_parts: ${{ steps.spec_shards.outputs.spec_parts }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -72,7 +80,19 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "画面の試験の組の分け方（置き場の変数 WEB_SHARDS・無ければ 1＝今と同じ 1 組・K-1304）"
+        id: shards
+        env:
+          WEB_SHARDS_VAR: ${{ vars.WEB_SHARDS }}
+        run: python3 scripts/ci/web_run.py shards --github-output "$GITHUB_OUTPUT"
+      - name: "spec の重い段（G57・G65）の組の分け方（置き場の変数 SPEC_SHARDS・無ければ 1＝今と同じ spec の組・K-1307）"
+        id: spec_shards
+        if: ${{ !cancelled() }}
+        env:
+          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}
+        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"
       - name: "G1 lint"
         if: ${{ !cancelled() }}
         run: pnpm lint
@@ -560,12 +580,19 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "チケットの Python の試験（tests: の .py を JUnit に・K-172）"
         if: ${{ !cancelled() }}
         env:
           CI_PY_TESTS: ${{ steps.scope.outputs.py_tests }}
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
+      - name: "spec の重い段（G57・G65）の組の分け方（spec の組が自分で・static を待たない・K-1307）"
+        id: spec_shards
+        if: ${{ !cancelled() }}
+        env:
+          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}
+        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"
       - name: "G27 層の棚卸し（G21）"
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',27,')) }}
         env:
@@ -613,7 +640,7 @@ jobs:
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',62,')) }}
         run: python3 scripts/ci/ci_lean_test.py
       - name: "G57 チケットの CI の範囲の台本の試験（K-107）"
-        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}
+        if: ${{ !cancelled() && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2 && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}
         run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
       - name: "G60 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）"
         if: ${{ !cancelled() }}
@@ -628,8 +655,8 @@ jobs:
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
       - name: "G65 CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）"
-        if: ${{ !cancelled() }}
-        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k219_canvas_states_test.py && python3 scripts/ci/k257_canvas_boards_test.py && python3 scripts/ci/k258_web_defer_test.py && python3 scripts/ci/k232_fidelity_doc_test.py && python3 scripts/ci/k262_staging_edge_test.py && python3 scripts/ci/k237_perf_ledger_test.py && python3 scripts/ci/k237_staging_perf_test.py && python3 scripts/ci/k330_cut_check_test.py && python3 scripts/ci/k323_spec_split_test.py && python3 scripts/ci/k325_registries_test.py && python3 scripts/ci/k326_ts_registries_test.py && python3 scripts/ci/k327_migrations_gen_test.py && python3 scripts/ci/k328_secrets_parents_test.py && python3 scripts/ci/k343_test_timeout_test.py && python3 scripts/ci/k376_gate_lists_test.py && python3 scripts/ci/k377_fidelity_removed_test.py && python3 scripts/ci/k379_bridge_gate_test.py && python3 scripts/ci/k425_decision_log_test.py && python3 scripts/ci/k430_decision_log_test.py && python3 scripts/ci/k601_decision_log_test.py && python3 scripts/ci/k622_spec_sync_tools_test.py && python3 scripts/ci/k623_decisions_registered_test.py && python3 scripts/ci/k624_d6_mock_only_test.py && python3 scripts/ci/k625_layer_ledgers_test.py && python3 scripts/ci/k626_p_audit_closed_test.py && python3 scripts/ci/k627_db_fresh_run_test.py && python3 scripts/ci/k631_web_types_test.py && python3 scripts/ci/k638_contract_test.py && python3 scripts/ci/k639_contract_test.py && python3 scripts/ci/k640_runs_on_test.py && python3 scripts/ci/k641_hosted_tools_test.py && python3 scripts/ci/k643_merge_not_impl_test.py && python3 scripts/ci/k644_migrate_auth_test.py && python3 scripts/ci/k673_decision_log_test.py && python3 scripts/ci/k780_decision_log_test.py && python3 scripts/ci/k248_scope_reach_test.py
+        if: ${{ !cancelled() && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2 }}
+        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k219_canvas_states_test.py && python3 scripts/ci/k257_canvas_boards_test.py && python3 scripts/ci/k258_web_defer_test.py && python3 scripts/ci/k232_fidelity_doc_test.py && python3 scripts/ci/k262_staging_edge_test.py && python3 scripts/ci/k237_perf_ledger_test.py && python3 scripts/ci/k237_staging_perf_test.py && python3 scripts/ci/k330_cut_check_test.py && python3 scripts/ci/k323_spec_split_test.py && python3 scripts/ci/k325_registries_test.py && python3 scripts/ci/k326_ts_registries_test.py && python3 scripts/ci/k327_migrations_gen_test.py && python3 scripts/ci/k328_secrets_parents_test.py && python3 scripts/ci/k343_test_timeout_test.py && python3 scripts/ci/k376_gate_lists_test.py && python3 scripts/ci/k377_fidelity_removed_test.py && python3 scripts/ci/k379_bridge_gate_test.py && python3 scripts/ci/k425_decision_log_test.py && python3 scripts/ci/k430_decision_log_test.py && python3 scripts/ci/k601_decision_log_test.py && python3 scripts/ci/k622_spec_sync_tools_test.py && python3 scripts/ci/k623_decisions_registered_test.py && python3 scripts/ci/k624_d6_mock_only_test.py && python3 scripts/ci/k625_layer_ledgers_test.py && python3 scripts/ci/k626_p_audit_closed_test.py && python3 scripts/ci/k627_db_fresh_run_test.py && python3 scripts/ci/k631_web_types_test.py && python3 scripts/ci/k638_contract_test.py && python3 scripts/ci/k639_contract_test.py && python3 scripts/ci/k640_runs_on_test.py && python3 scripts/ci/k641_hosted_tools_test.py && python3 scripts/ci/k643_merge_not_impl_test.py && python3 scripts/ci/k644_migrate_auth_test.py && python3 scripts/ci/k673_decision_log_test.py && python3 scripts/ci/k780_decision_log_test.py && python3 scripts/ci/k1114_build_dir_skip_test.py && python3 scripts/ci/k1115_cut_take_test.py && python3 scripts/ci/k1116_fuzz_contract_test.py && python3 scripts/ci/k1117_portable_contract_test.py && python3 scripts/ci/k1120_body_append_tree_test.py && python3 scripts/ci/k1121_build_api_d_test.py && python3 scripts/ci/k1122_op_gate_titles_test.py && python3 scripts/ci/k1154_order_head_test.py && python3 scripts/ci/k1304_web_shards_test.py && python3 scripts/ci/k1305_full_py_junit_test.py && python3 scripts/ci/k1307_spec_shards_test.py && python3 scripts/ci/k248_scope_reach_test.py
       - name: "G68 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5）"
         if: ${{ !cancelled() }}
         env:
@@ -652,6 +679,11 @@ jobs:
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
         run: python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k261_raw_lengths_test.py
+      - name: "G74 共通の台帳の本体に葉が直に行を足さない（足す分は葉ごとのファイル .d・猶予の台帳は減らすだけ・K-1112）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/body_append_gate.py --base-ref "$CI_BASE" && python3 scripts/ci/api_doc_d.py --check && python3 scripts/ci/k1112_body_append_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
@@ -699,7 +731,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G56 取り込む順（depends_on の実装が先に枝にある・K-94）"
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',56,')) }}
         env:
@@ -740,12 +773,74 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G67 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214）"
         if: ${{ !cancelled() }}
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
         run: python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  spec-parts:
+    name: ${{ format('spec ({0})', matrix.part) }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # spec の重い段を分けた組（K-1307）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{ !cancelled() && fromJSON(needs.static.outputs.spec_shards || '1') > 1 }}
+    strategy:
+      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）
+      matrix:
+        part: ${{ fromJSON(needs.static.outputs.spec_parts || '["off"]') }}
+    env:
+      SPEC_PART: ${{ matrix.part }}
+      SPEC_SHARDS: ${{ needs.static.outputs.spec_shards }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "G57.p チケットの CI の範囲の台本の試験（K-107）（分けた組 g57・K-1307）"
+        if: ${{ !cancelled() && matrix.part == 'g57' && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}
+        run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
+      - name: "G65.p CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）（G65 の並びを SPEC_SHARDS の数に分けた 1 組・K-1307）"
+        if: ${{ !cancelled() && startsWith(matrix.part, 'g65-') }}
+        run: python3 scripts/ci/spec_run.py g65
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('junit/*.xml') != '' }}
+        with:
+          name: junit-spec-parts-${{ matrix.part }}
+          path: junit/
+          if-no-files-found: error
+          retention-days: 7
       - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
@@ -766,16 +861,25 @@ jobs:
         run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
 
   web:
+    name: ${{ matrix.part == 'all' && 'web' || format('web ({0})', matrix.part) }}
     runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
+    # 組は static の web_parts（K-1304）：WEB_SHARDS が 1 か無ければ all の 1 組（今と同じ）。2 以上なら G48 を分けた組・G59・専用の段の組が同時に走り、
+    #   組ごとに自分の DB・API・画面を立てる（準備は同じ）。どの段を流すかは web_run.py が WEB_PART で決める（段の名前・if は変えない）
     needs: [static]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
     #   入力が空の回（push・入力を渡さない回）は今までどおり流れる
     if: ${{ !cancelled() && needs.static.outputs.web == 'true' && inputs.web != 'defer' }}
+    strategy:
+      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）
+      matrix:
+        part: ${{ fromJSON(needs.static.outputs.web_parts || '["all"]') }}
     # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
     #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
     # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）
     env:
+      WEB_PART: ${{ matrix.part }}
+      WEB_SHARDS: ${{ needs.static.outputs.web_shards || '1' }}
       KANAME_DEV_PAGES: '1'
       NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
       # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
@@ -811,6 +915,9 @@ jobs:
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
           docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - uses: actions/cache@v4   # GitHub の台だけ（K-1304）
+        if: ${{ runner.environment == 'github-hosted' }}
+        with: { path: ~/.cache/ms-playwright, key: "ms-playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}" }
       - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
       - name: 台の道具をそろえる（lsof・入っていれば飛ばす・K-641）
         run: command -v lsof >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq lsof; }
@@ -867,11 +974,21 @@ jobs:
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-bridge.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 73
       - uses: actions/upload-artifact@v4
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.part == 'all' }}
         with: { name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && matrix.part == 'all' }}
         with: { name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        # 分けた組の物（G48 の blob の報告と終わりの番号・G59 と専用の段の JUnit）。web-report の組が合わせる（K-1304）
+        if: ${{ always() && matrix.part != 'all' }}
+        with:
+          name: web-part-${{ matrix.part }}
+          path: |
+            web-part/
+            junit/
+          if-no-files-found: error
+          retention-days: 1
       - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
         if: always()
         run: |
@@ -881,10 +998,48 @@ jobs:
       - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  web-report:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 分けて流した画面の試験を合わせる（K-1304）：G48 の blob を merge-reports で 1 つの報告（pw-reports/k.json）と JUnit（junit/web.xml）にし、
+    #   今と同じ記録（ci_results.py record）と照らし（op_gate.py）を 1 回。G59・専用の段の JUnit と合わせて junit-web・ci-results を上げる。
+    #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
+    needs: [static, web]
+    if: ${{ !cancelled() && needs.web.result != 'skipped' && fromJSON(needs.static.outputs.web_shards || '1') > 1 }}
+    env:
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml
+      WEB_SHARDS: ${{ needs.static.outputs.web_shards }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - uses: actions/download-artifact@v4
+        with: { pattern: web-part-*, path: ., merge-multiple: true }
+      - name: "分けて流した G48 を合わせ、記録して照らす（N 組の blob と終わりの番号がそろう・どれかが赤なら記録しない・K-1304）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+        run: python3 scripts/ci/web_run.py g48-report
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }
   junit:
     runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
-    needs: [unit-1, unit-2, unit-3, unit-4, unit-5, unit-6, spec, spec-2, spec-3, web]
+    needs: [unit-1, unit-2, unit-3, unit-4, unit-5, unit-6, spec, spec-2, spec-3, spec-parts, web, web-report]
     if: always()
     steps:
       - uses: actions/upload-artifact/merge@v4
