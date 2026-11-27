@@ -875,7 +875,7 @@ test("K251-UI-040 一覧（?view=all）の表示設定の箱：名前は「一�
     await expect(box.getByRole("group", { name: title }), title).toHaveCount(0);
 });
 
-test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ぶのは 1 回だけ（自分に関わるものも 1 回：外枠の数と右の列が同じ問い合わせを分け合う・K-235）", async ({
+test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ばない（0 回）。自分に関わるものは右の列の 1 回だけ（外枠は getShell の数を使い、承認待ちの口を読まない・K-466）", async ({
   page,
 }) => {
   const count = async (path: string) => {
@@ -897,8 +897,8 @@ test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ち�
   };
   const mine = await count("/tickets");
   const all = await count("/tickets?view=all");
-  expect(all).toBe(1);
-  expect(mine).toBe(all);
+  expect(all).toBe(0);
+  expect(mine).toBe(1);
 });
 
 test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べる。使える項目（期限切れ・今日まで・自分が承認・AI が動いている・自分の承認を待っているもの・のAI のいま・最近のお知らせ・表の分け方の期限）は押せ、まだ使えない項目（今週まで・自分が担当・承認するものの動き・表の分け方の グループ・状態・入れるもの 3 つ）はグレーで押せない・口を呼ばない・箱に影がある（K-478 で使える項目を押せるようにした・D-145.9）", async ({

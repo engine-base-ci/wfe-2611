@@ -4,6 +4,7 @@
 //   一覧の答えの health・health_at は K-360、この PC の口（/install-progress・/ping の device_id）は K-359 の形。
 //   待ちは出来事で決める（固定の待ちは使わない）。台が混んでも落ちないよう、見える・移るの待ちは 15 秒まで。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
+import { shellData } from "./shell-answer";
 import { expect, type Page, type Request, type Route } from "@playwright/test";
 // 作り物の秘密の値は apps/web/test/_fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
 import { K361_WEB_TOKEN } from "../../test/_fake/secrets";
@@ -167,6 +168,8 @@ export async function mock(page: Page, devices: Dev[], local: Partial<Local> = {
     let r: { status: number; body: unknown } = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
     if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [], pcConnected: m.devices.some((d) => d.state === "live") })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/scopes") r = ok([], { limit: 200, writable: [] });
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: 0 }, cursor: null });
     else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST") {
