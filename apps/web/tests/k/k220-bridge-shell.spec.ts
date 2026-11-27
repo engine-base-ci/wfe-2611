@@ -19,6 +19,7 @@ import {
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -63,6 +64,8 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     else if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
     else if (p === "/api/v1/scopes") r = ok([], { limit: 200, writable: [] });
+    // 外枠の口 getShell（K-466）。承認待ち 2・グループ無し。PC の印は PC の画面が自分で読んだ値を外枠へ渡す
+    else if (p === "/api/v1/shell") r = ok(shellData({ approvals: 2, groups: [] }));
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: 2 }, cursor: null });
     else if (p === "/api/v1/bridge/devices") {
       if (m.holdDevices) return never();
@@ -271,15 +274,16 @@ test("K220-UI-009 本文の箱と見出し：箱は x 448・幅 956（中身の�
   expect(d.x).toBeGreaterThan(h.x + h.width - 1);
 });
 
-test("K220-UI-010 外枠の口は 1 画面で 1 回ずつ（自分・承認待ちの数）。左のメニューの下の PC の状態は「つながっている」", async ({
+test("K220-UI-010 外枠の口は 1 画面で 1 回（getShell・K-466）：自分の口と承認待ちの口は外枠のために読まない。左のメニューの下の PC の状態は「つながっている」", async ({
   page,
 }) => {
   const m = await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
   await expect(page.getByRole("navigation", { name: "メニュー", exact: true })).toContainText("PC つながっている");
-  await expect.poll(() => m.reads["/api/auth-ext/me"] ?? 0).toBeGreaterThanOrEqual(1);
-  expect(m.reads["/api/auth-ext/me"]).toBe(1);
-  expect(m.reads["/api/v1/approvals/queue"] ?? 0).toBeLessThanOrEqual(1);
+  await expect.poll(() => m.reads["/api/v1/shell"] ?? 0).toBeGreaterThanOrEqual(1);
+  expect(m.reads["/api/v1/shell"]).toBe(1);
+  expect(m.reads["/api/auth-ext/me"] ?? 0).toBe(0);
+  expect(m.reads["/api/v1/approvals/queue"] ?? 0).toBe(0);
 });
 
 test("K220-UI-011 PC の一覧を読んでいる間（D-144.8）：外枠と見出し「PC と使った量」はすぐ出る。「読み込んでいます…」は 2.9 秒では出ず 3 秒を過ぎて出る", async ({
@@ -405,7 +409,7 @@ test("K220-UI-016 この画面で PC がつながったら（待っている →
   await expect(nav).not.toContainText("PC つながっている");
   await page.clock.fastForward(6_000);
   await expect(nav).toContainText("PC つながっている");
-  expect(m.reads["/api/auth-ext/me"]).toBe(1);
+  expect(m.reads["/api/v1/shell"]).toBe(1);
 });
 
 test("K220-UI-017 PC の一覧の口が 403（権限なし）：外枠の中に「この画面を見る権限がありません」が出る（外枠の外に出さない）", async ({

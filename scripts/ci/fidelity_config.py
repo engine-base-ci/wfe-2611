@@ -26,6 +26,18 @@
   ・記録は消せない・書き替えられない：--base-ref の版に在った記録は、今の版にも 1 字も変えずに在る（無ければ赤）。前に入った記録は残っていること
     だけを見て、もう何も通さない（赤から外す力を持つのは、この版で新しく足して確かめの通った記録だけ）
   ・--no-base の回は記録の形だけを見る（弱めない検査を流さない回なので、記録が何かを通すことも無い）
+幅ごとの絵（組の "at"・K-1301）：組を残したまま、ある幅だけ比べる絵とセレクタを替える、ただ 1 つの道。黙って絵を替える道ではない
+  "at": {"<幅>": {"canvas": 絵, "pairs": {<対の name>: {"canvas": セレクタ, "app": セレクタ}}, "ticket": 替えたチケット, "decision": 決定の番号, "why": 訳}}
+  ・比べる道具は組と幅から groupAt（fidelity_compare.mjs）で解く。組の canvas・app・state・widths・pairs と対の name・role・props は替えない（弱めない検査はそのまま効く）
+  ・記録の形：at は表・幅の鍵は組の widths に在る幅の数字・欄は上の 5 つだけ（欠ける・知らない欄は赤）・字の欄は空でない字で制御の字が無い・
+    canvas の絵が在る・pairs は組の対の name をちょうど全部持ち、値は canvas と app の 2 つの欄だけ・why は空白を除いて 10 字以上・
+    decision は D-<数> か D-<数>.<数>・y_from（K-230）を持つ対のある組には書けない
+  ・記録は消せない・書き替えられない（--base-ref の回）：分かれ目の版の組に在った記録は、組が残っているかぎり、canvas・ticket・decision・why と
+    前からの対の値（pairs[name]）を 1 字も変えずに在る。変えてよいのは対の集まりの分だけ（この版で組に足した対の値を足す・
+    外した対の記録 removed の通った対を外す）。組ごと無くなった組の at は見ない
+  ・この版で新しく足した記録は、ticket が今のチケットのときだけ通る：11_tickets/<ticket>.md が在り、頭の欄 decisions: に decision・changes: に
+    04_design/fidelity.json がちょうど同じ字で在り、md が分かれ目の版に無いかそこから変わっていて、stage が確認中・完了でない
+  ・--no-base の回は記録の形だけを見る
 入っていない組の見張り（--owners-done --base-ref <版>・K-238）：
   ・enrolled でない組の数を「入っていない組 N / M」で出す
   ・持ち主が取り込み済みなのに enrolled でない組があれば赤（組の id と持ち主を同じ行に出す）。
@@ -205,6 +217,7 @@ def check_group(root: pathlib.Path, g: Any, states: str) -> list[str]:
         errs.append(f"{gid}：入れた組の鍵 \"{g['state']}\" が {STATES} に無い")
     if kind in KINDS:
         errs += check_pairs(gid, kind, g.get("pairs"))
+    errs += check_at_shape(root, gid, g)
     return errs
 
 
@@ -506,6 +519,130 @@ def check_removed(root: pathlib.Path, ref: str, removed: list[tuple[int, dict]],
     return frozenset(passed), errs
 
 
+AT_KEYS = ("canvas", "pairs", "ticket", "decision", "why")
+AT_PAIR_KEYS = ("canvas", "app")
+
+
+def _at_entries(g: Any) -> dict[str, Any]:
+    """組の幅ごとの絵の記録（at が無い・表でないなら空）"""
+    at = g.get("at") if isinstance(g, dict) else None
+    return at if isinstance(at, dict) else {}
+
+
+def _at_entry_errors(root: pathlib.Path, where: str, e: Any, names: set[str]) -> list[str]:
+    """幅ごとの絵の記録 1 つの形（欄・字・絵・対）"""
+    if not isinstance(e, dict):
+        return [f"{where}：記録が表でない"]
+    errs = [f"{where}：欄 {k} が無い" for k in AT_KEYS if k not in e]
+    errs += [f"{where}：知らない欄 {k!r}（書けるのは {'・'.join(AT_KEYS)}）" for k in e if k not in AT_KEYS]
+    for k in ("canvas", "ticket", "decision", "why"):
+        if k in e and not _plain(e[k]):
+            errs.append(f"{where}：欄 {k} が空でない字でないか、制御の字（改行・NUL など）が在る")
+    if _plain(e.get("canvas")) and not (root / "04_design" / "canvas" / f"{e['canvas']}.dc.html").is_file():
+        errs.append(f"{where}：絵 04_design/canvas/{e['canvas']}.dc.html が無い")
+    if _plain(e.get("why")) and len("".join(e["why"].split())) < WHY_MIN:
+        errs.append(f"{where}：why（訳）が {WHY_MIN} 字に足りない")
+    if _plain(e.get("decision")) and not DECISION_RE.fullmatch(e["decision"]):
+        errs.append(f"{where}：decision {e['decision']!r} が決定の番号の形（D-<数> か D-<数>.<数>）でない")
+    if "pairs" not in e:
+        return errs
+    pairs = e["pairs"]
+    if not isinstance(pairs, dict):
+        return errs + [f"{where}：pairs（対ごとのセレクタ）が表でない"]
+    errs += [f"{where}：組の対 {n} が pairs に無い" for n in sorted(names - set(pairs))]
+    errs += [f"{where}：組に無い対 {n!r} が pairs に在る" for n in pairs if n not in names]
+    for n, v in pairs.items():
+        if not isinstance(v, dict):
+            errs.append(f"{where}・{n}：対の値が表でない")
+            continue
+        errs += [f"{where}・{n}：欄 {k} が無い" for k in AT_PAIR_KEYS if k not in v]
+        errs += [f"{where}・{n}：知らない欄 {k!r}（書けるのは canvas・app）" for k in v if k not in AT_PAIR_KEYS]
+        errs += [f"{where}・{n}：{k} のセレクタが空でない字でないか、制御の字が在る" for k in AT_PAIR_KEYS if k in v and not _plain(v[k])]
+    return errs
+
+
+def check_at_shape(root: pathlib.Path, gid: str, g: dict) -> list[str]:
+    """組の幅ごとの絵（at・K-1301）の形。分かれ目と比べない回も見る"""
+    if "at" not in g:
+        return []
+    at = g["at"]
+    if not isinstance(at, dict):
+        return [f"{gid}：at（幅ごとの絵）が表でない"]
+    widths = g.get("widths") if isinstance(g.get("widths"), list) else []
+    raw_pairs = g.get("pairs") if isinstance(g.get("pairs"), list) else []
+    errs: list[str] = []
+    if at and any(isinstance(p, dict) and "y_from" in p for p in raw_pairs):
+        errs.append(f"{gid}：y_from（K-230）を持つ対のある組に at（幅ごとの絵）は書けない（幅で読み方を替える仕組みを 2 つ重ねない）")
+    names = _pair_names(g)
+    for key, e in at.items():
+        where = f"{gid}・at[{key}]"
+        if not (isinstance(key, str) and key.isascii() and key.isdigit() and int(key) in widths):
+            errs.append(f"{where}：幅の鍵が組の widths に在る幅の数字でない")
+        errs += _at_entry_errors(root, where, e, names)
+    return errs
+
+
+def _at_ticket_errors(root: pathlib.Path, ref: str, e: dict) -> list[str]:
+    """新しく足した幅ごとの絵の記録のチケット：今のチケットか（md が在る・決定と設定が頭の欄に在る・分かれ目から変わった・終わっていない）"""
+    tid = e["ticket"]
+    rel = f"11_tickets/{tid}.md"
+    md = root / rel
+    if "/" in tid or "\\" in tid or not md.is_file():
+        return [f"チケット {rel} が無い"]
+    errs: list[str] = []
+    if e["decision"] not in _head_list(md, "decisions"):
+        errs.append(f"チケット {tid} の頭の欄 decisions: に {e['decision']} が無い")
+    if CONFIG not in _head_list(md, "changes"):
+        errs.append(f"チケット {tid} の頭の欄 changes: に {CONFIG} が無い（設定を替えるチケットではない）")
+    if _git(root, "cat-file", "-e", f"{ref}:{rel}").returncode == 0:
+        r = _git(root, "show", f"{ref}:{rel}")
+        if r.returncode == 0 and r.stdout == md.read_text(encoding="utf-8"):
+            errs.append(f"チケット {tid} は分かれ目の版 {ref} から変わっていない（今のチケットではない）")
+    if _stage(md) in DONE_STAGES:
+        errs.append(f"チケット {tid} の stage が {_stage(md)}（終わったチケットは記録を足せない）")
+    return errs
+
+
+def check_at(root: pathlib.Path, ref: str, base: list[dict], cur: list[Any],
+             waived: frozenset[tuple[str, str]]) -> list[str]:
+    """幅ごとの絵の記録の確かめ（--base-ref の回）。前の記録は消せない・書き替えられない（対の集まりの分だけは変えてよい）。
+    新しく足した記録は今のチケットのときだけ通る"""
+    base_by = {g["id"]: g for g in base if isinstance(g, dict) and _str(g.get("id"))}
+    errs: list[str] = []
+    for g in cur:
+        if not isinstance(g, dict) or not _str(g.get("id")):
+            continue
+        gid, b = g["id"], base_by.get(g["id"])
+        before = _at_entries(b)
+        now = _at_entries(g)
+        kept = _pair_names(g)
+        added = kept - _pair_names(b)
+        for key, old in before.items():
+            where = f"{gid}・at[{key}]"
+            e = now.get(key)
+            if not isinstance(old, dict):
+                continue
+            if not isinstance(e, dict) or any(e.get(k) != old.get(k) for k in ("canvas", "ticket", "decision", "why")):
+                errs.append(f"{where}：分かれ目の版に在った幅ごとの絵の記録が、今の版に同じ字で残っていない（記録は消せない・書き替えられない）")
+                continue
+            old_pairs = old.get("pairs") if isinstance(old.get("pairs"), dict) else {}
+            new_pairs = e.get("pairs") if isinstance(e.get("pairs"), dict) else {}
+            for n, v in old_pairs.items():
+                if n in kept:
+                    if new_pairs.get(n) != v:
+                        errs.append(f"{where}・{n}：分かれ目の版に在った対の値を替えた（記録は書き替えられない）")
+                elif (gid, n) not in waived and n in new_pairs:
+                    errs.append(f"{where}・{n}：組に無い対の値が残っている")
+            for n in new_pairs:
+                if n not in old_pairs and n not in added:
+                    errs.append(f"{where}・{n}：この版で組に足していない対の値を足した")
+        for key, e in now.items():
+            if key in before or not isinstance(e, dict) or not all(_plain(e.get(k)) for k in ("ticket", "decision")):
+                continue   # 前の記録は上で見た。形の赤は check_at_shape が出す
+            errs += [f"{gid}・at[{key}]：{x}" for x in _at_ticket_errors(root, ref, e)]
+    return errs
+
+
 def check_ratchet(base: list[dict], cur: list[Any], waived: frozenset[tuple[str, str]] = frozenset()) -> list[str]:
     """分かれ目で enrolled だった組は、消せない・戻せない・比べるもの（値の name×値×幅）を減らせない・セレクタを替えられない。
     waived（確かめの通った、外した対の記録の（組, 対））の対を対ごと外した分だけは赤にしない"""
@@ -558,6 +695,7 @@ def run(root: pathlib.Path, required: list[str], base_ref: str | None, no_base: 
             waived, werrs = check_removed(root, base_ref, removed, base_removed(root, base_ref), base, groups)
             errs += werrs
             errs += check_ratchet(base, groups, waived)
+            errs += check_at(root, base_ref, base, groups, waived)
     elif not no_base:
         errs.append("比べ方の指定が無い（--base-ref <版> か --no-base）")
     return errs
