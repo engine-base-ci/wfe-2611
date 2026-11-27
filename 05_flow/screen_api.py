@@ -158,8 +158,8 @@ SCREEN_API = {
     ],
     "ai-activity": [
         ("GET", "/clones/me/now", "A53", "action_runs", "getCloneNow", ["tickets", "approvals", "action_runs", "sessions"]),
-        ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),
-        ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["memories", "learning_candidates"]),
+        ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["action_runs", "approvals", "ticket_section_versions"]),
+        ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["action_runs", "approvals", "ticket_section_versions", "test_specs"]),
         ("POST", "/action_runs/:id/takeover", "A57", "action_runs", "takeoverActionRun", ["tickets"]),
     ],
     # ---------------------------------------------------------------- ログイン・登録・2 段階・パスキー（08_api/phase1/04_ログイン.md）
@@ -1016,9 +1016,9 @@ RESPONSES = {
     "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "from_name": "string", "check_summary": "string", "due_on": "string?", "decide_inline": "boolean", "irreversible": "boolean", "primary_action": "string", "secondary_action": "string", "note": "string?", "created_at": "string", "handover_kind": "string?", "reply_due": "string?", "carry_children": "integer?", "to_scope_name": "string?", "ticket_scope_name": "string?"}),   # K-161：期限なし・聞き直しでない行は due_on・note が null。K-405：渡しの行は kind handover・AI の成果物の行は handover_kind・reply_due・carry_children・to_scope_name・ticket_scope_name が null
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "check_summary": "string", "cautions": "array", "irreversible": "boolean", "can_decide": "boolean", "chain": "array"}),
     "getCloneNow": ("CloneNow", {"pc": "object", "current": "object?", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
-    "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
+    "getCloneGrowth": ("CloneGrowth", {"assigned": "integer", "pass_rate": "integer?", "pass_rate_last_week": "integer?", "work_seconds": "integer"}),   # 育ち具合は数 3 つだけ（D-153.13・K-754）
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
-    "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string?", "used": "array", "result": "string"}),   # action_runs.ticket_id は null 可（K-62 が足した列）
+    "listCloneActivity": ("CloneActivity", {"id": "uuid", "at": "string", "kind": "string", "ticket_id": "uuid", "ticket_number": "string", "title": "string", "result": "string", "detail": "object"}),   # 自分の分身が終えた実行（K-754）
     # 型の後ろの ? は null を許す（申し込みが無い・期限が無いときは null）
     "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
     "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
