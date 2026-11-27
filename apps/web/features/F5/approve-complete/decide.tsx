@@ -171,6 +171,7 @@ export function DecideBody(props: Props) {
         <ReturnDialog
           approvalId={approval.id}
           {...(target ? { target } : {})}
+          {...(props.ticketId ? { ticketId: props.ticketId } : {})}
           screenId="tickets"
           open
           onOpenChange={setReturning}

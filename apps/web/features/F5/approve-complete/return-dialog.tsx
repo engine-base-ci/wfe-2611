@@ -2,13 +2,25 @@
 // 差し戻しの小窓（K-181・口は K-163 の returnApproval）。欄「差し戻す理由」（複数行・必須だが文字数の上限は置かない・D-131.1）。
 //   ブラウザ標準の検証は使わない（required を付けず、空は小窓の中に正本の文 E-VAL-020）。
 //   書きかけはその端末に残す（localStorage の kaname.k63.return.<承認の id>・送って 201 なら消す）。理由は文字のまま送る（HTML を作らない）
-//   中身はキャンバス StReturnModal（K-229）：対象の行・どこを直すか・理由（必須）・次は誰が直すか・覚えさせる候補。
-//   どこを直すか・次は誰が直すか・覚えさせる候補は仕組みがまだ無いので、出したまま押せない（D-145.9・input そのものを薄く）。
-//   覚えさせる候補はキャンバスでは印ありだが、仕組みが無いのに印を付けると「覚えさせる」と読めるので印なし。送る体は { note } だけ
+//   中身は段 6 の下絵 return-*（K-745）：対象の行・理由（必須）・次は誰が直すか（AI／自分・D-153.8・D-153.29）。
+//   「どこを直すか」「覚えさせる候補」は外した（D-153.8・D-153.15）。開くたびに AI に印（前に選んだ物を持ち越さない）。
+//   送る体は AI なら { note }（口の既定は clone・K-744）、自分なら { note, next_actor: "self" }。
+//   自分で直す（答えの run_id が null）をチケットの詳細から送ったときだけ、作業中に戻した後の箱と帯の下の 1 行を積む（trail.ts・K-730）
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button, Dialog } from "@/components/k";
+import { pushBand, pushTrail } from "@/features/F5/more/trail";
+import { timelineKey } from "@/features/F6/thread/use-timeline";
 import { call, type CallErr } from "@/lib/api/call";
+import { me } from "@/lib/auth/ext";
 import { catalogMessage } from "./message";
+import "@/features/F5/more/more.css";
+
+type Who = "clone" | "self";
+const WHO: readonly { value: Who; label: string }[] = [
+  { value: "clone", label: "AI に直させる（作り直しを任せます）" },
+  { value: "self", label: "自分で直す（チケットは作業中に戻ります）" },
+];
 
 const draftKey = (approvalId: string) => `kaname.k63.return.${approvalId}`;
 const readDraft = (approvalId: string): string => {
@@ -38,10 +50,25 @@ interface Props {
   onFailed: (r: CallErr) => void | Promise<void>;
   /** 頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
   target?: string;
+  /** チケットの詳細の帯から開いたときのチケットの id（自分で直すの後の箱と 1 行を積む先） */
+  ticketId?: string;
 }
 
-export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone, onFailed, target }: Props) {
+/** 名は見ている人の display_name・読めなければ「自分」 */
+async function viewerName(qc: ReturnType<typeof useQueryClient>): Promise<string> {
+  try {
+    const m = await qc.fetchQuery({ queryKey: ["me"], queryFn: me });
+    return m.display_name || "自分";
+  } catch {
+    return "自分";
+  }
+}
+
+export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone, onFailed, target, ticketId }: Props) {
+  const qc = useQueryClient();
   const [note, setNote] = useState("");
+  const [who, setWho] = useState<Who>("clone");
+  const whoName = useId();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const errorId = useId();
@@ -49,6 +76,7 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
   useEffect(() => {
     if (open) {
       setNote(readDraft(approvalId));
+      setWho("clone");
       setError(null);
     }
   }, [open, approvalId]);
@@ -59,11 +87,19 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
     sending.current = true;
     setBusy(true);
     try {
-      const r = await call("returnApproval", { params: { id: approvalId }, body: { note }, screenId });
+      const body = who === "self" ? { note, next_actor: "self" } : { note };
+      const r = await call("returnApproval", { params: { id: approvalId }, body, screenId });
       if (r.ok) {
         writeDraft(approvalId, "");
         setNote("");
         onOpenChange(false);
+        const runId = (r.data as { run_id?: string | null } | null)?.run_id;
+        if (ticketId && who === "self" && runId == null) {
+          const name = await viewerName(qc);
+          pushBand(ticketId, { title: `差し戻しました。次は ${name} が直します`, sub: `理由：${note}` });
+          pushTrail(ticketId, `${name}が差し戻しました（直すのは自分）`);
+          void qc.invalidateQueries({ queryKey: timelineKey(ticketId) });
+        }
         await onDone();
         return;
       }
@@ -96,12 +132,8 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
       {/* 段の間は 12px（StReturnModal）。対象の行も同じ段に置く */}
       <div className="k-dialog-stack">
         {target ? <p className="k-dialog-target">{target}</p> : null}
-        <label className="k-field">
-          <span className="k-label">どこを直すか</span>
-          <select className="k-input" disabled aria-disabled="true" value="" onChange={() => undefined}>
-            <option value="" hidden />
-          </select>
-        </label>
+        {/* スマホでは下から出す（more.css の印・見えない 1 要素で PC の見た目は変えない） */}
+        <i className="k-more-sheetmark" hidden aria-hidden="true" />
         {/* 見える項目名は「理由」と必須の印・欄の名前は「差し戻す理由」（見える字が名前に含まれる）。理由は aria-describedby でつなぐ */}
         <label className="k-field">
           <span className="k-label">
@@ -129,19 +161,19 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
         </label>
         <fieldset className="k-dialog-group">
           <legend>次は誰が直すか</legend>
-          <label className="k-dialog-check">
-            <input type="radio" name="k229-who" checked disabled aria-disabled="true" readOnly />
-            <span>AI に直させて、確認からやり直す</span>
-          </label>
-          <label className="k-dialog-check">
-            <input type="radio" name="k229-who" disabled aria-disabled="true" readOnly />
-            <span>自分で直す</span>
-          </label>
+          {WHO.map((o) => (
+            <label key={o.value} className="k-dialog-check k-more-choice">
+              <input
+                type="radio"
+                name={whoName}
+                value={o.value}
+                checked={who === o.value}
+                onChange={() => setWho(o.value)}
+              />
+              <span>{o.label}</span>
+            </label>
+          ))}
         </fieldset>
-        <label className="k-dialog-check">
-          <input type="checkbox" disabled aria-disabled="true" readOnly />
-          <span>この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）</span>
-        </label>
       </div>
     </Dialog>
   );

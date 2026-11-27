@@ -28,21 +28,7 @@ import {
   type Band,
 } from "../features/F5/approve-complete.harness";
 import { approveDialog, approveVia, confirmApprove, confirmButton, seenBox } from "./approve-modal";
-import {
-  LINE,
-  ROOT,
-  WHITE,
-  WIDTHS,
-  box,
-  countWrites,
-  cssOf,
-  expectInert,
-  fidelityCompareTests,
-  fidelityConfigTest,
-  opacityOf,
-  DISABLED_OPACITY,
-  overflowX,
-} from "./kit";
+import { LINE, ROOT, WHITE, WIDTHS, box, cssOf, fidelityCompareTests, fidelityConfigTest, overflowX } from "./kit";
 import { controlsOf } from "../_lib/row";
 
 const NAVY = "rgb(34, 52, 92)";
@@ -314,7 +300,7 @@ test("K229-UI-014 確かめの小窓の位置と幅：幅 1440 は幅 380・上�
   expect(Math.round(b.y)).toBe(60);
 });
 
-test("K229-UI-015 完了の小窓の型：題「完了にする」15px・700・頭と足の線・やめる（outlined）と 確かめて完了にする（紺・高さ 34）・幅 420・上から 60px・真ん中", async ({
+test("K229-UI-015 完了の小窓の型（K-572 で替えた）：題「完了にする」15px・700・頭と足の線・戻って付ける（outlined）と このまま完了にする（高さ 34）・幅 420・上から 60px・真ん中", async ({
   page,
 }) => {
   await mockApi(page, executedBand);
@@ -322,14 +308,14 @@ test("K229-UI-015 完了の小窓の型：題「完了にする」15px・700・�
   await openComplete(page);
   const d = dialog(page);
   await expectModalShape(d, "完了にする");
-  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["やめる", "確かめて完了にする"]);
+  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["戻って付ける", "このまま完了にする"]);
   const b = await box(d);
   expect(Math.round(b.width)).toBe(420);
   expect(Math.round(b.y)).toBe(60);
   expect(Math.abs(b.x - (1440 - 420) / 2)).toBeLessThanOrEqual(1);
 });
 
-test("K229-UI-016 完了の小窓の中身の区切り：頭に「EG-133 11 月分の請求書を送る」（12px・灰）、完了の条件の見出し（12px・500）と文、実施事項は線の枠（1px #DDE2E9・角丸 8）の中、その下に確かめのチェック", async ({
+test("K229-UI-016 完了の小窓の中身の区切り（K-572 で替えた）：頭に「EG-133 11 月分の請求書を送る」（12px・灰）、本文の未チェックの注意（題と「完了にしても止めません…」）とその下に ☐ 付きの行が並ぶ", async ({
   page,
 }) => {
   await mockApi(page, executedBand);
@@ -339,16 +325,14 @@ test("K229-UI-016 完了の小窓の中身の区切り：頭に「EG-133 11 月�
   const target = d.locator(".k-dialog-target");
   await expect(target).toHaveText("EG-133 11 月分の請求書を送る");
   expect(await cssOf(target, "font-size")).toBe("12px");
-  const cond = d.getByRole("region", { name: "完了の条件" });
-  expect(await cssOf(cond.locator(".k-label"), "font-size")).toBe("12px");
-  expect(await cssOf(cond.locator(".k-label"), "font-weight")).toBe("500");
-  await expect(cond).toContainText("先方が請求書を受け取った");
-  const fs = d.getByRole("group", { name: "実施事項" });
-  expect(await cssOf(fs, "border-top-color")).toBe(LINE);
-  expect(await cssOf(fs, "border-top-width")).toBe("1px");
-  expect(await cssOf(fs, "border-top-left-radius")).toBe("8px");
-  const conf = await box(d.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" }));
-  expect(conf.y).toBeGreaterThan((await box(fs)).y + (await box(fs)).height - 1);
+  const callout = d.getByText("本文に、チェックのないやることが 2 つ残っています", { exact: true });
+  await expect(callout).toBeVisible();
+  await expect(
+    d.getByText("完了にしても止めません。このままでよいかを決めてください。", { exact: true }),
+  ).toBeVisible();
+  const items = d.locator(".k-f4d-unchecked li");
+  await expect(items).toHaveText(["☐ 請求書を作る", "☐ 先方に送る"]);
+  expect((await box(items.first())).y).toBeGreaterThan((await box(callout)).y);
 });
 
 test("K229-UI-017 差し戻しの小窓の型：題「差し戻す」15px・頭の右上に ×（閉じる）が 1 つ・幅 420・やめる は outlined（白地・灰の線・黒字）・主ボタンは「差し戻す」・開くとフォーカスは「差し戻す理由」", async ({
@@ -362,38 +346,32 @@ test("K229-UI-017 差し戻しの小窓の型：題「差し戻す」15px・頭�
   await expect(d.getByRole("button", { name: "閉じる" })).toHaveCount(1);
   await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["やめる", "差し戻す"]);
   expect(Math.round((await box(d)).width)).toBe(420);
-  await expect(reasonBox(page)).toBeFocused(); // 最初のフォーカスは使える最初の欄（押せない「どこを直すか」には乗らない）
+  await expect(reasonBox(page)).toBeFocused(); // 最初のフォーカスは使える最初の欄（理由）
 });
 
-test("K229-UI-018 差し戻しの小窓の中身：対象の行・どこを直すか（押せない・空）・理由（必須の印・欄の名前は「差し戻す理由」）・次は誰が直すか（AI に直させて… に印・2 つとも押せない）・覚えさせる候補（押せない・印なし）", async ({
+test("K229-UI-018 差し戻しの小窓の中身：対象の行・理由（必須の印・欄の名前は「差し戻す理由」）・次は誰が直すか（2 つの丸「AI に直させる（作り直しを任せます）」に印・「自分で直す（チケットは作業中に戻ります）」。どちらも押せる）。どこを直すか・覚えさせる候補は無い（D-153.8・段 6 の K-745 が替えた）", async ({
   page,
 }) => {
-  const writes = countWrites(page);
   await mockApi(page);
   await openTicketSettled(page);
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
   const d = dialog(page);
   await expect(d.locator(".k-dialog-target")).toHaveText("EG-133 11 月分の請求書を送る");
-  const where = d.getByRole("combobox", { name: "どこを直すか" });
-  expect((await where.innerText()).trim()).toBe("");
-  await expectInert(page, where, "どこを直すか", writes, 1);
+  await expect(d.getByRole("combobox")).toHaveCount(0);
   await expect(reasonBox(page)).toBeVisible();
   const must = d.locator(".k-field-required");
   await expect(must).toHaveText("必須");
   expect(await cssOf(must, "color")).toBe("rgb(185, 28, 28)");
   const who = d.getByRole("group", { name: "次は誰が直すか" });
-  const ai = who.getByRole("radio", { name: "AI に直させて、確認からやり直す" });
-  const self = who.getByRole("radio", { name: "自分で直す" });
+  const ai = who.getByRole("radio", { name: "AI に直させる（作り直しを任せます）" });
+  const self = who.getByRole("radio", { name: "自分で直す（チケットは作業中に戻ります）" });
   await expect(ai).toBeChecked();
-  await expect(ai).toBeDisabled();
-  await expect(self).toBeDisabled();
-  const learn = d.getByRole("checkbox", { name: "この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）" });
-  await expect(learn).not.toBeChecked();
-  await expect(learn).toBeDisabled();
-  for (const x of [ai, self, learn]) expect(await opacityOf(x)).toBeCloseTo(DISABLED_OPACITY, 3); // 薄さは input そのもの（input-disabled）
+  await expect(ai).toBeEnabled();
+  await expect(self).toBeEnabled();
+  await expect(d.getByRole("checkbox")).toHaveCount(0);
 });
 
-test("K229-UI-019 差し戻しを送る：口に届く体は理由だけ（{ note }）。押せない欄の値は送らない", async ({ page }) => {
+test("K229-UI-019 差し戻しを送る：次は AI（既定）のまま送ると、口に届く体は理由だけ（{ note }）", async ({ page }) => {
   const m = await mockApi(page);
   await openTicketSettled(page);
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
@@ -434,10 +412,8 @@ test("K229-UI-022 操作要素の表：K-63 の表（07_qa/test-specs/k/approve-
   const have = new Set([...md.matchAll(/（([a-z]+)）「(.+?)」/g)].map((x) => `${x[1]}|${x[2]}`));
   const want = [
     "checkbox|成果物を目で見た",
-    "combobox|どこを直すか",
-    "radio|AI に直させて、確認からやり直す",
-    "radio|自分で直す",
-    "checkbox|この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）",
+    "radio|AI に直させる（作り直しを任せます）",
+    "radio|自分で直す（チケットは作業中に戻ります）",
   ];
   expect(want.filter((k) => !have.has(k))).toEqual([]);
 });
