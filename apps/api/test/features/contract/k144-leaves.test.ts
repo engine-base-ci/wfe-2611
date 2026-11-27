@@ -387,8 +387,10 @@ describe("K-378 ④ 本物の置き場と本体", () => {
     const keys = bodyBodies(text);
     for (const k of BODY_BODIES) expect(keys, `本体の体 ${k} が無い`).toContain(k);
     const ids = new Set([...text.matchAll(/["'`](K144-API-\d{3})\b/g)].map((m) => m[1]));
+    // K-712（D-152.1・記憶の口を消す）が記憶の口ごと外した行（025 updateMemory の道の値・038・041・045 createMemory を道具にした確かめ）
+    const retired = new Set(["K144-API-025", "K144-API-038", "K144-API-041", "K144-API-045"]);
     const lost = Array.from({ length: 60 }, (_x, i) => `K144-API-${String(i + 1).padStart(3, "0")}`).filter(
-      (id) => !ids.has(id),
+      (id) => !ids.has(id) && !retired.has(id),
     );
     expect(lost).toEqual([]);
   });
