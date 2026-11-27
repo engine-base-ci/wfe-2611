@@ -96,7 +96,7 @@ ACTS = [
  ("会社の型", [
   ("A117", "グループを作る・直す（メンバーの中）", ["R1", "R2"], ["J8"], "まれ", ["D-125.21", "D-125.116"], "layers", "層に名前を付け、グループを足す・並べる", "—", "—", ["C2"], 2),
   ("A118", "チケットの設定を整える（種別・状態・項目）", ["R1", "R2"], ["J8"], "まれ", ["D-125.66", "D-125.67", "D-125.70", "D-125.81", "D-152.18", "D-152.30", "D-152.31", "D-152.32", "D-152.36"], "masters", "種別・状態・項目を、タブごとに足す・直す・並べる・消す", "—", "使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる", ["C2"], 2),
-  ("A131", "ルールを置く（会社・層・個人・取引先）", EV, ["J8", "J11"], "随時", ["D-126.12", "D-127.11", "D-125.31"], "rules", "効く範囲を選んでルールを書く", "—", "範囲ごとに保存。取引先のルールはその取引先のチケットだけに効く", ["C2"], 2),
+  ("A131", "ルールを置く（会社・層・個人・取引先）", EV, ["J8", "J11"], "随時", ["D-126.12", "D-127.11", "D-125.31"], "clone-chat", "効く範囲を選んでルールを書く", "—", "範囲ごとに保存。取引先のルールはその取引先のチケットだけに効く", ["C2"], 2),
   ("A119", "業務の型を作る・広げる", EV, ["J8", "J11"], "随時", ["D-126.4", "D-126.6", "D-126.7", "D-126.9", "D-126.10"], "work-types", "AI と壁打ちして下書きを出し、欄ごとに直す／終わったチケットから作る／グループ・会社に広げる申請をする", "運営の「型を作るスキル」で下書きを作る", "機械の検査（必須の欄・ログイン情報や鍵の書き込み）を通して保存。申請はその層のマネージャーが OK", ["C3", "C2"], 2),
   ("A120", "ひな形の新しい版を取り込む", ["R1", "R2"], ["J8"], "まれ", ["D-125.72"], "masters", "差分を見て取り込むか選ぶ", "—", "—", ["C2"], 2),
   ("A114", "ナレッジのページを書く・直す（会社・グループ・自分の棚。書き終えると版が進む・必ず守るの印を付け外しする）", EV, ["J8"], "随時", ["D-125.34", "D-125.113", "D-152.1", "D-152.3", "D-152.14", "D-152.15", "D-152.16", "D-152.28", "D-152.33", "D-152.34"], "knowledge", "木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す", "—", "下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで", ["C2"], 2),
@@ -187,7 +187,9 @@ SCREEN_ADD = {
 }
 
 # 行為が裏側の表（BLUEPRINT）の画面のほかにも出る画面（K-53：規約に同意する A96 は、登録の画面と文面のページ legal の両方）
-ACT_MORE_SCREENS = {"A96": ["legal"]}
+#   A131（ルールを置く）は画面 rules を後のフェーズへ送った後も、残る口（promoteMemoryToRule・requestRuleException）を会話の画面が呼ぶので、
+#   裏側の表の画面は clone-chat にし、rules（後のフェーズ）はここに残す。A131 を K-722 が送るまでの形（K-711）
+ACT_MORE_SCREENS = {"A96": ["legal"], "A131": ["rules"]}
 
 MILESTONE_SCREENS = {
  1: ["signup", "legal", "help", "verify-email", "login", "password-reset", "mfa-setup", "account", "tickets", "approvals", "ai-activity", "clone-chat", "credentials", "bridge-setup", "ops-skills"],
@@ -240,7 +242,20 @@ PRODUCT_STATES = [
  ("PS3", "PC が閉じている ── データは見られる。AI の仕事は実行待ち（承認から 24 時間を過ぎたら実行の前に聞き直す）", "A57", ["data", "stopped", "app"], ["D-127.7", "D-127.9"]),
 ]
 
-SKELETON = ["A01", "A02", "A96", "A97", "A09", "A10", "A99", "A101", "A102", "A130", "A104", "A15", "A53", "A106"]
+SKELETON = ["A01", "A02", "A96", "A97", "A09", "A10", "A99", "A101", "A102", "A104", "A15", "A53", "A106"]
+
+# 第1フェーズの行為の表（ACTS）に書いたが、後の決めで後のフェーズへ送った行為（行為と裏側の表は残す・release だけ v2）。
+#   A130 業務の型を選ぶ：業務の型は物として無くした（D-150.60）。口 listWorkTypeCandidates を外したので第1フェーズの口は無い（K-582）。扱いは段 10
+SENT_LATER = {
+ "A130": ("D-150.60", "D-150.60 業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。業務の型を選ぶ口は外した（K-582）。扱いは段 10 が決める。後のフェーズ"),
+ "A119": ("D-152.20", "D-152.20 業務の型は物として無くした（種別の本文のひな形とナレッジのページで受ける）。業務の型を作る・広げる口は全部外した（K-711）。後のフェーズ"),
+}
+# 第1フェーズの画面の表（SCREEN_ADD）に書いたが、口を全部外したので後のフェーズへ送る画面（画面は残す・release だけ v2・K-711・PM の決め 2026-11-24：
+#   口を全部外した葉が画面も送る）。行為 A131（ルールを置く）は残る口（promoteMemoryToRule・requestRuleException）があるので送らない
+SENT_LATER_SCREENS = {
+ "rules": "D-152.20 決まりは物として無くした。AI に従わせたいことはナレッジのページで受ける（口は K-711 が外した）。後のフェーズ",
+ "work-types": "D-152.20 業務の型は物として無くした。やり方は種別の本文のひな形とナレッジのページで受ける（口は K-711 が外した）。後のフェーズ",
+}
 
 # ------------------------------------------------------------ 導線（D-127.10・D-127.11）
 # 絵の名前はキャンバス（Main・MobileList）の絵に合わせる（K-138・レビューの指摘 4）。外枠はキャンバスの線をそのまま描く
@@ -342,17 +357,23 @@ def apply(G):
     # 行為
     old = {a[0]: a for _, rows in G["BACKBONE"] for a in rows}
     new_ids = set()
-    backbone, milestone = [], {}
+    backbone, milestone, sent = [], {}, []
     for ph, rows in ACTS:
         out = []
         for (i, act, roles, jobs, freq, src, scr, human, auto, back, chk, ms) in rows:
             prev = old[i][6] if i in old else []            # 今の行為の根拠は残す
             prev_bp = G["BLUEPRINT"][i][5] if i in G["BLUEPRINT"] else []
-            out.append((i, act, roles, jobs, freq, "v1", src + [P1] + [x for x in prev if x not in src]))
             G["BLUEPRINT"][i] = (human, scr, auto, back, chk, src + [x for x in prev_bp if x not in src])
-            milestone[i] = ms; new_ids.add(i)
+            new_ids.add(i)
+            if i in SENT_LATER:   # 後のフェーズへ送った行為（K-582）。後のフェーズの見出しに並べ、理由を DEFERRED に残す（G17）
+                why_id, why = SENT_LATER[i]
+                sent.append((i, act, roles, jobs, freq, "v2", src + [why_id] + [x for x in prev if x not in src]))
+                G["DEFERRED"][i] = why
+                continue
+            out.append((i, act, roles, jobs, freq, "v1", src + [P1] + [x for x in prev if x not in src]))
+            milestone[i] = ms
         backbone.append((ph, out))
-    later = []
+    later = list(sent)
     for i, a in old.items():
         if i in new_ids: continue
         later.append((i, a[1], a[2], a[3], a[4], "v2", a[6]))
@@ -378,7 +399,11 @@ def apply(G):
         n, p, pa, o, rel, sh, src = v
         S[sid] = (n, p, pa, o, "v2", sh, src)
         if sid not in G["DEFERRED"]: G["DEFERRED"][sid] = DEFER_SCREEN[sid]
-    G["MILESTONE_SCREENS"] = {sid: ms for ms, ids in MILESTONE_SCREENS.items() for sid in ids}
+    for sid, why in SENT_LATER_SCREENS.items():   # 後のフェーズへ送った画面（K-711）。理由を DEFERRED に残す（G17）
+        n, p, pa, o, _, sh, src = S[sid]
+        S[sid] = (n, p, pa, o, "v2", sh, src + [x for x in ["D-152.20"] if x not in src])
+        G["DEFERRED"][sid] = why
+    G["MILESTONE_SCREENS"] = {sid: ms for ms, ids in MILESTONE_SCREENS.items() for sid in ids if sid not in SENT_LATER_SCREENS}
     G["ACT2SCREEN"] = {a: [v[1]] for a, v in G["BLUEPRINT"].items()}
     for a, more in ACT_MORE_SCREENS.items():   # 1 つの行為が 2 つ目の画面にも出る（裏側の表の画面は 1 つのまま）
         G["ACT2SCREEN"][a] = G["ACT2SCREEN"].get(a, []) + [x for x in more if x not in G["ACT2SCREEN"].get(a, [])]
