@@ -616,6 +616,10 @@
   "validations": {
    "class": "frozen",
    "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "knowledge_breaches": {
+   "class": "skeleton",
+   "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）"
   }
  }
 }
