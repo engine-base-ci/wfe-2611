@@ -381,7 +381,7 @@ SCREEN_API = {
         ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["client_request_messages", "attachments", "notifications"]),   # K-907
         ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["client_request_messages"]),   # K-907
         ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_request_messages", "client_requests", "notifications"]),   # K-908
-        ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
+        ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", ["attachments"]),   # K-909：置いたら下書きの行を書く
         ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", [T, "ticket_sections", "ticket_messages"]),
         ("GET", "/portal/acceptances/:id", "A126", "acceptances", "getPortalAcceptance", ["artifact_versions"]),
         ("POST", "/portal/acceptances/:id/answer", "A126", "acceptances", "answerAcceptance", [T, "ticket_messages", "notifications"]),
@@ -1503,7 +1503,7 @@ PERMS = {
     "createPortalRequest": ("client", "ゲスト。自分のゲストのグループの依頼として出す（見るだけの形は無い）", False),
     "getPortalRequest": ("client", "自分のゲストのグループの依頼だけ", False),
     "postPortalRequestMessage": ("client", "ゲスト。自分のゲストのグループの依頼で、まだ決まっていない物だけ", False),
-    "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
+    "uploadPortalAttachment": ("client", "ゲスト。ファイルは大きさと種類を検査してから置く（関門 C4）。依頼に付くまでは本人の下書き", False),
     "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
     "getPortalAcceptance": ("client", "確かめてもらう相手と、同じ取引先の人（見るだけ）", False),
     "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
