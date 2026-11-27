@@ -121,11 +121,7 @@ async function run(
 ): Promise<HookReply> {
   let r: Body;
   try {
-    r = await withTenant(
-      appPool,
-      a.ctx,
-      async (cl) => (await cl.query<{ r: Body }>(`select ${sql} as r`, params)).rows[0]!.r,
-    );
+    r = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<{ r: Body }>(sql, params)).rows[0]!.r);
   } catch (ex) {
     console.error(`[ticket-kinds] ${op}：書けなかった（${(ex as Error)?.name ?? "Error"}）`);
     return unavailable();
@@ -155,7 +151,7 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
           appPool,
           a,
           "createTicketKind",
-          "app.ticket_kind_create($1, $2, $3::jsonb)",
+          "select app.ticket_kind_create($1, $2, $3::jsonb) as r",
           [name, color, tpl === null ? null : JSON.stringify(tpl)],
           one(201),
         );
@@ -176,7 +172,7 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
           appPool,
           a,
           "updateTicketKind",
-          "app.ticket_kind_update($1::uuid, $2::jsonb)",
+          "select app.ticket_kind_update($1::uuid, $2::jsonb) as r",
           [a.id, JSON.stringify(patch)],
           one(200),
         );
@@ -184,7 +180,7 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
     },
     deleteTicketKind: {
       before: async (a) =>
-        run(appPool, a, "deleteTicketKind", "app.ticket_kind_delete($1::uuid)", [a.id], (data) => ({
+        run(appPool, a, "deleteTicketKind", "select app.ticket_kind_delete($1::uuid) as r", [a.id], (data) => ({
           status: 200,
           body: { data: { id: ((data ?? {}) as Body)["id"] } },
         })),
@@ -194,10 +190,17 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
         const ids = a.input["kind_ids"];
         if (!Array.isArray(ids) || ids.length === 0)
           return invalid([{ field: "kind_ids", message: "種別の id を 1 つ以上の並びで送ってください" }]);
-        return run(appPool, a, "reorderTicketKinds", "app.ticket_kind_reorder($1::uuid[])", [ids], (data) => ({
-          status: 200,
-          body: { data: ((data ?? []) as Body[]).map(toKindSetting) },
-        }));
+        return run(
+          appPool,
+          a,
+          "reorderTicketKinds",
+          "select app.ticket_kind_reorder($1::uuid[]) as r",
+          [ids],
+          (data) => ({
+            status: 200,
+            body: { data: ((data ?? []) as Body[]).map(toKindSetting) },
+          }),
+        );
       },
     },
   };

@@ -88,7 +88,7 @@ async function human(
     authUserId,
   });
   await f.admin.query(
-    "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, 'member', 'active')",
+    "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, 'member', 'active') on conflict (tenant_id, member_id) do update set auth_user_id = excluded.auth_user_id, role = excluded.role, status = excluded.status",
     [tenant, p.id, authUserId],
   );
   return { ...p, email };

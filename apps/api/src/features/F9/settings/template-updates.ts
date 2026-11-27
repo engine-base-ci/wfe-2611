@@ -57,11 +57,7 @@ function answer(r: Body | undefined, op: string, ok: (data: unknown) => HookRepl
 }
 
 async function call(d: TemplateUpdatesDeps, a: HookArgs, sql: string, params: unknown[]): Promise<Body | undefined> {
-  return withTenant(
-    d.appPool,
-    a.ctx,
-    async (cl) => (await cl.query<{ r: Body }>(`select ${sql} as r`, params)).rows[0]?.r,
-  );
+  return withTenant(d.appPool, a.ctx, async (cl) => (await cl.query<{ r: Body }>(sql, params)).rows[0]?.r);
 }
 
 export function createListKindTemplateUpdates(d: TemplateUpdatesDeps): (a: HookArgs) => Promise<HookReply> {
@@ -69,7 +65,7 @@ export function createListKindTemplateUpdates(d: TemplateUpdatesDeps): (a: HookA
     const op = "listKindTemplateUpdates";
     let r: Body | undefined;
     try {
-      r = await call(d, a, "app.kind_template_updates()", []);
+      r = await call(d, a, "select app.kind_template_updates() as r", []);
     } catch (e) {
       return failed(e, op);
     }
@@ -80,9 +76,20 @@ export function createListKindTemplateUpdates(d: TemplateUpdatesDeps): (a: HookA
 export function createApplyKindTemplateUpdate(d: TemplateUpdatesDeps): (a: HookArgs) => Promise<HookReply> {
   return async (a) => {
     const op = "applyKindTemplateUpdate";
+    // 体の形：choice は change か keep だけ（契約の enum。zod は欄の候補を見ないので口が断る・何も変えない）
+    const choice = a.input["choice"];
+    if (choice !== "change" && choice !== "keep")
+      return {
+        status: 422,
+        body: {
+          error: "validation_failed",
+          code: "VALIDATION_ERROR",
+          details: [{ field: "choice", message: "change か keep" }],
+        },
+      };
     let r: Body | undefined;
     try {
-      r = await call(d, a, "app.kind_template_apply($1::uuid, $2)", [a.id, a.input["choice"]]);
+      r = await call(d, a, "select app.kind_template_apply($1::uuid, $2) as r", [a.id, choice]);
     } catch (e) {
       return failed(e, op);
     }

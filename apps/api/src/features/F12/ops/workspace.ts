@@ -11,6 +11,11 @@ import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "./db.js";
 
 type OpsWorkspaceFn = "ops_workspace" | "ops_workspace_members";
+/** 呼ぶ関数ごとの SQL（関数名を SQL の文字に埋め込まない・G10） */
+const READ_SQL: Readonly<Record<OpsWorkspaceFn, string>> = {
+  ops_workspace: "select app.ops_workspace($1::uuid) as j",
+  ops_workspace_members: "select app.ops_workspace_members($1::uuid) as j",
+};
 
 /** 道の id が uuid でなければ 422（欄 id）。入口が先に止めるので、ここに来るのは入口が抜けたときだけ */
 function badId(id: string): HookReply | null {
@@ -29,7 +34,7 @@ function readOne(appPool: pg.Pool, fn: OpsWorkspaceFn): (a: HookArgs) => Promise
     if (bad) return bad;
     try {
       const data = await opsTx(appPool, a.ctx, async (cl: pg.PoolClient) => {
-        const r = await cl.query<{ j: unknown }>(`select app.${fn}($1::uuid) as j`, [id]);
+        const r = await cl.query<{ j: unknown }>(READ_SQL[fn], [id]);
         return r.rows[0]!.j;
       });
       return { status: 200, body: { data } };

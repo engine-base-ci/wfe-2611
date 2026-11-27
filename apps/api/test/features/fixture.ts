@@ -172,3 +172,39 @@ export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
     },
   };
 }
+
+/** 引き金を通さずに 1 文を書く（session_replication_role = replica）。役割の束の引き金（0080）が権限の行を作り直さないようにする。
+ *  試験が権限を person の ticketAbility で決めているときに使う（束が付くと「見るだけの人」「マネージャー」が直せる人になる） */
+export async function quietWrite(f: Pick<Fixture, "admin">, sql: string, args: unknown[]): Promise<void> {
+  const c = await f.admin.connect();
+  try {
+    await c.query("begin");
+    await c.query("set local session_replication_role = replica");
+    await c.query(sql, args);
+    await c.query("commit");
+  } catch (e) {
+    await c.query("rollback");
+    throw e;
+  } finally {
+    c.release();
+  }
+}
+
+/** 作る人を会社にも入れる（tenant_memberships が active・役割の束の引き金は通さない）。
+ *   任せる口は段10 の K-699 から、任せる人の「必ず守る」（app.knowledge_context）を読み、読めるのは会社に入っている人だけ。
+ *   本物の人は必ず会社に入っているので、任せる口を叩く土台の人も入れる。権限は試験が person の ticketAbility で決めたままにしたいので、
+ *   束の引き金（0080・役割から権限の行を作る）は通さない（通すと「見るだけの人」が member の束で直せる人になる）。
+ *   後から試験が自分で会社に入れる行（役割・状態を決める）は on conflict で上書きしてよい。
+ *   後から scope_memberships を足すと束の引き金がこの行の役割で権限を作るので、権限を足したくない所属は quietWrite で足す */
+export function joinOnCreate(f: Fixture): void {
+  const base = f.person;
+  f.person = async (tenantId, scopeId, o = {}) => {
+    const p = await base(tenantId, scopeId, o);
+    await quietWrite(
+      f,
+      "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, $3, 'member', 'active') on conflict (tenant_id, member_id) do nothing",
+      [tenantId, p.id, o.authUserId ?? null],
+    );
+    return p;
+  };
+}
