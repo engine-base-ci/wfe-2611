@@ -32,6 +32,12 @@ export const ROW_EXEMPT_FIELDS = {
   deleteTicketLink: {
     id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },
+  updateGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
+  deleteGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
 };
 const exemptField = (op, field) => {
   const why = ROW_EXEMPT_FIELDS[op]?.[field];
