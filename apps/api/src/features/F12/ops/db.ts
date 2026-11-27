@@ -49,6 +49,11 @@ const sqlState = (e: unknown): string => {
 /** DB の断りを口の答えに直す。どれでもない失敗は止める側に倒す（503） */
 export function opsErrorReply(e: unknown, where: string): HookReply {
   const state = sqlState(e);
+  // 関数を呼ぶ権限が無い（aclcheck_error・接続の役から EXECUTE が外れた）は止める側（503）。運営の人でない（ops_require の 42501）だけ 403
+  if (state === "42501" && (e as { routine?: unknown } | null)?.routine === "aclcheck_error") {
+    console.error(`[ops] ${where} の DB の関数を呼べない（42501）`);
+    return { status: 503, body: { error: "unavailable", code: "E-PAGE-003" } };
+  }
   if (state === "42501") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
   if (state === "P0002") return { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
   console.error(`[ops] ${where} の DB が失敗した（${state}）`);
