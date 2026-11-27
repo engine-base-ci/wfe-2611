@@ -441,3 +441,11 @@ POLICIES.setdefault("guest_groups", []).append(
 PENDING_CHILD_TABLES = {
     "skill_versions": "KN-21（会社・層・個人の業務の型を入れる前に、元の型を見られる人だけにする。節目①は運営の全社向けだけ）",
 }
+
+# ゲストが依頼を出す方針（K-907）。K-878 が「ゲストが依頼を出す方針は書く口の葉が足す」と決めた物。
+#   出せるのは自分のゲストのグループの・取引先なし・新しい・出した人が本人の行だけ。直す・消すの方針は足さない（0 行のまま・やり取りは K-908 の口）。
+#   K-878 の client_requests の一覧の後ろに足す形にして、どちらの葉が先に入っても方針が欠けない
+POLICIES.setdefault("client_requests", []).append(
+    {"name": "client_requests_guest_insert", "operation": "insert", "role": "client",
+     "predicate": f"tenant_id = {T} AND guest_group_id = app.my_guest_group() AND client_id IS NULL AND state = 'new' AND created_by = {U}",
+     "rationale": "ゲストは自分のゲストのグループの依頼として、自分を出した人にした新しい依頼だけを足せる（別のグループ・他人を出した人にした行・新しくない行は断る）", "source": ["D-155.37", "D-155.42", "D-128.46"]})

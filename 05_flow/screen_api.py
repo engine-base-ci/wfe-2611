@@ -378,8 +378,8 @@ SCREEN_API = {
     "portal": [
         ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["client_requests", T]),
         ("POST", "/portal/requests/questions", "A124", "client_requests", "askPortalRequestQuestions", ["bridge_jobs"]),
-        ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["conversations", "attachments", "notifications", "bridge_jobs"]),
-        ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["messages"]),
+        ("POST", "/portal/requests", "A124", "client_requests", "createPortalRequest", ["client_request_messages", "attachments", "notifications"]),   # K-907
+        ("GET", "/portal/requests/:id", "A124", "client_requests", "getPortalRequest", ["client_request_messages"]),   # K-907
         ("POST", "/portal/requests/:id/messages", "A124", "messages", "postPortalRequestMessage", ["client_request_messages", "client_requests", "notifications"]),   # K-908
         ("POST", "/portal/attachments", "A124", "attachments", "uploadPortalAttachment", []),
         ("GET", "/portal/tickets/:id", "A125", T, "getPortalTicket", [T, "ticket_sections", "ticket_messages"]),
@@ -1111,7 +1111,7 @@ RESPONSES = {
     "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "routes": "array", "can_act": "boolean", "pc_connected": "boolean", "ticket_draft": "object?", "questions": "array", "reply_draft": "string?", "route_suggestion": "object?"}),   # K-892：案は draft_state が ready のときだけ（無ければ null）
     "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
-    "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
+    "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array", "can_write": "boolean"}),
     "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
     "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
@@ -1500,8 +1500,8 @@ PERMS = {
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
     "getPortalHome": ("client", "自分のゲストのグループの依頼と、見せてもらったチケットだけ", False),
     "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
-    "createPortalRequest": ("client", "「依頼できる」の人だけ。同じ取引先の人に見える", False),
-    "getPortalRequest": ("client", "自分の取引先の依頼だけ", False),
+    "createPortalRequest": ("client", "ゲスト。自分のゲストのグループの依頼として出す（見るだけの形は無い）", False),
+    "getPortalRequest": ("client", "自分のゲストのグループの依頼だけ", False),
     "postPortalRequestMessage": ("client", "ゲスト。自分のゲストのグループの依頼で、まだ決まっていない物だけ", False),
     "uploadPortalAttachment": ("client", "「依頼できる」の人だけ。ファイルは検査してから置く（関門 C4）", False),
     "getPortalTicket": ("client", "見せる相手に自分のゲストのグループが選ばれたチケットだけ（題・本文・詳細・チャットと段の札）", False),
