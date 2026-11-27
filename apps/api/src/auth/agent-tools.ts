@@ -126,14 +126,19 @@ export function agentToolRoutes(d: AgentToolDeps): Hono {
     const token = c.req.header("x-kaname-tool-token") ?? "";
     if (token.length < 20) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵は分かりません");
     const job = (
-      await d.appPool.query<{ job_id: string; member_id: string; tenant_id: string; kind: string }>(
-        "select job_id, member_id, tenant_id, kind from app.bridge_tool_job($1)",
-        [hashToolToken(token)],
-      )
+      await d.appPool.query<{
+        job_id: string;
+        member_id: string;
+        tenant_id: string;
+        kind: string;
+        talk_kind: string | null;
+      }>("select job_id, member_id, tenant_id, kind, talk_kind from app.bridge_tool_job($1)", [hashToolToken(token)])
     ).rows[0];
     if (!job) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵はもう使えません（仕事が終わっています）");
     // チケットの仕事で使える道具は ticket_read だけ（契約の口と同じ決め）。成果物の口は会話の仕事の鍵だけ通す（K62-API-070・D-129.44）
-    if (job.kind === "ticket") return bad(c, 403, "FORBIDDEN", "この仕事ではその道具を使えません");
+    // 作る画面の会話（draft）の仕事で出せる道具は draft_propose だけ（K-775）。成果物も置き場も触らない
+    if (job.kind === "ticket" || job.talk_kind === "draft")
+      return bad(c, 403, "FORBIDDEN", "この仕事ではその道具を使えません");
     const name = decodeURIComponent(c.req.header("x-artifact-name") ?? "").trim();
     const ext = (/\.([A-Za-z0-9]{1,5})$/.exec(name)?.[1] ?? "").toLowerCase();
     const contentType = ARTIFACT_PUT_TYPES[ext];
