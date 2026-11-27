@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 262・部品 56・設定 41
+API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 20・共通の処理 13・エラー 262・部品 56・設定 41
 
 ## 共通の処理
 
@@ -29,6 +29,7 @@ API 369（作った 97・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/button` | Button | ボタン（K-24・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作 |
 | `apps/web/components/k/field` | TextField, TextArea, PasswordField | 入力（K-24・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field） |
 | `apps/web/components/k/select` | Select | 選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる |
+| `apps/web/components/k/choice` | Checkbox, Radio, RadioGroup | 丸い選択・四角い選択（K-642・正本 components.choice・choice-box）。画面はネイティブの丸・四角を直に書かず、ここだけを使う |
 | `apps/web/components/k/menu` | Menu, MenuTrigger, MenuPopup, MenuItem | メニューの型（K-369・Base UI Menu）。開くボタン 1 つと、開いた箱の中の項目の並び（行の「…」など）。 |
 | `apps/web/components/k/table` | Table | 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える） |
 | `apps/web/components/k/badge` | Badge | 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ） |
