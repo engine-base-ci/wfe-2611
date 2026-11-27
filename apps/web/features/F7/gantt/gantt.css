@@ -100,11 +100,17 @@
 }
 
 /* ---- 本体（svar-gantt）の置き場と、変数の置き換え ---- */
+/* 高さは目盛り 2 段（月と日）＋行 18 本（PC の 1 画面に 18 行ほど・それより多い行は本体の中で縦に送る・K-482） */
 .k-f7-gantt-body {
   position: relative;
   min-width: 0;
-  height: var(--k-c-gantt-body-height);
+  height: calc(var(--k-c-gantt-scale-height) * 2 + var(--k-c-gantt-row-height) * 18);
   overflow: hidden;
+}
+/* 棒をつかんで期限を動かす以外のつまみは出さない（つながりを作る・進み具合。どちらも口に送らず保存されない・K-482） */
+.k-f7-gantt-body .wx-link,
+.k-f7-gantt-body .wx-progress-marker {
+  display: none;
 }
 .k-f7-gantt-body .wx-willow-theme {
   height: 100%;
