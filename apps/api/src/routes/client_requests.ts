@@ -9,5 +9,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/client_requests/:id", op(deps, "updateClientRequest"));
   app.post("/api/v1/client_requests/:id/accept", op(deps, "acceptClientRequest"));
   app.post("/api/v1/client_requests/:id/decline", op(deps, "declineClientRequest"));
+  app.post("/api/v1/client_requests/:id/draft", op(deps, "requestClientRequestDraft"));
   app.post("/api/v1/client_requests/:id/reply", op(deps, "replyToClientRequest"));
 }

@@ -4935,37 +4935,6 @@
    "support_code": "VAL-020"
   },
   {
-   "id": "E-VAL-022",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "complete"
-   },
-   "when": "完了にするとき、チェックの入っていない実施事項が残っている",
-   "false_when": "実施事項が全部チェック済み",
-   "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
-   "action": "残っている実施事項を済ませてチェックする",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
-    "steps": [
-     "実施事項を 1 つ残して完了にする"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.55"
-   ],
-   "support_code": "VAL-022"
-  },
-  {
    "id": "E-VAL-023",
    "class": "validation",
    "where": {
@@ -5117,39 +5086,6 @@
     "D-128.49"
    ],
    "support_code": "CONF-016"
-  },
-  {
-   "id": "E-CONF-017",
-   "class": "conflict",
-   "where": {
-    "screen": "tickets",
-    "state": "complete"
-   },
-   "when": "完了の小窓を開いた後に、実施事項が書き換わった",
-   "false_when": "開いてから実施事項が変わっていない",
-   "message": "実施事項が変わりました。読み直してから完了にしてください",
-   "action": "読み直して、もう一度確かめる",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
-    "steps": [
-     "完了の小窓を開く",
-     "別のタブで実施事項を書き換える",
-     "完了にする"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.55"
-   ],
-   "support_code": "CONF-017"
   },
   {
    "id": "E-CONF-018",
@@ -5591,7 +5527,7 @@
   },
   {
    "id": "E-VAL-012",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5620,76 +5556,8 @@
    "support_code": "VAL-012"
   },
   {
-   "id": "E-VAL-013",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "種別の必須の区画（タスクなら目的・完了の条件・実施事項）が空のまま作ろうとした",
-   "false_when": "必須の区画が全部書いてある",
-   "message": "この区画は書かないと作れません",
-   "action": "区画を書く",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "目的を空のまま作る"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.51",
-    "D-125.53",
-    "D-128.117",
-    "D-128.138"
-   ],
-   "support_code": "VAL-013"
-  },
-  {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
-  },
-  {
    "id": "E-VAL-015",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5754,7 +5622,7 @@
     "screen": "tickets",
     "state": "list"
    },
-   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・期限・担当者・優先度・見込み など・段 8 で作る）を送った（K-387）",
+   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・担当者・見込み など）を送った（K-387・優先度と親は K-440・期限と開始日は K-483 の組）",
    "false_when": "view・q・scope_id・limit・cursor だけ。updateTicket で段・実績・保留の理由と再開の条件だけを送った",
    "message": "この絞り込みはまだ使えません",
    "action": "絞り込みを外して開き直す",
@@ -6916,35 +6784,6 @@
    "support_code": "VAL-042"
   },
   {
-   "id": "E-CONF-037",
-   "class": "conflict",
-   "where": {
-    "screen": "tickets",
-    "state": "decisions"
-   },
-   "when": "決定を足すとき、取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・K-390・K-391。断る番号の役割は代表の答え answer=f0f290e785a9）",
-   "false_when": "このチケットの決定にする（promoted_to が ticket か送らない）",
-   "message": "取引先の画面ができてから使えます",
-   "action": "このチケットの決定として残す",
-   "undo": false,
-   "layers": [
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "作業中のチケット",
-    "steps": [
-     "promoted_to に client_rule を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.40"
-   ],
-   "support_code": "CONF-037"
-  },
-  {
    "id": "E-CONF-031",
    "class": "conflict",
    "where": {
@@ -7818,7 +7657,7 @@
    ]
   },
   {
-   "id": "E-INV-016",
+   "id": "E-INV-020",
    "class": "conflict",
    "where": {
     "screen": "invite-accept",
@@ -7961,6 +7800,34 @@
    ]
   },
   {
+   "id": "E-SEC-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す先の版の中身が今の本文と同じ（版を無駄に増やさない）",
+   "false_when": "戻す先の版の中身が今の本文と違う",
+   "message": "もう同じ中身です",
+   "action": "別の版を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開く",
+    "steps": [
+     "今の版と同じ中身の版を選んで、本文をその版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.47"
+   ]
+  },
+  {
    "id": "E-SPEC-001",
    "class": "conflict",
    "where": {
@@ -8073,6 +7940,232 @@
    "source": [
     "段 10 の代表の決め 2026-11-22"
    ]
+  },
+  {
+   "id": "E-VAL-028",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの開始日が、最終期限より後の日だった",
+   "false_when": "開始日が期限と同じ日か、それより前（開始は入れなくてもよい）",
+   "message": "開始日は期限より前の日にしてください",
+   "action": "開始日か期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "開始に期限より後の日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.34"
+   ],
+   "support_code": "VAL-028"
+  },
+  {
+   "id": "E-DUP-001",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+   "false_when": "元のチケットが見える（書く権限は要らない）",
+   "message": "複製の元のチケットが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+   "action": "元を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを 1 つ作って消す",
+    "steps": [
+     "消したチケットを元にして複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-128.115"
+   ],
+   "support_code": "DUP-001"
+  },
+  {
+   "id": "E-DUP-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "子チケットを写すと、親子が 3 段を超える（複製の親が 2 段目で、元に子がいる）",
+   "false_when": "子を写さない・写しても 3 段まで",
+   "message": "子チケットを写すと、親子が 3 段を超えます。子を写さないか、別の親を選んでください",
+   "action": "子を写さずに作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を持つチケットと、2 段目のチケット",
+    "steps": [
+     "2 段目のチケットを親にして、子を写して複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-125.50"
+   ],
+   "support_code": "DUP-002"
+  },
+  {
+   "id": "E-TKT-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケット自身を決めようとした（K-440。親を決める小窓か、口 PATCH /api/v1/tickets/:id の parent_ticket_id）",
+   "false_when": "親に、自分とは別のチケットを決めた",
+   "message": "自分自身は親にできません",
+   "action": "別のチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細",
+    "steps": [
+     "口に、そのチケット自身の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-001"
+  },
+  {
+   "id": "E-TKT-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケットの子・孫（下の段）を決めようとした＝親子が輪になる（K-440。同時に A の親を B・B の親を A にしたときの後の 1 本も）",
+   "false_when": "自分の下の段に無いチケットを親にした",
+   "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+   "action": "自分の下にないチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "親と子のチケット",
+    "steps": [
+     "親のチケットに、その子の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-002"
+  },
+  {
+   "id": "E-TKT-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親を決めると親子が 3 段を超える（親が 3 段目、または自分の下の段を数えて 3 段を超える・K-440）",
+   "false_when": "親子が 3 段までに収まる",
+   "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+   "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3 段の親子のチケット",
+    "steps": [
+     "3 段目のチケットを親にする口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-003"
+  },
+  {
+   "id": "E-TKT-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "今の自分の期限が親の期限より後のチケットに、その親を決めようとした（どちらかの期限が空なら対象外・親の期限より後の期限にする側は期限の口・K-440）",
+   "false_when": "自分の期限が親の期限と同じか前（または、どちらかの期限が空）",
+   "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+   "action": "期限を親の期限以前に直してから親を決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限が親より後のチケット",
+    "steps": [
+     "親の期限より後の期限のチケットに、その親を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-004"
   },
   {
    "id": "E-LNK-001",
@@ -8197,6 +8290,35 @@
    "severity": "low",
    "source": [
     "D-151.4"
+   ]
+  },
+  {
+   "id": "E-NTF-010",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "notifications"
+   },
+   "when": "自分宛てで一覧に出る知らせでない（別の人・別の会社・もう無い・行き先のチケットが見えなくなった）",
+   "false_when": "自分宛ての一覧に出ている知らせ",
+   "message": "このお知らせは見つかりませんでした",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "鈴を押して知らせの一覧を開く",
+    "steps": [
+     "別の人宛ての知らせの id で PATCH /api/v1/notifications/:id を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.3"
    ]
   },
   {
@@ -8524,6 +8646,252 @@
     "D-128.83",
     "D-151.9"
    ]
+  },
+  {
+   "id": "E-VWS-020",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員向けの保存した条件の見せる相手（share か scope_id）を、作った人でない人（そのグループのマネージャー）が今と違う値に変えようとした",
+   "false_when": "作った人が変える・今と同じ値を添えただけ・名前や条件や列や詰め方だけを直す",
+   "message": "見せる相手を変えられるのは、作った人だけです",
+   "action": "名前や条件だけを直す（見せる相手は作った人に頼む）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "グループのマネージャーとして、作った人の「グループの全員」に見せている条件を開く",
+     "画面を通さずに口を直に呼び、見せる相手を「自分だけ」に変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.119",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-021",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員に見せている条件で、share は送らずに scope_id だけを null にした（結果が「グループの全員で見せるグループが無い」になる）",
+   "false_when": "share を「自分だけ」にして一緒に scope_id を null にする・scope_id を別のグループに変える",
+   "message": "グループの全員に見せている条件から、見せるグループは外せません。先に「自分だけ」に変えてください",
+   "action": "先に「自分だけ」に変える",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "「グループの全員」に見せている保存した条件を持つ",
+     "画面を通さずに口を直に呼び、見せるグループだけを外す（scope_id を null）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.119",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-DUE-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限（due_on）を変えるのに、理由（due_reason）が無い・null・空・空白だけ・制御文字だけ（K-483・期限をなくすときも初めて決めるときも要る）",
+   "false_when": "理由を書いて期限を変えた・開始日だけを直した",
+   "message": "期限を変える理由を書いてください",
+   "action": "理由を書いてから変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "理由を空にして期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-150.4",
+    "D-151.11"
+   ],
+   "support_code": "DUE-001"
+  },
+  {
+   "id": "E-DUE-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限を変える理由が 201 文字以上（K-483）",
+   "false_when": "理由が 200 文字まで",
+   "message": "理由は 200 文字までにしてください",
+   "action": "理由を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "201 文字の理由で期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-130.1"
+   ],
+   "support_code": "DUE-002"
+  },
+  {
+   "id": "E-DUE-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "子のチケットの期限を、親のチケットの期限より後の日にしようとした（K-483・消した親・期限の無い親は見ない）",
+   "false_when": "親の期限と同じ日か前・親に期限が無い",
+   "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+   "action": "親の期限を先に延ばすか、親の期限までの日にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "親より後の日に子の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-005"
+  },
+  {
+   "id": "E-DUE-006",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "親のチケットの期限を、子のチケット（消していない直接の子）の期限より前の日にしようとした（K-483）",
+   "false_when": "子の期限と同じ日か後・期限をなくす・消した子だけが後",
+   "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+   "action": "子の期限を先に変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "子より前の日に親の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-006"
+  },
+  {
+   "id": "E-DUE-007",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "完了したチケットの期限か開始日を変えようとした（K-483）",
+   "false_when": "完了していないチケット",
+   "message": "完了したチケットの期限は変えられません",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "完了したチケットの期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-007"
+  },
+  {
+   "id": "E-DUE-008",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "画面が見ていた期限・開始日（expected_due_on・expected_start_on）が今の値と違う＝ほかの人が先に変えた（K-483）",
+   "false_when": "expected を送らない・今の値と合う",
+   "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "別の画面で期限を変えた後、古い画面で変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-008"
   },
   {
    "id": "E-STP-001",
@@ -8927,6 +9295,246 @@
    ]
   },
   {
+   "id": "E-DEL-040",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消した本人でも、そのグループのマネージャー・管理者でもない人が、消したチケットを戻した",
+   "false_when": "消した本人か、そのグループのマネージャー・管理者が戻した",
+   "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+   "action": "消した人かマネージャーに頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "他の人が消したチケットを、書けるだけの人で開く",
+    "steps": [
+     "消したチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-041",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もう戻っている（消えていない）チケットを戻した・同時に別のタブが先に戻した",
+   "false_when": "消えているチケットを戻した",
+   "message": "このチケットはもう戻っています",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを消した直後の画面を 2 つのタブで開く",
+    "steps": [
+     "消した直後の「元に戻す」を 2 つのタブで同時に押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-042",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消してから 30 日を過ぎたチケットを戻した",
+   "false_when": "消してから 30 日以内のチケットを戻した",
+   "message": "消してから 30 日を過ぎているので、もう戻せません",
+   "action": "戻せないので、必要なら新しく作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "30 日より前に消したチケットがある状態にする",
+    "steps": [
+     "30 日を過ぎて消えたままのチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-128.116"
+   ]
+  },
+  {
+   "id": "E-DEL-043",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "親が消えている子を戻した",
+   "false_when": "親が消えていない子を戻した",
+   "message": "このチケットの親が消えています。先に親を戻してください",
+   "action": "親を先に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を消した後で、その親も消した状態にする",
+    "steps": [
+     "親を消した後に、先に消していた子の「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-FLD-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "チケットの種別に出ない会社の項目に値を入れようとした（K-564。項目に種別の行があって、このチケットの種別が入っていない。消した種別の行しか無い項目も同じ）",
+   "false_when": "全部の種別に出る項目、またはこのチケットの種別に出る項目に値を入れた",
+   "message": "この項目は、このチケットの種別では使えません",
+   "action": "項目の一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "種別が違う項目とチケット",
+    "steps": [
+     "その種別に出ない項目の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-001"
+  },
+  {
+   "id": "E-FLD-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "選択肢に無い値を入れようとした（1 つ選ぶ・複数選ぶ。別の項目の選択肢の id・マスタから外した選択肢も同じ・K-564）",
+   "false_when": "その項目の選択肢の id を送った",
+   "message": "選べない値が含まれています。選択肢から選び直してください",
+   "action": "選択肢から選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "選択肢のある項目とチケット",
+    "steps": [
+     "その項目に、知らない選択肢の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-002"
+  },
+  {
+   "id": "E-FLD-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "項目の型と合わない値を入れようとした（数に文字・日付に暦に無い日や別の書き方・チェックに文字・選ぶ型に数・K-564）",
+   "false_when": "項目の型どおりの値を送った",
+   "message": "この項目に入れられない形の値です",
+   "action": "値を入れ直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "数の項目とチケット",
+    "steps": [
+     "その項目に、数でない値を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-003"
+  },
+  {
+   "id": "E-FLD-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "必須の項目を空にしようとした（null・空の文字・空白だけ・空の並び。必須のチェックは false も同じ・K-564）",
+   "false_when": "必須でない項目を空にした、または必須の項目に値を入れた",
+   "message": "必須の項目は空にできません。値を入れてください",
+   "action": "値を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "必須の項目に値が入ったチケット",
+    "steps": [
+     "その項目に null を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-004"
+  },
+  {
    "id": "E-CONF-020",
    "class": "conflict",
    "where": {
@@ -8956,6 +9564,6040 @@
     "D-150.45"
    ],
    "support_code": "CONF-020"
+  },
+  {
+   "id": "E-ITM-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了したチケットの項目は戻せない",
+   "false_when": "チケットが完了していない",
+   "message": "完了したチケットの項目は、戻せません",
+   "action": "戻さずに閉じる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "完了したチケットで、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
+  },
+  {
+   "id": "E-ITM-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "見ている間に項目が変えられた",
+   "false_when": "今見ている点が今の最新の点",
+   "message": "先に項目が変えられました。読み直してから、もう一度戻してください",
+   "action": "読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "開いた後に別の画面で項目を変え、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
+  },
+  {
+   "id": "E-ITM-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す物が無い",
+   "false_when": "比べた 2 つの点の間に正味の変わりがある",
+   "message": "戻す項目がありません",
+   "action": "比べる点を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開き、項目の変更を見る",
+    "steps": [
+     "変わりの無い 2 つの点を比べて、項目の変更を版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.52",
+    "D-150.47"
+   ]
+  },
+  {
+   "id": "E-KNW-010",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページがまだ一度も書き終わっていない（下書きだけ）のに、必ず守る・写す・上げる・共有をする",
+   "false_when": "一度書き終えたページ",
+   "message": "このページはまだ書き終えていません。書き終えてから使ってください",
+   "action": "書き終える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ページがまだ一度も書き終わっていない（下書きだけ）のに、必ず守る・写す・上げる・共有をする（口 setKnowledgeMust・copyKnowledgePage（後で requestKnowledgeRaise・setKnowledgeShares））"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-011",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "上げる・共有する頼みが承認待ちのページを動かす・消す・必ず守るを変える",
+   "false_when": "承認待ちの頼みが無いページ",
+   "message": "このページを上の棚へ上げる（共有する）頼みが承認待ちです。決まるまでは変えられません",
+   "action": "頼みを取り下げる／決まるのを待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "上げる・共有する頼みが承認待ちのページを動かす・消す・必ず守るを変える（口 updateKnowledgePage・deleteKnowledgePage・setKnowledgeMust（後で requestKnowledgeRaise ほか））"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-012",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかの人がこのページの下書きを書いている間に下書きを保存する",
+   "false_when": "下書きが無い・自分の下書き",
+   "message": "ほかの人がこのページを書いています。書き終えるまで待ってください",
+   "action": "少し待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ほかの人がこのページの下書きを書いている間に下書きを保存する（口 saveKnowledgeDraft）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-020",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "同じ場所に同じ名前のフォルダを作る・名前を変える",
+   "false_when": "名前が違う・場所が違う",
+   "message": "同じ場所に同じ名前のフォルダがあります",
+   "action": "名前を変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "同じ場所に同じ名前のフォルダを作る・名前を変える（口 createKnowledgeFolder・updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-021",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダの入れ子が 6 を超える所に作る・動かす",
+   "false_when": "6 つ入れ子まで",
+   "message": "フォルダは 6 つ入れ子までです",
+   "action": "浅い所に置く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダの入れ子が 6 を超える所に作る・動かす（口 createKnowledgeFolder・updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-022",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダを自分か自分の中のフォルダの下へ動かす",
+   "false_when": "ほかの場所へ動かす",
+   "message": "フォルダを自分の中には動かせません",
+   "action": "別の場所を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダを自分か自分の中のフォルダの下へ動かす（口 updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-023",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "フォルダを別の棚のフォルダの下へ動かす",
+   "false_when": "同じ棚の中で動かす",
+   "message": "フォルダは別の棚には動かせません",
+   "action": "同じ棚の中で動かす",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "フォルダを別の棚のフォルダの下へ動かす（口 updateKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-024",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "中にページかフォルダがあるフォルダを消す",
+   "false_when": "空のフォルダ",
+   "message": "中にページかフォルダがあるので消せません",
+   "action": "先に動かすか消す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "中にページかフォルダがあるフォルダを消す（口 deleteKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-030",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "下書きが無いのに下書きを捨てる",
+   "false_when": "自分の下書きがある",
+   "message": "捨てる下書きがありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "下書きが無いのに下書きを捨てる（口 discardKnowledgeDraft）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-040",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "下書きが無いのに書き終える",
+   "false_when": "自分の下書きがある",
+   "message": "書き終える下書きがありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "下書きが無いのに書き終える（口 publishKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-041",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "必ず守るのページを本文 2,000 字を超えて書き終える",
+   "false_when": "2,000 字まで・必ず守るでないページ",
+   "message": "「必ず守る」のページは本文を 2,000 字までにしてください",
+   "action": "本文を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "必ず守るのページを本文 2,000 字を超えて書き終える（口 publishKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-050",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "必ず守るが付いたページを消す",
+   "false_when": "必ず守るが付いていないページ",
+   "message": "「必ず守る」が付いているので消せません",
+   "action": "先に外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "必ず守るが付いたページを消す（口 deleteKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-051",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかのグループに共有しているページ・フォルダを消す",
+   "false_when": "共有していない物",
+   "message": "ほかのグループに共有しているので消せません",
+   "action": "先に共有をやめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ほかのグループに共有しているページ・フォルダを消す（口 deleteKnowledgePage・deleteKnowledgeFolder）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-052",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページを別の棚のフォルダへ動かす",
+   "false_when": "同じ棚の中で動かす",
+   "message": "ページは別の棚には動かせません。上の棚へは「上げる」を使ってください",
+   "action": "「上げる」を使う",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "ページを別の棚のフォルダへ動かす（口 updateKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-060",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "棚の必ず守るの数が上限に届いているのに付ける",
+   "false_when": "上限より少ない・外す",
+   "message": "「必ず守る」の上限に届きました",
+   "action": "今付いているページから外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "棚の必ず守るの数が上限に届いているのに付ける（口 setKnowledgeMust）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-061",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "本文が 2,000 字を超えるページに必ず守るを付ける",
+   "false_when": "2,000 字まで・外す",
+   "message": "本文が 2,000 字を超えているので、「必ず守る」は付けられません",
+   "action": "本文を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "本文が 2,000 字を超えるページに必ず守るを付ける（口 setKnowledgeMust）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-080",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを写す",
+   "false_when": "会社・グループの棚のページ",
+   "message": "自分の棚のページは写せません",
+   "action": "上の棚のページを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページかフォルダを開く",
+    "steps": [
+     "自分の棚のページを写す（口 copyKnowledgePage）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.14",
+    "D-152.15"
+   ]
+  },
+  {
+   "id": "E-KNW-100",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページが会社の棚にあるのに、上の棚へ上げる",
+   "false_when": "グループ・自分の棚のページ",
+   "message": "このページは会社の棚にあるので、これより上へは上げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ページが会社の棚にあるのに、上の棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-101",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを、上げる先のグループを選ばずに上げる",
+   "false_when": "上げる先のグループを選んだ・グループの棚のページ",
+   "message": "上げる先のグループを選んでください",
+   "action": "グループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "自分の棚のページを、上げる先のグループを選ばずに上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-102",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "承認できる人（マネージャー・管理者）がいない棚へ上げる",
+   "false_when": "承認できる人がいる棚・自分が書ける棚",
+   "message": "上げる先に承認できる人がいません。管理者に知らせてください",
+   "action": "管理者に知らせる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "承認できる人（マネージャー・管理者）がいない棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-103",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "入れるフォルダを、上げる先でない棚から選んで上げる",
+   "false_when": "上げる先の棚のフォルダ・フォルダを選ばない",
+   "message": "入れるフォルダは、上げる先の棚から選んでください",
+   "action": "フォルダを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "入れるフォルダを、上げる先でない棚から選んで上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-104",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる",
+   "false_when": "承認待ちの頼み",
+   "message": "この頼みはもう決まっているので、取り下げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる（口 withdrawKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-105",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す",
+   "false_when": "断られて帯をまだ消していない頼み",
+   "message": "消せるのは、断られた頼みの帯だけです",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す（口 dismissKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-106",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかのグループに共有している（上のフォルダを含む）ページを上げる",
+   "false_when": "共有していないページ",
+   "message": "共有しているページは上げられません。先に共有をやめてください",
+   "action": "共有をやめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ほかのグループに共有している（上のフォルダを含む）ページを上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-110",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "もう決まった頼み（承認・断り・取り下げ済み）を承認する・断る",
+   "false_when": "承認待ちの頼みを 1 度だけ承認する・断る",
+   "message": "この頼みはもう決まっています",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理 › 承認待ちを開く",
+    "steps": [
+     "もう決まった頼み（承認・断り・取り下げ済み）を承認する・断る（口 approveKnowledgeRequest・declineKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-111",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを上げる頼みを、頼んだ人が先のグループを抜けた後に承認する",
+   "false_when": "頼んだ人がまだ先のグループにいる・グループの棚のページの頼み",
+   "message": "頼んだ人がもうそのグループにいないので、承認できません",
+   "action": "断る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理 › 承認待ちを開く",
+    "steps": [
+     "自分の棚のページを上げる頼みを、頼んだ人が先のグループを抜けた後に承認する（口 approveKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-120",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "共有の小窓で、元のグループを共有先に選んで送る",
+   "false_when": "元のグループ以外を選んだ",
+   "message": "元のグループには共有できません",
+   "action": "別のグループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "共有の小窓で、元のグループを共有先に選んで送る（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
+   "id": "E-KNW-121",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "会社の棚か自分の棚のページ・フォルダを共有する",
+   "false_when": "グループの棚の物",
+   "message": "共有できるのは、グループの棚のページとフォルダだけです",
+   "action": "上げるなど別の道を使う",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "会社の棚か自分の棚のページ・フォルダを共有する（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
+   "id": "E-KNW-122",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "マネージャーのいないグループへ共有を頼む",
+   "false_when": "共有先にマネージャーがいる",
+   "message": "共有先に承認できる人がいません。そのグループのマネージャーに知らせてください",
+   "action": "マネージャーを決めてもらう",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "マネージャーのいないグループへ共有を頼む（口 setKnowledgeShares）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.6"
+   ]
+  },
+  {
+   "id": "E-KNW-240",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了にするとき、必ず守る決まりから入った確認項目（今も必ず守るで生きているページの行）にチェックの付いていない物がある",
+   "false_when": "必ず守るの行が全部チェック済み・人が足した確認項目だけが未チェック・必ず守るでなくなったページの行・任せた人が会社を抜けた行",
+   "message": "必ず守る決まりから入った確認項目に、チェックの付いていない物があるので、まだ完了にできません",
+   "action": "確認項目に戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "必ず守るのページがある会社で、チケットを AI に任せて確認項目に必ず守るの行を入れる",
+    "steps": [
+     "必ず守るの確認項目にチェックを付けないまま「完了にする」を押す"
+    ],
+    "needs": "必ず守るのページ"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.42",
+    "D-150.50",
+    "D-152.12"
+   ]
+  },
+  {
+   "id": "E-KND-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "消していない種別に同じ名前（前後の空白を落とした字）があるのに、種別を足すか名前を直した",
+   "false_when": "同じ名前の種別が無い／消した種別の名前／別の会社の種別の名前",
+   "message": "同じ名前の種別がすでにあります",
+   "action": "名前を変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 1 つ足しておき、同じ名前でもう 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-001"
+  },
+  {
+   "id": "E-KND-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "種別がもう 10 ある会社で、種別を足した",
+   "false_when": "種別が 9 以下／別の会社の種別の数",
+   "message": "種別は 10 までです",
+   "action": "使っていない種別を消してから足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 10 にしてから 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-002"
+  },
+  {
+   "id": "E-KND-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "使っているチケット（消したチケットも含む）が 1 枚でも在る種別を消した",
+   "false_when": "その種別のチケットが 1 枚も無い",
+   "message": "この種別を使っているチケットがあるので、消せません",
+   "action": "使っているチケットを別の種別に移してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を指したチケットを 1 枚作ってから、その種別を消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-003"
+  },
+  {
+   "id": "E-KND-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "並べるときに渡した種別の並びが、今の生きている種別の全部と過不足なく一致しない",
+   "false_when": "渡した並びが今の種別の全部とちょうど同じ",
+   "message": "並びが古くなっています。開き直してください",
+   "action": "画面を開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "別の画面で種別を足した後、古い画面で並べ替える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-004"
+  },
+  {
+   "id": "E-KND-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "set-kinds"
+   },
+   "when": "生きている種別が 1 つだけのときに、その種別を消した",
+   "false_when": "生きている種別が 2 つ以上",
+   "message": "最後の 1 つの種別は消せません",
+   "action": "先に別の種別を足してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットの設定 › 種別を開いておく（管理者）",
+    "steps": [
+     "種別を 1 つだけにしてから、それを消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-150.35"
+   ],
+   "support_code": "KND-005"
+  },
+  {
+   "id": "E-STG-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "状態を足す・名前を直すとき、同じ会社に同じ名前の状態（仕組みの状態の名前も含む）が在る",
+   "false_when": "消した状態の名前・別の会社の同じ名前",
+   "message": "同じ名前の状態がすでにあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "状態を足す・名前を直すとき、同じ会社に同じ名前の状態（仕組みの状態の名前も含む）が在る操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "作業の状態（仕組みの状態を除く）が 8 つある会社で状態を足す",
+   "false_when": "8 つ未満・仕組みの状態は数えない",
+   "message": "状態は 8 つまで足せます",
+   "action": "使っていない状態を消してから足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "作業の状態（仕組みの状態を除く）が 8 つある会社で状態を足す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "始め（未着手）・終わり（完了）・仕組みの状態（確認中・承認待ち・実行中）を消す",
+   "false_when": "作業の状態（使っているチケットが無い物）",
+   "message": "この状態は仕組みが使うので、消せません",
+   "action": "消さずに名前や色を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "始め（未着手）・終わり（完了）・仕組みの状態（確認中・承認待ち・実行中）を消す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "仕組みの状態（確認中・承認待ち・実行中）の名前を変える",
+   "false_when": "色だけを直す・同じ名前のまま送る",
+   "message": "この状態の名前は変えられません",
+   "action": "色だけを直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "仕組みの状態（確認中・承認待ち・実行中）の名前を変える操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "その状態のチケット（消したチケットも数える）が在る状態を消す",
+   "false_when": "チケットが 1 枚も無い状態",
+   "message": "この状態のチケットがあるので、消せません",
+   "action": "チケットを別の状態に移してから消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "その状態のチケット（消したチケットも数える）が在る状態を消す操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-006",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "並べるとき、渡した並びが今の状態の全部と合わない（足りない・余る・重なる・消した状態・別の会社の状態）",
+   "false_when": "今の状態の全部を 1 つずつ渡した並び",
+   "message": "並びが古くなっています。開き直してください",
+   "action": "開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "並べるとき、渡した並びが今の状態の全部と合わない（足りない・余る・重なる・消した状態・別の会社の状態）操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-STG-007",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "並べるとき、始めの状態が先頭でない・終わりの状態が最後でない",
+   "false_when": "始めが先頭・終わりが最後の並び",
+   "message": "始めの状態は先頭に、終わりの状態は最後に置きます",
+   "action": "始めを先頭・終わりを最後にして並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 状態を開く",
+    "steps": [
+     "並べるとき、始めの状態が先頭でない・終わりの状態が最後でない操作をする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.38",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-001",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目を足す・名前を直すとき、同じ会社に同じ名前の項目（消していない物）が在る",
+   "false_when": "消した項目の名前・別の会社の同じ名前",
+   "message": "同じ名前の項目がすでにあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目を足す・名前を直すとき、同じ会社に同じ名前の項目（消していない物）が在るように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-004",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "1 つの項目の選ぶ物に同じ名前が 2 つある（前後の空白を落として比べる）",
+   "false_when": "名前がみな違う選ぶ物",
+   "message": "同じ名前の選ぶ物があります",
+   "action": "選ぶ物の名前を変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "1 つの項目の選ぶ物に同じ名前が 2 つある（前後の空白を落として比べる）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-002",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目の型を変えるとき、その項目に値が 1 つでも入っている（消していない値の行）",
+   "false_when": "値が 0 件・同じ型のまま",
+   "message": "値が入っている項目は、型を変えられません",
+   "action": "型はそのままにするか、新しい項目を足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目の型を変えるとき、その項目に値が 1 つでも入っている（消していない値の行）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-003",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "項目を並べるとき、渡した並びが今の生きている項目の全部と合わない（足りない・余る・重なる・消した項目・別の会社の項目）",
+   "false_when": "今の全部の項目をちょうど 1 回ずつ渡す",
+   "message": "並びが今の項目と合いません",
+   "action": "画面を開き直してから並べる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "項目を並べるとき、渡した並びが今の生きている項目の全部と合わない（足りない・余る・重なる・消した項目・別の会社の項目）ように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-FMS-005",
+   "class": "conflict",
+   "where": {
+    "screen": "masters"
+   },
+   "when": "選ぶ型でない項目に、型を変えずに選ぶ物だけを送る",
+   "false_when": "選ぶ型の項目・選ぶ型へ変えるときに一緒に送る",
+   "message": "選ぶ型でない項目には、選ぶ物を付けられません",
+   "action": "型を選ぶ型に変えてから選ぶ物を足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でチケットの設定 › 項目を開く",
+    "steps": [
+     "選ぶ型でない項目に、型を変えずに選ぶ物だけを送るように保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.37",
+    "D-152.18"
+   ]
+  },
+  {
+   "id": "E-RUN-001",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "担当者でない人（任せた人・マネージャー・担当者のいないチケットの誰でも）が、動いている AI の実行を止めようとした",
+   "false_when": "そのチケットの担当者が押した",
+   "message": "この AI を止められるのは担当者です",
+   "action": "担当者に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを、担当者でない人（任せた人）が開く",
+    "steps": [
+     "帯の「止める」を押す"
+    ],
+    "needs": "担当者でない人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
+  },
+  {
+   "id": "E-RUN-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "もう止まった・作り終えた・取り消した実行を止めようとした（二度押し・別のタブ）",
+   "false_when": "動いている・待っている実行を担当者が押した",
+   "message": "この実行はもう止まっています（または作り終えています）",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI が動いているチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで「止める」を押す",
+     "もう片方のタブで「止める」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.24",
+    "D-153.25"
+   ]
+  },
+  {
+   "id": "E-APR-010",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "PC がもう仕事を受け取って動かしている（running・asking）承認の後の実行を、承認した本人が取り下げようとした",
+   "false_when": "PC がまだ仕事を受け取っていない間に、承認した本人が取り下げた",
+   "message": "もう実行が始まっています。止めるには［止める］を押してください",
+   "action": "［止める］を押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを開き、PC に仕事を受け取らせる",
+    "steps": [
+     "実行待ちの帯の「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
+   "id": "E-APR-011",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた（24 時間・人が止めた）承認を取り下げようとした（二度押し・別のタブ）",
+   "false_when": "承認した後・PC がまだ受け取っていない承認を、承認した本人が 1 回だけ取り下げた",
+   "message": "この承認は取り下げられません（まだ承認していない・もう取り下げた・片付けられたのどれかです）",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで「承認を取り下げる」を押す",
+     "もう片方のタブで「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
+   "id": "E-APR-012",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "承認の後の実行がもう終わった（done）・PC が受け取った後に止まった承認を取り下げようとした",
+   "false_when": "PC がまだ仕事を受け取っていない間に、承認した本人が取り下げた",
+   "message": "もう実行が終わっています。画面を読み直してください",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを開いたまま、PC に実行を終わらせる",
+    "steps": [
+     "開いていた画面で「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
+   "id": "E-APR-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認する人が成果物を直して保存したが、直す前に読んだ版が古い（先にほかの人が成果物を直していた・別のタブで先に保存した）",
+   "false_when": "直す前に読んだ版が今の版と同じ",
+   "message": "先にほかの人が成果物を直していました。開き直して、続きから直してください",
+   "action": "開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちのチケットを承認する人が 2 つのタブで開き、両方で［自分で直す］を押す",
+    "steps": [
+     "片方のタブで字を直して［保存］を押す",
+     "もう片方のタブで字を直して［保存］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.28"
+   ]
+  },
+  {
+   "id": "E-APR-021",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認する人が、今の成果物と同じ字のまま保存した（何も変えていない）",
+   "false_when": "字を 1 文字でも直して保存した",
+   "message": "成果物は変わっていません。直してから保存してください",
+   "action": "字を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちのチケットを承認する人が開き、［自分で直す］を押す",
+    "steps": [
+     "字を変えずに［保存］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.28"
+   ]
+  },
+  {
+   "id": "E-RUN-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認待ちの成果物が無いチケット（作業中・承認済み・差し戻し済み・完了）で試し打ちする",
+   "false_when": "承認待ちの成果物が在るチケットで担当者が押した",
+   "message": "承認待ちの成果物が無いので、試し打ちできません",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちの成果物があるチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで承認する",
+     "もう片方のタブで「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "試し打ちを動かす AI が使えない（AI に任せた人が外された・直せなくなった・PC が無い）",
+   "false_when": "AI に任せた人が使えて、その人の PC がある",
+   "message": "試し打ちを動かす AI が使えません",
+   "action": "理由（detail.reason）を読んで、担当者・PC を直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "AI に任せた人の PC を外した、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "AI に任せた人のアカウント"
+   },
+   "severity": "medium",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-RUN-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "押した人のメールアドレスが分からない",
+   "false_when": "押した人のログインのメールアドレスが分かる",
+   "message": "あなたのメールアドレスが分からないので、試し打ちできません",
+   "action": "運営に連絡する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログインのメールアドレスに結ばれていない席の担当者で、承認待ちの成果物があるチケットを開く",
+    "steps": [
+     "「試し打ち（自分宛）」を押す"
+    ],
+    "needs": "メールアドレスに結ばれていない席"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.6",
+    "D-153.24"
+   ]
+  },
+  {
+   "id": "E-TALK-010",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "つながっている自分の PC が無い（外した・まだつないでいない）のに、自分の AI に言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がつながっていません。自分の PC をつなぐと話せます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "分身の部屋の「話す」で言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-011",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "自分の AI との会話でない会話（チケットの会話・作る画面の会話）に、自分の AI の口から言った",
+   "false_when": "自分の AI との会話（clone）に言った",
+   "message": "この会話には、ここからは話せません。チケットの右のパネル、または作る画面から話してください",
+   "action": "会話を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの右のパネルの会話がある",
+    "steps": [
+     "チケットの会話の id を指して、自分の AI に言う口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-012",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "1 つの会話で返事を待っている言葉（待っている仕事）が 20 ある所へ、さらに言った",
+   "false_when": "待っている仕事が 20 より少ない（終わった・止まった・取りやめた仕事は数えない）",
+   "message": "返事を待っている言葉が多すぎます。いくつか返事が来てから、もう一度送ってください",
+   "action": "少し待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "PC を止めたまま、同じ会話に 21 回言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-020",
+   "class": "connectivity",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "書きながらの返事の流れを開こうとしたが、知らせの接続が無い・つなげない・ログインの確かめの手段が無い",
+   "false_when": "知らせの接続がつながっていて、ログインを確かめられる",
+   "message": "いまは書きながらの返事を送れません。画面が少しずつ読み直します",
+   "action": "待つ（画面が自分で読み直す）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "知らせの接続（LISTEN の接続先）を設定しないまま API を立てる",
+     "話すの画面を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-113",
+    "D-115"
+   ]
+  },
+  {
+   "id": "E-TALK-030",
+   "class": "conflict",
+   "where": {
+    "screen": "bridge-setup"
+   },
+   "when": "PC が会話の写しを送った仕事に会話が無い（記憶のまとめ・チケットの仕事）",
+   "false_when": "会話に結ばれた仕事に写した",
+   "message": "この仕事は会話の仕事ではないので、文を写せません",
+   "action": "写さない（PC は送り直さない）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC をつなぎ、会話の無い仕事（記憶のまとめ）を受け取る",
+    "steps": [
+     "その仕事の道すじに会話の写しを送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-112",
+    "D-115"
+   ]
+  },
+  {
+   "id": "E-TALK-040",
+   "class": "external",
+   "where": {
+    "screen": "clone-chat",
+    "choke_point": "C4"
+   },
+   "when": "PC が仕事に付いた資料を取りに来たが、置き場が資料の署名 URL を出せない（置き場の名前空間の外・置き場に届かない）",
+   "false_when": "置き場が署名 URL を出し、PC が資料を取れた",
+   "message": "資料の場所を出せませんでした。少し待ってから、もう一度お試しください",
+   "action": "待ってやり直す（PC は取れなかった資料を名前と理由で文に添えて続ける）",
+   "undo": false,
+   "layers": [
+    "API",
+    "C4"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "資料を付けた仕事を PC が受け取っている状態で、資料の置き場の場所を会社の名前空間の外にする",
+    "steps": [
+     "PC が GET /api/v1/bridge/files/<資料の id>?job_id=<仕事の id> を呼ぶ"
+    ],
+    "needs": "置き場"
+   },
+   "severity": "low",
+   "source": [
+    "D-104.11",
+    "D-153.16"
+   ]
+  },
+  {
+   "id": "E-TALK-050",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "つながっている自分の PC が無い（まだつないでいない・外した）のに、チケットの右のパネルで自分の AI に言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がまだつながっていません。PC をつなぐと、このチケットのことを話せます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "書けるチケットを開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "右のパネルの「〇〇のAI」タブで言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16"
+   ]
+  },
+  {
+   "id": "E-APR-030",
+   "class": "conflict",
+   "where": {
+    "screen": "approvals",
+    "state": "queue"
+   },
+   "when": "「まとめて承認（全部）」で、自分が承認する承認待ちの成果物が 50 件を超えている",
+   "false_when": "自分が承認する承認待ちが 50 件以内のときに全部をまとめて確かめた・50 件以内を選んで確かめた",
+   "message": "承認待ちが 50 件を超えているので、まとめて承認できません。選んで承認してください",
+   "action": "50 件以内を選んで承認する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "自分が承認する承認待ちの成果物を 51 件ためる",
+    "steps": [
+     "承認待ちの画面で［まとめて承認（全部）］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.11"
+   ]
+  },
+  {
+   "id": "E-TALK-060",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "つながっている自分の PC が無い（まだつないでいない・外した）のに、チケットを作る画面の右の会話で言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がまだつながっていません。PC をつなぐと、AI と話しながらチケットを作れます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る画面を開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "作る画面の右の会話で言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-061",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話でない会話（自分の AI との会話・チケットに移った会話）に、作る画面の口から言った",
+   "false_when": "作る画面の会話（draft）に言った",
+   "message": "この会話は、チケットを作る画面の会話ではありません。新しく話し始めてください",
+   "action": "新しく話す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "チケットに移った会話の id を指して、作る画面の言う口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-070",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話の 1 つの仕事で、AI が案（道具 draft_propose）を 3 回出した後に、もう 1 回出した",
+   "false_when": "その仕事で出した案が 2 回まで（同じ会話の次の仕事は新しく 3 回）",
+   "message": "この仕事で出せる案は 3 回までです。続きは、人の返事を待ってください",
+   "action": "人の返事を待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る画面の右の会話で言葉を送り、AI の仕事が動いている",
+    "steps": [
+     "AI が道具 draft_propose で案を 3 回出す",
+     "同じ仕事で 4 回目を出す"
+    ],
+    "needs": "つながっている自分の PC"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-080",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "そのチケットを作った人でない人が、作る時の会話を移そうとした",
+   "false_when": "移す人がそのチケットを作った人",
+   "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
+   "action": "作った人に頼む",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "ほかの人が作ったチケットを指して、自分の作る画面の会話を移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-081",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話でない会話（自分の AI との会話）を移そうとした",
+   "false_when": "作る画面の会話（draft）を移した",
+   "message": "この会話は、チケットに移せません",
+   "action": "—",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "自分の AI との会話の id を指して移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-082",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もうチケットに移した会話を、もう 1 度移そうとした",
+   "false_when": "まだ移していない作る画面の会話を移した",
+   "message": "この会話は、もうチケットに移しています",
+   "action": "チケットの右のパネルで続ける",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "移した会話の id を指して、もう 1 度移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-062",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "チケットを作る権限が無い人が、作る画面の会話を始めた・言った",
+   "false_when": "どれか 1 つのグループに tickets の edit がある",
+   "message": "チケットを作る権限が無いので、作る画面の AI と話せません",
+   "action": "チケットを作る権限を持つ人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "どのグループにも tickets の edit が無い人（view だけ）でログインする",
+    "steps": [
+     "チケットを作る画面の会話を始める口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.35"
+   ]
+  },
+  {
+   "id": "E-GRP-001",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "グループの名前が無い・空・空白だけ・101 文字以上",
+   "false_when": "名前が 1〜100 文字で、空白だけでない",
+   "message": "名前は 1〜100 文字で入れてください",
+   "action": "名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "グループの小窓で名前を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-002",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "直す口の道の id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していないグループを指す",
+   "message": "直すグループが見つかりません。開き直してください",
+   "action": "メンバーの画面を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消したグループを直して保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-003",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "短い名前が無い・形が違う・T",
+   "false_when": "英字で始まる英数字の 1〜8 文字で、T だけでない",
+   "message": "短い名前は、英大文字で始まる英大文字と数字の 1〜8 文字で入れてください（T だけは使えません）",
+   "action": "短い名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "短い名前に「1A」を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-004",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "直す口の体が空",
+   "false_when": "名前・色・並び・マネージャーのどれかを送る",
+   "message": "変える項目がありません",
+   "action": "変える項目を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "何も変えずに保存を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-005",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "色が 6 つの tone の鍵のどれでもない",
+   "false_when": "色が teal・plum・indigo・amber・coral・sage のどれか",
+   "message": "色は、決まった 6 つから選んでください",
+   "action": "色を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "色に決まった 6 つ以外の値を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-006",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の名前が空・41 文字以上",
+   "false_when": "層の名前が 1〜40 文字",
+   "message": "層の名前は 1〜40 文字で入れてください",
+   "action": "層の名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "層の名前を 41 文字にして保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-007",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の道の id が無い",
+   "false_when": "同じ会社の消していない層を指す",
+   "message": "直す層が見つかりません。開き直してください",
+   "action": "メンバーの画面を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した層を直して保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-008",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "order_no・position が 0 以下",
+   "false_when": "並びの番号が 1 以上の整数",
+   "message": "並びの番号は 1 以上の整数にしてください",
+   "action": "並びを直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "並びの番号に 0 を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-009",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "人の数が上限を超えた",
+   "false_when": "マネージャー 10 人まで・メンバー 50 人まで",
+   "message": "マネージャーは 10 人まで、メンバーは 50 人までです",
+   "action": "選ぶ人を減らす",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "マネージャーを 11 人選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-010",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "会社のどのグループ（消した物も）の短い名前とも同じ",
+   "false_when": "会社のどのグループの短い名前とも違う",
+   "message": "その短い名前は、ほかのグループが使っています",
+   "action": "別の短い名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "ほかのグループと同じ短い名前で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-011",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "同じ上のグループの下に同じ名前",
+   "false_when": "同じ上のグループの下に同じ名前が無い",
+   "message": "同じ上のグループに、同じ名前のグループがあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "同じ上のグループの下に同じ名前で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-012",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "消していないグループが 200 ある",
+   "false_when": "消していないグループが 200 未満",
+   "message": "グループは 1 つのワークスペースで 200 までです",
+   "action": "使っていないグループを消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "グループが 200 ある会社でもう 1 つ作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-013",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "消していない層が 8 段ある",
+   "false_when": "消していない層が 8 段未満",
+   "message": "層は 8 段までです",
+   "action": "層を増やさずに作る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "層が 8 段ある会社でもう 1 段作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-014",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "parent_id が無い・別の会社・消した",
+   "false_when": "上のグループが同じ会社に在り消していない",
+   "message": "上のグループが見つかりません。選び直してください",
+   "action": "上のグループを選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した上のグループを選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-015",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "人が無い・別の会社・消した・抜けた・人でない",
+   "false_when": "選んだ人が同じ会社の人で在籍している",
+   "message": "選んだ人が見つかりません。選び直してください",
+   "action": "人を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "外した人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-016",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっている・招待中の人",
+   "false_when": "選んだ人が使える状態",
+   "message": "{名前}さんは今は選べません（{訳}）。別の人を選んでください",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "止まっている人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-017",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "閲覧のみの人をマネージャーにした",
+   "false_when": "マネージャーに選んだ人が閲覧のみでない",
+   "message": "{名前}さんは閲覧のみなので、マネージャーにはできません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "閲覧のみの人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-019",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の名前が消していない層と同じ",
+   "false_when": "層の名前が消していない層のどれとも違う",
+   "message": "同じ名前の層があります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "今ある層と同じ名前で層を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-020",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "layer_id が無い・別の会社・消した",
+   "false_when": "選んだ層が同じ会社に在り消していない",
+   "message": "選んだ層が見つかりません。選び直してください",
+   "action": "層を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した層を選んでグループを作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-MEM-002",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "道の id が無い・別の会社・消した・外した・AI",
+   "false_when": "同じ会社で在籍している人を指す",
+   "message": "この人は見つかりません。メンバーの一覧を開き直してください",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで外した人の詳細を開き直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-003",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "自分を指した役割・所属の変更",
+   "false_when": "ほかの人の役割・所属を変える",
+   "message": "自分の役割やグループは、自分では変えられません",
+   "action": "ほかの管理者に頼む",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "自分の詳細で役割を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-004",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "管理者が 1 人だけのとき、その人に対して",
+   "false_when": "管理者が 2 人以上いる・相手が管理者でない",
+   "message": "最後の管理者は、役割を下げることも、止めることも、外すこともできません",
+   "action": "先にほかの人を管理者にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "管理者が 1 人の会社でその人の役割を下げる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-005",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "自分を止める・外す",
+   "false_when": "ほかの人を止める・外す",
+   "message": "自分は止めることも外すこともできません。抜けるのは自分の設定からです",
+   "action": "自分の設定から抜ける",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "自分の詳細で止めるを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-006",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "scope_id・グループの id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していないグループを指す",
+   "message": "グループが見つかりません。選び直してください",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消したグループに移す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-007",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "グループの役割を直す相手がそのグループに居ない",
+   "false_when": "相手がそのグループに入っている",
+   "message": "この人は、そのグループに入っていません",
+   "action": "先にグループに入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "入っていないグループの役割を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-008",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "主の所属を外す・主を兼務の外に出す",
+   "false_when": "主でない所属を外す",
+   "message": "主のグループは、別のグループに移してから外してください",
+   "action": "先に主のグループを移す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "主のグループを兼務から外す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-009",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっている人を止める",
+   "false_when": "止まっていない人を止める",
+   "message": "この人はもう止まっています",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで止めた人をもう一度止める"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-010",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっていない人を戻す",
+   "false_when": "止まっている人を戻す",
+   "message": "この人は止まっていません",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで戻した人をもう一度戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-INV-016",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "招待の道の id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していない招待を指す",
+   "message": "この招待は見つかりません。メンバーの一覧を開き直してください",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-017",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "招待を受け入れて入った後に送り直す・取り消す",
+   "false_when": "まだ受け入れていない招待",
+   "message": "この招待はもう使われています",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "受け入れ済みの招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-018",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "取り消した招待を送り直す・もう一度取り消す",
+   "false_when": "取り消していない招待",
+   "message": "この招待はもう取り消されています",
+   "action": "新しく招く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "取り消した招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-019",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "同じ招待を 1 日に 2 回送り直す（D-154.12）",
+   "false_when": "その日にまだ送り直していない",
+   "message": "この招待は、今日もう送り直しました。明日また送れます",
+   "action": "明日また送る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "同じ招待を同じ日に 2 回送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-AUD-001",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録の絞りの形が違う（知らない札・日時でない期間・100 を超える件数）",
+   "false_when": "形の合った絞り",
+   "message": "条件が正しくありません。選び直してください",
+   "action": "条件を選び直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、知らない札（kind=bogus）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  },
+  {
+   "id": "E-AUD-002",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録の続きの印をほどけない（中身が 時刻（マイクロ秒）_uuid でない・暦に無い日付）",
+   "false_when": "口が返した続きの印",
+   "message": "続きの印が正しくありません。はじめから読み直してください",
+   "action": "はじめから読み直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、形の違う続きの印（cursor=abc）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  },
+  {
+   "id": "E-WS-001",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-name-error"
+   },
+   "when": "ワークスペースの名前が空・空白だけ（半角・全角）・欄が無い",
+   "false_when": "前後の空白を削って 1 字以上の名前",
+   "message": "名前を入れてください",
+   "action": "名前を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く",
+    "steps": [
+     "名前の欄を空にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.83"
+   ]
+  },
+  {
+   "id": "E-WS-002",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-name-error"
+   },
+   "when": "ワークスペースの名前が前後の空白を削って 101 字以上（サロゲート対は 1 字で数える）",
+   "false_when": "100 字までの名前",
+   "message": "名前は 100 文字までです。短くしてください",
+   "action": "名前を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く",
+    "steps": [
+     "名前の欄に 101 字を入れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.83"
+   ]
+  },
+  {
+   "id": "E-WS-010",
+   "class": "limit",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴに 2 MB（2,097,152 バイト）を超える画像を選んで置いた",
+   "false_when": "2 MB 以下の画像",
+   "message": "ロゴは 2 MB までです。小さい画像を選んでください",
+   "action": "小さい画像を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "ロゴの［変える］で 2 MB を超える画像を選ぶ"
+    ],
+    "needs": "2 MB を超える画像"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-010"
+  },
+  {
+   "id": "E-WS-011",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴに PNG・JPEG・WebP でないファイル（SVG・GIF・空のファイル・画像でない物）を選んで置いた。種類は中身の先頭で見る",
+   "false_when": "中身が PNG・JPEG・WebP の画像（名前や種類の表示が違っても通る）",
+   "message": "ロゴは PNG・JPEG・WebP の画像にしてください",
+   "action": "別の画像を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "ロゴの［変える］で SVG か GIF の画像を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-011"
+  },
+  {
+   "id": "E-WS-012",
+   "class": "external",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴを置き場に置けなかった（置き場が答えない・書けない）",
+   "false_when": "置き場がふだんどおり答える",
+   "message": "ロゴを置けませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "置き場を止める",
+     "ロゴの［変える］で画像を選ぶ"
+    ],
+    "needs": "置き場を止められる環境"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-012"
+  },
+  {
+   "id": "E-WS-030",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-delete"
+   },
+   "when": "消す小窓で打った名前が今のワークスペースの名前と正確に同じでない（全角半角・前後の空白・大文字小文字・一部だけも違うとみなす）",
+   "false_when": "今の名前と 1 字も違わない名前",
+   "message": "名前が合っていません。ワークスペースの名前をそのまま打ってください",
+   "action": "名前を打ち直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "「消す手続き」を押す",
+     "違う名前を打って押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-031",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "すでに消す手続き中のワークスペースで、もう一度手続きを始めた（別の管理者が同時に始めた 2 本目も）",
+   "false_when": "手続き中でないワークスペース",
+   "message": "すでに消す手続き中です",
+   "action": "画面を開き直して、手続きの帯を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "別のタブでも消す小窓を開く",
+     "両方で手続きを始める"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-032",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "消す手続きを始めて 14 日を過ぎてから取り消した",
+   "false_when": "始めて 14 日の内の取り消し",
+   "message": "取り消せる 14 日を過ぎました",
+   "action": "運営に問い合わせる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "手続きを始めて 14 日を過ぎてから「本人確認して取り消す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-033",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "消す手続き中でないのに取り消した（古い画面・別の人が先に取り消した）",
+   "false_when": "手続き中のワークスペースの取り消し",
+   "message": "消す手続き中ではありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "2 つのタブで手続きの帯を開く",
+     "片方で取り消し、もう片方でも取り消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-ME-001",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "名前が空・空白だけ（全角の空白も）で保存した（前後の空白を削った後に 0 文字）",
+   "false_when": "前後の空白を削って 1〜100 文字の名前",
+   "message": "名前を入れてください",
+   "action": "名前を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "名前の欄を空にして欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  },
+  {
+   "id": "E-ME-002",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "名前が前後の空白を削って 101 文字以上（文字の数で数える・サロゲート対は 1 文字）",
+   "false_when": "100 文字までの名前",
+   "message": "名前は 100 文字までです。短くしてください",
+   "action": "名前を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "名前の欄に 101 文字を入れて欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  },
+  {
+   "id": "E-ME-003",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "呼ばれ方が前後の空白を削って 21 文字以上（文字の数で数える）",
+   "false_when": "20 文字までの呼ばれ方・空（呼ばれ方を消す）",
+   "message": "呼ばれ方は 20 文字までです。短くしてください",
+   "action": "呼ばれ方を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "呼ばれ方の欄に 21 文字を入れて欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  },
+  {
+   "id": "E-ME-010",
+   "class": "limit",
+   "where": {
+    "act": "A74",
+    "screen": "account",
+    "choke_point": "C4"
+   },
+   "when": "顔の写真のファイルが 5 MB（5,242,880 バイト）を超えた",
+   "false_when": "5 MB ちょうどまでの写真",
+   "message": "写真は 5 MB までです。小さい写真を選んでください",
+   "action": "小さい写真を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "5 MB を超える写真を選ぶ"
+    ],
+    "needs": "5 MB を超える画像"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.57"
+   ]
+  },
+  {
+   "id": "E-ME-011",
+   "class": "validation",
+   "where": {
+    "act": "A74",
+    "screen": "account"
+   },
+   "when": "顔の写真のファイルの中身が PNG・JPEG・WebP でない（SVG・GIF・空・画像でない。名前と種類の申告は信じない）",
+   "false_when": "中身が PNG・JPEG・WebP の写真（名前や種類の申告が違っていても通る）",
+   "message": "写真は PNG・JPEG・WebP の画像にしてください",
+   "action": "PNG・JPEG・WebP の写真を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "GIF か SVG の画像を選ぶ"
+    ],
+    "needs": "GIF か SVG の画像"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.57"
+   ]
+  },
+  {
+   "id": "E-ME-012",
+   "class": "external",
+   "where": {
+    "act": "A74",
+    "screen": "account",
+    "choke_point": "C4"
+   },
+   "when": "顔の写真を置き場に置けなかった（置き場が落ちている・断った）",
+   "false_when": "置き場に置けた",
+   "message": "写真を置けませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "置き場を止めて写真を選ぶ"
+    ],
+    "needs": "置き場を止められる環境"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.57"
+   ]
+  },
+  {
+   "id": "E-ME-020",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールに、メールの形でない字（空・@ だけ・ドットの無いドメイン・255 字以上）を入れて送った",
+   "false_when": "そろえた後に「名前@ドメイン.末尾」の形で 254 字まで",
+   "message": "メールの形が違います。「名前@会社.example」のように入れてください",
+   "action": "メールを直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに takamoto@engine-base と入れて［確かめのメールを送る］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-021",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールが、もう別のアカウント（ほかの会社の人も）で使われている（頼むとき・確かめるまでの間に取られたとき）",
+   "false_when": "どのアカウントも使っていない宛て",
+   "message": "このメールは、もう別のアカウントで使われています。別のメールを入れてください",
+   "action": "別のメールを入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに、別の人がログインに使っているアドレスを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-022",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email-confirm"
+   },
+   "when": "確かめのリンクを、送ってから 24 時間たってから開いた",
+   "false_when": "送ってから 24 時間の内",
+   "message": "リンクの期限が切れました。もう一度、確かめのメールを送ってください",
+   "action": "確かめのメールを送り直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "確かめのメールを受け取る",
+    "steps": [
+     "確かめのメールを送ってから 24 時間待つ",
+     "確かめのメールのリンクを開く（/account/email-confirm）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12"
+   ]
+  },
+  {
+   "id": "E-ME-023",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email-confirm"
+   },
+   "when": "確かめのリンクを 2 回目に開いた（1 回目でもう変わっている）",
+   "false_when": "まだ使っていないリンク",
+   "message": "このリンクはもう使いました。メールはもう変わっています",
+   "action": "ログインする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "確かめのメールを受け取る",
+    "steps": [
+     "確かめのメールのリンクを開く（/account/email-confirm）",
+     "同じリンクをもう一度開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12"
+   ]
+  },
+  {
+   "id": "E-ME-024",
+   "class": "limit",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "1 時間の内に、メールを変える頼みを 6 回目に送った",
+   "false_when": "1 時間の内に 5 回まで",
+   "message": "メールを送りすぎです。しばらくしてからやり直してください",
+   "action": "しばらく待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "［確かめのメールを送る］を 1 時間の内に 6 回押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-025",
+   "class": "external",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "確かめのメールを送れなかった（メールの送出が落ちた）",
+   "false_when": "確かめのメールが送れた",
+   "message": "確かめのメールを送れませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "メールの送出が落ちている間に［確かめのメールを送る］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-026",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールに、今のログインのメールと同じ宛て（大文字・全角でも同じ）を入れて送った",
+   "false_when": "今のメールと違う宛て",
+   "message": "今のメールと同じです",
+   "action": "別のメールを入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに今のメールを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-030",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "me-sessions"
+   },
+   "when": "入っている端末の一覧で、今使っている端末そのものを切ろうとした",
+   "false_when": "今の端末でない、自分のログインの生きている端末を切る",
+   "message": "この端末は切れません。ログアウトを使ってください",
+   "action": "ログアウトする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログインと安全の画面で入っている端末の一覧を開く",
+    "steps": [
+     "口を直に呼び、今の端末の id を切る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18"
+   ]
+  },
+  {
+   "id": "E-ME-040",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "notify"
+   },
+   "when": "止められない出来事（新しい端末で入った）のベルかメールを切った",
+   "false_when": "ほかの出来事を切る・新しい端末で入ったを入れ直す",
+   "message": "この知らせは安全のため止められません",
+   "action": "そのままにする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › 知らせを開く",
+    "steps": [
+     "「新しい端末で入った」のメールを切る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.24",
+    "D-154.27"
+   ]
+  },
+  {
+   "id": "E-ME-041",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "notify-copy"
+   },
+   "when": "「ほかのワークスペースにも写す」の写し先に、写し元のワークスペースを選んだ",
+   "false_when": "写し元でないワークスペースだけを写し先に選ぶ",
+   "message": "写し先に、写し元は選べません",
+   "action": "写し先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › 知らせを開く",
+    "steps": [
+     "写す小窓で、今のワークスペースを写し先にも選んで写す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.24",
+    "D-154.27"
+   ]
+  },
+  {
+   "id": "E-ME-050",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "その会社で自分が担当の終わっていないチケットが残っているのに抜けようとした（渡し中も担当のまま）",
+   "false_when": "その会社で担当の終わっていないチケットが 0 件",
+   "message": "担当しているチケットがあります。ほかの人に渡してから、抜けてください",
+   "action": "担当しているチケットをほかの人に渡す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "その会社で担当の終わっていないチケットを 1 件持っておく",
+    "steps": [
+     "自分の設定 › プロフィールの入っているワークスペースで［抜ける］を押し、本人確認を通す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.65",
+    "D-154.19",
+    "D-154.61"
+   ]
+  },
+  {
+   "id": "E-ME-051",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "その会社の有効な管理者が自分だけなのに抜けようとした（止めた管理者は数えない・自分だけの会社も同じ）",
+   "false_when": "その会社にほかの有効な管理者が居る",
+   "message": "あなたはこのワークスペースの最後の管理者です。ほかの人を管理者にしてから、抜けてください",
+   "action": "ほかの人を管理者にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "その会社の有効な管理者を自分だけにしておく",
+    "steps": [
+     "自分の設定 › プロフィールの入っているワークスペースで［抜ける］を押し、本人確認を通す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.19",
+    "D-154.61",
+    "D-154.75"
+   ]
+  },
+  {
+   "id": "E-MEM-020",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "担当があるのに引き継ぎ先が決まっていない・1 件ずつの引き継ぎ先が担当の全部でない・下見のあとで担当が変わった",
+   "false_when": "担当の全部に引き継ぎ先がちょうど 1 回ずつ決まっている／担当が 0 件",
+   "message": "引き継ぎ先が決まっていない担当があります。もう一度確かめてください",
+   "action": "下見を読み直して引き継ぎ先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "担当しているチケットがある人の外す小窓を開いておく",
+    "steps": [
+     "別の画面で担当を 1 件足してから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6"
+   ],
+   "support_code": "MEM-020"
+  },
+  {
+   "id": "E-MEM-021",
+   "class": "not_found",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が別の会社の人・在らない・もう外した・招待中",
+   "false_when": "引き継ぎ先が同じ会社の有効な人",
+   "message": "引き継ぎ先の人が見つかりません",
+   "action": "メンバーの並びを読み直して引き継ぎ先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を外してから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6"
+   ],
+   "support_code": "MEM-021"
+  },
+  {
+   "id": "E-MEM-022",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が止めた人・外す本人",
+   "false_when": "引き継ぎ先が止めていない、外す本人でない人",
+   "message": "この人は引き継ぎ先にできません",
+   "action": "ほかの人を引き継ぎ先に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を一時的に止めてから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6",
+    "D-154.39"
+   ],
+   "support_code": "MEM-022"
+  },
+  {
+   "id": "E-MEM-023",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が閲覧のみ・依頼する側",
+   "false_when": "引き継ぎ先の会社の役割が閲覧のみ・依頼する側でない",
+   "message": "閲覧のみの人は担当にできません",
+   "action": "ほかの人を引き継ぎ先に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を閲覧のみにしてから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.39"
+   ],
+   "support_code": "MEM-023"
+  },
+  {
+   "id": "E-AUD-010",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録を探すことばが空・空白だけ・101 字以上",
+   "false_when": "1〜100 字のことば（前後と間の空白はそろえて探す）",
+   "message": "探すことばは 1〜100 字で入れてください",
+   "action": "ことばを入れ直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、空白だけのことば（q=%20%20）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  },
+  {
+   "id": "E-GST-001",
+   "class": "not_found",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "招くとき・名前を直すとき・消すときに選んだゲストのグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今あるゲストのグループを選ぶ",
+   "message": "このゲストのグループは見つかりません",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストを招く小窓を開き、ゲストのグループを選ぶ",
+    "steps": [
+     "別の画面でそのグループを消す",
+     "招く小窓で招くを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-002",
+   "class": "conflict",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "新しく作る・名前を直すゲストのグループの名前が、今ある物と同じ（全角半角・大文字小文字・空白の違いだけでも同じ）",
+   "false_when": "今ある物と違う名前にする",
+   "message": "同じ名前のゲストのグループがあります。別の名前にしてください",
+   "action": "一覧から選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストのグループを作る小窓を開く",
+    "steps": [
+     "今あるグループと同じ名前（全角にしたものでもよい）を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-003",
+   "class": "not_found",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "ゲストのグループを作るときに選んだ届け先の社内のグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今ある社内のグループを届け先に選ぶ",
+   "message": "このグループは見つかりません",
+   "action": "届け先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストのグループを作る小窓を開き、届け先を選ぶ",
+    "steps": [
+     "別の画面でその社内のグループを消す",
+     "作るを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-040",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "guest_share"
+   },
+   "when": "チケットの見せる相手に選んだゲストのグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今あるゲストのグループを選ぶ",
+   "message": "このゲストのグループは見つかりません",
+   "action": "選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細で見せる相手を選ぶ欄を開く",
+    "steps": [
+     "別の画面でそのゲストのグループを消す",
+     "見せる相手に足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.41"
+   ]
+  },
+  {
+   "id": "E-GST-041",
+   "class": "limit",
+   "where": {
+    "screen": "tickets",
+    "state": "guest_share"
+   },
+   "when": "チケットの見せる相手が 20 を超える（外す分を引いた結果）",
+   "false_when": "見せる相手が 20 以下",
+   "message": "見せる相手は 20 までです",
+   "action": "外してから足す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "見せる相手が 20 のチケットの詳細を開く",
+    "steps": [
+     "見せる相手をもう 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.41"
+   ]
+  },
+  {
+   "id": "E-GST-060",
+   "class": "not_found",
+   "where": {
+    "screen": "portal",
+    "state": "work"
+   },
+   "when": "見せたチケットのチャットに書こうとしたチケットが、見せていない・見せる相手を外された・ゲストのグループが消えた・消された・下書き・別のグループの物・無い",
+   "false_when": "自分のゲストのグループに今見せているチケットに書く",
+   "message": "この仕事は見られません",
+   "action": "一覧に戻る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、自分のグループに見せたチケットを開く",
+    "steps": [
+     "社内の人がそのチケットの見せる相手からグループを外す",
+     "ゲストがチャットに書いて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.41",
+    "D-155.42",
+    "D-155.26"
+   ]
+  },
+  {
+   "id": "E-GST-100",
+   "class": "not_found",
+   "where": {
+    "screen": "requests",
+    "state": "detail"
+   },
+   "when": "届いた依頼が、無い・見えない（届け先のグループが見えない）・消した・別の会社の物・前の取引先の形の物",
+   "false_when": "届け先のグループが見える人か、会社全体の edit を持つ人が、この会社の消していないゲストのグループの依頼を開く",
+   "message": "この依頼は見つかりません",
+   "action": "届いた依頼の一覧に戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストのグループの依頼が 1 つあり、届け先が営業のグループ",
+    "steps": [
+     "経理のグループだけの人で、その依頼の画面を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.43",
+    "D-155.40"
+   ]
+  },
+  {
+   "id": "E-GST-110",
+   "class": "conflict",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）ので、届け先を変える・返事を送るができない",
+   "false_when": "依頼が新しい・聞いている",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにしたか断った依頼を開いておく",
+    "steps": [
+     "届け先を変えるか返事を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.43",
+    "D-155.10"
+   ]
+  },
+  {
+   "id": "E-GST-111",
+   "class": "not_found",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "選んだ届け先のグループが、無い・消した・別の会社・あなたが届け先にできない",
+   "false_when": "この会社の消していないグループで、client_requests を edit できる",
+   "message": "この届け先のグループは選べません",
+   "action": "選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "届いた依頼を開いておく",
+    "steps": [
+     "選べない届け先を選んで変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.43",
+    "D-155.10"
+   ]
+  },
+  {
+   "id": "E-GST-120",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "accept"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）のに、チケットを作ろうとした（同時に 2 人が受けたときの後の方も）",
+   "false_when": "依頼が新しい・聞いている（まだ決まっていない）",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにした依頼か、断った依頼を開いておく",
+    "steps": [
+     "「チケットを作る」で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.42"
+   ],
+   "support_code": "GST-120"
+  },
+  {
+   "id": "E-GST-130",
+   "class": "conflict",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）ので、断れない",
+   "false_when": "依頼が新しい・聞いている",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにしたか断った依頼を開いておく",
+    "steps": [
+     "断る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.9"
+   ]
+  },
+  {
+   "id": "E-GST-140",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）のに案を作ろうとした",
+   "false_when": "新しい・聞いている依頼で案を作る",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、届いた依頼を開く",
+    "steps": [
+     "別の人がその依頼をチケットにする",
+     "「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-155.27"
+   ]
+  },
+  {
+   "id": "E-GST-141",
+   "class": "connectivity",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "押した人の PC がつながっていない（PC が無い・失効した・最後の知らせが 75 秒より前・別の人の PC だけ）",
+   "false_when": "押した人の PC がつながっているときに案を作る",
+   "message": "PC がつながると分身が案を出します",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、PC をつながずに届いた依頼を開く",
+    "steps": [
+     "「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-128.101"
+   ]
+  },
+  {
+   "id": "E-GST-142",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "案をもう作っている（10 分以内）・もう出来ている依頼で案を作ろうとした",
+   "false_when": "案が無い・出なかった・10 分より前から作っている依頼で案を作る",
+   "message": "案をもう作っています",
+   "action": "少し待って読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、PC をつないで届いた依頼を開く",
+    "steps": [
+     "「案を作る」を押す",
+     "すぐにもう一度「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-150",
+   "class": "not_found",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "work"
+   },
+   "when": "結果を返そうとした仕事が、無い・この PC の物でない・案の仕事でない・もう終わっている",
+   "false_when": "その PC が受け取った動いている案の仕事の結果を返す",
+   "message": "この仕事はもう終わっているか、見つかりません",
+   "action": "何もしない（PC は次の仕事を取る）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC をつなぎ、案の仕事を取って結果を返す",
+    "steps": [
+     "同じ結果をもう一度返す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-128.101"
+   ]
+  },
+  {
+   "id": "E-GST-160",
+   "class": "not_found",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "依頼を出すとき、付けようとした添付が、自分の下書きでない・無い・もう使われている・消した・検査が済んでいない",
+   "false_when": "付けた添付が全部、自分が足した検査済みの下書き（まだどこにも付いていない）",
+   "message": "この添付は付けられませんでした",
+   "action": "添付を足し直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ゲストでログインし、別の人の下書きの添付の id を手に入れておく",
+    "steps": [
+     "その id を付けて依頼を出す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.37"
+   ],
+   "support_code": "GST-160"
+  },
+  {
+   "id": "E-GST-170",
+   "class": "conflict",
+   "where": {
+    "screen": "portal",
+    "state": "request_detail"
+   },
+   "when": "依頼のやり取りに書くとき、その依頼がもうチケットになった・断られた",
+   "false_when": "依頼がまだ決まっていない（新しい・会社が聞いている）",
+   "message": "この依頼にはもう書けません",
+   "action": "依頼のやり取りを読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ゲストでログインし、自分のグループの依頼を会社にチケットにしてもらう（または断ってもらう）",
+    "steps": [
+     "その依頼のやり取りに返事を書いて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.10"
+   ],
+   "support_code": "GST-170"
+  },
+  {
+   "id": "E-GST-181",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "中身が 700000 バイトを超える",
+   "false_when": "700000 バイトまで（ちょうども通る）",
+   "message": "このファイルは大きすぎます（700KB まで）",
+   "action": "小さくするか、分けて足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "700KB を超えるファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-181"
+  },
+  {
+   "id": "E-GST-182",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "実行できる形式（名前の拡張子 exe・bat・js などが最後か途中にある、か中身の先頭が MZ・ELF・#!・Mach-O）",
+   "false_when": "pdf・png・docx・xlsx・txt など、名前にも中身にも実行できる形式の印が無い",
+   "message": "足せない種類のファイルです",
+   "action": "別の形式にして足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "名前が 報告書.pdf.exe のファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-182"
+  },
+  {
+   "id": "E-GST-183",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "まだ依頼に付いていない自分の下書き（消していない）が 5 つある",
+   "false_when": "下書きが 4 つまで。依頼に付いた物・消した物・ほかのゲストの下書きは数えない",
+   "message": "添付は 5 つまでです",
+   "action": "1 つ外してから足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "添付を 5 つ足し、6 つ目を足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-183"
+  },
+  {
+   "id": "E-GST-184",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "中身が空（0 バイト）",
+   "false_when": "中身が 1 バイト以上",
+   "message": "空のファイルは足せません",
+   "action": "中身のあるファイルを足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "0 バイトのファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-184"
+  },
+  {
+   "id": "E-AUTH-022",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "ops-passkey-only"
+   },
+   "when": "運営の人がメールとパスワードで入ろうとした",
+   "false_when": "運営の人がパスキーで入る・顧客の人がパスワードで入る・パスワードが違う（E-AUTH-001 のまま）",
+   "message": "運営の場所は、パスキーしか使えません（メールとパスワードでは入れません）",
+   "action": "パスキーで入る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "パスワードを持つ運営の人",
+    "steps": [
+     "メールとパスワードで入る"
+    ],
+    "needs": "運営の人にパスワードを付ける（DB に直に）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.70",
+    "D-156.2"
+   ],
+   "support_code": "AUTH-022"
+  },
+  {
+   "id": "E-INQ-001",
+   "class": "conflict",
+   "where": {
+    "screen": "inquiry"
+   },
+   "when": "問い合わせを送るとき、付けた添付の検査がまだ済んでいない（上げ終わる前）か、もう別の問い合わせに付けた",
+   "false_when": "検査の済んだ・まだ使っていない自分の添付・添付を付けない問い合わせ",
+   "message": "このファイルはまだ付けられません",
+   "action": "付け直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "会社の人で 困ったとき・お知らせ › 問い合わせる を開く",
+    "steps": [
+     "ファイルを付け、上げ終わる前に送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.26"
+   ]
+  },
+  {
+   "id": "E-INQ-003",
+   "class": "validation",
+   "where": {
+    "screen": "inquiry"
+   },
+   "when": "上げ終わりのとき、置き場に置いた中身の頭が名乗った種類（画像・PDF・zip）と合わない",
+   "false_when": "名乗った種類の頭で始まる中身（png・jpeg・gif・webp・pdf・zip）",
+   "message": "このファイルは付けられません（画像・PDF・zip だけ）",
+   "action": "付け直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "会社の人で 困ったとき・お知らせ › 問い合わせる を開く",
+    "steps": [
+     "拡張子を .png に変えた文字のファイルを付ける"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.26"
+   ]
+  },
+  {
+   "id": "E-INQ-004",
+   "class": "validation",
+   "where": {
+    "screen": "inquiry"
+   },
+   "when": "上げ終わりのとき、置き場に置いた物の大きさが名乗った大きさと違う・10MB を超える・まだ置いていない",
+   "false_when": "名乗ったとおりの大きさ（1 つ 10MB まで）で置き終わった物",
+   "message": "大きすぎて付けられません（1 つ 10MB まで・5 つまで）",
+   "action": "小さくして付け直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "会社の人で 困ったとき・お知らせ › 問い合わせる を開く",
+    "steps": [
+     "10MB を超えるファイルを付ける"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.26"
+   ]
+  },
+  {
+   "id": "E-BILL-001",
+   "class": "conflict",
+   "where": {
+    "screen": "billing"
+   },
+   "when": "出した請求書の PDF を開くとき、その PDF がまだできていない（請求書の行の PDF の置き場の参照が空）",
+   "false_when": "PDF ができている請求書・出していない（下書き）・見えない請求書（404）",
+   "message": "この請求書の PDF はまだできていません",
+   "action": "しばらくしてから開き直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でワークスペースの管理 › 設定 › 請求書を開く",
+    "steps": [
+     "PDF がまだできていない請求書の「PDF」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.31"
+   ]
+  },
+  {
+   "id": "E-PLAN-001",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings"
+   },
+   "when": "プランを変える小窓で、いまのプランを選んだ（下げる予定が無いとき。同時に 2 人が同じプランに上げたときの後の 1 つも）",
+   "false_when": "ほかのプランを選ぶ・下げる予定があるときに今のプランを選ぶ（予定を取り消す）",
+   "message": "いまのプランです",
+   "action": "ほかのプランを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "設定 › プランと支払い の「プランを変える」を開く",
+    "steps": [
+     "いまのプランを選んで変える（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65"
+   ]
+  },
+  {
+   "id": "E-PLAN-002",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings"
+   },
+   "when": "人数（社内の人・ゲストは数えない）が選んだプランの上限を超えるのに下げようとした",
+   "false_when": "人数が上限の内のプランを選ぶ",
+   "message": "いまのメンバーは {members} 人で、上限（{member_limit} 人）を超えています",
+   "action": "人を減らしてから選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "4 人の会社で 設定 › プランと支払い の「プランを変える」を開く",
+    "steps": [
+     "3 人までの無料を選んで変える"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.65",
+    "D-156.36"
+   ]
+  },
+  {
+   "id": "E-CONF-039",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-ws-members"
+   },
+   "when": "もう本人確認が済んだ人に送り直そうとした",
+   "false_when": "まだ本人確認が済んでいない人に送り直す",
+   "message": "この人はもう本人確認が済んでいます",
+   "action": "なし",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人で 1 社のメンバーのタブを開き、本人確認が済んだ人を選ぶ",
+    "steps": [
+     "その人の［メールを送り直す］を押す（直に口を呼ぶ）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.108"
+   ],
+   "support_code": "CONF-039"
+  },
+  {
+   "id": "E-OPS-001",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-peek"
+   },
+   "when": "同じ運営の人が同じワークスペースに、まだ効いている中を見るの許可（閉じていない・期限の前）を持っているのに、もう一度開く",
+   "false_when": "自分の効いている許可が無い（ほかの運営の人の許可は数えない）",
+   "message": "このワークスペースはもう開いています",
+   "action": "開いている帯から閉じる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ops-tenant の画面で中を見るを開いた",
+    "steps": [
+     "閉じずにもう一度［見るだけで開く］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.68",
+    "D-125.128"
+   ]
+  },
+  {
+   "id": "E-OPS-002",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-peek-open"
+   },
+   "when": "中を見るの許可がもう閉じた・期限（1 時間まで）が切れた・取り消したのに閉じる（同時の 2 回目も）",
+   "false_when": "開いている（閉じていない・期限の前）自分の許可を閉じる",
+   "message": "もう閉じています",
+   "action": "なし",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ops-tenant の画面で中を見るを開いた",
+    "steps": [
+     "［見るのをやめる］を 2 回押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.68",
+    "D-125.128"
+   ]
+  },
+  {
+   "id": "E-OPS-003",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "もう止めている会社をもう一度止めた・止める日が決まっている会社に日を決め直した",
+   "false_when": "止める予定も止めた印も無い会社を止めた／止める日が決まっている会社をすぐ止めた",
+   "message": "このワークスペースはもう止める日が決まっているか、止めています",
+   "action": "日を変えるときは再開で取り消してから",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止める日が決まっていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止める小窓で日を決めて止める",
+     "もう一度、日を決めて止める"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-003"
+  },
+  {
+   "id": "E-OPS-004",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "止める予定も止めた印も無い会社を再開した",
+   "false_when": "止める日が決まっている・止めている会社を再開した",
+   "message": "このワークスペースは止めていません",
+   "action": "画面を読み直して今の状態を確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止めていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止めていないワークスペースで再開を送る"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-004"
+  },
+  {
+   "id": "E-OPS-006",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "日を決めて止めるのに、止める日が日本の今日か昔",
+   "false_when": "止める日が明日以降",
+   "message": "止める日は明日以降にしてください",
+   "action": "止める日を明日以降に選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止める日が決まっていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止める小窓で止める日を今日にして送る"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-006"
+  },
+  {
+   "id": "E-OPS-005",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-support"
+   },
+   "when": "ほかの人が担当の問い合わせを取る・外す・済みにする・後でにする。担当なしの問い合わせを、取らずに済みにする・後でにする",
+   "false_when": "担当なしを取る・自分の担当を変える・担当なしを取ると一緒に済みにする",
+   "message": "ほかの人が担当しています",
+   "action": "担当の人に聞く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（問い合わせを持つ）で受信箱を開く",
+    "steps": [
+     "ほかの人が担当の問い合わせで［自分が持つ］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.25"
+   ]
+  },
+  {
+   "id": "E-OPS-008",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-support"
+   },
+   "when": "後での日時が今と同じか今より前",
+   "false_when": "今より後の日時・後でを外す（空）",
+   "message": "後での日時は今より後にしてください",
+   "action": "日時を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（問い合わせを持つ）で受信箱を開く",
+    "steps": [
+     "［後で］で過ぎた日時を選んで保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.25"
+   ]
+  },
+  {
+   "id": "E-OPS-010",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-publish"
+   },
+   "when": "使えなくなるメンテのお知らせに、メンテの始まりか終わりの時間が無いまま出した",
+   "false_when": "メンテの時間を書いたメンテ・リリース・障害を出した",
+   "message": "メンテの時間を書いてから出してください",
+   "action": "書き直して時間を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営のお知らせの下書きを 1 つ作っておく",
+    "steps": [
+     "種類をメンテにして、メンテの時間を書かずに下書きにする",
+     "出す確かめで「出す」を押す"
+    ],
+    "needs": "お知らせ（notice）を持つ運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.127"
+   ],
+   "support_code": "OPS-010"
+  },
+  {
+   "id": "E-OPS-011",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-publish"
+   },
+   "when": "もう出した・予定にしたお知らせをもう一度出した（二度押し・同時に 2 回）",
+   "false_when": "下書きのお知らせを初めて出した",
+   "message": "このお知らせはもう出しています",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営のお知らせの下書きを 1 つ作っておく",
+    "steps": [
+     "下書きを出す",
+     "同じお知らせをもう一度出す"
+    ],
+    "needs": "お知らせ（notice）を持つ運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33"
+   ],
+   "support_code": "OPS-011"
+  },
+  {
+   "id": "E-OPS-012",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice"
+   },
+   "when": "運営が続報を足すお知らせが、出した障害でない（リリース・メンテ・下書きの障害・予定の時刻の前の障害）",
+   "false_when": "出した障害（DB で出した・予定の時刻を過ぎた）で、まだ直ったにしていない",
+   "message": "続報は、出した障害のお知らせにだけ足せます",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（お知らせを持つ）で運営のお知らせを開く",
+    "steps": [
+     "下書きの障害のお知らせに［足して出す］を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.127"
+   ]
+  },
+  {
+   "id": "E-OPS-013",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice"
+   },
+   "when": "運営が続報を足す障害が、もう直ったにしてある（今の状態が resolved）",
+   "false_when": "調べている・原因が分かった・様子を見ている の障害",
+   "message": "この障害はもう直ったにしています",
+   "action": "新しい障害のお知らせを書く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（お知らせを持つ）で運営のお知らせを開く",
+    "steps": [
+     "直ったにした障害に［足して出す］を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.127"
+   ]
+  },
+  {
+   "id": "E-BILL-002",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が請求書をまとめて出す（下書きも）とき、選んだ月が日本の今月か、それより先の月（まだ締めていない）",
+   "false_when": "先月より前の月を選ぶ",
+   "message": "この月はまだ締めていません",
+   "action": "月が終わってから出す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人で 運営 › 請求 を開く",
+    "steps": [
+     "今月を選んで「今月の請求書をまとめて出す」を押す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.31"
+   ]
+  },
+  {
+   "id": "E-BILL-003",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が請求書をまとめて出すとき、その月の請求書がもう全部の会社に出ている（同時に 2 回押した後の 1 つも）",
+   "false_when": "まだその月の請求書が無い会社がある",
+   "message": "この月の請求書はもう全部出しています",
+   "action": "一覧で確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人で 運営 › 請求 を開く",
+    "steps": [
+     "先月の請求書をまとめて出す",
+     "もう一度「まとめて出す」を押す"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.31"
+   ]
+  },
+  {
+   "id": "E-BILL-004",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が入金を取り消すとき、その入金はもう取り消している（同時に 2 回押した後の 1 つも）か、選んだのが打ち消しの行そのもの",
+   "false_when": "まだ取り消していない正の額の入金を取り消す",
+   "message": "この入金はもう取り消しています",
+   "action": "入金の一覧で確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人で 運営 › 請求 を開き、入金を 1 件記録した請求書を選ぶ",
+    "steps": [
+     "入金の［取り消す］を押す",
+     "同じ入金をもう一度取り消す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.32"
+   ]
+  },
+  {
+   "id": "E-BILL-005",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が入金を取り消すとき、送った額が取り消す入金の額と違う",
+   "false_when": "取り消す入金と同じ額で取り消す",
+   "message": "取り消す額が入金の額と違います",
+   "action": "入金の額を確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人で 運営 › 請求 を開き、入金を 1 件記録した請求書を選ぶ",
+    "steps": [
+     "その入金の id と違う額で取り消す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.32"
+   ]
+  },
+  {
+   "id": "E-OPS-015",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-add"
+   },
+   "when": "運営の人を足すとき、同じメールの運営の人がもう居る（大文字・前後の空白はそろえて比べる）",
+   "false_when": "新しいメール・外した運営の人のメール（同じ人として足し直す）",
+   "message": "この人はもう運営の人です",
+   "action": "できることを変えるときは、一覧の［変える］から",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営の人を持つ運営の人で入り、本人確認を取り直す",
+    "steps": [
+     "もう居る運営の人のメールで足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.22"
+   ]
+  },
+  {
+   "id": "E-OPS-016",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-add"
+   },
+   "when": "運営の人を足すとき、同じメールの人が顧客の会社に居る",
+   "false_when": "運営の会社だけに居る人・まだ誰も使っていないメール",
+   "message": "このメールは顧客のアカウントで使われています。運営の人には別のメールを使ってください",
+   "action": "別のメールで足す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "顧客の会社の人のメール",
+    "steps": [
+     "そのメールで運営の人を足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.22"
+   ]
+  },
+  {
+   "id": "E-OPS-019",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を作るとき、そのプランにもう開いた案（下書き・決める人を待っている）が在る（同時に 2 回作った後の 1 つも）",
+   "false_when": "そのプランに開いた案が無い（差し戻された案だけ・決めた案だけ）",
+   "message": "このプランにはもう変える案があります",
+   "action": "今の案を直すか、決めてもらってから作ってください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "チーム のプランに案を作る",
+     "もう一度 チーム のプランに案を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  },
+  {
+   "id": "E-OPS-020",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を作る・直すとき、値段と人数が今のプランと同じ",
+   "false_when": "値段か人数のどちらかが今と違う",
+   "message": "変えるところがありません",
+   "action": "値段か人数を変えてから保存してください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "今と同じ値段と人数で案を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  },
+  {
+   "id": "E-OPS-021",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を直す・回すとき、その案がいま直せない・回せない状態（直すは下書きか差し戻しでない・回すは下書きでない）",
+   "false_when": "下書きの案を直す・回す",
+   "message": "この案はいま直せません",
+   "action": "案の状態を確かめてください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "案を決める人に回す",
+     "回した案を直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  },
+  {
+   "id": "E-OPS-022",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills",
+    "state": "oq-plan-self"
+   },
+   "when": "値段を決めるを持つ運営の人が、自分で作った案を決める・差し戻すを押した。値段を決めるを持つ生きている運営の人がほかにも居る",
+   "false_when": "ほかの人が作った案／値段を決めるを持つ生きている運営の人が自分 1 人だけ（例外・D-128.72）",
+   "message": "自分の案は自分で決められません",
+   "action": "「値段を決める」ができる別の運営の人に決めてもらってください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "値段の案と値段を決めるの両方を持つ運営の人が案を作って回し、値段を決めるを持つ運営の人がほかにも 1 人居る",
+    "steps": [
+     "自分の案を開いて「決める」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.72"
+   ],
+   "support_code": "OPS-022"
+  },
+  {
+   "id": "E-OPS-025",
+   "class": "conflict",
+   "where": {
+    "screen": "masters",
+    "state": "oq-template-update"
+   },
+   "when": "会社の管理者が、ひな形の新しい版を「変える」か「そのままにする」で選ぶとき、その版はもう選んだか届いていない（同時に 2 回選んだ後の 1 つも）",
+   "false_when": "届いていて、まだ選んでいない版を選ぶ",
+   "message": "もう選びました",
+   "action": "新しい版が届いたら、またここに出ます",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で チケットの設定 を開き、ひな形の新しい版が届いた会社にしておく",
+    "steps": [
+     "「変える」を押した後、同じ版をもう一度選ぶ（直に API）"
+    ],
+    "needs": "運営がひな形の新しい版を出しておく"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20"
+   ]
+  },
+  {
+   "id": "E-OPS-026",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-home",
+    "state": "op-pwned"
+   },
+   "when": "もう確かめた会社か、照合が使えなかった登録の無い会社を確かめようとした",
+   "false_when": "その会社に、最後に確かめた後の照合が使えなかった登録が 1 件以上ある",
+   "message": "この登録はもう確かめてあります",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "照合が使えなかった登録のある会社を、運営のワークスペースの一覧の小窓で一度「確かめた」にしておく",
+    "steps": [
+     "古い小窓のまま、同じ会社の「確かめた」をもう一度押す"
+    ],
+    "needs": "運営アカウント"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.35"
+   ],
+   "support_code": "OPS-026"
+  },
+  {
+   "id": "E-OPS-017",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-edit"
+   },
+   "when": "運営の人のできることを変える・外すとき、相手が自分",
+   "false_when": "ほかの運営の人を変える・外す",
+   "message": "自分のできることは変えられません",
+   "action": "別の運営の人に変えてもらってください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営の人を持つ運営の人で入り、本人確認を取り直す",
+    "steps": [
+     "一覧の自分の行のできることを変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.34"
+   ]
+  },
+  {
+   "id": "E-OPS-018",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-edit"
+   },
+   "when": "変えた後・外した後に、生きている運営の人のうち「運営の人」か「値段を決める」を持つ人が 0 になる",
+   "false_when": "同じ印を持つ生きている運営の人がほかにも居る",
+   "message": "最後の 1 人なので外せません",
+   "action": "別の運営の人に渡してから",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "「値段を決める」を持つ運営の人が 1 人だけ",
+    "steps": [
+     "その人から「値段を決める」を外す（か、その人を外す）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.34"
+   ]
+  },
+  {
+   "id": "E-OPS-023",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "運営がひな形の新しい版を出す（下書きも）とき、中身が今の版と同じ（並びも含めて・同時に 2 回出した後の 1 つも）",
+   "false_when": "中身のどれかを変える・足す・消す",
+   "message": "今の版と同じです",
+   "action": "中身を変えてから出す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "配るものを持つ運営の人で 運営 › 配るもの › ひな形 を開く",
+    "steps": [
+     "ひな形の［新しい版］を開き、何も変えずに出す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20"
+   ]
+  },
+  {
+   "id": "E-OPS-024",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "運営がひな形の新しい版を出す（下書きも）とき、部と合わない中身（部の欄でない欄・項目に種類が無い・同じ key が 2 つ・本文のひな形が壊れている）か、数の上限（種別 10・状態は仕組みの段を除いて 8）を超える。detail.key がどの 1 つか",
+   "false_when": "部の欄だけで、key が重ならず、数の上限の内",
+   "message": "ひな形の中身が合いません",
+   "action": "赤字の 1 つを直してから出す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "配るものを持つ運営の人で 運営 › 配るもの › ひな形 を開く",
+    "steps": [
+     "種別のひな形に 11 個目の種別を足して出す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20",
+    "D-125.68"
+   ]
+  },
+  {
+   "id": "E-OPS-007",
+   "class": "permission",
+   "where": {
+    "screen": "*",
+    "state": "workspace_stopped"
+   },
+   "when": "運営が止めた会社（止めた時刻か、止める日が今日以前）の会社の人が、止められた画面・お知らせ・問い合わせで使う口のほかを呼んだ",
+   "false_when": "止める日の前（予定だけ）／再開した後／別の会社の人／許可を持つ運営の人が中を見ている／止められた画面・お知らせ・問い合わせで使う口",
+   "message": "このワークスペースは止められています",
+   "action": "問い合わせる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営が会社を止めた後、その会社の人でログインしている",
+    "steps": [
+     "チケットの一覧を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "high",
+   "source": [
+    "D-156.23",
+    "D-125.126"
+   ],
+   "support_code": "OPS-007"
+  },
+  {
+   "id": "E-BILL-006",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が請求書をまとめて出すとき、請求書の PDF を作った後・出す前に、その月の会社の額が変わった（下書きの後にプランが変わった等）",
+   "false_when": "PDF を作ってから出すまでに額が変わらない",
+   "message": "下書きの後に中身が変わりました。もう一度確かめて出してください",
+   "action": "下書きを開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人で 運営 › 請求 を開く",
+    "steps": [
+     "先月の請求書の下書きを確かめる",
+     "出す前に、ある会社のプランを変える（直に DB で契約を替える）",
+     "「まとめて出す」を押す（PDF を作った後に額が変わった形は直に app.ops_invoices_issue に合わない額を渡す）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.31"
+   ]
+  },
+  {
+   "id": "E-OPS-009",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-new"
+   },
+   "when": "出したお知らせ（出した・予定の時刻を過ぎた・直った）の書き直しで、種類・誰に・出す場所・出す日時を送った",
+   "false_when": "下書きか予定の時刻の前のお知らせを直した／出した後でも題・本文・影響・メンテの時間だけを直した",
+   "message": "出したお知らせの 種類・誰に・出す場所・出す日時 は変えられません",
+   "action": "新しいお知らせとして書き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "お知らせを 1 つ出しておく",
+    "steps": [
+     "出したお知らせを開いて書き直す",
+     "誰にを変えて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33",
+    "D-156.64"
+   ],
+   "support_code": "OPS-009"
+  },
+  {
+   "id": "E-OPS-014",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-new"
+   },
+   "when": "メンテの終わりが始まりより前か同じ（直すときは保存の値と合わせて）",
+   "false_when": "メンテの終わりが始まりより後／メンテの時間を付けない",
+   "message": "メンテの終わりは始まりより後にしてください",
+   "action": "時間を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営の人でお知らせの画面を開いておく",
+    "steps": [
+     "メンテのお知らせを書く",
+     "終わりを始まりより前にして保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33"
+   ],
+   "support_code": "OPS-014"
+  },
+  {
+   "id": "E-PLAN-003",
+   "class": "conflict",
+   "where": {
+    "screen": "members",
+    "state": "invite"
+   },
+   "when": "いまのプランの人数の上限（社内の人と招待中の社内の招待の和）に達している会社で、社内の人を招く・招待のリンクを作った",
+   "false_when": "上限の内／ゲスト（先方の人）を招いた／いまのプランに人数の上限が無い／招待中の宛てに送り直した（数え直さない）",
+   "message": "いまのプランの人数の上限に達しています。プランを上げると招けます",
+   "action": "プランと支払いを見る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "無料のプラン（3 人まで）で社内の人が 3 人いる会社の管理者でログインしておく",
+    "steps": [
+     "メンバーの画面で「＋ 招く」を押し、社内の宛てを 1 つ書いて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.65",
+    "D-156.51"
+   ],
+   "support_code": "PLAN-003"
+  },
+  {
+   "id": "E-BILL-007",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-billing"
+   },
+   "when": "運営が請求書の型を保存するとき、読んだときの版が今の版と違う（ほかの運営の人が先に直した・同時に 2 人が保存した後の 1 つ）",
+   "false_when": "読んでから保存するまでに、ほかの人が型を直していない",
+   "message": "ほかの人が先に直しました。読み直してから、もう一度保存してください",
+   "action": "読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "お金を持つ運営の人 2 人で 運営 › 請求 › 請求書の型 を開く",
+    "steps": [
+     "1 人目が値を直して保存する",
+     "2 人目が、読み直さずに値を直して保存する"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.60"
+   ]
   }
  ],
  "meta": {

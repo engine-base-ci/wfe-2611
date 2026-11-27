@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 148 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 156 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 73 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -53,7 +53,7 @@
 | E-036 | `triggers` | 5. 実行・統制 | scope_layered | 3 | D-010 |
 | E-037 | `policies` | 5. 実行・統制 | scope_layered | 3 | D-060 |
 | E-038 | `approvals` | 5. 実行・統制 | scope_layered | 4 | D-010 |
-| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
+| E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 D-151.6 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
 | E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
@@ -91,15 +91,17 @@
 | E-074 | `inquiries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 2 | D-069 D-075 D-075.1 D-076 |
 | E-075 | `notices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-076 | `notice_deliveries` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 |
+| E-156 | `notice_updates` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-156.33 |
 | E-077 | `status_incidents` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-075.2 D-076 |
 | E-079 | `notification_preferences` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-043 D-069 D-075 D-075.3 |
 | E-080 | `notifications` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-043 D-069 D-075 D-076 |
 | E-081 | `plans` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-076.6 |
-| E-082 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 |
+| E-082 | `plan_versions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | none | 2 | D-069 D-075 D-076 D-128.72 |
 | E-083 | `subscriptions` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.4 D-076 |
 | E-084 | `plan_change_requests` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 5 | D-069 D-075 D-076 |
 | E-085 | `usage_meters` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-069 D-075 D-075.5 D-076 |
 | E-086 | `invoices` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 3 | D-002 D-069 D-075 D-075.4 |
+| E-150 | `ops_invoice_templates` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | ops_scoped | 1 | D-069 D-075 D-076 D-156.60 |
 | E-087 | `payments` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-075 D-076 D-077.1 |
 | E-088 | `error_events` | 12. 運営と顧客の間で往復するもの・自分で整えるもの | account_scoped | 4 | D-069 D-069.3 D-069.4 D-075 |
 | E-089 | `imports` | 13. 取り込み・正規連携・招待・持ち出し・添付 | scope_layered | 3 | D-025 D-026 D-042 D-076 |
@@ -140,11 +142,17 @@
 | E-121 | `knowledge_pages` | 16. 第1フェーズの表 | scope_layered | 4 | D-125 D-125.108 D-128 D-128.50 |
 | E-122 | `knowledge_page_versions` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
 | E-123 | `knowledge_links` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.52 |
+| E-151 | `knowledge_breaches` | 16. 第1フェーズの表 | account_scoped | 1 | D-125 D-128 D-152.24 |
+| E-152 | `knowledge_folders` | 16. 第1フェーズの表 | scope_layered | 3 | D-125 D-128 D-152.1 |
+| E-157 | `knowledge_limits` | 16. 第1フェーズの表 | none | 1 | D-125 D-128 D-152.16 |
+| E-153 | `knowledge_requests` | 16. 第1フェーズの表 | account_scoped | 1 | D-125 D-128 D-152.13 D-152.2 |
+| E-154 | `knowledge_shares` | 16. 第1フェーズの表 | account_scoped | 1 | D-125 D-128 D-152.27 D-152.6 |
 | E-124 | `clients` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.121 D-128 D-128.53 |
-| E-125 | `client_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.54 |
-| E-126 | `client_contacts` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 |
-| E-127 | `client_requests` | 16. 第1フェーズの表 | account_scoped | 10 | D-125 D-125.123 D-128 |
-| E-128 | `acceptances` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.124 D-128 |
+| E-125 | `client_groups` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.54 D-155.35 |
+| E-126 | `client_contacts` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 |
+| E-127 | `client_requests` | 16. 第1フェーズの表 | account_scoped | 10 | D-125 D-125.123 D-128 D-155.7 |
+| E-155 | `client_request_messages` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.7 |
+| E-128 | `acceptances` | 16. 第1フェーズの表 | account_scoped | 5 | D-125 D-125.124 D-128 D-155.44 |
 | E-129 | `tenant_memberships` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.150 D-128 D-128.46 |
 | E-130 | `terms_versions` | 16. 第1フェーズの表 | ops_scoped | 2 | D-125 D-125.162 D-128 |
 | E-131 | `terms_consents` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.162 D-128 |
@@ -154,7 +162,7 @@
 | E-147 | `guest_groups` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-155.35 D-155.37 |
 | E-148 | `guest_group_members` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.35 |
 | E-149 | `ticket_guest_shares` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-155.41 |
-| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 |
+| E-136 | `ticket_handovers` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-125.70 D-128 D-148.20 |
 | E-137 | `saved_views` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.83 |
 | E-138 | `ticket_imports` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.119 D-128.83 |
 | E-139 | `learning_candidates` | 16. 第1フェーズの表 | account_scoped | 4 | D-125 D-128 D-128.41 D-128.43 |
@@ -270,7 +278,7 @@
 | notices | お知らせ | A68 | 3 | 45 | 48 | 3 | R1 R2 R3 R4 |
 | billing | 請求書 | A69 | 3 | 45 | 48 | 9 | R1 R2 |
 | ops-notices | 運営：お知らせ | A71 | 2 | 45 | 51 | 4 | R6 |
-| ops-billing | 運営：請求 | A72 A87 | 2 | 45 | 50 | 13 | R6 |
+| ops-billing | 運営：請求 | A72 A87 | 2 | 45 | 50 | 14 | R6 |
 | ops-llm | 運営：AI の経路と使用量 | A85 | 3 | 0 | 1 | 3 | R6 |
 | ops-disclosure | 運営：開示資料 | A86 | 3 | 0 | 1 | 5 | R6 |
 | ops-tenant | 運営：ワークスペースの 1 社 | A127 A64 | 1 | 45 | 57 | 27 | R6 |
@@ -282,12 +290,12 @@
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 6 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 1 | 7 | R1 R2 R3 |
 | work-types | 業務の型 | A119 | 1 | 0 | 1 | 6 | R1 R2 R3 |
-| knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 25 | 8 | R1 R2 R3 |
-| requests | 届いた依頼 | A122 | 1 | 0 | 7 | 20 | R1 R2 |
+| knowledge | ナレッジ | A114 A136 A30 A93 | 1 | 0 | 25 | 12 | R1 R2 R3 |
+| requests | 届いた依頼 | A122 | 1 | 0 | 7 | 21 | R1 R2 |
 | ops-team | 運営：運営の人 | A134 | 1 | 0 | 4 | 4 | R6 |
 | legal | 規約・プライバシーポリシー | A96 | 1 | 0 | 0 | 2 | R1 R2 R3 R4 |
 | help | 困ったとき | A135 | 1 | 0 | 1 | 3 | R1 R2 R3 R4 |
-| portal | ゲストの場所 | A124 A125 | 1 | 0 | 9 | 19 | R4 |
+| portal | ゲストの場所 | A124 A125 | 1 | 0 | 9 | 20 | R4 |
 
 ## 引き継ぎ
 

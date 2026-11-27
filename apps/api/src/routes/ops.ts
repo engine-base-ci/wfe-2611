@@ -9,8 +9,9 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/ops/inquiries/:id", op(deps, "updateOpsInquiry"));
   app.post("/api/v1/ops/inquiries/:id/notes", op(deps, "addOpsInquiryNote"));
   app.post("/api/v1/ops/inquiries/:id/replies", op(deps, "replyOpsInquiry"));
+  app.get("/api/v1/ops/invoice-template", op(deps, "getOpsInvoiceTemplate"));
+  app.put("/api/v1/ops/invoice-template", op(deps, "updateOpsInvoiceTemplate"));
   app.get("/api/v1/ops/invoices", op(deps, "listOpsInvoices"));
-  app.post("/api/v1/ops/invoices/export", op(deps, "exportOpsInvoices"));
   app.post("/api/v1/ops/invoices/issue", op(deps, "issueOpsInvoices"));
   app.post("/api/v1/ops/invoices/:id/payments", op(deps, "recordPayment"));
   app.get("/api/v1/ops/members", op(deps, "listOpsMembers"));
@@ -34,18 +35,13 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/ops/plan_proposals/:id/return", op(deps, "returnPlanProposal"));
   app.post("/api/v1/ops/plan_proposals/:id/submit", op(deps, "submitPlanProposal"));
   app.get("/api/v1/ops/plans", op(deps, "listOpsPlans"));
+  app.get("/api/v1/ops/pwned", op(deps, "listOpsPwned"));
+  app.post("/api/v1/ops/pwned/pending/ack", op(deps, "ackOpsPwnedPending"));
   app.get("/api/v1/ops/shell", op(deps, "getOpsShell"));
   app.get("/api/v1/ops/templates", op(deps, "listOpsTemplates"));
   app.get("/api/v1/ops/templates/:id", op(deps, "getOpsTemplate"));
   app.post("/api/v1/ops/templates/:id/versions", op(deps, "releaseOpsTemplate"));
-  app.post("/api/v1/ops/work_type_uploads", op(deps, "uploadWorkTypePackage"));
-  app.get("/api/v1/ops/work_type_uploads/:id", op(deps, "getWorkTypeUpload"));
-  app.get("/api/v1/ops/work_types", op(deps, "listOpsWorkTypes"));
-  app.get("/api/v1/ops/work_types/:id", op(deps, "getOpsWorkType"));
-  app.post("/api/v1/ops/work_types/:id/versions", op(deps, "releaseOpsWorkType"));
-  app.post("/api/v1/ops/work_types/:id/versions/:v/rollback", op(deps, "rollbackOpsWorkType"));
   app.get("/api/v1/ops/workspaces", op(deps, "listOpsWorkspaces"));
-  app.post("/api/v1/ops/workspaces/export", op(deps, "exportOpsWorkspaces"));
   app.get("/api/v1/ops/workspaces/:id", op(deps, "getOpsWorkspace"));
   app.get("/api/v1/ops/workspaces/:id/audit", op(deps, "listOpsWorkspaceAudit"));
   app.get("/api/v1/ops/workspaces/:id/billing", op(deps, "getOpsWorkspaceBilling"));
@@ -55,6 +51,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/ops/workspaces/:id/notices", op(deps, "sendWorkspaceNotice"));
   app.post("/api/v1/ops/workspaces/:id/peeks", op(deps, "openPeek"));
   app.post("/api/v1/ops/workspaces/:id/plan", op(deps, "changeOpsWorkspacePlan"));
+  app.post("/api/v1/ops/workspaces/:id/pwned/ack", op(deps, "ackOpsPwned"));
   app.post("/api/v1/ops/workspaces/:id/resume", op(deps, "resumeWorkspace"));
   app.post("/api/v1/ops/workspaces/:id/stop", op(deps, "stopWorkspace"));
 }

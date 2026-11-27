@@ -4,13 +4,17 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.post("/api/v1/knowledge/ask", op(deps, "askKnowledge"));
-  app.post("/api/v1/knowledge/ask/feedback", op(deps, "sendKnowledgeAnswerFeedback"));
-  app.get("/api/v1/knowledge/home", op(deps, "getKnowledgeHome"));
-  app.get("/api/v1/knowledge/link-targets", op(deps, "searchKnowledgeLinkTargets"));
-  app.get("/api/v1/knowledge/proposals", op(deps, "listKnowledgeProposals"));
-  app.post("/api/v1/knowledge/proposals/:id/accept", op(deps, "acceptKnowledgeProposal"));
-  app.post("/api/v1/knowledge/proposals/:id/decline", op(deps, "declineKnowledgeProposal"));
+  app.get("/api/v1/knowledge/approvals", op(deps, "listKnowledgeApprovals"));
+  app.post("/api/v1/knowledge/folders", op(deps, "createKnowledgeFolder"));
+  app.patch("/api/v1/knowledge/folders/:id", op(deps, "updateKnowledgeFolder"));
+  app.delete("/api/v1/knowledge/folders/:id", op(deps, "deleteKnowledgeFolder"));
+  app.delete("/api/v1/knowledge/requests/:id", op(deps, "withdrawKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/approve", op(deps, "approveKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/decline", op(deps, "declineKnowledgeRequest"));
+  app.post("/api/v1/knowledge/requests/:id/dismiss", op(deps, "dismissKnowledgeRequest"));
+  app.get("/api/v1/knowledge/review", op(deps, "getKnowledgeReview"));
+  app.get("/api/v1/knowledge/shares", op(deps, "getKnowledgeShares"));
+  app.put("/api/v1/knowledge/shares", op(deps, "setKnowledgeShares"));
+  app.post("/api/v1/knowledge/similar", op(deps, "findSimilarKnowledge"));
   app.get("/api/v1/knowledge/tree", op(deps, "getKnowledgeTree"));
-  app.get("/api/v1/knowledge/verifications", op(deps, "listKnowledgeVerifications"));
 }

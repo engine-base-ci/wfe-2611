@@ -377,6 +377,7 @@
   --k-c-doc-tool-pad: 0 6px;
   --k-c-doc-tool-min-width: 30px;
   --k-c-shell-bar-height: 48px;
+  --k-c-kn-pane-height: 100dvh;
   --k-c-shell-bar-tool-width: 44px;
   --k-c-shell-bar-tool-height: 44px;
   --k-c-shell-bar-search-height: 36px;
@@ -590,6 +591,7 @@
   --k-c-artifact-button-lh: var(--k-lh-body-sm);
   --k-c-artifact-button-fw: var(--k-fw-body-sm);
   --k-c-shell-tabs-height: 60px;
+  --k-c-room-page-height: 100dvh;
   --k-c-create-head-gap: 12px;
   --k-c-create-how-height: 28px;
   --k-c-create-how-pad: 0 12px;
@@ -1217,6 +1219,33 @@
   --k-c-f4d-caret-margin: 0 0 0 1px;
   --k-c-f4d-sample-ink-fg: var(--k-st-progress);
   --k-c-f4d-sample-mark-bg: var(--k-st-warning-container);
+  --k-c-f9s-pill-lh: 1.8;
+  --k-c-f9s-swatch-ring-border: 2px solid var(--k-primary);
+  --k-c-f9s-swatch-ring-gap-width: 2px;
+  --k-c-notice-panel-width: 420px;
+  --k-c-search-panel-width: 580px;
+  --k-c-search-panel-top: 144px;
+  --k-c-notice-avatar-width: 22px;
+  --k-c-notice-avatar-height: 22px;
+  --k-c-more-menu-min-width: 220px;
+  --k-c-calendar-day-height: 112px;
+  --k-c-calendar-day-compact-height: 56px;
+  --k-c-calendar-tray-width: 384px;
+  --k-c-f7-dot-width: 6px;
+  --k-c-f7-dot-height: 6px;
+  --k-c-gantt-body-height: 624px;
+  --k-c-gantt-row-height: 36px;
+  --k-c-gantt-scale-height: 28px;
+  --k-c-gantt-cell-day-width: 32px;
+  --k-c-gantt-cell-week-width: 72px;
+  --k-c-gantt-cell-month-width: 96px;
+  --k-c-overview-phone-height: 100dvh;
+  --k-c-saved-nav-group-height: 30px;
+  --k-c-saved-nav-group-pad: 0 10px;
+  --k-c-saved-nav-mark-width: 18px;
+  --k-c-saved-nav-mark-height: 18px;
+  --k-c-notice-sheet-back-width: 36px;
+  --k-c-notice-sheet-back-height: 36px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {

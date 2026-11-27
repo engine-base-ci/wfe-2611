@@ -59,6 +59,9 @@ jobs:
           STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
           STAGING_DATABASE_READ_URL: ${{ secrets.STAGING_DATABASE_READ_URL }}
           STAGING_RESEND_READ_KEY: ${{ secrets.STAGING_RESEND_READ_KEY }}
+          STAGING_OPS_PASSKEY_KEY: ${{ secrets.STAGING_OPS_PASSKEY_KEY }}
+          STAGING_OPS_PASSKEY_ID: ${{ secrets.STAGING_OPS_PASSKEY_ID }}
+          STAGING_OPS_PASSKEY_USER: ${{ secrets.STAGING_OPS_PASSKEY_USER }}
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/infra/certs/supabase-root-2021.crt
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/e2e-staging.xml
         run: pnpm e2e:staging

@@ -10,24 +10,25 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id", op(deps, "getTicket"));
   app.patch("/api/v1/tickets/:id", op(deps, "updateTicket"));
   app.delete("/api/v1/tickets/:id", op(deps, "deleteTicket"));
-  app.post("/api/v1/tickets/:id/acceptances", op(deps, "requestAcceptance"));
   app.get("/api/v1/tickets/:id/agent-session", op(deps, "getTicketAgentSession"));
   app.post("/api/v1/tickets/:id/agent-session/apply", op(deps, "applyTicketAgentProposal"));
   app.post("/api/v1/tickets/:id/agent-session/messages", op(deps, "sendTicketAgentMessage"));
   app.get("/api/v1/tickets/:id/artifacts", op(deps, "listTicketArtifacts"));
   app.post("/api/v1/tickets/:id/attachments", op(deps, "createTicketAttachment"));
   app.patch("/api/v1/tickets/:id/body", op(deps, "updateTicketBody"));
-  app.get("/api/v1/tickets/:id/checks", op(deps, "listChecks"));
-  app.patch("/api/v1/tickets/:id/client-share", op(deps, "updateTicketClientShare"));
   app.post("/api/v1/tickets/:id/complete", op(deps, "completeTicket"));
   app.get("/api/v1/tickets/:id/decisions", op(deps, "listTicketDecisions"));
   app.post("/api/v1/tickets/:id/decisions", op(deps, "createTicketDecision"));
   app.post("/api/v1/tickets/:id/delegate", op(deps, "delegateTicket"));
   app.get("/api/v1/tickets/:id/delete-preview", op(deps, "previewTicketDelete"));
   app.post("/api/v1/tickets/:id/dry-run", op(deps, "dryRunTicket"));
+  app.get("/api/v1/tickets/:id/guest-shares", op(deps, "listTicketGuestShares"));
+  app.patch("/api/v1/tickets/:id/guest-shares", op(deps, "updateTicketGuestShares"));
   app.get("/api/v1/tickets/:id/handover-preview", op(deps, "previewTicketHandover"));
   app.get("/api/v1/tickets/:id/handovers", op(deps, "listTicketHandovers"));
   app.post("/api/v1/tickets/:id/handovers", op(deps, "createTicketHandover"));
+  app.get("/api/v1/tickets/:id/item-changes", op(deps, "listTicketItemChanges"));
+  app.post("/api/v1/tickets/:id/item-changes/restore", op(deps, "restoreTicketItems"));
   app.get("/api/v1/tickets/:id/kind-change-preview", op(deps, "previewTicketKindChange"));
   app.get("/api/v1/tickets/:id/links", op(deps, "listTicketLinks"));
   app.post("/api/v1/tickets/:id/links", op(deps, "createTicketLink"));
@@ -43,5 +44,4 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/tickets/:id/timeline/seen", op(deps, "markTicketTimelineSeen"));
   app.get("/api/v1/tickets/:id/versions", op(deps, "listTicketVersions"));
   app.post("/api/v1/tickets/:id/versions/:v/restore", op(deps, "restoreTicketVersion"));
-  app.get("/api/v1/tickets/:id/work-type-candidates", op(deps, "listWorkTypeCandidates"));
 }

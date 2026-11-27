@@ -24,12 +24,12 @@ describe("POST /api/v1/tickets/:id/decisions", () => {
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-014");
   });
-  it("test_post_tickets_id_decisions_conflict", () => {
-    // UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）
-    // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-011」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-011");
-  });
   it("test_post_tickets_id_decisions_rejected_422", () => {
+    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+    // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-017」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-017");
+  });
+  it("test_post_tickets_id_decisions_rejected_422_2", () => {
     // UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/decisions.test.ts の「K390-API-008」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decisions.test.ts", "utf8")).toContain("K390-API-008");

@@ -1,47 +1,42 @@
-// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。GET /api/v1/audit_events
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { makeHarness, endpointOf, type Harness } from "../harness.js";
-import { args } from "../args.js";
+// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。GET /api/v1/audit_events
+// 記録の一覧は、権限（管理者・マネージャー・兼務）・札・絞り・続きで答えが変わる。生成の試験の種では作れない（K-823）。ことば（q）で探すのは apps/api/test/features/F10/audit-search.test.ts（K-850）
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
 
-const e = endpointOf("listAuditEvents");
-let h: Harness;
-beforeAll(async () => {
-  h = await makeHarness();
-});
-afterAll(async () => {
-  await h.close();
-});
 describe("GET /api/v1/audit_events", () => {
-  it("test_get_audit_events_ok", async () => {
+  it("test_get_audit_events_ok", () => {
     // EVENT-DRIVEN: WHEN GET /api/v1/audit_events が「誰がいつ何をしたかを見る」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す
-    const who = e.auth === "ops" ? "ops" : "boss"; const r = await h.call(e, who, await args(h, e, who)); expect([200, 201]).toContain(r.status); const b = (await r.json()) as { data: unknown }; expect(b.data).toBeDefined(); if (e.kind === "create") expect((b.data as { id: string }).id).toBeTruthy();
+    // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-001");
   });
-  it("test_get_audit_events_rejected_401", async () => {
+  it("test_get_audit_events_rejected_401", () => {
     // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
-    const a = await args(h, e, "boss"); const before = await h.count(e.table); const r = await h.call(e, "anon", a); expect(r.status).toBe(e.auth === "public" ? 200 : 401); if (e.auth !== "public") { expect(((await r.json()) as { code: string }).code).toBe("UNAUTHENTICATED"); expect(await h.count(e.table)).toBe(before); }
+    // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-022」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-022");
   });
-  it("test_get_audit_events_rejected_403", async () => {
-    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
-    if (e.kind === "create" && e.perm.word === "self") { const a = await args(h, e, "staff"); const r = await h.call(e, "staff", a); expect([201, 403, 404]).toContain(r.status); if (r.status === 201) { const d = ((await r.json()) as { data: Record<string, unknown> }).data; for (const c of ["owner_member_id", "opened_by_member_id", "member_id", "requested_by", "uploaded_by"]) if (c in d) expect(d[c], "持ち主は呼んだ人").toBe(h.S.staffA); } return; } const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const who = e.auth === "ops" ? "boss" : e.kind === "list" || e.kind === "get" ? "opsB" : "staff"; const r = await h.call(e, who, a); expect([403, 404]).toContain(r.status); expect(await h.count(e.table)).toBe(before);
+  it("test_get_audit_events_rejected_403", () => {
+    // UNWANTED: IF 管理者でもマネージャーでもない人が記録を読もうとしたなら、Kaname は 403 を返し、記録の行を 1 つも返さない
+    // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-020」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-020");
   });
-  it("test_get_audit_events_rejected_422", async () => {
-    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-    const who = e.auth === "ops" ? "ops" : "boss"; if (e.kind === "list") { const r = await h.call(e, who, { query: { limit: "0" } }); expect(r.status).toBe(422); return; } if (e.kind === "get" || e.kind === "delete") { const r = await h.call(e, who, { id: "not-a-uuid" }); expect(r.status).toBe(422); return; } const a = await args(h, e, who); const before = await h.count(e.table); const r = await h.call(e, who, { ...a, body: { __unknown_field: "x", id: 12345 } }); expect(r.status).toBe(422); const b = (await r.json()) as { code: string; details: unknown[] }; expect(b.code).toBe("VALIDATION_ERROR"); expect(b.details.length).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); const r2 = await h.call(e, who, { ...a, body: "{not json" }); expect(r2.status).toBe(422);
+  it("test_get_audit_events_rejected_422", () => {
+    // UNWANTED: IF 絞りの形が違うなら、Kaname は 422 と E-AUD-001 を欄ごとの理由つきで返し、記録を読まない
+    // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-005");
   });
-  it("test_get_audit_events_rate_limited", async () => {
-    // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
-    const who = e.auth === "ops" ? "ops" : "boss"; h.limits["listAuditEvents"] = 2; const a = await args(h, e, who); await h.call(e, who, a); await h.call(e, who, a); const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(429); const b = (await r.json()) as { code: string; retry_after_sec: number }; expect(b.code).toBe("RATE_LIMITED"); expect(b.retry_after_sec).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); delete h.limits["listAuditEvents"];
+  it("test_get_audit_events_rejected_422_2", () => {
+    // UNWANTED: IF 続きの印の形が違うなら、Kaname は 422 と E-AUD-002 を返し、記録を読まない
+    // 本物の試験：apps/api/test/features/F10/audit-list.test.ts の「K823-API-011」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/audit-list.test.ts", "utf8")).toContain("K823-API-011");
   });
-  it("test_get_audit_events_terms_pending", async () => {
-    // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
-    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
-  });
-  it("test_get_audit_events_mfa_pending", async () => {
-    // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
-    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "mfa", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("MFA_REQUIRED"); expect(await h.count(e.table)).toBe(before);
-  });
-  it("test_get_audit_events_session_unresolved", async () => {
-    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "down", a); expect(r.status).toBe(503); expect(((await r.json()) as { code: string }).code).toBe("E-PAGE-003"); expect(await h.count(e.table)).toBe(before);
-  });
+  // 本物の試験はまだ無い（apps/api/test/features/F10/audit-list.test.ts）：UNWANTED: IF 探すことばが空・空白だけ・101 字以上なら、Kaname は 422 と E-AUD-010 を欄 q の理由つきで返し、記録を読まない
+  it.todo("test_get_audit_events_rejected_422_3");
+  // 当てはまらない（入口の上限は契約の共通の試験が持つ）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_audit_events_rate_limited");
+  // 当てはまらない（入口の共通の試験が持つ）：UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+  it.todo("test_get_audit_events_terms_pending");
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_get_audit_events_mfa_pending");
+  // 当てはまらない（入口の共通の試験が持つ）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_get_audit_events_session_unresolved");
 });

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:4eaa3ba4da2a0935
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:5125b418f41d4909
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -9,7 +9,7 @@ export interface NavData {
   productStates: readonly ProductState[]; screens: Record<ScreenId, ScreenMeta>; roles: readonly { id: RoleId; name: string }[];
 }
 export type RoleId = "R1" | "R2" | "R3" | "R4" | "R6";
-export type ScreenId = "signup" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "clients" | "requests" | "ops-team" | "legal" | "help" | "portal";
+export type ScreenId = "signup" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "requests" | "ops-team" | "legal" | "help" | "portal";
 export const NAV: NavData = {
   "sections": [
     {
@@ -35,10 +35,8 @@ export const NAV: NavData = {
       "label": "（名前）のAI",
       "icon": "bot",
       "screens": [
-        "clone-chat",
         "ai-activity",
-        "work-types",
-        "rules"
+        "clone-chat"
       ],
       "tab": "AI"
     },
@@ -65,11 +63,10 @@ export const NAV: NavData = {
       ]
     },
     {
-      "key": "clients",
-      "label": "取引先",
+      "key": "requests",
+      "label": "届いた依頼",
       "icon": "briefcase",
       "screens": [
-        "clients",
         "requests"
       ]
     },
@@ -115,6 +112,7 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
+      "requests",
       "me"
     ],
     "R2": [
@@ -123,6 +121,7 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
+      "requests",
       "me"
     ],
     "R3": [
@@ -145,10 +144,8 @@ export const NAV: NavData = {
     "R1": [
       "tickets",
       "approvals",
-      "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
+      "clone-chat",
       "knowledge",
       "members",
       "member-detail",
@@ -157,6 +154,7 @@ export const NAV: NavData = {
       "audit",
       "company-settings",
       "billing",
+      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -166,10 +164,8 @@ export const NAV: NavData = {
     "R2": [
       "tickets",
       "approvals",
-      "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
+      "clone-chat",
       "knowledge",
       "members",
       "member-detail",
@@ -178,6 +174,7 @@ export const NAV: NavData = {
       "audit",
       "company-settings",
       "billing",
+      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -187,10 +184,8 @@ export const NAV: NavData = {
     "R3": [
       "tickets",
       "approvals",
-      "clone-chat",
       "ai-activity",
-      "work-types",
-      "rules",
+      "clone-chat",
       "knowledge",
       "account",
       "credentials",
@@ -278,56 +273,28 @@ export const NAV: NavData = {
         "desc": "理由と一手"
       }
     ],
-    "work-types": [
-      {
-        "label": "使える型",
-        "desc": "自分の AI が使える型（運営・会社・グループ・自分）"
-      },
-      {
-        "label": "自分の型",
-        "desc": "自分で作った型と広げる申請"
-      },
-      {
-        "label": "申請",
-        "desc": "マネージャーが OK するもの"
-      }
-    ],
-    "rules": [
-      {
-        "label": "会社",
-        "desc": "会社の全員の AI に効く"
-      },
-      {
-        "label": "層",
-        "desc": "その層・グループの人の AI に効く"
-      },
-      {
-        "label": "自分",
-        "desc": "自分の AI にだけ効く"
-      },
-      {
-        "label": "取引先",
-        "desc": "その取引先のチケットだけに効く"
-      }
-    ],
     "knowledge": [
       {
         "label": "ページ",
-        "desc": "層ごとのページ"
+        "desc": "会社・グループ・自分の棚のページ"
       },
       {
-        "label": "記憶",
-        "desc": "自分の AI の記憶と上がってきた候補"
+        "label": "管理",
+        "desc": "承認待ちと見直すページ（管理者とマネージャーだけ）"
       }
     ],
     "masters": [
       {
-        "label": "守ること・承認・やり方",
-        "desc": "全員の分身に効く決まりと、承認を上に回すとき"
+        "label": "種別",
+        "desc": "名前・色・本文のひな形"
       },
       {
-        "label": "チケットの形",
-        "desc": "種別ごとの欄の並び・必須・出す・外す"
+        "label": "状態",
+        "desc": "名前・色・並び"
+      },
+      {
+        "label": "項目",
+        "desc": "会社が足す項目"
       }
     ],
     "member-detail": [
@@ -372,20 +339,6 @@ export const NAV: NavData = {
       {
         "label": "お知らせ",
         "desc": "ワークスペースごと"
-      }
-    ],
-    "clients": [
-      {
-        "label": "担当者",
-        "desc": "招待した人"
-      },
-      {
-        "label": "依頼",
-        "desc": "この取引先の依頼"
-      },
-      {
-        "label": "見せる項目",
-        "desc": "既定"
       }
     ],
     "ops-home": [
@@ -448,8 +401,12 @@ export const NAV: NavData = {
     ],
     "ops-skills": [
       {
-        "label": "業務の型と操作",
-        "desc": "上げる → 機械の検査 → 版を出す"
+        "label": "操作",
+        "desc": "読むだけ。版はコードで出す"
+      },
+      {
+        "label": "ひな形",
+        "desc": "種別・状態・項目の版を出す"
       },
       {
         "label": "プラン",
@@ -759,7 +716,7 @@ export const NAV: NavData = {
     "clone-chat": {
       "id": "clone-chat",
       "name": "分身の部屋：会話と知っていること",
-      "route": "/ai/chat",
+      "route": "/ai/talk",
       "needsLogin": true,
       "hasShell": true,
       "roles": [
@@ -775,7 +732,7 @@ export const NAV: NavData = {
     "ai-activity": {
       "id": "ai-activity",
       "name": "分身の部屋：やったこと",
-      "route": "/ai-staff/activity",
+      "route": "/ai",
       "needsLogin": true,
       "hasShell": true,
       "roles": [
@@ -1155,7 +1112,7 @@ export const NAV: NavData = {
         "R1",
         "R2"
       ],
-      "purpose": "名前とロゴ・プランと支払い・取引先の見え方・誰ができるか・ワークスペースを消す。変えることがあるものだけ置く",
+      "purpose": "名前とロゴ・プランと支払い・誰ができるか・ワークスペースを消す。変えることがあるものだけ置く",
       "primaryAction": "保存する",
       "release": "v1"
     },
@@ -1239,7 +1196,7 @@ export const NAV: NavData = {
       "roles": [
         "R6"
       ],
-      "purpose": "業務の型と操作を上げる（機械の検査 → 版を出す）。プランの値段と中身を版で持ち、変えるときは案を作り別の人が決める",
+      "purpose": "全部のワークスペースに効く物を版で持つ：操作（読むだけ・版はコードで出す）・ひな形（新しく入る会社が最初に使う既定の形。種別・状態・項目の版を出し、会社が手を付けていない所だけ「そのままにする／変える」を選ぶ）・プラン（値段と中身。変えるときは案を作り別の人が決める）",
       "primaryAction": "版を出す",
       "release": "v1"
     },
@@ -1411,16 +1368,16 @@ export const NAV: NavData = {
     },
     "masters": {
       "id": "masters",
-      "name": "決まり",
-      "route": "/workspace/rules",
+      "name": "チケットの設定",
+      "route": "/workspace/ticket-settings",
       "needsLogin": true,
       "hasShell": true,
       "roles": [
         "R1",
         "R2"
       ],
-      "purpose": "ワークスペースの管理 › 決まり。全員の分身とチケットに効く 守ること・承認を回すとき・やり方 と、チケットの形（種別ごとの欄の並び・必須）",
-      "primaryAction": "この形にする",
+      "purpose": "ワークスペースの管理 › チケットの設定。種別（名前・色・本文のひな形）・状態（名前・色・並び）・項目（会社が足す項目）を会社のやり方に合わせて足す・直す・並べる・消す。管理者だけが開ける",
+      "primaryAction": "保存する",
       "release": "v1"
     },
     "layers": {
@@ -1450,7 +1407,7 @@ export const NAV: NavData = {
       ],
       "purpose": "会社・層・個人・取引先 ごとにルール（書式・宛名・CC・禁止）を書く。見える・直せる範囲は権限で変わる",
       "primaryAction": "保存する",
-      "release": "v1"
+      "release": "v2"
     },
     "work-types": {
       "id": "work-types",
@@ -1465,7 +1422,7 @@ export const NAV: NavData = {
       ],
       "purpose": "業務の型（運営の全社向け／運営が作った会社向け／会社／グループ／自分）を見る・作る・広げる。見せるのは欄と説明だけで、裏のスキルの作りは見せない",
       "primaryAction": "作る",
-      "release": "v1"
+      "release": "v2"
     },
     "knowledge": {
       "id": "knowledge",
@@ -1478,22 +1435,8 @@ export const NAV: NavData = {
         "R2",
         "R3"
       ],
-      "purpose": "層ごとのページと記憶を書く・直す・確かめる。どのチケットで使われたかが分かる",
+      "purpose": "会社・グループ・自分の棚のページを、フォルダの木から選んで書く・直す・上げる・共有する・写す。必ず守るのページは AI が毎回読んで守る。管理する人は承認待ちと見直すページを見る",
       "primaryAction": "ページを書く",
-      "release": "v1"
-    },
-    "clients": {
-      "id": "clients",
-      "name": "取引先",
-      "route": "/clients",
-      "needsLogin": true,
-      "hasShell": true,
-      "roles": [
-        "R1",
-        "R2"
-      ],
-      "purpose": "取引先と担当者を管理し、招待し、見せる項目の既定を決める",
-      "primaryAction": "取引先を足す",
       "release": "v1"
     },
     "requests": {
@@ -1506,7 +1449,7 @@ export const NAV: NavData = {
         "R1",
         "R2"
       ],
-      "purpose": "取引先からの依頼とやり取りを見て、受けてチケットにする／断る",
+      "purpose": "ゲストからの依頼とやり取りを見て、受けてチケットにする／断る",
       "primaryAction": "受けてチケットにする",
       "release": "v1"
     },
@@ -1557,14 +1500,14 @@ export const NAV: NavData = {
     },
     "portal": {
       "id": "portal",
-      "name": "クライアントの場所",
+      "name": "ゲストの場所",
       "route": "/portal",
       "needsLogin": true,
       "hasShell": true,
       "roles": [
         "R4"
       ],
-      "purpose": "取引先の人が依頼を出し、やり取りし、進みと成果物を見て検収する",
+      "purpose": "ゲストが依頼を出し、やり取りし、見せてもらったチケットの進みを見る",
       "primaryAction": "依頼を出す",
       "release": "v1"
     }
@@ -1584,7 +1527,7 @@ export const NAV: NavData = {
     },
     {
       "id": "R4",
-      "name": "依頼を出す取引先の人"
+      "name": "依頼を出すゲスト"
     },
     {
       "id": "R6",

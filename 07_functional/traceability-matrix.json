@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 73,
   "features_count": 32,
-  "entities_count": 148,
+  "entities_count": 156,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -2481,6 +2481,7 @@
     "E-080 notifications",
     "E-072 ops_audit_events",
     "E-052 audit_events",
+    "E-150 ops_invoice_templates",
     "E-004 members"
    ],
    "related_apis": [
@@ -3132,8 +3133,12 @@
     "E-055 layers",
     "E-002 scopes",
     "E-142 scope_memberships",
+    "E-152 knowledge_folders",
     "E-120 reference_logs",
-    "E-080 notifications"
+    "E-153 knowledge_requests",
+    "E-080 notifications",
+    "E-154 knowledge_shares",
+    "E-151 knowledge_breaches"
    ],
    "related_apis": [
     "GET /api/knowledge/tree",
@@ -3188,6 +3193,7 @@
     "E-136 ticket_handovers",
     "E-137 saved_views",
     "E-138 ticket_imports",
+    "E-155 client_request_messages",
     "E-049 messages",
     "E-126 client_contacts",
     "E-095 skills",
@@ -3297,6 +3303,7 @@
     "E-137 saved_views",
     "E-138 ticket_imports",
     "E-044 bridge_jobs",
+    "E-155 client_request_messages",
     "E-094 attachments",
     "E-080 notifications",
     "E-049 messages",
@@ -12920,6 +12927,12 @@
    ]
   },
   {
+   "entity_id": "E-156",
+   "entity_name": "notice_updates",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
    "entity_id": "E-077",
    "entity_name": "status_incidents",
    "used_by_screens": [
@@ -13138,6 +13151,16 @@
     "F-011",
     "F-014",
     "F-015",
+    "F-016"
+   ]
+  },
+  {
+   "entity_id": "E-150",
+   "entity_name": "ops_invoice_templates",
+   "used_by_screens": [
+    "ops-billing"
+   ],
+   "used_by_features": [
     "F-016"
    ]
   },
@@ -13826,6 +13849,56 @@
    ]
   },
   {
+   "entity_id": "E-151",
+   "entity_name": "knowledge_breaches",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-152",
+   "entity_name": "knowledge_folders",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-157",
+   "entity_name": "knowledge_limits",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-153",
+   "entity_name": "knowledge_requests",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-154",
+   "entity_name": "knowledge_shares",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
    "entity_id": "E-124",
    "entity_name": "clients",
    "used_by_screens": [
@@ -13880,6 +13953,18 @@
    ],
    "used_by_features": [
     "F-005",
+    "F-021",
+    "F-022"
+   ]
+  },
+  {
+   "entity_id": "E-155",
+   "entity_name": "client_request_messages",
+   "used_by_screens": [
+    "requests",
+    "portal"
+   ],
+   "used_by_features": [
     "F-021",
     "F-022"
    ]
@@ -14975,7 +15060,11 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-151",
+    "E-152",
+    "E-153",
+    "E-154"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -15126,7 +15215,11 @@
     "E-145",
     "E-146",
     "E-147",
-    "E-149"
+    "E-149",
+    "E-151",
+    "E-152",
+    "E-153",
+    "E-154"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -15255,7 +15348,8 @@
     "E-132",
     "E-133",
     "E-134",
-    "E-142"
+    "E-142",
+    "E-150"
    ],
    "api_endpoints_draft": [
     "GET /api/audit_events",
@@ -15475,7 +15569,8 @@
     "E-146",
     "E-147",
     "E-148",
-    "E-149"
+    "E-149",
+    "E-155"
    ],
    "api_endpoints_draft": [
     "GET /api/client_requests",
@@ -15507,7 +15602,8 @@
     "E-138",
     "E-147",
     "E-148",
-    "E-149"
+    "E-149",
+    "E-155"
    ],
    "api_endpoints_draft": [
     "GET /api/client_requests",

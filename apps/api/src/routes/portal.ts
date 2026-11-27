@@ -5,8 +5,6 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/portal", op(deps, "getPortalHome"));
-  app.get("/api/v1/portal/acceptances/:id", op(deps, "getPortalAcceptance"));
-  app.post("/api/v1/portal/acceptances/:id/answer", op(deps, "answerAcceptance"));
   app.post("/api/v1/portal/attachments", op(deps, "uploadPortalAttachment"));
   app.get("/api/v1/portal/notices", op(deps, "listPortalNotices"));
   app.post("/api/v1/portal/requests", op(deps, "createPortalRequest"));
@@ -14,4 +12,5 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/portal/requests/:id", op(deps, "getPortalRequest"));
   app.post("/api/v1/portal/requests/:id/messages", op(deps, "postPortalRequestMessage"));
   app.get("/api/v1/portal/tickets/:id", op(deps, "getPortalTicket"));
+  app.post("/api/v1/portal/tickets/:id/messages", op(deps, "postPortalTicketMessage"));
 }

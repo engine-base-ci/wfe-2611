@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/tickets/:id/complete", () => {
   it("test_post_tickets_id_complete_ok", () => {
-    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：ナレッジ更新の候補を出す・実行後の確認の結果を添える）
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：実行後の確認の結果を添える）
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-027");
   });
@@ -33,6 +33,11 @@ describe("POST /api/v1/tickets/:id/complete", () => {
     // UNWANTED: IF 終わっていない子があるなら、Kaname は 422 と子ごとの理由（E-VAL-024）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-030」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-030");
+  });
+  it("test_post_tickets_id_complete_conflict_2", () => {
+    // UNWANTED: IF 必ず守るから入った確認項目にチェックの付いていない物があるなら、Kaname は 409 と残りの行の一覧（E-KNW-240）を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F9/knowledge-complete-guard.test.ts の「K701-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-complete-guard.test.ts", "utf8")).toContain("K701-API-001");
   });
   it("test_post_tickets_id_complete_rejected_422_2", () => {
     // UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない

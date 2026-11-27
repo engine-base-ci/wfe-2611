@@ -32341,6 +32341,7 @@
      "operation_id": "getOpsInvoiceTemplate",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-150",
       "E-004"
      ],
      "choke_points": [
@@ -32366,6 +32367,7 @@
      "operation_id": "updateOpsInvoiceTemplate",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-150",
       "E-072"
      ],
      "choke_points": [
@@ -32885,6 +32887,7 @@
      "operation_id": "getOpsInvoiceTemplate",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-150",
       "E-004"
      ],
      "choke_points": [
@@ -32910,6 +32913,7 @@
      "operation_id": "updateOpsInvoiceTemplate",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-150",
       "E-072"
      ],
      "choke_points": [
@@ -33345,6 +33349,7 @@
     "E-080",
     "E-072",
     "E-052",
+    "E-150",
     "E-004"
    ],
    "mock_path": "06_mockup/v1/v1-ops-billing.html",
@@ -43339,6 +43344,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
+      "E-152",
       "E-002"
      ],
      "choke_points": [
@@ -43369,6 +43375,7 @@
      "related_entities": [
       "E-121",
       "E-122",
+      "E-152",
       "E-120"
      ],
      "choke_points": [
@@ -43398,7 +43405,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -43599,6 +43607,7 @@
      "operation_id": "createKnowledgeFolder",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-152",
       "E-002"
      ],
      "choke_points": [
@@ -43626,7 +43635,9 @@
      "table": "knowledge_folders",
      "operation_id": "updateKnowledgeFolder",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-152"
+     ],
      "choke_points": [
       "C2"
      ],
@@ -43653,6 +43664,7 @@
      "operation_id": "deleteKnowledgeFolder",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-152",
       "E-121"
      ],
      "choke_points": [
@@ -43740,7 +43752,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -43769,7 +43782,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -43797,7 +43811,9 @@
      "operation_id": "requestKnowledgeRaise",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-121",
+      "E-152",
       "E-080"
      ],
      "choke_points": [
@@ -43823,6 +43839,7 @@
      "operation_id": "withdrawKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -43848,6 +43865,7 @@
      "operation_id": "dismissKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -43873,7 +43891,9 @@
      "operation_id": "listKnowledgeApprovals",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-121"
+      "E-153",
+      "E-121",
+      "E-152"
      ],
      "choke_points": [
       "C2",
@@ -43898,6 +43918,7 @@
      "operation_id": "approveKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-121",
       "E-080"
      ],
@@ -43924,6 +43945,7 @@
      "operation_id": "declineKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -43948,7 +43970,10 @@
      "table": "knowledge_shares",
      "operation_id": "getKnowledgeShares",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-154",
+      "E-153"
+     ],
      "choke_points": [
       "C2",
       "C6"
@@ -43971,7 +43996,10 @@
      "table": "knowledge_shares",
      "operation_id": "setKnowledgeShares",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-154",
+      "E-153"
+     ],
      "choke_points": [
       "C2",
       "C6"
@@ -43996,6 +44024,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
+      "E-151",
       "E-120"
      ],
      "choke_points": [
@@ -44025,6 +44054,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
+      "E-152",
       "E-002"
      ],
      "choke_points": [
@@ -44055,6 +44085,7 @@
      "related_entities": [
       "E-121",
       "E-122",
+      "E-152",
       "E-120"
      ],
      "choke_points": [
@@ -44084,7 +44115,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -44285,6 +44317,7 @@
      "operation_id": "createKnowledgeFolder",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-152",
       "E-002"
      ],
      "choke_points": [
@@ -44312,7 +44345,9 @@
      "table": "knowledge_folders",
      "operation_id": "updateKnowledgeFolder",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-152"
+     ],
      "choke_points": [
       "C2"
      ],
@@ -44339,6 +44374,7 @@
      "operation_id": "deleteKnowledgeFolder",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-152",
       "E-121"
      ],
      "choke_points": [
@@ -44426,7 +44462,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -44455,7 +44492,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
-      "E-122"
+      "E-122",
+      "E-152"
      ],
      "choke_points": [
       "C2"
@@ -44483,7 +44521,9 @@
      "operation_id": "requestKnowledgeRaise",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-121",
+      "E-152",
       "E-080"
      ],
      "choke_points": [
@@ -44509,6 +44549,7 @@
      "operation_id": "withdrawKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -44534,6 +44575,7 @@
      "operation_id": "dismissKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -44559,7 +44601,9 @@
      "operation_id": "listKnowledgeApprovals",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-121"
+      "E-153",
+      "E-121",
+      "E-152"
      ],
      "choke_points": [
       "C2",
@@ -44584,6 +44628,7 @@
      "operation_id": "approveKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-121",
       "E-080"
      ],
@@ -44610,6 +44655,7 @@
      "operation_id": "declineKnowledgeRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
+      "E-153",
       "E-080"
      ],
      "choke_points": [
@@ -44634,7 +44680,10 @@
      "table": "knowledge_shares",
      "operation_id": "getKnowledgeShares",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-154",
+      "E-153"
+     ],
      "choke_points": [
       "C2",
       "C6"
@@ -44657,7 +44706,10 @@
      "table": "knowledge_shares",
      "operation_id": "setKnowledgeShares",
      "auth": "session（会社・層・権限）",
-     "related_entities": [],
+     "related_entities": [
+      "E-154",
+      "E-153"
+     ],
      "choke_points": [
       "C2",
       "C6"
@@ -44682,6 +44734,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-121",
+      "E-151",
       "E-120"
      ],
      "choke_points": [
@@ -44707,8 +44760,12 @@
     "E-055",
     "E-002",
     "E-142",
+    "E-152",
     "E-120",
-    "E-080"
+    "E-153",
+    "E-080",
+    "E-154",
+    "E-151"
    ],
    "mock_path": null,
    "route": "/knowledge",
@@ -44790,7 +44847,8 @@
      "operation_id": "listClientRequests",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127"
+      "E-127",
+      "E-155"
      ],
      "choke_points": [
       "C2",
@@ -44861,6 +44919,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
+      "E-155",
       "E-080",
       "E-052"
      ],
@@ -44888,6 +44947,7 @@
       "E-107",
       "E-119",
       "E-149",
+      "E-155",
       "E-080",
       "E-052"
      ],
@@ -44958,7 +45018,8 @@
      "operation_id": "listClientRequests",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127"
+      "E-127",
+      "E-155"
      ],
      "choke_points": [
       "C2",
@@ -45029,6 +45090,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
+      "E-155",
       "E-080",
       "E-052"
      ],
@@ -45056,6 +45118,7 @@
       "E-107",
       "E-119",
       "E-149",
+      "E-155",
       "E-080",
       "E-052"
      ],
@@ -45128,6 +45191,7 @@
     "E-136",
     "E-137",
     "E-138",
+    "E-155",
     "E-049",
     "E-126",
     "E-095",
@@ -45674,6 +45738,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
+      "E-155",
       "E-094",
       "E-080"
      ],
@@ -45696,7 +45761,8 @@
      "operation_id": "getPortalRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127"
+      "E-127",
+      "E-155"
      ],
      "choke_points": [
       "C2",
@@ -45718,6 +45784,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
+      "E-155",
       "E-127",
       "E-080"
      ],
@@ -45870,6 +45937,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-127",
+      "E-155",
       "E-094",
       "E-080"
      ],
@@ -45892,7 +45960,8 @@
      "operation_id": "getPortalRequest",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-127"
+      "E-127",
+      "E-155"
      ],
      "choke_points": [
       "C2",
@@ -45914,6 +45983,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-049",
+      "E-155",
       "E-127",
       "E-080"
      ],
@@ -46026,6 +46096,7 @@
     "E-137",
     "E-138",
     "E-044",
+    "E-155",
     "E-094",
     "E-080",
     "E-049",

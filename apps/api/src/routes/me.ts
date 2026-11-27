@@ -10,6 +10,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/me/backup-codes", op(deps, "regenerateBackupCodes"));
   app.post("/api/v1/me/email-change", op(deps, "requestEmailChange"));
   app.post("/api/v1/me/email-change/verify", op(deps, "verifyEmailChange"));
+  app.get("/api/v1/me/invitations", op(deps, "listMyInvitations"));
   app.get("/api/v1/me/notification-settings", op(deps, "getNotificationSettings"));
   app.patch("/api/v1/me/notification-settings", op(deps, "updateNotificationSettings"));
   app.post("/api/v1/me/notification-settings/copy", op(deps, "copyNotificationSettings"));
@@ -30,4 +31,5 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/me/two-factor/enable", op(deps, "startTwoFactor"));
   app.get("/api/v1/me/usage", op(deps, "getMyUsage"));
   app.delete("/api/v1/me/workspaces/:id", op(deps, "leaveWorkspace"));
+  app.post("/api/v1/me/workspaces/:id/switch", op(deps, "switchWorkspace"));
 }

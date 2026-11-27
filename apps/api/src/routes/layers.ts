@@ -4,6 +4,7 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
+  app.get("/api/v1/layers", op(deps, "listLayers"));
   app.post("/api/v1/layers", op(deps, "createLayer"));
   app.patch("/api/v1/layers/:id", op(deps, "updateLayer"));
 }

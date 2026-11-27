@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:5be5104bde7d4d13
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:b4cb783d58285c12
 export interface RouteDef {
   id: string;
   route: string;
@@ -9,6 +9,12 @@ export const ROUTES: readonly RouteDef[] = [
   {
     "id": "account",
     "route": "/account",
+    "needsLogin": true,
+    "release": "v1"
+  },
+  {
+    "id": "ai-activity",
+    "route": "/ai",
     "needsLogin": true,
     "release": "v1"
   },
@@ -25,20 +31,14 @@ export const ROUTES: readonly RouteDef[] = [
     "release": "v2"
   },
   {
-    "id": "ai-activity",
-    "route": "/ai-staff/activity",
+    "id": "rules",
+    "route": "/ai/rules",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "clone-chat",
-    "route": "/ai/chat",
-    "needsLogin": true,
-    "release": "v1"
-  },
-  {
-    "id": "rules",
-    "route": "/ai/rules",
+    "route": "/ai/talk",
     "needsLogin": true,
     "release": "v1"
   },
@@ -52,7 +52,7 @@ export const ROUTES: readonly RouteDef[] = [
     "id": "work-types",
     "route": "/ai/work-types",
     "needsLogin": true,
-    "release": "v1"
+    "release": "v2"
   },
   {
     "id": "approvals",
@@ -83,12 +83,6 @@ export const ROUTES: readonly RouteDef[] = [
     "route": "/billing-setup",
     "needsLogin": false,
     "release": "v2"
-  },
-  {
-    "id": "clients",
-    "route": "/clients",
-    "needsLogin": true,
-    "release": "v1"
   },
   {
     "id": "company-model",
@@ -446,7 +440,7 @@ export const ROUTES: readonly RouteDef[] = [
   },
   {
     "id": "masters",
-    "route": "/workspace/rules",
+    "route": "/workspace/ticket-settings",
     "needsLogin": true,
     "release": "v1"
   }

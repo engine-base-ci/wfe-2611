@@ -17,6 +17,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/bridge/jobs/take", op(deps, "takeBridgeJob"));
   app.post("/api/v1/bridge/jobs/:id/artifacts", op(deps, "putArtifactFromBridge"));
   app.post("/api/v1/bridge/jobs/:id/browser", op(deps, "reportBrowserState"));
+  app.post("/api/v1/bridge/jobs/:id/client-request-draft", op(deps, "reportClientRequestDraft"));
   app.get("/api/v1/bridge/jobs/:id/control", op(deps, "getJobControl"));
   app.post("/api/v1/bridge/jobs/:id/conversation-entries", op(deps, "mirrorConversationEntries"));
   app.post("/api/v1/bridge/jobs/:id/finish", op(deps, "finishBridgeJob"));
