@@ -26,6 +26,10 @@ export const leaf: K144Leaf = {
     ["K144-API-1295", "acceptClientRequest", "path", "id"], // K-894
   ],
   BODIES: {
-    acceptClientRequest: { assignee_member_id: "3b6f3a52-6f0e-4c1c-8a0e-5d2b1c9e4f10", due_on: "2026-12-31", scope_id: "3b6f3a52-6f0e-4c1c-8a0e-5d2b1c9e4f11" }, // K-894
+    acceptClientRequest: {
+      assignee_member_id: "3b6f3a52-6f0e-4c1c-8a0e-5d2b1c9e4f10",
+      due_on: "2026-12-31",
+      scope_id: "3b6f3a52-6f0e-4c1c-8a0e-5d2b1c9e4f11",
+    }, // K-894
   },
 };

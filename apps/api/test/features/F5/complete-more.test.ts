@@ -97,8 +97,9 @@ describe("K-766 完了の答え：ナレッジの候補を出さない", () => {
               has_function_privilege('public', p.oid, 'execute') as pub
          from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'app' and p.proname = 'ticket_complete'`,
     );
+    // 引数は段5 の K-578 で 2 つ（p_ticket・p_confirmed）になった。K-766 は直さない（前のまま）を見る
     expect(fn).toEqual({
-      args: "p_ticket uuid, p_todo_checked integer[], p_todo_version integer, p_confirmed boolean",
+      args: "p_ticket uuid, p_confirmed boolean",
       app: true,
       pub: false,
     });

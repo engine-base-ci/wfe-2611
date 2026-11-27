@@ -4,7 +4,7 @@
 //   共通の判定：DB の関数 app.workspace_can(ability) ＝ K-827 の読む口・段 13 の changePlan・K-830 が使う（K-827 が作る・この葉は値を変えた後の判定を見る）
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 import { randomUUID } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdtempSync } from "node:fs";
@@ -23,14 +23,7 @@ import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, "..", "..", "..", "..", "..");
 const HOOK_FILE = join(HERE, "..", "..", "..", "src", "hooks", "workspace-permissions.ts");
-const ERRORS = (
-  JSON.parse(readFileSync(join(ROOT, "07_qa/test-specs/errors.json"), "utf8")) as {
-    errors: { id: string; message: string }[];
-  }
-).errors;
-const msg = (code: string): string => ERRORS.find((e) => e.id === code)?.message ?? `（errors.json に ${code} が無い）`;
 const WS = "株式会社K829";
 
 let f: Fixture;
@@ -45,7 +38,7 @@ type P = Person & { email: string };
 let admin: P, admin2: P, mgr: P, member: P, viewer: P, kenmu: P, stopped: P, outsider: P;
 
 type J = Record<string, unknown> & {
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   details?: { field: string; message: string }[];
   code?: string;
   detail?: Record<string, unknown>;
@@ -76,7 +69,7 @@ const n = async (sql: string, p: unknown[] = []) => Number((await f.admin.query<
 const audits = (action: string) =>
   n("select count(*) n from audit_events where tenant_id = $1 and action = $2", [T.tenantId, action]);
 const tenantRow = async (id = T.tenantId) =>
-  (await f.admin.query("select * from tenants where id = $1", [id])).rows[0] as Record<string, any>;
+  (await f.admin.query("select * from tenants where id = $1", [id])).rows[0] as Record<string, unknown>;
 /** 表への書き込みを 1 回だけわざと失敗させて fn を流す（取引ごと戻るかを見る） */
 async function failOn(table: string, cond: string, fn: () => Promise<void>): Promise<void> {
   const name = `k829_fail_${randomUUID().replaceAll("-", "")}`;
@@ -95,7 +88,6 @@ async function failOn(table: string, cond: string, fn: () => Promise<void>): Pro
 }
 
 /** 置き場（関門 C4）の偽：本物のローカルの置き場を、試験が 1 回だけ失敗させられる形で包む */
-let store: ObjectStore;
 const driverFail = { put: false, del: false };
 const mkObjects = (repo: Awaited<ReturnType<typeof createRepository>>) => {
   const inner = localDriver(mkdtempSync(join(tmpdir(), "k829-obj-")));
@@ -119,7 +111,7 @@ const ready = async () => {
     const d = {
       appPool: f.pool,
       repo,
-      objects: (store = mkObjects(repo)),
+      objects: mkObjects(repo),
       config: { env: "test", webBaseUrl: "http://localhost:3000", opsEmail: "ops@example.com" },
     } as unknown as HookDeps;
     Object.assign(hooks, ((await import(HOOK_FILE)) as { register: HookModule }).register.make(d));
@@ -233,7 +225,7 @@ const lastChange = async () =>
       "select payload from audit_events where tenant_id = $1 and action = 'workspace.permissions_changed' order by occurred_at desc limit 1",
       [T.tenantId],
     )
-  ).rows[0]?.payload as Record<string, any> | undefined;
+  ).rows[0]?.payload as Record<string, unknown> | undefined;
 
 describe("K-829 誰ができるかを変える（updateWorkspacePermissions）", () => {
   it("K829-API-001 管理者が変える：プランと支払いを「管理者とマネージャー」に → 200・答えに 2 つの今の値・DB の列が変わる・記録に前と後", async () => {

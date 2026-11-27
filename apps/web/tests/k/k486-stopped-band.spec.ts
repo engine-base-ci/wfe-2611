@@ -351,7 +351,10 @@ test("K486-UI-018 もう一度（題の行の AI に任せる・帯には無い 
   await expect(band.getByRole("heading", { level: 3 })).toHaveText(`${WHO} に任せました。`);
   await expect(band.locator(".k-band-sub")).toHaveText("PC が受け取るのを待っています");
   await expect(band.getByRole("button", { name: "AI と話す", exact: true })).toBeEnabled();
-  await expect(band.getByRole("button", { name: "AI と話す", exact: true })).not.toHaveAttribute("aria-disabled", "true");
+  await expect(band.getByRole("button", { name: "AI と話す", exact: true })).not.toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
   expect(s.runs[0]!.id).toBe(RUN2);
 });
 
