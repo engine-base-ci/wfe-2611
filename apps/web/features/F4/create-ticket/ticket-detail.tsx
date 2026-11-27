@@ -1,7 +1,10 @@
 "use client";
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。K-226 でキャンバス TicketDetail の形にした：
-//   左に本文の箱（.k-page）：白いカード（頭の行・題名の行・帯・本文の道具の帯・区画）と、その下に子チケット・つながりのカード。
-//   右に属性パネル（幅 380・detail-panel.tsx）。1023 以下はパネルを本文の下に回す。
+//   K-571 で下絵 v2 の形に作り直した：左に本文の箱（.k-page）：白いカード（頭の行・題名の行・帯・本文 1 枚・結果の場所）と、
+//   その下に子チケット・つながりのカード（LinksEntry）。本文と結果の場所は detail-body.tsx。題の行の入口は detail-entry-slots.tsx。
+//   右に項目のパネル（幅 380・detail-panel.tsx）。1023 以下はパネルを本文の下に回す。
+//   「確認項目を足す」の合図（kaname:f4:open-spec-add・K-573 が出す）は詳細の一番上で聞く：パネルを開いて項目のタブにし、
+//   足す小窓を開く（パネルの無い一覧の右の詳細では小窓だけ・K-450 の SpecAddOnly）。
 //   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227（承認待ち）・K-228。
 //   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
 //   layout="side"（K-252）：一覧の右に開く詳細。題名の行（帯と h1）・右のパネル・パネルを開く／閉じるを描かず、題名は h2。
@@ -12,7 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { isUuid } from "@kaname/contracts";
-import { DocTools, ErrorState, Loading, Prose } from "@/components/k";
+import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
@@ -22,7 +25,12 @@ import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
 import * as F6 from "@/features/F6/detail-slots";
 import * as F8 from "@/features/F8/handover/detail-slots";
-import { DetailMeta, DetailTitle, InertButton, StagePill } from "./detail-head";
+import { SpecAddOnly } from "@/features/F4/specs/spec-add-only";
+import { useOpenAddSignal } from "@/features/F4/specs/use-open-add-signal";
+import { BodyBlock, ResultBlocks } from "./detail-body";
+import { CompleteActSlot, DelegateActSlot, LinksEntry, type ActsProps } from "./detail-entry-slots";
+import type { Detail } from "./detail-types";
+import { DetailMeta, DetailTitle, StagePill } from "./detail-head";
 import { DetailPanel } from "./detail-panel";
 import { bandYieldTo, useBandOrder, type SlotDetail, type SlotTicket } from "./detail-slots";
 import { SCOPES_KEY, TicketShell, readScopes, type ScopeRow } from "./ticket-shell";
@@ -36,35 +44,6 @@ import {
 } from "@/features/F5/more/fills/talk";
 import { TicketMobileBar } from "@/features/F5/room/ticket-talk";
 import "./ticket-detail.css";
-
-interface Detail {
-  ticket: {
-    id: string;
-    number: string;
-    title: string;
-    due_on: string | null;
-    start_on: string | null;
-    priority: string;
-    created_at?: string | null;
-    scope_id?: string | null;
-  };
-  sections: { key: string; label: string; body: { text?: string } | null; version: number }[];
-  kind: { name: string; color?: string | null } | null;
-  stage: { key?: string | null; name: string } | null;
-  assignee: { display_name: string } | null;
-  /** 見ている人ができること（K-62 が delegate を、K165 が complete を足す） */
-  can?: { delegate?: boolean; complete?: boolean } | null;
-  /** 完了の時刻と押した人の表示名（K165 が足す。完了していなければ null） */
-  completed?: { at: string; by: string | null } | null;
-  /** 承認待ちの承認（K-162 が足す）。can_decide＝見ている人が承認する人か */
-  approval?: {
-    id: string;
-    can_decide: boolean;
-    irreversible?: boolean;
-    note?: string | null;
-    approver_name?: string | null;
-  } | null;
-}
 
 /** 外枠と同じ問い合わせ（同じ鍵・1 画面で 1 回・読み直さない）。外枠が読んでいれば口を 2 回呼ばない（G-16） */
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
@@ -218,7 +197,8 @@ function DetailView({
     if (was && ACTIVE.has(was) && status && !ACTIVE.has(status)) void reload();
   }, [status, reload]);
   const t = d.ticket;
-  const version = d.sections.reduce((n, s) => Math.max(n, s.version ?? 0), 0);
+  // 確認項目を足す小窓（合図で開く・閉じたら降ろす・K571-UI-028）
+  const [addOpen, setAddOpen] = useState(false);
   const changed = async () => {
     await Promise.all([reload(), runs.reload()]);
   };
@@ -233,10 +213,27 @@ function DetailView({
     bands: bands.shown,
     reload,
   };
+  const actsProps: ActsProps = {
+    ticketId: id,
+    ticket: d,
+    run: runs.current,
+    runKnown: runs.known,
+    onTicket,
+    onChanged: changed,
+    onRun: runs.follow,
+  };
   const bandProps = { id, d, runs, st, bands, onTicket, onChanged: changed };
   return (
     <F6.DetailScope ticket={st}>
       <F8.DetailScope ticket={st}>
+        <SpecAddSignal
+          id={id}
+          side={side}
+          onPanel={() => {
+            if (!panelOpen) togglePanel(true);
+          }}
+          onOpen={() => setAddOpen(true)}
+        />
         <TicketBandCopyProvider value={side ? null : <DetailBandSet {...bandProps} live={false} />}>
           <AiTabFrame side={side} ticketId={id} number={t.number} title={t.title} openPanel={openPanel}>
             <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
@@ -256,35 +253,26 @@ function DetailView({
                     {t.title}
                   </h2>
                 ) : (
-                  <DetailTitle title={t.title} me={myName} />
+                  <DetailTitle
+                    title={t.title}
+                    me={myName}
+                    slot={st}
+                    acts={
+                      <>
+                        <DelegateActSlot {...actsProps} />
+                        <CompleteActSlot {...actsProps} />
+                      </>
+                    }
+                  />
                 )}
                 <F6.TitleSlot ticket={st} />
                 <div className="k-detail-bands" ref={bands.ref} data-shown={[...bands.shown].join(" ") || undefined}>
                   <DetailBandSet {...bandProps} live />
                 </div>
-                <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
-                  <InertButton size="sm" className="k-detail-versions">
-                    版と差分
-                  </InertButton>
-                </DocTools>
-                <div className="k-detail-doc">
-                  {d.sections.map((s) => (
-                    <F6.SectionSlot key={s.key} ticket={st} section={s}>
-                      <section className="k-section" aria-label={s.label}>
-                        <h2 id={`sec-${s.key}`}>{s.label}</h2>
-                        <Prose>{s.body?.text ?? ""}</Prose>
-                      </section>
-                    </F6.SectionSlot>
-                  ))}
-                </div>
+                <BodyBlock detail={d} st={st} />
+                <ResultBlocks results={d.results} st={st} />
               </article>
-              <section className="k-detail-links" aria-label="子チケット・つながり">
-                <div className="k-detail-links-head">
-                  <h2>子チケット・つながり</h2>
-                  <InertButton size="sm">子を足す</InertButton>
-                  <InertButton size="sm">つながりを足す</InertButton>
-                </div>
-              </section>
+              <LinksEntry ticket={st} />
             </section>
             {side || panelOpen ? null : (
               <button
@@ -300,11 +288,16 @@ function DetailView({
             )}
             {!side && scopesSettled ? (
               <DetailPanel
+                ticketId={id}
                 ticket={t}
                 assignee={d.assignee?.display_name ?? null}
                 approver={d.approval?.approver_name ?? null}
                 scopes={scopes}
-                sections={d.sections}
+                fields={d.fields ?? []}
+                specCount={d.spec_count ?? 0}
+                addOpen={addOpen}
+                onAddOpenChange={setAddOpen}
+                onReload={() => void reload()}
                 runs={runs.runs}
                 me={myName}
                 hidden={!panelOpen}
@@ -313,11 +306,37 @@ function DetailView({
                 slot={st}
               />
             ) : null}
+            {side ? <SpecAddOnly ticketId={id} open={addOpen} onOpenChange={setAddOpen} /> : null}
           </AiTabFrame>
         </TicketBandCopyProvider>
       </F8.DetailScope>
     </F6.DetailScope>
   );
+}
+
+/** 「確認項目を足す」の合図を詳細の一番上で聞く（K-573 が出す・K571-UI-028）。
+ *  パネルがあれば開いて項目のタブにしてから小窓を開く。パネルの無い形は小窓だけ。口は呼ばない */
+function SpecAddSignal({
+  id,
+  side,
+  onPanel,
+  onOpen,
+}: {
+  id: string;
+  side: boolean;
+  onPanel: () => void;
+  onOpen: () => void;
+}) {
+  const tab = usePanelTab();
+  const open = useCallback(() => {
+    if (!side) {
+      onPanel();
+      tab?.setTab("attr");
+    }
+    onOpen();
+  }, [side, onPanel, onOpen, tab]);
+  useOpenAddSignal(id, open);
+  return null;
 }
 
 // 題名の下の帯（順は BAND_ORDER・ApproveBand → DelegateBand → 渡し → 保留）。live=false はスマホの AI の画面の写し（.k-room-mband・K-764）：
