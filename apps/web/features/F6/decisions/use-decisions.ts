@@ -1,13 +1,14 @@
 "use client";
 // 決定ログの区画が読む・足す口のつなぎ（K-397）。口は契約の listTicketDecisions・createTicketDecision と、前からの listMembers だけ。
 //   一覧の問い合わせの器 decisionsQuery は先読み（prefetch.ts）と区画が同じ物を使う（先読みの答えを読み直さない・失敗の後に既定の読み直しをしない）
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
-import { PAGE_ERROR } from "@/components/k/error-of";
-import { catalogMessage, messageOf } from "@/features/F5/approve-complete/message";
+import { catalogMessage } from "@/features/F5/approve-complete/message";
 import { call } from "@/lib/api/call";
 import { me } from "@/lib/auth/ext";
+import { timelineKey } from "../thread/use-timeline";
 import type { DecisionFormValues, PersonOption } from "./views";
+import { failureOf, networkNotice } from "./send";
 import type { DecisionRow } from "./to-view";
 
 const SCREEN = "tickets";
@@ -36,6 +37,19 @@ export function decisionsQuery(id: string): UseQueryOptions<DecisionsAnswer, Err
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   };
+}
+
+/** 区画の頭の知らせ（書けなくなった・消されたなど）。区画と書き込みの「決定にする」が同じ物を見る（問い合わせの鍵で持つ・DOM を共有しない） */
+const noticeKey = (id: string) => ["f6", "decision-notice", id] as const;
+export function useSectionNotice(id: string): [string | undefined, (m: string | undefined) => void] {
+  const qc = useQueryClient();
+  // 消すときは null を置く（undefined を置いても react-query は答えを替えない）
+  const q = useQuery<string | null>({ queryKey: noticeKey(id), enabled: false });
+  const set = useCallback(
+    (m: string | undefined) => qc.setQueryData<string | null>(noticeKey(id), m ?? null),
+    [qc, id],
+  );
+  return [q.data ?? undefined, set];
 }
 
 export interface DecisionsRead {
@@ -78,19 +92,21 @@ export interface AddDecision {
   submit: (v: DecisionFormValues) => Promise<void>;
 }
 
-/** 「＋ 決定を足す」の小窓の流れ。reload は決定の一覧を 1 回読み直す・onClosed は小窓を閉じた後（焦点を戻す） */
+/** 「＋ 決定を足す」の小窓の流れ。reload は決定の一覧を 1 回読み直す・onClosed は小窓を閉じた後（焦点を戻す）。
+ *  sourceMessageId があれば書き込みから決定にする（体に source_message_id を足す・K-398） */
 export function useAddDecision(
   ticketId: string,
   myName: string,
   reload: () => Promise<unknown>,
   onClosed: () => void,
+  sourceMessageId?: string,
 ): AddDecision {
   const [open, setOpen] = useState(false);
   const [wantMembers, setWantMembers] = useState(false);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<AddDecision["errors"]>(undefined);
   const [notice, setNotice] = useState<string | undefined>(undefined);
-  const [sectionNotice, setSectionNotice] = useState<string | undefined>(undefined);
+  const [sectionNotice, setSectionNotice] = useSectionNotice(ticketId);
   const sending = useRef(false); // 答えが来るまで 2 本目を送らない
   const who = useQuery({ queryKey: ["me"], queryFn: me, ...ONCE });
   // 同じ会社の今のメンバー（scope_id は付けない・作る画面と同じ読み方）。小窓を初めて開いたときに 1 回
@@ -131,6 +147,7 @@ export function useAddDecision(
           reason: v.reason.trim() ? v.reason : null,
           decided_by_member_id: v.by || null,
           decided_note: v.note.trim() ? v.note : null,
+          ...(sourceMessageId ? { source_message_id: sourceMessageId } : {}),
         },
         screenId: SCREEN,
       });
@@ -139,23 +156,18 @@ export function useAddDecision(
         await reload();
         return;
       }
-      if (r.status === 401) return; // 入り直し（共通の扱い）
-      // 決めた人が今のメンバーでない（404 E-PAGE-001・欄つき・drift 2026-11-20 16:51）も 422 と同じく小窓の中に出す
-      if (r.status === 422 || (r.status === 404 && r.fields["decided_by_member_id"])) {
-        const text = r.fields["text"];
-        const by = r.fields["decided_by_member_id"];
-        if (text || by) return setErrors({ ...(text ? { text } : {}), ...(by ? { by } : {}) });
-        return setNotice(r.message ?? messageOf(r));
-      }
-      if (r.status === 403 || r.status === 404) {
+      const f = failureOf(r);
+      if (f.kind === "login") return; // 入り直し（共通の扱い）
+      if (f.kind === "fields") return setErrors({ ...(f.text ? { text: f.text } : {}), ...(f.by ? { by: f.by } : {}) });
+      if (f.kind === "gone") {
         close();
-        setSectionNotice(messageOf(r));
+        setSectionNotice(f.message);
         await reload();
         return;
       }
-      setNotice(messageOf(r));
+      setNotice(f.message);
     } catch {
-      setNotice(catalogMessage(PAGE_ERROR.loadFailed)); // 網の切れ
+      setNotice(networkNotice()); // 網の切れ
     } finally {
       sending.current = false;
       setBusy(false);
@@ -183,4 +195,17 @@ export function useAddDecision(
     },
     submit,
   };
+}
+
+/** 決定にした・改めた・取り消した後の読み直し：決定の一覧とやり取りを 1 回ずつ（開いている問い合わせだけが読む） */
+export function useReloadAll(ticketId: string): () => Promise<unknown> {
+  const qc = useQueryClient();
+  return useCallback(
+    () =>
+      Promise.all([
+        qc.refetchQueries({ queryKey: decisionsKey(ticketId), exact: true }),
+        qc.invalidateQueries({ queryKey: timelineKey(ticketId) }),
+      ]),
+    [qc, ticketId],
+  );
 }

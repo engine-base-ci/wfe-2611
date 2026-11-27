@@ -43,6 +43,11 @@ export interface DecisionLogProps {
   onAdd?: () => void;
   /** 「もう一度読む」を押した */
   onRetry?: () => void;
+  /** 「元：やり取り … →」を押した（元の書き込みの id）。あれば既定のリンクの動きを止めて呼ぶ */
+  onSource?: (messageId: string) => void;
+  /** 生きている決定の「改める」「取り消す」を押した（決定の id） */
+  onRevise?: (id: string) => void;
+  onCancel?: (id: string) => void;
   /** 「＋ 決定を足す」の ref（小窓を閉じたら焦点を戻す） */
   addRef?: Ref<HTMLButtonElement>;
 }
@@ -58,6 +63,9 @@ export function DecisionLog({
   notice,
   onAdd,
   onRetry,
+  onSource,
+  onRevise,
+  onCancel,
   addRef,
 }: DecisionLogProps) {
   const live = items.filter((d) => d.status === "live").length;
@@ -97,7 +105,16 @@ export function DecisionLog({
                   d.sourceHref ? (
                     <>
                       {" ・ "}
-                      <a href={d.sourceHref}>元：{d.source} →</a>
+                      <a
+                        href={d.sourceHref}
+                        onClick={(e) => {
+                          if (!onSource) return;
+                          e.preventDefault();
+                          onSource(d.sourceHref!.replace(/^#msg-/, ""));
+                        }}
+                      >
+                        元：{d.source} →
+                      </a>
                     </>
                   ) : (
                     ` ・ 元：${d.source} →`
@@ -111,10 +128,10 @@ export function DecisionLog({
               </div>
               {canWrite && d.status === "live" ? (
                 <div className="k-dec-acts">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => onRevise?.(d.id)}>
                     改める
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" onClick={() => onCancel?.(d.id)}>
                     取り消す
                   </Button>
                 </div>
@@ -255,54 +272,164 @@ export function DecisionDialog({
   );
 }
 
+export interface ReviseValues {
+  text: string;
+  reason: string;
+}
+
 export interface ReviseDialogProps {
   open: boolean;
   prev: { by: string; text: string };
   text?: string;
   reason?: string;
-  /** 同時にほかの人が改めていた（書いた字は閉じるまで残す） */
+  /** 同時にほかの人が改めていた・取り消していた（書いた字は閉じるまで残す） */
   conflict?: boolean;
+  /** conflict の赤い箱の字（口の番号の正本の文）。無ければ「いま別の人が改めました」の文 */
+  conflictText?: string;
+  /** 小窓の上の知らせ（書けなかったとき） */
+  notice?: string;
+  /** 欄の下の断り（text＝新しい決定）。書き換えると消える。新しい物が来たらまた出る */
+  errors?: { text?: string };
+  /** 送っている間（ボタンを押せなくする） */
+  busy?: boolean;
+  /** 閉じた（やめる・× ・Esc・「閉じて読み直す」） */
+  onClose?: () => void;
+  onSubmit?: (values: ReviseValues) => void;
 }
 
+const CONFLICT_REVISED = "この決定は、いま別の人が改めました。読み直してから、もう一度お試しください";
+
 /** 決定を改める小窓（前の決定は消えず「改められた」の印） */
-export function ReviseDialog({ open, prev, text = "", reason = "", conflict }: ReviseDialogProps) {
+export function ReviseDialog({
+  open,
+  prev,
+  text = "",
+  reason = "",
+  conflict,
+  conflictText,
+  notice,
+  errors,
+  busy,
+  onClose,
+  onSubmit,
+}: ReviseDialogProps) {
+  const [v, setV] = useState<ReviseValues>({ text, reason });
+  const [edited, setEdited] = useState(false);
+  useEffect(() => setEdited(false), [errors]);
+  // 開くたびに最初の値から（書きかけを残さない）
+  useEffect(() => {
+    if (open) setV({ text, reason });
+  }, [open, text, reason]);
   const foot: ReactNode = conflict ? (
-    <Button variant="outlined">閉じて読み直す</Button>
+    <Button variant="outlined" onClick={onClose}>
+      閉じて読み直す
+    </Button>
   ) : (
     <>
-      <Button variant="outlined">やめる</Button>
-      <Button>改める</Button>
+      <Button variant="outlined" onClick={onClose} disabled={busy}>
+        やめる
+      </Button>
+      <Button onClick={() => onSubmit?.(v)} loading={busy}>
+        改める
+      </Button>
     </>
   );
+  const head = conflict ? (conflictText ?? CONFLICT_REVISED) : notice;
   return (
-    <Dialog open={open} title="決定を改める" subtitle="前の決定は消えず、「改められた」の印が付きます" actions={foot}>
-      {conflict ? (
-        <Callout tone="danger">この決定は、いま別の人が改めました。読み直してから、もう一度お試しください</Callout>
-      ) : null}
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o && !busy) onClose?.();
+      }}
+      title="決定を改める"
+      subtitle="前の決定は消えず、「改められた」の印が付きます"
+      actions={foot}
+    >
+      {head ? <Callout tone="danger">{head}</Callout> : null}
       <blockquote className="k-dec-source">
         <span className="k-dec-sub">前の決定（{prev.by}）</span>
         <br />
         {prev.text}
       </blockquote>
-      <TextArea label="新しい決定" name="decision_text" required defaultValue={text} rows={2} />
-      <TextField label="改める理由" name="decision_reason" defaultValue={reason} />
+      <TextArea
+        label="新しい決定"
+        name="decision_text"
+        required
+        value={v.text}
+        onChange={(e) => {
+          setV((o) => ({ ...o, text: e.target.value }));
+          setEdited(true);
+        }}
+        rows={2}
+        error={edited ? undefined : errors?.text}
+      />
+      <TextField
+        label="改める理由"
+        name="decision_reason"
+        value={v.reason}
+        onChange={(e) => setV((o) => ({ ...o, reason: e.target.value }))}
+      />
     </Dialog>
   );
 }
 
+export interface CancelDecisionProps {
+  open: boolean;
+  text: string;
+  /** 欄の下の断り（モックの固定の 1 件） */
+  error?: string;
+  /** 欄の下の断り（reason＝取り消す理由）。書き換えると消える。新しい物が来たらまた出る */
+  errors?: { reason?: string };
+  /** 確かめの上の知らせ（書けなかったとき） */
+  notice?: string;
+  busy?: boolean;
+  onClose?: () => void;
+  onSubmit?: (reason: string) => void;
+}
+
 /** 決定を取り消す確かめ（⑰：取り消した印と理由を残す・消さない） */
-export function CancelDecisionConfirm({ open, text, error }: { open: boolean; text: string; error?: string }) {
+export function CancelDecisionConfirm({
+  open,
+  text,
+  error,
+  errors,
+  notice,
+  busy,
+  onClose,
+  onSubmit,
+}: CancelDecisionProps) {
+  const [reason, setReason] = useState("");
+  const [edited, setEdited] = useState(false);
+  useEffect(() => setEdited(false), [errors]);
+  useEffect(() => {
+    if (open) setReason("");
+  }, [open]);
   return (
     <Confirm
       open={open}
-      onOpenChange={() => undefined}
-      onConfirm={() => undefined}
+      onOpenChange={(o) => {
+        if (!o) onClose?.();
+      }}
+      onConfirm={() => onSubmit?.(reason)}
+      busy={busy ?? false}
       title="この決定を取り消しますか？"
       description="取り消した印と理由が残ります（消えません）"
       confirmLabel="取り消す"
     >
+      {notice ? <Callout tone="danger">{notice}</Callout> : null}
       <blockquote className="k-dec-source">{text}</blockquote>
-      <TextArea label="取り消す理由" name="cancel_reason" required rows={2} error={error} />
+      <TextArea
+        label="取り消す理由"
+        name="cancel_reason"
+        required
+        rows={2}
+        value={reason}
+        onChange={(e) => {
+          setReason(e.target.value);
+          setEdited(true);
+        }}
+        error={edited ? undefined : errors ? errors.reason : error}
+      />
     </Confirm>
   );
 }

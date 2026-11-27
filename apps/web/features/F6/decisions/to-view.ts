@@ -20,9 +20,9 @@ export interface DecisionRow {
 const ORDER = { live: 0, revised: 1, cancelled: 2 } as const;
 const statusOf = (r: DecisionRow): DecisionView["status"] =>
   r.cancelled ? "cancelled" : r.superseded_by_id ? "revised" : "live";
-const day = (iso: string): string => mmddTime(iso).slice(0, 5);
+export const day = (iso: string): string => mmddTime(iso).slice(0, 5);
 /** 表示名の最初の語（呼ばれ方・D-128.58） */
-const callName = (name: string | null | undefined): string => (name ?? "").trim().split(/[\s\u3000]+/)[0] ?? "";
+export const callName = (name: string | null | undefined): string => (name ?? "").trim().split(/[\s\u3000]+/)[0] ?? "";
 
 export function toViews(rows: readonly DecisionRow[]): DecisionView[] {
   const byId = new Map(rows.map((r) => [r.id, r]));
@@ -38,11 +38,13 @@ function view(r: DecisionRow, status: DecisionView["status"], byId: ReadonlyMap<
   const by = r.decided_note && name ? `${head}（${r.decided_note}）` : head;
   const next = r.superseded_by_id ? byId.get(r.superseded_by_id) : undefined;
   const prev = r.revises_id ? byId.get(r.revises_id) : undefined;
+  // 札「改めた」は注「MM/DD の決定を改めた」と組（K-397）。取り消した・改められたの注が勝つときは札も出さない（札が 2 つにならない・K-398）
+  const revises = status === "live" && prev !== undefined;
   const note = r.cancelled
     ? `取り消し ${day(r.cancelled.at)} ${callName(r.cancelled.by?.display_name)}：${r.cancelled.reason}`
     : status === "revised"
       ? `新しい決定：${next?.text ?? ""} ↑`
-      : prev
+      : revises
         ? `${day(prev.decided_at)} の決定を改めた`
         : undefined;
   return {
@@ -56,6 +58,6 @@ function view(r: DecisionRow, status: DecisionView["status"], byId: ReadonlyMap<
       : {}),
     ...(r.source?.deleted ? { sourceGone: true } : {}),
     ...(note ? { note } : {}),
-    ...(r.revises_id ? { revises: true } : {}),
+    ...(revises ? { revises: true } : {}),
   };
 }
