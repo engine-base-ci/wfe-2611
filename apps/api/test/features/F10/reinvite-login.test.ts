@@ -188,12 +188,13 @@ describe("K-852 ログインの口：使える会社が無い人 × 招待の印
     expect(r.body["code"]).toBe("E-AUTH-007");
   });
 
-  it("K852-API-006 招いた会社が止められている（subscriptions.suspended_at）：本人宛ての招待の印でも 403・E-AUTH-007", async () => {
+  it("K852-API-006 招いた会社が止められている（tenants.stopped_at）：本人宛ての招待の印でも 403・E-AUTH-007", async () => {
     const host = await h.owner("h006");
     const b = await joinNew(host, "b006");
     await removed(b.memberId);
     const inv = await h.invite(host, { email: b.email });
-    await h.admin.query("update subscriptions set suspended_at = now() where tenant_id = $1", [host.tenantId]);
+    // 会社の止めは運営の止め（K-970・K-1012 の app.tenant_stopped・tenants.stopped_at）。会社を作っても契約の行は無いので subscriptions では止められない
+    await h.admin.query("update tenants set stopped_at = now() where id = $1", [host.tenantId]);
     const r = await signInWith(b.email, inv.token);
     expect(r.status).toBe(403);
     expect(r.body["code"]).toBe("E-AUTH-007");
