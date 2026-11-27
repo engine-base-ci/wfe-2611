@@ -453,9 +453,9 @@ describe("K-775 AI の案の道具 draft_propose", () => {
     expect(pc.token).toBeTruthy();
   });
 
-  it("K775-API-021 仕事の種類ごとの道具の一覧（toolsFor）：draft は draft_propose だけ。clone・種類の無い会話の仕事は前の道具（draft_propose は無い）。チケットの仕事に draft_propose は無い", async () => {
+  it("K775-API-021 仕事の種類ごとの道具の一覧（toolsFor）：draft は draft_propose と knowledge_open（answer=e46eb77d7c63）。clone・種類の無い会話の仕事は前の道具（draft_propose は無い）。チケットの仕事に draft_propose は無い", async () => {
     const { toolsFor } = await import("../../../src/features/F5/delegate/tools.js");
-    expect(toolsFor({ kind: "chat", conversation_id: randomUUID(), talk_kind: "draft" })).toEqual(["draft_propose"]);
+    expect(toolsFor({ kind: "chat", conversation_id: randomUUID(), talk_kind: "draft" })).toEqual(["draft_propose", "knowledge_open"]); // knowledge_open も（answer=e46eb77d7c63）
     for (const talk_kind of ["clone", "ticket", null, undefined]) {
       const list = toolsFor({ kind: "chat", conversation_id: randomUUID(), talk_kind });
       expect(list, String(talk_kind)).not.toContain("draft_propose");

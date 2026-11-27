@@ -145,8 +145,8 @@ describe("K-737 道具の定義と出し分け", () => {
     }
   });
 
-  it("K737-BRG-003 仕事ごとの出し分け（toolDefsForJob）：作る画面の会話（kind chat・talk_kind draft）は draft_propose だけ。自分の AI の会話（clone）・チケットの会話（ticket）・種類なし・古い API の仕事は前の会話の道具。チケットの仕事は 3 つ（作る段・承認の後の実行）・試し打ちは確認項目を変えない仕事なので ticket_read だけ（spec_check・guard_report は渡さない）・ログインの試しは空", () => {
-    expect(names(toolDefsForJob({ kind: "chat", talk_kind: "draft" }))).toEqual(["draft_propose"]);
+  it("K737-BRG-003 仕事ごとの出し分け（toolDefsForJob）：作る画面の会話（kind chat・talk_kind draft）は draft_propose と knowledge_open（answer=e46eb77d7c63）。自分の AI の会話（clone）・チケットの会話（ticket）・種類なし・古い API の仕事は前の会話の道具。チケットの仕事は 3 つ（作る段・承認の後の実行）・試し打ちは確認項目を変えない仕事なので ticket_read と knowledge_open（spec_check・guard_report は渡さない）・ログインの試しは空", () => {
+    expect(names(toolDefsForJob({ kind: "chat", talk_kind: "draft" }))).toEqual(["knowledge_open", "draft_propose"]); // knowledge_open も（answer=e46eb77d7c63）
     for (const tk of ["clone", "ticket", null, undefined] as const) {
       const n = names(toolDefsForJob({ kind: "chat", talk_kind: tk }));
       expect(n).toEqual(names(toolDefsFor("chat")));
@@ -154,24 +154,24 @@ describe("K-737 道具の定義と出し分け", () => {
     }
     expect(names(toolDefsForJob({ kind: "ticket", talk_kind: "draft" }))).toEqual(names(toolDefsFor("ticket")));
     expect(toolDefsForJob({ kind: "login_check", talk_kind: "draft" })).toEqual([]);
-    // 試し打ち（確認項目を変えない仕事）は ticket_read だけ。作る段・承認の後の実行は 3 つ
-    expect(names(toolDefsForJob({ kind: "ticket", phase: "dry_run" }))).toEqual(["ticket_read"]);
+    // 試し打ち（確認項目を変えない仕事）は ticket_read と knowledge_open。作る段・承認の後の実行は 3 つ
+    expect(names(toolDefsForJob({ kind: "ticket", phase: "dry_run" }))).toEqual(["ticket_read", "knowledge_open"]); // knowledge_open も（answer=e46eb77d7c63）
     for (const phase of ["make", "execute", null, undefined] as const)
       expect(names(toolDefsForJob({ kind: "ticket", phase }))).toEqual(
         expect.arrayContaining(["ticket_read", "spec_check", "guard_report"]),
       );
-    expect(names(toolDefsForJob({ talk_kind: "draft" }))).toEqual(["draft_propose"]); // 種類なしは会話と同じ
+    expect(names(toolDefsForJob({ talk_kind: "draft" }))).toEqual(["knowledge_open", "draft_propose"]); // 種類なしは会話と同じ
   });
 
-  it("K737-BRG-004 道具のサーバーに渡す環境 KANAME_TOOLS は、その仕事の道具の名前だけ（チケット＝3 つ・試し打ち＝ticket_read だけ・作る画面の会話＝draft_propose だけ・前の会話＝前のまま）。鍵が無ければサーバーは無い", () => {
+  it("K737-BRG-004 道具のサーバーに渡す環境 KANAME_TOOLS は、その仕事の道具の名前だけ（チケット＝3 つ・試し打ち＝ticket_read と knowledge_open・作る画面の会話＝draft_propose と knowledge_open・前の会話＝前のまま）。鍵が無ければサーバーは無い", () => {
     const k = { serverPath: "/tmp/k.js", nodeBin: "node", apiBase: "http://127.0.0.1:1" };
     const env = (kind: "ticket" | "chat", tk?: string | null, phase?: string | null) =>
       (kanameServer(k, "t".repeat(43), kind, tk as never, phase as never) as { env: Record<string, string> }).env[
         "KANAME_TOOLS"
       ]!.split(",");
     expect(env("ticket")).toEqual(expect.arrayContaining(["ticket_read", "spec_check", "guard_report"]));
-    expect(env("ticket", null, "dry_run")).toEqual(["ticket_read"]);
-    expect(env("chat", "draft")).toEqual(["draft_propose"]);
+    expect(env("ticket", null, "dry_run")).toEqual(["ticket_read", "knowledge_open"]);
+    expect(env("chat", "draft")).toEqual(["knowledge_open", "draft_propose"]);
     expect(env("chat", "clone")).toEqual(names(toolDefsFor("chat")));
     expect(env("chat")).toEqual(names(toolDefsFor("chat")));
     expect(kanameServer(k, null, "chat", "draft")).toBeNull();
@@ -179,7 +179,7 @@ describe("K-737 道具の定義と出し分け", () => {
 });
 
 describe("K-737 道具のサーバーの台本（子として動かす）", () => {
-  it("K737-BRG-005 tools/list：チケットの仕事は 3 つ・作る画面の会話は draft_propose だけを返し、ほかの道具は呼べない（その道具はありません）", async () => {
+  it("K737-BRG-005 tools/list：チケットの仕事は 3 つ・作る画面の会話は draft_propose と knowledge_open を返し、ほかの道具は呼べない（その道具はありません）", async () => {
     const t = start(names(toolDefsForJob({ kind: "ticket" })));
     const d = start(names(toolDefsForJob({ kind: "chat", talk_kind: "draft" })));
     try {
@@ -188,7 +188,7 @@ describe("K-737 道具のサーバーの台本（子として動かす）", () =
       expect(lt).not.toContain("draft_propose");
       expect(lt).not.toContain("draft_read");
       const ld = names((await d.ask("tools/list"))["result"]["tools"]);
-      expect(ld).toEqual(["draft_propose"]);
+      expect(ld).toEqual(["knowledge_open", "draft_propose"]);
       const r = await call(d, "spec_check", { spec_id: "x", basis: "y" });
       expect(r).toMatchObject({ isError: true });
       expect(r.text).toContain("その道具はありません");

@@ -178,7 +178,7 @@ export function toolDefsFor(kind: ToolJobKind | null | undefined): ToolDef[] {
   );
   return TOOL_DEFS.filter((t) => !TICKET_TOOL_NAMES.includes(t.name) && !DRAFT_TOOL_NAMES.includes(t.name));
 }
-/** 仕事ごとの出し分け（K-737）：作る画面の会話は draft_propose だけ・試し打ちは ticket_read だけ（付けた印を外せない spec_check・
+/** 仕事ごとの出し分け（K-737）：作る画面の会話は draft_propose と knowledge_open・試し打ちは ticket_read と knowledge_open（付けた印を外せない spec_check・
  *   破られた数を足す guard_report は渡さない）・それ以外は仕事の種類のまま */
 export function toolDefsForJob(job: {
   kind?: ToolJobKind | null;
@@ -186,8 +186,9 @@ export function toolDefsForJob(job: {
   phase?: ToolJobPhase | string | null;
 }): ToolDef[] {
   const kind = job.kind ?? "chat";
-  if (kind === "chat" && job.talk_kind === "draft") return pick(DRAFT_TOOL_NAMES);
-  if (kind === "ticket" && job.phase === "dry_run") return pick(["ticket_read"]);
+  // knowledge_open はどの仕事にも足す（ナレッジは AI が仕事で使うためにある・決める人 answer=fa4030dc4e06・e46eb77d7c63）
+  if (kind === "chat" && job.talk_kind === "draft") return pick([...DRAFT_TOOL_NAMES, "knowledge_open"]);
+  if (kind === "ticket" && job.phase === "dry_run") return pick(["ticket_read", "knowledge_open"]);
   return toolDefsFor(kind);
 }
 

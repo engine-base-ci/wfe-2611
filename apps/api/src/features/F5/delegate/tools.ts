@@ -1,8 +1,8 @@
 // AI に任せる（K-62）の道具の口 callKanameTool（POST /api/v1/bridge/jobs/:id/tools/:name）。前の道すじ /api/auth-ext/bridge/tool（agent-tools.ts）を移した。
 //   道具の鍵（take で渡す・DB にはハッシュだけ）と PC の印の両方が要る。その仕事を受け取った PC から・その仕事の間だけ・押した人の会社と権限の中だけ（D-110）。
 //   道具は仕事の種類で分ける：チケットの仕事は ticket_read と guard_report（K-738）と spec_check（K-736）だけ・会話の仕事は会話の道具（agent-tools.ts の TOOLS）だけ（K62-API-051）。
-//   会話の仕事はさらに会話の種類で分ける：作る画面の会話（talk_kind draft）の仕事は draft_propose（K-775）だけ。
-//   ページを開く knowledge_open（K-698）はどちらの仕事にも出す（ログインの試しには出さない）。
+//   会話の仕事はさらに会話の種類で分ける：作る画面の会話（talk_kind draft）の仕事は draft_propose（K-775）と knowledge_open。
+//   ページを開く knowledge_open（K-698）はどの仕事にも出す（作る画面の会話・試し打ちも・決める人 answer=fa4030dc4e06・e46eb77d7c63。ログインの試しには出さない）。
 //   書く・読むのは関門 C2 の関数（app.bridge_tool_job・app.ticket_tool_read・TOOLS の関数）。証跡は関数の中で残す
 import type pg from "pg";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
@@ -41,8 +41,8 @@ interface ToolJob {
 export function toolsFor(job: Pick<ToolJob, "kind" | "conversation_id" | "talk_kind">): readonly string[] {
   if (job.kind === "ticket") return TICKET_TOOLS;
   if (!job.conversation_id) return [];
-  // 作る画面の会話は draft_propose だけ（K-775）。ほかの会話は会話の道具と knowledge_open（K-698）
-  return job.talk_kind === "draft" ? DRAFT_TOOLS : [...Object.keys(TOOLS), ...KNOWLEDGE_TOOLS];
+  // 作る画面の会話は draft_propose と knowledge_open（K-775・answer=e46eb77d7c63）。ほかの会話は会話の道具と knowledge_open（K-698）
+  return job.talk_kind === "draft" ? [...DRAFT_TOOLS, ...KNOWLEDGE_TOOLS] : [...Object.keys(TOOLS), ...KNOWLEDGE_TOOLS];
 }
 
 export function toolHooks(pool: pg.Pool): Record<string, Hook> {
