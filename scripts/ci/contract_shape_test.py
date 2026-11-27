@@ -447,8 +447,11 @@ class ContractShapeTest(unittest.TestCase):
         params = self._id_params()
         names = {(i, n) for _o, i, n, _s in params}
         # K-92：listTickets の kind_id・assignee_id は契約から外した（まだ使えない絞り込み・422・E-VAL-018）。拾い方の見本は契約に残る欄に替えた
-        for must in [("path", "qid"), ("path", "pid"), ("path", "mid"), ("query", "client_id"), ("query", "layer_id"),
-                     ("query", "actor_member_id"), ("query", "tenant_id"), ("query", "plan_id"), ("query", "parent_id")]:
+        # 段の統合：後の葉が問い合わせを替えた 3 つ。client_id は段11 の K-892（listClientRequests の問い合わせを state だけに・D-155）、
+        #   plan_id は段12 の K-987（listPlanHistory の問い合わせを plan_key に）が外し、tenant_id は段11 の K-837（getNotificationSettings）が
+        #   workspace_id に替えた。拾い方の見本は今の契約に残る workspace_id にする
+        for must in [("path", "qid"), ("path", "pid"), ("path", "mid"), ("query", "layer_id"),
+                     ("query", "actor_member_id"), ("query", "workspace_id"), ("query", "parent_id")]:
             self.assertIn(must, names, f"{must} を拾えていない（拾い方が壊れたか、口が消えた）")
         bad = [f"{o} {i}:{n}" for o, i, n, sc in params
                if not (is_uuid(sc) if not n.endswith("_ids") else sc.get("type") == "array" and is_uuid(sc.get("items") or {}))]
