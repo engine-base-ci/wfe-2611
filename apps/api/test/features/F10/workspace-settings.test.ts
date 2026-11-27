@@ -262,8 +262,8 @@ describe("K-827 設定を読む（getWorkspaceSettings）", () => {
       T.tenantId,
     ]);
     await f.admin.query(
-      "insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, occurred_at) values ($1, $2, 'admin', 'workspace.deletion_requested', 'workspace', $1::text, now() - interval '3 days')",
-      [T.tenantId, admin.id],
+      "insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, occurred_at) values ($1, $2, 'admin', 'workspace.deletion_requested', 'workspace', $3, now() - interval '3 days')",
+      [T.tenantId, admin.id, T.tenantId],
     );
     try {
       const del = (await json(await get(admin))).data!["deletion"];

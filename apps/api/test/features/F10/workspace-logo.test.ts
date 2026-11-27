@@ -121,6 +121,9 @@ const ready = async () => {
       config: { env: "test", webBaseUrl: "http://localhost:3000", opsEmail: "ops@example.com" },
     } as unknown as HookDeps;
     Object.assign(hooks, ((await import(HOOK_FILE)) as { register: HookModule }).register.make(d));
+    // 読み直す GET /workspace は K-827 の hooks（workspace-settings.ts）
+    const settings = join(HERE, "..", "..", "..", "src", "hooks", "workspace-settings.ts");
+    Object.assign(hooks, ((await import(settings)) as { register: HookModule }).register.make(d));
   })();
   await loading;
 };

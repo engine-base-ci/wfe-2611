@@ -62,7 +62,12 @@ export function createAckOpsPwned(appPool: pg.Pool): (a: HookArgs) => Promise<Ho
 
 /** 答えを口の答えにする（会社の確かめた・確定前の確かめたで同じ形） */
 function ackReply(out: AckAnswer | null): HookReply {
-  if (out?.error === "none") return { status: 409, body: new KanameError(NOTHING_TO_ACK).toJSON() };
+  if (out?.error === "none") {
+    // 欄なし（field・details・detail を付けない・K995-API-006・K1110-API-006）。正本の toJSON はいつも detail を付ける
+    const body: Record<string, unknown> = { ...new KanameError(NOTHING_TO_ACK).toJSON() };
+    delete body["detail"];
+    return { status: 409, body };
+  }
   if (typeof out?.acknowledged_at !== "string" || typeof out.remaining !== "number") {
     return opsErrorReply(new Error("答えの形が違う"), "pwned");
   }

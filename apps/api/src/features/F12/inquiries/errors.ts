@@ -4,7 +4,15 @@ import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 
 /** 欄も details も付けない（在るかを漏らさない・控え帳） */
-const flat = (code: string, status: number): HookReply => ({ status, body: kanameError(code).toJSON() });
+const flat = (code: string, status: number): HookReply => {
+  // 正本の toJSON はいつも detail（空の {}）を付ける。欄なしの答えは外す
+  const body: Record<string, unknown> = { ...kanameError(code).toJSON() };
+  delete body["detail"];
+  return { status, body };
+};
+
+/** 見えない問い合わせ（他人・別の会社・無い・消した）：404 E-PAGE-001（欄なし）。入口の行の守り（perm.row）が先に見えないと決めたときも同じ答え */
+export const inquiryMissing = (): HookReply => flat("E-PAGE-001", 404);
 
 /** 止める側に倒す（503・E-PAGE-003）。ログには場所と言葉の種類だけ */
 export const inquiriesDown = (where: string, word: string): HookReply => {

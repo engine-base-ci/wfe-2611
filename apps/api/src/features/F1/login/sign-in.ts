@@ -7,7 +7,7 @@
 import { countryOf } from "@kaname/auth/device";
 import { EMAIL_RE, normalizeEmail, signInWithLock, type SignInResult } from "@kaname/auth/signup";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { kindOf, memberStateCheck, reply, type LoginDeps } from "./shared.js";
+import { INVITATION_MAX, kindOf, memberStateCheck, reply, type LoginDeps } from "./shared.js";
 
 export type { LoginDeps } from "./shared.js";
 
@@ -51,6 +51,17 @@ export function loginFeature(d: LoginDeps) {
     const password = typeof raw["password"] === "string" ? raw["password"] : String(a.input["password"] ?? "");
     const email = normalizeEmail(String(a.input["email"] ?? ""));
     if (!EMAIL_RE.test(email)) return reply(422, "E-VAL-004", { detail: { field: "email" } });
+    // 招待の印は 1〜512 文字（契約の VALUE_RANGES。入口の zod は字数を読まない）。長すぎる印はパスワードを確かめる前に 422（失敗に数えない・K852-API-024）
+    const inv = a.input["invitation"];
+    if (inv !== undefined && inv !== null && (typeof inv !== "string" || inv.length > INVITATION_MAX))
+      return {
+        status: 422,
+        body: {
+          error: "validation_failed",
+          code: "VALIDATION_ERROR",
+          details: [{ field: "invitation", message: `1〜${INVITATION_MAX} 文字` }],
+        },
+      };
     const ua = a.c.req.header("user-agent");
     try {
       const r = await signInWithLock(d.auth, d.appPool, email, password, ua, {

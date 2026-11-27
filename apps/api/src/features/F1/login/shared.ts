@@ -34,7 +34,7 @@ export const kindOf = (e: unknown): string => {
 export type MemberState = "member" | "invite" | "gone";
 
 /** 招待の印の長さの上限（招待の口の TOKEN_MAX と同じ） */
-const INVITATION_MAX = 512;
+export const INVITATION_MAX = 512;
 const sha256 = (s: string): string => createHash("sha256").update(s).digest("hex");
 /** 使える形の招待の印（1〜512 文字・空白だけでない）。形が違えば undefined */
 export const invitationOf = (v: unknown): string | undefined =>
