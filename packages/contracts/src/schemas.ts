@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:67278edaf46329a9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a4f3589e09ef815f
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3282,6 +3282,44 @@ export const TicketLinksInput = z.strictObject({
   to_ticket_id: z.uuid().optional(),
   kind: z.string().optional(),
 });
+export const GuestGroups = z.strictObject({
+  name: z.string().optional(),
+  name_key: z.string().optional(),
+  request_scope_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GuestGroupsInput = z.strictObject({
+  name: z.string().optional(),
+  name_key: z.string().optional(),
+  request_scope_id: z.uuid().optional(),
+});
+export const GuestGroupMembers = z.strictObject({
+  guest_group_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const GuestGroupMembersInput = z.strictObject({
+  guest_group_id: z.uuid().optional(),
+  member_id: z.uuid().optional(),
+});
+export const TicketGuestShares = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  guest_group_id: z.uuid().optional(),
+  id: z.uuid(),
+  tenant_id: z.uuid().optional(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
+  updated_at: z.iso.datetime({ offset: true }).optional(),
+});
+export const TicketGuestSharesInput = z.strictObject({
+  ticket_id: z.uuid().optional(),
+  guest_group_id: z.uuid().optional(),
+});
 export const TicketHandovers = z.strictObject({
   ticket_id: z.uuid().optional(),
   kind: z.string().optional(),
@@ -3598,7 +3636,7 @@ export const TicketCreateInput = z.strictObject({
   kind_id: z.uuid().optional(),
   title: z.string().optional(),
   assignee_member_id: z.uuid().optional(),
-  due_on: z.string().optional(),
+  due_on: z.iso.date().optional(),
   start_on: z.string().optional(),
   priority: z.string().optional(),
   priority_reason: z.string().optional(),
@@ -3608,6 +3646,12 @@ export const TicketCreateInput = z.strictObject({
   notify_member_ids: z.array(z.uuid()).optional(),
   draft_id: z.uuid().optional(),
   source_draft_id: z.uuid().optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  fields: z.record(z.string(), z.unknown()).optional(),
+  specs: z.array(z.string()).optional(),
+  links: z.array(z.unknown()).optional(),
+  duplicate_of: z.uuid().optional(),
+  copy: z.array(z.unknown()).optional(),
 });
 export const TicketDraftInput = z.strictObject({
   draft_id: z.uuid().optional(),
@@ -3746,6 +3790,16 @@ export const TicketUpdateInput = z.strictObject({
   actual_minutes: z.number().int().nullable().optional(),
   hold_reason: z.string().optional(),
   resume_condition: z.string().optional(),
+  priority: z.string().optional(),
+  priority_reason: z.string().optional(),
+  parent_ticket_id: z.uuid().nullable().optional(),
+  fields: z.record(z.string(), z.unknown()).optional(),
+  estimate_minutes: z.number().int().nullable().optional(),
+  due_on: z.string().nullable().optional(),
+  start_on: z.string().nullable().optional(),
+  due_reason: z.string().optional(),
+  expected_due_on: z.string().nullable().optional(),
+  expected_start_on: z.string().nullable().optional(),
 });
 export const TicketDecisionInput = z.strictObject({
   text: z.string().optional(),
@@ -3802,6 +3856,9 @@ export const TicketBodyInput = z.strictObject({
   version: z.number().int().optional(),
   doc: z.record(z.string(), z.unknown()).optional(),
 });
+export const BodyRestoreInput = z.strictObject({
+  current_version: z.number().int().optional(),
+});
 export const TestSpecCreateInput = z.strictObject({
   title: z.string().optional(),
 });
@@ -3814,6 +3871,12 @@ export const TicketLinkInput = z.strictObject({
   other_ticket_id: z.uuid().optional(),
   kind: z.string().optional(),
 });
+export const NotificationReadInput = z.strictObject({
+  read: z.boolean().optional(),
+});
+export const NotificationReadAllInput = z.strictObject({
+
+});
 export const SavedViewInput = z.strictObject({
   name: z.string().optional(),
   share: z.string().optional(),
@@ -3822,7 +3885,18 @@ export const SavedViewInput = z.strictObject({
   columns: z.array(z.string()).optional(),
   density: z.string().optional(),
 });
+export const SavedViewUpdateInput = z.strictObject({
+  name: z.string().optional(),
+  share: z.string().optional(),
+  scope_id: z.uuid().nullable().optional(),
+  filters: z.record(z.string(), z.unknown()).optional(),
+  columns: z.array(z.string()).optional(),
+  density: z.string().optional(),
+});
 export const ActionRunTakeoverInput = z.strictObject({
+
+});
+export const TicketRestoreInput = z.strictObject({
 
 });
 export const ScopeOverview = z.strictObject({
@@ -4123,6 +4197,15 @@ export const TicketDetail = z.strictObject({
   hold: z.record(z.string(), z.unknown()).nullable().optional(),
   handover: z.record(z.string(), z.unknown()).nullable().optional(),
   handover_kinds: z.array(z.string()).optional(),
+  body: z.record(z.string(), z.unknown()).optional(),
+  fields: z.array(z.unknown()).optional(),
+  spec_count: z.number().int().optional(),
+  spec_unchecked: z.number().int().optional(),
+  no_spec_reason: z.string().nullable().optional(),
+  parent: z.record(z.string(), z.unknown()).nullable().optional(),
+  child_count: z.number().int().optional(),
+  link_count: z.number().int().optional(),
+  results: z.record(z.string(), z.unknown()).optional(),
 });
 export const TicketKindChoice = z.strictObject({
   id: z.string().optional(),
@@ -4131,6 +4214,8 @@ export const TicketKindChoice = z.strictObject({
   position: z.number().int().optional(),
   is_builtin: z.boolean().optional(),
   sections: z.array(z.unknown()).optional(),
+  body_template: z.record(z.string(), z.unknown()).nullable().optional(),
+  fields: z.array(z.unknown()).optional(),
 });
 export const TicketDraft = z.strictObject({
   draft_id: z.string().optional(),
@@ -4463,6 +4548,7 @@ export const OpsWorkspaceBilling = z.strictObject({
   invoices: z.array(z.unknown()).optional(),
 });
 export const Shell = z.strictObject({
+  member: z.record(z.string(), z.unknown()).optional(),
   approvals_waiting: z.number().int().optional(),
   notifications_unread: z.number().int().optional(),
   groups: z.array(z.unknown()).optional(),
@@ -4470,6 +4556,7 @@ export const Shell = z.strictObject({
   setup_left: z.number().int().optional(),
   banner: z.record(z.string(), z.unknown()).optional(),
   workspace: z.record(z.string(), z.unknown()).optional(),
+  saved_views: z.array(z.unknown()).nullable().optional(),
 });
 export const OpsShell = z.strictObject({
   inquiries_unassigned: z.number().int().optional(),
@@ -4591,7 +4678,7 @@ export const TicketMessageStar = z.strictObject({
 });
 export const TicketUpdated = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
-  stage: z.record(z.string(), z.unknown()).optional(),
+  stage: z.record(z.string(), z.unknown()).nullable().optional(),
   changed: z.boolean().optional(),
   message_id: z.uuid().nullable().optional(),
 });
@@ -4720,6 +4807,22 @@ export const BodySaved = z.strictObject({
   changed: z.boolean().optional(),
   edited_at: z.string().optional(),
 });
+export const TicketVersionsView = z.strictObject({
+  versions: z.array(z.unknown()).optional(),
+  from: z.record(z.string(), z.unknown()).nullable().optional(),
+  to: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+export const BodyRestored = z.strictObject({
+  version: z.number().int().optional(),
+  changed: z.boolean().optional(),
+  edited_at: z.string().optional(),
+});
+export const TicketItemChangesView = z.strictObject({
+  points: z.array(z.unknown()).optional(),
+  from: z.number().int().nullable().optional(),
+  to: z.number().int().optional(),
+  diff: z.array(z.unknown()).optional(),
+});
 export const TestSpecItem = z.strictObject({
   id: z.uuid().optional(),
   title: z.string().optional(),
@@ -4753,6 +4856,9 @@ export const Notification = z.strictObject({
   read_at: z.string().nullable().optional(),
   created_at: z.string().optional(),
 });
+export const NotificationsRead = z.strictObject({
+  read: z.number().int().optional(),
+});
 export const SavedView = z.strictObject({
   id: z.uuid().optional(),
   name: z.string().optional(),
@@ -4768,12 +4874,19 @@ export const SavedView = z.strictObject({
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
+export const SavedViewDeleted = z.strictObject({
+  id: z.uuid().optional(),
+});
 export const TicketDeleted = z.strictObject({
   id: z.uuid().optional(),
   deleted_count: z.number().int().optional(),
   withdrawn_approvals: z.number().int().optional(),
   stopped_runs: z.number().int().optional(),
   restorable_until: z.string().optional(),
+});
+export const TicketRestored = z.strictObject({
+  id: z.uuid().optional(),
+  restored_count: z.number().int().optional(),
 });
 export const TicketField = z.strictObject({
   id: z.uuid().optional(),
@@ -4813,4 +4926,4 @@ export const UpdateMemoryInput = z.strictObject({
   superseded_by: z.uuid().nullable().optional(),
 });
 
-export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput, Tickets, TicketsInput, TicketSections, TicketSectionsInput, TicketSectionVersions, TicketSectionVersionsInput, TicketKinds, TicketKindsInput, KindSections, KindSectionsInput, TicketStages, TicketStagesInput, ClassAxes, ClassAxesInput, ClassValues, ClassValuesInput, TicketClassValues, TicketClassValuesInput, CustomFields, CustomFieldsInput, CustomFieldKinds, CustomFieldKindsInput, TicketFieldValues, TicketFieldValuesInput, HandoverRules, HandoverRulesInput, TestSpecs, TestSpecsInput, Checks, ChecksInput, TicketDecisions, TicketDecisionsInput, TicketMessages, TicketMessagesInput, ReferenceLogs, ReferenceLogsInput, KnowledgePages, KnowledgePagesInput, KnowledgePageVersions, KnowledgePageVersionsInput, KnowledgeLinks, KnowledgeLinksInput, Clients, ClientsInput, ClientGroups, ClientGroupsInput, ClientContacts, ClientContactsInput, ClientRequests, ClientRequestsInput, Acceptances, AcceptancesInput, TenantMemberships, TenantMembershipsInput, TermsVersions, TermsVersionsInput, TermsConsents, TermsConsentsInput, Passkeys, PasskeysInput, Operations, OperationsInput, TicketLinks, TicketLinksInput, TicketHandovers, TicketHandoversInput, SavedViews, SavedViewsInput, TicketImports, TicketImportsInput, LearningCandidates, LearningCandidatesInput, BridgePairingCodes, BridgePairingCodesInput, NotificationSettings, NotificationSettingsInput, OpsPlanProposals, OpsPlanProposalsInput, ScopeMemberships, ScopeMembershipsInput, RoleBundleDefaults, RoleBundleDefaultsInput, StepUpInput, PasskeyRenameInput, SignupInput, SignupResendInput, SignupVerifyInput, PasswordForgotInput, SignInInput, SignInCodeInput, SignOutInput, AdminRecoveryInput, TwoFactorStartInput, TwoFactorConfirmInput, PasswordChangeInput, PasswordSetInput, PasswordResetInput, TermsConsentInput, PairingCodeInput, BridgeClaimInput, BridgeHeartbeatInput, TicketCreateInput, TicketDraftInput, DismissSetupTasksInput, TicketDelegateInput, BridgeTakeInput, BridgeProgressInput, BridgeFinishInput, BridgeToolInput, ApprovalApproveInput, ApprovalReturnInput, InvitationAcceptInput, TicketCompleteInput, InvitationResendInput, CredentialCreateInput, CredentialUpdateInput, CredentialResolveInput, CredentialLoginCheckInput, CredentialLoginAnswerInput, CredentialCheckReportInput, DeviceBrowserInput, DeviceBrowserCheckInput, BridgeBrowserInput, TicketTimelineSeenInput, TicketMessageInput, TicketMessageEditInput, TicketMessageStarInput, TicketUpdateInput, TicketDecisionInput, TicketDecisionUpdateInput, TicketHandoverCreateInput, TicketHandoverAnswerInput, HandoverWithdrawInput, HandoverRemindInput, TicketHandoverClaimInput, InvitationsCreateInput, InvitationLinkCreateInput, InvitationJoinConfirmInput, TicketBodyInput, TestSpecCreateInput, TestSpecUpdateInput, TicketLinkInput, SavedViewInput, ActionRunTakeoverInput, ScopeOverview, TicketKindChangePreview, TicketDeletePreview, SearchHit, TimelineItem, TestSpecLint, TicketCompletion, BulkResult, ApprovalQueueItem, ApprovalDetail, BulkApprovalPreview, CloneNow, CloneGrowth, KnowsCounts, ActivityItem, SignupCreated, SignupResent, SignupStatus, SignupVerified, PasswordForgotAccepted, SignInResult, SignInCodeResult, SignedOut, AdminRecoveryResult, PasswordResetDone, CurrentTerms, TermsConsented, ConversationCreated, ConversationUpdated, MemoryUpdated, MySecurity, TwoFactorSetup, TwoFactorEnabled, BackupCodes, StepUp, PasswordChanged, PasswordSet, Me, MyUsage, SetupTask, SetupTasksDismissed, PairingCode, BridgeRelease, BridgeClaim, BridgeReleaseLink, BridgeHeartbeat, BridgeDevice, TicketDetail, TicketKindChoice, TicketDraft, BridgeJob, JobControl, TicketDelegation, ApprovalDecided, BridgeFinish, BridgeToolResult, ActionRunView, ResolvedCredential, WorkTypeUploadCheck, PlanProposalImpact, RuleCheck, WorkspaceMembers, InvitationLink, MemberDetail, MemberRemovalPreview, WorkspaceRules, EscalationPreview, ExportStatus, WorkspaceSettings, PlanChoice, Billing, SignedUrl, ClientRow, ClientLinkCandidate, ClientDetail, ClientActivityItem, PortalHome, ClientRequestDetail, PortalQuestions, PortalRequest, PortalTicket, PortalAcceptance, KnowledgeHome, KnowledgeTree, KnowledgeAnswer, KnowledgePageDetail, KnowledgeUsage, KnowledgeLinkTarget, KnowledgeVerification, KnowledgeImportPreview, OpsWorkspaceRow, OpsWorkspace, OpsWorkspaceMember, OpsWorkspaceBilling, Shell, OpsShell, TicketShape, TicketShapeChangePreview, OpsInquiryDetail, OpsNoticeDetail, PublicServiceStatus, InvitationPreview, InvitationAccepted, ServiceStatus, InvitationResendResult, Credential, CredentialDeleted, CredentialLoginCheck, CredentialLoginAnswer, CredentialCheckReport, RevokedDevice, DeviceBrowser, DeviceBrowserCheck, BridgeBrowser, TicketTimelineSeen, TicketMessageStar, TicketUpdated, TicketDecision, TicketDecisionCreated, TicketDecisionChange, HandoverPreview, HandoverRule, TicketHandoverCreated, TicketHandoverAnswered, TicketHandover, HandoverWithdrawn, HandoverReminded, TicketHandoverClaimed, InvitationsSent, InvitationJoinConfirmed, BodySaved, TestSpecItem, TicketLink, TicketLinkDeleted, Notification, SavedView, TicketDeleted, TicketField, UpdateConversationInput, UpdateMemoryInput };
+export const SCHEMAS: Record<string, z.ZodType> = { Tenants, TenantsInput, Scopes, ScopesInput, MemberKinds, MemberKindsInput, Members, MembersInput, SetupSteps, SetupStepsInput, Clones, ClonesInput, AiEmployees, AiEmployeesInput, GoalKinds, GoalKindsInput, Units, UnitsInput, RollupKinds, RollupKindsInput, Goals, GoalsInput, GoalAllocations, GoalAllocationsInput, GoalContributions, GoalContributionsInput, GoalVersions, GoalVersionsInput, Hypotheses, HypothesesInput, Measures, MeasuresInput, Validations, ValidationsInput, LedgerDefinitions, LedgerDefinitionsInput, LedgerFields, LedgerFieldsInput, LedgerStages, LedgerStagesInput, LedgerViews, LedgerViewsInput, LedgerRecords, LedgerRecordsInput, Duties, DutiesInput, DutyVersions, DutyVersionsInput, LearnedProcedures, LearnedProceduresInput, ProcedureSteps, ProcedureStepsInput, MemoryKinds, MemoryKindsInput, Memories, MemoriesInput, MemoryDigests, MemoryDigestsInput, MemoryProposals, MemoryProposalsInput, EmbeddingModels, EmbeddingModelsInput, SearchEmbeddings, SearchEmbeddingsInput, Tasks, TasksInput, TaskHandovers, TaskHandoversInput, DailyPlans, DailyPlansInput, Triggers, TriggersInput, Policies, PoliciesInput, Approvals, ApprovalsInput, ActionRuns, ActionRunsInput, ServiceRegistry, ServiceRegistryInput, CredentialKinds, CredentialKindsInput, Credentials, CredentialsInput, Conversations, ConversationsInput, BridgeJobs, BridgeJobsInput, BridgeJobStates, BridgeJobStatesInput, BridgeJobEvents, BridgeJobEventsInput, PermissionRules, PermissionRulesInput, AgentUsageSnapshots, AgentUsageSnapshotsInput, Messages, MessagesInput, Artifacts, ArtifactsInput, ArtifactVersions, ArtifactVersionsInput, AuditEvents, AuditEventsInput, SessionKinds, SessionKindsInput, RevokeReasons, RevokeReasonsInput, Layers, LayersInput, TargetKinds, TargetKindsInput, Abilities, AbilitiesInput, Permissions, PermissionsInput, AccountEvents, AccountEventsInput, AccountEventItems, AccountEventItemsInput, Sessions, SessionsInput, SupportAccessGrants, SupportAccessGrantsInput, RetentionHolds, RetentionHoldsInput, ErasureCertificates, ErasureCertificatesInput, Distributions, DistributionsInput, DistributionVersions, DistributionVersionsInput, TenantDistributions, TenantDistributionsInput, ServiceRegistryVersions, ServiceRegistryVersionsInput, ServiceRequests, ServiceRequestsInput, ReviewRequests, ReviewRequestsInput, OpsMembers, OpsMembersInput, OpsAuditEvents, OpsAuditEventsInput, SecurityEvents, SecurityEventsInput, Inquiries, InquiriesInput, Notices, NoticesInput, NoticeDeliveries, NoticeDeliveriesInput, StatusIncidents, StatusIncidentsInput, NotificationPreferences, NotificationPreferencesInput, Notifications, NotificationsInput, Plans, PlansInput, PlanVersions, PlanVersionsInput, Subscriptions, SubscriptionsInput, PlanChangeRequests, PlanChangeRequestsInput, UsageMeters, UsageMetersInput, Invoices, InvoicesInput, Payments, PaymentsInput, ErrorEvents, ErrorEventsInput, Imports, ImportsInput, Integrations, IntegrationsInput, Invitations, InvitationsInput, PendingSignup, PendingSignupInput, ExportJobs, ExportJobsInput, Attachments, AttachmentsInput, Skills, SkillsInput, SkillVersions, SkillVersionsInput, SkillTestRuns, SkillTestRunsInput, SkillAttachments, SkillAttachmentsInput, PaymentMethods, PaymentMethodsInput, BillingEvents, BillingEventsInput, LlmRoutes, LlmRoutesInput, LlmCapabilities, LlmCapabilitiesInput, PushDevices, PushDevicesInput, DisclosureVersions, DisclosureVersionsInput, Subprocessors, SubprocessorsInput, Tickets, TicketsInput, TicketSections, TicketSectionsInput, TicketSectionVersions, TicketSectionVersionsInput, TicketKinds, TicketKindsInput, KindSections, KindSectionsInput, TicketStages, TicketStagesInput, ClassAxes, ClassAxesInput, ClassValues, ClassValuesInput, TicketClassValues, TicketClassValuesInput, CustomFields, CustomFieldsInput, CustomFieldKinds, CustomFieldKindsInput, TicketFieldValues, TicketFieldValuesInput, HandoverRules, HandoverRulesInput, TestSpecs, TestSpecsInput, Checks, ChecksInput, TicketDecisions, TicketDecisionsInput, TicketMessages, TicketMessagesInput, ReferenceLogs, ReferenceLogsInput, KnowledgePages, KnowledgePagesInput, KnowledgePageVersions, KnowledgePageVersionsInput, KnowledgeLinks, KnowledgeLinksInput, Clients, ClientsInput, ClientGroups, ClientGroupsInput, ClientContacts, ClientContactsInput, ClientRequests, ClientRequestsInput, Acceptances, AcceptancesInput, TenantMemberships, TenantMembershipsInput, TermsVersions, TermsVersionsInput, TermsConsents, TermsConsentsInput, Passkeys, PasskeysInput, Operations, OperationsInput, TicketLinks, TicketLinksInput, GuestGroups, GuestGroupsInput, GuestGroupMembers, GuestGroupMembersInput, TicketGuestShares, TicketGuestSharesInput, TicketHandovers, TicketHandoversInput, SavedViews, SavedViewsInput, TicketImports, TicketImportsInput, LearningCandidates, LearningCandidatesInput, BridgePairingCodes, BridgePairingCodesInput, NotificationSettings, NotificationSettingsInput, OpsPlanProposals, OpsPlanProposalsInput, ScopeMemberships, ScopeMembershipsInput, RoleBundleDefaults, RoleBundleDefaultsInput, StepUpInput, PasskeyRenameInput, SignupInput, SignupResendInput, SignupVerifyInput, PasswordForgotInput, SignInInput, SignInCodeInput, SignOutInput, AdminRecoveryInput, TwoFactorStartInput, TwoFactorConfirmInput, PasswordChangeInput, PasswordSetInput, PasswordResetInput, TermsConsentInput, PairingCodeInput, BridgeClaimInput, BridgeHeartbeatInput, TicketCreateInput, TicketDraftInput, DismissSetupTasksInput, TicketDelegateInput, BridgeTakeInput, BridgeProgressInput, BridgeFinishInput, BridgeToolInput, ApprovalApproveInput, ApprovalReturnInput, InvitationAcceptInput, TicketCompleteInput, InvitationResendInput, CredentialCreateInput, CredentialUpdateInput, CredentialResolveInput, CredentialLoginCheckInput, CredentialLoginAnswerInput, CredentialCheckReportInput, DeviceBrowserInput, DeviceBrowserCheckInput, BridgeBrowserInput, TicketTimelineSeenInput, TicketMessageInput, TicketMessageEditInput, TicketMessageStarInput, TicketUpdateInput, TicketDecisionInput, TicketDecisionUpdateInput, TicketHandoverCreateInput, TicketHandoverAnswerInput, HandoverWithdrawInput, HandoverRemindInput, TicketHandoverClaimInput, InvitationsCreateInput, InvitationLinkCreateInput, InvitationJoinConfirmInput, TicketBodyInput, BodyRestoreInput, TestSpecCreateInput, TestSpecUpdateInput, TicketLinkInput, NotificationReadInput, NotificationReadAllInput, SavedViewInput, SavedViewUpdateInput, ActionRunTakeoverInput, TicketRestoreInput, ScopeOverview, TicketKindChangePreview, TicketDeletePreview, SearchHit, TimelineItem, TestSpecLint, TicketCompletion, BulkResult, ApprovalQueueItem, ApprovalDetail, BulkApprovalPreview, CloneNow, CloneGrowth, KnowsCounts, ActivityItem, SignupCreated, SignupResent, SignupStatus, SignupVerified, PasswordForgotAccepted, SignInResult, SignInCodeResult, SignedOut, AdminRecoveryResult, PasswordResetDone, CurrentTerms, TermsConsented, ConversationCreated, ConversationUpdated, MemoryUpdated, MySecurity, TwoFactorSetup, TwoFactorEnabled, BackupCodes, StepUp, PasswordChanged, PasswordSet, Me, MyUsage, SetupTask, SetupTasksDismissed, PairingCode, BridgeRelease, BridgeClaim, BridgeReleaseLink, BridgeHeartbeat, BridgeDevice, TicketDetail, TicketKindChoice, TicketDraft, BridgeJob, JobControl, TicketDelegation, ApprovalDecided, BridgeFinish, BridgeToolResult, ActionRunView, ResolvedCredential, WorkTypeUploadCheck, PlanProposalImpact, RuleCheck, WorkspaceMembers, InvitationLink, MemberDetail, MemberRemovalPreview, WorkspaceRules, EscalationPreview, ExportStatus, WorkspaceSettings, PlanChoice, Billing, SignedUrl, ClientRow, ClientLinkCandidate, ClientDetail, ClientActivityItem, PortalHome, ClientRequestDetail, PortalQuestions, PortalRequest, PortalTicket, PortalAcceptance, KnowledgeHome, KnowledgeTree, KnowledgeAnswer, KnowledgePageDetail, KnowledgeUsage, KnowledgeLinkTarget, KnowledgeVerification, KnowledgeImportPreview, OpsWorkspaceRow, OpsWorkspace, OpsWorkspaceMember, OpsWorkspaceBilling, Shell, OpsShell, TicketShape, TicketShapeChangePreview, OpsInquiryDetail, OpsNoticeDetail, PublicServiceStatus, InvitationPreview, InvitationAccepted, ServiceStatus, InvitationResendResult, Credential, CredentialDeleted, CredentialLoginCheck, CredentialLoginAnswer, CredentialCheckReport, RevokedDevice, DeviceBrowser, DeviceBrowserCheck, BridgeBrowser, TicketTimelineSeen, TicketMessageStar, TicketUpdated, TicketDecision, TicketDecisionCreated, TicketDecisionChange, HandoverPreview, HandoverRule, TicketHandoverCreated, TicketHandoverAnswered, TicketHandover, HandoverWithdrawn, HandoverReminded, TicketHandoverClaimed, InvitationsSent, InvitationJoinConfirmed, BodySaved, TicketVersionsView, BodyRestored, TicketItemChangesView, TestSpecItem, TicketLink, TicketLinkDeleted, Notification, NotificationsRead, SavedView, SavedViewDeleted, TicketDeleted, TicketRestored, TicketField, UpdateConversationInput, UpdateMemoryInput };

@@ -9,7 +9,7 @@
 //   会社名と名前は外枠と同じ問い合わせ（鍵 ["me"]）の答え。口は増えない
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loading, MeSub, Toaster, useNotify } from "@/components/k";
+import { Loading, MeSub, useNotify } from "@/components/k";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
@@ -132,46 +132,44 @@ export function CredentialsScreen() {
   const items = rows.filter((it) => it.layer === tab);
   const rowOf = (id: string) => rows.find((it) => it.id === id);
   return (
-    <Toaster>
-      <TicketShell screen={SCREEN} crumbs={[{ label: "自分の設定", disabled: true }, { label: "預けたログイン情報" }]}>
-        <div className="k-me-wrap">
-          <MeSub current="credentials" />
-          <section className="k-page k-me-page" aria-labelledby="credentials-title">
-            <CredentialsHead addReady onAdd={add.open} />
-            {list === null ? (
-              <Loading />
-            ) : (
-              <CredentialsBody
-                workspaceName={workspaceName}
-                personalName={mine?.display_name ?? ""}
-                tab={tab}
-                onTab={setTab}
-                items={items}
-                failed={list === "failed"}
-                rowActionsReady
-                recheckingId={check.rechecking}
-                onEdit={(id) => {
-                  const it = rowOf(id);
-                  if (it) edit.open(it);
-                }}
-                onRemove={(id) => {
-                  const it = rowOf(id);
-                  if (it) remove.open(it.id, it.name);
-                }}
-                onRecheck={check.recheck}
-                onCode={(id) => {
-                  const it = rowOf(id);
-                  if (it) check.openCode(it);
-                }}
-              />
-            )}
-          </section>
-        </div>
-        {add.ui}
-        {edit.ui}
-        {remove.ui}
-        {check.ui}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen={SCREEN} crumbs={[{ label: "自分の設定", disabled: true }, { label: "預けたログイン情報" }]}>
+      <div className="k-me-wrap">
+        <MeSub current="credentials" />
+        <section className="k-page k-me-page" aria-labelledby="credentials-title">
+          <CredentialsHead addReady onAdd={add.open} />
+          {list === null ? (
+            <Loading />
+          ) : (
+            <CredentialsBody
+              workspaceName={workspaceName}
+              personalName={mine?.display_name ?? ""}
+              tab={tab}
+              onTab={setTab}
+              items={items}
+              failed={list === "failed"}
+              rowActionsReady
+              recheckingId={check.rechecking}
+              onEdit={(id) => {
+                const it = rowOf(id);
+                if (it) edit.open(it);
+              }}
+              onRemove={(id) => {
+                const it = rowOf(id);
+                if (it) remove.open(it.id, it.name);
+              }}
+              onRecheck={check.recheck}
+              onCode={(id) => {
+                const it = rowOf(id);
+                if (it) check.openCode(it);
+              }}
+            />
+          )}
+        </section>
+      </div>
+      {add.ui}
+      {edit.ui}
+      {remove.ui}
+      {check.ui}
+    </TicketShell>
   );
 }

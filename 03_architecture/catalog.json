@@ -5,15 +5,15 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 375,
-  "api_built": 105,
+  "api": 376,
+  "api_built": 114,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 287,
-  "stack": 56,
+  "errors": 312,
+  "stack": 68,
   "env": 41
  },
  "api": [
@@ -1773,6 +1773,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-68",
     "K-401"
    ]
   },
@@ -3278,7 +3279,8 @@
    ],
    "status": "作った",
    "owner_tickets": [
-    "K-461"
+    "K-461",
+    "K-467"
    ]
   },
   {
@@ -3293,9 +3295,11 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-462",
+    "K-467"
    ]
   },
   {
@@ -3310,9 +3314,11 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-462",
+    "K-467"
    ]
   },
   {
@@ -4444,9 +4450,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-476"
    ]
   },
   {
@@ -4461,9 +4468,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-476"
    ]
   },
   {
@@ -4546,7 +4554,8 @@
    "status": "作った",
    "owner_tickets": [
     "K-67",
-    "K-468"
+    "K-468",
+    "K-471"
    ]
   },
   {
@@ -4576,9 +4585,11 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-465",
+    "K-466"
    ]
   },
   {
@@ -4663,6 +4674,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-68",
     "K-401"
    ]
   },
@@ -5313,7 +5325,25 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-68",
     "K-401"
+   ]
+  },
+  {
+   "op": "listTicketItemChanges",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/item-changes",
+   "what": "取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_messages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-433"
    ]
   },
   {
@@ -5415,9 +5445,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-489"
    ]
   },
   {
@@ -5545,7 +5576,7 @@
    "op": "listTicketVersions",
    "method": "GET",
    "path": "/api/v1/tickets/:id/versions",
-   "what": "取得（tickets）— チケットの中身（区画）を書く・直す",
+   "what": "取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない）",
    "flows": [
     "F4"
    ],
@@ -5553,9 +5584,10 @@
    "tables": [
     "ticket_section_versions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {
@@ -5568,11 +5600,12 @@
    ],
    "only_later_phase": false,
    "tables": [
-    "ticket_section_versions"
+    "ticket_sections"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-433"
    ]
   },
   {
@@ -7408,7 +7441,8 @@
     "F6"
    ],
    "reads": [
-    "F11"
+    "F11",
+    "F4"
    ],
    "boundary": true
   },
@@ -7416,10 +7450,10 @@
    "table": "ticket_section_versions",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
+   "writes": [],
+   "reads": [
     "F4"
    ],
-   "reads": [],
    "boundary": false
   },
   {
@@ -7560,6 +7594,8 @@
    "exports": [
     "Callout",
     "Toaster",
+    "dismissNotify",
+    "notify",
     "useNotify"
    ],
    "what": "知らせ（K-24）。2 つ："
@@ -7949,6 +7985,54 @@
    {
     "package": "zod",
     "for": "記録にある名前のまま"
+   },
+   {
+    "package": "@tiptap/core",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/react",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/pm",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/starter-kit",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-highlight",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-table",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-task-list",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-task-item",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-text-align",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-text-style",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-superscript",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-subscript",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
    }
   ],
   "env": [

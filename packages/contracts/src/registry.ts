@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:67278edaf46329a9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a4f3589e09ef815f
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -10747,9 +10747,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readNotification",
     "table": "notifications",
     "kind": "update",
-    "input": "NotificationsInput",
+    "input": "NotificationReadInput",
     "success": 200,
-    "output": "Notifications",
+    "output": "Notification",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -10788,10 +10788,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "notifications",
-        "sql": "member_id = app.user_id()"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -10803,9 +10800,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readAllNotifications",
     "table": "notifications",
     "kind": "create",
-    "input": "NotificationsInput",
+    "input": "NotificationReadAllInput",
     "success": 201,
-    "output": "Notifications",
+    "output": "NotificationsRead",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -14542,9 +14539,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateSavedView",
     "table": "saved_views",
     "kind": "update",
-    "input": "SavedViewsInput",
+    "input": "SavedViewUpdateInput",
     "success": 200,
-    "output": "SavedViews",
+    "output": "SavedView",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -14562,6 +14559,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       404,
+      422,
+      409,
+      409,
       422,
       413,
       429,
@@ -14600,7 +14600,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "SavedViews",
+    "output": "SavedViewDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -16184,6 +16184,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       404,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      404,
+      409,
       413,
       429,
       403,
@@ -16297,8 +16305,24 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       409,
       409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
+      409,
       422,
-      500,
+      422,
+      422,
+      503,
       503,
       413,
       429,
@@ -17423,6 +17447,61 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "GET",
+    "path": "/api/v1/tickets/:id/item-changes",
+    "operationId": "listTicketItemChanges",
+    "table": "ticket_messages",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "output": "TicketItemChangesView",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      404,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A101"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
     "path": "/api/v1/tickets/:id/kind-change-preview",
     "operationId": "previewTicketKindChange",
     "table": "tickets",
@@ -17714,9 +17793,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "restoreTicket",
     "table": "tickets",
     "kind": "create",
-    "input": "TicketsInput",
+    "input": "TicketRestoreInput",
     "success": 201,
-    "output": "Tickets",
+    "output": "TicketRestored",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17736,6 +17815,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -17757,10 +17837,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -18174,7 +18251,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "TicketSectionVersions",
+    "output": "TicketVersionsView",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -18191,6 +18268,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      404,
+      503,
       429,
       403,
       403,
@@ -18223,11 +18302,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "method": "POST",
     "path": "/api/v1/tickets/:id/versions/:v/restore",
     "operationId": "restoreTicketVersion",
-    "table": "ticket_section_versions",
+    "table": "ticket_sections",
     "kind": "create",
-    "input": "TicketSectionVersionsInput",
+    "input": "BodyRestoreInput",
     "success": 201,
-    "output": "TicketSectionVersions",
+    "output": "BodyRestored",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -18247,6 +18326,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      404,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -19983,4 +20066,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "67278edaf46329a9";
+export const OPENAPI_HASH = "a4f3589e09ef815f";

@@ -1,0 +1,11 @@
+/* 止まった理由と一手（F7・段 8）の部品。値は正本のトークン（--k-*）だけを読む。生の大きさ・色を書かない。
+   箱・ボタン・赤い箱の形は components/k の型のまま。ここは帯と下の表の並べ方だけ（前からの .k62-band と同じ間） */
+.k-f7-stop {
+  display: grid;
+  gap: var(--k-c-run-band-gap);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-f7-stop .k-band-acts a.k-btn {
+  text-decoration: none;
+}

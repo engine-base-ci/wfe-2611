@@ -5591,7 +5591,7 @@
   },
   {
    "id": "E-VAL-012",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5689,7 +5689,7 @@
   },
   {
    "id": "E-VAL-015",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5754,7 +5754,7 @@
     "screen": "tickets",
     "state": "list"
    },
-   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・期限・担当者・優先度・見込み など・段 8 で作る）を送った（K-387）",
+   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）。チケットを直す口（updateTicket）で、まだ変えられない欄（題名・担当者・見込み など）を送った（K-387・優先度と親は K-440・期限と開始日は K-483 の組）",
    "false_when": "view・q・scope_id・limit・cursor だけ。updateTicket で段・実績・保留の理由と再開の条件だけを送った",
    "message": "この絞り込みはまだ使えません",
    "action": "絞り込みを外して開き直す",
@@ -7961,6 +7961,34 @@
    ]
   },
   {
+   "id": "E-SEC-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す先の版の中身が今の本文と同じ（版を無駄に増やさない）",
+   "false_when": "戻す先の版の中身が今の本文と違う",
+   "message": "もう同じ中身です",
+   "action": "別の版を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開く",
+    "steps": [
+     "今の版と同じ中身の版を選んで、本文をその版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.47"
+   ]
+  },
+  {
    "id": "E-SPEC-001",
    "class": "conflict",
    "where": {
@@ -8073,6 +8101,232 @@
    "source": [
     "段 10 の代表の決め 2026-11-22"
    ]
+  },
+  {
+   "id": "E-VAL-028",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの開始日が、最終期限より後の日だった",
+   "false_when": "開始日が期限と同じ日か、それより前（開始は入れなくてもよい）",
+   "message": "開始日は期限より前の日にしてください",
+   "action": "開始日か期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "開始に期限より後の日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.34"
+   ],
+   "support_code": "VAL-028"
+  },
+  {
+   "id": "E-DUP-001",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+   "false_when": "元のチケットが見える（書く権限は要らない）",
+   "message": "複製の元のチケットが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+   "action": "元を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを 1 つ作って消す",
+    "steps": [
+     "消したチケットを元にして複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-128.115"
+   ],
+   "support_code": "DUP-001"
+  },
+  {
+   "id": "E-DUP-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "duplicate"
+   },
+   "when": "子チケットを写すと、親子が 3 段を超える（複製の親が 2 段目で、元に子がいる）",
+   "false_when": "子を写さない・写しても 3 段まで",
+   "message": "子チケットを写すと、親子が 3 段を超えます。子を写さないか、別の親を選んでください",
+   "action": "子を写さずに作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を持つチケットと、2 段目のチケット",
+    "steps": [
+     "2 段目のチケットを親にして、子を写して複製する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.6",
+    "D-125.50"
+   ],
+   "support_code": "DUP-002"
+  },
+  {
+   "id": "E-TKT-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケット自身を決めようとした（K-440。親を決める小窓か、口 PATCH /api/v1/tickets/:id の parent_ticket_id）",
+   "false_when": "親に、自分とは別のチケットを決めた",
+   "message": "自分自身は親にできません",
+   "action": "別のチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細",
+    "steps": [
+     "口に、そのチケット自身の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-001"
+  },
+  {
+   "id": "E-TKT-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親に、そのチケットの子・孫（下の段）を決めようとした＝親子が輪になる（K-440。同時に A の親を B・B の親を A にしたときの後の 1 本も）",
+   "false_when": "自分の下の段に無いチケットを親にした",
+   "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+   "action": "自分の下にないチケットを親に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "親と子のチケット",
+    "steps": [
+     "親のチケットに、その子の id を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-002"
+  },
+  {
+   "id": "E-TKT-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "親を決めると親子が 3 段を超える（親が 3 段目、または自分の下の段を数えて 3 段を超える・K-440）",
+   "false_when": "親子が 3 段までに収まる",
+   "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+   "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "3 段の親子のチケット",
+    "steps": [
+     "3 段目のチケットを親にする口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-003"
+  },
+  {
+   "id": "E-TKT-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "今の自分の期限が親の期限より後のチケットに、その親を決めようとした（どちらかの期限が空なら対象外・親の期限より後の期限にする側は期限の口・K-440）",
+   "false_when": "自分の期限が親の期限と同じか前（または、どちらかの期限が空）",
+   "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+   "action": "期限を親の期限以前に直してから親を決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限が親より後のチケット",
+    "steps": [
+     "親の期限より後の期限のチケットに、その親を parent_ticket_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.32",
+    "D-128.65",
+    "D-150.16"
+   ],
+   "support_code": "TKT-004"
   },
   {
    "id": "E-LNK-001",
@@ -8197,6 +8451,35 @@
    "severity": "low",
    "source": [
     "D-151.4"
+   ]
+  },
+  {
+   "id": "E-NTF-010",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "notifications"
+   },
+   "when": "自分宛てで一覧に出る知らせでない（別の人・別の会社・もう無い・行き先のチケットが見えなくなった）",
+   "false_when": "自分宛ての一覧に出ている知らせ",
+   "message": "このお知らせは見つかりませんでした",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "鈴を押して知らせの一覧を開く",
+    "steps": [
+     "別の人宛ての知らせの id で PATCH /api/v1/notifications/:id を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.3"
    ]
   },
   {
@@ -8524,6 +8807,252 @@
     "D-128.83",
     "D-151.9"
    ]
+  },
+  {
+   "id": "E-VWS-020",
+   "class": "permission",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員向けの保存した条件の見せる相手（share か scope_id）を、作った人でない人（そのグループのマネージャー）が今と違う値に変えようとした",
+   "false_when": "作った人が変える・今と同じ値を添えただけ・名前や条件や列や詰め方だけを直す",
+   "message": "見せる相手を変えられるのは、作った人だけです",
+   "action": "名前や条件だけを直す（見せる相手は作った人に頼む）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "グループのマネージャーとして、作った人の「グループの全員」に見せている条件を開く",
+     "画面を通さずに口を直に呼び、見せる相手を「自分だけ」に変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.119",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-021",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "グループの全員に見せている条件で、share は送らずに scope_id だけを null にした（結果が「グループの全員で見せるグループが無い」になる）",
+   "false_when": "share を「自分だけ」にして一緒に scope_id を null にする・scope_id を別のグループに変える",
+   "message": "グループの全員に見せている条件から、見せるグループは外せません。先に「自分だけ」に変えてください",
+   "action": "先に「自分だけ」に変える",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "保存した条件を開く（チケットの一覧の「保存した条件」）",
+    "steps": [
+     "「グループの全員」に見せている保存した条件を持つ",
+     "画面を通さずに口を直に呼び、見せるグループだけを外す（scope_id を null）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.119",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-DUE-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限（due_on）を変えるのに、理由（due_reason）が無い・null・空・空白だけ・制御文字だけ（K-483・期限をなくすときも初めて決めるときも要る）",
+   "false_when": "理由を書いて期限を変えた・開始日だけを直した",
+   "message": "期限を変える理由を書いてください",
+   "action": "理由を書いてから変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "理由を空にして期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-150.4",
+    "D-151.11"
+   ],
+   "support_code": "DUE-001"
+  },
+  {
+   "id": "E-DUE-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "期限を変える理由が 201 文字以上（K-483）",
+   "false_when": "理由が 200 文字まで",
+   "message": "理由は 200 文字までにしてください",
+   "action": "理由を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "201 文字の理由で期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33",
+    "D-130.1"
+   ],
+   "support_code": "DUE-002"
+  },
+  {
+   "id": "E-DUE-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "子のチケットの期限を、親のチケットの期限より後の日にしようとした（K-483・消した親・期限の無い親は見ない）",
+   "false_when": "親の期限と同じ日か前・親に期限が無い",
+   "message": "子のチケットの期限は、親のチケットの期限より後にできません",
+   "action": "親の期限を先に延ばすか、親の期限までの日にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "親より後の日に子の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-005"
+  },
+  {
+   "id": "E-DUE-006",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "親のチケットの期限を、子のチケット（消していない直接の子）の期限より前の日にしようとした（K-483）",
+   "false_when": "子の期限と同じ日か後・期限をなくす・消した子だけが後",
+   "message": "この期限より後の期限を持つ子のチケットがあります。先に子の期限を変えてください",
+   "action": "子の期限を先に変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "子より前の日に親の期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-151.12"
+   ],
+   "support_code": "DUE-006"
+  },
+  {
+   "id": "E-DUE-007",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "完了したチケットの期限か開始日を変えようとした（K-483）",
+   "false_when": "完了していないチケット",
+   "message": "完了したチケットの期限は変えられません",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "完了したチケットの期限を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-007"
+  },
+  {
+   "id": "E-DUE-008",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "due"
+   },
+   "when": "画面が見ていた期限・開始日（expected_due_on・expected_start_on）が今の値と違う＝ほかの人が先に変えた（K-483）",
+   "false_when": "expected を送らない・今の値と合う",
+   "message": "ほかの人が先に期限を変えました。開き直してから、もう一度変えてください",
+   "action": "開き直してから変える",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "期限のあるチケット",
+    "steps": [
+     "別の画面で期限を変えた後、古い画面で変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.11"
+   ],
+   "support_code": "DUE-008"
   },
   {
    "id": "E-STP-001",
@@ -8925,6 +9454,246 @@
     "D-125.62",
     "D-129.43"
    ]
+  },
+  {
+   "id": "E-DEL-040",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消した本人でも、そのグループのマネージャー・管理者でもない人が、消したチケットを戻した",
+   "false_when": "消した本人か、そのグループのマネージャー・管理者が戻した",
+   "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+   "action": "消した人かマネージャーに頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "他の人が消したチケットを、書けるだけの人で開く",
+    "steps": [
+     "消したチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-041",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もう戻っている（消えていない）チケットを戻した・同時に別のタブが先に戻した",
+   "false_when": "消えているチケットを戻した",
+   "message": "このチケットはもう戻っています",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを消した直後の画面を 2 つのタブで開く",
+    "steps": [
+     "消した直後の「元に戻す」を 2 つのタブで同時に押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-DEL-042",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "消してから 30 日を過ぎたチケットを戻した",
+   "false_when": "消してから 30 日以内のチケットを戻した",
+   "message": "消してから 30 日を過ぎているので、もう戻せません",
+   "action": "戻せないので、必要なら新しく作る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "30 日より前に消したチケットがある状態にする",
+    "steps": [
+     "30 日を過ぎて消えたままのチケットの「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-128.116"
+   ]
+  },
+  {
+   "id": "E-DEL-043",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "親が消えている子を戻した",
+   "false_when": "親が消えていない子を戻した",
+   "message": "このチケットの親が消えています。先に親を戻してください",
+   "action": "親を先に戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子を消した後で、その親も消した状態にする",
+    "steps": [
+     "親を消した後に、先に消していた子の「元に戻す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.84",
+    "D-151.20"
+   ]
+  },
+  {
+   "id": "E-FLD-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "チケットの種別に出ない会社の項目に値を入れようとした（K-564。項目に種別の行があって、このチケットの種別が入っていない。消した種別の行しか無い項目も同じ）",
+   "false_when": "全部の種別に出る項目、またはこのチケットの種別に出る項目に値を入れた",
+   "message": "この項目は、このチケットの種別では使えません",
+   "action": "項目の一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "種別が違う項目とチケット",
+    "steps": [
+     "その種別に出ない項目の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-001"
+  },
+  {
+   "id": "E-FLD-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "選択肢に無い値を入れようとした（1 つ選ぶ・複数選ぶ。別の項目の選択肢の id・マスタから外した選択肢も同じ・K-564）",
+   "false_when": "その項目の選択肢の id を送った",
+   "message": "選べない値が含まれています。選択肢から選び直してください",
+   "action": "選択肢から選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "選択肢のある項目とチケット",
+    "steps": [
+     "その項目に、知らない選択肢の id を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-002"
+  },
+  {
+   "id": "E-FLD-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "項目の型と合わない値を入れようとした（数に文字・日付に暦に無い日や別の書き方・チェックに文字・選ぶ型に数・K-564）",
+   "false_when": "項目の型どおりの値を送った",
+   "message": "この項目に入れられない形の値です",
+   "action": "値を入れ直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "数の項目とチケット",
+    "steps": [
+     "その項目に、数でない値を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-003"
+  },
+  {
+   "id": "E-FLD-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "detail"
+   },
+   "when": "必須の項目を空にしようとした（null・空の文字・空白だけ・空の並び。必須のチェックは false も同じ・K-564）",
+   "false_when": "必須でない項目を空にした、または必須の項目に値を入れた",
+   "message": "必須の項目は空にできません。値を入れてください",
+   "action": "値を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "必須の項目に値が入ったチケット",
+    "steps": [
+     "その項目に null を fields で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.51",
+    "D-150.37"
+   ],
+   "support_code": "FLD-004"
   },
   {
    "id": "E-CONF-020",

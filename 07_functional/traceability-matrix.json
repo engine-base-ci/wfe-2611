@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 145,
+  "entities_count": 148,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -2937,6 +2937,7 @@
     "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
+    "GET /api/tickets/:id/item-changes",
     "POST /api/ticket_kinds/:id/template-from-ticket",
     "GET /api/tickets/:id/test-specs",
     "POST /api/tickets/:id/test-specs",
@@ -10807,6 +10808,12 @@
     },
     {
      "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes"
+    },
+    {
+     "act": "A101",
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/:id/template-from-ticket"
@@ -14465,6 +14472,24 @@
     "F-023",
     "F-024"
    ]
+  },
+  {
+   "entity_id": "E-147",
+   "entity_name": "guest_groups",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-148",
+   "entity_name": "guest_group_members",
+   "used_by_screens": [],
+   "used_by_features": []
+  },
+  {
+   "entity_id": "E-149",
+   "entity_name": "ticket_guest_shares",
+   "used_by_screens": [],
+   "used_by_features": []
   },
   {
    "entity_id": "E-136",
