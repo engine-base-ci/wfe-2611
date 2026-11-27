@@ -5714,6 +5714,10 @@
    }
   },
   "scopes": {
+   "color": {
+    "type": "text",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -5745,6 +5749,10 @@
    "parent_id": {
     "type": "uuid",
     "nullable": true
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
    },
    "tenant_id": {
     "type": "uuid",
