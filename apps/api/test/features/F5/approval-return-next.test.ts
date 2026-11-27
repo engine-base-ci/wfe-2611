@@ -155,7 +155,10 @@ describe("K-744 差し戻し：次は誰が直すか（状態 × 入口 × 利�
         t.id,
       ]);
     const queued = await made();
-    const again = await req("POST", `/tickets/${t.id}/delegate`, { body: { no_spec_reason: NO_SPEC }, headers: auth(d.by) });
+    const again = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(d.by),
+    });
     expect(again.status, await again.clone().text()).toBe(201);
     expect(await made()).toBe(queued + 1);
     expect(await flag(t.id)).toBe(true);
