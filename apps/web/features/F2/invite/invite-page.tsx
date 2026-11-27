@@ -132,15 +132,15 @@ function noticeOf(r: CallErr): string {
   return INVITE_NOTICE.down;
 }
 
-/** 欄の誤りの答えか：422 と、招待のリンクでメールの鍵が無いときの 409 E-INV-016（K-422） */
-const isFieldErr = (r: CallErr): boolean => r.status === 422 || (r.status === 409 && r.code === "E-INV-016");
+/** 欄の誤りの答えか：422 と、招待のリンクでメールの鍵が無いときの 409 E-INV-020（K-422） */
+const isFieldErr = (r: CallErr): boolean => r.status === 422 || (r.status === 409 && r.code === "E-INV-020");
 
 /** 欄の誤りの文を欄に分ける（口はいまは誤りを 1 つずつ返す。2 つ返ってきたら 2 つとも出す）。欄が分からなければ null */
 function errorsOf(r: CallErr): Errors | null {
   const text = r.message ?? catalogText(r.code);
   const name = r.fields["name"] ?? (r.code === "E-VAL-007" ? text : undefined);
-  // 招待のリンク（K-422）：メールの鍵が無い参加は 409 E-INV-016（欄なし）・空白だけ／形違いを送ったら 422 E-INV-013（欄 email）
-  const email = r.fields["email"] ?? (r.code === "E-INV-013" || r.code === "E-INV-016" ? text : undefined);
+  // 招待のリンク（K-422）：メールの鍵が無い参加は 409 E-INV-020（欄なし）・空白だけ／形違いを送ったら 422 E-INV-013（欄 email）
+  const email = r.fields["email"] ?? (r.code === "E-INV-013" || r.code === "E-INV-020" ? text : undefined);
   const password = r.fields["password"] ?? (/^E-VAL-(005|011|026)$/.test(r.code) ? text : undefined);
   if (!name && !password && !email) return null;
   return { ...(name ? { name } : {}), ...(password ? { password } : {}), ...(email ? { email } : {}) };

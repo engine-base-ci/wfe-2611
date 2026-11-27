@@ -30,7 +30,7 @@
    ]
   },
   {
-   "id": "E-INV-016",
+   "id": "E-INV-020",
    "class": "conflict",
    "where": {
     "screen": "invite-accept",

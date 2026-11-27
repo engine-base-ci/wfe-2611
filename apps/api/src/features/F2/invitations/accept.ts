@@ -8,7 +8,7 @@
 //   上限（10 回／分／IP）は契約の入口（op.ts）が先に確かめる。体の email は読まない（宛ては招待のもの）。ただし送られた email の形は招待の種類によらず契約の決まり（空・形違いは 422・E-INV-013）。
 //   ログに宛てのメール・パスワード・トークンを出さない（宛先は mailTag の印・例外は種類だけ）
 // K-422 リンクの招待（宛てのメールが空）で、ログインしていない人が新しく入る：利用者も所属も作らない（D-148.51）。
-//   順：① ② ③ ④ は同じ → メール（空・形違い 422・E-INV-013／送られていない 409・E-INV-016）→ そのメールにもうアカウント 409・E-INV-006
+//   順：① ② ③ ④ は同じ → メール（空・形違い 422・E-INV-013／送られていない 409・E-INV-020）→ そのメールにもうアカウント 409・E-INV-006
 //       → 保留の行を置く（S1）→ 確認のメールを送る（S2・関門 C6）→ 送った印（S3）→ 202 { state: "sent" | "failed", email: 伏せたメール }。
 //       確認のリンクを押したときの続きは confirm.ts（confirmInvitationJoin）。宛てのメールの在る招待は今のまま（体の email は読まない）
 // K-333 今のアカウントで参加する（ログイン中の人・D-125.150）：入口がセッションを解けたら（ctx.role が member）この分に入り、体は読まない。
@@ -180,7 +180,7 @@ export function invitationAcceptFeature(d: InvitationDeps) {
     const rawEmail = a.input["email"];
     const email = typeof rawEmail === "string" ? normalizeEmail(rawEmail) : "";
     // 送られていない（宛てのメールが無い招待は体のメールが要る）：招待の行で決まる断りなので 409（欄・details は付けない）
-    if (!email) return reply(409, "E-INV-016");
+    if (!email) return reply(409, "E-INV-020");
     try {
       if (await authUserIdByEmail(d.authPool, email)) return reply(409, "E-INV-006");
     } catch (e) {
