@@ -1444,7 +1444,7 @@ PERMS = {
     "declineClientRequest": ("write", "届け先で client_requests を edit できる人（理由は出し手に見える）", False),
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
     "getPortalHome": ("client", "自分のゲストのグループの依頼と、見せてもらったチケットだけ", False),
-    "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
+    "askPortalRequestQuestions": ("client", "ゲスト。依頼が届く社内のグループの担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いた字はデータとして渡す", False),
     "createPortalRequest": ("client", "ゲスト。自分のゲストのグループの依頼として出す（見るだけの形は無い）", False),
     "getPortalRequest": ("client", "自分のゲストのグループの依頼だけ", False),
     "postPortalRequestMessage": ("client", "ゲスト。自分のゲストのグループの依頼で、まだ決まっていない物だけ", False),
