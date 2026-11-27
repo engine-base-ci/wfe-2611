@@ -3,6 +3,7 @@
 //   タブは「ようす・話す・やったこと」の 3 つ。「知っていること」はナレッジ（左のメニュー）へのリンク（聞くこと 12・段 10 でナレッジになった）。
 //   下絵では押しても動かない（値を受け取って描くだけ）。本番は links（タブごとの道）と knowledgeHref を渡すとリンクになる（K-755）。画面の名前は「〈名〉のAI」
 //   スマホ（767 以下）：ひとことは短い 1 行・タブは 1 段に収める。会話の画面（mobileChat）では頭を畳み、会話の頭（‹ と題）が代わりに立つ（見出しは読み上げ用に残す）
+import type { Route } from "next";
 import { Bot, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import "./room.css";
@@ -57,7 +58,7 @@ export function RoomHead({
       <nav aria-label="部屋のタブ" className="k-room-tabs">
         {TABS.map(([key, label]) =>
           links ? (
-            <Link key={key} href={links[key]} aria-current={active === key ? "page" : undefined}>
+            <Link key={key} href={links[key] as Route} aria-current={active === key ? "page" : undefined}>
               {label}
             </Link>
           ) : (
@@ -67,7 +68,7 @@ export function RoomHead({
           ),
         )}
         {knowledgeHref ? (
-          <Link href={knowledgeHref} title="ナレッジへ行きます">
+          <Link href={knowledgeHref as Route} title="ナレッジへ行きます">
             知っていること
             <ExternalLink size={12} aria-hidden="true" />
           </Link>

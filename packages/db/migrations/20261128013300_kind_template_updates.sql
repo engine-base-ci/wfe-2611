@@ -36,8 +36,9 @@ $$;
 revoke all on function app.template_part_table(text) from public;
 
 -- 変わる欄の字（「・」で並べる）。p_now は会社の行の今の中身、p_new は届いた版の中身（どちらも app.template_item_norm の欄）
+-- 中で app.template_color_name（kaname_app に渡さない）を呼ぶので security definer（呼び手の権限で動く関数の本文が呼ぶ関数は kaname_app が実行できる・K-426）
 create or replace function app.template_change_label(p_part text, p_now jsonb, p_new jsonb) returns text
-language sql immutable set search_path = public, app, pg_temp as $$
+language sql immutable security definer set search_path = public, app, pg_temp as $$
   select coalesce(string_agg(x.t, '・' order by x.n), '中身を変える')
     from (
       select 1 as n, '名前を「' || coalesce(p_new->>'name', '') || '」に' as t

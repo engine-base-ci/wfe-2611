@@ -5,6 +5,7 @@
 //   1 社が読めない：404 は見つからない（E-PAGE-001）・ほかは E-PAGE-007 と「もう一度」。タブの口だけが落ちたらタブの中だけ。
 //   K-972：頭のボタン（中を見る・お知らせを送る・⋯ › 止める／再開する）・見ている間の帯・止めている帯・小窓をつなぐ（ws-dialogs.tsx）。
 //   小窓が受けた答え（止める・再開する）は今の 1 社に重ねて置く（タブの読む欄を消さない）
+import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -146,7 +147,7 @@ function WsTenantBody(props: {
         tab={tab}
         view={frameView(ws)}
         tabs={tabLabels(ws)}
-        onTab={(t) => router.push(`${pathname}${tabSearch(t)}`, { scroll: false })}
+        onTab={(t) => router.push(`${pathname}${tabSearch(t)}` as Route, { scroll: false })}
         info={infoView(ws)}
         acts={dlg.acts}
         stopBand={dlg.stopBand}

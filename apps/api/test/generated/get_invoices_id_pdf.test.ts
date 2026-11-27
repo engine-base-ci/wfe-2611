@@ -26,8 +26,8 @@ describe("GET /api/v1/invoices/:id/pdf", () => {
   });
   it("test_get_invoices_id_pdf_rejected_422", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-958」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-958");
+    // 本物の試験：apps/api/test/features/contract/k144.d/K-958.ts の「K144-API-958」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144.d/K-958.ts", "utf8")).toContain("K144-API-958");
   });
   it("test_get_invoices_id_pdf_conflict", () => {
     // UNWANTED: IF 請求書の PDF がまだできていないなら、Kaname は 409 と E-BILL-001 を返し、署名しない

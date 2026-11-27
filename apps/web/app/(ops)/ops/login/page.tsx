@@ -1,6 +1,7 @@
 "use client";
 // 運営のログイン（K-946・下絵 op-login）。「パスキーで入る」で部品の口（K-304・K-944）を通して入り、next（/ops の中の道だけ）か /ops に移る。
 //   入っている人を get-session で飛ばさない（押せば入り直す）。失敗と本人がやめたは同じ失敗の文（下絵の文）
+import type { Route } from "next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -27,7 +28,7 @@ function OpsLoginPage() {
     }
     qc.removeQueries({ queryKey: [OPS_QUERY_ROOT] }); // 前の印で読んだ外枠の答えを捨てる
     refreshSession();
-    router.replace(safeOpsNext(next));
+    router.replace(safeOpsNext(next) as Route);
   };
   return <OpsLogin failed={failed} busy={busy} onPasskey={() => void onPasskey()} />;
 }

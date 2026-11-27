@@ -5,7 +5,8 @@
 //   503（E-TALK-020）・down・切れた・読めない → onDown（画面は見に行く形に戻る）。end:reconnect はすぐつなぎ直す。end:unauthenticated → onSignedOut
 import { ENDPOINTS } from "@kaname/contracts";
 import { pathOf } from "@/lib/api/call";
-import { apiBase, getToken } from "@/lib/api/client";
+import { getToken } from "@/lib/api/client";
+import { openConversationStream } from "@/lib/conversation-stream";
 
 export interface TalkStreamHandlers {
   /** 会話を読み直す（取りこぼしを拾う・変わった） */
@@ -19,9 +20,9 @@ export interface TalkStreamHandlers {
 
 const STREAM = ENDPOINTS.find((e) => e.operationId === "streamConversation");
 
-function streamUrl(id: string): string {
+function streamPath(id: string): string {
   if (!STREAM) throw new Error("契約に無い口: streamConversation");
-  return `${apiBase()}${pathOf(STREAM.path, { id })}`;
+  return pathOf(STREAM.path, { id });
 }
 
 type Signal = "ready" | "change" | "down" | "end:reconnect" | "end:unauthenticated" | "other";
@@ -65,7 +66,7 @@ export function openTalkStream(id: string, h: TalkStreamHandlers): () => void {
     const headers: Record<string, string> = { accept: "text/event-stream" };
     const token = getToken();
     if (token) headers["authorization"] = `Bearer ${token}`;
-    const res = await fetch(streamUrl(id), { headers, signal: ctrl.signal });
+    const res = await openConversationStream(streamPath(id), headers, ctrl.signal);
     if (res.status === 401) return h.onSignedOut();
     if (!res.ok || !res.body) return h.onDown();
     const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
