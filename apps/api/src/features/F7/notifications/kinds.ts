@@ -64,6 +64,9 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "workspace.stop_scheduled": settingKind(null),
   // 運営のひな形（K-1010・D-156.56）：既定のまま使っている会社の管理者だけに、ひな形の新しい版が届いたことを知らせる。行き先は選ぶ頁（K-1016）
   "template.update": settingKind("/settings/template-updates"),
+  // 運営の請求（K-983・D-156.54）：期限を過ぎた・期限から 7 日の知らせ（管理者だけ・一覧を開いたときに追いついて出す）。文は画面の葉 K-960
+  "billing.overdue": settingKind("/billing"),
+  "billing.overdue_week": settingKind("/billing"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */

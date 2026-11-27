@@ -2954,6 +2954,14 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "overdue_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "overdue_week_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "pdf_ref": {
     "type": "text",
     "nullable": true
