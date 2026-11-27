@@ -223,7 +223,9 @@ describe("K-712 契約・道・コード・文書：記憶の口と旧い記憶�
     expect(b).toMatch(/bridge_job_browser/);
     // K-697 のナレッジの渡しは F9/knowledge/ai/context.ts の loadKnowledge（中で app.bridge_job_knowledge を呼ぶ）を通る（段10 の K-697 の今の形）
     expect(b).toMatch(/loadKnowledge/);
-    expect(read("apps", "api", "src", "features", "F9", "knowledge", "ai", "context.ts")).toMatch(/bridge_job_knowledge/);
+    expect(read("apps", "api", "src", "features", "F9", "knowledge", "ai", "context.ts")).toMatch(
+      /bridge_job_knowledge/,
+    );
     expect(b).toMatch(/knowledgeExtras/);
     expect(b).toMatch(/takeRemember/);
     expect(b).toMatch(/digest_of_job/);

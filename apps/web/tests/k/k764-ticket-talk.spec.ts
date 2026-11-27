@@ -462,5 +462,9 @@ test("K764-UI-018 下絵との突き合わせ：tk-talk-band-running・tk-talk-p
     }),
   });
   // 下絵 tk-talk-pc-none は任せる前（作業中・承認なし・実行なし）で PC がまだの帯。本番も同じ状態で比べる
-  await match(browser, "tk-talk-pc-none", { band: { stage: "doing", can_delegate: true, approval: null, run: null }, pc: "none", session: EMPTY_SESSION });
+  await match(browser, "tk-talk-pc-none", {
+    band: { stage: "doing", can_delegate: true, approval: null, run: null },
+    pc: "none",
+    session: EMPTY_SESSION,
+  });
 });

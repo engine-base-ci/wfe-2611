@@ -58,12 +58,7 @@ const complete = (p: Person, ticket: string): Promise<Complete> =>
   withTenant(
     h.pool,
     p.ctx,
-    async (cl) =>
-      (
-        await cl.query<{ v: Complete }>("select app.ticket_complete($1, true) as v", [
-          ticket,
-        ])
-      ).rows[0]!.v,
+    async (cl) => (await cl.query<{ v: Complete }>("select app.ticket_complete($1, true) as v", [ticket])).rows[0]!.v,
   );
 /** 段 5 の K-435 の関数：機械・AI がチェックを付ける（会社の文脈だけで動く）。段 6 が口にするまで試験の準備で直に呼ぶ */
 const aiCheckVia = (p: Person, spec: string): Promise<unknown> =>

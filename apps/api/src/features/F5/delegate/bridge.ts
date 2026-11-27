@@ -87,7 +87,6 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     return (await one<string | null>("select app.bridge_job_talk_kind($1, $2) as v", [sid, job.job_id])) ?? null;
   };
 
-
   /** その PC の会社を運営が止めたか（K-1012・D-156.23）：止めた会社の PC には新しい仕事を渡さず（実行待ちは残る）、動いている仕事は止める合図で止める */
   const tenantStopped = async (sid: string): Promise<boolean> =>
     (await one<boolean>("select app.bridge_tenant_stopped($1) as v", [sid])) === true;
