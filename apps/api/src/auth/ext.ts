@@ -10,6 +10,7 @@ import type { Auth } from "@kaname/auth";
 import { createDeviceResolver, createSessionResolver, type Resolved } from "@kaname/auth/resolver";
 import { mfaRequired, readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
+import { withTenant } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { ObjectStore } from "@kaname/storage";

@@ -27,7 +27,7 @@ describe("口の名前で呼ぶ（K-27）", () => {
   });
   it("問い合わせは空の値を落とす。書き込みは冪等キーと JSON の本文を付ける", async () => {
     vi.stubGlobal("fetch", reply(201, { data: { id: "c1" } }));
-    await call("listConversations", { query: { q: "", limit: 20 } });
+    await call("listConversations", { query: { cursor: "", limit: 20 } }); // q は K-757（D-153.16）で外したので、空の値は cursor で見る
     expect(seen[0]!.url).toMatch(/\/api\/v1\/conversations\?limit=20$/);
     await call("createConversation", { body: { title: "相談" } });
     const h = seen[1]!.init.headers as Record<string, string>;

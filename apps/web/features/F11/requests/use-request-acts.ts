@@ -7,8 +7,8 @@ import { useRef } from "react";
 import type {
   ClientRequestAcceptInput,
   ClientRequestDeclineInput,
-  ClientRequestsInput,
-  MessagesInput,
+  ClientRequestReplyInput,
+  ClientRequestRouteInput,
 } from "@kaname/contracts";
 import { CATALOG } from "@kaname/errors/catalog";
 import { errorText } from "@/components/k";
@@ -102,7 +102,7 @@ export function useRequestActs(id: string | undefined) {
     mutationFn: async (routeId: string) => {
       const r = await call("updateClientRequest", {
         params: { id: id! },
-        body: { route_id: routeId } as unknown as ClientRequestsInput,
+        body: { route_id: routeId } satisfies ClientRequestRouteInput,
         screenId: SCREEN,
       });
       if (!r.ok) throw new RequestCallError(r);
@@ -113,7 +113,7 @@ export function useRequestActs(id: string | undefined) {
     mutationFn: async (body: string) => {
       const r = await call("replyToClientRequest", {
         params: { id: id! },
-        body: { body } as unknown as MessagesInput,
+        body: { body } satisfies ClientRequestReplyInput,
         screenId: SCREEN,
       });
       if (!r.ok) throw new RequestCallError(r);

@@ -335,7 +335,11 @@ export function buildArgs(
   if (chrome) args.push("--chrome");
   // Kaname の道具（D-110）と Bridge 専用のブラウザ（D-119）を 1 本の設定で渡す。
   // --mcp-config は可変長なので、すぐ後ろに別の引数（--append-system-prompt 等）が来る位置に置く
-  const kaname = none ? null : kanameServer(tools, job.tool_token, job.kind ?? "chat", job.talk_kind, job.phase);
+  // 届いた依頼の案（client_request_draft・K-929）は道具なしで作る仕事なので、Kaname の道具のサーバーも渡さない
+  const kaname =
+    none || job.kind === "client_request_draft"
+      ? null
+      : kanameServer(tools, job.tool_token, job.kind ?? "chat", job.talk_kind, job.phase);
   const own = !none && job.browser === "dedicated" && dedicated ? dedicatedServer(dedicated) : null;
   args.push(...mcpArgs({ kaname, [DEDICATED_SERVER]: own }));
   // 会話の仕事にだけ Kaname の書き方を渡す（記憶のまとめなど会話の無い仕事は、渡した文の指示だけで動く）

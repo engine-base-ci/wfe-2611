@@ -141,7 +141,7 @@ async function setup(page: Page, o: { rows?: Row[]; none?: Row[] } = {}) {
       return route.fulfill({ status: own.status, contentType: "application/json", body: JSON.stringify(own.body) });
     c.rows = c.rows.map((r) =>
       r.id === id
-        ? { ...r, due_on: body["due_on"] as string, start_on: (body["start_on"] as string) ?? r["start_on"] }
+        ? { ...r, due_on: body["due_on"] as string, start_on: (body["start_on"] as string) ?? (r as { start_on?: string | null }).start_on }
         : r,
     );
     c.noDate = c.noDate.filter((r) => r.id !== id);

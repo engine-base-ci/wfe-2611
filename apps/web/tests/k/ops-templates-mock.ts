@@ -3,6 +3,7 @@
 //   答えの形は 11_tickets/K-992.md（OpsTemplateRow 8 欄）・K-1010.md（OpsOperation 6 欄）・K-993.md（KindTemplateUpdate 7 欄）。
 //   字・数は下絵（features/F12/ops2/views-skills.tsx の TEMPLATES・DIFFS と操作の箱）と同じになる値。固定の待ちは使わない
 import type { Page, Request, Route } from "@playwright/test";
+import type { KindTemplateUpdateIn } from "../../features/F12/ops2/template-update-shape";
 import { uid } from "./ops-answers";
 
 /** 下絵 oq-templates の 3 行 */
@@ -51,7 +52,8 @@ export const OPERATIONS_A = [
 ];
 /** 下絵 oq-template-update の届いた版（種別 v3 → v4・差 3 つ） */
 export const UPDATE_ID = uid(0x9961);
-export const UPDATES_A = [
+/** 届いた版の見本（K-993 の 7 欄の形・K-1016 の部品の入力と同じ型で持つ） */
+export const UPDATES_A: KindTemplateUpdateIn[] = [
   {
     id: UPDATE_ID,
     part: "kind",
