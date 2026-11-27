@@ -206,18 +206,18 @@ test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が 
   await mockApi(page, { role: "owner" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R1");
-  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"]);
+  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "届いた依頼", "ワークスペースの管理"]);
   await expect.poll(() => navLabels(page)).toEqual(want);
   const canvas = await canvasSigs(browser, "Main", ".kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))", 1440);
-  expect(canvas).toHaveLength(5);
+  expect(canvas).toHaveLength(6);
   expect(await svgSigs(page, ".k-nav > .k-nav-item:not(:has(.k-group-mark))")).toEqual(canvas);
 });
 
-test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（取引先が無い）", async ({ page }) => {
+test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（届いた依頼が無い）", async ({ page }) => {
   await mockApi(page, { role: "staff" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R3");
-  expect(want).not.toContain("取引先");
+  expect(want).not.toContain("届いた依頼");
   await expect.poll(() => navLabels(page)).toEqual(want);
 });
 
@@ -263,13 +263,13 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 作っていない項目（ナレッジ・ワークスペースの管理）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い", async ({
+test("K138-SH-006 作っていない項目（ナレッジ・届いた依頼・ワークスペースの管理）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
-  for (const name of ["ナレッジ", "ワークスペースの管理"]) {
+  for (const name of ["ナレッジ", "届いた依頼", "ワークスペースの管理"]) {
     // 押せるリンクは無く、読み上げには「使えないリンク」として届く（role=link・aria-disabled）
     await expect(nav.getByRole("link", { name: new RegExp(name), disabled: false }), name).toHaveCount(0);
     const item = nav.getByRole("link", { name: new RegExp(name), disabled: true });

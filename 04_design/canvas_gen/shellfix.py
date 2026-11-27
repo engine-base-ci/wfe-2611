@@ -6,7 +6,7 @@ IC = {
  "approvals": '<path d="M20 6 9 17l-5-5"></path>',
  "ai": '<path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path>',
  "knowledge": '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5a2.5 2.5 0 0 0 0 5H20"></path>',
- "clients": '<rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>',
+ "requests": '<rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>',
  "company": '<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path>',
  "panelL": '<rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path>',
  "panelR": '<rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M15 3v18"></path>',
@@ -27,6 +27,7 @@ def nav(sec):
       + item("Approvals.dc.html", "approvals", "承認待ち", sec == "approvals", badge)
       + item("Room.dc.html", "ai", "高本のAI", sec == "ai")
       + item("KnHome.dc.html", "knowledge", "ナレッジ", sec == "knowledge")
+      + item("CuRequests.dc.html", "requests", "届いた依頼", sec == "requests")
       + '  <div class="kn-lbl" style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px; display: flex">グループ<span style="margin-left: auto">★</span></div>\n'
       + grp("EG", "#186F69", "営業", 18, "Overview.dc.html") + grp("JD", "#6D4AA6", "受託開発", 42) + grp("KR", "#B45309", "経理", 9)
       + '  <div style="flex: 1"></div>\n'
@@ -183,7 +184,7 @@ def section(f):
     if f.startswith("Ws"): return "company"
     if f.startswith("Me"): return "none"
     if f.startswith("Kn"): return "knowledge"
-    if f.startswith("Cu"): return "clients"
+    if f.startswith("Cu"): return "requests"
     return "tickets"
 for path in sorted(glob.glob(P + "*.dc.html")):
     f = os.path.basename(path)

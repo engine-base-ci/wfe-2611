@@ -149,7 +149,13 @@
    "CpNew"
   ],
   "requests": [
-   "CuRequests"
+   "CuRequests",
+   "CuList",
+   "CuPage",
+   "CuShare",
+   "CuReview",
+   "EdClient",
+   "EdContact"
   ],
   "rules": [
    "RoomKnows",
