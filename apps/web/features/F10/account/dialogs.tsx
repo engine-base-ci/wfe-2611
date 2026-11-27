@@ -1,8 +1,10 @@
 "use client";
 // 自分の設定の小窓とメールの確かめの先（メールを変える・抜ける・端末を切る）。キャンバス EdLeaveWs と、無い物は仮。
 //   値を受け取って描くだけ。確かめの先は外枠の外の画面（F1 の verify-email と同じ入口の枠 AuthFrame・同じ部品）
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { CATALOG } from "@kaname/errors/catalog";
 import { Button, Callout, Confirm, Dialog, TextField } from "@/components/k";
+import { PAGE_ERROR } from "@/components/k/error-of";
 import { SettingNote } from "@/components/k/setting-parts";
 import { AuthFrame } from "@/features/F1/sign-up/frame";
 import "./account.css";
@@ -13,11 +15,43 @@ const noop = () => undefined;
 const MAIL_FORM = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const TAKEN = "sato@engine-base.example";
 
+/** 本番（K-840）が渡す値と操作。どれも任意で、渡さなければモックの見た目と動きのまま */
+export interface EmailDialogProps {
+  /** 最初に入っている字（モック） */
+  start?: string;
+  /** 打った字（渡すと親が持つ） */
+  value?: string;
+  onChange?: (text: string) => void;
+  /** 欄の下の誤り（形・使われている・同じ） */
+  error?: string;
+  /** 小窓の中の赤い箱（送りすぎ・送れなかった・調子が悪い） */
+  notice?: ReactNode;
+  /** 答えを待っている間（主ボタンが処理中・閉じない） */
+  busy?: boolean;
+  onSend?: () => void;
+  onCancel?: () => void;
+  /** 今のメール */
+  current?: string;
+}
+
 /** 打つと誤りが出る（形が違う・もう使われている）。start は最初に入っている字 */
-export function EmailDialog({ start = "" }: { start?: string }) {
-  const [text, setText] = useState(start);
-  const msg =
-    text === ""
+export function EmailDialog({
+  start = "",
+  value,
+  onChange,
+  error,
+  notice,
+  busy = false,
+  onSend,
+  onCancel,
+  current = "takamoto@engine-base.example",
+}: EmailDialogProps) {
+  const [own, setOwn] = useState(start);
+  const live = value !== undefined;
+  const text = live ? value : own;
+  const msg = live
+    ? error
+    : text === ""
       ? undefined
       : !MAIL_FORM.test(text)
         ? "メールの形が違います。「名前@会社.example」のように入れてください"
@@ -27,32 +61,40 @@ export function EmailDialog({ start = "" }: { start?: string }) {
   return (
     <Dialog
       open
-      onOpenChange={noop}
+      onOpenChange={(o) => {
+        if (!o && !busy) (onCancel ?? noop)();
+      }}
       title="メールを変える"
       subtitle="新しいアドレスに確かめのメールを送ります。リンクを押すまでは、今のメールのままです"
       actions={
         <>
-          <Button variant="outlined">やめる</Button>
-          <Button>本人確認して送る</Button>
+          <Button variant="outlined" onClick={onCancel} disabled={busy}>
+            やめる
+          </Button>
+          <Button onClick={onSend} loading={busy}>
+            本人確認して送る
+          </Button>
         </>
       }
     >
-      <TextField label="今のメール" name="cur" defaultValue="takamoto@engine-base.example" readOnly />
+      <TextField label="今のメール" name="cur" defaultValue={current} readOnly />
       <TextField
         label="新しいメール"
         name="next"
         type="email"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => (live ? onChange?.(e.target.value) : setOwn(e.target.value))}
         placeholder="new@engine-base.example"
         error={msg}
       />
+      {notice ? <Callout tone="danger">{notice}</Callout> : null}
     </Dialog>
   );
 }
 
 // ---------------------------------------------------------------- 確かめのリンクを押した先（外枠の外の画面）
-type Done = "changed" | "expired" | "used";
+//   unusable（使えない・印が無い）は K-840 が足した仮の形（下絵の 3 枚は変えない）。本文は正本 E-PAGE-006 の文
+type Done = "changed" | "expired" | "used" | "unusable";
 const DONE: Record<Done, { badge: string; tone: "ok" | "warn"; title: string; text: string; act: string }> = {
   changed: {
     badge: "✓",
@@ -75,9 +117,17 @@ const DONE: Record<Done, { badge: string; tone: "ok" | "warn"; title: string; te
     text: "メールはすでに変わっています。もう一度押す必要はありません",
     act: "自分の設定へ戻る",
   },
+  unusable: {
+    badge: "✕",
+    tone: "warn",
+    title: "このリンクは使えません",
+    text: CATALOG[PAGE_ERROR.linkExpired]?.message ?? "",
+    act: "自分の設定へ戻る",
+  },
 };
 
-export function EmailDoneCard({ kind }: { kind: Done }) {
+/** text は本文の差し替え（本番が口の文を出すとき・任意） */
+export function EmailDoneCard({ kind, text }: { kind: Done; text?: string }) {
   const d = DONE[kind];
   return (
     <AuthFrame foot="help">
@@ -85,7 +135,7 @@ export function EmailDoneCard({ kind }: { kind: Done }) {
         {d.badge}
       </span>
       <h1>{d.title}</h1>
-      <Callout tone={d.tone === "warn" ? "warn" : "info"}>{d.text}</Callout>
+      <Callout tone={d.tone === "warn" ? "warn" : "info"}>{text ?? d.text}</Callout>
       <a href="/account" className="k-btn" data-variant="primary" data-size="lg">
         {d.act}
       </a>

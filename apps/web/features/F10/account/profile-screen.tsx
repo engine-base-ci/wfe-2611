@@ -23,6 +23,7 @@ import {
   type MeWeek,
   type MeZone,
 } from "./me-shape";
+import { useEmailResend } from "./email-change";
 import { MeShell } from "./me-shell";
 import { ProfileBody } from "./profile";
 import { inertDialogs, useOpenDialog } from "./profile-dialogs";
@@ -204,6 +205,8 @@ export function ProfileScreen() {
   const face = useFaceSave(replaceMe);
   const dialog = useOpenDialog(me, { replace: replaceMe, reload: reloadMe });
   const inert = inertDialogs();
+  // 確かめ待ちの［送り直す］と、口の無い［やめる］（押せない形）（K-840）
+  const resend = useEmailResend(me);
 
   let body;
   if (q.isError) body = <ReadFailed err={q.error.err} retry={() => void q.refetch()} />;
@@ -220,6 +223,8 @@ export function ProfileScreen() {
         onFile={face.onFile}
         onResetFace={face.onReset}
         onEmail={() => dialog.open("email")}
+        onResend={resend.onResend}
+        resendNotice={resend.notice}
         onLeave={(id) =>
           dialog.open(
             "leave",
@@ -232,7 +237,7 @@ export function ProfileScreen() {
         {...(text.fieldErr.name ? { nameError: text.fieldErr.name } : {})}
         {...(text.fieldErr.call_name ? { nickError: text.fieldErr.call_name } : {})}
         {...(text.savedAt ? { savedAt: text.savedAt } : {})}
-        inertButtons={inert}
+        inertButtons={[...inert, "cancelEmail"]}
         workspaces={toWsRows(me.workspaces)}
         theme={look.view.theme}
         week={look.view.week}
@@ -244,6 +249,7 @@ export function ProfileScreen() {
       <LeaveNotice />
       {body}
       {dialog.node}
+      {resend.node}
     </MeShell>
   );
 }

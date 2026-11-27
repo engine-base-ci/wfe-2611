@@ -2,6 +2,7 @@
 // 自分の設定の小窓の登録口（K-839）。K-840 がメールを変える小窓、K-841 がワークスペースから抜ける小窓を足す。
 //   登録の無い操作（「変える」「抜ける」）は押せない形（aria-disabled・title「まだ使えません」）で出す。試験は登録の行を字で読む
 import { useState, type ComponentType, type ReactNode } from "react";
+import { EmailChange } from "./email-change";
 import { LeaveWorkspace } from "./leave-workspace";
 import type { MeAnswer, MeWorkspace } from "./me-shape";
 
@@ -19,6 +20,7 @@ export interface ProfileDialogProps {
 
 export const PROFILE_DIALOGS: Partial<Record<ProfileDialogKey, ComponentType<ProfileDialogProps>>> = {
   // K-840 が email、K-841 が leave を 2 字下げの キー: 部品, の形で 1 行ずつ足す
+  email: EmailChange,
   leave: LeaveWorkspace,
 };
 
