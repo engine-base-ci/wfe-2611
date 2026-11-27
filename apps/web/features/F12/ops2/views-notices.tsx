@@ -1,10 +1,13 @@
 "use client";
 // 運営のお知らせ：一覧・作る・1 件（障害の続報）・出す確かめ（段 13・領域 ops2・キャンバス OpNotices・OpNoticeNew・OpNotice）。値を受け取って描くだけ
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import {
   Band,
   Button,
+  Callout,
   Confirm,
+  Empty,
   PageBody,
   PageHeader,
   Select,
@@ -20,7 +23,9 @@ import { RespTable, type RespColumn } from "@/features/F12/shared/resp-table";
 import "../shared/choice.css";
 import { NoticeWriteView, type NoticeWriteProps } from "./notice-write-view";
 
-interface NoticeRow {
+export interface NoticeRow {
+  /** 1 件の行き先に使う（下絵の行には無い） */
+  id?: string;
   kind: string;
   title: string;
   to: string;
@@ -70,15 +75,17 @@ const ROWS: readonly NoticeRow[] = [
     by: "佐野",
   },
 ];
-const COLS: RespColumn<NoticeRow>[] = [
+const MOCK_ONE = "/dev/mock/f12-ops2/oq-notice";
+const MOCK_NEW = "/dev/mock/f12-ops2/oq-notice-new";
+const colsOf = (rowHref: (r: NoticeRow) => string): RespColumn<NoticeRow>[] => [
   { key: "kind", header: "種類", cell: (r) => <StatusBadge tone="neutral">{r.kind}</StatusBadge> },
   {
     key: "title",
     header: "題",
     cell: (r) => (
-      <a className="k-link" href="/dev/mock/f12-ops2/oq-notice">
+      <Link className="k-link" href={rowHref(r)}>
         {r.title}
-      </a>
+      </Link>
     ),
   },
   { key: "to", header: "誰に", cell: (r) => r.to },
@@ -86,8 +93,39 @@ const COLS: RespColumn<NoticeRow>[] = [
   { key: "by", header: "出した人", cell: (r) => r.by },
 ];
 
+/** 絞り込みの札 1 つ（押した印と押したときの関数） */
+export interface NoticeChipItem {
+  label: string;
+  on: boolean;
+  onClick: () => void;
+}
+
+export interface NoticesPageProps {
+  /** 一覧の行（渡さなければ下絵の 5 行） */
+  rows?: readonly NoticeRow[];
+  /** 絞り込みの札（渡さなければ下絵の「すべて」を押した形） */
+  chips?: readonly NoticeChipItem[];
+  /** 題の行き先 */
+  rowHref?: (r: NoticeRow) => string;
+  /** ［お知らせを書く］の行き先 */
+  writeHref?: string;
+  /** 行が 0 のときの字（渡したときだけ表の代わりに出す） */
+  empty?: string;
+}
+
+const CHIP_LABELS = ["すべて", "障害", "メンテ", "リリース", "下書き"] as const;
+
 /** お知らせの一覧：出した・予定・障害の状態・下書き */
-export function NoticesPage() {
+export function NoticesPage({
+  rows = ROWS,
+  chips,
+  rowHref = () => MOCK_ONE,
+  writeHref = MOCK_NEW,
+  empty,
+}: NoticesPageProps = {}) {
+  const chipItems: readonly NoticeChipItem[] =
+    chips ?? CHIP_LABELS.map((label, i) => ({ label, on: i === 0, onClick: () => undefined }));
+  const isEmpty = empty !== undefined && rows.length === 0;
   return (
     <PageBody labelledBy="oq-notices-title">
       <PageHeader
@@ -95,21 +133,30 @@ export function NoticesPage() {
         title="お知らせ"
         sub="全部のワークスペースか、選んだワークスペースに出す"
         actions={
-          <a className="k-btn" data-variant="primary" data-size="md" href="/dev/mock/f12-ops2/oq-notice-new">
+          <Link className="k-btn" data-variant="primary" data-size="md" href={writeHref}>
             <Plus size={14} aria-hidden="true" />
             お知らせを書く
-          </a>
+          </Link>
         }
       />
       <div className="k-op-body">
         <div className="k-op-chips" role="group" aria-label="種類">
-          {["すべて", "障害", "メンテ", "リリース", "下書き"].map((k, i) => (
-            <Chip key={k} on={i === 0}>
-              {k}
+          {chipItems.map((c) => (
+            <Chip key={c.label} on={c.on} {...(chips ? { onClick: c.onClick } : {})}>
+              {c.label}
             </Chip>
           ))}
         </div>
-        <RespTable caption="お知らせの一覧" columns={COLS} rows={[...ROWS]} rowKey={(r) => r.title} />
+        {isEmpty ? (
+          <Empty title={empty} />
+        ) : (
+          <RespTable
+            caption="お知らせの一覧"
+            columns={colsOf(rowHref)}
+            rows={[...rows]}
+            rowKey={(r) => r.id ?? r.title}
+          />
+        )}
         <Note>
           顧客には「困ったとき・お知らせ」の一覧に出る。障害とメンテは上の帯にも出て、メンテ中はメンテナンス中の画面になる。メールは、使えなくなるメンテのときだけ各ワークスペースの管理者に届く
         </Note>
@@ -274,79 +321,215 @@ export function NoticeNewPage({ edit = false, ...live }: NoticeNewPageProps) {
 }
 
 const STEPS = ["調べている", "原因が分かった", "様子を見ている", "直った"] as const;
+const STEP_OPTIONS = [
+  { value: "cause", label: "原因が分かった" },
+  { value: "watch", label: "様子を見ている" },
+  { value: "fixed", label: "直った" },
+] as const;
+const DEFAULT_STEP = "様子を見ている";
 
-/** 1 件（障害）：状態 4 つ・続報を足す・影響する部分・出している場所 */
-export function NoticePage() {
+/** 1 件の値（渡さなければ下絵の障害の 1 件） */
+export interface NoticeDetailView {
+  title: string;
+  sub: string;
+  /** 障害の状態の段（障害でなければ null：段・状態を足す・直ったにする を出さない） */
+  steps: { labels: readonly string[]; current: number } | null;
+  /** これまで（新しい順） */
+  feed: readonly { at: string; text: string; detail: string }[];
+  /** 本文（障害でない 1 件だけ出す） */
+  body: string;
+  /** 影響の 1 行（無ければ null） */
+  impact: string | null;
+  /** 出している場所のカードの字 */
+  place: { maint: string | null; where: string };
+}
+
+/** 書いた続報の失敗の赤い箱の字 */
+export interface NoticeErrorView {
+  title: string;
+  body: string;
+}
+
+export interface NoticePageProps {
+  detail?: NoticeDetailView;
+  /** 選んだ状態の字（原因が分かった・様子を見ている・直った） */
+  step?: string;
+  onStep?: (label: string) => void;
+  /** 書いている続報 */
+  body?: string;
+  onBody?: (v: string) => void;
+  onAdd?: () => void;
+  onResolve?: () => void;
+  /** 直った後：［足して出す］［直ったにする］を押せない形にする（隠さない） */
+  locked?: boolean;
+  /** 送っている間（2 回目を送らない） */
+  busy?: boolean;
+  error?: NoticeErrorView | null;
+  /** ［書き直す］の行き先 */
+  editHref?: string;
+}
+
+const MOCK_DETAIL: NoticeDetailView = {
+  title: "分身の実行が遅れています",
+  sub: "障害 ・ 全部のワークスペース ・ 11/02 09:40〜",
+  steps: { labels: STEPS, current: 1 },
+  feed: [
+    {
+      at: "11/02 10:20",
+      text: "原因が分かった",
+      detail: "送る順番の仕組みが詰まっていました。入れ替えています。データは消えていません。",
+    },
+    {
+      at: "11/02 09:40",
+      text: "調べている",
+      detail: "分身の実行が始まるまでに時間がかかっています。調べています。",
+    },
+  ],
+  body: "",
+  impact: "分身の実行が始まるまでに時間がかかっています。画面と PC とのつながりはふつうに使えます",
+  place: { maint: null, where: "お知らせの一覧 ・ 上の帯" },
+};
+const MOCK_BODY = "送る順番の仕組みを入れ替えました。遅れていた実行は順に動いています。様子を見ています。";
+
+/** 押せない形（aria-disabled・押しても何もしない）か、押せる形の主ボタン */
+function ActButton({
+  children,
+  variant,
+  off,
+  busy,
+  onPress,
+}: {
+  children: string;
+  variant?: "outlined";
+  off: boolean;
+  busy: boolean;
+  onPress?: (() => void) | undefined;
+}) {
+  return (
+    <Button
+      {...(variant ? { variant } : {})}
+      loading={busy && !off}
+      aria-disabled={off || undefined}
+      onClick={off || busy ? undefined : onPress}
+    >
+      {children}
+    </Button>
+  );
+}
+
+/** 1 件：障害は 状態 4 つ・続報を足す・これまで・影響する部分／障害でなければ 本文と出している場所 */
+export function NoticePage({
+  detail = MOCK_DETAIL,
+  step,
+  onStep,
+  body,
+  onBody,
+  onAdd,
+  onResolve,
+  locked = false,
+  busy = false,
+  error = null,
+  editHref,
+}: NoticePageProps = {}) {
+  const live = onAdd !== undefined;
+  const steps = detail.steps;
+  const stepValue = STEP_OPTIONS.find((o) => o.label === (step ?? DEFAULT_STEP))?.value ?? "watch";
+  const emptyBody = live && (body ?? "").trim() === "";
+  const edit = editHref ? (
+    <Link className="k-btn" data-variant="outlined" data-size="md" href={editHref}>
+      書き直す
+    </Link>
+  ) : (
+    <Button variant="outlined">書き直す</Button>
+  );
   return (
     <PageBody labelledBy="oq-notice-title">
       <PageHeader
         id="oq-notice-title"
-        title="分身の実行が遅れています"
-        sub="障害 ・ 全部のワークスペース ・ 11/02 09:40〜"
+        title={detail.title}
+        sub={detail.sub}
         actions={
           <>
-            <Button variant="outlined">書き直す</Button>
-            <Button>直ったにする</Button>
+            {edit}
+            {steps ? (
+              <ActButton off={locked} busy={busy} onPress={onResolve}>
+                直ったにする
+              </ActButton>
+            ) : null}
           </>
         }
       />
       <div className="k-op-body">
-        <ol className="k-oq-steps" aria-label="状態">
-          {STEPS.map((s, i) => (
-            <li key={s} {...(i === 1 ? { "aria-current": "step" as const } : {})}>
-              {i + 1} {s}
-            </li>
-          ))}
-        </ol>
-        <Card title="状態を足す">
-          <div className="k-op-form">
-            <Select
-              label="状態"
-              name="step"
-              defaultValue="watch"
-              options={[
-                { value: "cause", label: "原因が分かった" },
-                { value: "watch", label: "様子を見ている" },
-                { value: "fixed", label: "直った" },
-              ]}
-            />
-            <TextArea
-              label="続報"
-              name="body"
-              rows={3}
-              readOnly
-              defaultValue="送る順番の仕組みを入れ替えました。遅れていた実行は順に動いています。様子を見ています。"
-            />
-            <div className="k-oq-end">
-              <Button>足して出す</Button>
-            </div>
-          </div>
-        </Card>
-        <Card title="これまで">
-          <Feed
-            label="続報の記録"
-            items={[
-              {
-                at: "11/02 10:20",
-                text: "原因が分かった",
-                detail: "送る順番の仕組みが詰まっていました。入れ替えています。データは消えていません。",
-              },
-              {
-                at: "11/02 09:40",
-                text: "調べている",
-                detail: "分身の実行が始まるまでに時間がかかっています。調べています。",
-              },
-            ]}
-          />
-        </Card>
-        <Card title="影響する部分">
-          <Facts
-            rows={[
-              ["影響", "分身の実行が始まるまでに時間がかかっています。画面と PC とのつながりはふつうに使えます"],
-              ["出している場所", "お知らせの一覧 ・ 上の帯"],
-            ]}
-          />
-        </Card>
+        {steps ? (
+          <>
+            <ol className="k-oq-steps" aria-label="状態">
+              {steps.labels.map((s, i) => (
+                <li key={s} {...(i === steps.current ? { "aria-current": "step" as const } : {})}>
+                  {i + 1} {s}
+                </li>
+              ))}
+            </ol>
+            <Card title="状態を足す">
+              <div className="k-op-form">
+                <Select
+                  label="状態"
+                  name="step"
+                  {...(live
+                    ? {
+                        value: stepValue,
+                        onValueChange: (v: string | null) =>
+                          onStep?.(STEP_OPTIONS.find((o) => o.value === v)?.label ?? DEFAULT_STEP),
+                      }
+                    : { defaultValue: "watch" })}
+                  options={[...STEP_OPTIONS]}
+                />
+                {live ? (
+                  <TextArea
+                    label="続報"
+                    name="body"
+                    rows={3}
+                    value={body ?? ""}
+                    onChange={(e) => onBody?.(e.currentTarget.value)}
+                  />
+                ) : (
+                  <TextArea label="続報" name="body" rows={3} readOnly defaultValue={MOCK_BODY} />
+                )}
+                {error ? (
+                  <Callout tone="danger" title={error.title}>
+                    {error.body}
+                  </Callout>
+                ) : null}
+                <div className="k-oq-end">
+                  <ActButton off={locked || emptyBody} busy={busy} onPress={onAdd}>
+                    足して出す
+                  </ActButton>
+                </div>
+              </div>
+            </Card>
+            <Card title="これまで">
+              <Feed label="続報の記録" items={detail.feed} />
+            </Card>
+            <Card title="影響する部分">
+              <Facts
+                rows={[
+                  ...(detail.impact ? [["影響", detail.impact] as const] : []),
+                  ["出している場所", detail.place.where],
+                ]}
+              />
+            </Card>
+          </>
+        ) : (
+          <>
+            <Card title="本文">
+              <p className="k-op-note-text">{detail.body}</p>
+              {detail.impact ? <Facts rows={[["影響", detail.impact]]} /> : null}
+            </Card>
+            {detail.place.maint ? <p className="k-op-note-text">{detail.place.maint}</p> : null}
+            <Card title="出している場所">
+              <Facts rows={[["出している場所", detail.place.where]]} />
+            </Card>
+          </>
+        )}
       </div>
     </PageBody>
   );
