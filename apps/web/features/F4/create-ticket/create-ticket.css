@@ -27,7 +27,8 @@
   overflow: hidden;
 }
 /* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
-.k-create-how > :is(span, button) {
+.k-create-how > span,
+.k-create-how > button {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -41,7 +42,8 @@
   background: var(--k-card);
   color: var(--k-on-surface-variant);
 }
-.k-create-how > :is(span, button)[aria-current="true"] {
+.k-create-how > span[aria-current="true"],
+.k-create-how > button[aria-current="true"] {
   flex: none;
   background: var(--k-primary);
   color: var(--k-on-primary);

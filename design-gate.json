@@ -118,25 +118,12 @@
       "shape": ".k-create-how"
     },
     "create-body": ".k-create-body",
-    "create-cards": ".k-create-cards",
-    "create-card": ".k-create-card",
-    "create-card-title": ".k-create-card > h2",
-    "create-pick": {
-      "selector": ".k-create-pick > .k-field",
-      "shape": ".k-create-pick"
-    },
-    "create-title": ".k-create-title .k-input",
     "create-assign": ".k-create-assign",
     "create-options": ".k-create-options",
     "create-drop": ".k-create-drop",
     "create-chip": ".k-create-chip",
     "create-target": ".k-create-chip > button",
-    "create-aside-box": ".k-create-aside > section",
-    "create-foot": ".k-create-foot",
-    "create-foot-button": ".k-create-foot .k-btn",
-    "create-foot-primary": ".k-create-foot .k-btn[data-variant=\"primary\"]",
     "create-assign-row": ".k-create-assign-row",
-    "create-checks": ".k-create-checks",
     "approvals-body": ".k-ap-body",
     "approvals-card": ".k-ap-card",
     "approvals-tools": ".k-ap-tools",
@@ -277,10 +264,6 @@
     "artifact-meta": ".k-artifact-meta",
     "artifact-acts": ".k-artifact-acts",
     "artifact-button": ".k-artifact-acts .k-artifact-btn",
-    "section-title-form": ".k-create-doc h2",
-    "create-doc-add": ".k-create-doc-add",
-    "create-spec": ".k-create-spec-box",
-    "create-spec-acts": ".k-create-spec-acts",
     "dialog-connect": ".k-dialog[data-size=\"connect\"]",
     "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
     "dialog-sub": ".k-dialog-sub",
@@ -308,7 +291,6 @@
     "pc-fix": ".k-pc-fix",
     "f4d-sample-ink": ".k-f4d-sample-ink",
     "f4d-sample-mark": ".k-f4d-sample-mark",
-    "f9s-pill": ".k-f9s-pill",
     "pc-more": ".k-pc-more",
     "pc-usage": ".k-pc-card.k-pc-usage",
     "pc-bar": ".k-pc-bar",
@@ -672,6 +654,14 @@
     {
       "part": "notice-sheet-back",
       "reason": "段 8 の下絵の値だけの部品（K-460）。スマホのお知らせの頁の「戻る」の大きさ。features/F7/notice/notice.css の .k-f7-notice-sheet-back が読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-pick",
+      "reason": "作る画面の部品（K-225）の規則は K-442 が create-ticket.css から消した（下絵 v2 の並びは doc.css）。値（幅 160・間 10）は features/F4/links/links.css が var(--k-c-create-pick-width) で読むだけで、部品の規則としては比べない（PM の決め 2026-11-28）"
+    },
+    {
+      "part": "f9s-pill",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。札の行の高さ 1.8 を .k-f9s-pill が var(--k-c-f9s-pill-lh) で読む。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（比べた値 0 個のまま緑にしない・K218-DS-025）"
     }
   ],
   "max_type_sizes": 10,
@@ -680,8 +670,14 @@
     "token_css": ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"],
     "token_prefix": "--k-",
     "allow": [
-      { "value": "0", "reason": "零は長さを持たない（どの単位でも同じ）" },
-      { "value": "100%", "reason": "親いっぱいはトークンにしない（大きさの決まりではなく親に合わせる指定）" }
+      {
+        "value": "0",
+        "reason": "零は長さを持たない（どの単位でも同じ）"
+      },
+      {
+        "value": "100%",
+        "reason": "親いっぱいはトークンにしない（大きさの決まりではなく親に合わせる指定）"
+      }
     ],
     "ledger": "scripts/ci/raw_length_ledger.json"
   }

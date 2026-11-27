@@ -218,7 +218,7 @@ export const runView = (b: Band) =>
         by: { display_name: "山田" },
         pc: b.run["pc"] ?? "live",
         silent: false,
-        progress: null,
+        progress: b.run["progress"] ?? null, // 作っている間の 1 行（K-62 の MakeLines・渡さなければ無し）
         stopped_reason: b.run["stopped_reason"] ?? null,
         started_at: new Date().toISOString(),
         finished_at: null,

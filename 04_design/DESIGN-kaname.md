@@ -728,8 +728,8 @@ components:
   artifact-meta:        # 名前の下の 12px の灰の行（成果物の版 N）
     typography: "{typography.body-sm}"
     textColor: "{colors.on-surface-variant}"
-  artifact-acts:        # 大きく見る・データを見る…の並び（名前の 8px 下・間 6px）
-    gap: "6px"
+  artifact-acts:        # 大きく見る・データを見る…の並び（名前の 8px 下・間 spacing.sm。6px は折り返すと押し物どうしがくっつくので K-730 が 8 にした）
+    gap: "{spacing.sm}"
     margin: "8px 0 0"
   artifact-button:      # 成果物のボタン（高さ 30・余白 0 10px・12px）
     height: "30px"
@@ -751,19 +751,8 @@ components:
   create-body:          # 本文の器（帯の下。左右 spacing.lg・下は足元の帯の分 spacing.2xl）
     padding: "{spacing.md} {spacing.lg} {spacing.2xl}"
     gap: "{spacing.md}"
-  create-cards:         # 白い箱の縦の並び（箱と箱の間）
-    gap: "12px"
   create-cards-basis:   # 白い箱の並びが右の列と横に並ぶときの基準の幅（flex-basis）
     width: "640px"
-  create-card:          # 白い箱（グループ・種別・題名／本文／振り分け）
-    backgroundColor: "{colors.card}"
-    border: "1px solid {colors.line}"
-    rounded: "{rounded.field}"
-    padding: "{spacing.md}"
-    gap: "12px"
-  create-card-title:    # 箱の見出し（振り分け）
-    typography: "{typography.body-md}"
-    fontWeight: 700
   create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）。間はキャンバスの 10（K-225 で 8 から直した）
     width: "160px"
     gap: "10px"
@@ -771,10 +760,6 @@ components:
     lineHeight: 1.6
   create-number:        # 選ぶ欄の行の右の「番号は作ったときに付く」（キャンバスの下 8・左は寄せる）。幅 767 以下で行が割れたときの高さに効く（K-225）
     margin: "0 0 8px auto"
-  create-title:         # 題名の欄（キャンバスは高さ 40・15px・500。入口の欄 input-lg の 42 とは別）
-    height: "40px"
-    typography: "{typography.h3}"
-    fontWeight: 500
   create-assign:        # 振り分けの格子（2 列の間 spacing.lg・行の間は 0）
     gap: "0 {spacing.lg}"
   create-assign-row:    # 振り分けの 1 行（上下 spacing.sm と下の線）
@@ -807,22 +792,6 @@ components:
     gap: "12px"
   create-aside-max:     # 右の列が広がっても超えない幅（340）
     width: "340px"
-  create-aside-box:     # 右の列の白い箱
-    backgroundColor: "{colors.card}"
-    border: "1px solid {colors.line}"
-    rounded: "{rounded.field}"
-    padding: "12px 14px"
-  create-checks:        # 作る前にの行の間
-    gap: "6px"
-  create-foot:          # 足元の帯（画面の下に貼り付く）
-    backgroundColor: "{colors.card}"
-    borderTop: "1px solid {colors.line}"
-    padding: "10px {spacing.lg}"
-  create-foot-button:   # 足元の帯のボタンの高さ（キャンバス 34）
-    height: "34px"
-  create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
-    border: "1px solid {colors.primary}"
-    padding: "0 18px"
   # 承認待ち（K-231・D-143.2：値はキャンバス Approvals・ApEmpty の実測）
   approvals-body:       # 本文の箱（帯の下。カードか空の箱を包む）
     padding: "{spacing.md} {spacing.lg}"
@@ -915,27 +884,9 @@ components:
   create-doc:           # 本文の箱の中の文書（道具の帯の下）。幅 900 は CSS の max-width で持つ
     padding: "8px 28px 24px"
     width: "900px"
-  # 作る画面の区画の見出し（16px・700・下に線）。2 つめから上 22
-  section-title-form:
-    typography: "{typography.section-title}"
-    lineHeight: 1.6
-    borderBottom: "1px solid {colors.line}"
-    margin: "22px 0 6px"
-    padding: "0 0 6px"
   # 作る画面の最初の区画の見出し（上 20）
   section-title-form-first:
     margin: "20px 0 6px"
-  create-doc-add:       # 文書の下の「＋ 見出しを足す…」（点線の上の線・まだ使えない）
-    borderTop: "1px dashed {colors.line}"
-    margin: "18px 0 0"
-    padding: "10px 0 0"
-  create-spec:          # 本文の箱の「テスト仕様」の箱（線・角丸 8）
-    border: "1px solid {colors.line}"
-    rounded: "{rounded.field}"
-  create-spec-acts:     # テスト仕様の箱の下の行（＋ 項目を足す・抜けを点検する）
-    backgroundColor: "{colors.table-head}"
-    padding: "7px 10px"
-    gap: "12px"
   # PC と使った量・PC をつなぐ（K-230・D-143.2：値はキャンバス EdPC・MePC・MePCInstalled の実測。小窓の置き場・影・余白は dialog の型のまま）
   dialog-connect:       # PC をつなぐの小窓の幅（EdPC 580）
     width: "580px"
