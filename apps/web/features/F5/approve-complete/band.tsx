@@ -37,7 +37,6 @@ import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
 import { docOf, useComplete } from "./use-complete";
 import { SweepFailedBand } from "./sweep-failed";
-import { docOf, useComplete } from "./use-complete";
 
 export type { BandApproval } from "./decide";
 export const BAND_LABEL = "承認と実行";
