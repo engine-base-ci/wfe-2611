@@ -1,6 +1,7 @@
 "use client";
 // 請求書・請求先・プランを変える・値段が変わる知らせ（段 13・領域 user・下絵）。値を受け取って描くだけ（口は呼ばない・欄は読むだけ）。
 //   キャンバス WsBills・EdPlan・WsPriceChange を写す。値段は仮（無料 ¥0・チーム ¥15,000・ビジネス ¥40,000）。カード払いは後のフェーズ（押せない形で出す）。
+import type { Route } from "next";
 import {
   Badge,
   Button,
@@ -395,7 +396,7 @@ export function PlanBlocked({ plan, limit, members, onCancel, membersHref }: Pla
       subtitle={`${plan} は ${limit} 人まで`}
       actions={
         <>
-          <Button variant="outlined" {...(membersHref ? { onClick: () => router.push(membersHref) } : {})}>
+          <Button variant="outlined" {...(membersHref ? { onClick: () => router.push(membersHref as Route) } : {})}>
             メンバーを見る
           </Button>
           <Button variant="primary" disabled aria-disabled="true">

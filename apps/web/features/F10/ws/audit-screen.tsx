@@ -5,6 +5,7 @@
 //   閲覧のみ（R4）は口を呼ばずに「この画面を見る権限がありません」。R3 は口を呼び、403 か scope で決まる。続きの 403 も同じ画面に替える
 //   絞りは URL が状態（?kind・q・member・ticket）。札は push（戻るで 1 つ前の絞り）・ことばと 1 人の絞りを外すのは replace。
 //   書き出し・消す・直すは作らない（D-154.4・D-154.25）。消した行の「戻す」は押せない形（D-145.9）
+import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, type ReactNode } from "react";
@@ -61,7 +62,7 @@ function Denied() {
 function useNavigate(): (next: AuditFilters, how: "push" | "replace") => void {
   const router = useRouter();
   const path = usePathname();
-  return (next, how) => router[how](`${path}${searchOf(next)}`, { scroll: false });
+  return (next, how) => router[how](`${path}${searchOf(next)}` as Route, { scroll: false });
 }
 
 export function AuditScreen() {

@@ -3,6 +3,7 @@
 //   形は自分の読み（getMe の workspaces[i]）から決める：最後の管理者が先 → 担当が残っている → 抜けられる。開くだけでは口を呼ばない。
 //   抜ける：leaveWorkspace 1 回（処理中は押せない）。403 取り直し → StepUp → 1 回だけやり直す。409 は読み直して形を替える。
 //   今いる会社を抜けたら入り直しへ。渡しにいく・決めにいく：今の会社はそのまま移る・別の会社は switchWorkspace の後に開き直す
+import type { Route } from "next";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StepUp } from "@/features/F1/security/step-up";
@@ -85,7 +86,7 @@ export function LeaveWorkspace({ me, workspace, onClose, reload }: ProfileDialog
   const goTo = async (path: string): Promise<void> => {
     if (sending.current) return;
     if (w.current) {
-      router.push(path);
+      router.push(path as Route);
       return;
     }
     sending.current = true;
