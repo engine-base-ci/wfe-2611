@@ -4,9 +4,11 @@
 //   K819-UI-018 が登録の有無を字で読む（行の頭が 2 字下げの「キー:」）ので、DO_DIALOGS の中はこの形を守る
 //   K-821：止める・戻す（SuspendBox・ResumeBox）。確かめ → 口（use-member-state.ts）→ 成功で詳細とメンバーの並びを読み直して知らせ・失敗は上の赤い箱
 //   K-822：外す（RemoveBox）。下見 → 小窓か上の赤い箱 → 外す（use-member-remove.ts）→ 知らせて /members へ
-import { useQueryClient } from "@tanstack/react-query";
+//   K-820：グループを移す（MoveDialogBox）・兼ねるグループを足す外す（AlsoDialogBox）。口と取り直しと失敗の出し分けは use-member-groups.ts。
+//   成功は答えの groups で詳細の区画を差し替え（setQueryData）、並びの鍵に読み直しの印を付ける。もう居ないは閉じてから詳細を読み直す
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, type ComponentType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
 import { Callout, PAGE_ERROR, errorCodeOf, useNotify } from "@/components/k";
 import type { CallErr } from "@/lib/api/call";
@@ -14,8 +16,10 @@ import { StepUp } from "@/features/F1/security/step-up";
 import { MEMBERS_KEY } from "@/features/F10/invite/use-members";
 import { RemoveDialog } from "./dialog-remove";
 import { ResumeConfirm, SuspendConfirm } from "./dialogs-confirm";
+import { AlsoDialog, MoveDialog } from "./dialogs-group";
 import type { MemberAnswer } from "./member-shape";
-import { reloadMember } from "./use-member";
+import { memberKey, reloadMember } from "./use-member";
+import { useMemberGroups, type MemberGroupRef } from "./use-member-groups";
 import { useMemberRemove, type PageNotice } from "./use-member-remove";
 import { useMemberState, type StateKind, type StateResult } from "./use-member-state";
 import type { Action } from "./views";
@@ -33,6 +37,8 @@ export interface DoDialogProps {
 
 export const DO_DIALOGS: Partial<Record<Action, ComponentType<DoDialogProps>>> = {
   // K-820 が move・also、K-821 が suspend・resume、K-822 が remove を「2 字下げの キー: 部品,」の 1 行で足す
+  move: MoveDialogBox,
+  also: AlsoDialogBox,
   suspend: SuspendBox,
   resume: ResumeBox,
   remove: RemoveBox,
@@ -62,6 +68,166 @@ export function useDoParam(open: (a: Action) => void): void {
     const q = rest.toString();
     router.replace(q ? `${path}?${q}` : path, { scroll: false });
   }, [sp, router, path, open]);
+}
+
+const primaryOf = (groups: readonly MemberGroupRef[]) => groups.find((g) => g.primary);
+
+/** 開いた直後に選びと失敗を初めに戻す（開き直すと書きかけは残らない） */
+function useOnOpen(open: boolean, fn: () => void) {
+  const was = useRef(false);
+  const latest = useRef(fn);
+  useEffect(() => {
+    latest.current = fn;
+  });
+  useEffect(() => {
+    if (open && !was.current) latest.current();
+    was.current = open;
+  }, [open]);
+}
+
+/** 書けた：答えの groups で詳細の区画を差し替え、詳細と並びの鍵には印だけ付ける（読み直すと差し替えた区画が前の答えに戻る） */
+const groupsSetter = (qc: QueryClient, id: string) => (groups: MemberGroupRef[]) => {
+  qc.setQueryData<MemberAnswer>(memberKey(id), (old) =>
+    old
+      ? { ...old, groups: groups.map((g) => ({ id: g.id, name: g.name, primary: g.primary, role: g.role ?? null })) }
+      : old,
+  );
+  void qc.invalidateQueries({ queryKey: memberKey(id), refetchType: "none" });
+  void qc.invalidateQueries({ queryKey: MEMBERS_KEY, refetchType: "none" });
+};
+
+/** もう居ない：小窓を閉じてから詳細を読み直す（→ 見つかりません） */
+const goneOf = (qc: QueryClient, id: string, onClose: () => void) => () => {
+  onClose();
+  void reloadMember(qc, id);
+};
+
+/** グループを移す（主の所属）。体は { primary_scope_id } だけ */
+function MoveDialogBox({ id, answer, onClose }: DoDialogProps) {
+  const notify = useNotify();
+  const qc = useQueryClient();
+  const name = answer.member.name;
+  const groups: readonly MemberGroupRef[] = answer.groups;
+  const open = true; // 登録口（K-819）は開いている間だけ小窓を描く
+  const [to, setTo] = useState("");
+  const g = useMemberGroups(id, { onChanged: groupsSetter(qc, id), onGone: goneOf(qc, id, onClose) });
+  const { reset } = g;
+  const from = primaryOf(groups);
+  const options = (g.choices ?? []).filter((c) => c.id !== from?.id).map((c) => ({ value: c.id, label: c.name }));
+  const value = options.some((o) => o.value === to) ? to : (options[0]?.value ?? "");
+  useOnOpen(open, () => {
+    setTo("");
+    reset();
+  });
+  const submit = async () => {
+    if (!value) return;
+    const label = options.find((o) => o.value === value)?.label ?? "";
+    const done = await g.send({ primary_scope_id: value });
+    if (done) finish(label);
+  };
+  const finish = (label: string) => {
+    onClose();
+    notify(`${name} を ${label} に移しました`);
+  };
+  return (
+    <>
+      <MoveDialog
+        open={open && g.stepUp === null}
+        name={name}
+        from={from?.name ?? ""}
+        to={value}
+        groups={options}
+        loading={g.choices === null}
+        onChange={setTo}
+        onSubmit={() => void submit()}
+        onCancel={onClose}
+        busy={g.busy}
+        error={g.error}
+        submitDisabled={!value}
+      />
+      <StepUp
+        open={open && g.stepUp !== null}
+        reason="グループを移す前に、本人か確かめます"
+        withCode={g.stepUp?.withCode ?? false}
+        withPasskey={g.stepUp?.withPasskey ?? false}
+        screenId="member-detail"
+        onDone={() =>
+          void g.retry().then((done) => {
+            if (done) finish(options.find((o) => o.value === value)?.label ?? "");
+          })
+        }
+        onCancel={g.cancelStepUp}
+      />
+    </>
+  );
+}
+
+/** 兼ねるグループを足す・外す。体は足す分 add_scope_ids・外す分 remove_scope_ids（role_key は送らない） */
+function AlsoDialogBox({ id, answer, onClose }: DoDialogProps) {
+  const notify = useNotify();
+  const qc = useQueryClient();
+  const name = answer.member.name;
+  const groups: readonly MemberGroupRef[] = answer.groups;
+  const open = true; // 登録口（K-819）は開いている間だけ小窓を描く
+  const [add, setAdd] = useState("");
+  const [removed, setRemoved] = useState<string[]>([]);
+  const g = useMemberGroups(id, { onChanged: groupsSetter(qc, id), onGone: goneOf(qc, id, onClose) });
+  const { reset } = g;
+  const also = groups.filter((x) => !x.primary).map((x) => ({ value: x.id, label: x.name }));
+  const taken = new Set(groups.map((x) => x.id));
+  const addable = (g.choices ?? []).filter((c) => !taken.has(c.id)).map((c) => ({ value: c.id, label: c.name }));
+  const adding = addable.some((o) => o.value === add) ? add : "";
+  const body = {
+    ...(adding ? { add_scope_ids: [adding] } : {}),
+    ...(removed.length ? { remove_scope_ids: [...removed] } : {}),
+  };
+  const changed = Object.keys(body).length > 0;
+  useOnOpen(open, () => {
+    setAdd("");
+    setRemoved([]);
+    reset();
+  });
+  const finish = () => {
+    onClose();
+    notify(`${name} の兼ねるグループを直しました`);
+  };
+  const submit = async () => {
+    if (!changed) return;
+    if (await g.send(body)) finish();
+  };
+  return (
+    <>
+      <AlsoDialog
+        open={open && g.stepUp === null}
+        name={name}
+        also={also}
+        add={adding}
+        addable={addable}
+        removed={removed}
+        loading={g.choices === null}
+        onChange={setAdd}
+        onRemove={(v) => setRemoved((r) => (r.includes(v) ? r : [...r, v]))}
+        onSubmit={() => void submit()}
+        onCancel={onClose}
+        busy={g.busy}
+        error={g.error}
+        submitDisabled={!changed}
+      />
+      <StepUp
+        open={open && g.stepUp !== null}
+        reason="兼ねるグループを直す前に、本人か確かめます"
+        withCode={g.stepUp?.withCode ?? false}
+        withPasskey={g.stepUp?.withPasskey ?? false}
+        screenId="member-detail"
+        onDone={() =>
+          void g.retry().then((done) => {
+            if (done) finish();
+          })
+        }
+        onCancel={g.cancelStepUp}
+      />
+    </>
+  );
 }
 
 // ---------------------------------------------------------------- 止める・戻す（K-821）
