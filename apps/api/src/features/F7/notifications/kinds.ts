@@ -62,6 +62,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "inquiry.replied": settingKind("/notices"),
   // 運営が止める日を決めた（K-970・D-156.23）：その会社の管理者に。押せない行（止める日は画面の上の帯で確かめる）
   "workspace.stop_scheduled": settingKind(null),
+  // 運営のひな形（K-1010・D-156.56）：既定のまま使っている会社の管理者だけに、ひな形の新しい版が届いたことを知らせる。行き先は選ぶ頁（K-1016）
+  "template.update": settingKind("/settings/template-updates"),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
