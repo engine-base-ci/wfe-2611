@@ -2,7 +2,7 @@
 // 止まった箱ぜんたいの差し込み口（K-599 が置き・K-486 が理由ごとの帯にする・A57・D-151.17）。
 //   出すのは作る段（phase make）の止まった・やめた実行で、まだ引き取っていない（taken_over_at が無い）ときだけ。
 //   それ以外は前からの箱（children）をそのまま返す（承認の後の実行・動いている・待っている・引き取った後は前からの帯）。
-//   理由の種類は口の答えの reason_kind だけで決める（kind-of.ts）。確認で落ちた帯には前からの確認の結果の表が下に付く。
+//   理由の種類は口の答えの reason_kind だけで決める（kind-of.ts）。確認の結果の表は、渡されたとき（段 6 の ChecksSlot）は理由の種類によらず帯の下に付き、渡されないときは確認で落ちた帯にだけ前からの表が付く。
 //   押せる人：AI に任せる＝getTicket の can.delegate／自分で直す＝担当者本人（getTicket の assignee.id と /me の member_id）
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -25,7 +25,7 @@ export interface StoppedHandSlotProps {
   delegate: { run: () => void; busy: boolean; disabled: boolean };
   /** 実行の一覧・今の実行と詳細を順に読み直す（K-486 が書き込みの後に呼ぶ） */
   onChanged: () => Promise<void>;
-  /** 確認で落ちた帯の下の確認の結果の表（段 6 の ChecksSlot・K-730）。無ければ前からの表 CheckTable */
+  /** 止まった帯の下の確認の結果の表（段 6 の ChecksSlot・K-730／K-740：理由の種類によらず止まった箱の下に出す）。無ければ確認で落ちた帯にだけ前からの表 CheckTable */
   checks?: ReactNode;
   children: ReactNode;
 }
@@ -87,7 +87,7 @@ export function StoppedHandSlot({ ticket, run, delegate, onChanged, checks, chil
           />
         }
       >
-        {s.kind === "check-failed" ? (checks ?? <CheckTable />) : null}
+        {checks ?? (s.kind === "check-failed" ? <CheckTable /> : null)}
       </StopReason>
       <TakeoverConfirm
         open={hand.open}
