@@ -56,7 +56,14 @@ function canDelegateOf(detail: SlotTicket["detail"]): boolean {
   return !!can && typeof can === "object" && (can as { delegate?: unknown }).delegate === true;
 }
 
-export function StoppedHandSlot({ ticket, run, delegate, onChanged, checks, children }: StoppedHandSlotProps): ReactNode {
+export function StoppedHandSlot({
+  ticket,
+  run,
+  delegate,
+  onChanged,
+  checks,
+  children,
+}: StoppedHandSlotProps): ReactNode {
   const shown = showsStopBand(run);
   const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: shown, ...ONCE });
   const hand = useStoppedHand(run.id, onChanged);

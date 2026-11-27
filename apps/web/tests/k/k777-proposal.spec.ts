@@ -284,7 +284,7 @@ async function match(browser: Browser, id: string, after: (pg: Page) => Promise<
         await withProposal(pg, undefined, w);
         await after(pg);
       },
-      { pairs: PROP_PAIRS, base: "/dev/mock/f5" },
+      { pairs: PROP_PAIRS, base: "/dev/mock/f5", skip: Y_SKIP },
     );
     bad.push(...r.bad);
   }

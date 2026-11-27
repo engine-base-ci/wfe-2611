@@ -32,7 +32,8 @@ function refused(e: unknown): HookReply {
   const { code, hint } = pgInfo(e);
   if (code === "42501" && hint === "E-GST-100") return coded(404, "E-GST-100");
   if (code === "42501") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
-  if (code === "22023" && (hint === "E-GST-140" || hint === "E-GST-141" || hint === "E-GST-142")) return coded(409, hint);
+  if (code === "22023" && (hint === "E-GST-140" || hint === "E-GST-141" || hint === "E-GST-142"))
+    return coded(409, hint);
   return down(e);
 }
 
@@ -40,7 +41,11 @@ export function createRequestClientRequestDraft(appPool: pg.Pool): (a: HookArgs)
   return async (a: HookArgs): Promise<HookReply> => {
     let v: { job_id?: string } | undefined;
     try {
-      v = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<{ v: { job_id?: string } }>(SQL, [a.id])).rows[0]?.v);
+      v = await withTenant(
+        appPool,
+        a.ctx,
+        async (cl) => (await cl.query<{ v: { job_id?: string } }>(SQL, [a.id])).rows[0]?.v,
+      );
     } catch (e) {
       return refused(e);
     }

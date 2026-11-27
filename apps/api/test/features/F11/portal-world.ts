@@ -96,10 +96,24 @@ export async function world(f: Fixture, tag: string): Promise<World> {
     [c.tenantId, staff.id, reqScope],
   );
   const base = { tenantId: c.tenantId, reqScope };
-  return { tenantId: c.tenantId, root: c.rootScope, reqScope, boss, staff, gA: await group(f, base, "Ａ社"), gB: await group(f, base, "Ｂ社") };
+  return {
+    tenantId: c.tenantId,
+    root: c.rootScope,
+    reqScope,
+    boss,
+    staff,
+    gA: await group(f, base, "Ａ社"),
+    gB: await group(f, base, "Ｂ社"),
+  };
 }
 /** ゲスト（役割 requester）。g が null ならグループに入れない */
-export async function guest(f: Fixture, w: World, name: string, g: string | null, o: { status?: string } = {}): Promise<P> {
+export async function guest(
+  f: Fixture,
+  w: World,
+  name: string,
+  g: string | null,
+  o: { status?: string } = {},
+): Promise<P> {
   const p = await make(f, w.tenantId, w.root, name, { role: "requester", status: o.status ?? "active" });
   if (g)
     await f.admin.query("insert into guest_group_members (tenant_id, guest_group_id, member_id) values ($1, $2, $3)", [
@@ -186,7 +200,16 @@ export async function request(
     await f.admin.query<{ id: string }>(
       `insert into client_requests (tenant_id, guest_group_id, title, body, state, ticket_id, decline_reason, routed_scope_id, created_by)
        values ($1, $2, $3, $3, $4, $5, $6, $7, $8) returning id`,
-      [w.tenantId, g, o.title ?? "依頼のたいとる", state, o.ticketId ?? null, state === "declined" ? "今回は受けられません" : null, o.routed ?? null, by.id],
+      [
+        w.tenantId,
+        g,
+        o.title ?? "依頼のたいとる",
+        state,
+        o.ticketId ?? null,
+        state === "declined" ? "今回は受けられません" : null,
+        o.routed ?? null,
+        by.id,
+      ],
     )
   ).rows[0]!.id;
 }

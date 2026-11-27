@@ -20,7 +20,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..", "..", "..", "..");
 const HOOKS_DIR = join(HERE, "..", "..", "..", "src", "hooks");
 const ERRORS = (
-  JSON.parse(readFileSync(join(ROOT, "07_qa/test-specs/errors.json"), "utf8")) as { errors: { id: string; message: string }[] }
+  JSON.parse(readFileSync(join(ROOT, "07_qa/test-specs/errors.json"), "utf8")) as {
+    errors: { id: string; message: string }[];
+  }
 ).errors;
 const msg = (code: string): string => ERRORS.find((e) => e.id === code)?.message ?? `（errors.json に ${code} が無い）`;
 const NO_SUCH = "00000000-0000-4000-8000-0000000000dd";
@@ -63,7 +65,10 @@ interface World {
 }
 async function memberOf(w: { tenantId: string; root: string }, name: string, role: string): Promise<Person> {
   const p = await f.person(w.tenantId, w.root, { name, ticketAbility: "edit" });
-  await f.admin.query("insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, $3, 'active')", [w.tenantId, p.id, role]);
+  await f.admin.query(
+    "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, $3, 'active')",
+    [w.tenantId, p.id, role],
+  );
   return p;
 }
 async function world(): Promise<World> {
@@ -71,26 +76,45 @@ async function world(): Promise<World> {
   const c = await f.company(`K927 の会社 ${Math.random().toString(36).slice(2, 7)}`, "GE");
   const base = { tenantId: c.tenantId, root: c.rootScope };
   const grant = async (p: Person, ability: string) =>
-    f.admin.query("insert into permissions (tenant_id, grantee_member_id, target_kind_id, scope_id, ability_id) values ($1, $2, 'members', null, $3)", [c.tenantId, p.id, ability]);
+    f.admin.query(
+      "insert into permissions (tenant_id, grantee_member_id, target_kind_id, scope_id, ability_id) values ($1, $2, 'members', null, $3)",
+      [c.tenantId, p.id, ability],
+    );
   const editor = await memberOf(base, "編集の人", "member");
   await grant(editor, "edit");
   const inviter = await memberOf(base, "招く権限の人", "member");
   await grant(inviter, "invite");
-  return { ...base, admin: await memberOf(base, "高本", "admin"), editor, inviter, mgr: await memberOf(base, "マネージャー", "manager"), member: await memberOf(base, "普通の人", "member") };
+  return {
+    ...base,
+    admin: await memberOf(base, "高本", "admin"),
+    editor,
+    inviter,
+    mgr: await memberOf(base, "マネージャー", "manager"),
+    member: await memberOf(base, "普通の人", "member"),
+  };
 }
-const gg = async (w: World, name: string, o: { deleted?: boolean; tenant?: string; scope?: string } = {}): Promise<string> =>
+const gg = async (
+  w: World,
+  name: string,
+  o: { deleted?: boolean; tenant?: string; scope?: string } = {},
+): Promise<string> =>
   (
-    await f.admin.query<{ id: string }>("insert into guest_groups (tenant_id, name, request_scope_id, deleted_at) values ($1, $2, $3, $4) returning id", [
-      o.tenant ?? w.tenantId,
-      name,
-      o.scope ?? w.root,
-      o.deleted ? new Date() : null,
-    ])
+    await f.admin.query<{ id: string }>(
+      "insert into guest_groups (tenant_id, name, request_scope_id, deleted_at) values ($1, $2, $3, $4) returning id",
+      [o.tenant ?? w.tenantId, name, o.scope ?? w.root, o.deleted ? new Date() : null],
+    )
   ).rows[0]!.id;
 const guest = async (w: World, name: string, g: string): Promise<Person> => {
   const p = await f.person(w.tenantId, w.root, { name });
-  await f.admin.query("insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, 'requester', 'active')", [w.tenantId, p.id]);
-  await f.admin.query("insert into guest_group_members (tenant_id, guest_group_id, member_id) values ($1, $2, $3)", [w.tenantId, g, p.id]);
+  await f.admin.query(
+    "insert into tenant_memberships (tenant_id, member_id, auth_user_id, role, status) values ($1, $2, null, 'requester', 'active')",
+    [w.tenantId, p.id],
+  );
+  await f.admin.query("insert into guest_group_members (tenant_id, guest_group_id, member_id) values ($1, $2, $3)", [
+    w.tenantId,
+    g,
+    p.id,
+  ]);
   return p;
 };
 const session = async (w: World, p: Person): Promise<string> =>
@@ -110,23 +134,41 @@ const ticket = async (w: World): Promise<string> =>
     )
   ).rows[0]!.id;
 const share = async (w: World, t: string, g: string): Promise<void> => {
-  await f.admin.query("insert into ticket_guest_shares (tenant_id, ticket_id, guest_group_id, shared_by) values ($1, $2, $3, $4)", [w.tenantId, t, g, w.admin.id]);
+  await f.admin.query(
+    "insert into ticket_guest_shares (tenant_id, ticket_id, guest_group_id, shared_by) values ($1, $2, $3, $4)",
+    [w.tenantId, t, g, w.admin.id],
+  );
 };
 const rename = (id: string, body: unknown, p: Person | null, role: "member" | "client" = "member") =>
   f.req("PATCH", `/guest-groups/${id}`, { body, ...(p ? { headers: f.as(p, role) } : {}) });
 const remove = (id: string, p: Person | null, role: "member" | "client" = "member") =>
   f.req("DELETE", `/guest-groups/${id}`, p ? { headers: f.as(p, role) } : {});
 const n = async (sql: string, p: unknown[] = []) => Number((await f.admin.query<{ n: string }>(sql, p)).rows[0]!.n);
-const nameOf = async (g: string) => (await f.admin.query<{ name: string }>("select name from guest_groups where id = $1", [g])).rows[0]!.name;
+const nameOf = async (g: string) =>
+  (await f.admin.query<{ name: string }>("select name from guest_groups where id = $1", [g])).rows[0]!.name;
 const live = (g: string) => n("select count(*) as n from guest_groups where id = $1 and deleted_at is null", [g]);
 const audit = (w: World, action: string) =>
-  f.admin.query<{ payload: Json }>("select payload from audit_events where tenant_id = $1 and action = $2 order by created_at", [w.tenantId, action]);
-const asGuest = (w: World, p: Person): TenantContext => ({ tenantId: w.tenantId, userId: p.id, role: "client", stepUpAt: null });
+  f.admin.query<{ payload: Json }>(
+    "select payload from audit_events where tenant_id = $1 and action = $2 order by created_at",
+    [w.tenantId, action],
+  );
+const asGuest = (w: World, p: Person): TenantContext => ({
+  tenantId: w.tenantId,
+  userId: p.id,
+  role: "client",
+  stepUpAt: null,
+});
 const guestSees = async (w: World, p: Person, t: string): Promise<number> =>
-  withTenant(f.pool, asGuest(w, p), async (cl) => (await cl.query("select id from tickets where id = $1", [t])).rowCount ?? 0);
+  withTenant(
+    f.pool,
+    asGuest(w, p),
+    async (cl) => (await cl.query("select id from tickets where id = $1", [t])).rowCount ?? 0,
+  );
 async function failOn(table: string, cond: string, fn: () => Promise<void>): Promise<void> {
   const name = `k927_fail_${randomUUID().replaceAll("-", "")}`;
-  await f.admin.query(`create function app.${name}() returns trigger language plpgsql as $$ begin if ${cond} then raise exception 'K927 試験の失敗'; end if; return new; end $$`);
+  await f.admin.query(
+    `create function app.${name}() returns trigger language plpgsql as $$ begin if ${cond} then raise exception 'K927 試験の失敗'; end if; return new; end $$`,
+  );
   await f.admin.query(`create trigger ${name} before insert on ${table} for each row execute function app.${name}()`);
   try {
     await fn();
@@ -135,7 +177,11 @@ async function failOn(table: string, cond: string, fn: () => Promise<void>): Pro
     await f.admin.query(`drop function if exists app.${name}()`);
   }
 }
-const inv = async (w: World, g: string | null, o: { accepted?: boolean; revoked?: boolean; role?: string } = {}): Promise<string> =>
+const inv = async (
+  w: World,
+  g: string | null,
+  o: { accepted?: boolean; revoked?: boolean; role?: string } = {},
+): Promise<string> =>
   (
     await f.admin.query<{ id: string }>(
       `insert into invitations (tenant_id, email, scope_id, role_id, token_hash, expires_at, guest_group_id, accepted_member_id, revoked_at)
@@ -158,7 +204,8 @@ describe("K-927 名前を直す（updateGuestGroup）", () => {
     const w = await world();
     const g = await gg(w, "旧Ａ社");
     const a = await guest(w, "山田", g);
-    const keyBefore = (await f.admin.query<{ k: string }>("select name_key as k from guest_groups where id = $1", [g])).rows[0]!.k;
+    const keyBefore = (await f.admin.query<{ k: string }>("select name_key as k from guest_groups where id = $1", [g]))
+      .rows[0]!.k;
     const r = await rename(g, { name: "  新Ａ社（ゲスト）  " }, w.admin);
     expect(r.status, await r.clone().text()).toBe(200);
     expect(r.headers.get("cache-control") ?? "").toMatch(/no-store|private/);
@@ -166,9 +213,19 @@ describe("K-927 名前を直す（updateGuestGroup）", () => {
     expect(Object.keys(d).sort()).toEqual(["id", "name"]);
     expect(d).toEqual({ id: g, name: "新Ａ社（ゲスト）" });
     expect(await nameOf(g)).toBe("新Ａ社（ゲスト）");
-    expect((await f.admin.query<{ k: string }>("select name_key as k from guest_groups where id = $1", [g])).rows[0]!.k).not.toBe(keyBefore);
-    expect(await n("select count(*) as n from guest_group_members where guest_group_id = $1 and member_id = $2 and deleted_at is null", [g, a.id])).toBe(1);
-    expect((await f.admin.query<{ s: string }>("select request_scope_id as s from guest_groups where id = $1", [g])).rows[0]!.s).toBe(w.root);
+    expect(
+      (await f.admin.query<{ k: string }>("select name_key as k from guest_groups where id = $1", [g])).rows[0]!.k,
+    ).not.toBe(keyBefore);
+    expect(
+      await n(
+        "select count(*) as n from guest_group_members where guest_group_id = $1 and member_id = $2 and deleted_at is null",
+        [g, a.id],
+      ),
+    ).toBe(1);
+    expect(
+      (await f.admin.query<{ s: string }>("select request_scope_id as s from guest_groups where id = $1", [g])).rows[0]!
+        .s,
+    ).toBe(w.root);
     const ev = await audit(w, "guest_group.renamed");
     expect(ev.rows.map((x) => x.payload)).toEqual([{ guest_group_id: g }]);
   });
@@ -192,7 +249,14 @@ describe("K-927 名前を直す（updateGuestGroup）", () => {
   it("K927-API-003 入力：名前が無い・空・空白だけ・81 字・数字・知らない欄はどれも 422・何も変えない。80 字は通る", async () => {
     const w = await world();
     const g = await gg(w, "入力の社");
-    for (const b of [{}, { name: "" }, { name: "   " }, { name: "あ".repeat(81) }, { name: 7 }, { name: "社", request_scope_id: w.root }]) {
+    for (const b of [
+      {},
+      { name: "" },
+      { name: "   " },
+      { name: "あ".repeat(81) },
+      { name: 7 },
+      { name: "社", request_scope_id: w.root },
+    ]) {
       expect((await rename(g, b, w.admin)).status, JSON.stringify(b)).toBe(422);
     }
     expect(await nameOf(g)).toBe("入力の社");
@@ -202,7 +266,10 @@ describe("K-927 名前を直す（updateGuestGroup）", () => {
   it("K927-API-004 失敗：無い・消した・別の会社・知らない id は 404・E-GST-001・正本の文・欄・details なし・何も変えない", async () => {
     const w = await world();
     const o = await f.company("K927 別の会社", "OZ");
-    const [dead, other] = [await gg(w, "消した社", { deleted: true }), await gg(w, "別の会社の社", { tenant: o.tenantId, scope: o.rootScope })];
+    const [dead, other] = [
+      await gg(w, "消した社", { deleted: true }),
+      await gg(w, "別の会社の社", { tenant: o.tenantId, scope: o.rootScope }),
+    ];
     for (const id of [dead, other, NO_SUCH]) {
       const r = await rename(id, { name: "直せない" }, w.admin);
       expect(r.status, id).toBe(404);
@@ -219,7 +286,8 @@ describe("K-927 名前を直す（updateGuestGroup）", () => {
     const w = await world();
     const g = await gg(w, "権限の社");
     const gst = await guest(w, "ゲスト", g);
-    for (const p of [w.mgr, w.member, w.inviter]) expect((await rename(g, { name: "通らない" }, p)).status, p.id).toBe(403);
+    for (const p of [w.mgr, w.member, w.inviter])
+      expect((await rename(g, { name: "通らない" }, p)).status, p.id).toBe(403);
     expect((await rename(g, { name: "ゲストから" }, gst, "client")).status).toBe(403);
     expect((await rename(g, { name: "ログインなし" }, null)).status).toBe(401);
     expect(await nameOf(g)).toBe("権限の社");
@@ -237,8 +305,15 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     expect(r.status, await r.clone().text()).toBe(200);
     expect(Object.keys((await asJson(r)).data as Json)).toEqual(["id"]);
     expect(await live(g)).toBe(0);
-    expect(await n("select count(*) as n from guest_group_members where guest_group_id = $1 and deleted_at is null", [g])).toBe(0);
-    expect(await n("select count(*) as n from guest_group_members where guest_group_id = $1 and member_id = any($2::uuid[])", [g, [a.id, b.id]])).toBe(2);
+    expect(
+      await n("select count(*) as n from guest_group_members where guest_group_id = $1 and deleted_at is null", [g]),
+    ).toBe(0);
+    expect(
+      await n(
+        "select count(*) as n from guest_group_members where guest_group_id = $1 and member_id = any($2::uuid[])",
+        [g, [a.id, b.id]],
+      ),
+    ).toBe(2);
     const list = await f.req("GET", "/guest-groups", { headers: f.as(w.admin, "member") });
     if (list.status === 200) {
       const groups = ((await asJson(list)).data as { groups: { id: string }[] }).groups;
@@ -253,12 +328,23 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     const [sa, sb] = [await session(w, a), await session(w, b)];
     expect((await remove(g, w.admin)).status).toBe(200);
     const row = async (id: string) =>
-      (await f.admin.query<{ d: Date | null; st: string }>("select m.deleted_at as d, tm.status as st from members m join tenant_memberships tm on tm.member_id = m.id where m.id = $1", [id])).rows[0]!;
+      (
+        await f.admin.query<{ d: Date | null; st: string }>(
+          "select m.deleted_at as d, tm.status as st from members m join tenant_memberships tm on tm.member_id = m.id where m.id = $1",
+          [id],
+        )
+      ).rows[0]!;
     expect((await row(a.id)).d).not.toBeNull();
     expect((await row(a.id)).st).toBe("left");
     expect((await row(b.id)).d).toBeNull();
     expect((await row(b.id)).st).toBe("active");
-    const ses = async (id: string) => (await f.admin.query<{ r: Date | null; why: string | null }>("select revoked_at as r, revoke_reason_id as why from sessions where id = $1", [id])).rows[0]!;
+    const ses = async (id: string) =>
+      (
+        await f.admin.query<{ r: Date | null; why: string | null }>(
+          "select revoked_at as r, revoke_reason_id as why from sessions where id = $1",
+          [id],
+        )
+      ).rows[0]!;
     expect((await ses(sa)).r).not.toBeNull();
     expect((await ses(sa)).why).toBe("guest_group_deleted");
     expect((await ses(sb)).r).toBeNull();
@@ -274,9 +360,17 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     expect(await guestSees(w, a, t)).toBe(1);
     expect((await remove(g, w.admin)).status).toBe(200);
     expect(await guestSees(w, a, t)).toBe(0);
-    const grp = await withTenant(f.pool, asGuest(w, a), async (cl) => (await cl.query<{ g: string | null }>("select app.my_guest_group() as g")).rows[0]!.g);
+    const grp = await withTenant(
+      f.pool,
+      asGuest(w, a),
+      async (cl) => (await cl.query<{ g: string | null }>("select app.my_guest_group() as g")).rows[0]!.g,
+    );
     expect(grp).toBeNull();
-    const staff = await withTenant(f.pool, { tenantId: w.tenantId, userId: w.admin.id, role: "member", stepUpAt: null }, async (cl) => (await cl.query("select id from tickets where id = $1", [t])).rowCount ?? 0);
+    const staff = await withTenant(
+      f.pool,
+      { tenantId: w.tenantId, userId: w.admin.id, role: "member", stepUpAt: null },
+      async (cl) => (await cl.query("select id from tickets where id = $1", [t])).rowCount ?? 0,
+    );
     expect(staff).toBe(1);
   });
 
@@ -292,13 +386,32 @@ describe("K-927 消す（deleteGuestGroup）", () => {
         [w.tenantId, g, a.id],
       )
     ).rows[0]!.id;
-    await f.admin.query("insert into client_request_messages (tenant_id, client_request_id, side, kind, body, author_member_id) values ($1, $2, 'guest', 'message', 'やり取り', $3)", [w.tenantId, req, a.id]);
-    await f.admin.query("insert into ticket_messages (tenant_id, ticket_id, author_member_id, kind, body, guest_visible) values ($1, $2, $3, 'post', 'チャット', true)", [w.tenantId, t, a.id]);
+    await f.admin.query(
+      "insert into client_request_messages (tenant_id, client_request_id, side, kind, body, author_member_id) values ($1, $2, 'guest', 'message', 'やり取り', $3)",
+      [w.tenantId, req, a.id],
+    );
+    await f.admin.query(
+      "insert into ticket_messages (tenant_id, ticket_id, author_member_id, kind, body, guest_visible) values ($1, $2, $3, 'post', 'チャット', true)",
+      [w.tenantId, t, a.id],
+    );
     expect((await remove(g, w.admin)).status).toBe(200);
     expect(await n("select count(*) as n from tickets where id = $1 and deleted_at is null", [t])).toBe(1);
-    expect((await f.admin.query<{ state: string; g: string }>("select state, guest_group_id as g from client_requests where id = $1 and deleted_at is null", [req])).rows[0]).toEqual({ state: "asking", g });
-    expect(await n("select count(*) as n from client_request_messages where client_request_id = $1 and deleted_at is null", [req])).toBe(1);
-    expect(await n("select count(*) as n from ticket_messages where ticket_id = $1 and deleted_at is null", [t])).toBe(1);
+    expect(
+      (
+        await f.admin.query<{ state: string; g: string }>(
+          "select state, guest_group_id as g from client_requests where id = $1 and deleted_at is null",
+          [req],
+        )
+      ).rows[0],
+    ).toEqual({ state: "asking", g });
+    expect(
+      await n("select count(*) as n from client_request_messages where client_request_id = $1 and deleted_at is null", [
+        req,
+      ]),
+    ).toBe(1);
+    expect(await n("select count(*) as n from ticket_messages where ticket_id = $1 and deleted_at is null", [t])).toBe(
+      1,
+    );
   });
 
   it("K927-API-010 守り：そのグループへの見せる相手の行は全部 deleted_at。別のグループへの行は残る。外した 1 つごとに証跡 ticket.guest_share_removed", async () => {
@@ -309,15 +422,22 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     await share(w, t2, g);
     await share(w, t2, keep);
     expect((await remove(g, w.admin)).status).toBe(200);
-    expect(await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [g])).toBe(0);
-    expect(await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [keep])).toBe(1);
+    expect(
+      await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [g]),
+    ).toBe(0);
+    expect(
+      await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [keep]),
+    ).toBe(1);
     expect((await audit(w, "ticket.guest_share_removed")).rows.length).toBe(2);
   });
 
   it("K927-API-011 失敗：消す：無い・消した（2 回目）・別の会社・知らない id は 404・E-GST-001・欄・details なし・何も変えない", async () => {
     const w = await world();
     const o = await f.company("K927 別の会社 2", "OY");
-    const [once, other] = [await gg(w, "一度だけ"), await gg(w, "別の会社の社", { tenant: o.tenantId, scope: o.rootScope })];
+    const [once, other] = [
+      await gg(w, "一度だけ"),
+      await gg(w, "別の会社の社", { tenant: o.tenantId, scope: o.rootScope }),
+    ];
     expect((await remove(once, w.admin)).status).toBe(200);
     for (const id of [once, other, NO_SUCH]) {
       const r = await remove(id, w.admin);
@@ -353,7 +473,9 @@ describe("K-927 消す（deleteGuestGroup）", () => {
       await inv(w, null, { role: "member" }),
     ];
     expect((await remove(g, w.admin)).status).toBe(200);
-    const revoked = async (id: string) => (await f.admin.query<{ r: Date | null }>("select revoked_at as r from invitations where id = $1", [id])).rows[0]!.r;
+    const revoked = async (id: string) =>
+      (await f.admin.query<{ r: Date | null }>("select revoked_at as r from invitations where id = $1", [id])).rows[0]!
+        .r;
     expect(await revoked(open)).not.toBeNull();
     expect(await revoked(accepted)).toBeNull();
     expect(await revoked(done)).not.toBeNull();
@@ -375,10 +497,19 @@ describe("K-927 消す（deleteGuestGroup）", () => {
       expect((await asJson(r))["code"]).toBe("E-PAGE-003");
     });
     expect(await live(g)).toBe(1);
-    expect((await f.admin.query<{ d: Date | null }>("select deleted_at as d from members where id = $1", [a.id])).rows[0]!.d).toBeNull();
-    expect((await f.admin.query<{ r: Date | null }>("select revoked_at as r from sessions where id = $1", [s])).rows[0]!.r).toBeNull();
-    expect((await f.admin.query<{ r: Date | null }>("select revoked_at as r from invitations where id = $1", [i])).rows[0]!.r).toBeNull();
-    expect(await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [g])).toBe(1);
+    expect(
+      (await f.admin.query<{ d: Date | null }>("select deleted_at as d from members where id = $1", [a.id])).rows[0]!.d,
+    ).toBeNull();
+    expect(
+      (await f.admin.query<{ r: Date | null }>("select revoked_at as r from sessions where id = $1", [s])).rows[0]!.r,
+    ).toBeNull();
+    expect(
+      (await f.admin.query<{ r: Date | null }>("select revoked_at as r from invitations where id = $1", [i])).rows[0]!
+        .r,
+    ).toBeNull();
+    expect(
+      await n("select count(*) as n from ticket_guest_shares where guest_group_id = $1 and deleted_at is null", [g]),
+    ).toBe(1);
     expect((await remove(g, w.admin)).status).toBe(200);
   });
 
@@ -450,7 +581,9 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     const w = await world();
     const g = await gg(w, "空の社");
     expect((await remove(g, w.admin)).status).toBe(200);
-    expect((await audit(w, "guest_group.deleted")).rows.map((x) => x.payload)).toEqual([{ guest_group_id: g, guest_count: 0, share_count: 0 }]);
+    expect((await audit(w, "guest_group.deleted")).rows.map((x) => x.payload)).toEqual([
+      { guest_group_id: g, guest_count: 0, share_count: 0 },
+    ]);
   });
 
   it("K927-API-020 守り（消えた後の行は読みから外れる）：口で消したグループは、グループの一覧（listGuestGroups）に出ず・見せていたチケットはそのグループのゲストに見えず・名前を直す口は 404", async () => {
@@ -460,7 +593,11 @@ describe("K-927 消す（deleteGuestGroup）", () => {
     const t = await ticket(w);
     await share(w, t, g);
     const listed = async (): Promise<string[]> =>
-      ((await asJson(await f.req("GET", "/guest-groups", { headers: f.as(w.admin, "member") }))).data as { groups: { id: string }[] }).groups.map((x) => x.id);
+      (
+        (await asJson(await f.req("GET", "/guest-groups", { headers: f.as(w.admin, "member") }))).data as {
+          groups: { id: string }[];
+        }
+      ).groups.map((x) => x.id);
     expect(await listed()).toContain(g);
     expect((await remove(g, w.admin)).status).toBe(200);
     expect(await listed()).not.toContain(g);
