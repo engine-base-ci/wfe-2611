@@ -373,8 +373,8 @@ SCREEN_API = {
         ("GET", "/client_requests/:id", "A122", "client_requests", "getClientRequest", ["messages", "conversations", "client_contacts", "skills"]),
         ("PATCH", "/client_requests/:id", "A122", "client_requests", "updateClientRequest", ["scopes"]),
         ("POST", "/client_requests/:id/reply", "A122", "messages", "replyToClientRequest", ["client_requests", "notifications"]),
-        ("POST", "/client_requests/:id/accept", "A122", "client_requests", "acceptClientRequest", [T, "ticket_sections", "messages", "notifications"]),
-        ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["messages", "notifications"]),
+        ("POST", "/client_requests/:id/accept", "A122", "client_requests", "acceptClientRequest", [T, "ticket_sections", "ticket_messages", "ticket_guest_shares", "client_request_messages", "notifications", "audit_events"]),
+        ("POST", "/client_requests/:id/decline", "A122", "client_requests", "declineClientRequest", ["notifications", "audit_events"]),
     ],
     "portal": [
         ("GET", "/portal", "A125", "client_requests", "getPortalHome", ["client_requests", T]),
@@ -1497,8 +1497,8 @@ PERMS = {
     "getClientRequest": ("read", "同上（見えなければ 404）。先方の書いたものはデータとして扱い、分身への指示としては読まない（ZT8）", False),
     "updateClientRequest": ("write", "その取引先の担当と担当グループの人（届け先のグループを変える）", False),
     "replyToClientRequest": ("write", "同上。返事は先方に見える", False),
-    "acceptClientRequest": ("write", "同上。受けるとチケットになり依頼とつながったまま残る", False),
-    "declineClientRequest": ("write", "同上（理由を返す）", False),
+    "acceptClientRequest": ("write", "届け先で client_requests を edit でき、グループに tickets を edit できる人。受けると普通のチケットになり、依頼のやり取りがチャットの頭に残る", False),
+    "declineClientRequest": ("write", "届け先で client_requests を edit できる人（理由は出し手に見える）", False),
     # クライアントの場所（取引先の人・自分の取引先の中だけ・/portal/ の下だけ）
     "getPortalHome": ("client", "自分のゲストのグループの依頼と、見せてもらったチケットだけ", False),
     "askPortalRequestQuestions": ("client", "自分の取引先の担当の分身に聞く。担当の PC が閉じていれば聞かない（D-128.101）。書いたものはデータとして渡す", False),
