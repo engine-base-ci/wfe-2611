@@ -166,9 +166,9 @@ export function NoticesPage({
 }
 
 const PLAN_PICKS = ["無料", "チーム", "ビジネス"] as const;
-const WS_PICKS = ["合同会社ミナト企画", "北村デザイン事務所", "株式会社オオタ物流"] as const;
 
-/** 誰に を選んだときの中の選び肢（プラン 3 つ・ワークスペースの候補）。選んでいない方は押せない */
+/** 誰に の中の選び肢。プラン 3 つは選んでいないときも押せない形で出す。
+ *  ワークスペースの候補は［ワークスペースを選ぶ］を選んだときだけ口から読んで出す（K-1015）ので、選んでいない下絵には描かない */
 function PickChecks({ label, items, on }: { label: string; items: readonly string[]; on: boolean }) {
   // ワークスペースの名前は長いので 1 列（細い列で名前が折れないように）
   const wide = items.some((t) => t.length > 6);
@@ -270,7 +270,6 @@ export function NoticeNewPage({ edit = false, ...live }: NoticeNewPageProps) {
               <RadioChoice name="to" value="plan" title="プランで選ぶ" />
               <PickChecks label="プラン" items={PLAN_PICKS} on={false} />
               <RadioChoice name="to" value="pick" title="ワークスペースを選ぶ" />
-              <PickChecks label="ワークスペース" items={WS_PICKS} on={false} />
             </fieldset>
             <fieldset className="k-op-fieldset" {...fixed}>
               <legend>出す場所</legend>
@@ -292,6 +291,15 @@ export function NoticeNewPage({ edit = false, ...live }: NoticeNewPageProps) {
               <legend>いつ出すか</legend>
               <RadioChoice name="at" value="now" title="すぐ" />
               <RadioChoice name="at" value="date" checked title="日を決める" desc="11/03 10:00" />
+              {/* 日を決めたときだけ、その下に 出す日時 の欄（日本時間・D-156.33）。書き直す頁では押せない形 */}
+              <TextField
+                label="出す日時"
+                name="publish_at"
+                type="datetime-local"
+                readOnly
+                defaultValue="2026-11-03T10:00"
+                description="日本時間"
+              />
             </fieldset>
           </div>
           <div className="k-op-form">
