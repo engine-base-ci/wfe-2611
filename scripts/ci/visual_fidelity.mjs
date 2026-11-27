@@ -21,6 +21,7 @@ import {
   parseArgs,
   routeCanvasFonts,
   STILL_CSS,
+  groupAt,
   waitRows,
   widthsFor,
 } from "./fidelity_compare.mjs";
@@ -37,16 +38,19 @@ function loadRuns(o) {
     const g = all.groups.find((x) => x.id === o.group);
     if (!g) throw new ArgError(`04_design/fidelity.json に組 ${o.group} が無い`);
     const widths = widthsFor(g, o.width);
-    return widths.map((width) => ({
-      name: `${g.id}-${width}`,
-      canvas: `04_design/canvas/${g.canvas}.dc.html`,
-      app: g.app,
-      viewport: { width, height: HEIGHT },
-      pairs: g.pairs,
-      extra: [],
-      outDir: o.out ? (widths.length > 1 ? `${o.out}/${width}` : o.out) : defaultOutDir(g.id, width),
-      base: o.rest[0],
-    }));
+    return widths.map((width) => {
+      const at = groupAt(g, width); // 幅ごとの絵（組の at・K-1301）
+      return {
+        name: `${g.id}-${width}`,
+        canvas: `04_design/canvas/${at.canvas}.dc.html`,
+        app: g.app,
+        viewport: { width, height: HEIGHT },
+        pairs: at.pairs,
+        extra: [],
+        outDir: o.out ? (widths.length > 1 ? `${o.out}/${width}` : o.out) : defaultOutDir(g.id, width),
+        base: o.rest[0],
+      };
+    });
   }
   const cfgPath = o.rest[0];
   if (!cfgPath) throw new ArgError("設定の道（pairs.json）か --group が要る");
