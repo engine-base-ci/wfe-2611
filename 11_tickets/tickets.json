@@ -510,7 +510,6 @@
     "apps/api/test/auth_ext.test.ts",
     "apps/api/test/auth_routes.test.ts",
     "apps/api/test/bridge_blocked.test.ts",
-    "apps/api/test/bridge_credentials.test.ts",
     "apps/api/test/bridge_orphans.test.ts",
     "apps/api/test/bridge_release.test.ts",
     "apps/api/test/bridge_stream.test.ts",
@@ -519,12 +518,9 @@
     "apps/api/test/draft_credentials.test.ts",
     "apps/api/test/errors.test.ts",
     "apps/api/test/golive.test.ts",
-    "apps/api/test/login_check.test.ts",
     "apps/api/test/memory_text.test.ts",
     "apps/api/test/ops_alert.test.ts",
     "apps/api/test/server.test.ts",
-    "apps/api/test/transcript_mirror.test.ts",
-    "apps/api/test/two_factor.test.ts",
     "apps/api/test/vault_guard.test.ts",
     "apps/api/test/vercel_entry.test.ts",
     "packages/auth/test/auth.test.ts",
@@ -2422,7 +2418,6 @@
     "apps/api/test/generated/delete_ticket_links_id.test.ts",
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
-    "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/get_tickets_id_artifacts.test.ts",
     "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
     "apps/api/test/generated/get_tickets_id_links.test.ts",
@@ -2432,7 +2427,6 @@
     "apps/api/test/generated/post_conversations.test.ts",
     "apps/api/test/generated/post_ticket_imports.test.ts",
     "apps/api/test/generated/post_ticket_imports_id_commit.test.ts",
-    "apps/api/test/generated/post_ticket_kinds_id_template_from_ticket.test.ts",
     "apps/api/test/generated/post_tickets_bulk.test.ts",
     "apps/api/test/generated/post_tickets_id_agent_session_apply.test.ts",
     "apps/api/test/generated/post_tickets_id_attachments.test.ts",
@@ -3274,45 +3268,13 @@
    "apis": [],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
-    "apps/api/test/generated/delete_memories_id.test.ts",
-    "apps/api/test/generated/delete_rules_id.test.ts",
-    "apps/api/test/generated/delete_workspace_escalation_rules_id.test.ts",
-    "apps/api/test/generated/delete_workspace_rules_id.test.ts",
     "apps/api/test/generated/get_knowledge_pages_id.test.ts",
     "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts",
     "apps/api/test/generated/get_knowledge_tree.test.ts",
-    "apps/api/test/generated/get_memories.test.ts",
-    "apps/api/test/generated/get_rules_id.test.ts",
-    "apps/api/test/generated/get_ticket_kinds_template_updates.test.ts",
-    "apps/api/test/generated/get_work_types.test.ts",
-    "apps/api/test/generated/get_work_types_id.test.ts",
-    "apps/api/test/generated/get_work_types_id_versions.test.ts",
-    "apps/api/test/generated/get_workspace_rules.test.ts",
     "apps/api/test/generated/patch_knowledge_pages_id.test.ts",
     "apps/api/test/generated/patch_knowledge_pages_id_draft.test.ts",
-    "apps/api/test/generated/patch_layers_id.test.ts",
-    "apps/api/test/generated/patch_memories_id.test.ts",
-    "apps/api/test/generated/patch_rules_id.test.ts",
-    "apps/api/test/generated/patch_scopes_id.test.ts",
-    "apps/api/test/generated/patch_work_types_id_draft.test.ts",
-    "apps/api/test/generated/patch_workspace_escalation_rules_id.test.ts",
-    "apps/api/test/generated/patch_workspace_rules_id.test.ts",
     "apps/api/test/generated/post_knowledge_pages.test.ts",
-    "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts",
-    "apps/api/test/generated/post_layers.test.ts",
-    "apps/api/test/generated/post_memories.test.ts",
-    "apps/api/test/generated/post_memories_id_promote.test.ts",
-    "apps/api/test/generated/post_rules_check.test.ts",
-    "apps/api/test/generated/post_scopes.test.ts",
-    "apps/api/test/generated/post_ticket_kinds_template_updates_id_apply.test.ts",
-    "apps/api/test/generated/post_work_types.test.ts",
-    "apps/api/test/generated/post_work_types_id_copy.test.ts",
-    "apps/api/test/generated/post_work_types_id_release.test.ts",
-    "apps/api/test/generated/post_work_types_id_spread_requests.test.ts",
-    "apps/api/test/generated/post_work_types_id_try.test.ts",
-    "apps/api/test/generated/post_workspace_escalation_rules.test.ts",
-    "apps/api/test/generated/post_workspace_escalation_rules_preview.test.ts",
-    "apps/api/test/generated/post_workspace_rules.test.ts"
+    "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -3385,11 +3347,6 @@
     "updateScope"
    ],
    "tests": [
-    "apps/api/test/generated/delete_members_id.test.ts",
-    "apps/api/test/generated/get_exports_id.test.ts",
-    "apps/api/test/generated/patch_members_id_permissions.test.ts",
-    "apps/api/test/generated/post_exports.test.ts",
-    "apps/api/test/generated/post_members_id_nudge.test.ts",
     "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/post_invitations.test.ts",
     "apps/api/test/generated/post_invitations_link.test.ts",
@@ -28940,7 +28897,6 @@
    ],
    "tests": [
     "packages/db/test/ticket_body.test.ts",
-    "packages/db/test/ticket_body_legacy_sections.test.ts",
     "packages/contracts/test/doc.test.ts"
    ],
    "carry": [],
@@ -29208,8 +29164,7 @@
     "C2"
    ],
    "tests": [
-    "apps/api/test/features/F5/delegate-body.test.ts",
-    "apps/api/test/features/F5/delegate-body-legacy-sections.test.ts"
+    "apps/api/test/features/F5/delegate-body.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F5/delegate.test.ts"
@@ -29299,8 +29254,7 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F5/complete-unchecked.test.ts",
-    "apps/api/test/features/F5/complete-unchecked-legacy-sections.test.ts"
+    "apps/api/test/features/F5/complete-unchecked.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F5/approve-complete-complete.test.ts"
@@ -58993,7 +58947,8 @@
     "C2"
    ],
    "tests": [
-    "apps/api/test/features/F12/ops-pwned-pending.test.ts"
+    "apps/api/test/features/F12/ops-pwned-pending.test.ts",
+    "apps/api/test/generated/post_ops_pwned_pending_ack.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F12/ops-pwned.test.ts"
