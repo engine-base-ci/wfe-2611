@@ -5,6 +5,7 @@
 //   招待中の行の「送り直す」「取り消す」は、関数を渡したときだけ押して動く（K-809・渡さない呼び方＝モックは今の見た目のまま）
 //   画面が口につながったあと（K-818）：押したときの関数（onRole・onMore）・名前のリンク（href）・止めている人（suspended）を任意の props で受ける。
 //   渡さない呼び方（モック）は今の見た目のまま
+import type { Route } from "next";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge, Button, Menu, MenuItem, MenuPopup, MenuTrigger } from "@/components/k";
@@ -212,7 +213,7 @@ export function PersonRow({
       </span>
       <span className="k-inv-who">
         <span className="k-inv-name">
-          {invited ? r.email : href ? <Link href={href}>{r.name}</Link> : r.name}
+          {invited ? r.email : href ? <Link href={href as Route}>{r.name}</Link> : r.name}
           {r.note ? <span className="k-inv-note">{r.note}</span> : null}
         </span>
         {invited && r.resent ? (
