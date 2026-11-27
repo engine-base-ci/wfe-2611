@@ -46,8 +46,9 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   /** 差し戻せた（201） */
   onDone: () => void | Promise<void>;
-  /** 口が断った（422 の欄 note は小窓の中に出す。それ以外は小窓を閉じ、呼んだ側が知らせて読み直す） */
-  onFailed: (r: CallErr) => void | Promise<void>;
+  /** 口が断った（422 の欄 note は小窓の中に出す。それ以外は小窓を閉じ、呼んだ側が知らせて読み直す）。
+   *  文を返すと、小窓を閉じずにその文を小窓の中（理由の下）に出す（K-752・同じ 1 件のまま押し直せる） */
+  onFailed: (r: CallErr) => void | string | Promise<void>;
   /** 頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
   target?: string;
   /** チケットの詳細の帯から開いたときのチケットの id（自分で直すの後の箱と 1 行を積む先） */
@@ -105,8 +106,10 @@ export function ReturnDialog({ approvalId, screenId, open, onOpenChange, onDone,
       }
       if (r.status === 422 && r.fields["note"]) return setError(r.fields["note"]);
       if (r.status === 401) return; // 入り直し（共通の扱い）
+      const kept = onFailed(r);
+      if (typeof kept === "string") return setError(kept);
       onOpenChange(false);
-      await onFailed(r);
+      await kept;
     } finally {
       sending.current = false;
       setBusy(false);
