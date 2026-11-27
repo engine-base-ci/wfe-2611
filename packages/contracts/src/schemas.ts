@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:7b0c60c08aff7de0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:d7079c11d0536688
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1063,6 +1063,8 @@ export const BridgeJobs = z.strictObject({
   result: z.string().nullable().optional(),
   partial: z.string().nullable().optional(),
   stopped_reason: z.string().nullable().optional(),
+  sweep_failed_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  sweep_error_code: z.string().nullable().optional(),
   permission_mode: z.string().optional(),
   model: z.string().nullable().optional(),
   effort: z.string().nullable().optional(),
@@ -1097,6 +1099,8 @@ export const BridgeJobsInput = z.strictObject({
   result: z.string().nullable().optional(),
   partial: z.string().nullable().optional(),
   stopped_reason: z.string().nullable().optional(),
+  sweep_failed_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  sweep_error_code: z.string().nullable().optional(),
   permission_mode: z.string().optional(),
   model: z.string().nullable().optional(),
   effort: z.string().nullable().optional(),
