@@ -160,6 +160,35 @@
 .k-f9-pair-vs::before {
   content: "⇄";
 }
+/* K-696 並べて見る：食い違いの行の下に、上と下のページの本文を左右に並べる（幅 767 以下は上下） */
+.k-f9-pair-open {
+  padding: var(--k-s-sm) 0;
+  border-top: var(--k-c-detail-rule-border-bottom);
+  min-width: 0;
+}
+.k-f9-pair-open > [role="region"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+.k-f9-pair-col {
+  display: grid;
+  align-content: start;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-f9-pair-col > header {
+  display: grid;
+}
+.k-f9-pair-col > header b {
+  font-weight: var(--k-fw-h3);
+}
+.k-f9-pair-col > header small {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
 @media (max-width: 767px) {
   .k-f9-ap,
   .k-f9-rv {
@@ -172,5 +201,8 @@
   }
   .k-f9-pair-vs::before {
     content: "⇅";
+  }
+  .k-f9-pair-open > [role="region"] {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

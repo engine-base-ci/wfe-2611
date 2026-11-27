@@ -2,7 +2,7 @@
 // ナレッジの管理の面（管理者・マネージャー）：承認待ち／見直すページ（使われていない・食い違い・よく破られる）。
 //   見た目だけ（値は props・口は呼ばない）
 import { ArrowRight, ArrowUpToLine, Share2 } from "lucide-react";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { Badge, Button, Callout, TextArea } from "@/components/k";
 import type { ApprovalItem, BrokenRow, ConflictRow, UnusedRow } from "./types";
 import "./knowledge.css";
@@ -104,10 +104,26 @@ export function ApprovalsView({ items }: { items: readonly ApprovalItem[] }) {
 
 // ---------------------------------------------------------------- 見直すページ
 
+export type ReviewListKey = "unused" | "conflicts" | "broken";
+export interface ReviewHandlers {
+  open: (id: string) => void;
+  fix: (id: string) => void;
+  compare: (id: string) => void;
+}
 export interface ReviewProps {
   unused: readonly UnusedRow[];
   conflicts: readonly ConflictRow[];
   broken: readonly BrokenRow[];
+  /** 押したときの動き（渡さない呼び方＝モックは今の見た目のまま） */
+  handlers?: ReviewHandlers;
+  /** 並べて開いている食い違いの行 */
+  openIds?: ReadonlySet<string>;
+  /** 食い違いの行の id → その行の下に並べる領域 */
+  panes?: Readonly<Record<string, ReactNode>>;
+  /** 一覧ごとの注記（上限ちょうど など） */
+  limitNotes?: Partial<Record<ReviewListKey, string | null>>;
+  /** 一覧ごとの空の字（渡したときだけ 0 件で出す） */
+  emptyTexts?: Partial<Record<ReviewListKey, string>>;
 }
 
 function Block({
@@ -116,12 +132,18 @@ function Block({
   n,
   lead,
   children,
+  empty,
+  note,
 }: {
   id: string;
   title: string;
   n: number;
   lead: string;
   children: ReactNode;
+  /** 0 件のときの字（渡したときだけ一覧の代わりに出す） */
+  empty?: string | undefined;
+  /** 説明の次の注記 */
+  note?: string | null | undefined;
 }) {
   return (
     <section className="k-f9-rv" aria-labelledby={id}>
@@ -131,13 +153,23 @@ function Block({
           <span className="k-f9-count">{n}</span>
         </h2>
         <p className="k-f9-sub">{lead}</p>
+        {note ? <p className="k-f9-sub">{note}</p> : null}
       </div>
-      {children}
+      {n === 0 && empty ? <p className="k-f9-none">{empty}</p> : children}
     </section>
   );
 }
 
-export function ReviewView({ unused, conflicts, broken }: ReviewProps) {
+export function ReviewView({
+  unused,
+  conflicts,
+  broken,
+  handlers,
+  openIds,
+  panes,
+  limitNotes,
+  emptyTexts,
+}: ReviewProps) {
   return (
     <section className="k-f9-admin" aria-labelledby="kn-admin-title">
       <header className="k-f9-admin-head">
@@ -149,6 +181,8 @@ export function ReviewView({ unused, conflicts, broken }: ReviewProps) {
 
       <Block
         id="rv-unused"
+        empty={emptyTexts?.unused}
+        note={limitNotes?.unused}
         title="使われていないページ"
         n={unused.length}
         lead="AI が 90 日のあいだ 1 度も開いていないページです。要らなければ消し、要るなら題名と 1 行の説明を直します。"
@@ -157,11 +191,16 @@ export function ReviewView({ unused, conflicts, broken }: ReviewProps) {
           {unused.map((r) => (
             <li key={r.id} className="k-f9-row">
               <span className="k-f9-row-main">
-                <b>{r.title}</b>
+                <b id={`rv-tu-${r.id}`}>{r.title}</b>
                 <small>{r.place}</small>
               </span>
               <span className="k-f9-row-meta">{r.lastOpened}</span>
-              <Button variant="outlined" size="sm" aria-label={`${r.title}を開く`}>
+              <Button
+                variant="outlined"
+                size="sm"
+                aria-describedby={`rv-tu-${r.id}`}
+                {...(handlers ? { onClick: () => handlers.open(r.id) } : {})}
+              >
                 開く
               </Button>
             </li>
@@ -171,37 +210,61 @@ export function ReviewView({ unused, conflicts, broken }: ReviewProps) {
 
       <Block
         id="rv-conflict"
+        empty={emptyTexts?.conflicts}
+        note={limitNotes?.conflicts}
         title="食い違っているページ"
         n={conflicts.length}
         lead="上の棚と下の棚で、違うことが書いてあります。AI には上の棚（会社 › グループ › 自分 の順）が効きます。"
       >
         <ul className="k-f9-rows">
           {conflicts.map((r) => (
-            <li key={r.id} className="k-f9-row" data-stack>
-              <span className="k-f9-row-main">
-                <span className="k-f9-pair">
-                  <span>
-                    <b>{r.upper}</b>
-                    <small>{r.upperPlace}</small>
+            <Fragment key={r.id}>
+              <li className="k-f9-row" data-stack>
+                <span className="k-f9-row-main">
+                  <span className="k-f9-pair">
+                    <span>
+                      <b>{r.upper}</b>
+                      <small>{r.upperPlace}</small>
+                    </span>
+                    <span className="k-f9-pair-vs" aria-hidden="true" />
+                    <span>
+                      <b>{r.lower}</b>
+                      <small>{r.lowerPlace}</small>
+                    </span>
                   </span>
-                  <span className="k-f9-pair-vs" aria-hidden="true" />
-                  <span>
-                    <b>{r.lower}</b>
-                    <small>{r.lowerPlace}</small>
-                  </span>
+                  <span className="k-f9-row-point">{r.point}</span>
                 </span>
-                <span className="k-f9-row-point">{r.point}</span>
-              </span>
-              <Button variant="outlined" size="sm" aria-label={`${r.upper}と${r.lower}を並べて見る`}>
-                並べて見る
-              </Button>
-            </li>
+                <Button
+                  variant="outlined"
+                  size="sm"
+                  aria-label={`${r.upper}と${r.lower}を並べて見る`}
+                  {...(handlers
+                    ? {
+                        onClick: () => handlers.compare(r.id),
+                        "aria-expanded": Boolean(openIds?.has(r.id)),
+                        ...(openIds?.has(r.id) ? { "aria-controls": `rv-pair-${r.id}` } : {}),
+                      }
+                    : {})}
+                >
+                  並べて見る
+                </Button>
+              </li>
+              {openIds?.has(r.id) && panes?.[r.id] ? (
+                <li className="k-f9-pair-open">
+                  <div id={`rv-pair-${r.id}`} role="region" aria-label="2 つのページを並べて見る">
+                    {panes[r.id]}
+                  </div>
+                </li>
+              ) : null}
+            </Fragment>
           ))}
         </ul>
       </Block>
 
       <Block
         id="rv-broken"
+        empty={emptyTexts?.broken}
+        note={limitNotes?.broken}
         title="よく破られる決まり"
         n={broken.length}
         lead="この 30 日に、AI が守れなかった数の多い順です。書き方があいまいなことが多いので、直します。"
@@ -210,14 +273,19 @@ export function ReviewView({ unused, conflicts, broken }: ReviewProps) {
           {broken.map((r) => (
             <li key={r.id} className="k-f9-row">
               <span className="k-f9-row-main">
-                <b>{r.title}</b>
+                <b id={`rv-tb-${r.id}`}>{r.title}</b>
                 <small>{r.place}</small>
                 <span className="k-f9-row-point">{r.how}</span>
               </span>
               <span className="k-f9-row-num">
                 <b>{r.count}</b> 回
               </span>
-              <Button variant="outlined" size="sm" aria-label={`${r.title}の書き方を直す`}>
+              <Button
+                variant="outlined"
+                size="sm"
+                aria-describedby={`rv-tb-${r.id}`}
+                {...(handlers ? { onClick: () => handlers.fix(r.id) } : {})}
+              >
                 書き方を直す
               </Button>
             </li>
