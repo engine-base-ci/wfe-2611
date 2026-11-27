@@ -1990,6 +1990,170 @@
      ]
     }
    ]
+  },
+  {
+   "id": "bridge-setup-foot",
+   "kind": "page",
+   "canvas": "MePCInstalled",
+   "app": "/setup/bridge",
+   "state": "bridge-setup-foot",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-367",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main > div > section h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main > div > section > :first-child",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > div > section",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "この PC の Bridge のカード",
+     "role": "card",
+     "canvas": "main > div > section > div:nth-child(2)",
+     "app": ".k-pc-this",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "このアカウントに切り替える",
+     "role": "primary",
+     "canvas": "[data-act=\"switch-account\"]",
+     "app": "[data-act=\"switch-account\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "login-invite",
+   "kind": "auth",
+   "canvas": "AuthLogin",
+   "app": "/login?next=%2Finvite%2F{ticket}",
+   "state": "login-invite",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-855",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "x-dc > div > div:nth-of-type(2) > input:first-of-type",
+     "app": "[data-part=\"auth-box\"] input[autocomplete=\"email\"]",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a:first-of-type",
+     "app": "[data-part=\"auth-box\"] [data-act=\"passkey\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
   }
  ]
 }
