@@ -193,7 +193,9 @@ describe("K-738 守れていなかったと知らせる（DB の関数 app.ticke
     const s = await scene(h, "k738-006");
     const r = await mkRun(s);
     await aiCheck(h, s.specs.gp);
-    const human = await guardSpec(h, s.w, s.ticket, s.pages.co, s.w.mem1, { by: "human" });
+    // 同じチケット・同じページの生きている knowledge の行は 1 つ（段10 の K-700 の test_specs_knowledge_uq）。人が付けた行は別の必ず守るのページから入れる
+    const humanPage = await pubPage(h, s.w.co.rootScope, s.w.boss, "人が付けた行のページ", { must: true });
+    const human = await guardSpec(h, s.w, s.ticket, humanPage, s.w.mem1, { by: "human" });
     const snap = async () =>
       q(
         "select id, checked_at, checked_by_ai, checked_by_member_id, version from test_specs where ticket_id = $1 order by id",

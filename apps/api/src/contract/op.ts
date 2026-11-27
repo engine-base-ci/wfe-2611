@@ -411,7 +411,8 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     } else if (def.kind === "create" || def.kind === "update") {
       let raw: unknown;
       try {
-        raw = normalize(JSON.parse(bodyText ?? ""));
+        // 体なしの口（Hook.noBody・K-896）は、空の体だけ {} として読む（空でない字は JSON の読みに通す）
+        raw = deps.hooks[operationId]?.noBody && (bodyText ?? "") === "" ? {} : normalize(JSON.parse(bodyText ?? ""));
       } catch {
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message: "JSON" }] });
       }

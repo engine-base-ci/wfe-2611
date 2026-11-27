@@ -18,7 +18,25 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import { makeFixture, type Fixture } from "../fixture.js";
-import { asG, asJson, asM, chat, count, failOn, group, guest, hasNoDetail, request, requestMsg, share, ticket, useHooks, world, type Json, type World } from "./portal-world.js";
+import {
+  asG,
+  asJson,
+  asM,
+  chat,
+  count,
+  failOn,
+  group,
+  guest,
+  hasNoDetail,
+  request,
+  requestMsg,
+  share,
+  ticket,
+  useHooks,
+  world,
+  type Json,
+  type World,
+} from "./portal-world.js";
 
 let f: Fixture;
 beforeAll(async () => {
@@ -43,8 +61,14 @@ const home = (p: Awaited<ReturnType<typeof guest>> | null, role: "client" | "mem
 const homeOf = async (r: Response): Promise<Home> => (await asJson(r)).data as unknown as Home;
 const tget = (id: string, p: Awaited<ReturnType<typeof guest>> | null, role: "client" | "member" = "client") =>
   f.req("GET", `/portal/tickets/${id}`, p ? { headers: role === "client" ? asG(f, p) : asM(f, p) } : {});
-const notices = (p: Awaited<ReturnType<typeof guest>> | null) => f.req("GET", "/portal/notices", p ? { headers: asG(f, p) } : {});
-const ctxOf = (w: World, p: { id: string }, role: TenantContext["role"] = "client"): TenantContext => ({ tenantId: w.tenantId, userId: p.id, role, stepUpAt: null });
+const notices = (p: Awaited<ReturnType<typeof guest>> | null) =>
+  f.req("GET", "/portal/notices", p ? { headers: asG(f, p) } : {});
+const ctxOf = (w: World, p: { id: string }, role: TenantContext["role"] = "client"): TenantContext => ({
+  tenantId: w.tenantId,
+  userId: p.id,
+  role,
+  stepUpAt: null,
+});
 
 describe("K-906 ホーム（getPortalHome）", () => {
   it("K906-API-001 形：200・no-store・鍵は group_name・tenant_name・request_scope_name・me・first_visit・requests・tickets（to_review・期限・担当の欄は無い）。me は表示名とその頭の 1 字", async () => {
@@ -54,7 +78,15 @@ describe("K-906 ホーム（getPortalHome）", () => {
     expect(r.status, await r.clone().text()).toBe(200);
     expect(r.headers.get("cache-control") ?? "").toContain("no-store");
     const d = (await asJson(r)).data as Json;
-    expect(Object.keys(d).sort()).toEqual(["first_visit", "group_name", "me", "request_scope_name", "requests", "tenant_name", "tickets"]);
+    expect(Object.keys(d).sort()).toEqual([
+      "first_visit",
+      "group_name",
+      "me",
+      "request_scope_name",
+      "requests",
+      "tenant_name",
+      "tickets",
+    ]);
     expect(d["me"]).toEqual({ name: "山田 花子", initial: "山" });
     expect(String(d["tenant_name"])).toMatch(/^ポータル試験 001 /);
     expect(d["request_scope_name"]).toBe("営業");
@@ -69,7 +101,12 @@ describe("K-906 ホーム（getPortalHome）", () => {
     expect((await homeOf(await home(a1))).first_visit).toBe(true);
     expect((await homeOf(await home(a1))).first_visit).toBe(false);
     expect((await homeOf(await home(a1))).first_visit).toBe(false);
-    expect(await count(f, "audit_events", "tenant_id = $1 and action = 'portal.first_visit' and actor_member_id = $2", [w.tenantId, a1.id])).toBe(1);
+    expect(
+      await count(f, "audit_events", "tenant_id = $1 and action = 'portal.first_visit' and actor_member_id = $2", [
+        w.tenantId,
+        a1.id,
+      ]),
+    ).toBe(1);
     expect((await homeOf(await home(a2))).first_visit).toBe(true);
     expect(await count(f, "audit_events", "tenant_id = $1 and action = 'portal.first_visit'", [w.tenantId])).toBe(2);
   });
@@ -138,7 +175,13 @@ describe("K-906 ホーム（getPortalHome）", () => {
     const w = await world(f, "006");
     const a = await guest(f, w, "甲", w.gA);
     const want: [string | null, string][] = [
-      ["done", "完了"], ["checking", "確認中"], ["awaiting_approval", "確認中"], ["todo", "作っている"], ["doing", "作っている"], ["hold", "作っている"], ["running", "作っている"],
+      ["done", "完了"],
+      ["checking", "確認中"],
+      ["awaiting_approval", "確認中"],
+      ["todo", "作っている"],
+      ["doing", "作っている"],
+      ["hold", "作っている"],
+      ["running", "作っている"],
     ];
     const ids: [string, string][] = [];
     for (const [key, label] of want) {
@@ -146,7 +189,10 @@ describe("K-906 ホーム（getPortalHome）", () => {
       await share(f, w, t, w.gA);
       ids.push([t, label]);
     }
-    await f.admin.query("insert into ticket_stages (tenant_id, key, name, position) values ($1, null, '自分の段', 15) on conflict do nothing", [w.tenantId]);
+    await f.admin.query(
+      "insert into ticket_stages (tenant_id, key, name, position) values ($1, null, '自分の段', 15) on conflict do nothing",
+      [w.tenantId],
+    );
     const custom = await ticket(f, w, { title: "自分の段", stageKey: null });
     await share(f, w, custom, w.gA);
     ids.push([custom, "作っている"]);
@@ -158,10 +204,14 @@ describe("K-906 ホーム（getPortalHome）", () => {
     const w = await world(f, "007");
     const a = await guest(f, w, "甲", w.gA);
     const t = await ticket(f, w, { due: "2031-03-14" });
-    await f.admin.query("update tickets set assignee_member_id = $2, priority = 'high', priority_reason = '社内の理由ひみつ' where id = $1", [t, w.staff.id]);
+    await f.admin.query(
+      "update tickets set assignee_member_id = $2, priority = 'high', priority_reason = '社内の理由ひみつ' where id = $1",
+      [t, w.staff.id],
+    );
     await share(f, w, t, w.gA);
     const raw = await (await home(a)).text();
-    for (const s of ["2031-03-14", "社内の理由ひみつ", w.staff.id, "priority", "assignee", "due"]) expect(raw, s).not.toContain(s);
+    for (const s of ["2031-03-14", "社内の理由ひみつ", w.staff.id, "priority", "assignee", "due"])
+      expect(raw, s).not.toContain(s);
   });
 
   it("K906-API-008 0 件：依頼もチケットも無いグループは requests・tickets が空の配列で 200（first_visit は true）", async () => {
@@ -178,9 +228,18 @@ describe("K-906 ホーム（getPortalHome）", () => {
     const keep = await guest(f, w, "残る", w.gA);
     const cases: [string, (id: string) => Promise<unknown>][] = [
       ["抜けた", (id) => f.admin.query("update tenant_memberships set status = 'left' where member_id = $1", [id])],
-      ["止めた", (id) => f.admin.query("update tenant_memberships set status = 'suspended' where member_id = $1", [id])],
-      ["グループから外された", (id) => f.admin.query("update guest_group_members set deleted_at = now() where member_id = $1", [id])],
-      ["役割が変わった", (id) => f.admin.query("update tenant_memberships set role = 'member' where member_id = $1", [id])],
+      [
+        "止めた",
+        (id) => f.admin.query("update tenant_memberships set status = 'suspended' where member_id = $1", [id]),
+      ],
+      [
+        "グループから外された",
+        (id) => f.admin.query("update guest_group_members set deleted_at = now() where member_id = $1", [id]),
+      ],
+      [
+        "役割が変わった",
+        (id) => f.admin.query("update tenant_memberships set role = 'member' where member_id = $1", [id]),
+      ],
     ];
     for (const [label, cut] of cases) {
       const p = await guest(f, w, label, w.gA);
@@ -191,7 +250,10 @@ describe("K-906 ホーム（getPortalHome）", () => {
       expect((await asJson(r))["code"]).toBe("FORBIDDEN");
     }
     const lonely = await guest(f, w, "消える社の人", await group(f, w, "消える社"));
-    await f.admin.query("update guest_groups set deleted_at = now() where id = (select guest_group_id from guest_group_members where member_id = $1)", [lonely.id]);
+    await f.admin.query(
+      "update guest_groups set deleted_at = now() where id = (select guest_group_id from guest_group_members where member_id = $1)",
+      [lonely.id],
+    );
     expect((await home(lonely)).status).toBe(403);
     expect((await home(keep)).status).toBe(200);
   });
@@ -200,7 +262,11 @@ describe("K-906 ホーム（getPortalHome）", () => {
     const w = await world(f, "010");
     const free = await guest(f, w, "どこにも入っていない", null);
     const t = await ticket(f, w, {});
-    for (const [method, path] of [["GET", "/portal"], ["GET", `/portal/tickets/${t}`], ["GET", "/portal/notices"]] as const) {
+    for (const [method, path] of [
+      ["GET", "/portal"],
+      ["GET", `/portal/tickets/${t}`],
+      ["GET", "/portal/notices"],
+    ] as const) {
       expect((await f.req(method, path, { headers: asM(f, w.boss) })).status, `${path} 社内の人`).toBe(403);
       expect((await f.req(method, path)).status, `${path} ログインなし`).toBe(401);
       expect((await f.req(method, path, { headers: asG(f, free) })).status, `${path} グループなし`).toBe(403);
@@ -217,7 +283,11 @@ describe("K-906 ホーム（getPortalHome）", () => {
       const r = await home(a);
       expect(r.status).toBe(429);
       const j = await asJson(r);
-      expect(Number.isInteger(j["retry_after_sec"]) && (j["retry_after_sec"] as number) >= 1 && (j["retry_after_sec"] as number) <= 60).toBe(true);
+      expect(
+        Number.isInteger(j["retry_after_sec"]) &&
+          (j["retry_after_sec"] as number) >= 1 &&
+          (j["retry_after_sec"] as number) <= 60,
+      ).toBe(true);
       expect(r.headers.get("cache-control") ?? "").toContain("no-store");
     } finally {
       delete f.limits["getPortalHome"];
@@ -240,7 +310,15 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
   it("K906-API-013 形：見せたチケットは 200・no-store・鍵はちょうど ticket・messages。ticket は id・title・stage・body・detail・from_request。本文と詳細は区画の字。詳細の区画が無ければ空の字", async () => {
     const w = await world(f, "013");
     const a = await guest(f, w, "甲", w.gA);
-    const [t, bare] = [await ticket(f, w, { title: "請求書を送る", body: "保守費を請求する", detail: "1,500,000 円", stageKey: "checking" }), await ticket(f, w, { title: "詳細なし", body: "本文だけ" })];
+    const [t, bare] = [
+      await ticket(f, w, {
+        title: "請求書を送る",
+        body: "保守費を請求する",
+        detail: "1,500,000 円",
+        stageKey: "checking",
+      }),
+      await ticket(f, w, { title: "詳細なし", body: "本文だけ" }),
+    ];
     await share(f, w, t, w.gA);
     await share(f, w, bare, w.gA);
     const r = await tget(t, a);
@@ -248,7 +326,14 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
     expect(r.headers.get("cache-control") ?? "").toContain("no-store");
     const d = (await asJson(r)).data as { ticket: Json; messages: unknown[] };
     expect(Object.keys(d).sort()).toEqual(["messages", "ticket"]);
-    expect(d.ticket).toEqual({ id: t, title: "請求書を送る", stage: "確認中", body: "保守費を請求する", detail: "1,500,000 円", from_request: false });
+    expect(d.ticket).toEqual({
+      id: t,
+      title: "請求書を送る",
+      stage: "確認中",
+      body: "保守費を請求する",
+      detail: "1,500,000 円",
+      from_request: false,
+    });
     expect(((await asJson(await tget(bare, a))).data as { ticket: Json }).ticket["detail"]).toBe("");
   });
 
@@ -265,7 +350,15 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
     await share(f, w, other, w.gB);
     await share(f, w, gone, w.gA);
     const draft = await ticket(f, w, { title: "ひみつの題" });
-    await f.admin.query("update tickets set draft_import_id = $2 where id = $1", [draft, (await f.admin.query<{ id: string }>("insert into ticket_imports (tenant_id, uploaded_by, scope_id, source) values ($1, $2, $3, 'generic') returning id", [w.tenantId, w.boss.id, w.root])).rows[0]!.id]);
+    await f.admin.query("update tickets set draft_import_id = $2 where id = $1", [
+      draft,
+      (
+        await f.admin.query<{ id: string }>(
+          "insert into ticket_imports (tenant_id, uploaded_by, scope_id, source) values ($1, $2, $3, 'generic') returning id",
+          [w.tenantId, w.boss.id, w.root],
+        )
+      ).rows[0]!.id,
+    ]);
     await share(f, w, draft, w.gA);
     const o = await world(f, "014x");
     const foreign = await ticket(f, o, { title: "ひみつの題" });
@@ -285,11 +378,29 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
     const a = await guest(f, w, "甲", w.gA);
     const t = await ticket(f, w, { due: "2031-03-14" });
     await f.admin.query("update tickets set assignee_member_id = $2 where id = $1", [t, w.staff.id]);
-    await f.admin.query("insert into test_specs (tenant_id, ticket_id, check_kind, title) values ($1, $2, 'human', '確認項目ひみつ')", [w.tenantId, t]);
-    await f.admin.query("insert into ticket_decisions (tenant_id, ticket_id, text, decided_by) values ($1, $2, '決定ひみつ', $3)", [w.tenantId, t, w.boss.id]);
+    await f.admin.query(
+      "insert into test_specs (tenant_id, ticket_id, check_kind, title) values ($1, $2, 'human', '確認項目ひみつ')",
+      [w.tenantId, t],
+    );
+    await f.admin.query(
+      "insert into ticket_decisions (tenant_id, ticket_id, text, decided_by) values ($1, $2, '決定ひみつ', $3)",
+      [w.tenantId, t, w.boss.id],
+    );
     await share(f, w, t, w.gA);
     const raw = await (await tget(t, a)).text();
-    for (const s of ["2031-03-14", "確認項目ひみつ", "決定ひみつ", w.staff.id, "assignee", "due_on", "priority", "checks", "decisions", "artifacts"]) expect(raw, s).not.toContain(s);
+    for (const s of [
+      "2031-03-14",
+      "確認項目ひみつ",
+      "決定ひみつ",
+      w.staff.id,
+      "assignee",
+      "due_on",
+      "priority",
+      "checks",
+      "decisions",
+      "artifacts",
+    ])
+      expect(raw, s).not.toContain(s);
     expect((await tget(t, w.boss, "member")).status).toBe(403);
   });
 
@@ -300,8 +411,8 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
     await share(f, w, viaReq, w.gA);
     await share(f, w, plain, w.gA);
     await request(f, w, w.gA, a, { ticketId: viaReq });
-    expect((((await asJson(await tget(viaReq, a))).data as { ticket: Json }).ticket)["from_request"]).toBe(true);
-    expect((((await asJson(await tget(plain, a))).data as { ticket: Json }).ticket)["from_request"]).toBe(false);
+    expect(((await asJson(await tget(viaReq, a))).data as { ticket: Json }).ticket["from_request"]).toBe(true);
+    expect(((await asJson(await tget(plain, a))).data as { ticket: Json }).ticket["from_request"]).toBe(false);
   });
 
   it("K906-API-017 チャット：ゲストに見える書き込み（guest_visible）の post だけを古い順に返す。変更・仕組みの書き込みと見せない書き込みは出ない。書いた人が役割 requester なら side は they・社内の人は we。鍵は id・side・name・at・text。依頼から来た書き込みにだけ from_request: true", async () => {
@@ -315,10 +426,22 @@ describe("K-906 見せてもらったチケット（getPortalTicket）", () => {
     await chat(f, w, t, w.staff, "期限を変えました", { ago: "30 minutes", kind: "change", visible: true });
     await chat(f, w, t, a2, "こちらも確認します");
     await chat(f, w, t, a, "依頼の本文です", { ago: "4 hours", fromRequest: true });
-    const m = ((await asJson(await tget(t, a))).data as { messages: { id: string; side: string; name: string; at: string; text: string; from_request?: true }[] }).messages;
-    expect(m.map((x) => [x.side, x.name, x.text])).toEqual([["they", "山田", "依頼の本文です"], ["we", "営業の人", "始めました"], ["they", "山田", "お願いします"], ["they", "鈴木", "こちらも確認します"]]);
+    const m = (
+      (await asJson(await tget(t, a))).data as {
+        messages: { id: string; side: string; name: string; at: string; text: string; from_request?: true }[];
+      }
+    ).messages;
+    expect(m.map((x) => [x.side, x.name, x.text])).toEqual([
+      ["they", "山田", "依頼の本文です"],
+      ["we", "営業の人", "始めました"],
+      ["they", "山田", "お願いします"],
+      ["they", "鈴木", "こちらも確認します"],
+    ]);
     expect(Object.keys(m[1]!).sort()).toEqual(["at", "id", "name", "side", "text"]);
-    expect(m.map((x) => x.from_request ?? null), "依頼から来た 1 件にだけ from_request: true").toEqual([true, null, null, null]);
+    expect(
+      m.map((x) => x.from_request ?? null),
+      "依頼から来た 1 件にだけ from_request: true",
+    ).toEqual([true, null, null, null]);
   });
 
   it("K906-API-018 グループの全員が同じ物を読む：同じグループの別のゲストも同じ答え・別のグループのゲストは 404。外すとすぐ 404（G-14）・足し直すとまた 200", async () => {
@@ -355,21 +478,48 @@ describe("K-906 お知らせ（listPortalNotices）と表の守り", () => {
   it("K906-API-020 お知らせ：公開済み・全部向け・placements に banner を含む物だけ（下書き・予約・消した・特定の会社向け・プラン向け・banner の無い物・期限の過ぎた保守は出ない）。新しい順・3 件まで・鍵は id・title・body", async () => {
     const w = await world(f, "020");
     const a = await guest(f, w, "甲", w.gA);
-    const mk = async (title: string, o: { state?: string; tenant?: string | null; plans?: boolean; place?: string; deleted?: boolean; mto?: string; ago?: string } = {}) =>
-      (await f.admin.query<{ id: string }>(
-        `insert into notices (kind_id, title, body, state, target_tenant_id, target_plan_ids, placements, maintenance_to, deleted_at, created_at)
+    const mk = async (
+      title: string,
+      o: {
+        state?: string;
+        tenant?: string | null;
+        plans?: boolean;
+        place?: string;
+        deleted?: boolean;
+        mto?: string;
+        ago?: string;
+      } = {},
+    ) =>
+      (
+        await f.admin.query<{ id: string }>(
+          `insert into notices (kind_id, title, body, state, target_tenant_id, target_plan_ids, placements, maintenance_to, deleted_at, created_at)
          values ('incident', $1, $2, $3, $4, ${o.plans ? "array[gen_random_uuid()]" : "null"}, $5::text[], ${o.mto ? `now() + interval '${o.mto}'` : "null"}, ${o.deleted ? "now()" : "null"}, now() - $6::interval) returning id`,
-        [`K906-${title}`, `本文 ${title}`, o.state ?? "published", o.tenant ?? null, o.place ?? "{banner,list}", o.ago ?? "0 seconds"],
-      )).rows[0]!.id;
+          [
+            `K906-${title}`,
+            `本文 ${title}`,
+            o.state ?? "published",
+            o.tenant ?? null,
+            o.place ?? "{banner,list}",
+            o.ago ?? "0 seconds",
+          ],
+        )
+      ).rows[0]!.id;
     await f.admin.query("update notices set deleted_at = now() where title like 'K906-%'");
-    const [n1, n2, n3, n4] = [await mk("一番新しい", { ago: "1 minute" }), await mk("二番目", { ago: "1 hour" }), await mk("三番目", { ago: "2 hours" }), await mk("四番目", { ago: "3 hours" })];
+    const [n1, n2, n3, n4] = [
+      await mk("一番新しい", { ago: "1 minute" }),
+      await mk("二番目", { ago: "1 hour" }),
+      await mk("三番目", { ago: "2 hours" }),
+      await mk("四番目", { ago: "3 hours" }),
+    ];
     await mk("下書き", { state: "draft" });
     await mk("予約", { state: "scheduled" });
     await mk("消した", { deleted: true });
     await mk("この会社向け", { tenant: w.tenantId });
     await mk("プラン向け", { plans: true });
     await mk("bannerなし", { place: "{list}" });
-    await f.admin.query("update notices set maintenance_to = now() - interval '1 day' where id = (select id from notices where title = 'K906-四番目')");
+    await f.admin.query(
+      "update notices set maintenance_to = now() - interval '1 day' where id = (select id from notices where title = 'K906-四番目')",
+    );
     const r = await notices(a);
     expect(r.status, await r.clone().text()).toBe(200);
     const d = (await asJson(r)).data as { id: string; title: string; body: string }[];
@@ -392,11 +542,18 @@ describe("K-906 お知らせ（listPortalNotices）と表の守り", () => {
     const t = await ticket(f, w, {});
     await share(f, w, t, w.gA);
     await chat(f, w, t, a, "書き込み");
-    const inGuest = (table: string) => withTenant(f.pool, ctxOf(w, a), async (cl) => (await cl.query(`select 1 from ${table}`)).rowCount ?? 0);
-    for (const table of ["ticket_sections", "notices", "ticket_messages", "client_request_messages"]) expect(await inGuest(table), table).toBe(0);
+    const inGuest = (table: string) =>
+      withTenant(f.pool, ctxOf(w, a), async (cl) => (await cl.query(`select 1 from ${table}`)).rowCount ?? 0);
+    for (const table of ["ticket_sections", "notices", "ticket_messages", "client_request_messages"])
+      expect(await inGuest(table), table).toBe(0);
     for (const fn of ["app.portal_home()", `app.portal_ticket('${t}')`, "app.portal_notices()"]) {
-      await expect(withTenant(f.pool, ctxOf(w, w.boss, "member"), (cl) => cl.query(`select ${fn}`)), fn).rejects.toMatchObject({ code: "42501" });
+      await expect(
+        withTenant(f.pool, ctxOf(w, w.boss, "member"), (cl) => cl.query(`select ${fn}`)),
+        fn,
+      ).rejects.toMatchObject({ code: "42501" });
     }
-    expect(await withTenant(f.pool, ctxOf(w, a), async (cl) => (await cl.query("select app.portal_home() as v")).rowCount)).toBe(1);
+    expect(
+      await withTenant(f.pool, ctxOf(w, a), async (cl) => (await cl.query("select app.portal_home() as v")).rowCount),
+    ).toBe(1);
   });
 });

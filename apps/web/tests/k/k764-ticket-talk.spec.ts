@@ -331,7 +331,10 @@ test("K764-UI-022 横の詳細（一覧の右に開く詳細）：帯の［AI �
     (route) =>
       route.request().method() === "GET"
         ? route.fulfill({
-            json: { data: [item(0, { id: TICKET, number: "EG-133", title: "セイコー様へ 11 月分の請求書を送る" })], meta: { next_cursor: null } },
+            json: {
+              data: [item(0, { id: TICKET, number: "EG-133", title: "セイコー様へ 11 月分の請求書を送る" })],
+              meta: { next_cursor: null },
+            },
           })
         : route.fallback(),
   );

@@ -124,8 +124,8 @@ begin
   end if;
 
   -- ⑥ グループの行（名前・色）
-  if v_name is not null then v_fields := v_fields || 'name'; end if;
-  if v_color is not null then v_fields := v_fields || 'color'; end if;
+  if v_name is not null then v_fields := v_fields || 'name'::text; end if;
+  if v_color is not null then v_fields := v_fields || 'color'::text; end if;
   if v_name is not null or v_color is not null then
     update scopes s set name = coalesce(v_name, s.name), color = coalesce(v_color, s.color),
                         updated_at = now(), updated_by = v_self
@@ -133,7 +133,7 @@ begin
   end if;
   -- ⑦ マネージャーの入れ替え（指した人を manager に・外れた manager を member に・所属は残す）
   if v_has_managers then
-    v_fields := v_fields || 'manager_member_ids';
+    v_fields := v_fields || 'manager_member_ids'::text;
     update scope_memberships sm set role = 'member', changed_by = v_self, updated_at = now(), updated_by = v_self
      where sm.scope_id = p_id and sm.tenant_id = v_tenant and sm.deleted_at is null and sm.role = 'manager'
        and not (sm.member_id = any (v_managers));
@@ -150,7 +150,7 @@ begin
   end if;
   -- ⑧ 並び（兄弟の中で位置を指す・範囲を超えた値は最後・ほかの兄弟を詰めて 1 から振り直す）
   if v_pos is not null then
-    v_fields := v_fields || 'position';
+    v_fields := v_fields || 'position'::text;
     select count(*) into v_count from scopes s
      where s.tenant_id = v_tenant and s.parent_id is not distinct from v_parent and s.deleted_at is null and s.id <> p_id;
     v_pos := least(v_pos, v_count + 1);

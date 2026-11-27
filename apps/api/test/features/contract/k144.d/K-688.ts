@@ -5,6 +5,10 @@
 import type { K144Leaf } from "./_base.js";
 
 export const leaf: K144Leaf = {
+  setup: async (f) => {
+    // 正しい uuid の行は口の振る舞いまで進む（hooks が無いと 501＝契約の並びに無い）。葉ごとの hooks のファイルの register（K-326）を 1 回だけ読む // K-688
+    (await import("../../F3/leaf-hooks.js")).leafHooks(f, ["f9-knowledge-approvals"]); // K-688
+  },
   UUID_PARAM_CASES: [
     ["K144-API-130", "approveKnowledgeRequest", "path", "id"], // K-688
     ["K144-API-131", "declineKnowledgeRequest", "path", "id"], // K-688

@@ -184,7 +184,10 @@ describe("K-464 AI が止まったとき担当者に知らせを書く", () => {
     await ready();
     const tm = await team("AI を動かす人");
     const t = await ticket({ assignee: tm.by, title: "消されるチケット" });
-    const r = await req("POST", `/tickets/${t.id}/delegate`, { body: { no_spec_reason: NO_SPEC }, headers: auth(tm.by) });
+    const r = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(tm.by),
+    });
     expect(r.status).toBe(201);
     const jobId = String(((await json(r)).data as Record<string, unknown>)["job_id"]);
     expect((await take(tm.pc))?.id).toBe(jobId);
@@ -199,7 +202,10 @@ describe("K-464 AI が止まったとき担当者に知らせを書く", () => {
     const tm = await team("AI を動かす人");
     const stopped = await member("止められた担当者");
     const t = await ticket({ assignee: stopped, title: "担当者が止められたチケット" });
-    const r = await req("POST", `/tickets/${t.id}/delegate`, { body: { no_spec_reason: NO_SPEC }, headers: auth(tm.by) });
+    const r = await req("POST", `/tickets/${t.id}/delegate`, {
+      body: { no_spec_reason: NO_SPEC },
+      headers: auth(tm.by),
+    });
     expect(r.status, await r.clone().text()).toBe(201);
     const jobId = String(((await json(r)).data as Record<string, unknown>)["job_id"]);
     expect((await take(tm.pc))?.id).toBe(jobId);
