@@ -161,7 +161,8 @@ test("K571-UI-006 結果の場所が無い：results が空なら場所ごと出
 });
 
 test("K571-UI-007 差し込み口が残り、入口が足される（複製・版と差分・本文・パネルの親の行・子チケットとつながりのカード・題の行の完了にする／AI に任せる）：ticket-detail.tsx に F6.SectionSlot（結果の場所と前の形の区画の 1 つずつ）・F6.DetailScope・F8.DetailScope・帯の順の入れ物、detail-panel.tsx に F6.PanelTabsSlot・F6.EstimateSlot・F6.ActualTimeSlot・F8.AssigneeSlot、題の行に複製と版と差分の入口、本文に BodySlot", () => {
-  const d = src("ticket-detail.tsx");
+  // 本文の場所と区画（F6.SectionSlot・BodySlot）は K-571 が detail-body.tsx に切り出した。詳細は 2 つを合わせて見る
+  const d = src("ticket-detail.tsx") + src("detail-body.tsx");
   const bad: string[] = [];
   for (const n of [
     "F6.SectionSlot",

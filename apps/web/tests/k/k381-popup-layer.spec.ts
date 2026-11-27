@@ -99,6 +99,9 @@ test('K381-SRC-001 apps/web の Base UI の置き場（Menu・Select の Positio
       "apps/web/components/k/menu.tsx",
       "apps/web/components/k/select.tsx",
       "apps/web/components/k/shell.tsx",
+      // 段 5 の文書の編集の道具の帯と表の「…」（K-587・2026-11-27）も同じ置き場の決まりで Menu の Positioner を持つ
+      "apps/web/features/F4/doc/editor/bar-menu.tsx",
+      "apps/web/features/F4/doc/editor/table-menu.tsx",
     ].sort(),
   );
   expect(bad, bad.join("\n")).toEqual([]);
