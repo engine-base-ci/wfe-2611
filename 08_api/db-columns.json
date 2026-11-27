@@ -5318,11 +5318,35 @@
     "type": "timestamp with time zone",
     "nullable": false
    },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "existing_from": {
+    "type": "date",
+    "nullable": true
+   },
    "id": {
     "type": "uuid",
     "nullable": false
    },
+   "member_limit": {
+    "type": "integer",
+    "nullable": true
+   },
+   "new_from": {
+    "type": "date",
+    "nullable": true
+   },
    "plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "price_monthly": {
+    "type": "integer",
+    "nullable": true
+   },
+   "proposal_id": {
     "type": "uuid",
     "nullable": true
    },
