@@ -2,7 +2,7 @@
 #   ゲストのグループの依頼を、届け先の社内のグループが見える人（と会社全体の edit を持つ人）が読む（D-155.43・D-155.40）。
 #   route・getClientRequest の答えの形・権限・問い合わせの行は本体（05_flow/screen_api.py）の前からある行を直した。ここは本体に無い物だけ。
 #   一覧の答えは並びでなく { items, counts }（画面 K-898 が前提にした形）。並びでない一覧なので OBJECT_OPS に入れ、cursor・limit・sort を契約に足さない
-OBJECT_OPS = {"listClientRequests"}
+OBJECT_OPS = {"listClientRequests": "一覧の答えは並びでなく { items, counts }（K-892・画面 K-898）"}
 
 RESPONSES = {
     "listClientRequests": ("ClientRequestList", {"items": "array", "counts": "object"}),
