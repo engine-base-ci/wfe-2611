@@ -252,7 +252,9 @@ test("K745-UI-010 画面：幅 375・768・1440 で小窓は横溢れ 0・丸 2 
       await expect(b).toBeInViewport();
     if (w === 375) {
       const r = await dialogOf(page).boundingBox();
-      expect(r && Math.abs(812 - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
+      // 画面の高さは openTicket が決めた値で見る（812 と決め打ちしない・K734-UI-017 と同じ）
+      const vh = page.viewportSize()!.height;
+      expect(r && Math.abs(vh - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
     }
   }
 });

@@ -65,7 +65,7 @@ export function ChecksView({ summary, rows, reason }: ViewProps): ReactNode {
                   >
                     {r.checked ? "✓" : "□"}
                   </span>
-                  {r.text}
+                  <span>{r.text}</span>
                 </td>
               </tr>
             ))}

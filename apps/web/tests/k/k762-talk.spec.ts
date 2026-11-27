@@ -23,7 +23,7 @@ import {
   view,
   working,
 } from "./talk-mock";
-import { ROOT, ROOM_HEAD_PAIRS, WIDTHS_ALL, err, msg, openRoom, overflowX, tabs } from "./room-mock";
+import { ROOT, ROOM_HEAD_PAIRS, WIDTHS_ALL, err, msg, openRoom, overflowX, tabs, todayJst } from "./room-mock";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -536,7 +536,8 @@ const TALK_PAIRS: FidelityPair[] = [
   p("quota", ".k-room-quota", ["x", "y", "texts"]),
 ];
 // 注：下絵の「見たもの」・AI の返事の中の箇条・書く欄の「5 時間の枠」・一覧の「〜」は K-755 が下絵の側を直す（K-755 に依存）。比べない役は無い
-const SKIP: string[] = [];
+// 日の区切りは真ん中に寄せた「今日 M/D（曜）」で、試験の会話は今日の日付・下絵は 11/2 の字。字の幅が日付で変わるので x は比べない（y・字・色は比べる）
+const SKIP: string[] = ["day-sep:x"];
 async function match(
   browser: Browser,
   id: string,
@@ -654,7 +655,8 @@ test("K762-UI-026 下絵との突き合わせ：talk-sending（答えを止め�
     await open(`/ai/talk?c=${C1}`)(pg, w);
   });
   await match(browser, "talk-pc-none", async (pg, w) => {
-    await mockTalk(pg, { pc: "none", rows: [] });
+    // 下絵の「PC がまだ」は今日できた分身（「今日から」）。本番も同じ日に始めた分身で開く
+    await mockTalk(pg, { pc: "none", rows: [], since: todayJst() });
     await open("/ai/talk")(pg, w);
   });
 });

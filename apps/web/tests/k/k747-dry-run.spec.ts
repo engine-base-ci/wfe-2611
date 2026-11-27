@@ -69,7 +69,9 @@ async function mockDry(page: Page, o: { run?: Record<string, unknown> | null; ma
   d.w = await layer(page, (req, path) => {
     if (req.method() === "POST" && path === DRY) {
       d.count++;
-      const id = d.count === 1 ? RUN_ID : `0193c5a0-0000-7000-8000-0000000e00${String(d.count).padStart(2, "0")}`;
+      // 前に実行が在れば（「もう一度試し打ち」）新しい run_id にする（前と同じ id だと、終わった前の実行の答えが残って帯が戻らない）
+      const fresh = d.count === 1 && d.run?.id !== RUN_ID;
+      const id = fresh ? RUN_ID : `0193c5a0-0000-7000-8000-0000000e00${String(d.count + 1).padStart(2, "0")}`;
       d.run = runRow({ id, phase: "dry_run", status: "queued", by: { member_id: ME, display_name: "高本" } });
       return {
         status: 201,
@@ -134,7 +136,8 @@ test("K747-UI-003 入力：小窓の「試し打ちする」で試し打ちの�
   await openDry(page);
   await go(page).click();
   await expect.poll(() => d.w.of(/dry-run$/).length).toBe(1);
-  expect(d.w.of(/dry-run$/)[0]).toEqual({ path: DRY, body: {} });
+  // 書いた口の控え（f5-more-kit の layer・K-730）は method も持つ（K734・K735 の行と同じ形で見る）
+  expect(d.w.of(/dry-run$/)[0]).toEqual({ method: "POST", path: DRY, body: {} });
   await expect(confirmOf(page)).toHaveCount(0);
   const b = dryBand(page, MSG.running);
   await expect(b.locator(".k-band-sub")).toContainText("宛先をあなたに差し替えています");
@@ -321,7 +324,9 @@ test("K747-UI-015 画面：幅 375・768・1440 で小窓と帯は横溢れ 0・
       await expect(b).toBeInViewport();
     if (w === 375) {
       const r = await confirmOf(page).boundingBox();
-      expect(r && Math.abs(812 - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
+      // 画面の高さは openTicket が決めた値で見る（812 と決め打ちしない・K734-UI-017 と同じ）
+      const vh = page.viewportSize()!.height;
+      expect(r && Math.abs(vh - (r.y + r.height) - SHEET_GAP) <= 1).toBe(true);
     }
     await go(page).click();
     await expect(dryBand(page, MSG.running)).toBeVisible();

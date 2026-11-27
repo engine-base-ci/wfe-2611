@@ -119,7 +119,12 @@ test("K743-UI-003 入力：字を直して「直して保存する」で直す�
   await box(page).fill(text);
   await save(page).click();
   await expect.poll(() => e.w.of(EDIT).length).toBe(1);
-  expect(e.w.of(EDIT)[0]).toEqual({ path: `/api/v1/approvals/${A_OPEN}/edit`, body: { text, version: 1 } });
+  // 書いた口の控え（f5-more-kit の layer・K-730）は method も持つ（K734・K735 の行と同じ形で見る）
+  expect(e.w.of(EDIT)[0]).toEqual({
+    method: "POST",
+    path: `/api/v1/approvals/${A_OPEN}/edit`,
+    body: { text, version: 1 },
+  });
   await expect(surface(page)).toHaveCount(0);
   await expect(card(page)).toContainText("成果物の版 2");
   await expect(card(page)).toContainText("（10/19 の追加対応は外しました）");

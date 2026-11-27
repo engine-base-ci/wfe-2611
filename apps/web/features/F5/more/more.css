@@ -8,13 +8,16 @@
   min-width: 0;
 }
 .k-more-edited,
-.k-more-sum {
+.k-section .k-more-edited,
+.k-more-sum,
+.k-section .k-more-sum {
   margin: 0;
   font-size: var(--k-text-body-sm);
   line-height: var(--k-lh-body-sm);
   color: var(--k-on-surface-variant);
 }
-.k-more-edited {
+.k-more-edited,
+.k-section .k-more-edited {
   color: var(--k-on-surface);
   font-weight: var(--k-fw-label-md);
 }
@@ -844,4 +847,13 @@
   inset: 0;
   overflow-y: auto;
   z-index: var(--k-c-popup-layer-z);
+}
+
+/* 確認の区画（K-740）と自分で直す枠（K-743）は、詳細の区画（.k-section）の中でも下絵の小さい字・灰の色のまま（統合の枝の直し 2026-11-28）。
+   どちらも親（.k-more-detail）の字を継いでいたので、区画の中に置かれると区画の本文の字（13px・黒）を継いでいた */
+.k-more-checks,
+.k-more-edit {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
 }

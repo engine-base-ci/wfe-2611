@@ -118,9 +118,9 @@ export const sse = (...events: string[]): string =>
 
 export async function mockTalk(
   page: Page,
-  o: { pc?: PcState; rows?: Record<string, unknown>[] } = {},
+  o: { pc?: PcState; rows?: Record<string, unknown>[]; since?: string } = {},
 ): Promise<TalkMock> {
-  const room = await mockRoom(page, o.pc ? { pc: o.pc } : {});
+  const room = await mockRoom(page, { ...(o.pc ? { pc: o.pc } : {}), ...(o.since ? { since: o.since } : {}) });
   const rows = o.rows ?? ROWS();
   const t: TalkMock = {
     room,

@@ -156,9 +156,14 @@ function RoomTalk({ c, isNew, mview }: { c: string | null; isNew: boolean; mview
   const say = useSay();
   const stop = useStop();
 
+  // 二度押しの守り：isPending は次の描き直しまで偽のままなので、同じ瞬間の 2 回目は印（ref）で止める（K762-UI-008）
+  const sending = useRef(false);
   const send = async () => {
-    if (say.isPending || text.trim() === "") return;
-    const r = await say.mutateAsync({ current: isNew ? null : (openId ?? null), text });
+    if (sending.current || say.isPending || text.trim() === "") return;
+    sending.current = true;
+    const r = await say.mutateAsync({ current: isNew ? null : (openId ?? null), text }).finally(() => {
+      sending.current = false;
+    });
     if (!r.ok) return setSayNote(sayNoticeOf(r.err));
     setSayNote(null);
     setText("");

@@ -154,7 +154,7 @@ test("K740-UI-003 失敗：承認の 1 件（getApproval）が 500 なら確認�
   await expect(area(page)).toHaveCount(0);
 });
 
-const stoppedWith = async (page: Page, checks: Record<string, unknown>) => {
+const stoppedWith = async (page: Page, checks: Record<string, unknown>, width?: number) => {
   await mockApi(page, {
     stage: "doing",
     run: { phase: "make", status: "stopped", stopped_reason: "金額が合いませんでした" },
@@ -162,7 +162,7 @@ const stoppedWith = async (page: Page, checks: Record<string, unknown>) => {
   const run = runRow({ status: "stopped", stopped_reason: "金額が合いませんでした", checks });
   const runs = runReplies(() => run);
   await layer(page, (_req, path) => runs(path));
-  await openTicket(page);
+  await (width === undefined ? openTicket(page) : openTicket(page, width));
 };
 test("K740-UI-004 対象の状態：作る段の止まった実行の checks.rows が 3 件のうち 1 件済みなら、止まった箱の下の区画に「確認 1 ／ 3 済み」と 3 行（✓ 1・□ 2）", async ({
   page,
@@ -257,7 +257,9 @@ test("K740-UI-009 入力：小窓の四角を付けると確認項目の一覧�
   await box.check();
   await expect.poll(() => c.w.of(SPEC_RE).length).toBe(1);
   expect(c.w.reads(SPECS)).toBe(1);
+  // 書いた口の控え（f5-more-kit の layer・K-730）は method も持つ（K734・K735 の行と同じ形で見る）
   expect(c.w.of(SPEC_RE)[0]).toEqual({
+    method: "PATCH",
     path: `/api/v1/test_specs/${ROWS[3]!.id}`,
     body: { version: 1, checked: true },
   });
@@ -406,23 +408,27 @@ test("K740-UI-016 画面：下絵との突き合わせ（checks-table・checks-f
     ],
     [
       "checks-failed",
-      async (p) => {
-        await stoppedWith(p, {
-          state: "partial",
-          summary: "1 ／ 3 済み",
-          rows: [
-            { id: "a", text: "金額", checked: false },
-            { id: "b", text: "インボイス", checked: true },
-            { id: "c", text: "PDF", checked: false },
-          ],
-        });
+      async (p, w) => {
+        await stoppedWith(
+          p,
+          {
+            state: "partial",
+            summary: "1 ／ 3 済み",
+            rows: [
+              { id: "a", text: "金額", checked: false },
+              { id: "b", text: "インボイス", checked: true },
+              { id: "c", text: "PDF", checked: false },
+            ],
+          },
+          w, // 本番もモックと同じ幅で開く（K734-UI-018 と同じ直し）
+        );
       },
     ],
     [
       "checks-queue-column",
-      async (p) => {
+      async (p, w) => {
         await queueWith(p);
-        await openQueue(p, 1440);
+        await openQueue(p, w); // 本番もモックと同じ幅で開く（K734-UI-018 と同じ直し）
       },
     ],
     [

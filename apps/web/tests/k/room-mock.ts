@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, type Page, type Request, type Route } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(HERE, "../../../..");
@@ -160,6 +161,10 @@ export async function mockRoom(page: Page, o: RoomOptions = {}): Promise<RoomMoc
       reply = await m.on.growth(req);
     } else if (/\/me$/.test(p))
       reply = ok({ id: ME, member_id: ME, display_name: "高本", role_id: "owner", roles: ["member"], name: "高本" });
+    // はじめの設定は通した人（アプリの枠の前の道 /ai/chat は RequireSetup が進み具合を待つ・K762-UI-028）
+    else if (p === "/api/auth-ext/setup-state") reply = ok({ step: 6, total: 6 });
+    // 外枠は getShell 1 本（K-466）。左のメニューの項目はこの答えで出る（K762-UI-023）
+    else if (p === "/api/v1/shell") reply = { status: 200, body: { data: shellData(), meta: {} } };
     else reply = { status: 200, body: { data: [], meta: { limit: 50, counts: { total: 0 } } } };
     await route.fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) });
   });
