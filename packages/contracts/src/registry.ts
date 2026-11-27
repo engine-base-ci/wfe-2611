@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:45f4a4b720bffad7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a440229153fe1099
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6251,7 +6251,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "KnowledgeShares",
+    "output": "KnowledgeShareChoice",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -6301,9 +6301,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "setKnowledgeShares",
     "table": "knowledge_shares",
     "kind": "update",
-    "input": "KnowledgeSharesInput",
+    "input": "KnowledgeShareSetInput",
     "success": 200,
-    "output": "KnowledgeShares",
+    "output": "KnowledgeShareChoice",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17978,4 +17978,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "45f4a4b720bffad7";
+export const OPENAPI_HASH = "a440229153fe1099";

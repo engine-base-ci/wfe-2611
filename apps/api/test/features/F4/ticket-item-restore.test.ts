@@ -199,8 +199,9 @@ describe("K-576 項目の変更を点の形に戻す（restoreTicketItems・本�
       t.id,
       spec.map(([, , old, nu], i) => ({
         field: `field:${ids[i]}`,
-        from: "表示の字",
-        to: "表示の字",
+        // 表示の字は前と後で違える（K-433 の ticket_item_changes は表示の字が同じ組を正味の変わりから落とす）。戻すのは生の値（raw_from）
+        from: `前の字 ${i}`,
+        to: `後の字 ${i}`,
         raw_from: old,
         raw_to: nu,
       })),
@@ -410,7 +411,7 @@ describe("K-576 項目の変更を点の形に戻す（restoreTicketItems・本�
     await line(t.id, [{ field: "due_on", from: day(30), to: day(40), note: "延ばす" }]);
     await ok(await go(w.writer, t.id, { from: 1, to: 2 }));
     const n = await f().admin.query<{ member_id: string; channel: string; payload: Record<string, unknown> }>(
-      "select member_id, channel, payload from notifications where tenant_id = $1",
+      "select member_id, channel_id as channel, payload from notifications where tenant_id = $1", // 列は channel_id（0083 から）
       [w.tenantId],
     );
     expect(n.rows.length).toBeGreaterThanOrEqual(1);

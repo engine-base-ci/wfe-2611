@@ -17,7 +17,7 @@ QUERIES = {
 
 # 入力は送った後の選びの全部（group_ids）。知らない欄は 422（strict）
 INPUTS = {
-    "setKnowledgeShares": ("KnowledgeSharesInput", {"page_id": "uuid?", "folder_id": "uuid?", "group_ids": "uuid[]", "message": "string?"}),
+    "setKnowledgeShares": ("KnowledgeShareSetInput", {"page_id": "uuid?", "folder_id": "uuid?", "group_ids": "uuid[]", "message": "string?"}),
 }
 REQUIRED_INPUTS = {
     "setKnowledgeShares": ["group_ids"],
@@ -32,8 +32,8 @@ INPUT_RULES = {
 UNEXPRESSIBLE_422: dict = {}
 
 RESPONSES = {
-    "getKnowledgeShares": ("KnowledgeShares", {"target": "object", "from_group_name": "string", "groups": "array"}),
-    "setKnowledgeShares": ("KnowledgeShares", {"target": "object", "from_group_name": "string", "groups": "array"}),
+    "getKnowledgeShares": ("KnowledgeShareChoice", {"target": "object", "from_group_name": "string", "groups": "array"}),
+    "setKnowledgeShares": ("KnowledgeShareChoice", {"target": "object", "from_group_name": "string", "groups": "array"}),
 }
 
 RATES = {
