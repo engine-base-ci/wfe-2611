@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 334（作った 291・後のフェーズの行為だけ 20）・前の道すじ 16・表 159・画面の部品 19・共通の処理 13・エラー 510・部品 72・設定 48
+API 334（作った 291・後のフェーズの行為だけ 20）・前の道すじ 16・表 161・画面の部品 19・共通の処理 13・エラー 510・部品 72・設定 48
 
 ## 共通の処理
 
@@ -68,6 +68,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `credentials` | skeleton | F3 |  |  |
 | `custom_field_kinds` | skeleton |  |  |  |
 | `custom_fields` | skeleton | F9 | F4 | ○ |
+| `distribution_versions` | internal |  |  |  |
 | `distributions` | skeleton | F12 |  |  |
 | `error_events` | internal |  |  |  |
 | `export_jobs` | skeleton |  |  |  |
@@ -92,16 +93,19 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `members` | skeleton | F10 | F12,F4 | ○ |
 | `messages` | skeleton | F11,F12,F4,F5 |  | ○ |
 | `notice_deliveries` | skeleton | F12 |  |  |
+| `notice_updates` | internal |  |  |  |
 | `notices` | skeleton | F12 | F11 | ○ |
 | `notification_settings` | skeleton | F10 |  |  |
 | `notifications` | skeleton | F7 |  |  |
 | `operations` | skeleton |  | F12 |  |
 | `ops_audit_events` | skeleton |  | F12 |  |
+| `ops_invoice_templates` | skeleton | F12 |  |  |
 | `ops_members` | skeleton | F12 |  |  |
 | `ops_plan_proposals` | skeleton | F12 |  |  |
 | `ops_setup_links` | internal |  |  |  |
 | `payments` | skeleton | F12 |  |  |
 | `permissions` | skeleton | F10 |  |  |
+| `plan_versions` | internal |  |  |  |
 | `plans` | skeleton |  | F12 |  |
 | `reference_logs` | skeleton |  | F4 |  |
 | `saved_views` | skeleton | F7 |  |  |
@@ -136,7 +140,7 @@ API 334（作った 291・後のフェーズの行為だけ 20）・前の道す
 | `ticket_thread_seen` | internal |  |  |  |
 | `tickets` | skeleton | F3,F4,F5,F6,F7 | F11,F8 | ○ |
 
-凍結の表（74）：`acceptances`・`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`checks`・`class_axes`・`class_values`・`client_contacts`・`client_groups`・`clients`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`imports`・`integrations`・`kind_sections`・`knowledge_links`・`learned_procedures`・`learning_candidates`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memories`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`policies`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`skill_test_runs`・`skill_versions`・`skills`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
+凍結の表（72）：`acceptances`・`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`checks`・`class_axes`・`class_values`・`client_contacts`・`client_groups`・`clients`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`imports`・`integrations`・`kind_sections`・`knowledge_links`・`learned_procedures`・`learning_candidates`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memories`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`policies`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`skill_test_runs`・`skill_versions`・`skills`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
 
 ## API の口
 

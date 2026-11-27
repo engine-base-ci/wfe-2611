@@ -9,7 +9,7 @@
   "api_built": 291,
   "api_only_later_phase": 20,
   "legacy_routes": 16,
-  "db": 159,
+  "db": 161,
   "ui": 19,
   "packages": 13,
   "errors": 510,
@@ -6114,8 +6114,8 @@
   },
   {
    "table": "distribution_versions",
-   "class": "frozen",
-   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）",
+   "class": "internal",
+   "why": "口は無いが、ひな形の配る版の関数（新しい版を出す K-1010・届いた版を選ぶ K-993）が読み書きする版の表。凍結から外した（PM の決め 2026-11-28・D-128.127）",
    "writes": [],
    "reads": [],
    "boundary": false
@@ -6565,6 +6565,14 @@
    "boundary": false
   },
   {
+   "table": "notice_updates",
+   "class": "internal",
+   "why": "口は無いが、お知らせの関数だけが触る続報の履歴の表（書くのは運営の葉 K-977・K-979・一覧は app の関数が返す・K-954）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
    "table": "notices",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
@@ -6622,6 +6630,16 @@
    "reads": [
     "F12"
    ],
+   "boundary": false
+  },
+  {
+   "table": "ops_invoice_templates",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "writes": [
+    "F12"
+   ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -6698,8 +6716,8 @@
   },
   {
    "table": "plan_versions",
-   "class": "frozen",
-   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）",
+   "class": "internal",
+   "why": "口は無いが、プランの関数（app.plan_now・試しの期間・規約の版・K-1157・K-1104・K-1017）が読み書きする版の表。凍結から外した（PM の決め 2026-11-28・D-128.127）",
    "writes": [],
    "reads": [],
    "boundary": false
