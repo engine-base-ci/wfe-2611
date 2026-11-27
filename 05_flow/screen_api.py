@@ -1358,8 +1358,8 @@ PERMS = {
     "changePassword": ("self", "本人。変えたら今の画面だけ残し、全部のワークスペースのほかの端末と Bridge を切る（D-128.141）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "setMyPassword": ("self", "本人。パスワードの無い人（パスキーだけ）だけ。ある人は 409（代表の答え ②）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "listMySessions": ("self", "自分の端末だけ", False),
-    "revokeMySession": ("self", "自分の端末だけ", False),
-    "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", False),
+    "revokeMySession": ("self", "自分の端末だけ", True),
+    "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", True),
     "resetMemberTwoFactor": ("admin", "ワークスペースの管理者が、本人を確かめてから戻す。記録に残り、本人に知らせる（D-125.138）", True),
     # 自分の設定
     "getMe": ("self", "自分のものだけ", False),
