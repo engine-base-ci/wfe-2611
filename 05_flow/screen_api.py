@@ -1177,7 +1177,7 @@ QUERIES = {
     "listPlanHistory": ["plan_id"],
     "getNotificationSettings": ["workspace_id"],   # 読むワークスペース（無ければ今の会社・K-837）
     "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
-    "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
+    "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],   # q はことばで探す（K-850・1〜100 字。値域は screen_api.d/K-823.py の QUERY_RANGES）
     "listScopes": ["layer_id"],
     "listClientActivity": ["client_visible"],
     "listClientRequests": ["state", "client_id"],
