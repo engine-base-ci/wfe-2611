@@ -1,0 +1,23 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-workspace-billing.ts",
+    "apps/api/src/features/F12/ops/workspace-billing.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261128010800_ops_workspace_billing.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+    "apps/api/test/features/F12/plans.test.ts",
+    "apps/api/test/features/F12/billing-read.test.ts"
+   ]
+  }
+ ]
+}
