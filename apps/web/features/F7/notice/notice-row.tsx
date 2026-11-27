@@ -1,5 +1,6 @@
-// お知らせの 1 行（丸い印・文・番号と時刻・札）。行き先があれば a、無ければ button（押すと既読になるだけ）。
+// お知らせの 1 行（丸い印・文・番号と時刻・札）。行き先があれば Link（全画面の読み直しをしない）、無ければ button（押すと既読になるだけ）。
 //   未読は淡い橙の面と少し太い字（色だけで伝えない・読み上げにも「未読」を伝える）。
+import Link from "next/link";
 import { NoticeTag } from "./notice-tag";
 import type { NoticeItem } from "./notice-types";
 
@@ -23,9 +24,9 @@ export function NoticeRow({ item, onOpen }: { item: NoticeItem; onOpen?: ((item:
   );
   const open = onOpen ? () => onOpen(item) : undefined;
   return item.href ? (
-    <a className="k-f7-notice-row" data-unread={item.unread || undefined} href={item.href} onClick={open}>
+    <Link className="k-f7-notice-row" data-unread={item.unread || undefined} href={item.href} onClick={open}>
       {body}
-    </a>
+    </Link>
   ) : (
     <button type="button" className="k-f7-notice-row" data-unread={item.unread || undefined} onClick={open}>
       {body}
