@@ -5114,7 +5114,15 @@
     "type": "date",
     "nullable": true
    },
+   "payer_name": {
+    "type": "text",
+    "nullable": true
+   },
    "recorded_by_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reverses_payment_id": {
     "type": "uuid",
     "nullable": true
    },
