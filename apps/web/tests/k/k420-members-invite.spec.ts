@@ -121,6 +121,17 @@ const err = (status: number, code: string, details: unknown[] = []): Reply => ({
   status,
   body: { error: code.toLowerCase(), code, details },
 });
+/** 本物の招く口の 409 E-INV-010 の形（create.ts：details は付けず、入っている宛ては detail.already に並ぶ・K419-API-011） */
+const already = (emails: string[]): Reply => ({
+  status: 409,
+  body: {
+    error: "conflict",
+    code: "E-INV-010",
+    message: "もうこのワークスペースに入っています",
+    action: "その宛てを外す",
+    detail: { already: emails },
+  },
+});
 
 async function mockMembers(page: Page): Promise<MMock> {
   const mk: MMock = {
@@ -239,18 +250,10 @@ const STATES: Record<string, (page: Page, mk: MMock) => Promise<void>> = {
     await openDialog(page);
     await addMail(page, "kimura@engine-base.example");
     await page.locator(DLG).getByLabel("メール").fill("nakamura@engine-base.example");
-    await page.locator(DLG).getByLabel("ひとこと（任意）").fill("営業の問い合わせをいっしょに回してもらいます");
+    // 「ひとこと・リンクで招く」は既定で閉じる（チケットの行とモック inv-dialog も閉じたまま）。開かずに見えない欄へは書かない（段9 の全部の CI・2026-11-27）
   },
   "inv-error": async (page, mk) => {
-    mk.on.invite = () =>
-      err(409, "E-INV-010", [
-        {
-          field: "emails",
-          email: "suzuki@engine-base.example",
-          code: "E-INV-010",
-          message: "もうこのワークスペースに入っています",
-        },
-      ]);
+    mk.on.invite = () => already(["suzuki@engine-base.example"]);
     await openDialog(page);
     await addMail(page, "suzuki@engine-base.example");
     await sendBtn(page).click();
@@ -308,7 +311,10 @@ test("K420-UI-002 /members を開くと並びの口を 1 回だけ読む・左�
   const mk = await mockMembers(page);
   await openMembers(page, owner.token);
   expect(mk.reads).toBe(1);
-  const nav = page.getByRole("link", { name: "ワークスペースの管理" });
+  // 左のバー（メニュー）の項目だけを見る。頭の「いまの場所」のくずにも同じ字（準備中の role=link）があるので、くずは数えない
+  const nav = page
+    .getByRole("navigation", { name: "メニュー", exact: true })
+    .getByRole("link", { name: "ワークスペースの管理" });
   await expect(nav).toHaveAttribute("aria-current", "page");
   await expect(nav).not.toHaveAttribute("aria-disabled", "true");
 });
@@ -319,7 +325,12 @@ test("K420-UI-003 並び：グループごとに人が 1 人 1 行・状態の�
   const mk = await mockMembers(page);
   mk.invited = true;
   await openMembers(page, owner.token);
-  const sales = page.locator(".k-inv-group").filter({ hasText: "営業" });
+  // グループのカードはグループの名前で絞る（営業のカードにも注「受託開発も兼ねる」があり、字だけで絞ると 2 枚に当たる）
+  const group = (name: string) =>
+    page
+      .locator(".k-inv-group")
+      .filter({ has: page.locator(".k-inv-group-name", { hasText: new RegExp(`^${name}$`) }) });
+  const sales = group("営業");
   await expect(sales.locator(".k-inv-row")).toHaveCount(5);
   await expect(sales.locator(".k-inv-row").filter({ hasText: "高本 聖斗" })).toContainText("自分");
   await expect(sales.locator(".k-inv-row").filter({ hasText: "田中 美咲" })).toContainText("受託開発も兼ねる");
@@ -333,7 +344,7 @@ test("K420-UI-003 並び：グループごとに人が 1 人 1 行・状態の�
     "招待中 ・ あと 7 日",
   );
   await page.locator(".k-f10m-toggle").filter({ hasText: "受託開発" }).click();
-  const dev = page.locator(".k-inv-group").filter({ hasText: "受託開発" });
+  const dev = group("受託開発");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "佐藤 花子" })).toContainText("兼ねている");
   await expect(dev.locator(".k-inv-row").filter({ hasText: "山口 健" }).locator(".k-inv-state")).toHaveText(
     "分身なし（見るだけ）",
@@ -514,20 +525,15 @@ test("K420-UI-011 2 人以上を招くと知らせは「N 人に招待を送り�
   ).toBeVisible();
 });
 
-test("K420-UI-012 口が断る（409 E-INV-010 もう入っている人 2 人 → 並びを替えて 422 E-INV-009 画面の形の確かめは通った送った宛て 1 つを口が断った）：どちらも小窓は閉じず欄の下に宛てごとの文を 1 つの赤字で出す（409 は「。」でつなぐ）・上の赤い箱は出ない・書いた中身（並び・グループ・役割）は残る", async ({
+test("K420-UI-012 口が断る（409 E-INV-010 もう入っている人 2 人・宛ては detail.already → 並びを替えて 422 E-INV-009 画面の形の確かめは通った送った宛て 1 つを口が断った）：どちらも小窓は閉じず欄の下に宛てごとの文を 1 つの赤字で出す（409 は「。」でつなぐ）・上の赤い箱は出ない・書いた中身（並び・グループ・役割）は残る", async ({
   page,
 }) => {
   const mk = await mockMembers(page);
   // 形の誤りが先：形の違う宛てと入っている人が混じる回は口が 422 の E-INV-009 だけを返す（K-419）ので、2 つの番号を 1 回に混ぜず、2 回の間で並びを替える
-  const inside = (email: string) => ({
-    field: "emails",
-    email,
-    code: "E-INV-010",
-    message: "もうこのワークスペースに入っています",
-  });
+  // 409 E-INV-010 は本物の口の形（details なし・入っている宛ては detail.already）
   mk.on.invite = () =>
     mk.invites.length === 1
-      ? err(409, "E-INV-010", [inside("suzuki@engine-base.example"), inside("ito@engine-base.example")])
+      ? already(["suzuki@engine-base.example", "ito@engine-base.example"])
       : err(422, "E-INV-009", [
           {
             field: "emails",
@@ -561,6 +567,30 @@ test("K420-UI-012 口が断る（409 E-INV-010 もう入っている人 2 人 �
   await kept(["nakamura@engine-base.example"]);
   expect(mk.invites).toHaveLength(2);
   expect(mk.invites[1]!.body["emails"]).toEqual(["nakamura@engine-base.example"]);
+});
+
+test("K420-UI-033 ひとことが 500 字を超えて「招く」：口を呼ばず、ひとことの欄の下に「ひとことは 500 字までです」・小窓は閉じず中身は残る。500 字ちょうどなら送れる", async ({
+  page,
+}) => {
+  const mk = await mockMembers(page);
+  await openMembers(page, owner.token);
+  await openDialog(page);
+  await addMail(page, "kimura@engine-base.example");
+  await page.locator(".k-inv-more-sum").click();
+  const note = page.locator(DLG).getByLabel("ひとこと（任意）");
+  await note.fill("あ".repeat(501));
+  await sendBtn(page).click();
+  await expect(page.locator(`${DLG} .k-inv-note-err`)).toHaveText("ひとことは 500 字までです");
+  await expect(page.locator(`${DLG} .k-err`)).toHaveCount(0);
+  await expect(page.locator(DLG)).toBeVisible();
+  await expect(page.locator(".k-inv-chip-t")).toHaveText(["kimura@engine-base.example"]);
+  await expect(note).toHaveValue("あ".repeat(501));
+  expect(mk.invites).toHaveLength(0);
+  await note.fill("あ".repeat(500));
+  await sendBtn(page).click();
+  await expect(page.locator(DLG)).toHaveCount(0);
+  expect(mk.invites).toHaveLength(1);
+  expect(mk.invites[0]!.body["message"]).toBe("あ".repeat(500));
 });
 
 test("K420-UI-013 口が 503：小窓の上の赤い箱に正本の文・中身は残る・もう一度押すと送れる（D-148.31）", async ({
@@ -802,11 +832,15 @@ test("K420-UI-022 キーボード：Tab で「＋ 招く」に届き Enter で�
   await inviteBtn(page).focus();
   await page.keyboard.press("Enter");
   await expect(page.locator(DLG).getByLabel("メール")).toBeFocused();
+  // 小窓の部品（base-ui）は最後から先頭へ回すとき、小窓の外の焦点の番（見えない span）を一度通って先頭へ送る。
+  //   押した直後の 1 回だけを読まず、焦点が落ち着くまで待って小窓の中かを見る（段9 の全部の CI・2026-11-27）
   for (let i = 0; i < 20; i++) {
     await page.keyboard.press("Tab");
-    expect(await page.evaluate((s) => !!document.activeElement?.closest(s), DLG), `Tab ${i + 1} 回目も小窓の中`).toBe(
-      true,
-    );
+    await expect
+      .poll(() => page.evaluate((s) => !!document.activeElement?.closest(s), DLG), {
+        message: `Tab ${i + 1} 回目も小窓の中`,
+      })
+      .toBe(true);
   }
 });
 
