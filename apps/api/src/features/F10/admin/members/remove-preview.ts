@@ -7,7 +7,7 @@ import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../../contract/deps.js";
 import { replyOf } from "../gate.js";
 import type { AdminOp } from "../op.js";
-import { dataReply } from "../shape.js";
+import { dataReply, invalidInput } from "../shape.js";
 
 export const PREVIEW_KEYS = [
   "member",
@@ -33,6 +33,9 @@ const kindOf = (e: unknown): string => (e instanceof Error ? e.name : typeof e);
 export const ready = true as boolean;
 
 export const run: AdminOp = async ({ d, a }) => {
+  // 下見は問い合わせを受けない（知らない問い合わせは 422・K815-API-017。入口は get の口の問い合わせを確かめない）
+  const q = Object.keys(a.c.req.queries());
+  if (q.length) return invalidInput("query", "この口は問い合わせを受けない");
   let v: Answer;
   try {
     v = await withTenant(d.appPool, a.ctx, async (c) => {
