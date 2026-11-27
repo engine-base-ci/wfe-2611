@@ -127,7 +127,21 @@ export interface MemberGroup {
   inbox?: string;
 }
 
-function Person({ r, guest = false, menuOpen = false }: { r: MemberRow; guest?: boolean; menuOpen?: boolean }) {
+/** ゲストの人の行の「⋯」の項目（K-931）：入っている人は 止める・外す、止めている人は 戻す・外す */
+export type GuestRowAct = "suspend" | "resume" | "remove";
+
+function Person({
+  r,
+  guest = false,
+  menuOpen = false,
+  onGuestAct,
+}: {
+  r: MemberRow;
+  guest?: boolean;
+  menuOpen?: boolean;
+  /** ゲストの人の行の「⋯」の項目を押したとき（K-931）。無ければ押しても何も起きない（下絵） */
+  onGuestAct?: (act: GuestRowAct, r: MemberRow) => void;
+}) {
   const invited = Boolean(r.invitedLeft);
   return (
     <li className="k-inv-row" data-guest={(guest && !invited) || undefined}>
@@ -159,14 +173,16 @@ function Person({ r, guest = false, menuOpen = false }: { r: MemberRow; guest?: 
             送り直す
           </Button>
         ) : guest ? (
-          /* ゲストを 1 人だけ一時的に止める／戻す・外す（代表の答え answer=03b52b9684c4）。押せる形にするのは K-931（この葉はキャンバスに在る物を押せない形で出す） */
+          /* ゲストを 1 人だけ一時的に止める／戻す・外す（代表の答え answer=03b52b9684c4・K-931）。押すと確かめを開く（手は呼ぶ側） */
           <Menu defaultOpen={menuOpen}>
             <MenuTrigger className="k-btn" label={`${r.name}のほかの操作`}>
               ⋯
             </MenuTrigger>
             <MenuPopup align="end">
-              <MenuItem disabled>{r.suspended ? "戻す" : "一時的に止める"}</MenuItem>
-              <MenuItem disabled>外す</MenuItem>
+              <MenuItem onSelect={() => onGuestAct?.(r.suspended ? "resume" : "suspend", r)}>
+                {r.suspended ? "戻す" : "一時的に止める"}
+              </MenuItem>
+              <MenuItem onSelect={() => onGuestAct?.("remove", r)}>外す</MenuItem>
             </MenuPopup>
           </Menu>
         ) : (
@@ -201,6 +217,7 @@ export function MembersBody({
   onInviteGroup,
   onRenameGroup,
   onDeleteGroup,
+  onGuestAct,
   content,
 }: {
   groups: readonly MemberGroup[];
@@ -226,6 +243,8 @@ export function MembersBody({
   /** グループの「⋯」の「名前を直す」「消す」を押したとき（K-928）。無ければ押せない形 */
   onRenameGroup?: (g: MemberGroup) => void;
   onDeleteGroup?: (g: MemberGroup) => void;
+  /** ゲストの人の行の「⋯」の「一時的に止める」「戻す」「外す」を押したとき（K-931） */
+  onGuestAct?: (act: GuestRowAct, r: MemberRow) => void;
   /** 並びの代わりに出す物（ゲストのタブの空・読めない・権限が無い） */
   content?: ReactNode;
 }) {
@@ -312,7 +331,13 @@ export function MembersBody({
               </div>
               <ul className="k-inv-rows">
                 {g.rows.map((r) => (
-                  <Person key={r.id} r={r} guest={guest} menuOpen={menuOpenRow === r.id} />
+                  <Person
+                    key={r.id}
+                    r={r}
+                    guest={guest}
+                    menuOpen={menuOpenRow === r.id}
+                    {...(onGuestAct ? { onGuestAct } : {})}
+                  />
                 ))}
               </ul>
             </section>

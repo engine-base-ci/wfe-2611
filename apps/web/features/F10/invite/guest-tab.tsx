@@ -8,11 +8,27 @@
 //   消す：確かめに中のゲストの数（止めている人も数える）・送っている間は 2 回目を呼ばない。
 //   失敗：404・E-GST-001 は知らせ＋小窓を閉じて読み直す／409・E-GST-002 は欄の下（文は正本の番号で引く）／403・503 などは小窓の中の赤の知らせ（値は残る）。
 //   画面は役の名前で出し分けない（直せるか・消せるかは口の 403 が決める）
+// ゲストの人の行の「⋯」から 1 人だけ一時的に止める・戻す・外す（K-931・口は K-814・K-848）：同じ useGuestGroupEditing が確かめの開け閉めを持つ。
+//   送るのは useGuestAct（本人確認の取り直しは StepUp で 1 回だけやり直す・やめたら確かめに戻る）。できたら閉じて知らせ（一覧は送る所が読み直す）。
+//   失敗は 3 つとも同じ出し分け（guestActFailure 1 つ）：404・E-MEM-002 と 409 E-MEM-009・010 は閉じて番号の文の知らせ／403・503・網が切れたは確かめの中の赤の知らせ（閉じない・押し直せる）
 import { useRef, useState, type ReactNode } from "react";
 import { Button, Empty, NoAccess, PAGE_ERROR, errorText, useNotify } from "@/components/k";
 import type { CallErr } from "@/lib/api/call";
-import { GuestGroupDeleteConfirm, GuestGroupRenameDialog } from "./guest-group-views";
-import { useGuestGroupEdit, type GuestGroupAnswer } from "./use-guest-groups";
+import { StepUp } from "@/features/F1/security/step-up";
+import {
+  GuestGroupDeleteConfirm,
+  GuestGroupRenameDialog,
+  GuestRemoveConfirm,
+  GuestResumeConfirm,
+  GuestSuspendConfirm,
+} from "./guest-group-views";
+import {
+  useGuestAct,
+  useGuestGroupEdit,
+  type GuestAct,
+  type GuestActResult,
+  type GuestGroupAnswer,
+} from "./use-guest-groups";
 
 export type GuestTabState = "empty" | "failed" | "forbidden";
 
@@ -55,18 +71,60 @@ const trimName = (s: string): string => s.trim();
 
 type Editing =
   | { kind: "rename"; group: GuestGroupAnswer; name: string; error?: string; alert?: string; saving: boolean }
-  | { kind: "delete"; group: GuestGroupAnswer; alert?: string; busy: boolean };
+  | { kind: "delete"; group: GuestGroupAnswer; alert?: string; busy: boolean }
+  | { kind: "guest"; act: GuestAct; id: string; name: string; alert?: string };
+
+/** ゲストの止める・戻す・外すの字（知らせ・本人確認の小窓の理由） */
+const GUEST_TEXT: Record<GuestAct, { done: (n: string) => string; stepUp: (n: string) => string }> = {
+  suspend: { done: (n) => `${n} を一時的に止めました`, stepUp: (n) => `${n} を一時的に止める前に、本人か確かめます` },
+  resume: { done: (n) => `${n} を戻しました`, stepUp: (n) => `${n} を戻す前に、本人か確かめます` },
+  remove: { done: (n) => `${n} さんを外しました`, stepUp: (n) => `${n} さんを外す前に、本人か確かめます` },
+};
+const GUEST_CONFIRM = { suspend: GuestSuspendConfirm, resume: GuestResumeConfirm, remove: GuestRemoveConfirm };
+/** 閉じて番号の文で知らせる答え（もう居ない・もう止まっている・もう戻っている。一覧は送る所が読み直す） */
+const CLOSE_CODES = ["E-MEM-002", "E-MEM-009", "E-MEM-010"];
+
+/** もう止まっている・もう戻っている（今の形に読み直すだけ・誤りではない知らせ） */
+const INFO_CODES = ["E-MEM-009", "E-MEM-010"];
+
+/** 止める・戻す・外すの失敗の出し分け（3 つとも同じ）。close＝閉じて知らせる文／alert＝確かめの中の赤の知らせ */
+function guestActFailure(e: CallErr | null): { close: string; info: boolean } | { alert: string } {
+  if (!e) return { alert: errorText(PAGE_ERROR.offline).title }; // 網が切れた（口に届かない）
+  if (CLOSE_CODES.includes(e.code)) return { close: catalogMessage(e.code), info: INFO_CODES.includes(e.code) };
+  if (e.status === 404) return { close: catalogMessage("E-MEM-002"), info: false };
+  return { alert: alertOf(e) };
+}
 
 /** グループの「⋯」の名前を直す・消す（K-928）。startRename・startDelete で開き、dialogs を画面に置く */
 export function useGuestGroupEditing(): {
   startRename: (g: GuestGroupAnswer) => void;
   startDelete: (g: GuestGroupAnswer) => void;
+  /** ゲストの人の行の「⋯」の「一時的に止める」「戻す」「外す」（K-931） */
+  startGuest: (act: GuestAct, guest: { id: string; name: string }) => void;
   dialogs: ReactNode;
 } {
   const { rename, remove } = useGuestGroupEdit();
   const notify = useNotify();
   const [editing, setEditing] = useState<Editing | null>(null);
   const sending = useRef(false); // 答えを待つ間の 2 回目を止める（押せない形の前に押された分も）
+
+  const onGuestResult = (r: GuestActResult): void => {
+    if (editing?.kind !== "guest") return;
+    if (r.ok) {
+      setEditing(null);
+      notify(GUEST_TEXT[editing.act].done(editing.name));
+      return;
+    }
+    if (r.error?.kind === "unauthenticated") return; // call が入り直しへ送る
+    const f = guestActFailure(r.error);
+    if ("close" in f) {
+      setEditing(null);
+      notify(f.close, f.info ? {} : { type: "error" });
+    } else {
+      setEditing({ ...editing, alert: f.alert });
+    }
+  };
+  const guestAct = useGuestAct(onGuestResult);
 
   const submitRename = async (): Promise<void> => {
     if (editing?.kind !== "rename" || sending.current) return;
@@ -146,11 +204,49 @@ export function useGuestGroupEditing(): {
           onConfirm={() => void submitDelete()}
         />
       ) : null}
+      {editing?.kind === "guest" ? (
+        <GuestActDialog editing={editing} act={guestAct} onClose={() => setEditing(null)} />
+      ) : null}
     </>
   );
   return {
     startRename: (g) => setEditing({ kind: "rename", group: g, name: g.name, saving: false }),
     startDelete: (g) => setEditing({ kind: "delete", group: g, busy: false }),
+    startGuest: (act, guest) => setEditing({ kind: "guest", act, id: guest.id, name: guest.name }),
     dialogs,
   };
+}
+
+/** ゲストの止める・戻す・外すの確かめと本人確認の小窓（取り直しの間は確かめを隠し、やめたら確かめに戻る） */
+function GuestActDialog({
+  editing,
+  act,
+  onClose,
+}: {
+  editing: Extract<Editing, { kind: "guest" }>;
+  act: ReturnType<typeof useGuestAct>;
+  onClose: () => void;
+}) {
+  const Box = GUEST_CONFIRM[editing.act];
+  return (
+    <>
+      {act.stepUp ? null : (
+        <Box
+          name={editing.name}
+          busy={act.busy}
+          {...(editing.alert ? { alert: editing.alert } : {})}
+          onOpenChange={(o) => (o || act.busy ? undefined : onClose())}
+          onConfirm={() => act.send(editing.act, editing.id)}
+        />
+      )}
+      <StepUp
+        open={act.stepUp !== null}
+        reason={GUEST_TEXT[editing.act].stepUp(editing.name)}
+        withCode={act.stepUp?.withCode ?? false}
+        withPasskey={act.stepUp?.withPasskey ?? false}
+        onDone={act.stepUpDone}
+        onCancel={act.stepUpCancel}
+      />
+    </>
+  );
 }

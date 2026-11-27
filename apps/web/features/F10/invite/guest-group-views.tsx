@@ -5,7 +5,7 @@
 //   依頼が届く社内のグループはゲストのグループに 1 つ持たせる（招くの小窓では選ばない・D-155.38・D-155.40）。
 //   部品は値と「押したときの関数」を任意の props で受けて描くだけ（口は呼ばない・K874-UI-021）。関数が無ければ下絵の見た目だけの形。
 //   名前を直す小窓と消す確かめは、押せる形にして口につなぐ手（on…）を受け取る（K-928）。手を渡さなければ見た目だけの形（下絵の mb-group-*）。
-//   ゲストを止める／戻す／外す確かめは見た目だけ（押せる形にして口につなぐのは K-931）
+//   ゲストを止める／戻す／外す確かめは、手（onOpenChange・onConfirm）を渡すと押せる形（K-931）。渡さなければ見た目だけの形（下絵の mb-guest-*）
 import type { ReactNode } from "react";
 import { Button, Callout, Confirm, Dialog } from "@/components/k";
 
@@ -345,47 +345,89 @@ export function GuestGroupDeleteConfirm({
   );
 }
 
-/** ゲストを 1 人だけ一時的に止める確かめ（代表の答え answer=03b52b9684c4・見た目だけ。押せる形にするのは K-931） */
-export function GuestSuspendConfirm({ name = "山田 花子" }: { name?: string }) {
+/** ゲストを止める／戻す／外す確かめが受ける手（K-931）。手を渡さなければ下絵の見た目だけの形 */
+interface GuestActConfirmProps {
+  name?: string;
+  open?: boolean;
+  /** 答えを待つ間（押せない・閉じない） */
+  busy?: boolean;
+  /** 確かめの中の赤の知らせ（権限が無い・送れなかった など） */
+  alert?: ReactNode;
+  onOpenChange?: (open: boolean) => void;
+  onConfirm?: () => void;
+}
+
+/** ゲストを 1 人だけ一時的に止める確かめ（代表の答え answer=03b52b9684c4・K-931） */
+export function GuestSuspendConfirm({
+  name = "山田 花子",
+  open = true,
+  busy = false,
+  alert,
+  onOpenChange = () => undefined,
+  onConfirm = () => undefined,
+}: GuestActConfirmProps) {
   return (
     <Confirm
-      open
-      onOpenChange={() => undefined}
-      onConfirm={() => undefined}
+      open={open}
+      busy={busy}
+      onOpenChange={onOpenChange}
+      onConfirm={onConfirm}
       tone="primary"
       title={`${name} さんを一時的に止めますか`}
       description="止めると、すぐ入れなくなります。出した依頼とやり取りは残ります。いつでも戻せます。"
       confirmLabel="本人確認して止める"
-    />
+    >
+      {alert ? <Callout tone="danger">{alert}</Callout> : null}
+    </Confirm>
   );
 }
 
-/** 止めているゲストを戻す確かめ（見た目だけ・K-931） */
-export function GuestResumeConfirm({ name = "鈴木 健太" }: { name?: string }) {
+/** 止めているゲストを戻す確かめ（K-931） */
+export function GuestResumeConfirm({
+  name = "鈴木 健太",
+  open = true,
+  busy = false,
+  alert,
+  onOpenChange = () => undefined,
+  onConfirm = () => undefined,
+}: GuestActConfirmProps) {
   return (
     <Confirm
-      open
-      onOpenChange={() => undefined}
-      onConfirm={() => undefined}
+      open={open}
+      busy={busy}
+      onOpenChange={onOpenChange}
+      onConfirm={onConfirm}
       tone="primary"
       title={`${name} さんを戻しますか`}
       description="また入れるようになります。本人は入り直します。"
       confirmLabel="本人確認して戻す"
-    />
+    >
+      {alert ? <Callout tone="danger">{alert}</Callout> : null}
+    </Confirm>
   );
 }
 
-/** ゲストを 1 人だけ外す確かめ（D-155.14・見た目だけ・K-931。ゲストは担当を持たないので引き継ぎ先は選ばない） */
-export function GuestRemoveConfirm({ name = "山田 花子" }: { name?: string }) {
+/** ゲストを 1 人だけ外す確かめ（D-155.14・K-931。ゲストは担当を持たないので引き継ぎ先は選ばない） */
+export function GuestRemoveConfirm({
+  name = "山田 花子",
+  open = true,
+  busy = false,
+  alert,
+  onOpenChange = () => undefined,
+  onConfirm = () => undefined,
+}: GuestActConfirmProps) {
   return (
     <Confirm
-      open
-      onOpenChange={() => undefined}
-      onConfirm={() => undefined}
+      open={open}
+      busy={busy}
+      onOpenChange={onOpenChange}
+      onConfirm={onConfirm}
       title={`${name} さんを外しますか`}
       caution={["外すと、すぐ入れなくなります。", "出した依頼とやり取りは残ります。"]}
       description="外したあとは元に戻せません。もう一度入ってもらうときは、招き直します。"
       confirmLabel="本人確認して外す"
-    />
+    >
+      {alert ? <Callout tone="danger">{alert}</Callout> : null}
+    </Confirm>
   );
 }

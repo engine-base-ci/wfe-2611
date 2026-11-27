@@ -4,6 +4,7 @@
 //   「＋ 招く」の小窓：足す（宛てをそろえて形を見る）・外す・グループと役割・ひとこと・リンク。送るのは createInvitations（K-419）、リンクは createInvitationLink（K-421）。
 //   管理者として招く（口が 403・STEP_UP_REQUIRED）なら本人確認の取り直し（step-up.tsx）を出し、通ったら止まった操作を 1 回だけ送り直す。
 //   口の断り方の出し分けは状態でなく答えの code と details：宛てごとの文（E-INV-009・010）と 51 人以上（E-INV-012）は欄の下、ほか（404・503 など）は小窓の上の赤い箱。書いた中身は残す。
+//   K-931（段 12）：ゲストの人の行の「⋯」から 1 人だけ止める・戻す・外す（確かめと送るは guest-tab.tsx の useGuestGroupEditing）。
 //   K-874（段 12）：見出しの下のタブ（メンバー／ゲスト・URL ?tab=guests）。開いたとき getWorkspaceMembers と listGuestGroups（K-876）を並べて 1 回ずつ読む。
 //   ゲストを招く（役割 requester・guest_group_id・scope_id は送らない・D-155.38）・ゲストのグループを作る小窓（createGuestGroup・K-876）。
 //   同じ中身の押し直しは同じ Idempotency-Key（中身を変えたら新しい鍵）。
@@ -444,6 +445,7 @@ export function MembersPage() {
                     const a = gview?.raw.find((x) => x.id === g.id);
                     if (a) editing.startDelete(a);
                   }}
+                  onGuestAct={(act, r) => editing.startGuest(act, r)}
                   {...(guests.isPending
                     ? { content: <Loading /> }
                     : guestState
