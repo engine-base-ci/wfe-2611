@@ -18,6 +18,8 @@ export interface OpsShellCounts {
  *  caps が読めなければ operator を持たない（分からない＝各画面は口の 403 で見分ける） */
 export interface OpsShellData {
   operator?: { caps: string[] };
+  /** 答えの data のほかの欄（一覧の上の数 workspaces・runs_month・invoices）は頁が答えのまま読む（K-965）。外枠は数だけを読む */
+  [key: string]: unknown;
 }
 
 /** 外枠の口の結果：読めた／入り直し（401・403 FORBIDDEN）／パスキーを付けるだけのセッション（403 MFA_REQUIRED）／それ以外の失敗 */
@@ -67,7 +69,8 @@ export async function fetchOpsShell(): Promise<OpsShellResult> {
   }
   if (res.ok) {
     const body: unknown = await res.json().catch(() => null);
-    return { kind: "ok", counts: countsOf(body), data: dataOf(body) };
+    // data は頁が使う（一覧の上の数・K-965）。operator.caps は拾い直した物で上書きする（K-1108・K-971）
+    return { kind: "ok", counts: countsOf(body), data: { ...obj(obj(body)?.["data"]), ...dataOf(body) } };
   }
   if (res.status === 401) return { kind: "login" };
   if (res.status === 403) {
@@ -76,4 +79,31 @@ export async function fetchOpsShell(): Promise<OpsShellResult> {
     if (code === "MFA_REQUIRED") return { kind: "setup" };
   }
   return { kind: "failed" }; // 503・403 E-AUTH-010 ほか：数だけ出さない
+}
+
+export const OPS_WORKSPACES_PATH = "/api/v1/ops/workspaces";
+
+/** 一覧の口の結果：読めた（data はそのまま・形は頁が確かめる）／入り直し／それ以外の失敗 */
+export type OpsListResult = { kind: "ok"; data: unknown } | { kind: "login" } | { kind: "failed" };
+
+/** 全社の一覧の口（listOpsWorkspaces・K-963／K-965）。search は「?view=…」の形か空（既定の値は書かない） */
+export async function fetchOpsWorkspaces(search: string): Promise<OpsListResult> {
+  const token = getToken();
+  let res: Response;
+  try {
+    res = await fetch(`${apiBase()}${OPS_WORKSPACES_PATH}${search}`, {
+      method: "GET",
+      headers: { accept: "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+      credentials: "omit",
+    });
+  } catch {
+    return { kind: "failed" }; // 網が切れた
+  }
+  if (res.ok) {
+    const body: unknown = await res.json().catch(() => null);
+    return { kind: "ok", data: obj(body)?.["data"] };
+  }
+  if (res.status === 401) return { kind: "login" };
+  if (res.status === 403 && (await codeOf(res)) === "FORBIDDEN") return { kind: "login" };
+  return { kind: "failed" };
 }
