@@ -2,15 +2,20 @@
 // 配るもの › ひな形・操作／会社の側のひな形の新しい版（段 13・領域 ops2・キャンバス OpTemplates・OpTypes）。値を受け取って描くだけ。
 //   ひな形は新しく入る会社が最初に使う既定の形（種別（名前・色・本文のひな形）・状態・項目）。会社は後から自由に変えられ、新しい版は
 //   会社が手を付けていない所だけ「こう変わります」と知らせる（代表の答え 2026-11-23・D-156.20）。業務の型は描かない（段 10 の決め）
+//   本番（K-994）は任意の props で値と行き先を渡す。渡さない呼び方（モック）は下絵の見た目のまま
 import { Fingerprint, Plus } from "lucide-react";
 import { Band, Button, Confirm, PageBody, PageHeader } from "@/components/k";
 import { Bullets, Card, Note, StatusBadge } from "@/features/F12/ops/ops-parts";
-import { SkillsNav } from "./views-plans";
+import { SkillsNav, type SkillsTab } from "./views-plans";
 import "@/features/F12/ops/ops.css";
 import "./ops2.css";
 import { RespTable, type RespColumn } from "@/features/F12/shared/resp-table";
 
-interface TemplateRow {
+/** 配るものの中の行き先（本番の道） */
+type SkillsHrefs = Partial<Record<SkillsTab, string>>;
+
+/** ひな形の 1 行（本番は templates-shape.ts の templateRow が口の答えから作る） */
+export interface TemplateRow {
   id: string;
   name: string;
   body: string;
@@ -48,7 +53,23 @@ const TEMPLATES: readonly TemplateRow[] = [
     last: "09/01",
   },
 ];
-const COLS: RespColumn<TemplateRow>[] = [
+const NEW_LABEL = "新しい版";
+/** 行の［新しい版］。行き先を渡したときだけ押せるリンク、渡さなければ下絵と同じ押せない形（押せる形にするのは K-1111） */
+function NewVersion({ row, href }: { row: TemplateRow; href?: string | undefined }) {
+  const label = `${row.name} の新しい版を作る`;
+  if (href)
+    return (
+      <a className="k-btn" data-variant="outlined" data-size="sm" href={href} aria-label={label}>
+        {NEW_LABEL}
+      </a>
+    );
+  return (
+    <Button size="sm" variant="outlined" aria-label={label} aria-disabled="true" tabIndex={-1} title="まだ使えません">
+      {NEW_LABEL}
+    </Button>
+  );
+}
+const columns = (newHref?: (row: TemplateRow) => string): RespColumn<TemplateRow>[] => [
   {
     key: "name",
     header: "ひな形",
@@ -67,23 +88,20 @@ const COLS: RespColumn<TemplateRow>[] = [
     key: "act",
     header: <span className="sr-only">操作</span>,
     card: "action",
-    cell: (r) => (
-      <Button
-        size="sm"
-        variant="outlined"
-        aria-label={`${r.name} の新しい版を作る`}
-        aria-disabled="true"
-        tabIndex={-1}
-        title="まだ使えません"
-      >
-        新しい版
-      </Button>
-    ),
+    cell: (r) => <NewVersion row={r} href={newHref?.(r)} />,
   },
 ];
 
 /** ひな形：中身は 種別・状態・項目。版・使っている会社の数・新しい版に変えた数 */
-export function TemplatesPage() {
+export function TemplatesPage({
+  rows = TEMPLATES,
+  newHref,
+  nav,
+}: {
+  rows?: readonly TemplateRow[];
+  newHref?: (row: TemplateRow) => string;
+  nav?: SkillsHrefs;
+} = {}) {
   return (
     <PageBody labelledBy="oq-templates-title">
       <PageHeader
@@ -97,8 +115,8 @@ export function TemplatesPage() {
         }
       />
       <div className="k-op-body">
-        <SkillsNav on="templates" />
-        <RespTable caption="ひな形の一覧" columns={COLS} rows={[...TEMPLATES]} rowKey={(r) => r.id} />
+        <SkillsNav on="templates" {...(nav ? { hrefs: nav } : {})} />
+        <RespTable caption="ひな形の一覧" columns={columns(newHref)} rows={[...rows]} rowKey={(r) => r.id} />
         <Card title="新しい版を出すと">
           <ol className="k-oq-numbered">
             <li>新しく入るワークスペースは、最新の既定で始まる</li>
@@ -146,8 +164,38 @@ export function TemplateReleaseConfirm({ onClose, onConfirm }: { onClose?: () =>
   );
 }
 
+/** 操作の 1 枚（本番は templates-shape.ts の operationCard が口の答えから作る）。札が無ければ出さない */
+export interface OperationView {
+  key: string;
+  title: string;
+  aside: string;
+  body: string;
+  badge: string | null;
+  tone?: "success" | "danger";
+}
+const OPERATIONS: readonly OperationView[] = [
+  {
+    key: "browser",
+    title: "ブラウザで操作する",
+    aside: "v1.4 ・ 読むだけ",
+    body: "汎用の操作 1 つ。初めてのサイトも動かし、うまくいったら動かし方を記録して次から使う",
+    badge: "検査 通った",
+    tone: "success",
+  },
+];
+
 /** 操作：読むだけ（ブラウザで操作する v1.4）。上げる・直すは後のフェーズ（押せない形で出す） */
-export function OperationsPage() {
+export function OperationsPage({
+  operations = OPERATIONS,
+  versionDisabled = true,
+  nav,
+}: {
+  operations?: readonly OperationView[];
+  /** ［版を見る］を押せない形で出す（既定・版は 1 つだけ） */
+  versionDisabled?: boolean;
+  nav?: SkillsHrefs;
+} = {}) {
+  const off = versionDisabled ? ({ "aria-disabled": "true", tabIndex: -1, title: "まだ使えません" } as const) : {};
   return (
     <PageBody labelledBy="oq-operations-title">
       <PageHeader
@@ -161,16 +209,18 @@ export function OperationsPage() {
         }
       />
       <div className="k-op-body">
-        <SkillsNav on="ops" />
-        <Card title="ブラウザで操作する" aside="v1.4 ・ 読むだけ">
-          <p>汎用の操作 1 つ。初めてのサイトも動かし、うまくいったら動かし方を記録して次から使う</p>
-          <div className="k-op-inline">
-            <StatusBadge tone="success">検査 通った</StatusBadge>
-            <Button size="sm" variant="outlined" aria-disabled="true" tabIndex={-1} title="まだ使えません">
-              版を見る
-            </Button>
-          </div>
-        </Card>
+        <SkillsNav on="ops" {...(nav ? { hrefs: nav } : {})} />
+        {operations.map((o) => (
+          <Card key={o.key} title={o.title} aside={o.aside}>
+            <p>{o.body}</p>
+            <div className="k-op-inline">
+              {o.badge ? <StatusBadge tone={o.tone ?? "success"}>{o.badge}</StatusBadge> : null}
+              <Button size="sm" variant="outlined" {...off}>
+                版を見る
+              </Button>
+            </div>
+          </Card>
+        ))}
         <Note>いまは読むだけです。操作を上げる・版を出す・直すは、後のフェーズで使えるようになります</Note>
       </div>
     </PageBody>
