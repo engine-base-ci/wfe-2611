@@ -10,7 +10,7 @@
 //     今はどれも中身をそのまま返すか何も出さない。題名の下の帯の順は detail-slots.ts の BAND_ORDER 1 か所（承認・実行 → 渡し → 保留）
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { isUuid } from "@kaname/contracts";
 import { DocTools, ErrorState, Loading, Prose } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
@@ -26,6 +26,15 @@ import { DetailMeta, DetailTitle, InertButton, StagePill } from "./detail-head";
 import { DetailPanel } from "./detail-panel";
 import { bandYieldTo, useBandOrder, type SlotDetail, type SlotTicket } from "./detail-slots";
 import { SCOPES_KEY, TicketShell, readScopes, type ScopeRow } from "./ticket-shell";
+import { usePanelTab } from "@/features/F6/scope";
+import {
+  OPEN_AI_TAB_EVENT,
+  TicketBandCopyProvider,
+  wantComposerFocus,
+  takeComposerFocus,
+  type OpenAiTabDetail,
+} from "@/features/F5/more/fills/talk";
+import { TicketMobileBar } from "@/features/F5/room/ticket-talk";
 import "./ticket-detail.css";
 
 interface Detail {
@@ -186,6 +195,7 @@ function DetailView({
   onTicket: (d: Detail) => void;
 }) {
   const [panelOpen, setPanelOpen] = useState(true);
+  const openPanel = useCallback(() => setPanelOpen(true), []);
   // パネルを閉じたら「パネルを開く」へ、開いたら「パネルを閉じる」へキーボードの場所を移す（押したボタンが消えて場所を失わない）
   const reopenRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -223,114 +233,207 @@ function DetailView({
     bands: bands.shown,
     reload,
   };
+  const bandProps = { id, d, runs, st, bands, onTicket, onChanged: changed };
   return (
     <F6.DetailScope ticket={st}>
       <F8.DetailScope ticket={st}>
-        <div className={side ? "k-detail k-detail-side" : "k-detail"}>
-          <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
-            <article className="k-detail-card">
-              <DetailMeta
-                ticket={t}
-                kind={d.kind}
-                stage={d.stage}
-                stageSlot={
-                  <F6.StageSlot ticket={st}>
-                    <StagePill stage={d.stage} />
-                  </F6.StageSlot>
-                }
-              />
-              {side ? (
-                <h2 id={titleId} className="k-list-detail-title" title={t.title}>
-                  {t.title}
-                </h2>
-              ) : (
-                <DetailTitle title={t.title} me={myName} />
-              )}
-              <F6.TitleSlot ticket={st} />
-              <div className="k-detail-bands" ref={bands.ref} data-shown={[...bands.shown].join(" ") || undefined}>
-                <ApproveBand
-                  ticketId={id}
-                  ticket={d}
-                  run={runs.current}
-                  runKnown={runs.known}
-                  onTicket={onTicket}
-                  onChanged={changed}
+        <TicketBandCopyProvider value={side ? null : <DetailBandSet {...bandProps} live={false} />}>
+          <AiTabFrame side={side} ticketId={id} number={t.number} title={t.title} openPanel={openPanel}>
+            <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
+              <article className="k-detail-card">
+                <DetailMeta
+                  ticket={t}
+                  kind={d.kind}
+                  stage={d.stage}
+                  stageSlot={
+                    <F6.StageSlot ticket={st}>
+                      <StagePill stage={d.stage} />
+                    </F6.StageSlot>
+                  }
                 />
-                <DelegateBand
-                  ticket={{
-                    id,
-                    stageKey: d.stage?.key ?? null,
-                    canDelegate: d.can?.delegate === true,
-                    canDecide: d.approval?.can_decide === true,
-                    approvalId: d.approval?.id ?? null,
-                    hasAssignee: d.assignee !== null,
-                    // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
-                    completeShown: canCompleteNow(d, runs.current, runs.known),
-                  }}
-                  run={runs.current}
-                  onRun={runs.follow}
-                  onChanged={changed}
-                />
-                <F8.HandoverBandSlot
-                  ticket={st}
-                  yieldTo={bandYieldTo("handover", bands.shown)}
-                  onWant={bands.want("handover")}
-                />
-                <F6.HoldBandSlot ticket={st} yieldTo={bandYieldTo("hold", bands.shown)} onWant={bands.want("hold")} />
-              </div>
-              <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
-                <InertButton size="sm" className="k-detail-versions">
-                  版と差分
-                </InertButton>
-              </DocTools>
-              <div className="k-detail-doc">
-                {d.sections.map((s) => (
-                  <F6.SectionSlot key={s.key} ticket={st} section={s}>
-                    <section className="k-section" aria-label={s.label}>
-                      <h2 id={`sec-${s.key}`}>{s.label}</h2>
-                      <Prose>{s.body?.text ?? ""}</Prose>
-                    </section>
-                  </F6.SectionSlot>
-                ))}
-              </div>
-            </article>
-            <section className="k-detail-links" aria-label="子チケット・つながり">
-              <div className="k-detail-links-head">
-                <h2>子チケット・つながり</h2>
-                <InertButton size="sm">子を足す</InertButton>
-                <InertButton size="sm">つながりを足す</InertButton>
-              </div>
+                {side ? (
+                  <h2 id={titleId} className="k-list-detail-title" title={t.title}>
+                    {t.title}
+                  </h2>
+                ) : (
+                  <DetailTitle title={t.title} me={myName} />
+                )}
+                <F6.TitleSlot ticket={st} />
+                <div className="k-detail-bands" ref={bands.ref} data-shown={[...bands.shown].join(" ") || undefined}>
+                  <DetailBandSet {...bandProps} live />
+                </div>
+                <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
+                  <InertButton size="sm" className="k-detail-versions">
+                    版と差分
+                  </InertButton>
+                </DocTools>
+                <div className="k-detail-doc">
+                  {d.sections.map((s) => (
+                    <F6.SectionSlot key={s.key} ticket={st} section={s}>
+                      <section className="k-section" aria-label={s.label}>
+                        <h2 id={`sec-${s.key}`}>{s.label}</h2>
+                        <Prose>{s.body?.text ?? ""}</Prose>
+                      </section>
+                    </F6.SectionSlot>
+                  ))}
+                </div>
+              </article>
+              <section className="k-detail-links" aria-label="子チケット・つながり">
+                <div className="k-detail-links-head">
+                  <h2>子チケット・つながり</h2>
+                  <InertButton size="sm">子を足す</InertButton>
+                  <InertButton size="sm">つながりを足す</InertButton>
+                </div>
+              </section>
             </section>
-          </section>
-          {side || panelOpen ? null : (
-            <button
-              type="button"
-              className="k-detail-reopen"
-              aria-label="パネルを開く"
-              title="パネルを開く"
-              ref={reopenRef}
-              onClick={() => togglePanel(true)}
-            >
-              <PanelRight size={16} aria-hidden="true" />
-            </button>
-          )}
-          {!side && scopesSettled ? (
-            <DetailPanel
-              ticket={t}
-              assignee={d.assignee?.display_name ?? null}
-              approver={d.approval?.approver_name ?? null}
-              scopes={scopes}
-              sections={d.sections}
-              runs={runs.runs}
-              me={myName}
-              hidden={!panelOpen}
-              closeRef={closeRef}
-              onClose={() => togglePanel(false)}
-              slot={st}
-            />
-          ) : null}
-        </div>
+            {side || panelOpen ? null : (
+              <button
+                type="button"
+                className="k-detail-reopen"
+                aria-label="パネルを開く"
+                title="パネルを開く"
+                ref={reopenRef}
+                onClick={() => togglePanel(true)}
+              >
+                <PanelRight size={16} aria-hidden="true" />
+              </button>
+            )}
+            {!side && scopesSettled ? (
+              <DetailPanel
+                ticket={t}
+                assignee={d.assignee?.display_name ?? null}
+                approver={d.approval?.approver_name ?? null}
+                scopes={scopes}
+                sections={d.sections}
+                runs={runs.runs}
+                me={myName}
+                hidden={!panelOpen}
+                closeRef={closeRef}
+                onClose={() => togglePanel(false)}
+                slot={st}
+              />
+            ) : null}
+          </AiTabFrame>
+        </TicketBandCopyProvider>
       </F8.DetailScope>
     </F6.DetailScope>
+  );
+}
+
+// 題名の下の帯（順は BAND_ORDER・ApproveBand → DelegateBand → 渡し → 保留）。live=false はスマホの AI の画面の写し（.k-room-mband・K-764）：
+//   同じ答え・同じ鍵の問い合わせを使い新しい口は呼ばない。出す・出さないの数え（onWant）は本文の側の帯だけが持つ
+function DetailBandSet({
+  id,
+  d,
+  runs,
+  st,
+  bands,
+  onTicket,
+  onChanged: changed,
+  live,
+}: {
+  id: string;
+  d: Detail;
+  runs: ReturnType<typeof useRuns>;
+  st: SlotTicket;
+  bands: ReturnType<typeof useBandOrder>;
+  onTicket: (d: Detail) => void;
+  onChanged: () => Promise<void>;
+  live: boolean;
+}) {
+  return (
+    <>
+      <ApproveBand
+        ticketId={id}
+        ticket={d}
+        run={runs.current}
+        runKnown={runs.known}
+        onTicket={onTicket}
+        onChanged={changed}
+      />
+      <DelegateBand
+        ticket={{
+          id,
+          stageKey: d.stage?.key ?? null,
+          canDelegate: d.can?.delegate === true,
+          canDecide: d.approval?.can_decide === true,
+          approvalId: d.approval?.id ?? null,
+          hasAssignee: d.assignee !== null,
+          // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
+          completeShown: canCompleteNow(d, runs.current, runs.known),
+        }}
+        run={runs.current}
+        onRun={runs.follow}
+        onChanged={changed}
+      />
+      <F8.HandoverBandSlot
+        ticket={st}
+        yieldTo={bandYieldTo("handover", bands.shown)}
+        onWant={live ? bands.want("handover") : noWant}
+      />
+      <F6.HoldBandSlot
+        ticket={st}
+        yieldTo={bandYieldTo("hold", bands.shown)}
+        onWant={live ? bands.want("hold") : noWant}
+      />
+    </>
+  );
+}
+
+const noWant = (): void => undefined;
+
+// ---------------------------------------------------------------- 右のパネルの「〈名〉のAI」（K-764）
+//   ① 道の ?ai=1 で開いたら一度だけ AI のタブに（道は書き換えない）② 帯の合図 OPEN_AI_TAB_EVENT でパネルを開き AI のタブにして書く欄へ焦点
+//   ③ AI のタブの間は .k-detail に data-mtab="ai"（767 以下は本文を出さず全画面の別画面・room.css）。頭の帯は .k-detail の直下の先頭。
+//   横の詳細（side）には右のパネルが無いので合図を受けない（帯のボタンが ?ai=1 で詳細を開く）
+const COMPOSER = '[role="region"][aria-label="AI と話す"] textarea';
+
+function AiTabFrame({
+  side,
+  ticketId,
+  number,
+  title,
+  openPanel,
+  children,
+}: {
+  side: boolean;
+  ticketId: string;
+  number: string;
+  title: string;
+  openPanel: () => void;
+  children: ReactNode;
+}) {
+  const scope = usePanelTab();
+  const setTab = scope?.setTab;
+  const fromUrl = useRef(false);
+  useEffect(() => {
+    if (side || fromUrl.current || !setTab) return;
+    fromUrl.current = true;
+    if (new URLSearchParams(window.location.search).get("ai") === "1") setTab("ai");
+  }, [side, setTab]);
+  useEffect(() => {
+    if (side || !setTab) return;
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<OpenAiTabDetail>).detail;
+      if (d?.ticketId !== ticketId) return;
+      e.preventDefault();
+      openPanel();
+      setTab("ai");
+      wantComposerFocus();
+      // すでに AI のタブが描かれていれば、その書く欄へ（まだなら中身が描かれたときに置く）
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLTextAreaElement>(COMPOSER);
+        if (el && takeComposerFocus()) el.focus();
+      });
+    };
+    window.addEventListener(OPEN_AI_TAB_EVENT, on);
+    return () => window.removeEventListener(OPEN_AI_TAB_EVENT, on);
+  }, [side, setTab, ticketId, openPanel]);
+  const ai = !side && scope?.tab === "ai";
+  return (
+    <div className={side ? "k-detail k-detail-side" : "k-detail"} {...(ai ? { "data-mtab": "ai" } : {})}>
+      {ai ? <TicketMobileBar ticket={number} title={title} onBack={() => setTab?.("attr")} /> : null}
+      {children}
+    </div>
   );
 }
