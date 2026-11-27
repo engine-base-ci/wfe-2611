@@ -70,11 +70,8 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     }
   };
 
-  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
+  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
   const withExtras = async (sid: string, job: TakenJob) => {
-    const memories = job.conversation_id
-      ? ((await one<unknown>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id])) ?? [])
-      : [];
     const tool_token =
       job.conversation_id || job.kind === "ticket" ? await issueToolToken(pool, sid, job.job_id) : null;
     const browser =
@@ -84,7 +81,7 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
     const loaded = job.kind === "login_check" ? undefined : await loadKnowledge(pool, sid, job.job_id);
     const knowledge = loaded === undefined ? "" : loaded === null ? null : renderKnowledgeSection(loaded, { canOpen });
     const extra = knowledgeExtras(job, knowledge, job.conversation_id ? AGENT_CONVENTIONS : null);
-    return { ...job, memories, tool_token, prompt: extra.prompt, conventions: extra.conventions, browser };
+    return { ...job, tool_token, prompt: extra.prompt, conventions: extra.conventions, browser };
   };
 
   return {

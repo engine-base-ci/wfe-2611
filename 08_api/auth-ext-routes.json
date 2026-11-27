@@ -129,63 +129,6 @@
   },
   {
    "file": "apps/api/src/auth/agent.ts",
-   "method": "DELETE",
-   "route": "/api/auth-ext/agent/memory/:id",
-   "to": "deleteMemory"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "PATCH",
-   "route": "/api/auth-ext/agent/memory/:id",
-   "to": "updateMemory"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/agent/memory/digest",
-   "to": "listLearningCandidates"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/agent/memory/digest",
-   "to": null,
-   "retire_with": "KN-37",
-   "decision": "D-128.79",
-   "reason": "記憶の毎朝のまとめは「覚えたいこと」（learning_candidates）に置き換えた"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/agent/memory/digest/:id/pick",
-   "to": "acceptLearningCandidate"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/agent/memory/digest/:id/undo",
-   "to": "dismissLearningCandidate"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/agent/memory/proposals/:id/decide",
-   "to": "approveApproval"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/agent/memory/proposals/:id/send",
-   "to": "promoteMemoryToRule"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "GET",
-   "route": "/api/auth-ext/agent/memory/reviews",
-   "to": "listApprovalQueue"
-  },
-  {
-   "file": "apps/api/src/auth/agent.ts",
    "method": "GET",
    "route": "/api/auth-ext/agent/messages",
    "to": "listConversationMessages"
