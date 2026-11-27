@@ -24,6 +24,10 @@
   migration の lint（K-156）：scope=full でも比べる元が有効なら migration_files を出す。名前を変えた migration（git の R）も足した物に数える
   DB の範囲（migration・SQL・行の守り・権限）：全部にはせず、database の組＋変えた migration の lint＋DB を使う試験を全部
     答えの db_range（出力 db_range）はこの範囲を触った回だけ真（全部の回も真）。G27 の DB の層はこれで流すかを決める（D-133.6）
+  赤を直した回（K-1156・2026-11-24 代表の決め）：--rerun（前の回で赤だった行 ID・空白区切り）と --since（前の回の版 40 桁）が両方あるときだけ絞る。
+    範囲の確かめ（差分・件名の番号・affects・ci_wide・止める理由）は今までどおり base で。選ぶ差分は since と先頭の木の差分（取り込んだ本線の分も入る）。
+    チケットの試験（tests: と中間・統合の試験）は rerun の行 ID（- か _ の形）を中身に持つファイルだけ。scope=full は全部。片方だけ・どちらも無ければ今と同じ。
+    形の違う入力（since が 40 桁のコミットでない・rerun に行 ID でない字）は止める（全部に倒さない）
   依存の地図：パッケージは pnpm のワークスペース（package.json の workspace:）、試験の import は vitest の Node の口（vitest_related.mjs）
 """
 from __future__ import annotations
@@ -144,6 +148,50 @@ def changed_files(repo: str, base: str, head: str) -> list[Change]:
     if git(repo, "cat-file", "-e", f"{base}^{{commit}}", check=False).returncode != 0:
         raise BaseError(f"比べる元がコミットでない: {base}")
     raw = git(repo, "diff", "--name-status", "-M", "-z", f"{base}...{head}").stdout.decode("utf-8", "surrogateescape")
+    return _name_status(raw)
+
+
+def tree_changes(repo: str, since: str, head: str) -> list[Change]:
+    """赤を直した回の選ぶ差分：前の回の版（since）の木と先頭の木の差分（取り込んだ本線の分も入る・K-1156）"""
+    if not isinstance(since, str) or not SHA.fullmatch(since):
+        raise BaseError(f"前の回の版（since）が 40 桁の 16 進でない: {since!r}")
+    if git(repo, "cat-file", "-e", f"{since}^{{commit}}", check=False).returncode != 0:
+        raise BaseError(f"前の回の版（since）がコミットでない: {since}")
+    return _name_status(git(repo, "diff", "--name-status", "-M", "-z", since, head).stdout.decode("utf-8", "surrogateescape"))
+
+
+ROW_TOKEN = re.compile(r"[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)+")   # 行 ID（K12-API-003・K9-M9-9・K107-J1）。_ の形も受ける
+
+
+def rerun_rows(text: str) -> list[tuple[str, ...]]:
+    """--rerun の字（空白区切り）→ 行 ID の段の並び。行 ID の形でない字が 1 つでもあれば ValueError（K-1156）"""
+    out = []
+    for tok in (text or "").split():
+        if not ROW_TOKEN.fullmatch(tok):
+            raise ValueError(f"行 ID の形でない字: {tok!r}")
+        out.append(tuple(re.split(r"[-_]", tok)))
+    return out
+
+
+def _row_rx(row: tuple[str, ...]) -> re.Pattern:
+    """- の形（K12-API-003）と _ の形（test_K12_API_003_name）のどちらにも当てる。続きの数字（K12-API-0031）には当てない"""
+    return re.compile(r"(?<![A-Za-z0-9])" + "[-_]".join(re.escape(x) for x in row) + r"(?![0-9])")
+
+
+def _rows_in(repo: str, files: list[str], rows: list[tuple[str, ...]]) -> tuple[list[str], set[tuple[str, ...]]]:
+    """files のうち rows のどれかを中身に持つ物と、見つかった行"""
+    keep, found = [], set()
+    rxs = [(r, _row_rx(r)) for r in rows]
+    for f in files:
+        text = _read(repo, f)
+        hit = {r for r, rx in rxs if rx.search(text)}
+        if hit:
+            keep.append(f)
+            found |= hit
+    return keep, found
+
+
+def _name_status(raw: str) -> list[Change]:
     parts = raw.split("\0")
     out, i = [], 0
     while i < len(parts) and parts[i]:
@@ -657,7 +705,7 @@ def _shards(n: int, per: int) -> int:
 
 # K-170（2026-11-11・決める人「チケットの時はチケットだけ。フォールバックもチケットごと」）：scope=auto は全部に倒さない。
 #   範囲を決められない理由は止める（組は流さない）。ほかの理由（CI の設定・部品の版・地図に無い・共通の部品・宣言なし）はチケットの範囲で続ける
-STOP_KINDS = {"requested", "base", "empty", "badpath", "ticket", "ticket-tests", "integration", "tool", "mismatch"}
+STOP_KINDS = {"requested", "base", "empty", "badpath", "ticket", "ticket-tests", "integration", "tool", "mismatch", "rerun"}
 
 
 def _stop_plan(p: dict) -> dict:
@@ -750,9 +798,12 @@ def with_web_selection(p: dict, sel: dict) -> dict:
 
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
-         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "", leaves: str | None = None) -> dict:
+         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "", leaves: str | None = None,
+         rerun: str = "", since: str = "", _pick: dict | None = None) -> dict:
     if scope == "ticket":
         scope = "auto"   # K-172：ticket-flow の入口の名前。絞り方は auto と同じ
+    if _pick is None and scope != "full" and (rerun or "").split() and since:
+        return _rerun_plan(repo, base, head, scope, rules, tickets_dir, list_tests, db_tests, ticket, rerun, since)
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "integration_waiting": {}, "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
@@ -780,7 +831,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         _full_scope_migrations(p, repo, base, head, rules)
         return done()
     try:
-        changes = changed_files(repo, base, head)
+        changes = tree_changes(repo, base, head) if _pick else changed_files(repo, base, head)   # 赤を直した回の選ぶ差分は since と先頭の木（K-1156）
     except BaseError as e:
         p["base"] = ""
         full.append(("base", str(e)))
@@ -788,7 +839,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p["changes"] = changes
     p["date_only"] = date_only(repo, base, head, changes)
     changes = [c for c in changes if c.path not in p["date_only"]]   # 日付だけの生成物は範囲に数えない
-    if not p["changes"]:
+    if not p["changes"] and not _pick:   # 赤を直した回は前の回から何も変えていなくても、赤の行は流す（K-1156）
         full.append(("empty", "変えたファイルが無い"))
         return done()
 
@@ -874,22 +925,29 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         p["migration_files"] = mig_files
 
     # チケット
-    ids, headless = subject_ids(repo, base, head)
-    p["tickets"] = ids
-    if headless:
-        full.append(("ticket", f"件名の頭に番号の無いコミット {'・'.join(headless)}（取り込みでないコミットは件名の頭にチケットの番号を書く）"))
+    if _pick:   # 赤を直した回の選ぶ側：番号・affects の確かめは base の答え（_rerun_plan）がした。since..先頭の件名では裁かない（K-1156）
+        ids = list(_pick["ids"])
+        p["tickets"] = ids
+    else:
+        ids, headless = subject_ids(repo, base, head)
+        p["tickets"] = ids
+        if headless:
+            full.append(("ticket", f"件名の頭に番号の無いコミット {'・'.join(headless)}（取り込みでないコミットは件名の頭にチケットの番号を書く）"))
     if len(ids) != 1:
         full.append(("ticket", f"コミットのチケットの番号が {len(ids)} 個（{', '.join(ids) or 'なし'}）"))
     elif ticket and ids != [ticket]:
         full.append(("ticket", f"入力のチケット {ticket} とコミットのチケットの番号 {ids[0]} が違う"))
     else:
-        mism, fr = _ticket_check(tickets_dir, ids[0], rules, changed_pk, {c for c, _ in wide})
-        p["mismatches"] = mism
-        full += fr
+        if not _pick:
+            mism, fr = _ticket_check(tickets_dir, ids[0], rules, changed_pk, {c for c, _ in wide})
+            p["mismatches"] = mism
+            full += fr
         integ, itests, empty, p["integration_waiting"] = _integration(repo, tickets_dir, ids[0], head)
         p["integration"] = integ
         for e in empty:
             full.append(("integration", f"{e} の tests が無い（何にも当たらない）"))
+        if _pick:   # 中間・統合の試験も、前の回で赤だった行を持つファイルだけ（K-1156）
+            itests, p["rerun_seen"] = _rows_in(repo, itests, _pick["rows"])
         direct.update(itests)
 
     if any(c in STOP_KINDS for c, _ in full):
@@ -900,6 +958,9 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
             full.append(("ticket-tests", f"{ids[0]} の tests: の {g} が何にも当たらない"))
         if miss:
             return done()
+        if _pick:   # チケットの試験は、前の回で赤だった行を持つファイルだけ（K-1156）
+            tt, seen = _rows_in(repo, tt, _pick["rows"])
+            p["rerun_seen"] = set(p.get("rerun_seen") or set()) | seen
         direct.update(t for t in tt if match(t, TEST_GLOBS))   # .py などは spec の組が流す
         p["py_tests"] = sorted(t for t in tt if t.endswith(".py"))   # spec の組が junit_unittest.py で流す（K-172）
         p["ticket_web_tests"] = [t for t in tt if t.startswith(WEB_E2E_PREFIX)]   # 画面の試験は web の組が流す（K170-CS-014）
@@ -920,7 +981,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
 
     # 試験の無いコード（どの受け方でもよい）
     data_tested = [l["paths"] for l in rules["data_links"] if l.get("tests")]
-    for s in sorted(src_live):
+    for s in sorted(src_live) if not _pick else []:   # 試験の無いコードは base の答えが見る（K-1156）
         if rel.get(s):
             continue
         if any(match(s, ps) for ps in data_tested) or itests:
@@ -955,6 +1016,34 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     if web_select.domain_g48(repo) or web_select.domain_g59(repo):
         p["errors"] = list(p.get("errors") or []) + web_select.check_gates(repo, rules.get("web_select") or {})
     return done()
+
+
+# 赤を直した回に、選ぶ側の答えから差し替える物（確かめの答えの残りはそのまま・K-1156）
+PICKED = {"jobs": None, "unit_shards": 0, "unit_files": [], "coverage_args": [], "gates": [], "py_tests": [], "ticket_web_tests": [],
+          "migration_files": [], "db_range": False, "web_ticket_rows": [], "web_g48": [], "web_g59": [], "web_gates": {}, "web_tasks": []}
+
+
+def _rerun_plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
+                list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str, rerun: str, since: str) -> dict:
+    """赤を直した回（K-1156）：確かめは base、選ぶは since と先頭の木の差分。チケットの試験は rerun の行を持つファイルだけ"""
+    main = plan(repo, base, head, scope, rules, tickets_dir, list_tests, db_tests, ticket=ticket)
+    try:
+        rows = rerun_rows(rerun)
+        tree_changes(repo, since, head)   # 形とコミットを確かめる
+    except (ValueError, BaseError) as e:
+        return _stop_plan({**main, "full_reasons": main["full_reasons"] + [("rerun", str(e))],
+                           "errors": main["errors"] + [f"範囲を決められない（rerun：{e}）。全部には倒さず止める"]})
+    if main["mode"] != "scoped" or main["errors"] or main["mismatches"]:
+        return main   # 確かめが赤なら、絞らずに今と同じ答えで止める
+    sel = plan(repo, since, head, scope, rules, tickets_dir, list_tests, db_tests, ticket=ticket,
+               _pick={"ids": main["tickets"], "rows": rows})
+    out = {**main, **{k: sel.get(k, v if v is not None else main[k]) for k, v in PICKED.items()}}
+    seen = sel.get("rerun_seen") or set()
+    out["reasons"] = main["reasons"] + [f"赤を直した回：rerun {len(rows)} 行・since {since[:10]}（選ぶ差分は since と先頭の木・確かめは base）"] + [
+        f"赤を直した回：行 {'-'.join(r)} はチケットの試験のどのファイルにも無い（この回は流れない）" for r in rows if r not in seen]
+    out["errors"] = list(main["errors"]) + list(sel["errors"])
+    out["full_reasons"] = main["full_reasons"] + [(c, d) for c, d in sel["full_reasons"] if c in STOP_KINDS]
+    return _stop_plan(out) if sel["errors"] else out
 
 
 # ---------------------------------------------------------------- 組の中で流す命令（引数の並び）
@@ -1074,6 +1163,8 @@ def _decide(argv: list[str]) -> int:
     ap.add_argument("--scope", default="full")
     ap.add_argument("--ticket", default="")
     ap.add_argument("--leaves", default="")   # 全部の回の段の葉（空白区切り・ticket-flow の stageq が渡す・K-1305）
+    ap.add_argument("--rerun", default="")   # 赤を直した回：前の回で赤だった行 ID（空白区切り・K-1156）
+    ap.add_argument("--since", default="")   # 赤を直した回：前の回の版（40 桁）
     ap.add_argument("--rules", default=None)
     ap.add_argument("--tickets", default=None)
     ap.add_argument("--github-output", default=None)
@@ -1094,7 +1185,7 @@ def _decide(argv: list[str]) -> int:
             gw = [f for f in walk_files(repo, CODE_EXT) if match(f, rules["db"]["gateway"])]
             got = check_answer(lt(gw), gw) if gw else {}
             return sorted({t for v in got.values() for t in v} | set(db_tests_by_text(repo, rules)))
-    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket, leaves=a.leaves)
+    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket, leaves=a.leaves, rerun=a.rerun, since=a.since)
     red = bool(p["mismatches"] or p["errors"])
     out = _stop_plan(p) if red else p   # K-170：赤でも全部に倒さず、組を流さない
     if a.github_output:
