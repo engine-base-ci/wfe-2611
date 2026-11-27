@@ -155,11 +155,14 @@ beforeAll(async () => {
     T.tenantId,
   ]);
   const stage = await one("select id as v from ticket_stages where tenant_id = $1 limit 1", [T.tenantId]);
-  const tk = (sc: string, number: string) =>
-    one(
+  // 番号はいつもサーバーがグループの通し番号で付ける（0071 の ticket_number・入れた値は使わない）。決めた番号になるよう通し番号を先に合わせる
+  const tk = async (sc: string, number: string) => {
+    await f.admin.query("update scopes set next_ticket_no = $2 where id = $1", [sc, Number(number.split("-")[1])]);
+    return one(
       "insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, created_by) values ($1, $2, $3, $4, $5, $6, $7) returning id as v",
       [T.tenantId, sc, number, kind, stage, `${number} のチケット`, admin.id],
     );
+  };
   const tJD = await tk(JD, "JD-7");
   const tCS = await tk(CS, "CS-9");
   E["s1"] = await ev({
