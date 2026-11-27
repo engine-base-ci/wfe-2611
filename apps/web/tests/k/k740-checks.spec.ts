@@ -458,7 +458,13 @@ test("K740-UI-016 画面：下絵との突き合わせ（checks-table・checks-f
           await p.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
           await drive(p, w);
         },
-        { base: "/dev/mock/f5", pairs: C_PAIRS, blur: true },
+        // 承認待ちの列：下絵は 9 行・試験は字の 3 通り（4 ／ 5 済み・検査なし・—）の 3 行。幅で見えている行の数が違うので、列のセルの数は比べない（値は比べる）
+        {
+          base: "/dev/mock/f5",
+          pairs: C_PAIRS,
+          blur: true,
+          skip: id === "checks-queue-column" ? ["cell:当たった数"] : [],
+        },
       );
       expect(rows.length, `${id}・幅 ${w}：比べた値が 0 件`).toBeGreaterThan(0);
       expect(bad, `${id}・幅 ${w}\n${bad.join("\n")}`).toEqual([]);

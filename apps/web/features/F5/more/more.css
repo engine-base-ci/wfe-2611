@@ -56,7 +56,8 @@
 .k-more-dash {
   color: var(--k-neutral);
 }
-.k-more-reason {
+.k-more-reason,
+.k-section .k-more-reason {
   margin: 0;
   padding: var(--k-c-check-empty-pad);
   color: var(--k-c-check-empty-fg);
