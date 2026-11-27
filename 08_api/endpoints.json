@@ -62947,8 +62947,7 @@
   }
  ],
  "acts_without_endpoint": [
-  "A137",
-  "A40"
+  "A137"
  ],
  "deferred_screens": [
   "account-close",

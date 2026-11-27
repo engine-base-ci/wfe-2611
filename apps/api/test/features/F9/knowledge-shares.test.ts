@@ -296,6 +296,12 @@ describe("K-689 グループを選んで共有", () => {
     expect((await requestRows(h, w)).filter((x) => x["state"] === "pending").length).toBe(1);
     const r = await setShares(w.mgr2, { page_id: p, group_ids: [g4] });
     expect(r.status).toBe(200);
+    // 止めた人の画面には「止めました」と残る・中身はもう見えない（決める人の答え answer=2b578da80a62）
+    expect((await h.json(r)).data).toEqual({
+      target: { page_id: p, folder_id: null, title: "" },
+      from_group_name: "",
+      groups: [{ group_id: w.g2, name: "受託開発", manager_name: "", checked: false, state: "ended" }],
+    });
     expect((await shareRows(w))[0]!["ended_by"]).toBe(w.mgr2.id);
     expect((await readPage(w.mem2, p)).status).toBe(404);
     const ns = await notices(h, w, "knowledge.share_ended");

@@ -455,7 +455,7 @@ INPUTS = {
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
 # list で始まるが、data に並びでなく 1 つの形（例：items と counts）を返す口（K-892）。一覧の問い合わせ（cursor・limit・sort）を契約に足さない。チケットごとの分は screen_api.d に書く
-OBJECT_OPS = set()  # type: set[str]
+OBJECT_OPS = {}
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
