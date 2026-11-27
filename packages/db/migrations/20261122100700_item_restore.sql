@@ -55,9 +55,12 @@ begin
   if v_err is not null then return jsonb_build_object('error', v_err); end if;
   -- 同じチケットの同時の 2 本は 1 本ずつ（後の 1 本は前の 1 本が書いた後の点を見て stale になる）。組の関数と同じ no key update
   select * into t from tickets where id = p_ticket and tenant_id = v_tenant for no key update;
-  if t.id is null or t.deleted_at is not null then return jsonb_build_object('error', 'not_found'); end if;
+  -- 入口は :id の行を読まない（row_rules.mjs の ROW_EXEMPT_FIELDS・PM の決め 2026-11-28）。無い・別の会社・見えないは missing（入口と同じ NOT_FOUND）、
+  --   消したチケット（同じ会社の行）は not_found（E-PAGE-001・K576-API-013）
+  if t.id is null then return jsonb_build_object('error', 'missing'); end if;
+  if t.deleted_at is not null then return jsonb_build_object('error', 'not_found'); end if;
   begin
-    if not app.ticket_visible(t.id) then v_err := 'not_found';
+    if not app.ticket_visible(t.id) then v_err := 'missing';
     elsif not app.ticket_writable(t.id) then v_err := 'not_writable';
     end if;
   exception when others then

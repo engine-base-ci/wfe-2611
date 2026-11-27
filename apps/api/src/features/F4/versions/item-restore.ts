@@ -11,6 +11,8 @@ import { unavailable } from "../body/errors.js";
 import type { Detail } from "./input.js";
 
 const NOT_FOUND: HookReply = { status: 404, body: { error: "not_found", code: "E-PAGE-001" } };
+/** 無い・別の会社・見えない（入口の行の確かめの NOT_FOUND と同じ答え。入口はこの口の :id を読まない） */
+const MISSING: HookReply = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
 const FORBIDDEN: HookReply = { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
 
 /** 409 の体（正本の文を引く・欄を付けない） */
@@ -22,6 +24,7 @@ const conflict = (code: string): HookReply => {
 /** DB の答えの言葉 → HTTP の答え。知らない言葉と guard_failed は止める側（503）に倒す */
 const REPLIES: Readonly<Record<string, () => HookReply>> = {
   not_found: () => NOT_FOUND,
+  missing: () => MISSING,
   not_member: () => FORBIDDEN,
   not_writable: () => FORBIDDEN,
   done: () => conflict("E-ITM-001"),
