@@ -6,7 +6,7 @@
 //   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380。渡された行は K-412 の queue-row-pass.tsx が描く）
 //   幅 767 以下は表を隠し、表の後ろの 1 件 1 枚のカード（queue-card.tsx・K-412・D-148.26）を出す。小さな知らせの置き場は queue.tsx
 import { Fragment, type ReactNode } from "react";
-import { Button } from "@/components/k";
+import { Button, Checkbox } from "@/components/k";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { DUE_GROUPS, dueGroupOf, jstDay, type DueGroup } from "./due";
 import type { QueueRow } from "./queue";
@@ -39,7 +39,7 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
             <thead>
               <tr>
                 <th scope="col">
-                  <input type="checkbox" disabled aria-label="まとめて選べるものをすべて選ぶ" />
+                  <Checkbox disabled aria-label="まとめて選べるものをすべて選ぶ" />
                 </th>
                 {HEADERS.map((h) => (
                   <th key={h} scope="col">
@@ -111,7 +111,7 @@ function Row({ row, acts }: { row: QueueRow; acts: RowActs }) {
     <tr>
       <td>
         {row.decide_inline ? (
-          <input type="checkbox" disabled aria-label="まとめて承認に入れる" />
+          <Checkbox disabled aria-label="まとめて承認に入れる" />
         ) : (
           <span className="k-ap-dash" title="1 件ずつ決める">
             —

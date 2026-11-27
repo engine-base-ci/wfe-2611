@@ -7,6 +7,7 @@
 import { Bot, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
+import * as F7 from "@/features/F7/detail-slots";
 import { DuplicateEntry, VersionsEntry } from "./detail-entry-slots";
 import type { SlotTicket } from "./detail-slots";
 
@@ -160,7 +161,7 @@ export function DetailMeta({
   );
 }
 
-/** 題名の行（下絵 v2）。右に 複製・版と差分（入口の差し込み口）・acts（AI に任せる・完了にするの差し込み口）・ほかの操作。
+/** 題名の行（下絵 v2）。右に 複製・版と差分（入口の差し込み口）・acts（AI に任せる・完了にするの差し込み口）・ほかの操作（段 8 の F7.MoreMenuSlot・K-599）。
  *  slot が無い呼び手（段 7・段 9 の下絵 f6・f8）は前の並び（複製・〈名前〉のAI と話す・ほかの操作）のまま描く */
 export function DetailTitle({
   title,
@@ -200,9 +201,11 @@ export function DetailTitle({
             ) : null}
           </>
         )}
-        <InertButton label="ほかの操作" className="k-detail-more">
-          …
-        </InertButton>
+        <F7.MoreMenuSlot {...(slot ? { ticket: slot } : {})}>
+          <InertButton label="ほかの操作" className="k-detail-more">
+            …
+          </InertButton>
+        </F7.MoreMenuSlot>
       </div>
     </header>
   );

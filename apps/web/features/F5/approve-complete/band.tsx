@@ -7,6 +7,7 @@
 //   口の失敗の知らせは帯の region の中の赤い箱（NoticeBox・K-227）
 //     ③ 承認の後の実行が走っている … pc live は「実行中」・running で pc asleep は「実行中・PC が閉じています…」・asking は「AI が許可を求めています…」
 //     ④ 実行待ち・PC が閉じている（queued・pc asleep）… 「実行待ち・PC が閉じています…」（queued・pc live は「実行中」）
+//     ④' 片付けに失敗した待っている実行（sweep_failed_at あり・K-1192）… 赤い箱「片付けに失敗しています」。［この実行を止める］は担当者だけ（sweep-failed.tsx）
 //     ⑤ 止まった … 実行の記録（action_runs）の止まった理由を全文そのまま（切らない・言い換えない・D-131.2・D-131.4）
 //     ⑥ 作業中・承認待ちなし・走っている実行なし・can.complete（AI に任せていないチケットも・K-184）… 「完了の条件を確かめて完了にしてください」（案内の字だけ）。
 //        「完了にする」のボタンは題の行（complete-act.tsx・K-572）。押したときの流れ（use-complete.ts）の小窓と赤い知らせは、この帯が同じ store を読んで出す
@@ -22,6 +23,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Band, BandLine, NoticeBox } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
+import { getToken } from "@/lib/api/client";
+import { me } from "@/lib/auth/ext";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
 import { CompleteBlockedDialog } from "@/features/F9/knowledge/ticket-views";
 import { CompleteDialog } from "./complete-dialog";
@@ -29,6 +32,7 @@ import { completedLine, type Completed } from "./complete-model";
 import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
 import { docOf, useComplete } from "./use-complete";
+import { SweepFailedBand } from "./sweep-failed";
 
 export type { BandApproval } from "./decide";
 export const BAND_LABEL = "承認と実行";
@@ -48,12 +52,18 @@ const SETUP_BRIDGE = "/setup/bridge";
 const COMPLETABLE_STAGE = "doing";
 
 /** 承認の後の実行（phase execute）の今の様子。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
-type ExecuteView = { kind: "running"; title: string } | { kind: "wait" } | { kind: "stopped"; reason: string } | null;
+type ExecuteView =
+  | { kind: "running"; title: string }
+  | { kind: "wait" }
+  | { kind: "sweepFailed" }
+  | { kind: "stopped"; reason: string }
+  | null;
 function executeView(run: RunView): ExecuteView {
   if (!isActive(run)) {
     if (run.status === "done" || !run.stopped_reason) return null;
     return { kind: "stopped", reason: run.stopped_reason }; // ⑤ 理由は口の文をそのまま
   }
+  if (run.status === "queued" && run.sweep_failed_at) return { kind: "sweepFailed" }; // ④ の代わり（PC の様子に関わらず・K-1192）
   if (run.status === "asking") return { kind: "running", title: MSG.asking };
   if (run.pc !== "asleep") return { kind: "running", title: MSG.running }; // queued・running で PC が開いている
   return run.status === "queued" ? { kind: "wait" } : { kind: "running", title: MSG.runningAsleep };
@@ -121,8 +131,30 @@ export function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown
 export const targetLine = (number?: string | null, title?: string | null): string | undefined =>
   [number, title].filter(Boolean).join(" ") || undefined;
 
+/** 見ている人の member_id（外枠と同じ鍵 ["me"] の問い合わせ・口は増えない・読めるまで null） */
+function useMeId(): string | null {
+  const signedIn = typeof window !== "undefined" && Boolean(getToken());
+  const who = useQuery({
+    queryKey: ["me"],
+    queryFn: me,
+    enabled: signedIn,
+    retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  return who.isSuccess ? who.data.member_id : null;
+}
+/** 担当者の member_id（getTicket の assignee.id。無ければ null） */
+const assigneeIdOf = (assignee: unknown): string | null =>
+  assignee !== null && typeof assignee === "object" && typeof (assignee as { id?: unknown }).id === "string"
+    ? (assignee as { id: string }).id
+    : null;
 export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKnown, onTicket, onChanged }: Props<T>) {
   usePolledTicket(ticketId, isActive(run), onTicket);
+  const meId = useMeId();
+  const assigneeId = assigneeIdOf(ticket.assignee);
+  const isAssignee = meId !== null && assigneeId !== null && meId === assigneeId;
   const [notice, setNotice] = useState<string | null>(null);
   const c = useComplete({ ticketId, doc: docOf(ticket), onChanged });
   /** 口が断った（409・404 など）：知らせを出して読み直す。401 は入り直し（共通の扱い・戻る先にこのチケット） */
@@ -165,6 +197,18 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
         <Band tone="danger" role="alert" title={MSG.stoppedTitle}>
           <BandLine>{view.reason}</BandLine>
         </Band>,
+      );
+    if (view?.kind === "sweepFailed" && execute)
+      return busyBody(
+        <SweepFailedBand
+          runId={execute.id}
+          canStop={isAssignee}
+          onChanged={async () => {
+            setNotice(null);
+            await onChanged();
+          }}
+          onFailed={failed}
+        />,
       );
     if (view?.kind === "running") return busyBody(<Band tone="info" title={view.title} />);
     if (view?.kind === "wait")

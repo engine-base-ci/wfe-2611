@@ -79,7 +79,9 @@
     "dialog-caution": ".k-dialog-caution",
     "dialog-target": ".k-dialog-target",
     "dialog-group": ".k-dialog-group",
-    "dialog-check": ".k-dialog-check",
+    "choice": ".k-choice",
+    "choice-box": ".k-choice-input",
+    "dialog-check": ".k-choice[data-size=\"sm\"]",
     "dialog-stack": ".k-dialog-stack",
     "dialog-select": ".k-dialog-stack select.k-input",
     "dialog-textarea": ".k-dialog-stack textarea.k-input",
@@ -596,6 +598,78 @@
     {
       "part": "search-focus",
       "reason": "探す欄の型の部品（段 9・components/k/search-field.css の .k-search-field:focus-within）。値は 焦点の輪（outline） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-panel",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。お知らせの箱の幅。features/F7/notice/notice.css が min() の中で var(--k-c-notice-panel-width) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "search-panel",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。探す箱の幅と上端。features/F7/search/search.css が min()・top・max-height の calc の中で var(--k-c-search-panel-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-avatar",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。お知らせの行の丸い印の大きさ。features/F7/notice/notice.css が var(--k-c-notice-avatar-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "more-menu-min",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。詳細の「…」の箱の幅の下限。features/F7/delete/delete.css の min-width が var(--k-c-more-menu-min-width) を読む（D5 は min-width を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-day",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。カレンダーの日のセルの高さ。features/F7/calendar/calendar.css が var(--k-c-calendar-day-height) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-day-compact",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホのカレンダーの日のセルの高さ。features/F7/calendar/calendar.css の幅 767 以下の @media の中で読む（D5 は @media の中を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-tray",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。カレンダーの期限なしの置き場の重なる箱の幅。features/F7/calendar/calendar.css が var(--k-c-calendar-tray-width) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f7-dot",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。種別の色の小さな丸の大きさ。features/F7/calendar/calendar.css が var(--k-c-f7-dot-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-body",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの本体の高さ。features/F7/gantt/gantt.css が var(--k-c-gantt-body-height) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-row",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの行の高さ。svar-gantt が数（px）で受ける props なので、features/F7/gantt/gantt-inner.tsx が read-len.ts で var を読んで渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-scale",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの目盛りの高さ。gantt-inner.tsx が read-len.ts で読んで svar-gantt の scaleHeight に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-day",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの日のセルの幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt の cellWidth に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-week",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの週のセルの幅と左の表の列の幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-month",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの月のセルの幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt の cellWidth に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "overview-phone",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホの概要の頁の高さの元（画面の高さ）。features/F7/overview/overview.css の @media の中で calc から上の帯と下のタブを引いて読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "saved-nav-group",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。保存した検索条件の並びのグループの行の高さと左右の余白。features/F7/saved/saved.css の .k-f7-saved-nav-link が min-height と padding で読む（D5 は min-height を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "saved-nav-mark",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。保存した検索条件の並びのグループの札の大きさ。features/F7/saved/saved.css の .k-f7-saved-nav-mark が読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-sheet-back",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホのお知らせの頁の「戻る」の大きさ。features/F7/notice/notice.css の .k-f7-notice-sheet-back が読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10,

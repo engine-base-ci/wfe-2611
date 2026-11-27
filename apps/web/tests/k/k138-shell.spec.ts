@@ -3,7 +3,7 @@
 //   主ナビ（lib/nav.ts の sectionsByRole）と同じになるか・上の帯・下のタブ・横溢れ・固定の箱の被り・突き合わせを数で見る。
 //   口（API）は網の手前（page.route）で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404 を返す）。
 //   期待は決める人の答えのおすすめ（K-138.md の決定ログ 1〜6）による：作っていない項目は押せない形で出し目に見える「準備中」を出さない・
-//   グループの件数と知らせの数は出さない・探す欄は出さない・承認待ちの数はどの画面でも出す。
+//   グループの件数とお知らせの数は出さない・探す欄は出さない・承認待ちの数はどの画面でも出す。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -19,6 +19,7 @@ import {
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -74,8 +75,24 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     const p = u.pathname;
     m.calls.push(`${req.method()} ${p}${u.search}`);
     let r: Reply = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
-    const outer = ["/api/v1/scopes", "/api/v1/approvals/queue", "/api/v1/bridge/devices"];
-    if (m.outerFail && outer.includes(p)) r = { status: 500, body: { error: "internal", code: "INTERNAL" } };
+    // 外枠の口は getShell 1 本（K-466）。前の「外枠だけが読む 3 つの口が 500」は getShell が 500、役の口の 401 は getShell の 401 に替えた
+    if (p === "/api/v1/shell" && m.outerFail) r = { status: 500, body: { error: "internal", code: "INTERNAL" } };
+    else if (p === "/api/v1/shell" && m.meStatus !== 200)
+      r = { status: m.meStatus, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+    else if (p === "/api/v1/shell")
+      r = ok(
+        shellData({
+          roleId: m.role,
+          name: m.displayName,
+          company: m.workspaceName,
+          approvals: m.approvals,
+          pcConnected: m.devices.some((d) => d.state === "live"),
+          groups: [
+            { id: SALES, name: "営業", ticket_prefix: "EG", writable: true, open_count: 18 },
+            { id: ACCT, name: "経理", ticket_prefix: null, writable: false, open_count: 9 },
+          ],
+        }),
+      );
     else if (p === "/api/auth/get-session")
       r = {
         status: 200,
@@ -315,7 +332,7 @@ test("K138-SH-008 承認待ちの口の数 2：/tickets でも /approvals でも
   }
 });
 
-test("K138-SH-009 グループ：見出し「グループ」と★（グレーで押せない）の下に 営業・経理 の 2 行。絞り込みができるまでグレーで押せない（D-145.18）・件数の字は無い・札は番号の頭（無ければ名前の頭 1 字）で 18px", async ({
+test("K138-SH-009 グループ：見出し「グループ」と★（グレーで押せない）の下に 営業・経理 の 2 行。グループの画面ができるまではグレーで押せない（D-145.18・K-480 が作った後はその画面へのリンク）・件数は getShell の open_count（営業 18・経理 9・K-466）・札は番号の頭（無ければ名前の頭 1 字）で 18px", async ({
   page,
 }) => {
   await mockApi(page);
@@ -333,31 +350,38 @@ test("K138-SH-009 グループ：見出し「グループ」と★（グレー�
   await expect(groups.locator(".k-group-mark")).toHaveText(["EG", "経"]);
   for (const i of [0, 1]) {
     const g = groups.nth(i);
-    await expect(g).toHaveAttribute("role", "link");
-    await expect(g).toHaveAttribute("aria-disabled", "true");
-    await expect(g).toHaveAttribute("tabindex", "0");
     await expect(g).toHaveAttribute("data-group", ["営業", "経理"][i]!);
-    // 札の字はキャンバスどおり 10px・太さ普通
+    // 札の字はキャンバスどおり 10px・太さ普通（押せない形でもリンクでも同じ）
     expect(
       await g.locator(".k-group-mark").evaluate((e) => [getComputedStyle(e).fontSize, getComputedStyle(e).fontWeight]),
     ).toEqual(["10px", "400"]);
-    await expect(g).not.toHaveAttribute("href", /./);
-    expect(await g.getAttribute("title")).toContain("準備中");
-    expect(await g.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
     const box = await g
       .locator(".k-group-mark")
       .evaluate((e) => [e.getBoundingClientRect().width, e.getBoundingClientRect().height]);
     expect(box.map(Math.round)).toEqual([18, 18]);
-    const before = page.url();
-    await g.click({ force: true });
-    expect(page.url()).toBe(before);
+    const href = await g.getAttribute("href");
+    if (href === null) {
+      // 行き先の画面がまだ無い間：グレーで押せない形（K-480 が区画を本物にするまで・K-599 の groupHref が null）
+      await expect(g).toHaveAttribute("role", "link");
+      await expect(g).toHaveAttribute("aria-disabled", "true");
+      await expect(g).toHaveAttribute("tabindex", "0");
+      expect(await g.getAttribute("title")).toContain("準備中");
+      expect(await g.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+      const before = page.url();
+      await g.click({ force: true });
+      expect(page.url()).toBe(before);
+    } else {
+      // 行き先の画面ができたあと（K-480）：そのグループの画面へのリンク（押せない印は付かない）
+      expect(href).toMatch(/^\/tickets\?view=\w+&scope=[0-9a-f-]{36}$/);
+      await expect(g).not.toHaveAttribute("aria-disabled", "true");
+    }
   }
   // 札の幅がそろい、名前の左の端が 2 行でそろう（札がはみ出して名前がずれない）
   const lefts = await groups
     .locator(".k-nav-label")
     .evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
   expect(new Set(lefts).size).toBe(1);
-  await expect(groups.locator(".k-nav-count")).toHaveCount(0);
+  await expect(groups.locator(".k-nav-count")).toHaveText(["18", "9"]);
 });
 
 for (const [devices, label] of [
@@ -391,7 +415,7 @@ test("K138-SH-011 上の帯のいまの場所：画面ごとの字・詳細は�
   }
 });
 
-test("K138-SH-012 上の帯：探す欄はグレーで出て打っても字が入らない（⌘K でも）・知らせの鈴はグレーで押しても何も開かず数の字が無い", async ({
+test("K138-SH-012 上の帯：探す欄（名前「探す」）とお知らせの鈴（名前が「お知らせ」で始まる）が帯の中に 1 つずつ在る（押せるかどうかは K-467・K-471 の試験が見る。K-466 が、後の葉で変わる「グレー」の確かめをここから外した）", async ({
   page,
 }) => {
   await mockApi(page);
@@ -399,25 +423,10 @@ test("K138-SH-012 上の帯：探す欄はグレーで出て打っても字が�
   const bar = page.locator("header.k-bar");
   const search = bar.getByRole("search");
   await expect(search).toHaveCount(1);
-  const box = search.locator("input");
-  await expect(box).toBeDisabled();
-  await expect(box).toHaveAttribute("aria-disabled", "true");
-  expect(await search.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
-  await box.click({ force: true });
-  await page.keyboard.type("請求");
-  await expect(box).toHaveValue("");
-  await page.keyboard.press("Meta+k");
-  await expect(box).not.toBeFocused();
+  await expect(search.locator("input")).toHaveCount(1);
   const bell = bar.locator(".k-bell");
   await expect(bell).toHaveCount(1);
-  await expect(bell).toHaveAttribute("aria-disabled", "true");
-  expect(await bell.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
-  expect((await bell.innerText()).trim()).toBe("");
-  const before = page.url();
-  await bell.click({ force: true });
-  await page.keyboard.press("Enter");
-  expect(page.url()).toBe(before);
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(await bell.getAttribute("aria-label")).toMatch(/^お知らせ/);
 });
 
 test("K138-SH-013 自分のメニュー：名前「高本」・「準備中」の字が無い・ログアウトを押すとログアウトの口を呼び /login へ移る", async ({
@@ -586,15 +595,15 @@ test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の
   await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(216);
 });
 
-test("K138-SH-021 役が分かるまで（読み中）は左のメニューに役の項目のリンクが 0・本文は出る。役の口が 401（ログインが切れた）なら入り直し（/login?next=）へ移り、前の役の項目を出さない。役の値が分からない（null・知らない値）ときも役の項目を出さない", async ({
+test("K138-SH-021 役が分かるまで（読み中）は左のメニューに役の項目のリンクが 0・本文は出る。外枠の口 getShell が 401（ログインが切れた）なら入り直し（/login?next=）へ移り、前の役の項目を出さない。役の値が分からない（null・知らない値）ときも役の項目を出さない", async ({
   page,
   browser,
 }) => {
   await mockApi(page);
-  // 役の口の答えを止めておき（読み中）、後で 401 を返す。後から足した route が先に効く
+  // 外枠の口 getShell（役・名前・会社・グループ・数を 1 本で返す・K-466）の答えを止めておき（読み中）、後で 401 を返す。後から足した route が先に効く
   let release!: () => void;
   const held = new Promise<void>((done) => (release = done));
-  await page.route(/\/api\/auth-ext\/me$/, async (route) => {
+  await page.route(/\/api\/v1\/shell$/, async (route) => {
     await held;
     await route.fulfill({
       status: 401,
@@ -678,14 +687,14 @@ test("K138-SH-025 使えない状態の部品：正本に button-disabled・inpu
   expect(await search.locator("input").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
 });
 
-test("K138-SH-026 外枠だけが読む 3 つの口（グループ・承認待ちの数・PC）が 500：主ナビは R1 どおり・数の印なし・グループの見出しなし・PC はつないでいない・本文は出る", async ({
+test("K138-SH-026 外枠の口 getShell が 500（役・数・グループ・PC が全部分からない）：左のメニューの項目も数の印もグループの見出しも出さず（嘘の値を出さない）・PC はつないでいない・本文は出る（K-466 で、前の「3 つの口が 500 でも主ナビは R1」から、役も getShell から来る形に替えた）", async ({
   page,
 }) => {
   await mockApi(page, { outerFail: true });
   await open(page, PATHS.detail);
   await expect(page.locator("#k-main h1")).toHaveText("請求書を送る");
-  await expect.poll(() => navLabels(page)).toEqual(expectedLabels("R1"));
   const nav = leftNav(page);
+  await expect(nav.locator(".k-nav-item:not(:has(.k-group-mark))")).toHaveCount(0);
   await expect(nav.locator(".k-nav-badge")).toHaveCount(0);
   await expect(nav.getByText("グループ", { exact: true })).toHaveCount(0);
   await expect(nav.locator(".k-nav-item:has(.k-group-mark)")).toHaveCount(0);
@@ -694,7 +703,7 @@ test("K138-SH-026 外枠だけが読む 3 つの口（グループ・承認待�
   await expect(nav.getByRole("button", { name: "チケットを作る" })).toHaveCount(0);
 });
 
-test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認待ちの数・グループを 1 回ずつ読み、時計を 60 秒進めても窓に戻っても増えない・/approvals では外枠が数を読まない", async ({
+test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で getShell を 1 回だけ読み（PC・承認待ちの数・グループ・役は全部その 1 本）、時計を 60 秒進めても窓に戻っても増えない・グループの口と PC の口は呼ばない・/approvals でも getShell は 1 回（K-466）", async ({
   page,
 }) => {
   const m = await mockApi(page);
@@ -703,28 +712,29 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認�
   await expect(leftNav(page).locator(".k-pc")).toHaveText("PC つながっている");
   await expect(leftNav(page).locator(".k-nav-badge")).toHaveText("2");
   const count = (prefix: string) => m.calls.filter((c) => c.startsWith(prefix)).length;
-  expect(count("GET /api/v1/bridge/devices")).toBe(1);
-  // 承認待ちの数は、一覧の右の列（自分の承認を待っているもの・5 件）と同じ問い合わせを分け合う（K-235）
+  expect(count("GET /api/v1/shell")).toBe(1);
+  expect(count("GET /api/v1/bridge/devices")).toBe(0);
+  expect(count("GET /api/v1/scopes")).toBe(0);
+  // 一覧の右の列（自分の承認を待っているもの・5 件）が承認待ちの行を 1 回読む（外枠は読まない）
   expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(1);
-  // グループの口は外枠と本文（作る面の選択肢）で分け合い、1 回だけ読む
-  expect(count("GET /api/v1/scopes")).toBe(1);
   await page.clock.runFor(60_000);
-  expect(count("GET /api/v1/bridge/devices")).toBe(1);
+  expect(count("GET /api/v1/shell")).toBe(1);
   expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(1);
-  expect(count("GET /api/v1/scopes")).toBe(1);
-  // 窓に戻っても役の口を読み直さない
+  // 窓に戻っても読み直さない
   const meBefore = count("GET /api/auth-ext/me");
   // 入っている TanStack Query は window の visibilitychange を聞く（document の物は泡立たず届かない）
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
   await page.clock.runFor(10_000);
   expect(count("GET /api/auth-ext/me")).toBe(meBefore);
+  expect(count("GET /api/v1/shell")).toBe(1);
 
   m.calls.length = 0;
   await open(page, PATHS.approvals);
   await expect(page.locator("#k-main h1")).toHaveText("承認待ち");
   await expect(leftNav(page).locator(".k-pc")).toHaveText("PC つながっている");
   expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(0);
+  expect(count("GET /api/v1/shell")).toBe(1);
 });
 
 test("K138-SH-028 名前が無い（display_name が null）：自分の札とメニューの名前は空（嘘の名前を出さない）・AI の項目は「あなたのAI」（下のタブは「AI」のまま）", async ({
@@ -772,7 +782,7 @@ test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_n
   expect((await top.locator(".k-ws-name").innerText()).replace("▾", "").trim()).toBe("");
 });
 
-test("K138-SH-030 幅 767 以下（375）は上の帯を出す（2026-11-18 代表がキャンバス MobileList の決めを変えた・K-350）：帯の左に会社の印と名前、右に 探す（グレー）・知らせ（グレー）・自分のメニュー。いまの場所と帯の題は出さず、見える題は本文の h1 だけ。本文の見出しの右に鈴は無い。引き出し「メニュー（全部）」に自分のメニューは無い", async ({
+test("K138-SH-030 幅 767 以下（375）は上の帯を出す（2026-11-18 代表がキャンバス MobileList の決めを変えた・K-350）：帯の左に会社の印と名前、右に 探す・お知らせ・自分のメニュー。いまの場所と帯の題は出さず、見える題は本文の h1 だけ。本文の見出しの右に鈴は無い。引き出し「メニュー（全部）」に自分のメニューは無い", async ({
   page,
 }) => {
   await mockApi(page, { workspaceName: "ENGINE BASE" });
@@ -796,15 +806,16 @@ test("K138-SH-030 幅 767 以下（375）は上の帯を出す（2026-11-18 代�
     await expect(bar.locator(".k-bar-ws-name"), path).toHaveText("ENGINE BASE");
     await expect(page.getByRole("navigation", { name: "いまの場所" }), path).toBeHidden();
     await expect(page.getByRole("search"), path).toBeHidden();
-    const searchOpen = bar.getByRole("button", { name: "探す（準備中）" });
+    // 虫眼鏡のボタンは在る（押せるかは K-471 の試験が見る。前の「グレー」の確かめを K-466 でここから外した）
+    const searchOpen = bar.locator(".k-bar-search-open");
     await expect(searchOpen, path).toBeVisible();
-    await expect(searchOpen, path).toHaveAttribute("aria-disabled", "true");
+    expect(await searchOpen.getAttribute("aria-label"), path).toMatch(/^探す/);
     await expect(bar.getByRole("button", { name: "自分のメニュー" }), path).toBeVisible();
     // 鈴は帯の中の 1 つだけ（本文の見出しの右には置かない）
     await expect(page.locator(".k-bell"), path).toHaveCount(1);
     const bell = bar.locator(".k-bell");
     await expect(bell, path).toBeVisible();
-    await expect(bell, path).toHaveAttribute("aria-disabled", "true");
+    expect(await bell.getAttribute("aria-label"), path).toMatch(/^お知らせ/);
     await expect(page.locator("#k-main .k-bell"), path).toHaveCount(0);
     expect(await overflowX(page), path).toBe(0);
   }

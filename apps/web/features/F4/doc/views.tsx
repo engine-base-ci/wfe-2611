@@ -2,7 +2,7 @@
 // 段 5 の作り直した下絵の部品（項目の表＋自由な本文＋確認項目）。見た目だけ・値は props・口は呼ばない。
 //   本番では段 5 の葉が本物のデータと動きをつなぐ。色・字・余白は doc.css（正本のトークンだけ）
 import type { ReactNode } from "react";
-import { Button, Select, TextArea, TextField } from "@/components/k";
+import { Button, Checkbox, Select, TextArea, TextField } from "@/components/k";
 import { ParentEntry } from "@/features/F4/parent/views";
 import { NotifyPicker } from "@/features/F4/create-ticket/notify-picker";
 import { BAR_GROUPS } from "./bar-tools";
@@ -74,7 +74,7 @@ export function Checks({ items }: { items: readonly { text: string; done: boolea
     <ul className="k-f4d-checks">
       {items.map((c) => (
         <li key={c.text} data-done={c.done}>
-          <input type="checkbox" defaultChecked={c.done} aria-label={c.text} />
+          <Checkbox defaultChecked={c.done} aria-label={c.text} />
           <span>{c.text}</span>
         </li>
       ))}
@@ -264,10 +264,9 @@ export function SpecsItem({ lines, compact = false }: { lines: readonly SpecLine
         <ul className="k-f4d-spec-list" aria-label="確認項目">
           {lines.map((l) => (
             <li key={l.text} data-done={l.done === true}>
-              <label className="k-f4d-spec-text">
-                <input type="checkbox" className="k-f4d-spec-box" defaultChecked={l.done === true} />
-                <span>{l.text}</span>
-              </label>
+              <Checkbox className="k-f4d-spec-text" defaultChecked={l.done === true}>
+                {l.text}
+              </Checkbox>
               <Button variant="ghost" size="sm" aria-label={`${l.text}を外す`}>
                 外す
               </Button>
@@ -425,22 +424,14 @@ function CustomPairs({ all, errors }: { all: boolean; errors: CustomErrors }) {
           <Pair name="送る書類">
             <fieldset className="k-f4d-multi">
               <legend className="k-f4d-sr">送る書類</legend>
-              <label>
-                <input type="checkbox" defaultChecked /> 請求書
-              </label>
-              <label>
-                <input type="checkbox" defaultChecked /> 明細
-              </label>
-              <label>
-                <input type="checkbox" /> 納品書
-              </label>
+              <Checkbox defaultChecked>請求書</Checkbox>
+              <Checkbox defaultChecked>明細</Checkbox>
+              <Checkbox>納品書</Checkbox>
               <p className="k-f4d-hint">送るものをすべて選びます</p>
             </fieldset>
           </Pair>
           <Pair name="原本の郵送">
-            <label className="k-f4d-check">
-              <input type="checkbox" /> 原本を郵送する
-            </label>
+            <Checkbox>原本を郵送する</Checkbox>
           </Pair>
           <Pair name="社内メモ" full>
             <TextArea label="社内メモ" name="t7" rows={2} description="社内だけで共有する補足" value="" readOnly />

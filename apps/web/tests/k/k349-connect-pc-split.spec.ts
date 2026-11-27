@@ -14,6 +14,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Locator, type Page, type Request, type Route } from "@playwright/test";
+import { shellData } from "./shell-answer";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DIR = join(HERE, "../../features/F3/connect-pc");
@@ -227,6 +228,8 @@ async function mockApi(page: Page, o: Partial<Pick<Mock, "devices" | "installed"
     if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
     else if (p === "/api/v1/scopes") r = ok([], { limit: 200, writable: [] });
+    else if (p === "/api/v1/shell")
+      r = ok(shellData({ groups: [] })); // 外枠の口 getShell（K-466）
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: 0 }, cursor: null });
     else if (p === "/api/v1/bridge/devices") r = ok(m.devices);
     else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST") {
@@ -257,7 +260,7 @@ const rows = (page: Page): Locator => page.locator(`${LIST} .k-pc-row`);
 const kids = (l: Locator): Promise<string[]> =>
   l.evaluate((e) => Array.from(e.children).map((c) => `${c.tagName.toLowerCase()}.${c.classList[0] ?? ""}`));
 
-/** この PC に Bridge が入っている人が「この PC の Bridge につなぐ」を押し、本文の知らせが出るまで待つ */
+/** この PC に Bridge が入っている人が「この PC の Bridge につなぐ」を押し、本文のお知らせが出るまで待つ */
 async function passToLocalBridge(page: Page): Promise<Mock> {
   const m = await mockApi(page, { installed: true });
   await open(page);
@@ -326,7 +329,7 @@ test("K349-UI-003 行の「…」：どの行にも「…」のボタン（.k-pc
   }
 });
 
-test("K349-UI-004 本文の下の知らせ：この PC の Bridge にコードを渡すと、知らせ（role=status・.k-pc-note）が 1 つ、本文の箱の直の子で一番最後に出る（つないでいる PC のカードより後ろ）。コードの口とこの PC の口は 1 回ずつ", async ({
+test("K349-UI-004 本文の下のお知らせ：この PC の Bridge にコードを渡すと、お知らせ（role=status・.k-pc-note）が 1 つ、本文の箱の直の子で一番最後に出る（つないでいる PC のカードより後ろ）。コードの口とこの PC の口は 1 回ずつ", async ({
   page,
 }) => {
   const m = await passToLocalBridge(page);
@@ -349,7 +352,7 @@ test("K349-UI-004 本文の下の知らせ：この PC の Bridge にコード�
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("K349-UI-005 前の画面への文の置き場：在れば 1 つだけ、つないでいる PC のカードのすぐ後・知らせのすぐ前（リンク「前の設定の画面」は /setup/bridge/legacy）。無ければ、知らせのすぐ前はつないでいる PC のカード", async ({
+test("K349-UI-005 前の画面への文の置き場：在れば 1 つだけ、つないでいる PC のカードのすぐ後・お知らせのすぐ前（リンク「前の設定の画面」は /setup/bridge/legacy）。無ければ、お知らせのすぐ前はつないでいる PC のカード", async ({
   page,
 }) => {
   await passToLocalBridge(page);
@@ -357,7 +360,7 @@ test("K349-UI-005 前の画面への文の置き場：在れば 1 つだけ、�
   const n = await legacy.count();
   expect(n, "前の画面への文は 0 か 1 つ").toBeLessThanOrEqual(1);
   await expect(page.locator(`${BODY} [data-act="legacy"]`), "リンクは文の数と同じ").toHaveCount(n);
-  // 知らせのすぐ前：文が在れば文・無ければつないでいる PC のカード（つながっている PC が無いので、使った量の箱は出ない）
+  // お知らせのすぐ前：文が在れば文・無ければつないでいる PC のカード（つながっている PC が無いので、使った量の箱は出ない）
   const before = await page.locator(`${BODY} .k-pc-note`).evaluate((e) => {
     const prev = e.previousElementSibling;
     return {
@@ -380,7 +383,7 @@ test("K349-UI-005 前の画面への文の置き場：在れば 1 つだけ、�
   }
 });
 
-test("K349-UI-006 小窓の受け取る段に差す物が無い間：受け取る前の 1 段目の説明の中の要素は受け取るの字のリンク 2 つだけ。「Mac 用」を押すと口が 1 回・丸が ✓・知らせ「ダウンロードを始めました…」（今のまま）", async ({
+test("K349-UI-006 小窓の受け取る段に差す物が無い間：受け取る前の 1 段目の説明の中の要素は受け取るの字のリンク 2 つだけ。「Mac 用」を押すと口が 1 回・丸が ✓・お知らせ「ダウンロードを始めました…」（今のまま）", async ({
   page,
 }) => {
   const m = await mockApi(page);

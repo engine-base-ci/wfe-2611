@@ -143,7 +143,13 @@ function detailExtras(x: DetailExtras | undefined, t: Row): Row {
   const p = x?.p ?? null;
   return {
     approval: band?.approval ?? null,
-    can: { complete: band?.can_complete === true, progress: p?.can_progress === true, actual: p?.can_actual === true },
+    // due：期限・開始日を変えられるか（K-483・書ける今のメンバー＝can_actual で、完了していない）
+    can: {
+      complete: band?.can_complete === true,
+      progress: p?.can_progress === true,
+      actual: p?.can_actual === true,
+      due: p?.can_actual === true && !band?.completed_at && !t["completed_at"],
+    },
     completed: band?.completed_at ? { at: band.completed_at, by: band.completed_by_name ?? null } : null,
     // 予定・人の分（実績）・AI の分（終わった実行の長さの合計・K-387）
     time: {

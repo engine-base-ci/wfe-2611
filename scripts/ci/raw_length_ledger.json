@@ -6086,7 +6086,7 @@
    "selector": "className",
    "prop": "任意値",
    "value": "text-[12px]",
-   "count": 5,
+   "count": 4,
    "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
@@ -6102,7 +6102,7 @@
    "selector": "className",
    "prop": "任意値",
    "value": "text-[14px]",
-   "count": 5,
+   "count": 4,
    "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
