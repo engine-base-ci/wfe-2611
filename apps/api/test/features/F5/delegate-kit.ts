@@ -100,6 +100,17 @@ const jst = (days = 0) => new Date(Date.now() + 9 * 3600_000 + days * 86400_000)
 
 export async function makeKit(): Promise<Kit> {
   const f = await makeFixture();
+  // 任せる口は段10 の K-699 から、任せる人の「必ず守る」を読む（app.knowledge_context）。読むのは会社に入っている人（tenant_memberships が active）
+  //   だけなので、試験の人も本物と同じく会社に入れて作る（入れないと KNW_GUARD_CONTEXT で 503・段6 と段10 を合わせた統合の枝で出た）
+  const basePerson = f.person;
+  f.person = async (tenantId, scopeId, o = {}) => {
+    const p = await basePerson(tenantId, scopeId, o);
+    await f.admin.query(
+      "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'member', 'active') on conflict (tenant_id, member_id) do nothing",
+      [tenantId, p.id],
+    );
+    return p;
+  };
   // 本物のサーバー（apps/api/src/server.ts）と同じ順：チケットを作る（K-60）の工場の後に、K-62 の工場（getTicket を can.delegate つきに替える）
   Object.assign(f.hooks, ticketHooks(f.pool), delegateHooks(f.pool));
   // 1 つの試験のファイルで 60 回より多く任せる・取りに来る。上限そのものは K62-API-034 だけで確かめ、ほかでは上げておく
