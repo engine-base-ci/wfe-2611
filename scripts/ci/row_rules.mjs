@@ -19,6 +19,7 @@ export const ID_TABLE = {
   "/api/v1/knowledge/proposals": "knowledge_page_versions",
   "/api/v1/knowledge_imports": "imports",
   "/api/v1/exports": "export_jobs",
+  "/api/v1/ticket_draft_conversations": "conversations",
 };
 /** 入口で行を読まない口（理由が必須）。認証の側の表など、public の表に無いもの */
 export const ROW_EXEMPT = {
