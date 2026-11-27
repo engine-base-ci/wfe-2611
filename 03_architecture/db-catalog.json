@@ -105,10 +105,6 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
   },
-  "client_request_messages": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
-  },
   "client_requests": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
@@ -256,22 +252,6 @@
   "knowledge_limits": {
    "class": "skeleton",
    "why": "必ず守るの付け外しの口が上限を読む（K-685）"
-  },
-  "knowledge_folders": {
-   "class": "skeleton",
-   "why": "ナレッジの口が使う（K-674）"
-  },
-  "knowledge_shares": {
-   "class": "skeleton",
-   "why": "グループを選んで共有の口と見える関数が使う（K-689）"
-  },
-  "knowledge_limits": {
-   "class": "skeleton",
-   "why": "必ず守るの付け外しの口が上限を読む（K-685）"
-  },
-  "knowledge_folders": {
-   "class": "skeleton",
-   "why": "ナレッジの口が使う（K-674）"
   },
   "knowledge_page_versions": {
    "class": "skeleton",
@@ -664,6 +644,14 @@
   "knowledge_breaches": {
    "class": "skeleton",
    "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）"
+  },
+  "ops_invoice_templates": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notice_updates": {
+   "class": "internal",
+   "why": "口は無いが、お知らせの関数だけが触る続報の履歴の表（書くのは運営の葉 K-977・K-979・一覧は app の関数が返す・K-954）"
   }
  }
 }

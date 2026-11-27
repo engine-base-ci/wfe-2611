@@ -69,6 +69,24 @@ export const nextIp = (): string => `203.0.113.${(ipSeq = (ipSeq % 250) + 1)}`;
 /** 足す口の振る舞い（アプリの接続 → operationId ごとの hook）。例：apps/api/src/hooks/tickets.ts の ticketHooks */
 export type HookFactory = (appPool: pg.Pool) => Record<string, Hook>;
 
+/** close の時に流す後片付け（後に足した物から）。beforeAll の中で呼んだ afterAll は vitest に登録されず流れないので、
+ *  試験の土台（*.harness.ts）が beforeAll の中で足す後片付けはここに置く（統合の枝の CI：共用の DB に試験の行が残り、
+ *  次の会社の種まき・運営の人の数・プランの一覧が別の試験の行で変わっていた）。1 つが落ちても残りは流し、落ちた物は出す */
+const closeHooks: (() => Promise<void>)[] = [];
+export function afterClose(fn: () => Promise<void>): void {
+  closeHooks.push(fn);
+}
+async function runCloseHooks(): Promise<void> {
+  while (closeHooks.length) {
+    const fn = closeHooks.pop()!;
+    try {
+      await fn();
+    } catch (e) {
+      console.warn(`[fixture] 後片付けが落ちた（${(e as Error).message}）`);
+    }
+  }
+}
+
 export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
   await migrate(DB_URL, DB_PKG);
   // 認証の表（kaname_auth.user）は別の道の migration。土台を使う試験が自分の足し込みで書くので、ほかの試験が先に流れた DB でだけ在る状態にしない（K-644・K-433）
@@ -167,6 +185,7 @@ export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
     as,
     pending,
     close: async () => {
+      await runCloseHooks();
       await pool.end();
       await admin.end();
     },

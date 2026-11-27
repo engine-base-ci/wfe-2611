@@ -5,7 +5,6 @@
 //   （準備で読まない：切る段の smoke で、まだ無いファイルを準備で読んで準備ごと落とさない・answer=8f745003d023）。
 //   hooks の材料は appPool・repo・objects・config.baseUrl（関門 C4 の置き場はこの土台が試験だけの一時のフォルダで作る）。
 //   運営の返事・社内メモは、運営の葉（K-975）が入るまで DB に直に置く（opsReply）。作った会社・行は名前の頭（run）で見分ける
-import { afterAll } from "vitest";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -15,7 +14,7 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createRepository } from "@kaname/db/repository";
 import type { Hono } from "hono";
-import { makeFixture, type Fixture, type Person } from "../fixture.js";
+import { afterClose, makeFixture, type Fixture, type Person } from "../fixture.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
 
 const HOOKS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "src", "hooks");
@@ -111,7 +110,7 @@ export async function startInquiries(prefix: string, hookFiles: readonly string[
     return base(method, path, o);
   };
   const tenants: string[] = [];
-  afterAll(async () => {
+  afterClose(async () => {
     if (!tenants.length) return;
     const t = [tenants];
     await f.admin.query(
