@@ -21,6 +21,8 @@ export interface RunView {
   started_at: string | null;
   finished_at: string | null;
   checks: { state: string } | null;
+  /** 片付けに失敗した印（待っている承認の後の実行だけ・K-1191）。無ければ印なし */
+  sweep_failed_at?: string | null;
 }
 /** 走っている（終わっていない）実行の状態 */
 export const ACTIVE = new Set(["queued", "running", "asking"]);
