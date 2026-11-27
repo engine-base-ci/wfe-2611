@@ -2,7 +2,8 @@
 // グループの小窓（段 11・F10）：足す・直す・並びを替える・層の名前と並びを直す。
 //   前の形（old/段10-v1 の F9/groups）の小窓を写して直した版（言葉は「グループ」・つかんで動かす部品には頼らず「上へ・下へ」のボタンで）。
 //   キャンバス EdGroup（グループを足す）。直す・並びを替える・層を直す・入力の誤り・口が断った は絵が無いので、画面に出る文は「仮」。
-//   値は props で受け取って描くだけ。欄は readOnly か値つき・押す関数は渡さない
+//   値は props で受け取って描くだけ。欄は readOnly か値つき・押す関数は渡さない（モック）。入れ物は任意の on*・layers・people・busy を渡して動かす（K-805）
+import type React from "react";
 import { ChevronDown, ChevronUp, GripVertical, X } from "lucide-react";
 import { Button, Dialog, NoticeBox, Select, TextField } from "@/components/k";
 import "@/features/F10/invite/invite.css";
@@ -30,7 +31,7 @@ export interface GroupFormValues {
   code: string;
   layer: string;
   manager: string;
-  /** 足すメンバー（札になる）。足す小窓だけ */
+  /** 足すメンバー（札になる）。足す小窓だけ。入れ物が people を渡すときは人の id */
   members: readonly string[];
   /** メンバーを名前で探す欄にいま打っている字 */
   query: string;
@@ -39,9 +40,11 @@ export interface GroupFormValues {
 export interface GroupFormErrors {
   name?: string;
   code?: string;
+  /** 新しい層の名前の欄の下（空・E-GRP-013・019） */
+  newLayer?: string;
 }
 
-function Swatches({ tone }: { tone: GroupTone }) {
+function Swatches({ tone, onTone }: { tone: GroupTone; onTone?: ((t: GroupTone) => void) | undefined }) {
   return (
     <div className="k-f10m-field">
       <span className="k-label" id="grp-tone-label">
@@ -58,6 +61,7 @@ function Swatches({ tone }: { tone: GroupTone }) {
             aria-checked={s.tone === tone}
             aria-label={s.label}
             title={s.label}
+            onClick={onTone ? () => onTone(s.tone) : undefined}
           />
         ))}
       </div>
@@ -65,7 +69,35 @@ function Swatches({ tone }: { tone: GroupTone }) {
   );
 }
 
-function MemberPick({ members, query }: { members: readonly string[]; query: string }) {
+/** 小窓に渡す人（マネージャーの選び・メンバーの札の候補）。渡さなければモックの決めた人 */
+export interface GroupPerson {
+  id: string;
+  name: string;
+  /** 閲覧のみ（マネージャーには選べない・E-GRP-017） */
+  viewer?: boolean;
+}
+
+function MemberPick({
+  members,
+  query,
+  people,
+  candidates,
+  onQuery,
+  onAddMember,
+  onRemoveMember,
+}: {
+  members: readonly string[];
+  query: string;
+  /** 渡すと members は人の id（札は名前を引いて描く）。渡さなければ members は名前（モック） */
+  people?: readonly GroupPerson[] | undefined;
+  candidates?: readonly GroupPerson[] | undefined;
+  onQuery?: ((q: string) => void) | undefined;
+  onAddMember?: ((id: string) => void) | undefined;
+  onRemoveMember?: ((member: string) => void) | undefined;
+}) {
+  const labelOf = (m: string) => people?.find((p) => p.id === m)?.name ?? m;
+  const live = Boolean(onQuery);
+  const list = live && query.trim() && candidates ? candidates : [];
   return (
     <div className="k-f10m-field">
       <label className="k-label" htmlFor="grp-member-search">
@@ -74,8 +106,13 @@ function MemberPick({ members, query }: { members: readonly string[]; query: str
       <div className="k-f10m-pick">
         {members.map((m) => (
           <span key={m} className="k-inv-chip">
-            <span className="k-inv-chip-t">{m}</span>
-            <button type="button" className="k-inv-chip-x" aria-label={`${m} を外す`}>
+            <span className="k-inv-chip-t">{labelOf(m)}</span>
+            <button
+              type="button"
+              className="k-inv-chip-x"
+              aria-label={`${labelOf(m)} を外す`}
+              onClick={onRemoveMember ? () => onRemoveMember(m) : undefined}
+            >
               <X size={12} aria-hidden="true" />
             </button>
           </span>
@@ -86,9 +123,40 @@ function MemberPick({ members, query }: { members: readonly string[]; query: str
           type="search"
           value={query}
           placeholder="＋ 名前で探す"
-          readOnly
+          readOnly={!live}
+          autoComplete="off"
+          {...(live
+            ? {
+                role: "combobox",
+                "aria-expanded": list.length > 0,
+                "aria-controls": "grp-member-list",
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => onQuery?.(e.target.value),
+                onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key !== "Enter") return;
+                  e.preventDefault();
+                  const first = list[0];
+                  if (first) onAddMember?.(first.id);
+                },
+              }
+            : {})}
         />
       </div>
+      {list.length > 0 ? (
+        <ul id="grp-member-list" className="k-select-popup k-select-field" role="listbox" aria-label="メンバーの候補">
+          {list.map((p) => (
+            <li
+              key={p.id}
+              role="option"
+              aria-selected={false}
+              className="k-select-item"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => onAddMember?.(p.id)}
+            >
+              {p.name}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }
@@ -107,6 +175,29 @@ export interface GroupDialogProps {
   memberCount?: number;
   /** 層 ▾ の中の「層の名前と並びを直す」（D-154.53）：show＝出す（既定・下絵）・disabled＝押せない形・hide＝出さない（層の一覧が読めないとき） */
   editLayersOption?: "show" | "disabled" | "hide";
+  // ---- ここから入れ物がつなぐときだけ渡す（K-805・渡さなければモックのまま描くだけ）
+  /** 層の名前の並び（口 listLayers の順）。渡さなければモックの 3 つ */
+  layers?: readonly string[];
+  /** マネージャーの選び・メンバーの札の候補（兼ねる人も 1 度だけ）。values.manager は人の id */
+  people?: readonly GroupPerson[];
+  /** メンバーの札の候補（探した字に当たり、まだ札に無い人）。people から入れ物が作る */
+  candidates?: readonly GroupPerson[];
+  onName?: (v: string) => void;
+  onCode?: (v: string) => void;
+  onLayer?: (layer: string) => void;
+  /** 層 ▾ で「＋ 層を足す」を選んだ・新しい層の名前を打った */
+  onNewLayer?: (label: string) => void;
+  onManager?: (id: string | null) => void;
+  onQuery?: (q: string) => void;
+  onAddMember?: (id: string) => void;
+  /** 札を外す（people を渡したときは人の id） */
+  onRemoveMember?: (member: string) => void;
+  onTone?: (t: GroupTone) => void;
+  onSubmit?: () => void;
+  /** やめる・Esc・外側 */
+  onCancel?: () => void;
+  /** 答えを待つ間（「足す」を押せない） */
+  busy?: boolean;
 }
 
 /** グループを足す・直す小窓。名前と短い名前を横に・層・マネージャー・メンバー（足すだけ）・色の段 */
@@ -119,31 +210,68 @@ export function GroupDialog({
   newLayer,
   memberCount,
   editLayersOption = "show",
+  layers,
+  people,
+  candidates,
+  onName,
+  onCode,
+  onLayer,
+  onNewLayer,
+  onManager,
+  onQuery,
+  onAddMember,
+  onRemoveMember,
+  onTone,
+  onSubmit,
+  onCancel,
+  busy,
 }: GroupDialogProps) {
   const add = mode === "add";
+  const live = Boolean(onSubmit);
   const layerOptions = add
     ? [
-        ...LAYERS.map((l) => ({ value: l, label: l })),
+        ...(layers ?? LAYERS).map((l) => ({ value: l, label: l })),
         { value: ADD_LAYER, label: "＋ 層を足す" },
         ...(editLayersOption === "hide"
           ? []
           : [{ value: EDIT_LAYERS, label: "層の名前と並びを直す", disabled: editLayersOption === "disabled" }]),
       ]
     : [{ value: values.layer, label: values.layer }];
+  const managerOptions = people
+    ? people.filter((p) => !p.viewer).map((p) => ({ value: p.id, label: p.name }))
+    : MANAGERS.map((m) => ({ value: m, label: m }));
+  const field = (f?: (v: string) => void) =>
+    f
+      ? { readOnly: false, onChange: (e: React.ChangeEvent<HTMLInputElement>) => f(e.target.value) }
+      : { readOnly: true };
+  const code = values.code.normalize("NFKC").trim().toUpperCase();
+  const sample = code && !errors.code ? code : "CS";
   return (
     <Dialog
       title={add ? "グループを足す" : "グループを直す"}
       subtitle={add ? "グループは日々のチケットの置き場。チケットの番号の頭になる" : "名前・マネージャー・色を直せる"}
       size="connect"
       open={open}
+      {...(onCancel ? { onOpenChange: (o: boolean) => (o ? undefined : onCancel()) } : {})}
       actions={
         <>
-          <Button variant="outlined">やめる</Button>
-          <Button>{add ? "足す" : "保存する"}</Button>
+          <Button variant="outlined" onClick={onCancel}>
+            やめる
+          </Button>
+          <Button onClick={onSubmit} disabled={live ? Boolean(busy) : undefined}>
+            {add ? "足す" : "保存する"}
+          </Button>
         </>
       }
     >
-      <div className="k-dialog-stack">
+      <form
+        className="k-dialog-stack"
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!busy) onSubmit?.();
+        }}
+      >
         {notice ? <NoticeBox>{notice}</NoticeBox> : null}
         <div className="k-f10m-pair">
           <TextField
@@ -152,7 +280,7 @@ export function GroupDialog({
             value={values.name}
             placeholder="例：カスタマーサポート"
             error={errors.name}
-            readOnly
+            {...field(onName)}
           />
           <TextField
             name="group-code"
@@ -160,13 +288,9 @@ export function GroupDialog({
             hint="番号の頭"
             value={values.code}
             placeholder="例：CS"
-            description={
-              add
-                ? `${values.code && !errors.code ? values.code : "CS"}-1、${values.code && !errors.code ? values.code : "CS"}-2 …`
-                : "作ったあとは変えられません"
-            }
+            description={add ? `${sample}-1、${sample}-2 …` : "作ったあとは変えられません"}
             error={errors.code}
-            readOnly
+            {...field(onCode)}
             disabled={!add}
           />
         </div>
@@ -174,9 +298,17 @@ export function GroupDialog({
           name="group-layer"
           label="層"
           options={layerOptions}
-          value={newLayer !== undefined ? ADD_LAYER : values.layer}
+          value={newLayer !== undefined ? ADD_LAYER : live ? values.layer || null : values.layer}
           description="層の守ること・やり方・承認の決まりが、このグループにも効く"
           disabled={!add}
+          {...(onLayer || onNewLayer
+            ? {
+                onValueChange: (v: string | null) => {
+                  if (v === ADD_LAYER) onNewLayer?.("");
+                  else if (v && v !== EDIT_LAYERS) onLayer?.(v);
+                },
+              }
+            : {})}
         />
         {newLayer !== undefined ? (
           <TextField
@@ -185,23 +317,33 @@ export function GroupDialog({
             value={newLayer}
             placeholder="例：カスタマー"
             description="足した層の守ること・やり方・承認の決まりは、あとで決められる"
-            readOnly
+            error={errors.newLayer}
+            {...field(onNewLayer)}
           />
         ) : null}
         <Select
           name="group-manager"
           label="マネージャー"
-          options={MANAGERS.map((m) => ({ value: m, label: m }))}
+          options={managerOptions}
           value={values.manager || null}
           placeholder="選ぶ"
+          {...(onManager ? { onValueChange: (v: string | null) => onManager(v) } : {})}
         />
         {add ? (
-          <MemberPick members={values.members} query={values.query} />
+          <MemberPick
+            members={values.members}
+            query={values.query}
+            people={people}
+            candidates={candidates}
+            onQuery={onQuery}
+            onAddMember={onAddMember}
+            onRemoveMember={onRemoveMember}
+          />
         ) : (
           <p className="k-f10m-note">{`メンバー ${memberCount ?? 0} 人は、メンバーの画面で足す・外す`}</p>
         )}
-        <Swatches tone={values.tone} />
-      </div>
+        <Swatches tone={values.tone} onTone={onTone} />
+      </form>
     </Dialog>
   );
 }

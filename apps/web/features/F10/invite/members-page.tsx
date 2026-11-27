@@ -7,6 +7,7 @@
 //   管理者として招く（口が 403・STEP_UP_REQUIRED）なら本人確認の取り直し（step-up.tsx）を出し、通ったら止まった操作を 1 回だけ送り直す。
 //   口の断り方の出し分けは状態でなく答えの code と details：宛てごとの文（E-INV-009・010）と 51 人以上（E-INV-012）は欄の下、ほか（404・503 など）は小窓の上の赤い箱。書いた中身は残す。
 //   K-809：招待中の行の「送り直す」「取り消す」（use-invite-rows.ts・取り消す前に Confirm）と、各グループの「＋ このグループに招く」（招く小窓をそのグループを選んだ形で開く）。
+//   K-805：「＋ グループ」→ グループを足す小窓（use-group-add.ts・GroupDialog）。並びが読めない間は押せない。
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
@@ -25,6 +26,8 @@ import { bandOf, initialOpen, toGroups } from "@/features/F10/members/members-sh
 import { useRoleChange, type RoleResult } from "@/features/F10/members/use-role-change";
 import type { MoreAction } from "@/features/F10/members/person-row";
 import { useInviteRows } from "@/features/F10/members/use-invite-rows";
+import { GroupDialog } from "@/features/F10/members/group-dialogs";
+import { peopleOf, useGroupAdd } from "@/features/F10/members/use-group-add"; // K-805
 import { MembersPage as MembersBody, groupKey, type GroupData, type PendingButton } from "@/features/F10/members/views";
 
 const LOAD_FAILED = "メンバーを読み込めませんでした";
@@ -37,8 +40,8 @@ const NOTE_TOO_LONG = "ひとことは 500 字までです";
 const MESSAGE_MAX = 500;
 const msgOf = (code: string): string => CATALOG[code]?.message ?? "";
 const EMPTY_GROUP = "このグループにはまだ人がいません";
-/** まだ押せない入口（「＋ グループ」は K-805・「並びを替える」「直す」は K-806 が押せる形にする。「＋ このグループに招く」は K-809 でつないだ） */
-const PENDING: readonly PendingButton[] = ["addGroup", "reorder", "editGroup"];
+/** まだ押せない入口（「並びを替える」「直す」は K-806 が押せる形にする。「＋ グループ」は K-805・「＋ このグループに招く」は K-809 でつないだ） */
+const PENDING: readonly PendingButton[] = ["reorder", "editGroup"];
 /** 見られる役（管理者・R1・R2） */
 const CAN_SEE = ["R1", "R2"];
 /** 「⋯」の行き先（メンバーの 1 人の画面・小窓は K-819 の ?do=） */
@@ -163,6 +166,8 @@ function MembersScreen() {
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const rows = useInviteRows({ reload: () => void qc.invalidateQueries({ queryKey: MEMBERS_KEY }) });
   const sending = useRef(false);
+  const people = useMemo(() => peopleOf(view?.answer.groups), [view]); // K-805
+  const groupAdd = useGroupAdd({ people }); // K-805
   const pending = useRef<Req | null>(null);
 
   // ---- グループの開き閉じ（鍵はグループの id・初めは自分の主のグループだけ・読み直しでは触らない）
@@ -366,6 +371,8 @@ function MembersScreen() {
                 disabledButtons={PENDING}
                 inviteDisabled={!view}
                 onInvite={() => openDialog()}
+                onAddGroup={groupAdd.open /* K-805 */}
+                addGroupDisabled={!view /* K-805：並びが読めない間は押せない */}
                 rowActs={rowActs}
                 {...(roleNote || rows.notice
                   ? {
@@ -416,6 +423,7 @@ function MembersScreen() {
           onSend={send}
           onCancel={close}
         />
+        <GroupDialog {...groupAdd.dialog} /* K-805 */ />
         <Confirm
           open={rows.ask !== null}
           title="招待を取り消しますか"

@@ -191,6 +191,10 @@ export interface MembersPageProps {
   resentIds?: readonly string[];
   /** 答えを待っている招待の id（その行の操作を押せない形に・K-809） */
   busyId?: string | null;
+  /** 頭の「＋ グループ」を押した（K-805・渡さなければモックのまま押しても何もしない） */
+  onAddGroup?: () => void;
+  /** 「＋ グループ」を押せない形にする（並びが読めない間・K-805） */
+  addGroupDisabled?: boolean;
 }
 
 /** メンバーの画面の本文（上の 1 行・グループの並び） */
@@ -207,6 +211,8 @@ export function MembersPage({
   inviteDisabled = false,
   rowActs,
   failure,
+  onAddGroup,
+  addGroupDisabled,
   ...inv
 }: MembersPageProps) {
   return (
@@ -215,7 +221,12 @@ export function MembersPage({
         <h1 id="members-title">メンバー</h1>
         <p className="k-page-sub">グループごとに並ぶ。役割はその場で変えられる</p>
         <div className="k-page-acts">
-          <Button variant="outlined" {...inertIf(disabledButtons.includes("addGroup"))}>
+          <Button
+            variant="outlined"
+            {...inertIf(disabledButtons.includes("addGroup"))}
+            onClick={disabledButtons.includes("addGroup") ? undefined : onAddGroup}
+            disabled={addGroupDisabled}
+          >
             ＋ グループ
           </Button>
           <Button variant="outlined" {...inertIf(disabledButtons.includes("reorder"))}>
