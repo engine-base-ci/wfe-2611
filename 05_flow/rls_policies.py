@@ -170,6 +170,9 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "その棚に書ける人（グループの棚は誰が作っても同じ・自分の棚は本人）。行は消さない（deleted_at）", "source": ["D-152.3"]},
         ops_read("knowledge_folders"),
     ],
+    # 必ず守るの上限（K-685・D-152.16）。会社の列を持たない製品共通の設定（role_bundle_defaults と同じ形）。アプリの役は読むだけ
+    "knowledge_limits": [{"name": "knowledge_limits_all_read", "operation": "select", "role": "authenticated", "predicate": "true",
+                          "rationale": "製品共通の必ず守るの上限（会社 30・グループ 20・自分 10）。どの会社の人にも同じものを見せる。書くのは運営の migration だけ", "source": ["D-152.16"]}],
     "knowledge_links": [
         {"name": "knowledge_links_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_visible(from_page_id)",
          "rationale": "元のページを読める人（つないだ先の中身はその先の守りで見る）", "source": ["D-128.52"]},
