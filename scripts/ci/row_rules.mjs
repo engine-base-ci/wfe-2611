@@ -65,6 +65,9 @@ export const ROW_EXEMPT_FIELDS = {
   deleteGuestGroup: {
     id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
   },
+  restoreTicketItems: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと無い id と同じ 404・NOT_FOUND になり、決めの「消したチケットは 404・E-PAGE-001」（K576-API-013）が成り立たない。この欄の守り（無い・別の会社・見えないは NOT_FOUND・消したは E-PAGE-001・書けない人は 403）は DB の関数 app.ticket_item_restore（ticket_visible・ticket_writable）と契約の uuid の確かめが持つ（PM の決め 2026-11-28）",
+  },
   restoreTicket: {
     id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
   },
