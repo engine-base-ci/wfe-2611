@@ -6,6 +6,7 @@
 //   待ちの印（pending）は画面のメモリだけに持つ（再読み込みで最初に戻る）。「この端末を信頼する」は送らない（D-128.60）。
 //   K-317：パスキー（部品の口・lib/auth/client の signInWithPasskey）・スマホの QR（同じ手順・QR はブラウザが出す）・この PC の外で入った後の「入れました」・
 //   端末をなくした（requestAdminRecovery）・いまの様子の帯（getServiceStatus・読めなければ帯なし）・別のアカウントでログイン中（入れたら前のログインを signOut で閉じる）
+//   K-855：next が招待の画面（/invite/<印>）のときだけ、パスワードと 6 けたの口の体に invitation を、パスキーの確かめの要求の頭に同じ印を足す（D-154.87〜89）
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "next";
@@ -34,10 +35,17 @@ const RESET_EMAIL_KEY = "kaname.reset-email";
 const MS_PER_SEC = 1000;
 /** バックアップコードは全角を半角にし、前後の空白を落とすだけ（大小は口がそろえる） */
 const tidyBackup = (v: string): string => v.normalize("NFKC").trim();
+/** 招待の画面の道（/invite/<印>）。印の後ろに道・?・# が付く物は招待の画面と見ない */
+const INVITE_PATH = /^\/invite\/([A-Za-z0-9_-]{1,512})$/;
+/** next が招待の画面なら、その招待の印（移り先と同じ判定 afterLogin で読む）。ほかは無し */
+const invitationOf = (next: string | null): string | null => INVITE_PATH.exec(afterLogin(next))?.[1] ?? null;
 const textOf = (r: CallErr): string => r.message ?? CATALOG[r.code as keyof typeof CATALOG]?.message ?? FALLBACK;
 
 export function LoginForm({ next }: { next: string | null }) {
   const router = useRouter();
+  /** 招待のリンクから来たときだけの印（口に送るときだけ使う・画面には出さない） */
+  const invitation = invitationOf(next);
+  const withInvitation = invitation ? { invitation } : {};
   const [step, setStep] = useState<Step>("main");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -207,7 +215,11 @@ export function LoginForm({ next }: { next: string | null }) {
     if (locked) return;
     setPkFailed(false);
     void run(async () => {
-      const r = await call("signInWithPassword", { body: { email, password }, keepOn401: true, screenId: "login" });
+      const r = await call("signInWithPassword", {
+        body: { email, password, ...withInvitation },
+        keepOn401: true,
+        screenId: "login",
+      });
       if (!r.ok) {
         onSignInFail(r);
         return "stay";
@@ -250,7 +262,7 @@ export function LoginForm({ next }: { next: string | null }) {
   const verify = (body: { code: string } | { backup_code: string }) =>
     run(async () => {
       const r = await call("verifySignInCode", {
-        body: { pending: pending ?? "", ...body },
+        body: { pending: pending ?? "", ...body, ...withInvitation },
         keepOn401: true,
         screenId: "login",
       });
@@ -310,13 +322,14 @@ export function LoginForm({ next }: { next: string | null }) {
     setPkFailed(false);
     let moving = false;
     try {
-      const r = await signInWithPasskey();
+      const r = await signInWithPasskey(invitation ?? undefined);
       if (!r.ok) {
         if (r.status === 403 && BLOCKED.has(r.code))
           block(r.message ?? CATALOG[r.code as keyof typeof CATALOG]?.message ?? FALLBACK);
         else setPkFailed(true);
-      } else if (r.crossPlatform) {
+      } else if (r.crossPlatform && !invitation) {
         // この PC の外（スマホ・鍵）で入った：入れた。この PC にもパスキーを付けるかを聞く
+        //   招待から来たときは聞かずに招待の画面へ（招待の印で入った印は会社の口で 401 で、付ける画面からは戻れないため・PM の決め）
         await closePrevious(r.token);
         setToken(r.token);
         refreshSession();

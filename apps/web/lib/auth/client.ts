@@ -16,6 +16,9 @@ const CHALLENGE_FIELD = "challenge_token";
 const CHALLENGE_HEADER = "x-passkey-challenge";
 /** 今の問いの challenge_token（問いを受けてから応答を送るまでだけ持つ。送ったら捨てる） */
 let passkeyChallenge: string | null = null;
+/** 招待のリンクから来たときの招待の印（K-855・D-154.89）：確かめの要求の頭で送る。手順の間だけ持ち、送ったら捨てる */
+const INVITATION_HEADER = "x-kaname-invitation";
+let passkeyInvitation: string | null = null;
 const urlOf = (u: unknown): string => (typeof u === "string" ? u : u instanceof URL ? u.href : "");
 
 // 口の住所が空（画面と同じ住所・K-262）なら baseURL を渡さない（Better Auth は画面の出どころの /api/auth を使う）
@@ -41,6 +44,10 @@ export const authClient = createAuthClient({
       if (isVerify && passkeyChallenge) {
         h.set(CHALLENGE_HEADER, passkeyChallenge);
         passkeyChallenge = null;
+      }
+      if (isVerify && passkeyInvitation) {
+        h.set(INVITATION_HEADER, passkeyInvitation);
+        passkeyInvitation = null;
       }
       return { ...ctx, headers: h };
     },
@@ -87,11 +94,18 @@ export type PasskeySignIn =
   | { ok: false; status: number; code: string; message: string | null };
 
 /** パスキーで入る（K-304 の部品の口）：問い → ブラウザの手順（指・顔・PC のロック・スマホの QR はブラウザが出す）→ 応答。
+ *  invitation（招待のリンクから来たときだけ）は確かめの要求の頭 x-kaname-invitation に付ける（問いの要求には付けない）。
  *  印は応答の頭 set-auth-token（上の onSuccess が置く）。本人がやめた・時間切れは status 400 の失敗で返る（応答の口は呼ばない） */
-export async function signInWithPasskey(): Promise<PasskeySignIn> {
+export async function signInWithPasskey(invitation?: string): Promise<PasskeySignIn> {
   passkeyChallenge = null;
+  passkeyInvitation = invitation || null;
   const before = getToken();
-  const r = await authClient.signIn.passkey({ returnWebAuthnResponse: true });
+  let r: Awaited<ReturnType<typeof authClient.signIn.passkey>>;
+  try {
+    r = await authClient.signIn.passkey({ returnWebAuthnResponse: true });
+  } finally {
+    passkeyInvitation = null; // 確かめの要求まで進まなかった（やめた・時間切れ）ときも次の入りに残さない
+  }
   const err = r.error as { status?: unknown; code?: unknown; message?: unknown } | null;
   // 新しい印は応答の頭（onSuccess が置いた値）。頭が無ければ答えの session.token
   const now = getToken();
