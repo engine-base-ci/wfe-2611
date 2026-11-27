@@ -9,9 +9,11 @@
 //   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
 //   PC の状態は、画面が自分で PC の一覧を読み続けるとき（PC をつなぐ・K-220）は画面の答えを受け取り、外枠は読まない（口を二重に呼ばない）
 //   右の自分のAIのパネルは出さない（チケットは PC をつないでいなくても作れる・D-127.8）
+//   右上の自分のメニューと左上のワークスペースの切り替えの中身は F10 の部品（K-844）。口 getMe は箱を開いたときだけ読む（外枠の口を増やさない）
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Shell, type Crumb, type Group } from "@/components/k";
+import { MeMenuBox, OrgMenuBox } from "@/features/F10/account/me-menu";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
@@ -73,7 +75,7 @@ export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
 
 export interface TicketShellProps {
   /** いま見ている画面（flow の screen id）。左のメニューの今いる項目になる */
-  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials";
+  screen: "tickets" | "approvals" | "bridge-setup" | "mfa-setup" | "credentials" | "audit" | "account" | "company-settings" | "member-detail";
   /** 上の帯のいまの場所 */
   crumbs: Crumb[];
   /** 左のメニューの数（まとまりの鍵 → 数）。承認待ちの画面は自分で読んだ数を渡す（外枠は二重に読まない） */
@@ -153,6 +155,11 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
   const approvals = ownCount ? counts?.["approvals"] : waiting.data;
   const badges = { ...counts, ...(approvals !== undefined ? { approvals } : {}) };
   const canCreate = (scopes.data?.writable.length ?? 0) > 0;
+  const pcOn = ownBridge ? bridgeConnected === true : devices.data === true;
+  const theme = readTheme();
+  const leave = () => {
+    void signOut().finally(() => window.location.assign("/login"));
+  };
   return (
     <Shell
       {...(role ? { role } : {})}
@@ -162,13 +169,13 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
       member={{ name, initial: name.slice(0, 1) }}
       groups={groups}
       badges={badges}
-      bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
-      theme={readTheme()}
+      bridgeConnected={pcOn}
+      theme={theme}
       {...(railed ? { railed } : {})}
       {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
-      onSignOut={() => {
-        void signOut().finally(() => window.location.assign("/login"));
-      }}
+      onSignOut={leave}
+      meMenu={<MeMenuBox screen={screen} fallbackName={name} bridgeConnected={pcOn} theme={theme} onSignOut={leave} />}
+      orgMenu={<OrgMenuBox screen={screen} workspaceName={company} />}
     >
       <div data-ticket-shell>{children}</div>
     </Shell>

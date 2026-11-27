@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/contract/op.ts", "apps/api/src/contract/deps.ts", "apps/api/src/features/F10/image-kind.ts", "apps/api/src/hooks/workspace-logo.ts", "apps/api/src/features/F10/workspace/logo.ts", "packages/db/migrations/20261126002800_workspace_logo.sql"], "tests": ["apps/api/test/features/F10/workspace-logo.test.ts"]}
+ ]
+}

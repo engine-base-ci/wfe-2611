@@ -10,7 +10,7 @@
 //   いまの場所と帯の題は出さない（題は本文の h1）。鈴は帯の 1 つだけで、本文の見出しの右には置かない。下のタブの「メニュー」の引き出しに自分のメニューは無い
 import { Menu as M } from "@base-ui/react/menu";
 import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, X, type LucideIcon } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactElement, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
@@ -60,18 +60,22 @@ const Icon = ({ name, size = 16 }: { name: string; size?: number }) => {
   return <C size={size} aria-hidden="true" strokeWidth={2} />;
 };
 
-/** 767 以下か（スマホの帯の形にする幅：探すは虫眼鏡のボタンから開く） */
-function useNarrow(): boolean {
-  const [narrow, setNarrow] = useState(false);
+/** 幅が問い合わせに合うか */
+function useMedia(query: string): boolean {
+  const [hit, setHit] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const on = () => setNarrow(mq.matches);
+    const mq = window.matchMedia(query);
+    const on = () => setHit(mq.matches);
     on();
     mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
-  }, []);
-  return narrow;
+  }, [query]);
+  return hit;
 }
+/** 767 以下か（スマホの帯の形にする幅：探すは虫眼鏡のボタンから開く） */
+const useNarrow = (): boolean => useMedia("(max-width: 767px)");
+/** 1023 以下か（左のバーがレールになる幅） */
+const useRail = (): boolean => useMedia("(max-width: 1023px)");
 
 interface BellProps {
   notices?: number | undefined;
@@ -131,6 +135,11 @@ export interface ShellProps {
   /** 知らせを開く。無ければ鈴を使えない形（グレー・押しても何も開かない）で出す */
   onNotices?: () => void;
   onSignOut?: () => void;
+  /** 自分のメニューの箱の中身（K-844）。渡されたら今の「名前・項目・見た目・ログアウト」の代わりにこれを出す（引き金・開き方・閉じ方・置き場は今のまま） */
+  meMenu?: ReactNode;
+  /** ワークスペースの切り替えの箱の中身（K-844）。渡されたら会社の ▾ を押せる引き金「ワークスペースを切り替える」にし、開いた箱にこれを出す。
+   *  左のバーが畳まれた幅（1023 以下・畳んだとき）は会社の印が、767 以下は上の帯の会社の印が引き金になる（▾ が見えない幅でも切り替えられる） */
+  orgMenu?: ReactNode;
   /** 試験・見本で「作った画面」の一覧を替える */
   built?: readonly string[];
   /** 画面が左のバーを 56 に畳ませる（チケットの一覧で横に詳細を開いた 1024〜1279・D-128.14）。本人の好み（k-shell-nav）は書き換えない */
@@ -194,24 +203,79 @@ function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
   );
 }
 
+/** 差し込まれた箱の中身を出す入れ物（K-844）。menu の役は中身の箱が 1 つだけ持つので、外枠の箱は役を持たない。
+ *  押せる項目（role="menuitem" で aria-disabled でない物）を押したら閉じる（closeOnItem） */
+function SlotMenu({
+  trigger,
+  face,
+  label,
+  closeOnItem,
+  children,
+}: {
+  /** 引き金の要素（button か、印のままの span） */
+  trigger: ReactElement;
+  /** 引き金の中に描く物 */
+  face: ReactNode;
+  label: string;
+  closeOnItem?: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <M.Root open={open} onOpenChange={setOpen}>
+      <M.Trigger render={trigger} nativeButton={trigger.type === "button"} aria-label={label}>
+        {face}
+      </M.Trigger>
+      <M.Portal>
+        <M.Positioner className="k-popup-layer" sideOffset={6} align="start">
+          <M.Popup
+            role="presentation"
+            aria-labelledby={undefined}
+            onClick={(e) => {
+              if (!closeOnItem) return;
+              const hit = (e.target as Element).closest('[role="menuitem"]');
+              if (hit && hit.getAttribute("aria-disabled") !== "true") setOpen(false);
+            }}
+          >
+            {children}
+          </M.Popup>
+        </M.Positioner>
+      </M.Portal>
+    </M.Root>
+  );
+}
+
 function MeMenu({
   me,
   member,
   theme,
   onSignOut,
+  slot,
 }: {
   me: NavItem[];
   member: { name: string; initial: string };
   theme: Theme;
   onSignOut?: (() => void) | undefined;
+  slot?: ReactNode;
 }) {
+  const face = (
+    <>
+      <span className="k-avatar" aria-hidden="true">
+        {member.initial}
+      </span>
+      ▾
+    </>
+  );
+  if (slot !== undefined)
+    return (
+      <SlotMenu trigger={<button type="button" className="k-me" />} face={face} label="自分のメニュー" closeOnItem>
+        {slot}
+      </SlotMenu>
+    );
   return (
     <M.Root>
       <M.Trigger className="k-me" aria-label="自分のメニュー">
-        <span className="k-avatar" aria-hidden="true">
-          {member.initial}
-        </span>
-        ▾
+        {face}
       </M.Trigger>
       <M.Portal>
         <M.Positioner className="k-popup-layer" sideOffset={6} align="end">
@@ -243,6 +307,8 @@ function MeMenu({
   );
 }
 
+const ORG_LABEL = "ワークスペースを切り替える";
+
 /** 押せない小さな印（★・会社の切り替え ▾）。読み上げは「使えないボタン」・Tab で止まる・押しても何もしない */
 const Inert = ({ className, label, children }: { className: string; label: string; children: ReactNode }) => (
   <span className={className} role="button" aria-disabled="true" tabIndex={0} aria-label={label} title={label}>
@@ -252,6 +318,7 @@ const Inert = ({ className, label, children }: { className: string; label: strin
 
 export function Shell(p: ShellProps) {
   const narrow = useNarrow();
+  const rail = useRail();
   const nav = p.role
     ? navFor(p.role, {
         screen: p.screen,
@@ -309,19 +376,33 @@ export function Shell(p: ShellProps) {
     if (q) p.onSearch?.(q);
   };
   const title = p.crumbs.at(-1)?.label ?? "";
+  // 会社の ▾ が見えない幅（左のバーが畳まれている）では、左のバーの会社の印を切り替えの引き金にする
+  const markSwitches = isRailed || (rail && !narrow);
 
   const sidebar = (inSheet: boolean) => (
     <>
       <div className="k-nav-top">
-        <span className="k-ws-mark" aria-hidden="true">
-          {p.workspace.initial}
-        </span>
+        {p.orgMenu !== undefined && !inSheet && markSwitches ? (
+          <SlotMenu trigger={<span className="k-ws-mark" />} face={p.workspace.initial} label={ORG_LABEL}>
+            {p.orgMenu}
+          </SlotMenu>
+        ) : (
+          <span className="k-ws-mark" aria-hidden="true">
+            {p.workspace.initial}
+          </span>
+        )}
         <b className="k-nav-label k-ws-name">
           {p.workspace.name}
           {p.workspace.name ? " " : ""}
-          <Inert className="k-ws-switch" label="会社を切り替える（準備中）">
-            ▾
-          </Inert>
+          {p.orgMenu !== undefined && (inSheet || !markSwitches) ? (
+            <SlotMenu trigger={<button type="button" className="k-ws-switch" />} face="▾" label={ORG_LABEL}>
+              {p.orgMenu}
+            </SlotMenu>
+          ) : (
+            <Inert className="k-ws-switch" label="会社を切り替える（準備中）">
+              ▾
+            </Inert>
+          )}
         </b>
         {inSheet ? null : (
           <button
@@ -412,9 +493,15 @@ export function Shell(p: ShellProps) {
       </nav>
       <div className="k-body">
         <header className="k-bar" data-searching={searching || undefined}>
-          <span className="k-ws-mark k-bar-ws" aria-hidden="true">
-            {p.workspace.initial}
-          </span>
+          {p.orgMenu !== undefined && narrow ? (
+            <SlotMenu trigger={<span className="k-ws-mark k-bar-ws" />} face={p.workspace.initial} label={ORG_LABEL}>
+              {p.orgMenu}
+            </SlotMenu>
+          ) : (
+            <span className="k-ws-mark k-bar-ws" aria-hidden="true">
+              {p.workspace.initial}
+            </span>
+          )}
           {/* スマホの帯の左：会社の名前（画面の名前は本文の見出しにあるので重ねない） */}
           <span className="k-bar-ws-name">{p.workspace.name}</span>
           <nav aria-label="いまの場所" className="k-crumbs">
@@ -488,7 +575,7 @@ export function Shell(p: ShellProps) {
               ) : null}
             </form>
             <BellButton notices={p.notices} onNotices={p.onNotices} />
-            <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
+            <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} slot={p.meMenu} />
             {p.panel ? (
               <button
                 type="button"

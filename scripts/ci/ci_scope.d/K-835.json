@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/me-email.ts", "apps/api/src/features/F10/me/email.ts", "packages/db/migrations/20261126003500_me_email_change.sql"], "tests": ["apps/api/test/features/F10/me-email.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/me-email.test.ts": "土台 me.harness.ts が口の振る舞い apps/api/src/hooks/me-email.ts（と extraHooks の me-profile.ts）を動的 import で読む（K-835）"
+ }
+}

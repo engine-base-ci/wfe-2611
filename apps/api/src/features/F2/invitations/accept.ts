@@ -31,6 +31,7 @@ import type { TenantContext } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { InvitationDeps } from "./deps.js";
+import { signedInFor } from "./signed.js";
 import { TOKEN_MAX } from "./preview.js";
 
 /** 名前の上限（D-128.142・登録と同じ） */
@@ -98,12 +99,9 @@ export function invitationAcceptFeature(d: InvitationDeps) {
     }
   };
 
-  /** ログイン中の本人（認証の利用者とセッション）。入口が会社の人として解けたときだけ。無ければ null（ログインしていない人の分） */
-  const signedIn = async (a: HookArgs): Promise<{ userId: string; sessionId: string; token: string } | null> => {
-    if (a.ctx.role !== "member") return null;
-    const s = await d.auth.api.getSession({ headers: a.c.req.raw.headers });
-    return s ? { userId: s.user.id, sessionId: s.session.id, token: s.session.token } : null;
-  };
+  /** ログイン中の本人（認証の利用者とセッション）。会社の人として解けたときと、招待の印でログインの印を受けた人が本人宛ての使える招待を開いたとき（K-852）。
+   *  無ければ null（ログインしていない人の分・signed.ts の 1 か所） */
+  const signedIn = (a: HookArgs, token: string) => signedInFor(d, a, token);
 
   /** 今のアカウントで参加する（K-333） */
   const join = async (
@@ -121,6 +119,8 @@ export function invitationAcceptFeature(d: InvitationDeps) {
       const why = joinRefusal(e);
       if (why === "wrong_email") return reply(403, "E-INV-005");
       if (why === "already_member") return reply(409, "E-INV-007");
+      // 止めたまま外された会社には戻れない（生き返らせない・K-852・D-154.85）
+      if (why === "suspended") return reply(403, "E-AUTH-011");
       if (why === "used" || why === "revoked" || why === "expired") return reply(410, GONE[why]);
       if (why === "not_found") return reply(404, "E-INV-001");
       console.error(`[invitation] 今のアカウントで参加できなかった（招待 ${inv.invitationId}・${kindOf(e)}）`);
@@ -143,7 +143,7 @@ export function invitationAcceptFeature(d: InvitationDeps) {
     if (inv.workspaceSuspended) return reply(403, "E-AUTH-012");
     let me: Awaited<ReturnType<typeof signedIn>>;
     try {
-      me = await signedIn(a);
+      me = await signedIn(a, token);
     } catch (e) {
       console.error(`[invitation] セッションを読めなかった（${kindOf(e)}）`);
       return unavailable();

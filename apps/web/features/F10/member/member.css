@@ -1,0 +1,124 @@
+/* メンバーの 1 人の画面（段 11・F10）の部品。カードと行は components/k の setting-parts、頭と帯は k-page-head と Band のまま。
+   ここは「外す小窓」の中の並べ方と、押せない所の見た目だけ。色・字・余白は正本のトークン（--k-*）。クラスの頭は k-f10d- */
+
+.k-f10d-body {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+.k-f10d-body .k-set-card {
+  margin: 0;
+}
+.k-f10d-off[aria-disabled="true"] {
+  color: var(--k-on-surface-variant);
+  cursor: not-allowed;
+}
+
+/* ---- 小窓の中 ---- */
+.k-f10d-sub {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f10d-h {
+  margin: 0;
+  font-size: var(--k-text-body-md);
+  font-weight: var(--k-fw-h3);
+}
+.k-f10d-seg {
+  display: inline-flex;
+  gap: var(--k-s-xs);
+}
+.k-f10d-seg button {
+  min-height: var(--k-s-xl);
+  padding: 0 var(--k-s-md);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  cursor: pointer;
+}
+.k-f10d-seg button[aria-checked="true"] {
+  border-color: var(--k-primary);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f10d-tickets {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f10d-ticket {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-md);
+}
+.k-f10d-ticket-main {
+  display: grid;
+  min-width: 0;
+}
+.k-f10d-ticket-code {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f10d-ticket-to {
+  color: var(--k-on-surface);
+  white-space: nowrap;
+}
+.k-f10d-facts {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+}
+.k-f10d-fact {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--k-s-sm);
+  margin: 0;
+}
+.k-f10d-fact dt {
+  font-weight: var(--k-fw-h3);
+}
+.k-f10d-fact dd {
+  margin: 0;
+}
+.k-f10d-fact[data-tone="gone"] dt {
+  color: var(--k-error);
+}
+.k-f10d-added {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-md);
+}
+@media (max-width: 767px) {
+  .k-f10d-ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .k-f10d-fact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-f10d-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--k-c-dialog-stack-gap);
+  align-items: start;
+}
+@media (max-width: 767px) {
+  .k-f10d-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/invitations/**",
+    "apps/api/src/features/F10/invite/mail.ts",
+    "packages/db/migrations/20261126000700_invitation_manage.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-invite-manage.test.ts"
+   ]
+  }
+ ]
+}
