@@ -1,0 +1,58 @@
+// 権限の言葉の段（ZT1・ZT5・K-14）。契約の perm（08_api の permission から生成）を、入口（op.ts）で言葉ごとに確かめる。
+//   役の段（member／ops／client／device）は op.ts が先に見る。ここはその上の「誰が呼べるか」。
+//   行に結ぶ言葉（self・assignee・approver・recipient・manager・read・write）は、:id の行を読む段（op.ts の 4.1・契約の perm.row）で確かめる（K-15）。
+import type { EndpointDef } from "@kaname/contracts";
+import type { TenantContext } from "@kaname/db/context";
+import type { Repository } from "@kaname/db/repository";
+
+export interface PermArgs {
+  e: EndpointDef;
+  ctx: TenantContext;
+  repo: Repository;
+  id: string | null;
+}
+type Check = (a: PermArgs) => Promise<boolean>;
+
+/** 言葉 → 確かめ。キーが無い言葉は、まだ入口で見ていない（zt_gate の perm_words_missing に出る） */
+export const CHECKS: Record<string, Check> = {
+  public: async () => true,
+  client: async ({ ctx }) => ctx.role === "client",
+  device: async ({ ctx }) => ctx.role === "device",
+  // 管理者の段：その能力（招く・書き出す・お金・消す・表ごとの読む／書く）を、会社全体で（scope: any はどこかのグループで）持つ人
+  admin: async ({ e, ctx, repo }) => {
+    const p = e.perm;
+    if (p.adminOnly) return repo.isAdmin(ctx);
+    if (!p.target || !p.ability) return false;
+    return p.scope === "any" ? repo.canAny(ctx, p.target, p.ability) : repo.can(ctx, p.target, null, p.ability);
+  },
+  // 運営：そのできること（ops_members.caps）を持つ運営の人だけ
+  //   ops:any は運営の人なら誰でも（運営の人の行があること）
+  // 行に結ぶ言葉：この段では社内の人であること（役は 2 の段で確かめた）。:id の行は 4.1 で perm.row を確かめる（一覧・作るは RLS が絞る）
+  self: async ({ ctx }) => ctx.role === "member",
+  // 本人か、本人がつないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）。PC の口は /bridge/ の下だけ（ZT10）
+  self_or_device: async ({ ctx }) => ctx.role === "member" || ctx.role === "device",
+  read: async ({ ctx }) => ctx.role === "member" || ctx.role === "ops",
+  write: async ({ ctx }) => ctx.role === "member",
+  assignee: async ({ ctx }) => ctx.role === "member",
+  approver: async ({ ctx }) => ctx.role === "member",
+  recipient: async ({ ctx }) => ctx.role === "member",
+  manager: async ({ ctx }) => ctx.role === "member",
+  "ops:*": async ({ e, ctx, repo }) => {
+    if (ctx.role !== "ops" || !e.perm.cap) return false;
+    const caps = await repo.opsCaps(ctx);
+    return caps !== null && (e.perm.cap === "any" || caps.includes(e.perm.cap));
+  },
+};
+
+export const checkFor = (word: string): Check | undefined => CHECKS[word.startsWith("ops:") ? "ops:*" : word];
+
+/** 本人確認の取り直しが新しいか（15 分以内・D-125.139） */
+export const STEP_UP_MS = 15 * 60 * 1000;
+export const stepUpFresh = (ctx: TenantContext, now = Date.now()): boolean =>
+  !!ctx.stepUpAt && now - new Date(ctx.stepUpAt).getTime() <= STEP_UP_MS;
+/** ログインしてから 15 分の内か（K-308・代表の答え ⑬）。ログインの時刻が無ければ false */
+export const loginFresh = (ctx: TenantContext, now = Date.now()): boolean =>
+  !!ctx.loginAt && now - new Date(ctx.loginAt).getTime() <= STEP_UP_MS;
+/** 取り直しが直前 15 分の内か、ログインから 15 分の内か（安全の設定の 4 つの口・契約の step_up が "login_or_step_up"・K-308） */
+export const stepUpOrFreshLogin = (ctx: TenantContext, now = Date.now()): boolean =>
+  stepUpFresh(ctx, now) || loginFresh(ctx, now);
