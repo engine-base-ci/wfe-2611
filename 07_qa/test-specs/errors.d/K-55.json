@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-INV-004",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待がもう受けられた（used）",
+   "false_when": "まだ受けていない招待",
+   "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
+   "action": "参加した人はログインして入る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "一度参加に使った招待のリンクをもう一度開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.62",
+    "D-128.63"
+   ]
+  }
+ ]
+}
