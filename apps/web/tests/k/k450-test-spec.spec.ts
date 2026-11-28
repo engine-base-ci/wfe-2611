@@ -261,6 +261,9 @@ test("K450-UI-011 チェックが付いた行の文：文のボタンは aria-di
   await expect(editor(page)).toHaveCount(0);
   await boxOf(page, T[0]!).uncheck();
   await expect.poll(() => w.n).toBe(1);
+  // 外した答えが画面に戻り、文のボタンが押せる形に替わってから押す（口を呼んだ直後はまだ aria-disabled のままで、押しても入力に替わらない）
+  await expect(boxOf(page, T[0]!)).not.toBeChecked();
+  await expect(textBtn(page, T[0]!)).not.toHaveAttribute("aria-disabled", "true");
   await textBtn(page, T[0]!).click();
   await expect(editor(page)).toBeVisible();
 });
