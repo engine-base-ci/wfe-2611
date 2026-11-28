@@ -1,0 +1,88 @@
+{
+ "screen": "ops-billing",
+ "mock": "06_mockup/v1/v1-ops-billing.html",
+ "state_labels": {
+  "n": "請求と入金",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:請求書を一括で出す",
+   "kind": "button",
+   "label": "請求書を一括で出す",
+   "target": null,
+   "states": [
+    "請求と入金"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会社の詳細で対応→ops-tenant",
+   "kind": "link",
+   "label": "会社の詳細で対応",
+   "target": "ops-tenant",
+   "states": [
+    "請求と入金"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:電話の記録を残す",
+   "kind": "button",
+   "label": "電話の記録を残す",
+   "target": null,
+   "states": [
+    "請求と入金"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:メールで連絡",
+   "kind": "button",
+   "label": "メールで連絡",
+   "target": null,
+   "states": [
+    "請求と入金"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会社の詳細で承認→ops-tenant",
+   "kind": "link",
+   "label": "会社の詳細で承認",
+   "target": "ops-tenant",
+   "states": [
+    "請求と入金"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:未収に連絡する",
+   "kind": "button",
+   "label": "未収に連絡する",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
