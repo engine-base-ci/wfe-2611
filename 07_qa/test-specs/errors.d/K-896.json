@@ -1,0 +1,96 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-140",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）のに案を作ろうとした",
+   "false_when": "新しい・聞いている依頼で案を作る",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、届いた依頼を開く",
+    "steps": [
+     "別の人がその依頼をチケットにする",
+     "「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-155.27"
+   ]
+  },
+  {
+   "id": "E-GST-141",
+   "class": "connectivity",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "押した人の PC がつながっていない（PC が無い・失効した・最後の知らせが 75 秒より前・別の人の PC だけ）",
+   "false_when": "押した人の PC がつながっているときに案を作る",
+   "message": "PC がつながると分身が案を出します",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、PC をつながずに届いた依頼を開く",
+    "steps": [
+     "「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-128.101"
+   ]
+  },
+  {
+   "id": "E-GST-142",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "work"
+   },
+   "when": "案をもう作っている（10 分以内）・もう出来ている依頼で案を作ろうとした",
+   "false_when": "案が無い・出なかった・10 分より前から作っている依頼で案を作る",
+   "message": "案をもう作っています",
+   "action": "少し待って読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "社内の人でログインし、PC をつないで届いた依頼を開く",
+    "steps": [
+     "「案を作る」を押す",
+     "すぐにもう一度「案を作る」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-155.35"
+   ]
+  }
+ ]
+}
