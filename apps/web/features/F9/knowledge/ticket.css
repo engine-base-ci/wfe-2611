@@ -1,0 +1,114 @@
+/* チケットの側に出るナレッジの分（守る物の一覧・確認項目の印）の下絵。色・字・余白は正本のトークン（--k-*）だけ。クラスの頭は k-f9- */
+
+/* ---------------------------------------------------------------- チケットの側に出る分 */
+.k-f9-guard {
+  display: grid;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  margin-top: var(--k-s-xs);
+}
+.k-f9-guard-lead {
+  margin: 0;
+}
+.k-f9-guard h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+  margin: 0 0 var(--k-s-xs);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h3);
+}
+.k-f9-guard h4 svg {
+  color: var(--k-primary);
+}
+.k-f9-guard h4 small {
+  margin-left: var(--k-s-xs);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body);
+  color: var(--k-st-success);
+}
+.k-f9-guard ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+}
+.k-f9-guard li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+}
+.k-f9-guard li:last-child {
+  border-bottom: 0;
+}
+.k-f9-guard a,
+.k-f9-inline-link {
+  color: var(--k-primary);
+  text-decoration: underline;
+}
+.k-f9-guard li small,
+.k-f9-inline-place {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-f9-specs h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+}
+.k-f9-specs h2 small {
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body);
+  color: var(--k-st-warning);
+}
+.k-f9-specs ul {
+  list-style: none;
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+}
+.k-f9-specs li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+}
+.k-f9-specs li .k-f9-checkbox {
+  margin-top: var(--k-s-xs);
+}
+.k-f9-specs label {
+  display: grid;
+  min-width: 0;
+}
+.k-f9-specs li[data-done="true"] label > span {
+  color: var(--k-on-surface-variant);
+}
+.k-f9-spec-from {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  font-size: var(--k-text-label-md);
+  color: var(--k-primary);
+}
+.k-f9-spec-by {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+/* 印のリンク（K-703）：色は印の字に合わせる */
+.k-f9-spec-from a {
+  color: inherit;
+}
+/* 本番の確認項目の行（F4）では、印を文の下の 2 行目に置く（K-703・下絵 tk-blocked） */
+.k-f4d-spec-list li:has(> .k-f9-spec-from) {
+  flex-wrap: wrap;
+}
+.k-f4d-spec-list li > .k-f9-spec-from {
+  order: 1;
+  flex-basis: 100%;
+}
