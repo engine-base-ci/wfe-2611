@@ -1,0 +1,128 @@
+{
+ "screen": "company-settings",
+ "mock": "06_mockup/v1/v1-company-settings.html",
+ "state_labels": {
+  "n": "会社の設定",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "input:会社名",
+   "kind": "input",
+   "label": "会社名",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:タイムゾーン",
+   "kind": "select",
+   "label": "タイムゾーン",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:請求先",
+   "kind": "input",
+   "label": "請求先",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:日本（東京）Kaname のサーバー。AI の経路は Bridge（本人のサブスク）なので、AI 側へは仕事に必要な分だ",
+   "kind": "radio",
+   "label": "日本（東京）Kaname のサーバー。AI の経路は Bridge（本人のサブスク）なので、AI 側へは仕事に必要な分だ",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:海外の経路も許す（+10%）AI の経路で東京以外を使う場合。学習には使わない契約",
+   "kind": "radio",
+   "label": "海外の経路も許す（+10%）AI の経路で東京以外を使う場合。学習には使わない契約",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:ローカル LLM（将来）段階3 以降。社内から出さない",
+   "kind": "radio",
+   "label": "ローカル LLM（将来）段階3 以降。社内から出さない",
+   "target": null,
+   "states": [
+    "会社の設定",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
