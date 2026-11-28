@@ -1,0 +1,8955 @@
+{
+ "_doc": "生成物（pnpm db:columns）。本物の DB の列。05_flow/build_api.py が契約の答えの形に使う。手で直さない",
+ "tables": {
+  "abilities": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "acceptances": {
+   "artifact_version_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "comment": {
+    "type": "text",
+    "nullable": true
+   },
+   "contact_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "message": {
+    "type": "text",
+    "nullable": true
+   },
+   "reminded_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "result": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "account_event_items": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "disposition_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "done_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "event_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "object_kind": {
+    "type": "text",
+    "nullable": true
+   },
+   "target_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "account_events": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "resolved_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "subject_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "subject_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "action_runs": {
+   "action_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "ai_employee_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "approval_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "bridge_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "choke_point_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "cost": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "duty_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "error_summary": {
+    "type": "text",
+    "nullable": true
+   },
+   "finished_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mode_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "phase": {
+    "type": "text",
+    "nullable": true
+   },
+   "procedure_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "taken_over_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "task_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tokens_in": {
+    "type": "integer",
+    "nullable": true
+   },
+   "tokens_out": {
+    "type": "integer",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "agent_usage_snapshots": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "observed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "resets_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "utilization": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "window_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "ai_employees": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "paused_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "paused_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "provisioning_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "template_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "approvals": {
+   "action_run_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "approver_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "bulk_batch_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decision": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "escalated_by_policy_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "human_checks": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "irreversible": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "level": {
+    "type": "integer",
+    "nullable": false
+   },
+   "memory_candidate": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "next_actor": {
+    "type": "text",
+    "nullable": true
+   },
+   "note": {
+    "type": "text",
+    "nullable": true
+   },
+   "parent_approval_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "resolved_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "return_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "return_targets": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "step_up_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "subject_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "subject_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "withdrawn_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   }
+  },
+  "artifact_versions": {
+   "artifact_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": true
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reverted_from": {
+    "type": "integer",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "size_bytes": {
+    "type": "bigint",
+    "nullable": true
+   },
+   "storage_ref": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "artifacts": {
+   "approved_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "format_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "source_conversation_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "source_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "source_message_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "storage_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "task_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "template_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "attachments": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mime": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "owner_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "owner_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "scanned_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "size": {
+    "type": "bigint",
+    "nullable": true
+   },
+   "storage_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "upload_expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "upload_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "upload_token_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "uploaded_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "audit_events": {
+   "action": {
+    "type": "text",
+    "nullable": false
+   },
+   "actor_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "actor_role": {
+    "type": "text",
+    "nullable": false
+   },
+   "choke_point_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "occurred_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "payload": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "target_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "target_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "billing_events": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": true
+   },
+   "payload": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "processed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "received_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "signature_ok": {
+    "type": "text",
+    "nullable": true
+   },
+   "stripe_event_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "bridge_job_events": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "job_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "payload": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "request_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "seq": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "bridge_job_states": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "bridge_jobs": {
+   "agent_session_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "attachment_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "browser": {
+    "type": "text",
+    "nullable": true
+   },
+   "client_request_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "conversation_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "credential_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "effort": {
+    "type": "text",
+    "nullable": true
+   },
+   "finished_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "model": {
+    "type": "text",
+    "nullable": true
+   },
+   "partial": {
+    "type": "text",
+    "nullable": true
+   },
+   "permission_mode": {
+    "type": "text",
+    "nullable": false
+   },
+   "prompt": {
+    "type": "text",
+    "nullable": false
+   },
+   "result": {
+    "type": "text",
+    "nullable": true
+   },
+   "resume_session_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "state_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "steer_seq": {
+    "type": "integer",
+    "nullable": false
+   },
+   "stop_requested_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "stopped_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "sweep_error_code": {
+    "type": "text",
+    "nullable": true
+   },
+   "sweep_failed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "taken_session_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "target_session_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tool_token_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "tools": {
+    "type": "text[]",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "bridge_pairing_codes": {
+   "code_hash": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "used_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "used_session_id": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "checks": {
+   "artifact_version_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "attempt": {
+    "type": "integer",
+    "nullable": false
+   },
+   "checked_by_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "evidence": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "result": {
+    "type": "text",
+    "nullable": false
+   },
+   "runner": {
+    "type": "text",
+    "nullable": false
+   },
+   "spec_version": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "test_spec_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "class_axes": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_builtin": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "class_values": {
+   "axis_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "color": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "client_contacts": {
+   "cc_role": {
+    "type": "text",
+    "nullable": false
+   },
+   "client_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "email": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "role": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "client_groups": {
+   "client_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "client_request_messages": {
+   "author_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "client_request_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "side": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "client_requests": {
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "client_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "contact_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decline_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "draft": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "draft_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "draft_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "draft_state": {
+    "type": "text",
+    "nullable": true
+   },
+   "due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "guest_group_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "questions": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "routed_scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "title": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "clients": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "default_share": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "email_domain": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "routing": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "visibility": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "clones": {
+   "auto_memory": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "persona": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "conversations": {
+   "agent_session_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "area": {
+    "type": "text",
+    "nullable": true
+   },
+   "branched_from_message_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "closed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "incognito": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "last_read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "parent_conversation_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "participant_member_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "starred_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "subject_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "talk_kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "title_auto": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "credential_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   }
+  },
+  "credentials": {
+   "client_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
+   "destinations": {
+    "type": "text[]",
+    "nullable": false
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "last_used_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "layer": {
+    "type": "text",
+    "nullable": false
+   },
+   "login_check_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "login_check_detail": {
+    "type": "text",
+    "nullable": true
+   },
+   "login_check_state": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "purpose": {
+    "type": "text",
+    "nullable": true
+   },
+   "read_only": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "service_domain": {
+    "type": "text",
+    "nullable": true
+   },
+   "service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "service_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "two_factor_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "use_count": {
+    "type": "integer",
+    "nullable": false
+   },
+   "vault_ref": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "custom_field_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "field_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "custom_fields": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
+   "field_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "options": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "required": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "daily_plans": {
+   "capacity_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "carry_over": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "closed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "committed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "plan_date": {
+    "type": "date",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "disclosure_versions": {
+   "content_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "dpa_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "generated_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "notice_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "pdf_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "released_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": true
+   }
+  },
+  "distribution_versions": {
+   "change_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "distribution_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "released_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "released_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "snapshot": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "distributions": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_locked": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "plan_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "duties": {
+   "ai_employee_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "constraints": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "definition_md": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   },
+   "visibility_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "duty_versions": {
+   "change_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "changed_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "duty_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "snapshot": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "erasure_certificates": {
+   "content_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "issued_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "sent_to": {
+    "type": "text",
+    "nullable": true
+   },
+   "storage_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "error_events": {
+   "context": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "error_code": {
+    "type": "text",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "next_action_taken_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "screen_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "shown_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "export_jobs": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "downloaded_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "storage_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "goal_allocations": {
+   "agreement_status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "allocated_value": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "assignee_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "goal_contributions": {
+   "child_goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "hypothesis_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "parent_goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "verdict_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "goal_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "progress_strategy": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   }
+  },
+  "goal_versions": {
+   "changed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "changed_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "snapshot": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "goals": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "origin_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "parent_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "period_end": {
+    "type": "date",
+    "nullable": true
+   },
+   "period_start": {
+    "type": "date",
+    "nullable": true
+   },
+   "rollup_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "rollup_spec": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "target_value": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "unit_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "guest_group_members": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "guest_group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "guest_groups": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "name_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "request_scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "handover_rules": {
+   "axis_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mode": {
+    "type": "text",
+    "nullable": false
+   },
+   "target": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "hypotheses": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "evidence": {
+    "type": "text",
+    "nullable": true
+   },
+   "goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "statement": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "imports": {
+   "applied_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "applied_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "detected_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "file_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "proposal": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "inquiries": {
+   "ai_first_answered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "asker_read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "assignee_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "context": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "conversation_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "last_message_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "later_until": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "opened_by_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "topic_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "integrations": {
+   "connected_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "credential_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "scopes": {
+    "type": "text[]",
+    "nullable": true
+   },
+   "service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "invitations": {
+   "accepted_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "email": {
+    "type": "text",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "guest_group_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "message": {
+    "type": "text",
+    "nullable": true
+   },
+   "permission_preset": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "resend_requested_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "resent_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "role_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "token_hash": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "invoices": {
+   "amount": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "issued_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "overdue_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "overdue_week_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "pdf_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "period_end": {
+    "type": "date",
+    "nullable": true
+   },
+   "period_start": {
+    "type": "date",
+    "nullable": true
+   },
+   "plan_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "price_amount": {
+    "type": "integer",
+    "nullable": true
+   },
+   "prorated_amount": {
+    "type": "integer",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "subscription_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tax_amount": {
+    "type": "integer",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "kind_sections": {
+   "client_visible": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "content_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "default_test_specs": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "hint": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "mode": {
+    "type": "text",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "section_key": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "used_for_acceptance": {
+    "type": "boolean",
+    "nullable": false
+   }
+  },
+  "knowledge_breaches": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "test_spec_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_folders": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_personal": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "parent_folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_limits": {
+   "must_max": {
+    "type": "integer",
+    "nullable": false
+   },
+   "shelf": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "knowledge_links": {
+   "anchor": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_page_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_page_versions": {
+   "author_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "body": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decision": {
+    "type": "text",
+    "nullable": true
+   },
+   "decline_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": true
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "proposed_by_clone": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "proposed_from_ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "published_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "published_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "knowledge_pages": {
+   "archived_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "archived_to_page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "copied_from_page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": false
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "form": {
+    "type": "text",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_must": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "is_personal": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "parent_page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "summary": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": false
+   },
+   "topics": {
+    "type": "text[]",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "verified_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "verify_due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "verify_interval_days": {
+    "type": "integer",
+    "nullable": true
+   }
+  },
+  "knowledge_requests": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decline_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "dismissed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "from_is_personal": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "from_scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "message": {
+    "type": "text",
+    "nullable": true
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "to_scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_shares": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "request_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "shared_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "layers": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "order_no": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "learned_procedures": {
+   "avg_ms": {
+    "type": "integer",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "duty_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "fail_count": {
+    "type": "integer",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "last_verified_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "run_count": {
+    "type": "integer",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "target_service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "learning_candidates": {
+   "check_result": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "evidence": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "proposed_as": {
+    "type": "text",
+    "nullable": false
+   },
+   "result_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "result_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "text": {
+    "type": "text",
+    "nullable": false
+   },
+   "trigger": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ledger_definitions": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "json_schema": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "ledger_fields": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "data_type_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "definition_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_filterable": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "is_sortable": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "options_master_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "order_no": {
+    "type": "integer",
+    "nullable": true
+   },
+   "required": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ledger_records": {
+   "amount": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "assignee_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "data": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "definition_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "measure_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "occurred_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "stage_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ledger_stages": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "definition_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "order_no": {
+    "type": "integer",
+    "nullable": true
+   },
+   "rules": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ledger_views": {
+   "columns": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "definition_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "filters": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "sorts": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "llm_capabilities": {
+   "capability_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "provider_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "supported": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   }
+  },
+  "llm_routes": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "credential_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "default_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "managed_allowed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "managed_allowed_by_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "offline_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "provider_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "measures": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "expected_effect": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "hypothesis_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "statement": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "member_kinds": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "members": {
+   "agent_effort": {
+    "type": "text",
+    "nullable": true
+   },
+   "agent_model": {
+    "type": "text",
+    "nullable": true
+   },
+   "agent_permission_mode": {
+    "type": "text",
+    "nullable": false
+   },
+   "auth_user_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "avatar_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "call_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "display_name": {
+    "type": "text",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "language": {
+    "type": "text",
+    "nullable": false
+   },
+   "manager_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "role_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "setup_dismissed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "setup_skipped_keys": {
+    "type": "text[]",
+    "nullable": false
+   },
+   "setup_step": {
+    "type": "smallint",
+    "nullable": false
+   },
+   "suspended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "suspended_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "theme": {
+    "type": "text",
+    "nullable": false
+   },
+   "timezone": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "week_start": {
+    "type": "smallint",
+    "nullable": false
+   }
+  },
+  "memories": {
+   "approved_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "approved_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "auto": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "confidence": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "digest_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "embedding": {
+    "type": "vector",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "last_used_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "source_ref_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "source_type_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "superseded_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "use_count": {
+    "type": "integer",
+    "nullable": false
+   },
+   "visibility": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "memory_digests": {
+   "bridge_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "conversation_count": {
+    "type": "integer",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "finished_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "result": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "state_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "memory_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   }
+  },
+  "memory_proposals": {
+   "conflict_group_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "evidence": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "memory_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "proposer_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reviewer_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "target_scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "messages": {
+   "action_run_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "attachments": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "author_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "citations": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "confidence": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "conversation_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "kind": {
+    "type": "text",
+    "nullable": true
+   },
+   "options": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "parent_message_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "quote": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "send_state": {
+    "type": "text",
+    "nullable": true
+   },
+   "sender_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "transcript_uuid": {
+    "type": "text",
+    "nullable": true
+   },
+   "undo_action_run_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "visibility": {
+    "type": "text",
+    "nullable": false
+   },
+   "work": {
+    "type": "jsonb",
+    "nullable": true
+   }
+  },
+  "notice_deliveries": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "delivered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "notice_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "notice_updates": {
+   "body": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "notice_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "notices": {
+   "admins_only": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "affects": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "emailed_admins_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "impact": {
+    "type": "text",
+    "nullable": true
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "maintenance_from": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "maintenance_to": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "placements": {
+    "type": "text[]",
+    "nullable": false
+   },
+   "publish_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "published_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "target_plan_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "target_tenant_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "target_tenant_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "notification_preferences": {
+   "channel_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "enabled": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "event_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "notification_settings": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "email_digest": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "paused_until": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "quiet_hours": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "urgent_override": {
+    "type": "jsonb",
+    "nullable": false
+   }
+  },
+  "notifications": {
+   "channel_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "dedupe_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "event_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "failed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "payload": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "retry_count": {
+    "type": "integer",
+    "nullable": true
+   },
+   "sent_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "operations": {
+   "check_state": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": false
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version_label": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "ops_audit_events": {
+   "action": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "grant_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "occurred_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "payload": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "target_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "target_tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "target_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ops_invoice_templates": {
+   "address": {
+    "type": "text",
+    "nullable": false
+   },
+   "company": {
+    "type": "text",
+    "nullable": false
+   },
+   "contact": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": false
+   },
+   "payee": {
+    "type": "text",
+    "nullable": false
+   },
+   "reg_no": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "ops_members": {
+   "caps": {
+    "type": "text[]",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ops_role_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ops_plan_proposals": {
+   "changes": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "existing_policy": {
+    "type": "text",
+    "nullable": false
+   },
+   "from_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "new_from": {
+    "type": "date",
+    "nullable": true
+   },
+   "notice_days": {
+    "type": "integer",
+    "nullable": true
+   },
+   "plan_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "proposed_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "reason": {
+    "type": "text",
+    "nullable": false
+   },
+   "return_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "submitted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ops_setup_links": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ops_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "session_opened_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "token_hash": {
+    "type": "text",
+    "nullable": false
+   },
+   "used_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   }
+  },
+  "payment_methods": {
+   "brand": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "expires_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "last4": {
+    "type": "text",
+    "nullable": true
+   },
+   "registered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "stripe_customer_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "payments": {
+   "amount": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "invoice_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "method_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "paid_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "payer_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "recorded_by_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reverses_payment_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "permission_rules": {
+   "bridge_job_event_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decision_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "target_pattern": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tool": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "permissions": {
+   "ability_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "bundle_role": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "granted_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "grantee_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "target_kind_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "plan_change_requests": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "dependencies_event_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "effective_from": {
+    "type": "date",
+    "nullable": true
+   },
+   "from_plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "prorated_amount": {
+    "type": "integer",
+    "nullable": true
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "plan_versions": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "existing_from": {
+    "type": "date",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_limit": {
+    "type": "integer",
+    "nullable": true
+   },
+   "new_from": {
+    "type": "date",
+    "nullable": true
+   },
+   "plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "price_monthly": {
+    "type": "integer",
+    "nullable": true
+   },
+   "proposal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "released_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "snapshot": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "trial_days": {
+    "type": "integer",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "plans": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "limits": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "price_monthly": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "policies": {
+   "action_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "applies_to": {
+    "type": "text",
+    "nullable": false
+   },
+   "client_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "escalate_to": {
+    "type": "text",
+    "nullable": true
+   },
+   "escalate_when": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "exception_approval_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "exception_of_policy_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_locked": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "last_used_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "mode_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "params": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "paused_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "source_ref": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "subject_kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "text": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "use_count": {
+    "type": "integer",
+    "nullable": false
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "procedure_steps": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "intent_ja": {
+    "type": "text",
+    "nullable": true
+   },
+   "is_variable": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "locator": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "order_no": {
+    "type": "integer",
+    "nullable": true
+   },
+   "procedure_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "push_devices": {
+   "app_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "last_seen_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "platform_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "token_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "reference_logs": {
+   "action_run_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "bridge_job_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ref_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ref_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "seen_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "url": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "retention_holds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "legal_basis": {
+    "type": "text",
+    "nullable": true
+   },
+   "record_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "record_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "retain_until": {
+    "type": "date",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "review_requests": {
+   "anonymization_check": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "reviewer_ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "subject_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "subject_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "revoke_reasons": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "role_bundle_defaults": {
+   "ability_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "role": {
+    "type": "text",
+    "nullable": false
+   },
+   "scope_kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "target_kind_id": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "rollup_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   }
+  },
+  "saved_views": {
+   "columns": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "density": {
+    "type": "text",
+    "nullable": false
+   },
+   "filters": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "share": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "scope_memberships": {
+   "changed_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_primary": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "role": {
+    "type": "text",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "since": {
+    "type": "date",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "scopes": {
+   "color": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "layer_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "next_ticket_no": {
+    "type": "integer",
+    "nullable": false
+   },
+   "parent_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_prefix": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "security_events": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "detail": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ip_region": {
+    "type": "text",
+    "nullable": true
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "occurred_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "service_registry": {
+   "automation_verdict_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "domain": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "notes": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "service_registry_versions": {
+   "automation_verdict_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "released_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "service_requests": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "service_name": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "url": {
+    "type": "text",
+    "nullable": true
+   },
+   "verdict_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "session_kinds": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "sessions": {
+   "alive_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "auth_session_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "bridge_version": {
+    "type": "text",
+    "nullable": true
+   },
+   "browser": {
+    "type": "text",
+    "nullable": false
+   },
+   "cli_model": {
+    "type": "text",
+    "nullable": true
+   },
+   "country": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "device": {
+    "type": "text",
+    "nullable": true
+   },
+   "device_label": {
+    "type": "text",
+    "nullable": true
+   },
+   "device_token_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "health": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "health_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ip_region": {
+    "type": "text",
+    "nullable": true
+   },
+   "issued_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": false
+   },
+   "last_ip": {
+    "type": "text",
+    "nullable": true
+   },
+   "last_seen_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "login_kind": {
+    "type": "text",
+    "nullable": true
+   },
+   "machine_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mfa_pending": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "revoke_reason_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "step_up_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "terms_pending": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "setup_steps": {
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "n": {
+    "type": "smallint",
+    "nullable": false
+   }
+  },
+  "skill_attachments": {
+   "attached_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "disabled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "enabled": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "skill_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "target_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "target_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version_in_use": {
+    "type": "integer",
+    "nullable": true
+   }
+  },
+  "skill_test_runs": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "finished_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mode": {
+    "type": "text",
+    "nullable": true
+   },
+   "ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "result": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "skill_version_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "skill_versions": {
+   "changelog": {
+    "type": "text",
+    "nullable": true
+   },
+   "checked": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "fields": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "package_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "released_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "released_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "skill_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "test_result": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tested_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "skills": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "current_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "owner_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "plan_ids": {
+    "type": "uuid[]",
+    "nullable": true
+   },
+   "purpose": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "visibility_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "status_incidents": {
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "component_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "note": {
+    "type": "text",
+    "nullable": true
+   },
+   "notice_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "resolved_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "service_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "state_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "subprocessors": {
+   "announced_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "data_kinds": {
+    "type": "text[]",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "effective_from": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": true
+   },
+   "purpose": {
+    "type": "text",
+    "nullable": true
+   },
+   "region": {
+    "type": "text",
+    "nullable": true
+   },
+   "retired_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "subscriptions": {
+   "billing_contact": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "started_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "suspended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "support_access_grants": {
+   "closed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "expires_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "granted_by_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "inquiry_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ops_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "revoked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "scope": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "target_kinds": {
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "task_handovers": {
+   "agreement_status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mode_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "task_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "tasks": {
+   "actual_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "assignee_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "blocked_reason_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "blocked_since": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "estimate_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "goal_changed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "goal_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "measure_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "next_action": {
+    "type": "text",
+    "nullable": true
+   },
+   "origin_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "planned_for": {
+    "type": "date",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "tenant_distributions": {
+   "chosen": {
+    "type": "text",
+    "nullable": true
+   },
+   "chosen_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "chosen_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "disabled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "distribution_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "enabled": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "offered_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "offered_version": {
+    "type": "integer",
+    "nullable": true
+   },
+   "override": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version_in_use": {
+    "type": "integer",
+    "nullable": true
+   }
+  },
+  "tenant_memberships": {
+   "auth_user_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "joined_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "role": {
+    "type": "text",
+    "nullable": false
+   },
+   "status": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "tenants": {
+   "billing_contact": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "client_visibility_default": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deletion_requested_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "half_made_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "live_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "live_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "logo_ref": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "plan_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "request_routing": {
+    "type": "text",
+    "nullable": true
+   },
+   "session_idle_hours": {
+    "type": "integer",
+    "nullable": false
+   },
+   "session_max_days": {
+    "type": "integer",
+    "nullable": false
+   },
+   "status_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "stop_notice": {
+    "type": "text",
+    "nullable": true
+   },
+   "stop_noticed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "stop_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "stop_reason_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "stopped_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "who_billing": {
+    "type": "text",
+    "nullable": false
+   },
+   "who_delete_workspace": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "terms_consents": {
+   "agreed_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "auth_user_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ip": {
+    "type": "inet",
+    "nullable": true
+   },
+   "member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "terms_version_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "terms_versions": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "published_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "url": {
+    "type": "text",
+    "nullable": false
+   },
+   "version": {
+    "type": "text",
+    "nullable": false
+   }
+  },
+  "test_specs": {
+   "check_kind": {
+    "type": "text",
+    "nullable": true
+   },
+   "checked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "checked_basis": {
+    "type": "text",
+    "nullable": true
+   },
+   "checked_by_ai": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "checked_by_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "judge_type": {
+    "type": "text",
+    "nullable": true
+   },
+   "off_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "params": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "source": {
+    "type": "text",
+    "nullable": false
+   },
+   "source_ref_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "ticket_class_values": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "value_id": {
+    "type": "uuid",
+    "nullable": false
+   }
+  },
+  "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_by_ai_of": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "promoted_to": {
+    "type": "text",
+    "nullable": false
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "source_message_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "superseded_by_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "text": {
+    "type": "text",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_field_values": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "field_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "value": {
+    "type": "jsonb",
+    "nullable": false
+   }
+  },
+  "ticket_guest_shares": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "guest_group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "shared_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_handovers": {
+   "answered_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "ask": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decline_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_member_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "notify_managers": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "overdue_notified_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "reminded_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "reply_due": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "switch": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "switch_applied": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "to_scope_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_imports": {
+   "committed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "errors": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "mapping": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "rows": {
+    "type": "integer",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "source": {
+    "type": "text",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "uploaded_by": {
+    "type": "uuid",
+    "nullable": false
+   }
+  },
+  "ticket_kinds": {
+   "body_template": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "color": {
+    "type": "text",
+    "nullable": true
+   },
+   "color_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_builtin": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_links": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_messages": {
+   "author_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "body": {
+    "type": "text",
+    "nullable": true
+   },
+   "changes": {
+    "type": "jsonb",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "edited_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "from_request": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "guest_visible": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "mentions": {
+    "type": "uuid[]",
+    "nullable": false
+   },
+   "notify_member_ids": {
+    "type": "uuid[]",
+    "nullable": false
+   },
+   "quote_of_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "quote_text": {
+    "type": "text",
+    "nullable": true
+   },
+   "reactions": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "ticket_section_versions": {
+   "body": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "edited_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "edited_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "edited_by_clone": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "restored_from": {
+    "type": "integer",
+    "nullable": true
+   },
+   "section_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "ticket_sections": {
+   "body": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "section_key": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "version": {
+    "type": "integer",
+    "nullable": false
+   }
+  },
+  "ticket_stages": {
+   "color_key": {
+    "type": "text",
+    "nullable": false
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "is_fixed": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "template_hash": {
+    "type": "text",
+    "nullable": true
+   },
+   "template_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "tickets": {
+   "actual_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "assignee_member_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "client_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "client_share": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "completed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "completed_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "delegated_to_clone": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "deleted_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "derived_from_ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "draft_import_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "due_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "estimate_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "hold_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "no_spec_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "number": {
+    "type": "text",
+    "nullable": false
+   },
+   "parent_ticket_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "priority": {
+    "type": "text",
+    "nullable": false
+   },
+   "priority_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "resume_condition": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "stage_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "start_on": {
+    "type": "date",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "title": {
+    "type": "text",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "work_type_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "work_type_version": {
+    "type": "integer",
+    "nullable": true
+   }
+  },
+  "triggers": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "cron_expr": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "enabled": {
+    "type": "boolean",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "on_missed_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "timezone": {
+    "type": "text",
+    "nullable": true
+   },
+   "ttl_minutes": {
+    "type": "integer",
+    "nullable": true
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "units": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decimals": {
+    "type": "integer",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "key": {
+    "type": "text",
+    "nullable": false
+   },
+   "label": {
+    "type": "text",
+    "nullable": false
+   },
+   "scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "symbol": {
+    "type": "text",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "value_type_id": {
+    "type": "text",
+    "nullable": true
+   }
+  },
+  "usage_meters": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "limit_value": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "meter_key": {
+    "type": "text",
+    "nullable": true
+   },
+   "period_start": {
+    "type": "date",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "value": {
+    "type": "numeric",
+    "nullable": true
+   }
+  },
+  "validations": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "measure_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "measured_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "measured_value": {
+    "type": "numeric",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "verdict_id": {
+    "type": "text",
+    "nullable": true
+   }
+  }
+ }
+}
