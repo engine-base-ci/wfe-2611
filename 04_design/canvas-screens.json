@@ -1,0 +1,260 @@
+{
+ "_doc": "第1フェーズの画面（flow.json の release v1）→ キャンバスの絵（04_design/canvas/*.dc.html の名前）。画面の正はキャンバス（D-128.23）。canvas_gate.py の CV4 と spec-sync の D6 が読む（K-45）。画面か絵を足したら、ここに足す",
+ "screens": {
+  "account": [
+   "MeProfile",
+   "MeProfileEdit",
+   "MeNotify",
+   "EdLeaveWs",
+   "TopMe"
+  ],
+  "ai-activity": [
+   "RoomDone"
+  ],
+  "approvals": [
+   "Approvals",
+   "ApprovalsFocus",
+   "ApBulk",
+   "ApHistory",
+   "ApEmpty"
+  ],
+  "audit": [
+   "WsLog"
+  ],
+  "billing": [
+   "WsBills"
+  ],
+  "bridge-setup": [
+   "EdPC",
+   "MePC",
+   "MePCInstalled"
+  ],
+  "clone-chat": [
+   "AiChat",
+   "Room",
+   "RoomMemory",
+   "RoomWants",
+   "EdMemory",
+   "EdTeach"
+  ],
+  "company-settings": [
+   "WsSettings",
+   "EdPlan",
+   "EdDeleteWs",
+   "WsPriceChange"
+  ],
+  "credentials": [
+   "MeSecrets",
+   "MeSecretAdd",
+   "MeSecretEdit"
+  ],
+  "inquiry": [
+   "MeHelp",
+   "EdInquiry",
+   "MeInquiry"
+  ],
+  "invite-accept": [
+   "AuthInvite"
+  ],
+  "knowledge": [
+   "KnHome",
+   "KnPage",
+   "KnEdit",
+   "KnNew",
+   "KnImport",
+   "KnLinks",
+   "KnProposal",
+   "KnVerify"
+  ],
+  "layers": [
+   "EdGroup",
+   "OvGroup"
+  ],
+  "login": [
+   "AuthLogin",
+   "Auth2FA",
+   "AuthQR",
+   "AuthRecover",
+   "AuthConsent"
+  ],
+  "masters": [
+   "WsRules",
+   "WsShape",
+   "EdApproval",
+   "EdKind",
+   "EdSection"
+  ],
+  "member-detail": [
+   "WsMember"
+  ],
+  "members": [
+   "WsPeople",
+   "WsInvite",
+   "EdMemberMenu",
+   "EdMemberRemove"
+  ],
+  "mfa-setup": [
+   "MeLogin",
+   "MeLogin2FA",
+   "Me2FA",
+   "MeBackup",
+   "MeTotp",
+   "EdPasskey",
+   "AuthAddPasskey"
+  ],
+  "notices": [
+   "MnIncident"
+  ],
+  "ops-billing": [
+   "OpBills",
+   "OpPay"
+  ],
+  "ops-home": [
+   "OpList"
+  ],
+  "ops-notices": [
+   "OpNotices",
+   "OpNotice",
+   "OpNoticeNew"
+  ],
+  "ops-skills": [
+   "OpTypes",
+   "OpTypeUpload",
+   "OpTemplates",
+   "OpPlans",
+   "OpPlanEdit",
+   "OpPlanLog",
+   "OpPlanReview"
+  ],
+  "ops-support": [
+   "OpInbox"
+  ],
+  "ops-team": [
+   "OpTeam"
+  ],
+  "ops-tenant": [
+   "OpWs",
+   "OpWsBilling",
+   "OpWsLog",
+   "OpWsMembers",
+   "OpPeek",
+   "PeekMain",
+   "OpStop"
+  ],
+  "password-reset": [
+   "AuthReset"
+  ],
+  "portal": [
+   "CpHome",
+   "CpNew"
+  ],
+  "requests": [
+   "CuRequests"
+  ],
+  "signup": [
+   "AuthSignup",
+   "AuthChecking"
+  ],
+  "tickets": [
+   "Main",
+   "Overview",
+   "List",
+   "TicketDetail",
+   "Create",
+   "Calendar",
+   "Gantt",
+   "CalDay",
+   "GtMove",
+   "GtNoDate",
+   "LsBulk",
+   "LsFilter",
+   "LsSave",
+   "LsView",
+   "MnView",
+   "TdAssignee",
+   "TdCheck",
+   "TdDecision",
+   "TdDelete",
+   "TdDue",
+   "TdDuplicate",
+   "TdLink",
+   "TdMore",
+   "TdPreview",
+   "TdRunLog",
+   "TdTalk",
+   "TdVersions",
+   "StAiPanel",
+   "StCreateAi",
+   "StEdit",
+   "StFailed",
+   "StModal",
+   "StOverlay",
+   "StRunning",
+   "EdMove",
+   "EdParent",
+   "EdTypeChange",
+   "OnHome",
+   "OnLoading",
+   "StBefore",
+   "StConfirmDone",
+   "StDone",
+   "StDelegated",
+   "StCompleteModal",
+   "OnHomeLater",
+   "StApproveModal",
+   "StReturnModal"
+  ],
+  "verify-email": [
+   "AuthVerify",
+   "AuthVerifying",
+   "AuthVerifyExpired",
+   "AuthVerifyUsed",
+   "AuthVerifyLoading"
+  ],
+  "legal": [
+   "LegalPage"
+  ]
+ },
+ "mock_only": {
+  "help": "キャンバスに無い段 2 の画面。正は本番と同じ部品のモック /dev/mock/f1/help-*（K-300・K-315 の頭の欄 mock:）"
+ },
+ "common": {
+  "_doc": "どの画面でも使う絵（外枠・4 つの状態・エラー・スマホ・ワークスペースの切り替え）。画面ごとの絵ではない",
+  "boards": [
+   "OnError",
+   "OnKnowledge",
+   "OnRoom",
+   "ErrDown",
+   "ErrLinkExpired",
+   "ErrMaintenance",
+   "ErrNoAccess",
+   "ErrNotFound",
+   "ErrSession",
+   "MbAI",
+   "MbApprovals",
+   "MbApproveOne",
+   "MbCreate",
+   "MbKnowledge",
+   "MbMenu",
+   "MbNotify",
+   "MbTalk",
+   "MobileDetail",
+   "MobileList",
+   "TnNew",
+   "TopOrg",
+   "UiDisabled"
+  ]
+ },
+ "later": {
+  "_doc": "後のフェーズへ送った画面（flow.json の release v2）の絵。消さずに残す（画面を戻すときの正）。CV4 は、ここの画面が第1フェーズに無いことと、絵が 2 か所に入っていないことを見る（K-711）",
+  "rules": [
+   "RoomKnows",
+   "RoomAddRule",
+   "EdRule"
+  ],
+  "work-types": [
+   "RoomWays",
+   "RoomType"
+  ]
+ }
+}
