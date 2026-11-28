@@ -1,0 +1,26 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F4/create-ticket/ticket-detail.tsx",
+        "apps/web/features/F4/create-ticket/detail-panel.tsx",
+        "apps/web/features/F4/create-ticket/detail-head.tsx",
+        "apps/web/features/F4/create-ticket/detail-body.tsx",
+        "apps/web/features/F4/create-ticket/detail-entry-slots.tsx",
+        "apps/web/features/F4/duplicate/detail-entry.tsx",
+        "apps/web/features/F4/versions/versions-entry.tsx",
+        "apps/web/features/F4/body-edit/body-slot.tsx",
+        "apps/web/features/F4/parent/detail-row-slot.tsx",
+        "apps/web/features/F4/links/detail-entry.tsx",
+        "apps/web/features/F5/approve-complete/complete-act-slot.tsx",
+        "apps/web/features/F5/delegate/delegate-act-slot.tsx"
+      ],
+      "tests": [
+        "apps/web/tests/k/k571-detail-body.spec.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/k571-detail-body.spec.ts": "詳細の画面のファイル（ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・detail-entry-slots.tsx）を readFileSync で読む（K571-UI-007・014）"
+  }
+}

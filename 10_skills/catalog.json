@@ -1,0 +1,213 @@
+{
+ "_doc": "段階 1 の制作対象 14 本（D-080.7）。status: draft（一式あり）/ todo（未着手）。元ネタは HQ の .claude/skills と strategic-goal-system",
+ "skills": [
+  {
+   "id": "meta-company-model",
+   "kind": "meta",
+   "name": "会社モデル構築",
+   "origin": [
+    "hearing",
+    "business-plan",
+    "onboarding-design"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.3",
+    "D-080.2",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "meta-duty-definition",
+   "kind": "meta",
+   "name": "担当業務の定義（OJT の進め方）",
+   "origin": [
+    "sop-create",
+    "outsource-brief"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.4",
+    "D-080.8",
+    "D-080.3",
+    "D-126.9",
+    "D-126.18"
+   ]
+  },
+  {
+   "id": "meta-ledger-design",
+   "kind": "meta",
+   "name": "台帳の設計（段階・項目・判断基準）",
+   "origin": [
+    "pipeline-management",
+    "payment-management"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.5",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "meta-goal-breakdown",
+   "kind": "meta",
+   "name": "目標の分解（年→四半期→月→週）",
+   "origin": [
+    "strategic-goal-system",
+    "annual-okr",
+    "quarterly-okr"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.6",
+    "D-032.1",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "meta-improvement",
+   "kind": "meta",
+   "name": "改善提案の作り方（未達の原因と再計画）",
+   "origin": [
+    "strategic-goal-system",
+    "analytics"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.7",
+    "D-035.1",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "meta-clone-growth",
+   "kind": "meta",
+   "name": "自分のAIの育成（好みの引き出し方・記憶への落とし方）",
+   "origin": [
+    "hearing"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.8",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "meta-trouble",
+   "kind": "meta",
+   "name": "トラブル対応（覚えた操作が壊れた・承認が滞留）",
+   "origin": [
+    "support-response",
+    "dependency-risk"
+   ],
+   "status": "todo",
+   "source": [
+    "D-030.9",
+    "D-040.1",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "goal-sales-contract-dev",
+   "kind": "goal",
+   "name": "営業目標（受託開発）",
+   "origin": [
+    "strategic-goal-system",
+    "pipeline-management"
+   ],
+   "status": "draft",
+   "source": [
+    "D-063.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "goal-sales-restaurant",
+   "kind": "goal",
+   "name": "営業目標（飲食）",
+   "origin": [
+    "strategic-goal-system"
+   ],
+   "status": "todo",
+   "source": [
+    "D-063.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "goal-delivery-production",
+   "kind": "goal",
+   "name": "納期遵守（制作）",
+   "origin": [
+    "strategic-goal-system",
+    "sop-create"
+   ],
+   "status": "todo",
+   "source": [
+    "D-063.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "duty-hatchunavi-intake",
+   "kind": "duty",
+   "name": "発注ナビの新着を台帳に入れる",
+   "origin": [
+    "hatchunavi-apply"
+   ],
+   "status": "todo",
+   "source": [
+    "D-022.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "duty-invoice-create",
+   "kind": "duty",
+   "name": "請求書の作成（税込・内訳）",
+   "origin": [
+    "invoice-create"
+   ],
+   "status": "todo",
+   "source": [
+    "D-038.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "duty-payment-match",
+   "kind": "duty",
+   "name": "入金の照合（正規連携）",
+   "origin": [
+    "payment-management",
+    "ai-tax-accountant"
+   ],
+   "status": "todo",
+   "source": [
+    "D-041.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  },
+  {
+   "id": "duty-inquiry-first-reply",
+   "kind": "duty",
+   "name": "問い合わせの一次返信",
+   "origin": [
+    "support-response",
+    "customer-followup"
+   ],
+   "status": "todo",
+   "source": [
+    "D-075.1",
+    "D-080.7",
+    "D-080.3"
+   ]
+  }
+ ]
+}
