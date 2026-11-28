@@ -1,0 +1,57 @@
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。個別の振る舞いは apps/api/src/hooks/<operationId>.ts に書く（op が呼ぶ）
+import type { Hono } from "hono";
+import type { Vars } from "../middleware/tenant.js";
+import { op, type ContractDeps } from "../contract/op.js";
+
+export function register(app: Hono<Vars>, deps: ContractDeps): void {
+  app.get("/api/v1/ops/inquiries", op(deps, "listOpsInquiries"));
+  app.get("/api/v1/ops/inquiries/:id", op(deps, "getOpsInquiry"));
+  app.patch("/api/v1/ops/inquiries/:id", op(deps, "updateOpsInquiry"));
+  app.post("/api/v1/ops/inquiries/:id/notes", op(deps, "addOpsInquiryNote"));
+  app.post("/api/v1/ops/inquiries/:id/replies", op(deps, "replyOpsInquiry"));
+  app.get("/api/v1/ops/invoice-template", op(deps, "getOpsInvoiceTemplate"));
+  app.put("/api/v1/ops/invoice-template", op(deps, "updateOpsInvoiceTemplate"));
+  app.get("/api/v1/ops/invoices", op(deps, "listOpsInvoices"));
+  app.post("/api/v1/ops/invoices/issue", op(deps, "issueOpsInvoices"));
+  app.post("/api/v1/ops/invoices/:id/payments", op(deps, "recordPayment"));
+  app.get("/api/v1/ops/members", op(deps, "listOpsMembers"));
+  app.post("/api/v1/ops/members", op(deps, "addOpsMember"));
+  app.patch("/api/v1/ops/members/:id", op(deps, "updateOpsMemberCaps"));
+  app.delete("/api/v1/ops/members/:id", op(deps, "removeOpsMember"));
+  app.get("/api/v1/ops/notices", op(deps, "listOpsNotices"));
+  app.post("/api/v1/ops/notices", op(deps, "createOpsNotice"));
+  app.get("/api/v1/ops/notices/:id", op(deps, "getOpsNotice"));
+  app.patch("/api/v1/ops/notices/:id", op(deps, "updateOpsNotice"));
+  app.post("/api/v1/ops/notices/:id/publish", op(deps, "publishOpsNotice"));
+  app.post("/api/v1/ops/notices/:id/updates", op(deps, "addIncidentUpdate"));
+  app.get("/api/v1/ops/operations", op(deps, "listOperations"));
+  app.delete("/api/v1/ops/peeks/:id", op(deps, "closePeek"));
+  app.get("/api/v1/ops/plan_history", op(deps, "listPlanHistory"));
+  app.get("/api/v1/ops/plan_proposals", op(deps, "listPlanProposals"));
+  app.post("/api/v1/ops/plan_proposals", op(deps, "createPlanProposal"));
+  app.patch("/api/v1/ops/plan_proposals/:id", op(deps, "updatePlanProposal"));
+  app.post("/api/v1/ops/plan_proposals/:id/decide", op(deps, "decidePlanProposal"));
+  app.get("/api/v1/ops/plan_proposals/:id/impact", op(deps, "getPlanProposalImpact"));
+  app.post("/api/v1/ops/plan_proposals/:id/return", op(deps, "returnPlanProposal"));
+  app.post("/api/v1/ops/plan_proposals/:id/submit", op(deps, "submitPlanProposal"));
+  app.get("/api/v1/ops/plans", op(deps, "listOpsPlans"));
+  app.get("/api/v1/ops/pwned", op(deps, "listOpsPwned"));
+  app.post("/api/v1/ops/pwned/pending/ack", op(deps, "ackOpsPwnedPending"));
+  app.get("/api/v1/ops/shell", op(deps, "getOpsShell"));
+  app.get("/api/v1/ops/templates", op(deps, "listOpsTemplates"));
+  app.get("/api/v1/ops/templates/:id", op(deps, "getOpsTemplate"));
+  app.post("/api/v1/ops/templates/:id/versions", op(deps, "releaseOpsTemplate"));
+  app.get("/api/v1/ops/workspaces", op(deps, "listOpsWorkspaces"));
+  app.get("/api/v1/ops/workspaces/:id", op(deps, "getOpsWorkspace"));
+  app.get("/api/v1/ops/workspaces/:id/audit", op(deps, "listOpsWorkspaceAudit"));
+  app.get("/api/v1/ops/workspaces/:id/billing", op(deps, "getOpsWorkspaceBilling"));
+  app.get("/api/v1/ops/workspaces/:id/inquiries", op(deps, "listOpsWorkspaceInquiries"));
+  app.get("/api/v1/ops/workspaces/:id/members", op(deps, "listOpsWorkspaceMembers"));
+  app.post("/api/v1/ops/workspaces/:id/members/:mid/resend-verification", op(deps, "resendOpsVerification"));
+  app.post("/api/v1/ops/workspaces/:id/notices", op(deps, "sendWorkspaceNotice"));
+  app.post("/api/v1/ops/workspaces/:id/peeks", op(deps, "openPeek"));
+  app.post("/api/v1/ops/workspaces/:id/plan", op(deps, "changeOpsWorkspacePlan"));
+  app.post("/api/v1/ops/workspaces/:id/pwned/ack", op(deps, "ackOpsPwned"));
+  app.post("/api/v1/ops/workspaces/:id/resume", op(deps, "resumeWorkspace"));
+  app.post("/api/v1/ops/workspaces/:id/stop", op(deps, "stopWorkspace"));
+}
