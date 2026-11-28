@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F7/saved/"], "tests": ["apps/web/tests/k/k479-save-view.spec.ts"]}
+ ]
+}
