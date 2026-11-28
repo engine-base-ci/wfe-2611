@@ -714,20 +714,29 @@ describe("K-674 ナレッジの置き場（DB）", () => {
 
   it("K674-DB-029 S1 migration の流し直し：同じ migration をもう 1 度当てても失敗せず、中身も変わらない", async () => {
     const sql = readFileSync(join(here, "..", "migrations", "20261125011400_knowledge_shelves.sql"), "utf8");
-    const count = async () =>
-      Number(
-        (
-          await admin.query<{ n: string }>(
-            "select (select count(*) from knowledge_pages) + (select count(*) from knowledge_folders) + (select count(*) from knowledge_page_versions) as n",
-          )
-        ).rows[0]!.n,
+    // 流し直しは 1 つの取引の中で行い、最後に戻す：この migration は関数を S1 の形で置き直すので、残すと後の migration
+    //   （共有 K-689・K-719 など）が足した関数の中身が消え、同じ DB で後に流れる試験のファイルが落ちる（単体の組の中の順）
+    const c = await admin.connect();
+    try {
+      await c.query("begin");
+      const count = async () =>
+        Number(
+          (
+            await c.query<{ n: string }>(
+              "select (select count(*) from knowledge_pages) + (select count(*) from knowledge_folders) + (select count(*) from knowledge_page_versions) as n",
+            )
+          ).rows[0]!.n,
+        );
+      const before = await count();
+      await c.query(sql);
+      expect(await count()).toBe(before);
+      const fn = await c.query(
+        "select count(*)::int as n from pg_proc p join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'app' and p.proname in ('kpage_visible', 'kpage_writable', 'kn_shelf_readable', 'kn_shelf_writable')",
       );
-    const before = await count();
-    await admin.query(sql);
-    expect(await count()).toBe(before);
-    const fn = await admin.query(
-      "select count(*)::int as n from pg_proc p join pg_namespace s on s.oid = p.pronamespace where s.nspname = 'app' and p.proname in ('kpage_visible', 'kpage_writable', 'kn_shelf_readable', 'kn_shelf_writable')",
-    );
-    expect(fn.rows[0]!.n).toBe(4);
+      expect(fn.rows[0]!.n).toBe(4);
+    } finally {
+      await c.query("rollback");
+      c.release();
+    }
   });
 });
