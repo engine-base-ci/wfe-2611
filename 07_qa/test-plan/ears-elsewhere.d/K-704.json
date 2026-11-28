@@ -1,0 +1,120 @@
+{
+ "ops": {
+  "createTicketKind": {
+   "file": "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+   "reason": "種別を足す・直す・消す・並べるは、権限（ticket_kinds の edit）・名前の一意・使っているチケットの数で答えが変わる。生成の試験の偽のセッションでは管理者の権限もチケットも作れない（K-704）",
+   "covers": {
+    "test_post_ticket_kinds_ok": "K704-API-001",
+    "test_post_ticket_kinds_shape": "K704-API-001",
+    "test_post_ticket_kinds_rejected_401": "K704-API-017",
+    "test_post_ticket_kinds_rejected_403": "K704-API-017",
+    "test_post_ticket_kinds_rejected_422": "K704-API-003",
+    "test_post_ticket_kinds_conflict": "K704-API-005",
+    "test_post_ticket_kinds_conflict_2": "K704-API-006",
+    "test_post_ticket_kinds_session_unresolved": "K704-API-021",
+    "test_post_ticket_kinds_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_kinds_rate_limited": "K704-API-019",
+    "test_post_ticket_kinds_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_kinds_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ticket_kinds_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  },
+  "updateTicketKind": {
+   "file": "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+   "reason": "種別を足す・直す・消す・並べるは、権限（ticket_kinds の edit）・名前の一意・使っているチケットの数で答えが変わる。生成の試験の偽のセッションでは管理者の権限もチケットも作れない（K-704）",
+   "covers": {
+    "test_patch_ticket_kinds_id_ok": "K704-API-007",
+    "test_patch_ticket_kinds_id_shape": "K704-API-007",
+    "test_patch_ticket_kinds_id_rejected_401": "K704-API-017",
+    "test_patch_ticket_kinds_id_rejected_403": "K704-API-017",
+    "test_patch_ticket_kinds_id_not_found": "K704-API-011",
+    "test_patch_ticket_kinds_id_rejected_422": "K704-API-009",
+    "test_patch_ticket_kinds_id_conflict": "K704-API-010",
+    "test_patch_ticket_kinds_id_session_unresolved": "K704-API-022",
+    "test_patch_ticket_kinds_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_ticket_kinds_id_rate_limited": "K704-API-019",
+    "test_patch_ticket_kinds_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_ticket_kinds_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_patch_ticket_kinds_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  },
+  "deleteTicketKind": {
+   "file": "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+   "reason": "種別を足す・直す・消す・並べるは、権限（ticket_kinds の edit）・名前の一意・使っているチケットの数で答えが変わる。生成の試験の偽のセッションでは管理者の権限もチケットも作れない（K-704）",
+   "covers": {
+    "test_delete_ticket_kinds_id_ok": "K704-API-012",
+    "test_delete_ticket_kinds_id_shape": "K704-API-012",
+    "test_delete_ticket_kinds_id_rejected_401": "K704-API-017",
+    "test_delete_ticket_kinds_id_rejected_403": "K704-API-017",
+    "test_delete_ticket_kinds_id_not_found": "K704-API-011",
+    "test_delete_ticket_kinds_id_rejected_422": "K704-API-011",
+    "test_delete_ticket_kinds_id_conflict": "K704-API-013",
+    "test_delete_ticket_kinds_id_conflict_2": "K704-API-014",
+    "test_delete_ticket_kinds_id_session_unresolved": "K704-API-021",
+    "test_delete_ticket_kinds_id_rate_limited": "K704-API-019",
+    "test_delete_ticket_kinds_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ticket_kinds_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_ticket_kinds_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  },
+  "reorderTicketKinds": {
+   "file": "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+   "reason": "種別を足す・直す・消す・並べるは、権限（ticket_kinds の edit）・名前の一意・使っているチケットの数で答えが変わる。生成の試験の偽のセッションでは管理者の権限もチケットも作れない（K-704）",
+   "covers": {
+    "test_post_ticket_kinds_order_ok": "K704-API-015",
+    "test_post_ticket_kinds_order_shape": "K704-API-015",
+    "test_post_ticket_kinds_order_rejected_401": "K704-API-017",
+    "test_post_ticket_kinds_order_rejected_403": "K704-API-017",
+    "test_post_ticket_kinds_order_rejected_422": "K704-API-016",
+    "test_post_ticket_kinds_order_conflict": "K704-API-016",
+    "test_post_ticket_kinds_order_session_unresolved": "K704-API-021",
+    "test_post_ticket_kinds_order_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_kinds_order_rate_limited": "K704-API-019",
+    "test_post_ticket_kinds_order_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_kinds_order_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_ticket_kinds_order_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  }
+ }
+}
