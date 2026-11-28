@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/suspend.ts",
+    "apps/api/src/features/F10/admin/members/resume.ts",
+    "packages/db/migrations/20261126001400_member_suspend.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-suspend.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/admin-member-suspend.test.ts",
+    "apps/api/test/features/contract/k144.d/K-800.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_members_id_suspend.test.ts",
+    "apps/api/test/generated/post_members_id_resume.test.ts"
+   ]
+  }
+ ]
+}
