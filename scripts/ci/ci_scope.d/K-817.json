@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261126001700_member_reinvite.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-reinvite.test.ts"
+   ]
+  }
+ ]
+}
