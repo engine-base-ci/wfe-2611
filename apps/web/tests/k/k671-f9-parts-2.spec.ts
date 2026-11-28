@@ -97,7 +97,7 @@ test("K671-UI-005 kn-must-full：小窓が「会社の「必ず守る」は 30 �
   await expect(dlg.getByText("いま付いているページ（30）", { exact: true })).toBeVisible();
   await expect(dlg.getByText("ほか 15 個", { exact: true })).toBeVisible();
   await expect(dlg.getByRole("button", { name: /の「必ず守る」を外す$/ }).first()).toBeVisible();
-  await expect(dlg.getByRole("button", { name: "閉じる", exact: true })).toBeVisible();
+  await expect(dlg.locator(".k-dialog-actions").getByRole("button", { name: "閉じる", exact: true })).toBeVisible();
 });
 
 test("K671-UI-006 kn-raise：上げる先（営業の棚）・承認する人・入れるフォルダ・ひとことが出て、「上げるのを頼む」が主ボタン", async ({
@@ -130,7 +130,7 @@ test("K671-UI-008 kn-raise-declined：断られた帯に理由が出て、「直
   await guard(page);
   await openState(page, "kn-raise-declined", 1440);
   await expect(page.getByText("営業の棚に上げるのを断られました", { exact: true })).toBeVisible();
-  await expect(page.getByText(/5% まで/)).toBeVisible();
+  await expect(page.getByText(/5% まで/).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "直してもう一度頼む", exact: true })).toBeEnabled();
   await expect(page.getByRole("button", { name: "このお知らせを消す", exact: true })).toBeEnabled();
 });
@@ -213,7 +213,8 @@ test("K671-UI-015 kn-review：「見直すページ」に 3 つ（使われて�
     await expect(page.getByRole("heading", { name: new RegExp(n) })).toBeVisible();
   }
   await expect(page.getByRole("button", { name: /を並べて見る$/ }).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: /の書き方を直す$/ }).first()).toBeVisible();
+  // K-696 が名前を見える字「書き方を直す」にし、題名は aria-describedby でつないだ（後の葉の決め）
+  await expect(page.getByRole("button", { name: "書き方を直す", exact: true }).first()).toBeVisible();
 });
 
 test("K671-UI-016 kn-review：食い違いの説明が「会社 › グループ › 自分」の順で、画面に「部署」の字が無い", async ({
@@ -231,7 +232,7 @@ test("K671-UI-017 幅 375 でも小窓が画面に収まり、足のボタン「
   await guard(page);
   await openState(page, "kn-must-full", 375);
   const dlg = page.getByRole("dialog");
-  await expect(dlg.getByRole("button", { name: "閉じる", exact: true })).toBeInViewport();
+  await expect(dlg.locator(".k-dialog-actions").getByRole("button", { name: "閉じる", exact: true })).toBeInViewport();
   const box = await dlg.boundingBox();
   expect(box && box.y >= 0 && box.y + box.height <= 812, "小窓が画面からはみ出す").toBe(true);
 });

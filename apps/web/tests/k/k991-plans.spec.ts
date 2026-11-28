@@ -8,6 +8,7 @@ import { FORBIDDEN, overflowX } from "./f12-mock-kit";
 import { local, mockOps, shellOf, signInOps } from "./ops-mock";
 import { count, ME, mockPlans, NOW, PLANS_A, PROPOSAL_ID, proposalOf, SANO, type PlansMock } from "./ops-plans-mock";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const BOX = ["width", "height", "x", "y", "background-color", "border-top-color", "border-top-left-radius"];
 const TEXT = ["font-size", "font-weight", "color", "line-height", "texts"];
@@ -109,11 +110,11 @@ test.describe("K-991 一覧と作る", () => {
       .getByRole("button", { name: "変える案を作る", exact: true })
       .click();
     await expect(page).toHaveURL(/\/ops\/skills\/plans\/new\?plan=team$/);
-    await page.getByLabel("値段（月・税別）", { exact: true }).fill("18000");
-    await page.getByLabel("人数", { exact: true }).fill("12");
-    await expect(page.getByLabel("無料期間（日）", { exact: true })).toHaveValue("0");
-    await page.getByLabel("無料期間（日）", { exact: true }).fill("14");
-    await page.getByLabel("理由", { exact: true }).fill("人数の上限に当たる会社が多いため");
+    await page.getByLabel(/^値段（月・税別）\*?$/).fill("18000");
+    await page.getByLabel(/^人数\*?$/).fill("12");
+    await expect(page.getByLabel(/^無料期間（日）\*?$/)).toHaveValue("0");
+    await page.getByLabel(/^無料期間（日）\*?$/).fill("14");
+    await page.getByLabel(/^理由\*?$/).fill("人数の上限に当たる会社が多いため");
     await btn(page, "下書きにする").click();
     await expect(page).toHaveURL(new RegExp(`/ops/skills/plans/proposals/${PROPOSAL_ID}$`));
     expect(m.bodies.create).toEqual([
@@ -163,9 +164,9 @@ test.describe("K-991 一覧と作る", () => {
   }) => {
     const m = await open(page, baseURL, `${PATH}/new?plan=team`);
     m.on.create = () => ({ status: 409, body: { error: "conflict", code: "E-OPS-019" } });
-    await page.getByLabel("理由", { exact: true }).fill("理由");
+    await page.getByLabel(/^理由\*?$/).fill("理由");
     await btn(page, "下書きにする").click();
-    await expect(page.getByRole("alert")).toContainText("このプランにはもう変える案があります");
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText("このプランにはもう変える案があります");
     await expect(page).toHaveURL(/\/new\?plan=team$/);
   });
 
@@ -178,8 +179,8 @@ test.describe("K-991 一覧と作る", () => {
       status: 422,
       body: { error: "validation", code: "VALIDATION_ERROR", field: "notice_days" },
     });
-    await page.getByLabel("日数", { exact: true }).fill("29");
-    await page.getByLabel("理由", { exact: true }).fill("理由");
+    await page.getByLabel(/^日数\*?$/).fill("29");
+    await page.getByLabel(/^理由\*?$/).fill("理由");
     await btn(page, "下書きにする").click();
     await expect(page.getByText("30 日より短くはできません", { exact: true })).toBeVisible();
   });
@@ -195,7 +196,7 @@ test.describe("K-991 決める・差し戻す・自分の案", () => {
     const base = m.on.decide;
     m.on.decide = (req) =>
       ++n === 1 ? { status: 403, body: { error: "forbidden", code: "STEP_UP_REQUIRED" } } : base(req);
-    const notice = await page.getByLabel("お知らせの文（決めたら出る）", { exact: true }).inputValue();
+    const notice = await page.getByLabel(/^お知らせの文（決めたら出る）\*?$/).inputValue();
     await btn(page, "決める").click();
     await dialog(page, "本人か確かめます").getByRole("button", { name: "パスキーで確かめる", exact: true }).click();
     await expect(page).toHaveURL(/\/ops\/skills\/plans$/);
@@ -211,7 +212,7 @@ test.describe("K-991 決める・差し戻す・自分の案", () => {
     const m = await open(page, baseURL, ONE);
     await btn(page, "差し戻す（理由を書く）").click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("理由", { exact: true }).fill("上げ幅が大きい");
+    await d.getByLabel(/^理由\*?$/).fill("上げ幅が大きい");
     await d.getByRole("button", { name: "差し戻す", exact: true }).click();
     await expect(page).toHaveURL(/\/ops\/skills\/plans$/);
     await expect(page.getByRole("status")).toContainText("差し戻しました");

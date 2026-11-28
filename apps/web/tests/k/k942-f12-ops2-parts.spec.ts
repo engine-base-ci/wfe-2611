@@ -22,6 +22,7 @@ import {
   sources,
   strip,
 } from "./f12-mock-kit";
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const DIR = "f12-ops2" as const;
 const MOCK = mockDir(DIR);
@@ -274,7 +275,7 @@ test("K942-UI-010 ほかの人が担当（oq-inbox-taken）：「佐野 さん�
   await guard(page);
   await openState(page, DIR, "oq-inbox-taken", 1440);
   await expect(page.getByText("佐野 さんが担当になりました", { exact: true })).toBeVisible();
-  await expect(page.getByLabel("担当", { exact: true })).toBeDisabled();
+  await expect(page.getByLabel(/^担当\*?$/)).toBeDisabled();
   await expect(page.getByRole("button", { name: "返す", exact: true })).toHaveAttribute("aria-disabled", "true");
 });
 
