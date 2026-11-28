@@ -19,13 +19,13 @@ const BODY = "いつもありがとうございます。12 月分の作業報告
 /** K-892 の確定の形：ticket_draft は { title, kind, owner, due（YYYY-MM-DD）, cost, route_name }・届け先の案は route_suggestion { name, reason } */
 const DRAFT = {
   title: "セイコー様 12 月分の作業報告書を作って送る",
-  kind: "作業報告",
+  kind: "タスク", // 下絵 rq-new と同じ値
   owner: "高本",
   due: "2026-12-26",
   cost: "保守契約の範囲内（追加費用なし）",
   route_name: "EG 営業",
 };
-const SUGGEST = { name: "EG 営業", reason: "作業報告書は保守契約の仕事なので 営業" };
+const SUGGEST = { name: "EG 営業", reason: "作業報告書は保守契約の仕事なので 営業（経理ではない）" }; // 下絵 rq-new と同じ理由
 const QUESTIONS = ["報告書の形は 11 月分と同じでよいか", "宛先は山田様か鈴木様か"];
 const MEMBERS = [
   { id: "m-takamoto", display_name: "高本 聖斗", kind_id: "human" },
@@ -50,6 +50,8 @@ interface World {
   arriveAtRead: number;
   pendingReads: number;
   posted: boolean;
+  /** 一覧に足す依頼（突き合わせの行で、下絵の一覧と同じ 4 件にする） */
+  more: Record<string, unknown>[];
 }
 const world = (o: Partial<World> = {}): World => ({
   pc: true,
@@ -63,8 +65,46 @@ const world = (o: Partial<World> = {}): World => ({
   arriveAtRead: 2,
   pendingReads: 0,
   posted: false,
+  more: [],
   ...o,
 });
+/** 下絵 rq-new の一覧の残り 3 件と、開いた依頼の本文（突き合わせの行だけで使う） */
+const MOCK_MORE = [
+  [
+    "0193c5a0-0000-7000-8000-0000000f0002",
+    "管理画面に検索の絞り込みを足したい",
+    "大橋 誠 様",
+    "京蟻システム株式会社（ゲスト）",
+    "JD 受託開発",
+    "asking",
+  ],
+  [
+    "0193c5a0-0000-7000-8000-0000000f0003",
+    "ログイン画面の文言を直してほしい",
+    "大橋 誠 様",
+    "京蟻システム株式会社（ゲスト）",
+    "JD 受託開発",
+    "new",
+  ],
+  [
+    "0193c5a0-0000-7000-8000-0000000f0004",
+    "10 月分の請求書の再発行",
+    "小林 様",
+    "合同会社ミナト（ゲスト）",
+    "KR 経理",
+    "done",
+  ],
+].map(([id, title, from_name, group_name, route_name, state]) => ({
+  id,
+  title,
+  from_name,
+  group_name,
+  route_name,
+  created_at: "2026-11-22T01:20:00Z",
+  state,
+}));
+const MOCK_BODY =
+  "いつもありがとうございます。11 月分と同じ形で、12 月分の作業報告書もいただけますか。年内に社内に回したいです。";
 /** 今読むと見える案：今ある案か、押した後 arriveAtRead 回目の読みから届く案（later） */
 function seen(w: World): { draft: typeof DRAFT | null; reply: string | null } {
   if (w.later && w.posted) {
@@ -103,8 +143,9 @@ async function mockWorld(page: Page, w: World) {
               created_at: "2026-11-23T01:20:00Z",
               state: "new",
             },
+            ...w.more,
           ],
-          counts: { live: 1 },
+          counts: { live: 1 + w.more.filter((i) => i["state"] !== "done").length },
         }),
       );
     if (method === "GET") {
@@ -171,7 +212,9 @@ for (const [mock, pc] of [
         width,
         async (page) => {
           await loginAs(page, u.token);
-          await mockWorld(page, world(pc ? {} : { pc: false, draft: null, reply: null }));
+          // 一覧と本文は下絵と同じ（幅 768 は一覧の下に本文が来るので件数と本文の行数で案の区画の位置が変わる）
+          const same = { more: MOCK_MORE, body: MOCK_BODY };
+          await mockWorld(page, world(pc ? same : { ...same, pc: false, draft: null, reply: null }));
           await page.goto(`/requests/${RID}`);
           await expect(card(page)).toBeVisible();
         },

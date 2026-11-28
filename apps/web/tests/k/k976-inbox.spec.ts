@@ -59,11 +59,36 @@ const chip = (page: Page, name: string) => page.locator(".k-op-chip").filter({ h
 const lists = (m: InboxMock) =>
   m.calls.filter((c) => c.startsWith("GET /api/v1/ops/inquiries?") || c === "GET /api/v1/ops/inquiries");
 const ID = INBOX_A[0]!.id;
+/** 下絵 oq-inbox-thread の 1 件の字（1 件の頭の会社名は正式名・最初の書き込みに番号 KN-212）にそろえた答え */
+const mockDetail = (o: Parameters<typeof detailOf>[0] = {}) => {
+  const d = detailOf({ workspace: { ...INBOX_A[0]!.workspace, name: "合同会社ミナト企画" }, ...o });
+  return {
+    ...d,
+    messages: d.messages.map((x, i) =>
+      i === 0
+        ? {
+            ...x,
+            body: "請求書を送るチケット（KN-212）を承認したのですが、30 分たっても「実行待ち」のままです。PC はつけています。",
+          }
+        : x,
+    ),
+  };
+};
 
 test.describe("K-976 受信箱の見た目", () => {
   const STATES: [string, string, string, (m: InboxMock) => void][] = [
-    ["K976-UI-001", "oq-inbox", "?box=mine", () => undefined],
-    ["K976-UI-002", "oq-inbox-thread", `?box=mine&id=${ID}`, () => undefined],
+    [
+      "K976-UI-001",
+      "oq-inbox",
+      "?box=mine",
+      (m) => void (m.on.one = () => ({ status: 200, body: { data: mockDetail() } })),
+    ],
+    [
+      "K976-UI-002",
+      "oq-inbox-thread",
+      `?box=mine&id=${ID}`,
+      (m) => void (m.on.one = () => ({ status: 200, body: { data: mockDetail() } })),
+    ],
     [
       "K976-UI-003",
       "oq-inbox-empty",
@@ -77,7 +102,7 @@ test.describe("K-976 受信箱の見た目", () => {
       (m) =>
         void (m.on.one = () => ({
           status: 200,
-          body: { data: detailOf({ owner: { member_id: SANO, name: "佐野" } }) },
+          body: { data: mockDetail({ owner: { member_id: SANO, name: "佐野" } }) },
         })),
     ],
   ];

@@ -76,7 +76,7 @@ export function PortalHomePage() {
     );
   }
   const h = r.data;
-  if (h.first_visit) return <Welcome name={h.me.name} inviter={null} onStart={markStarted} />;
+  if (h.first_visit) return <Welcome name={h.me.name} inviter={h.inviter_name ?? null} onStart={markStarted} />;
   const notice = notices.data?.[0];
   return (
     <HomeBody

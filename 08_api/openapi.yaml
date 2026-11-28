@@ -21396,6 +21396,9 @@ components:
           type: object
         first_visit:
           type: boolean
+        inviter_name:
+          type: string
+          nullable: true
         requests:
           type: array
           items:
