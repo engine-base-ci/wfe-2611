@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F5/talk/adopt.ts",
+    "apps/api/src/hooks/draft-adopt.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/draft-adopt.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/draft-adopt.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_draft_conversations_id_adopt.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F5/draft-adopt.test.ts": "葉の hooks のファイル draft-adopt.ts を動的 import で読んで土台の hooks に足す（まだ無いファイルで準備ごと落とさないため）・K-776",
+  "apps/api/test/features/contract/k144.d/K-776.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）"
+ }
+}
