@@ -1,0 +1,383 @@
+// K-184「開いたままのチケットで、任せる → 承認・差し戻しの後の帯が替わる」の画面の試験（実 Chrome・口は差し替え）。
+//   1 つのページを開いたまま（再読み込みなし）、口の答えを時間の順に替えていく。固定の待ちは使わない（3 秒ごとの読み直しは時計を進めて起こし、画面の文が出るのを待つ）。
+//   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。土台は ./approve-complete.harness.ts。
+//
+// 捕まえる不具合（中間テスト K-64 の切り直しで見つかった・2026-11-13）：apps/web/features/F5/delegate/use-run.ts の useRuns は、
+//   「AI に任せる」を押したときの実行の id（pinned）を持ち続け、今の実行を `pinned ?? 一覧の先頭` で決める。承認・差し戻しで新しい実行（承認の後の実行・作り直し）が
+//   一覧の先頭に来ても、読むのは任せたときの古い実行のまま → 帯（実行中・止まった理由・完了の案内・作り直しの「作っています」）が出ない。再読み込みすると出る。
+// この試験が今の実装で赤になる訳：土台の mockApi は getActionRun をどの id でも「今の実行」で答えるので、古い id を読み続けても気づけない。
+//   この試験は実行を id ごとに答える（古い作る段の実行の id には、終わった作る段の実行を返す）。画面が古い id を読み続ければ、
+//   承認の後に「実行中」が出ず（K63-UI-064・066・067）、差し戻しの後に「作っています」が出ない（K63-UI-065）。
+import type { Page, Route, Request } from "@playwright/test";
+import { expect, row } from "../../_lib/row";
+import {
+  R,
+  API_RE,
+  TICKET,
+  MAKER,
+  MSG,
+  ticketOf,
+  pending,
+  mockApi,
+  openTicket,
+  tickSettled,
+  bandOf,
+  k62Band,
+  reasonBox,
+  type Band,
+} from "./approve-complete.harness.js";
+import { approveVia } from "../../k/approve-modal";
+
+const MAKE_1 = "0193c5a0-0000-7000-8000-0000000e0011"; // 任せたときの作る段の実行（画面が pinned に持つ id）
+const EXEC = "0193c5a0-0000-7000-8000-0000000e0012"; // 承認の後の実行
+const MAKE_2 = "0193c5a0-0000-7000-8000-0000000e0013"; // 差し戻しの作り直し
+const MAKING = "山田のAI が作っています";
+
+interface Run {
+  id: string;
+  phase: "make" | "execute";
+  status: string;
+  pc?: "live" | "asleep";
+  stopped_reason?: string;
+  return_reason?: string;
+}
+const view = (r: Run) => ({
+  id: r.id,
+  ticket_id: TICKET,
+  phase: r.phase,
+  status: r.status,
+  by: { member_id: MAKER, display_name: "山田" },
+  pc: r.pc ?? "live",
+  silent: false,
+  last_event_at: null,
+  progress: null,
+  stopped_reason: r.stopped_reason ?? null,
+  return_reason: r.return_reason ?? null,
+  started_at: new Date().toISOString(),
+  finished_at: null,
+  checks: { state: "none" },
+});
+
+/** 口の今の様子（試験が時間の順に替える）。runs は新しい順。実行の 1 件は id ごとに答える */
+interface World {
+  ticket: Band;
+  runs: Run[];
+  delegates: number;
+  /** id ごとの実行の 1 件の答えを止めておく（返した関数を呼ぶと答える） */
+  hold: (id: string) => () => void;
+  /** 実行の一覧の答えを止めておく（返した関数を呼ぶと答える） */
+  holdList: () => () => void;
+  /** 実行の一覧を、あと何回 500 で答えるか */
+  failList: number;
+  /** 届いた問い合わせの数（答えを握っている間に「届いたこと」を合図にする）。一覧と、id ごとの 1 件 */
+  listAsked: number;
+  runAsked: Record<string, number>;
+  /** 承認・差し戻しの口が呼ばれたときに替える口の答え（本物の口と同じく、押す前には替えない・K-265） */
+  next: (() => void) | null;
+}
+async function world(page: Page): Promise<World> {
+  const m = await mockApi(page, { stage: "doing", can_delegate: true });
+  const gates: Record<string, Promise<void>> = {};
+  let listGate: Promise<void> | null = null;
+  const w: World = {
+    ticket: { stage: "doing", can_delegate: true },
+    runs: [],
+    delegates: 0,
+    hold: (id) => {
+      let open = () => {};
+      gates[id] = new Promise<void>((r) => (open = r));
+      return () => open();
+    },
+    holdList: () => {
+      let open = () => {};
+      listGate = new Promise<void>((r) => (open = r));
+      return () => {
+        listGate = null;
+        open();
+      };
+    },
+    failList: 0,
+    listAsked: 0,
+    runAsked: {},
+    next: null,
+  };
+  m.on.ticket = () => ({ status: 200, body: { data: ticketOf(w.ticket) } });
+  // 口の答えは承認・差し戻しの口が呼ばれたときに替える（K-265）。押す前に替えると、作る段が終わった回の遅れた読み直しが
+  //   承認の後の形を読み、押す前に帯のボタンが消える（段 1 の締めの全部の CI で K63-UI-066 がこの形で落ちた）
+  const decided = () => {
+    const go = w.next;
+    w.next = null;
+    go?.();
+  };
+  const base = { approve: m.on.approve, ret: m.on.ret };
+  m.on.approve = (req) => {
+    decided();
+    return base.approve(req);
+  };
+  m.on.ret = (req) => {
+    decided();
+    return base.ret(req);
+  };
+  const json = (route: Route, status: number, body: unknown) =>
+    route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
+  // 後から足した道が先に見られる。ここで受けない道は土台（mockApi）へ回す
+  await page.route(API_RE, async (route: Route, req: Request) => {
+    const p = new URL(req.url()).pathname;
+    if (req.method() === "POST" && p === `/api/v1/tickets/${TICKET}/delegate`) {
+      w.delegates++;
+      w.runs = [{ id: MAKE_1, phase: "make", status: "running" }];
+      w.ticket = { stage: "running" };
+      return json(route, 201, { data: { run_id: MAKE_1, job_id: MAKE_1, status: "queued", pc: "live" } });
+    }
+    if (p === `/api/v1/tickets/${TICKET}/runs`) {
+      w.listAsked++;
+      if (listGate) await listGate;
+      if (w.failList > 0) {
+        w.failList--;
+        return json(route, 500, { error: "internal", code: "E-PAGE-003" });
+      }
+      return json(route, 200, { data: w.runs.map(view), meta: { limit: 50 } });
+    }
+    const one = /^\/api\/v1\/action_runs\/([^/]+)$/.exec(p);
+    if (one) {
+      const id = one[1]!;
+      w.runAsked[id] = (w.runAsked[id] ?? 0) + 1;
+      if (gates[id]) await gates[id];
+      const r = w.runs.find((x) => x.id === id);
+      return r ? json(route, 200, { data: view(r) }) : json(route, 404, { error: "not_found", code: "NOT_FOUND" });
+    }
+    return route.fallback();
+  });
+  return w;
+}
+/** 3 秒ごとの読み直しを 1 回起こす（時計を進める。待ち時間に頼らない） */
+const tick = (page: Page) => tickSettled(page);
+/** 再読み込みしていないことの印（再読み込みすると消える） */
+const mark = (page: Page) => page.evaluate(() => ((window as unknown as { __k184?: number }).__k184 = 1));
+const marked = (page: Page) => page.evaluate(() => (window as unknown as { __k184?: number }).__k184);
+
+/** 開いたままのページで「AI に任せる」を押し、作る段が終わって承認待ちの帯（承認して送る）が出るまで */
+async function delegatedAndMade(page: Page): Promise<World> {
+  const w = await world(page);
+  await page.clock.install();
+  await openTicket(page);
+  await mark(page);
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
+  await expect.poll(() => w.delegates).toBe(1);
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible();
+  // 作る段が終わり、承認待ちになった
+  w.runs = [{ id: MAKE_1, phase: "make", status: "done" }];
+  w.ticket = { stage: "awaiting_approval", approval: pending() };
+  await tick(page);
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
+  return w;
+}
+/** 承認すると、承認の後の実行が一覧の先頭に来る（古い作る段の実行は終わったまま残る）。替わるのは承認の口が呼ばれたとき（K-265） */
+const approveTo = (w: World, exec: Run) => {
+  w.next = () => {
+    w.runs = [exec, { id: MAKE_1, phase: "make", status: "done" }];
+    w.ticket = { stage: "running" };
+  };
+};
+
+row(R["K63-UI-064"], async (page) => {
+  const w = await delegatedAndMade(page);
+  approveTo(w, { id: EXEC, phase: "execute", status: "running" });
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible(); // 再読み込みなしで替わる
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
+  // 実行が終わった
+  w.runs = [
+    { id: EXEC, phase: "execute", status: "done" },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  await tick(page);
+  await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
+  expect(await marked(page)).toBe(1);
+});
+
+row(R["K63-UI-065"], async (page) => {
+  const w = await delegatedAndMade(page);
+  await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
+  await reasonBox(page).fill("宛名を直してください");
+  // 差し戻すと、作り直しの実行が一覧の先頭に来る（替わるのは差し戻しの口が呼ばれたとき・K-265）
+  w.next = () => {
+    w.runs = [
+      { id: MAKE_2, phase: "make", status: "running", return_reason: "宛名を直してください" },
+      { id: MAKE_1, phase: "make", status: "done" },
+    ];
+    w.ticket = { stage: "running" };
+  };
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 再読み込みなしで、作り直しの間の K-62 の帯が出る
+  await expect(k62Band(page).getByText("差し戻しの理由：宛名を直してください")).toBeVisible();
+  await expect(bandOf(page)).toHaveCount(0); // 作り直しの間は K-63 の帯を出さない（D-128.178）
+  // 作り直しが終わり、新しい承認待ちになった
+  w.runs = [
+    { id: MAKE_2, phase: "make", status: "done" },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "awaiting_approval", approval: pending() };
+  await tick(page);
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
+  await expect(k62Band(page).getByText(MAKING)).toHaveCount(0);
+  expect(await marked(page)).toBe(1);
+});
+
+row(R["K63-UI-066"], async (page) => {
+  const w = await delegatedAndMade(page);
+  approveTo(w, { id: EXEC, phase: "execute", status: "running" });
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
+  // 実行が止まった（道具の途中）
+  const reason = `ここで止まりました。${MSG.inFlight}`;
+  w.runs = [
+    { id: EXEC, phase: "execute", status: "stopped", stopped_reason: reason },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  await tick(page);
+  await expect(bandOf(page).getByText(MSG.inFlight)).toBeVisible();
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toHaveCount(0);
+  expect(await marked(page)).toBe(1);
+});
+
+row(R["K63-UI-067"], async (page) => {
+  const w = await delegatedAndMade(page);
+  // 承認の後、古い作る段の実行（MAKE_1）の答えだけを止めておく（新しい実行の答えより後に届かせる）
+  const release = w.hold(MAKE_1);
+  approveTo(w, { id: EXEC, phase: "execute", status: "running" });
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
+  // 古い実行の答え（作る段・終わった）が後から届く
+  release();
+  await tick(page);
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible(); // 新しい実行の帯を上書きしない
+  await expect(k62Band(page)).toHaveCount(0); // 承認の後の実行の間、K-62 の帯は出ない（D-128.178）
+  await expect(page.getByRole("button", { name: "承認して送る" })).toHaveCount(0);
+  // 続けて実行が終われば、完了の案内まで進む（古い答えに引きずられない）
+  w.runs = [
+    { id: EXEC, phase: "execute", status: "done" },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  await tick(page);
+  await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
+  expect(await marked(page)).toBe(1);
+});
+
+// 開いたまま、PC が閉じていて実行待ちの間に承認から 24 時間が過ぎる：読み直しの間隔で、帯が聞き直し（新しい承認待ち）に替わる。
+//   実行待ち（queued）は走っている実行なので、3 秒ごとの読み直し（実行の 1 件・一覧・チケット）は続く。聞き直しは、読む口の前の片付け（口の側）が作る。
+//   口の答え：実行は stopped（理由は「承認から 24 時間を過ぎたので…」）・チケットは承認待ち・approval は新しい id で note に聞き直しの文
+row(R["K63-UI-068"], async (page) => {
+  const REASK = "0193c5a0-0000-7000-8000-0000000a0068"; // 聞き直しの承認待ち（前の承認とは別の id）
+  const w = await delegatedAndMade(page);
+  approveTo(w, { id: EXEC, phase: "execute", status: "queued", pc: "asleep" });
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
+  await expect(bandOf(page).getByText(MSG.pcClosed)).toBeVisible(); // 実行待ち・PC が閉じている
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toHaveCount(0);
+  // 24 時間が過ぎ、読む口の前の片付けが聞き直しにした
+  w.runs = [
+    {
+      id: EXEC,
+      phase: "execute",
+      status: "stopped",
+      pc: "asleep",
+      stopped_reason: "承認から 24 時間を過ぎたので、実行の前にもう一度確かめます",
+    },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "awaiting_approval", approval: pending({ id: REASK, note: MSG.note24h }) };
+  await tick(page);
+  await expect(bandOf(page)).toContainText(MSG.note24h); // 再読み込みなしで聞き直しの帯に替わる
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
+  await expect(bandOf(page).getByRole("button", { name: "差し戻す" })).toBeVisible();
+  await expect(bandOf(page).getByText(MSG.pcClosed)).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
+  await expect(k62Band(page)).toHaveCount(0); // 承認する人には K-62 の帯を出さない（D-128.178）
+  expect(await marked(page)).toBe(1);
+});
+
+// ---- レビューの指摘（2026-11-13）を捕まえる行：実行の様子をまだ読めていない間に「完了にする」を出さない ----
+// 捕まえる不具合：band.tsx の canCompleteNow は「走っている実行が無い」を isActive(run) だけで見るので、run が null の間
+//   （実行の一覧を読み込み中・任せた直後でその実行の 1 件がまだ届かない間）も「走っていない」と数え、「完了にする」を出す。
+//   押すと、走っている実行がある作業中のチケットの完了の小窓が開いたまま残る。
+// 「出ないこと」は時間で待たずに確かめる：口の答えを握ったまま、その問い合わせが届いたこと（listAsked・runAsked）を合図に 0 件を見る。
+//   答えを握っている間は画面の状態が変わらないので揺れない。今の実装ではこの時点でボタンが出ているので赤になる。
+const completeButton = (page: Page) => page.getByRole("button", { name: "完了にする", exact: true });
+
+row(R["K63-UI-069"], async (page) => {
+  // チケットは作業中・口は can.complete を true と答える・実は作る段の実行が走っている。実行の一覧の答えだけを遅らせる
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true };
+  w.runs = [{ id: MAKE_1, phase: "make", status: "running" }];
+  const release = w.holdList();
+  await openTicket(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0); // 一覧を読みに行った（まだ答えていない）
+  await expect(completeButton(page)).toHaveCount(0); // 一覧が届くまで出さない
+  await expect(page.getByText(MSG.completeHint)).toHaveCount(0);
+  release();
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 届いたら作る段の帯
+  await expect(completeButton(page)).toHaveCount(0);
+});
+
+row(R["K63-UI-070"], async (page) => {
+  // 実行の記録が無い作業中のチケット。一覧が遅れて届いても、届いた後には「完了にする」が出る
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  w.runs = [];
+  const release = w.holdList();
+  await openTicket(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0);
+  await expect(completeButton(page)).toHaveCount(0); // 走っている実行が無いと分かるまで出さない
+  release();
+  await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
+  await expect(completeButton(page)).toBeVisible();
+});
+
+row(R["K63-UI-071"], async (page) => {
+  // 「AI に任せる」を押し、任せる口は答えた。その実行の 1 件と一覧の読み直しの答えは、まだ届いていない
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  await openTicket(page);
+  await expect(completeButton(page)).toBeVisible(); // 任せる前：走っている実行が無いので出ている
+  const releaseRun = w.hold(MAKE_1);
+  const releaseList = w.holdList();
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
+  await expect.poll(() => w.delegates).toBe(1);
+  await expect.poll(() => w.runAsked[MAKE_1] ?? 0).toBeGreaterThan(0); // 任せた実行を読みに行った（まだ答えていない）
+  await expect(completeButton(page)).toHaveCount(0); // 任せた直後は出さない
+  await expect(page.getByText(MSG.completeHint)).toHaveCount(0);
+  releaseRun();
+  releaseList();
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible();
+  await expect(completeButton(page)).toHaveCount(0);
+});
+
+row(R["K63-UI-072"], async (page) => {
+  // 任せた直後の一覧の読み直しが 1 回失敗（500）する。その後、別の所（別のタブ・別の端末）で作る段が終わって承認され、承認の後の実行が走っている
+  const w = await world(page);
+  await page.clock.install();
+  await openTicket(page);
+  await mark(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0); // 開いたときの一覧が届いてから（失敗の 1 回を、任せた直後の読み直しに当てる）
+  const listsBefore = w.listAsked;
+  w.failList = 1;
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click(); // 題の行（K-573）
+  await expect.poll(() => w.delegates).toBe(1);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(listsBefore); // 失敗する読み直しが届いた
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 任せた実行は id で読めている
+  w.runs = [
+    { id: EXEC, phase: "execute", status: "running" },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "running" };
+  await tick(page);
+  // 一覧の読み直しが失敗していても、次の読み直しで一覧の先頭（承認の後の実行）の帯になる
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
+  await expect(k62Band(page)).toHaveCount(0);
+  expect(await marked(page)).toBe(1);
+});
