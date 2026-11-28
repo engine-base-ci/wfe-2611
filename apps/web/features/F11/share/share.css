@@ -1,0 +1,108 @@
+/* ゲストに見せる（段 12・F11）の部品。値は正本のトークン（--k-*）だけ。クラスの頭は k-f11v- */
+.k-f11v-notes {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding-left: var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f11v-conds {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding-left: var(--k-s-md);
+  font-size: var(--k-text-body);
+}
+.k-f11v-vis {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f11v-vis label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+}
+.k-f11v-vis-never {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-block: var(--k-s-sm) 0;
+}
+/* 詳細の頭：段の札（行いっぱいの高さ）と下の行の押し物の間を spacing.sm 以上に（F4 の頭は 6px・段 5 に申し送り） */
+.k-detail-meta.k-f11v-meta {
+  padding-bottom: var(--k-s-xs);
+}
+/* 小見出し */
+.k-f11v-vis-head {
+  margin: var(--k-s-sm) 0 var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+/* 右のパネルの「見せている相手」の行 */
+.k-f11v-shown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+}
+.k-f11v-shown-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  padding-top: var(--k-s-sm);
+}
+/* やり取り（チャット） */
+.k-f11v-chat {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+.k-f11v-chat-mark {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f11v-chat-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  font-size: var(--k-text-body-sm);
+}
+.k-f11v-chat-msg > div {
+  display: grid;
+  min-width: 0;
+}
+.k-f11v-chat-msg p {
+  margin: 0;
+}
+.k-f11v-chat-name {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f11v-chat-line {
+  padding-top: var(--k-s-sm);
+  border-top: var(--k-c-detail-card-border);
+}
+/* 右のパネルの「見せている相手」の見出し・札の並び・下の 1 行の間（札と字が上下でくっつかない・spacing.sm） */
+.k-detail-panel-sec .k-f11v-vis {
+  margin-block: var(--k-s-sm);
+}
+.k-f11v-lock-note {
+  margin-block-start: var(--k-s-sm);
+}
