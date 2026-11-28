@@ -1,0 +1,551 @@
+/* 保存した検索条件・絞る（F7・段 8）の部品。値は --k-* のトークンだけを読む。生の色・大きさ・余白・影を書かない
+   （@media の区切りの幅だけは CSS の決まりで生の値）。形は components/k と一覧（ticket-list.css）の型のまま、ここは並べ方だけ */
+
+/* ---- 小さな部品：札・区切りの札・補足・取っ手 ---- */
+.k-f7-saved-sub {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-saved-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-list-chips-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-saved-chip {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--k-c-list-search-chip-height);
+  padding: var(--k-c-list-search-chip-pad);
+  border: var(--k-c-list-search-chip-border);
+  border-radius: var(--k-c-list-search-chip-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-c-list-search-chip-text);
+  line-height: var(--k-c-list-search-chip-lh);
+  overflow-wrap: anywhere;
+}
+.k-f7-saved-chip[data-tone="value"] {
+  border-color: var(--k-primary-line);
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+}
+.k-f7-saved-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  border: var(--k-c-list-search-seg-border);
+  border-radius: var(--k-c-list-search-seg-radius);
+  overflow: hidden;
+}
+.k-f7-saved-seg-item {
+  box-sizing: border-box;
+  min-height: var(--k-c-list-search-seg-item-height);
+  padding: var(--k-c-list-search-seg-item-pad);
+  border: 0;
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-c-list-search-seg-item-text);
+  line-height: var(--k-c-list-search-seg-item-lh);
+  cursor: pointer;
+}
+.k-f7-saved-seg-item + .k-f7-saved-seg-item {
+  border-left: var(--k-c-list-search-seg-border);
+}
+.k-f7-saved-seg-item:hover {
+  background: var(--k-select);
+}
+.k-f7-saved-seg-item[aria-pressed="true"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+/* まだ使えない項目（区切りの札・チェックの行）：正本の使えない状態の薄さ */
+.k-f7-saved-seg-item[aria-disabled="true"],
+.k-f7-saved-check[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-saved-seg-item[aria-pressed="true"][aria-disabled="true"] {
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
+.k-f7-saved-pick {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: var(--k-c-list-tool-height);
+  padding: var(--k-c-list-tool-pad);
+  border: var(--k-c-list-tool-border);
+  border-radius: var(--k-c-list-tool-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-c-list-tool-text);
+  line-height: var(--k-c-list-tool-lh);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-f7-saved-pick:hover {
+  background: var(--k-select);
+}
+/* 条件の行の選び（<select>）。字は選びの中で切る */
+select.k-f7-saved-pick {
+  text-overflow: ellipsis;
+}
+/* 条件の行の誤り（行の下・口に飛ばさない） */
+.k-f7-saved-cond-error {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--k-error);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+/* 1 行の高さ「詰める」（<html data-list-density="tight">・K-478）：一覧の 1 行 36px から余白 1 段（8px）を引く。新しい値は足さない */
+[data-list-density="tight"] .k-list-table td {
+  height: calc(var(--k-c-list-td-height) - var(--k-s-sm));
+}
+.k-f7-saved-text-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-primary);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f7-saved-text-btn:hover {
+  text-decoration: underline;
+}
+.k-f7-saved-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 入り切り（PC をつなぐ画面と同じ形。入っていないとき 玉は左） ---- */
+.k-f7-saved-switches {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-dialog-group-pad);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+}
+.k-f7-saved-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-md);
+  min-width: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-saved-switch-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-s-xs) var(--k-s-sm);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-f7-saved-switch-btn {
+  flex: none;
+  display: flex;
+  box-sizing: border-box;
+  width: var(--k-c-pc-switch-width);
+  min-width: var(--k-c-pc-switch-width);
+  height: var(--k-c-pc-switch-height);
+  min-height: var(--k-c-pc-switch-height);
+  padding: var(--k-c-pc-switch-pad);
+  border: 0;
+  border-radius: var(--k-c-pc-switch-radius);
+  background: var(--k-c-pc-switch-bg);
+  cursor: pointer;
+}
+.k-f7-saved-switch-btn > span {
+  width: var(--k-c-pc-switch-knob-width);
+  height: var(--k-c-pc-switch-knob-height);
+  border-radius: var(--k-c-pc-switch-knob-radius);
+  background: var(--k-c-pc-switch-knob-bg);
+}
+.k-f7-saved-switch-btn[aria-checked="true"] {
+  justify-content: flex-end;
+  background: var(--k-primary);
+}
+.k-f7-saved-switch-btn[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 条件を組む（一覧の検索条件の下に開く） ---- */
+.k-f7-saved-cond {
+  display: grid;
+  gap: var(--k-s-md);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--k-c-list-columns-pad);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  background: var(--k-c-list-columns-bg);
+  box-shadow: var(--k-c-list-columns-shadow);
+}
+.k-f7-saved-cond-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+}
+.k-f7-saved-ai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+  background: var(--k-ai-container);
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-saved-ai-mark {
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-full);
+  background: var(--k-tertiary);
+  color: var(--k-on-tertiary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-saved-ai-text {
+  flex: 1 1 calc(var(--k-c-list-search-label-width) * 3);
+  min-width: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-f7-saved-cond-list {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-saved-cond-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+.k-f7-saved-cond-lead {
+  flex: none;
+  min-width: var(--k-c-list-search-label-width);
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-saved-cond-values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1 1 calc(var(--k-c-list-search-label-width) * 2);
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-f7-saved-cond-text {
+  font-size: var(--k-text-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-f7-saved-cond-x {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--k-c-list-tool-height);
+  height: var(--k-c-list-tool-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-c-list-tool-radius);
+  background: none;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  cursor: pointer;
+}
+.k-f7-saved-cond-x:hover {
+  background: var(--k-surface-variant);
+}
+.k-f7-saved-cond-group {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+}
+.k-f7-saved-cond-add,
+.k-f7-saved-cond-foot,
+.k-f7-saved-cond-foot-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f7-saved-cond-foot {
+  justify-content: space-between;
+  padding-top: var(--k-s-md);
+  border-top: var(--k-c-dialog-actions-border-top);
+}
+/* 足の「検索条件を保存」（K-479 の SaveViewButton を渡す・data-variant を持たない button）：足のほかのボタン（線のある従ボタン・小）と同じ見た目 */
+.k-btn.k-f7-saved-cond-save {
+  min-height: calc(var(--k-c-button-outlined-height) - var(--k-s-xs));
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-c-button-outlined-fw);
+}
+.k-btn.k-f7-saved-cond-save:hover:not([aria-disabled="true"]) {
+  background: var(--k-select);
+}
+
+/* ---- 表示設定の箱（表の箱の頭の「表示設定」のすぐ下に開く。狭い幅は箱の幅に収める） ---- */
+.k-f7-saved-anchor {
+  position: relative;
+  display: inline-flex;
+}
+.k-f7-saved-pop {
+  position: absolute;
+  top: var(--k-c-list-columns-top);
+  right: 0;
+  z-index: var(--k-c-popup-layer-z);
+  display: grid;
+  gap: var(--k-s-md);
+  box-sizing: border-box;
+  width: var(--k-c-list-columns-width);
+  /* 上限は画面の幅から（箱の基準の「表示設定」のボタンの幅にすると、広い幅で箱が字の幅まで潰れて横に溢れる・K478-UI-023） */
+  max-width: var(--k-c-popup-layer-max-width);
+  padding: var(--k-c-list-columns-pad);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  background: var(--k-c-list-columns-bg);
+  box-shadow: var(--k-c-list-columns-shadow);
+  color: var(--k-on-surface);
+  text-align: left;
+}
+.k-f7-saved-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+}
+.k-f7-saved-group {
+  display: grid;
+  gap: var(--k-s-xs);
+}
+.k-f7-saved-group-title {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-saved-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-saved-list-row {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-f7-saved-grip {
+  flex: none;
+  color: var(--k-neutral);
+}
+.k-f7-saved-check {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: var(--k-c-list-columns-item-gap);
+  min-width: 0;
+  padding: var(--k-c-list-columns-item-pad);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  overflow-wrap: anywhere;
+}
+.k-f7-saved-check input {
+  flex: none;
+  accent-color: var(--k-primary);
+}
+.k-f7-saved-fixed {
+  flex: none;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f7-saved-opts {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding-top: var(--k-s-sm);
+  border-top: var(--k-c-dialog-actions-border-top);
+}
+.k-f7-saved-opt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-saved-opt-name {
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 左のメニューの並び（グループの行の下に 1 段下げて） ---- */
+.k-f7-saved-nav {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-f7-saved-nav-list {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0 0 0 var(--k-s-md);
+  list-style: none;
+}
+.k-f7-saved-nav-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+/* 行の見た目は外枠の .k-nav-item・.k-group-mark・.k-nav-label と同じ値（正本のトークンで写した・外枠の名前は借りない） */
+.k-f7-saved-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-button-primary-height);
+  padding: var(--k-c-saved-nav-group-pad);
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.k-f7-saved-nav-link:hover {
+  background: var(--k-surface-variant);
+  text-decoration: none;
+}
+.k-f7-saved-nav-link[aria-current="page"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-saved-nav-link[data-group] {
+  min-height: var(--k-c-saved-nav-group-height);
+}
+.k-f7-saved-nav-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-saved-nav-mark-width);
+  height: var(--k-c-saved-nav-mark-height);
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: var(--k-r-sm);
+  background: var(--k-f7-tone);
+  color: var(--k-card);
+  font-size: var(--k-text-label-xs);
+}
+.k-f7-saved-nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-f7-saved-nav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--k-c-list-tool-height);
+}
+.k-f7-saved-nav-share {
+  flex: none;
+  margin-left: auto;
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-xs);
+}
+.k-f7-saved-nav-link[aria-current="page"] .k-f7-saved-nav-share {
+  background: var(--k-primary-hover);
+  color: var(--k-on-primary);
+}
+.k-f7-saved-nav-more {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--k-c-list-tool-height);
+  height: var(--k-c-list-tool-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: none;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  cursor: pointer;
+}
+.k-f7-saved-nav-more:hover {
+  background: var(--k-surface-variant);
+}
+
+@media (max-width: 767px) {
+  /* 狭い幅は箱の位置の基準を表の箱の頭の行にし、箱を表の箱の幅に収める（ticket-list.css の表示設定と同じ） */
+  .k-f7-saved-anchor {
+    position: static;
+  }
+  .k-f7-saved-pop {
+    top: 100%;
+    right: var(--k-s-sm);
+    max-width: calc(100% - var(--k-s-md));
+  }
+}
+
+/* ---- 左のメニューの拡大枠（モック用：外枠がグループの下に差し込む口を持つまで、並びだけを見せる枠） ---- */
+.k-f7-saved-navframe {
+  display: grid;
+  gap: var(--k-s-sm);
+  box-sizing: border-box;
+  width: min(100%, var(--k-c-list-columns-width));
+  padding: var(--k-s-sm);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  background: var(--k-side-bg);
+}
+
+/* ---- 一覧の検索条件の箱の押せる札（K-478：かんたん／詳しく・状態・親子。形は ticket-list.css の .k-list-search-* のまま、押した形だけ足す） ---- */
+button.k-list-search-seg-item,
+button.k-list-search-chip {
+  font-family: inherit;
+  cursor: pointer;
+}
+button.k-list-search-seg-item {
+  border: 0;
+}
+.k-list-search-seg .k-list-search-seg-item[aria-pressed="false"] {
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
+.k-list-search-seg .k-list-search-seg-item[aria-pressed="true"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+button.k-list-search-seg-item + button.k-list-search-seg-item {
+  border-left: var(--k-c-list-search-seg-border);
+}
