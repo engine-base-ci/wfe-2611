@@ -322,7 +322,8 @@ test("K478-UI-014 自分に関わるものの見え方：「上の数字」の�
   await expect(cards(page).getByRole("button")).toHaveCount(3);
   await expect(card(page, "期限切れ")).toHaveCount(0);
   await expect(side(page).getByRole("heading", { name: "最近のお知らせ", exact: true })).toHaveCount(0);
-  await expect(side(page).getByRole("heading", { name: "自分の承認を待っているもの", exact: true })).toBeVisible();
+  // 見出しの中に押せない「すべて」が付く（K-251 の BoxHead）ので名前の頭で探す
+  await expect(side(page).getByRole("heading", { name: /^自分の承認を待っているもの/ })).toBeVisible();
   await page.reload();
   await expect(rowsOf(page)).toHaveCount(3);
   await expect(cards(page).getByRole("button")).toHaveCount(3);
@@ -655,7 +656,7 @@ test("K478-UI-023 幅 320・375・768・1024・1440：自分に関わるもの�
   await mockMine(page);
   for (const w of WIDTHS) {
     await open(page, "/tickets", w);
-    await expect(rowsOf(page).or(page.locator(".k-f7-overview-mrow")).first()).toBeVisible();
+    await expect(rowsOf(page).or(page.locator(".k-f7-overview-mrow")).filter({ visible: true }).first()).toBeVisible();
     expect(await overflowX(page), `自分に関わるもの 幅 ${w}`).toBe(0);
     await open(page, "/tickets?view=all", w);
     await expect(rowsOf(page)).toHaveCount(3);
@@ -675,7 +676,8 @@ test("K478-UI-029 タブと数の札の間は 16px（自分に関わるもの・
   await mockMine(page);
   await open(page, "/tickets", 1440);
   await expect(cards(page)).toBeVisible();
-  const tabs = (await page.locator(".k-list-views").boundingBox())!;
+  // タブの帯（見出しの帯 header.k-list-head）の下の線から数の札の上まで。タブの並びの箱の下には帯の下の線（1px）がある（下絵も同じ）
+  const tabs = (await page.locator("header.k-list-head").boundingBox())!;
   const top = (await cards(page).boundingBox())!;
   expect(Math.round(top.y - (tabs.y + tabs.height)), "タブの下から数の札の上まで").toBe(16);
   await open(page, "/tickets", 375);
@@ -771,7 +773,7 @@ for (const w of MATCH_WIDTHS.filter((x) => x !== 768)) {
     const mine = async (p: Page, then?: () => Promise<void>) => {
       await mockMine(p);
       await open(p, "/tickets", w);
-      await expect(rowsOf(p).or(p.locator(".k-f7-overview-mrow")).first()).toBeVisible();
+      await expect(rowsOf(p).or(p.locator(".k-f7-overview-mrow")).filter({ visible: true }).first()).toBeVisible();
       await then?.();
     };
     const all = async (p: Page, then: () => Promise<void>) => {
