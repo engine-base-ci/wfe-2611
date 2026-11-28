@@ -1,0 +1,20 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-plans-impact.ts",
+    "apps/api/src/features/F12/ops/plans/impact.ts",
+    "packages/db/migrations/20261128012900_ops_plans_impact.sql",
+    "05_flow/screen_api.d/K-989.py",
+    "scripts/ci/contract_shape.d/K-989.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-plans-impact.test.ts",
+    "apps/api/test/generated/get_ops_plan_proposals_id_impact.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-989.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-989"
+ }
+}
