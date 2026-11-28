@@ -1,0 +1,8 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F10/account/**"],
+      "tests": ["apps/web/tests/k/k841-leave-ws.spec.ts"]
+    }
+  ]
+}
