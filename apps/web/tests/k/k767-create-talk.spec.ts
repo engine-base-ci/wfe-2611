@@ -415,6 +415,8 @@ async function match(
       w,
       async (pg) => {
         await drive(pg, w);
+        // 本文の欄（あとから読む編集の部品）が描き終わってから比べる（描く前は空の箱で、会話の箱の位置が上にずれる）
+        await expect(pg.locator("form .k-f4d-doc").first().locator(":scope > *").first()).toBeAttached();
         await pg.setViewportSize({ width: w, height: vh });
       },
       {

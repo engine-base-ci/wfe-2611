@@ -89,6 +89,8 @@ export interface MatchOptions {
   blur?: boolean;
   /** モックの置き場（既定 /dev/mock/f1・段 3 の画面の葉は /dev/mock/f2・K-335 が足した） */
   base?: string;
+  /** モックの側の描き終わりを待つ（あとから読む部品・例：ガントの棒。見出しが出ただけでは描き終わっていない状態の葉が渡す） */
+  mockReady?: (page: Page) => Promise<void>;
 }
 
 /** モックの状態 id と、本番の画面をその状態にする手順を受け、同じ幅で値を比べた行を返す */
@@ -110,6 +112,7 @@ export async function matchMock(
   expect((await mock.goto(`${opts.base ?? "/dev/mock/f1"}/${id}`))?.status(), `モック ${id}`).toBe(200);
   // 描き終わりの目印：状態の中の見出し（スマホの「〈名〉のAI」の全画面のように頁の h1 を隠す状態は、見えている h1〜h3 か右のパネル（aside）で待つ）
   await expect(mock.locator(`[data-mock="${id}"] :is(h1, h2, h3, aside):visible`).first()).toBeVisible();
+  await opts.mockReady?.(mock);
   await mock.evaluate(() => document.fonts.ready);
   await mock.mouse.move(0, 0);
   await settle(mock);

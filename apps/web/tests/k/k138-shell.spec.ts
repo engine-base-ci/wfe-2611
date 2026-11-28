@@ -691,8 +691,10 @@ test("K138-SH-025 使えない状態の部品：正本に button-disabled・inpu
   const item = leftNav(page).locator('[aria-disabled="true"]').first();
   expect(Number(await item.evaluate((e) => getComputedStyle(e).opacity))).toBe(Number(tokens.button));
   // 探す欄は外の箱（role search）だけを薄くする。中の入力欄にも掛けると薄さが重なる（0.55 × 0.55）ので、入力欄は 1 のまま
+  // K-471 で /tickets の探す欄は本物（押せる）になった。押せないときだけ外の箱を薄くし、押せるときは薄くしない
   const search = page.getByRole("search");
-  expect(Number(await search.evaluate((e) => getComputedStyle(e).opacity))).toBe(Number(tokens.input));
+  const off = (await search.locator("input").getAttribute("aria-disabled")) === "true";
+  expect(Number(await search.evaluate((e) => getComputedStyle(e).opacity))).toBe(off ? Number(tokens.input) : 1);
   expect(await search.locator("input").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
 });
 

@@ -325,7 +325,8 @@ select.k-f7-saved-pick {
   gap: var(--k-s-md);
   box-sizing: border-box;
   width: var(--k-c-list-columns-width);
-  max-width: 100%;
+  /* 上限は画面の幅から（箱の基準の「表示設定」のボタンの幅にすると、広い幅で箱が字の幅まで潰れて横に溢れる・K478-UI-023） */
+  max-width: var(--k-c-popup-layer-max-width);
   padding: var(--k-c-list-columns-pad);
   border: var(--k-c-list-columns-border);
   border-radius: var(--k-c-list-columns-radius);
