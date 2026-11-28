@@ -1,0 +1,1 @@
+{"data_links": [{"paths": ["apps/web/features/F5/stop/", "apps/web/features/F5/more/fills/stop.tsx"], "tests": ["apps/web/tests/k/k734-stop.spec.ts"]}], "reads_ok": {"apps/web/tests/k/k734-stop.spec.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-734）"}}
