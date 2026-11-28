@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261126000800_members_last_used.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-members-last-used.test.ts",
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ]
+  }
+ ]
+}
