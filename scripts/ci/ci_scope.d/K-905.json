@@ -1,0 +1,27 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/app/(dev)/dev/mock/f11/mocks.tsx",
+    "11_tickets/K-905.md",
+    "apps/web/features/F11/share/views.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k905-ticket-guest-share.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F4/create-ticket/hooks.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/ticket-detail-guest-share.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/k234_one_transaction.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k905-ticket-guest-share.spec.ts": "K905-UI-015 がモックの置き場 apps/web/app/(dev)/dev/mock/f11/mocks.tsx・チケット 11_tickets/K-905.md・部品 apps/web/features/F11/share/views.tsx を読み、K-905 の状態の数と部品が口を呼ばないことを見る（K-905）"
+ }
+}
