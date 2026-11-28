@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-avatar.ts",
+    "apps/api/src/features/F10/me/avatar.ts",
+    "packages/db/migrations/20261126003400_me_avatar.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-avatar.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-avatar.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/post_me_avatar.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/me-avatar.test.ts": "土台 me.harness.ts の setupMe(\"me-avatar.ts\") が口の登録 apps/api/src/hooks/me-avatar.ts を動的 import で読む。読む物の変更でも流れるよう data_links で結ぶ（K-834）"
+ }
+}

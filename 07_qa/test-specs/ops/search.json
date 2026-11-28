@@ -1,0 +1,128 @@
+{
+ "screen": "search",
+ "mock": "06_mockup/v1/v1-search.html",
+ "state_labels": {
+  "n": "結果",
+  "0": "最初",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "input:text",
+   "kind": "input",
+   "label": "text",
+   "target": null,
+   "states": [
+    "結果",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:探す",
+   "kind": "button",
+   "label": "探す",
+   "target": null,
+   "states": [
+    "結果",
+    "最初",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:セイコー 食品パッケージ画像編集SaaS案件 · 提案済 · 3,300,000 · 着手金 990,000（30%）台→record-detail",
+   "kind": "link",
+   "label": "セイコー 食品パッケージ画像編集SaaS案件 · 提案済 · 3,300,000 · 着手金 990,000（30%）台",
+   "target": "record-detail",
+   "states": [
+    "結果",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:請求書 下書き · セイコー 着手金 990,000請求 · 承認待ち · 経理社員が作成台帳→approvals",
+   "kind": "link",
+   "label": "請求書 下書き · セイコー 着手金 990,000請求 · 承認待ち · 経理社員が作成台帳",
+   "target": "approvals",
+   "states": [
+    "結果",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:着手金は契約時に3割、残金は納品時あなたの判断の癖 · 個人 · 2026-09-04記憶→clone-memory",
+   "kind": "link",
+   "label": "着手金は契約時に3割、残金は納品時あなたの判断の癖 · 個人 · 2026-09-04記憶",
+   "target": "clone-memory",
+   "states": [
+    "結果",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高本AIが経理社員に「セイコー 着手金の請求書」を配った9/10 09:14 · 会話から証跡→audit",
+   "kind": "link",
+   "label": "高本AIが経理社員に「セイコー 着手金の請求書」を配った9/10 09:14 · 会話から証跡",
+   "target": "audit",
+   "states": [
+    "結果",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:言葉で探す（例：先月の入金、京蟻の契約書、値引きの方針）",
+   "kind": "input",
+   "label": "言葉で探す（例：先月の入金、京蟻の契約書、値引きの方針）",
+   "target": null,
+   "states": [
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
