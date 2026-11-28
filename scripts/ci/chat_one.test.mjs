@@ -1,0 +1,23 @@
+// chat_one の検査の検査：何も無ければ緑・違反を置くと赤・片付けると緑（L-019）
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { check } from "./chat_one.mjs";
+const r = mkdtempSync(join(tmpdir(), "chat-one-"));
+const put = (p, s) => { mkdirSync(join(r, p, ".."), { recursive: true }); writeFileSync(join(r, p), s); };
+put("apps/web/components/ai/composer.tsx", "<textarea name='t' />");
+put("apps/web/app/(app)/x/page.tsx", "const chat = useAgentChat(); <AgentChat chat={chat} /> <AppShell panel={false}>");
+put("06_mockup/_composer.py", 'x = \'<div class="composer" data-part="composer">\'');
+put("06_mockup/v1/v1-a.html", '<div class="composer" data-part="composer"></div>');
+const expect = (n, why) => { const b = check(r); if (b.length !== n) { console.error(`[chat_one self-test] NG ${why}: ${b.length} 件`, b); process.exit(1); } };
+expect(0, "きれいな状態は緑");
+put("apps/web/app/(app)/y/page.tsx", "const a = useAgent(true); <Conversation agent={a} />");
+put("apps/web/components/ai/panel.tsx", "import { X } from '@assistant-ui/react'; <textarea />");
+put("apps/web/app/(app)/z/page.tsx", "<AppShell panel={<Other />}>");
+put("06_mockup/_shell.py", 'y = \'<div class="composer">\'');
+put("06_mockup/v1/v1-b.html", '<div class="composer"></div>');
+expect(7, "C1・C2・C3・C4・C5・M1・M2 の 7 件が赤");
+for (const p of ["apps/web/app/(app)/y/page.tsx", "apps/web/components/ai/panel.tsx", "apps/web/app/(app)/z/page.tsx", "06_mockup/_shell.py", "06_mockup/v1/v1-b.html"]) rmSync(join(r, p));
+expect(0, "片付けたら緑");
+rmSync(r, { recursive: true });
+console.log("[chat_one self-test] OK（何も無ければ緑・7 種の違反を赤・片付けると緑）");
