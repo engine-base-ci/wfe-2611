@@ -18,7 +18,8 @@ test.use({ timezoneId: "Asia/Tokyo" });
 
 const WS_NAME = "株式会社ENGINE BASE";
 const SEC = 'section[aria-labelledby="members-title"]';
-const DLG = ".k-dialog";
+// 開いている小窓（段11 の本文は閉じた小窓（data-closed）も DOM に残すので、それを数えない）
+const DLG = ".k-dialog:not([data-closed])";
 const WIDTHS = [320, 375, 768, 1024, 1440] as const;
 const G_SALES = "0193c5a0-0000-7000-8000-00000000e001";
 const G_DEV = "0193c5a0-0000-7000-8000-00000000e002";
@@ -343,6 +344,8 @@ for (const [id, drive] of Object.entries(STATES)) {
           const mk = await mockGuests(page);
           await openMembers(page, owner.token, w);
           await drive(page, mk);
+          // グループの行のボタンを押すと頁が下へ送られる。y は頁の上からの位置で読むので、下絵と同じく頁の頭に戻してから比べる（K930 と同じ）
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         { pairs: PAIRS, base: "/dev/mock/f11", blur: true },
       );
@@ -436,11 +439,11 @@ test("K874-UI-006 招くの小窓：役割の選び肢に「ゲスト」が増�
   await mockGuests(page);
   await openMembers(page, owner.token);
   await openInvite(page);
-  const role = page.locator(DLG).getByLabel("役割", { exact: true });
+  const role = page.locator(DLG).getByRole("combobox", { name: "役割", exact: true });
   await expect(role.locator("option")).toHaveText(["メンバー", "マネージャー", "閲覧のみ", "管理者", "ゲスト"]);
-  await expect(page.locator(DLG).getByLabel("グループ", { exact: true })).toBeVisible();
+  await expect(page.locator(DLG).getByRole("combobox", { name: "グループ", exact: true })).toBeVisible();
   await role.selectOption("ゲスト");
-  await expect(page.locator(DLG).getByLabel("グループ", { exact: true })).toHaveCount(0);
+  await expect(page.locator(DLG).getByRole("combobox", { name: "グループ", exact: true })).toHaveCount(0);
   const opts = await groupField(page).locator("option").allInnerTexts();
   expect(opts.slice(-3)).toEqual([SEIKO, KYOGI, "＋ 新しいゲストのグループを作る"]);
   await page.locator(".k-inv-more-sum").click();
@@ -457,7 +460,7 @@ test("K874-UI-007 ゲストのタブの「＋ 招く」は役割「ゲスト」�
   const mk = await mockGuests(page);
   await openGuests(page, owner.token);
   await openInvite(page);
-  await expect(page.locator(DLG).getByLabel("役割", { exact: true })).toHaveValue("requester");
+  await expect(page.locator(DLG).getByRole("combobox", { name: "役割", exact: true })).toHaveValue("requester");
   await addMail(page, "sano@seiko.example");
   await sendBtn(page).click();
   await expect(page.locator(DLG)).toContainText("ゲストのグループを選んでください");
@@ -639,7 +642,7 @@ test("K874-UI-016 グループの行の「＋ このゲストのグループに�
     .filter({ hasText: KYOGI })
     .getByRole("button", { name: "＋ このゲストのグループに招く", exact: true })
     .click();
-  await expect(page.locator(DLG).getByLabel("役割", { exact: true })).toHaveValue("requester");
+  await expect(page.locator(DLG).getByRole("combobox", { name: "役割", exact: true })).toHaveValue("requester");
   await expect(groupField(page)).toHaveValue(KYOGI);
   await expect(page.locator(DLG)).toContainText("このグループの依頼は 受託開発 に届く（作るときに決めた物）");
   await addMail(page, "kato@kyogi.example");
@@ -655,7 +658,7 @@ test("K874-UI-017 メンバーとして招く道は今までどおり：役割�
   await openMembers(page, owner.token);
   await openInvite(page);
   await addMail(page, "kimura@engine-base.example");
-  const role = page.locator(DLG).getByLabel("役割", { exact: true });
+  const role = page.locator(DLG).getByRole("combobox", { name: "役割", exact: true });
   await role.selectOption("ゲスト");
   await groupField(page).selectOption(SEIKO);
   await role.selectOption("メンバー");

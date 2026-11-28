@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:4f4986332f50c945
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:fcb751bbac3d3277
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -550,7 +550,7 @@ export type PlanChoice = { plan_key?: string; name?: string | null; price_monthl
 export type Billing = { terms?: string; payee?: Record<string, unknown>; contact?: Record<string, unknown>; invoices?: string[]; overdue?: Record<string, unknown> | null; free?: boolean; can_edit_contact?: boolean };
 export type SignedUrl = { url?: string; expires_at?: string };
 export type ClientRequestDetail = { request?: Record<string, unknown>; messages?: string[]; routes?: string[]; can_act?: boolean; pc_connected?: boolean; ticket_draft?: Record<string, unknown> | null; questions?: string[]; reply_draft?: string | null; route_suggestion?: Record<string, unknown> | null };
-export type PortalHome = { group_name?: string; tenant_name?: string; request_scope_name?: string | null; me?: Record<string, unknown>; first_visit?: boolean; requests?: string[]; tickets?: string[] };
+export type PortalHome = { group_name?: string; tenant_name?: string; request_scope_name?: string | null; me?: Record<string, unknown>; first_visit?: boolean; inviter_name?: string | null; requests?: string[]; tickets?: string[] };
 export type PortalQuestions = { available?: boolean; questions?: string[] };
 export type PortalRequest = { request?: Record<string, unknown>; messages?: string[]; can_write?: boolean };
 export type PortalTicket = { ticket?: Record<string, unknown>; messages?: string[] };
