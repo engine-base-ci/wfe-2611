@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F4/duplicate/",
+    "apps/web/features/F4/pick/",
+    "apps/web/app/(dev)/dev/mock/f4/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k446-duplicate.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/duplicate-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-446）"
+ }
+}
