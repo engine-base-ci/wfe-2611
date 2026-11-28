@@ -2,7 +2,7 @@
 #   体（createTicketDecision）：text（必須・字数の上限なし）・reason・decided_by_member_id（同じ会社の今のメンバー・既定は本人）・decided_note（ひとこと）・
 #   source_message_id（やり取りの書き込みから決定にする）・promoted_to（ticket だけ。知らない値は 422・D-155.35 で取引先を持たなくなった・K-916）。
 #   書いた人・決めた時刻・改めた先は入れさせない（知らない欄は 422）。
-#   答えの 1 件 TicketDecision は 12 の鍵（K-391 の改める・取り消す口も同じ形で答える・画面 K-397 が読む）
+#   答えの 1 件 TicketDecision は 13 の鍵（decided_by_ai＝AI が決めた行の「誰の AI か」{ member_id, display_name }・人が決めた行は null・K-571 の形・2026-11-28）（K-391 の改める・取り消す口も同じ形で答える・画面 K-397 が読む）
 INPUTS = {
     "createTicketDecision": ("TicketDecisionInput", {"text": "string", "reason": "string?", "decided_by_member_id": "uuid?", "decided_note": "string?", "source_message_id": "uuid?", "promoted_to": "string?"}),
 }
@@ -19,7 +19,7 @@ VALUE_RANGES = {
 }
 
 RESPONSES = {
-    "listTicketDecisions": ("TicketDecision", {"id": "uuid", "ticket_id": "uuid", "text": "string", "reason": "string?", "decided_by": "object?", "decided_note": "string?", "decided_at": "string", "source": "object?", "revises_id": "uuid?", "superseded_by_id": "uuid?", "cancelled": "object?", "promoted_to": "string"}),
+    "listTicketDecisions": ("TicketDecision", {"id": "uuid", "ticket_id": "uuid", "text": "string", "reason": "string?", "decided_by": "object?", "decided_by_ai": "object?", "decided_note": "string?", "decided_at": "string", "source": "object?", "revises_id": "uuid?", "superseded_by_id": "uuid?", "cancelled": "object?", "promoted_to": "string"}),
     "createTicketDecision": ("TicketDecisionCreated", {"decision": "object", "message_id": "uuid"}),
 }
 

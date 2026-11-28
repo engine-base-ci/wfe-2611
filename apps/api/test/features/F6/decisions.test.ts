@@ -40,6 +40,7 @@ const KEYS = [
   "cancelled",
   "decided_at",
   "decided_by",
+  "decided_by_ai",
   "decided_note",
   "id",
   "promoted_to",
@@ -71,7 +72,7 @@ describe("K-390 決定を読む", () => {
     expect(r.headers.get("cache-control") ?? "").toMatch(/no-store/);
   });
 
-  it("K390-API-002 並び：生きている決定（決めた時刻の新しい順）→ 改められた → 取り消した。鍵はちょうど 12 個・改めた元と取り消しの中身", async () => {
+  it("K390-API-002 並び：生きている決定（決めた時刻の新しい順）→ 改められた → 取り消した。鍵はちょうど 13 個（decided_by_ai は K-571・2026-11-28）・改めた元と取り消しの中身", async () => {
     const t = await ticket();
     const newer = await decision(t, { text: "支払いは翌月末", agoMin: 5 });
     const oldLive = await decision(t, { text: "見積は税込で出す", agoMin: 20 });
@@ -96,6 +97,29 @@ describe("K-390 決定を読む", () => {
     await decision(t, { by: gone });
     await f.admin.query("update members set deleted_at = now() where id = $1", [gone.id]);
     expect((await listOf(boss, t.id))[0]!["decided_by"]).toEqual({ id: gone.id, display_name: "辞めた人" });
+  });
+});
+
+describe("K-390 AI が決めた決定の形（K-571）", () => {
+  it("K390-API-021 AI が決めた行（decided_by_ai_of）は、決めた人 decided_by が null で decided_by_ai に { member_id, display_name }（誰の AI か）。人が決めた行の decided_by_ai は null。人と AI の両方は持てない（check）", async () => {
+    const t = await ticket();
+    const human = await decision(t, { text: "見積は税込で出す", agoMin: 10 });
+    const byAi = await decision(t, { text: "支払期日は 12/15 にする", agoMin: 5 });
+    await f.admin.query("update ticket_decisions set decided_by = null, decided_by_ai_of = $2 where id = $1", [
+      byAi,
+      boss.id,
+    ]);
+    const ds = await listOf(viewer, t.id);
+    const ai = ds.find((d) => d.id === byAi)!;
+    expect(ai["decided_by"]).toBeNull();
+    expect(ai["decided_by_ai"]).toEqual({
+      member_id: boss.id,
+      display_name: (await one<{ n: string }>("select display_name as n from members where id = $1", [boss.id])).n,
+    });
+    expect(ds.find((d) => d.id === human)!["decided_by_ai"]).toBeNull();
+    await expect(
+      f.admin.query("update ticket_decisions set decided_by_ai_of = $2 where id = $1", [human, boss.id]),
+    ).rejects.toThrow(/ticket_decisions_decider_one_ck/);
   });
 });
 

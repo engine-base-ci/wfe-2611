@@ -602,7 +602,12 @@ export function Results() {
       <DecisionLog
         canWrite
         items={[
-          { id: "d2", text: "支払期日は先方の締めに合わせて 12/15 にする", by: "11/21", status: "live" },
+          {
+            id: "d2",
+            text: "支払期日は先方の締めに合わせて 12/15 にする",
+            by: "11/21 高本のAI（AI が決めた）",
+            status: "live",
+          },
           { id: "d1", text: "追加対応は 2 件を明細に分けて載せる", by: "11/21 高本", status: "live" },
         ]}
       />

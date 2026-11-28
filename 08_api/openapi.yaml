@@ -8255,6 +8255,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        decided_by_ai_of:
+          type: string
+          format: uuid
+          nullable: true
         deleted_at:
           type: string
           format: date-time
@@ -21977,6 +21981,9 @@ components:
           type: string
           nullable: true
         decided_by:
+          type: object
+          nullable: true
+        decided_by_ai:
           type: object
           nullable: true
         decided_note:
@@ -52574,6 +52581,7 @@ paths:
           - created_by
           - decided_at
           - decided_by
+          - decided_by_ai_of
           - decided_note
           - deleted_at
           - id
