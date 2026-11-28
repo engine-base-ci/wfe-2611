@@ -60668,6 +60668,11 @@
     ".github/workflows/v3-gate.yml",
     "05_flow/build_testplan.py",
     "scripts/ci/web_run.py",
+    "scripts/ci/web_pull.py",
+    "scripts/ci/k1304_web_shards_test.py",
+    "apps/web/playwright.config.ts",
+    "scripts/ci/ci_scope.d/_base.json",
+    "scripts/ci/ci_scope.json",
     "scripts/ci/g65.d/K-1304.txt",
     ".gitignore"
    ],
