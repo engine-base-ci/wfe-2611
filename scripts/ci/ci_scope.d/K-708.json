@@ -1,0 +1,11 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F9/settings/**"],
+      "tests": ["apps/web/tests/k/k708-settings-stages.spec.ts", "apps/web/test/k708-settings-stages-shape.test.ts"]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/k708-settings-stages.spec.ts": "settings-mock.ts を通して正本 07_qa/test-specs/errors.json の文を読み（エラーの文を比べる）、f9-ws-match.ts を通して scripts/ci/fidelity_compare.mjs を読む（モックと本番を比べる・ファイルは書かない）・K-708"
+  }
+}

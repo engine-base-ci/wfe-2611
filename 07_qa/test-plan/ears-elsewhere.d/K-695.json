@@ -1,0 +1,26 @@
+{
+ "ops": {
+  "getKnowledgeReview": {
+   "file": "apps/api/test/features/F9/knowledge-review.test.ts",
+   "reason": "見直すページは役（管理者・マネージャー）と棚・時刻（90 日・30 日）・破られた数で答えが変わる。生成の試験の偽のセッションでは棚も所属も破られた数も作れない（K-695）",
+   "covers": {
+    "test_get_knowledge_review_ok": "K695-API-001",
+    "test_get_knowledge_review_shape": "K695-API-001",
+    "test_get_knowledge_review_rejected_401": "K695-API-020",
+    "test_get_knowledge_review_rejected_403": "K695-API-002",
+    "test_get_knowledge_review_rate_limited": "K695-API-021",
+    "test_get_knowledge_review_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_knowledge_review_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_knowledge_review_rejected_422": "入力の無い口（問い合わせの欄も体も受けない・QUERIES は空）。値の形で 422 になる欄が無い"
+   }
+  }
+ }
+}
