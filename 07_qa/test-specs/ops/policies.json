@@ -1,0 +1,133 @@
+{
+ "screen": "policies",
+ "mock": "06_mockup/v1/v1-policies.html",
+ "state_labels": {
+  "n": "ルール",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:直す",
+   "kind": "button",
+   "label": "直す",
+   "target": null,
+   "states": [
+    "ルール",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "ルール",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:そうする",
+   "kind": "button",
+   "label": "そうする",
+   "target": null,
+   "states": [
+    "ルール",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:今のまま",
+   "kind": "button",
+   "label": "今のまま",
+   "target": null,
+   "states": [
+    "ルール",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:取り消す",
+   "kind": "button",
+   "label": "取り消す",
+   "target": null,
+   "states": [
+    "ルール",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
