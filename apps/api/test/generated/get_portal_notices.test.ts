@@ -21,7 +21,7 @@ describe("GET /api/v1/portal/notices", () => {
   });
   // 当てはまらない（体も問い合わせも道の値も持たない口で、形の誤りの出し方が無い（K-906））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_portal_notices_rejected_422");
-  // 本物の試験はまだ無い（apps/api/test/features/F11/portal-read.test.ts）：UNWANTED: IF 先方の人の場所が読めないなら、Kaname は 404 を返し、中身を返さない
+  // 当てはまらない（お知らせは読めない（関数が null）とき空の一覧（200）で、404 は返さない（portal/notices.ts が onNull に空の data を渡す）。契約の 404 は同じファイルの readPortal の既定（チケット 1 件の口）を K-144 の SHAPE_010 が拾った物）：UNWANTED: IF 先方の人の場所が読めないなら、Kaname は 404 を返し、中身を返さない
   it.todo("test_get_portal_notices_not_found");
   // 当てはまらない（読むだけの全員同じ答えの口で、数え方は入口の共通（K-144）。ホームの上限は K906-API-011 が受ける）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_portal_notices_rate_limited");
