@@ -94,8 +94,10 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
   // 呼ぶ側が頭に印を渡したときはそれを使う（運営のパスキーを付けるだけのセッションを閉じる・K-1003）
   if (token && headers["authorization"] === undefined) headers["authorization"] = `Bearer ${token}`;
   if (args.screenId) headers["x-screen-id"] = args.screenId;
+  // 体は渡したときだけ送る（体なしの口＝送り直す等は体を付けない・K-809。口の側は空の体を {} として読む・K-896）
+  const body = args.form ?? (args.body === undefined ? undefined : JSON.stringify(args.body));
   if (write) {
-    if (!args.form) headers["content-type"] = "application/json";
+    if (!args.form && body !== undefined) headers["content-type"] = "application/json";
     headers["idempotency-key"] = args.idempotencyKey ?? newKey();
   }
   const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
@@ -104,7 +106,7 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
     {
       method: e.method,
       headers,
-      ...(write ? { body: args.form ?? JSON.stringify(args.body ?? {}) } : {}),
+      ...(write && body !== undefined ? { body } : {}),
       ...(args.signal ? { signal: args.signal } : {}),
     },
   );

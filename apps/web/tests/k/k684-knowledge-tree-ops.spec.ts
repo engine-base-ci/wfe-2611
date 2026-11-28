@@ -5,7 +5,7 @@
 //   テストはチケットを作る人が書き、実装する人は変えない
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { loginAs, signupViaApi } from "../_lib/api";
-import { F9_WIDTHS, matchF9 } from "./f9-match";
+import { F9_WIDTHS, KN_PAIRS, matchF9 } from "./f9-match";
 import {
   F_CS,
   F_KEIRI,
@@ -141,7 +141,19 @@ for (const [id, drive] of Object.entries(STATES)) {
         async (page) => {
           await drive(page, w);
         },
-        { skip: ["dialog:height", "card:height", "tree:height"] },
+        {
+          skip: ["dialog:height", "card:height", "tree:height"],
+          // 前の版の小窓は本文の見出し（h2）も持つので、小窓の題（.k-dialog-title）だけを題として比べる（PM の決め 2026-11-28）
+          ...(id === "kn-versions"
+            ? {
+                pairs: KN_PAIRS.map((p) =>
+                  p.name === "dialog-title"
+                    ? { ...p, canvas: ".k-dialog .k-dialog-title", app: ".k-dialog .k-dialog-title" }
+                    : p,
+                ),
+              }
+            : {}),
+        },
       );
       expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);

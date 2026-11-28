@@ -122,3 +122,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* 外す小窓の足のボタン：押せる高さ 32（正本 member-remove-button・K822-UI-017。PC をつなぐの小窓の 30 は替えない） */
+.k-dialog[data-size="connect"] .k-dialog-actions .k-btn.k-f10d-act {
+  min-height: var(--k-c-member-remove-button-height);
+}
