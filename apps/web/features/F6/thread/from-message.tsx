@@ -30,7 +30,7 @@ function DecideFromMessage({
   item: TimelineItem;
   body: string;
 }): ReactNode {
-  const reload = useReloadAll(ticket.id);
+  const reload = useReloadAll(ticket.id, ticket.reload);
   // 閉じたら押したボタンへ焦点を戻す（決定になった後はボタンが無いので何もしない）
   const opener = useRef<HTMLElement | null>(null);
   const back = useCallback(

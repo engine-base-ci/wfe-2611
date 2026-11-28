@@ -32,6 +32,7 @@ export function SectionSlot({
       label={section.label}
       intro={section.body?.text?.trim() ? section.body.text : undefined}
       onSource={openMessage}
+      reloadDetail={ticket.reload}
     />
   );
 }

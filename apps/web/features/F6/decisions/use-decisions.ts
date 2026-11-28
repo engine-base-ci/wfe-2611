@@ -197,15 +197,18 @@ export function useAddDecision(
   };
 }
 
-/** 決定にした・改めた・取り消した後の読み直し：決定の一覧とやり取りを 1 回ずつ（開いている問い合わせだけが読む） */
-export function useReloadAll(ticketId: string): () => Promise<unknown> {
+/** 決定にした・改めた・取り消した後の読み直し：決定の一覧とやり取りを 1 回ずつ（開いている問い合わせだけが読む）。
+ *  詳細の読み直し（reloadDetail・SlotTicket.reload）を渡されたら詳細も 1 回読む：決定ログの場所は詳細の答えの results.decisions が
+ *  在るときだけ出るので、はじめの 1 つを決めた後に場所が出ない（K399-T1-003） */
+export function useReloadAll(ticketId: string, reloadDetail?: () => Promise<void>): () => Promise<unknown> {
   const qc = useQueryClient();
   return useCallback(
     () =>
       Promise.all([
         qc.refetchQueries({ queryKey: decisionsKey(ticketId), exact: true }),
         qc.invalidateQueries({ queryKey: timelineKey(ticketId) }),
+        ...(reloadDetail ? [reloadDetail()] : []),
       ]),
-    [qc, ticketId],
+    [qc, ticketId, reloadDetail],
   );
 }
