@@ -1,0 +1,63 @@
+{
+ "screen": "ops-audit",
+ "mock": "06_mockup/v1/v1-ops-audit.html",
+ "state_labels": {
+  "n": "運営の証跡",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
+   "target": null,
+   "states": [
+    "運営の証跡",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:招く",
+   "kind": "button",
+   "label": "招く",
+   "target": null,
+   "states": [
+    "運営の証跡"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:権限",
+   "kind": "button",
+   "label": "権限",
+   "target": null,
+   "states": [
+    "運営の証跡"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:取り消す",
+   "kind": "button",
+   "label": "取り消す",
+   "target": null,
+   "states": [
+    "運営の証跡"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
