@@ -1,0 +1,99 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-001",
+   "class": "not_found",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "招くとき・名前を直すとき・消すときに選んだゲストのグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今あるゲストのグループを選ぶ",
+   "message": "このゲストのグループは見つかりません",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストを招く小窓を開き、ゲストのグループを選ぶ",
+    "steps": [
+     "別の画面でそのグループを消す",
+     "招く小窓で招くを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-002",
+   "class": "conflict",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "新しく作る・名前を直すゲストのグループの名前が、今ある物と同じ（全角半角・大文字小文字・空白の違いだけでも同じ）",
+   "false_when": "今ある物と違う名前にする",
+   "message": "同じ名前のゲストのグループがあります。別の名前にしてください",
+   "action": "一覧から選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストのグループを作る小窓を開く",
+    "steps": [
+     "今あるグループと同じ名前（全角にしたものでもよい）を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  },
+  {
+   "id": "E-GST-003",
+   "class": "not_found",
+   "where": {
+    "screen": "members",
+    "state": "guests"
+   },
+   "when": "ゲストのグループを作るときに選んだ届け先の社内のグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今ある社内のグループを届け先に選ぶ",
+   "message": "このグループは見つかりません",
+   "action": "届け先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面でゲストのグループを作る小窓を開き、届け先を選ぶ",
+    "steps": [
+     "別の画面でその社内のグループを消す",
+     "作るを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.35"
+   ]
+  }
+ ]
+}
