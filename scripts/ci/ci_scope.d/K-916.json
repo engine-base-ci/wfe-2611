@@ -1,0 +1,32 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-390.py",
+    "scripts/ci/contract_shape.d/K-390.py",
+    "07_qa/test-specs/errors.d/K-390.json",
+    "07_qa/test-specs/errors.json",
+    "07_qa/test-specs/errors.md",
+    "packages/errors/src/catalog.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-390.json",
+    "07_qa/test-plan/ears-test-mapping.json",
+    "08_api/ears-ac-seed.json",
+    "08_api/endpoints.json",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts",
+    "apps/api/src/features/F6/decisions/errors.ts",
+    "apps/web/features/F6/decisions/views.tsx",
+    "apps/web/features/F6/decisions/decisions.css",
+    "04_design/canvas_gen/td2.py",
+    "04_design/canvas/TdDecision.dc.html",
+    "packages/db/migrations/0072_ticket_around.sql",
+    "packages/db/migrations/20261120130700_ticket_decisions.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decisions-no-client-rule.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F6/decisions-no-client-rule.test.ts": "契約・エラーの正本・ears・口のコード・画面の部品・キャンバスの絵と作り手・migration を本物のファイルとして読み、git grep で残りを数える（読む物は data_links で結ぶ・K-916）"
+ }
+}
