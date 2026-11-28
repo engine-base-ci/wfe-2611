@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["scripts/ci/canvas_field_gate.py", "scripts/ci/gen_built_routes.py", "scripts/ci/design_gate.py", "scripts/ci/class_gate.py", "04_design/DESIGN-kaname.md", "design-gate.json"], "tests": ["apps/web/tests/k/k801-stage11-mock.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k801-stage11-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f10/（mocks.tsx・render-*.tsx）・F10 の部品と CSS（apps/web/features/F10 の members・member・ws・account）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）を読み、scripts/ci/canvas_field_gate.py・design_gate.py・class_gate.py を子プロセスで流す（K-801）"
+ }
+}

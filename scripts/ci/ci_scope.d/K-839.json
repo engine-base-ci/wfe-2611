@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F10/account/**",
+    "apps/web/app/(work)/account/**",
+    "apps/web/app/(dev)/dev/mock/f10/render-account.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k839-profile.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k839-profile.spec.ts": "小窓の登録口 apps/web/features/F10/account/profile-dialogs.tsx を字で読み、PROFILE_DIALOGS に email・leave の登録があるかで「変える」「抜ける」の押せる形を見分ける（K839-UI-015・016・K-839）"
+ }
+}
