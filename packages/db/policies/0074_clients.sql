@@ -1,0 +1,87 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table tickets enable row level security;
+alter table tickets force row level security;
+drop policy if exists tickets_read on tickets;
+create policy tickets_read on tickets for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_draft_ok(draft_import_id, app.user_id()) AND (scope_id = ANY(visible_scopes(app.user_id())) OR assignee_member_id = app.user_id() OR app.ticket_involved(id, app.user_id()))));
+drop policy if exists tickets_create on tickets;
+create policy tickets_create on tickets for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_draft_ok(draft_import_id, app.user_id()) AND has_permission(app.user_id(), 'tickets', scope_id, 'edit')));
+drop policy if exists tickets_update on tickets;
+create policy tickets_update on tickets for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_draft_ok(draft_import_id, app.user_id()) AND (has_permission(app.user_id(), 'tickets', scope_id, 'edit') OR assignee_member_id = app.user_id()))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_draft_ok(draft_import_id, app.user_id()) AND (has_permission(app.user_id(), 'tickets', scope_id, 'edit') OR assignee_member_id = app.user_id())));
+drop policy if exists tickets_client_read on tickets;
+create policy tickets_client_read on tickets for select using (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client() AND draft_import_id IS NULL AND client_share <> '{}'::jsonb));
+drop policy if exists tickets_ops_read_with_grant on tickets;
+create policy tickets_ops_read_with_grant on tickets for select using (app.ops_grant_ok(tickets.tenant_id));
+
+alter table clients enable row level security;
+alter table clients force row level security;
+drop policy if exists clients_read on clients;
+create policy clients_read on clients for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND (visibility = 'all' OR owner_member_id = app.user_id() OR app.client_in_my_groups(id) OR has_permission(app.user_id(), 'clients', NULL, 'edit'))));
+drop policy if exists clients_create on clients;
+create policy clients_create on clients for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'clients', NULL, 'edit')));
+drop policy if exists clients_update on clients;
+create policy clients_update on clients for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND (owner_member_id = app.user_id() OR has_permission(app.user_id(), 'clients', NULL, 'edit')))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND (owner_member_id = app.user_id() OR has_permission(app.user_id(), 'clients', NULL, 'edit'))));
+drop policy if exists clients_own_read on clients;
+create policy clients_own_read on clients for select using (app.client_ok() AND (tenant_id = app.tenant_id() AND id = app.my_client()));
+drop policy if exists clients_ops_read_with_grant on clients;
+create policy clients_ops_read_with_grant on clients for select using (app.ops_grant_ok(clients.tenant_id));
+
+alter table client_groups enable row level security;
+alter table client_groups force row level security;
+drop policy if exists client_groups_read on client_groups;
+create policy client_groups_read on client_groups for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id)));
+drop policy if exists client_groups_write_insert on client_groups;
+create policy client_groups_write_insert on client_groups for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_groups_write_update on client_groups;
+create policy client_groups_write_update on client_groups for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_groups_write_delete on client_groups;
+create policy client_groups_write_delete on client_groups for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_groups_ops_read_with_grant on client_groups;
+create policy client_groups_ops_read_with_grant on client_groups for select using (app.ops_grant_ok(client_groups.tenant_id));
+
+alter table client_contacts enable row level security;
+alter table client_contacts force row level security;
+drop policy if exists client_contacts_read on client_contacts;
+create policy client_contacts_read on client_contacts for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id)));
+drop policy if exists client_contacts_write_insert on client_contacts;
+create policy client_contacts_write_insert on client_contacts for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_contacts_write_update on client_contacts;
+create policy client_contacts_write_update on client_contacts for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_contacts_write_delete on client_contacts;
+create policy client_contacts_write_delete on client_contacts for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_editable(client_id)));
+drop policy if exists client_contacts_same_client_read on client_contacts;
+create policy client_contacts_same_client_read on client_contacts for select using (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client()));
+drop policy if exists client_contacts_ops_read_with_grant on client_contacts;
+create policy client_contacts_ops_read_with_grant on client_contacts for select using (app.ops_grant_ok(client_contacts.tenant_id));
+
+alter table client_requests enable row level security;
+alter table client_requests force row level security;
+drop policy if exists client_requests_read on client_requests;
+create policy client_requests_read on client_requests for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id)));
+drop policy if exists client_requests_handle_insert on client_requests;
+create policy client_requests_handle_insert on client_requests for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(app.user_id(), 'client_requests', routed_scope_id, 'edit'))));
+drop policy if exists client_requests_handle_update on client_requests;
+create policy client_requests_handle_update on client_requests for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(app.user_id(), 'client_requests', routed_scope_id, 'edit')))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.client_visible(client_id) AND (app.client_editable(client_id) OR has_permission(app.user_id(), 'client_requests', routed_scope_id, 'edit'))));
+drop policy if exists client_requests_same_client_read on client_requests;
+create policy client_requests_same_client_read on client_requests for select using (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client()));
+drop policy if exists client_requests_submit on client_requests;
+create policy client_requests_submit on client_requests for insert with check (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client() AND contact_id = app.my_contact() AND state = 'new' AND EXISTS (SELECT 1 FROM client_contacts k WHERE k.id = contact_id AND k.role = 'requester')));
+drop policy if exists client_requests_own_edit on client_requests;
+create policy client_requests_own_edit on client_requests for update using (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client() AND contact_id = app.my_contact() AND state IN ('new', 'asking'))) with check (app.client_ok() AND (tenant_id = app.tenant_id() AND client_id = app.my_client() AND contact_id = app.my_contact() AND state IN ('new', 'asking')));
+drop policy if exists client_requests_ops_read_with_grant on client_requests;
+create policy client_requests_ops_read_with_grant on client_requests for select using (app.ops_grant_ok(client_requests.tenant_id));
+
+alter table acceptances enable row level security;
+alter table acceptances force row level security;
+drop policy if exists acceptances_ticket_read on acceptances;
+create policy acceptances_ticket_read on acceptances for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_visible(ticket_id)));
+drop policy if exists acceptances_ask_insert on acceptances;
+create policy acceptances_ask_insert on acceptances for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists acceptances_ask_update on acceptances;
+create policy acceptances_ask_update on acceptances for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists acceptances_client_read on acceptances;
+create policy acceptances_client_read on acceptances for select using (app.client_ok() AND (tenant_id = app.tenant_id() AND EXISTS (SELECT 1 FROM client_contacts k WHERE k.id = contact_id AND k.client_id = app.my_client())));
+drop policy if exists acceptances_client_answer on acceptances;
+create policy acceptances_client_answer on acceptances for update using (app.client_ok() AND (tenant_id = app.tenant_id() AND contact_id = app.my_contact())) with check (app.client_ok() AND (tenant_id = app.tenant_id() AND contact_id = app.my_contact()));
+drop policy if exists acceptances_ops_read_with_grant on acceptances;
+create policy acceptances_ops_read_with_grant on acceptances for select using (app.ops_grant_ok(acceptances.tenant_id));
