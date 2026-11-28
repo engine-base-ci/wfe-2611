@@ -1,0 +1,36 @@
+{
+ "ops": {
+  "updateMemberGroups": {
+   "file": "apps/api/test/features/F10/admin-member-groups.test.ts",
+   "reason": "グループを移す・兼ねる口は、相手の状態・自分・グループの有無・主は 1 つ・兼務・外した行の復活・本人確認・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-812）",
+   "covers": {
+    "test_patch_members_id_groups_ok": "K812-API-001",
+    "test_patch_members_id_groups_shape": "K812-API-001",
+    "test_patch_members_id_groups_rejected_401": "K812-API-011",
+    "test_patch_members_id_groups_rejected_403": "K812-API-011",
+    "test_patch_members_id_groups_rejected_403_2": "K812-API-011",
+    "test_patch_members_id_groups_not_found": "K812-API-008",
+    "test_patch_members_id_groups_not_found_2": "K812-API-007",
+    "test_patch_members_id_groups_conflict": "K812-API-008",
+    "test_patch_members_id_groups_conflict_2": "K812-API-005",
+    "test_patch_members_id_groups_conflict_3": "K812-API-005",
+    "test_patch_members_id_groups_rejected_422": "K812-API-010",
+    "test_patch_members_id_groups_rate_limited": "K812-API-011",
+    "test_patch_members_id_groups_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_members_id_groups_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_members_id_groups_session_unresolved": "K812-API-013",
+    "test_patch_members_id_groups_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  }
+ }
+}
