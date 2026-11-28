@@ -1,0 +1,33 @@
+{
+ "ops": {
+  "markTicketTimelineSeen": {
+   "file": "apps/api/test/features/F6/thread-seen.test.ts",
+   "reason": "最後に開いた時刻は、見ている人・チケットの見え方・前の行の時刻の組み合わせで書く値が変わる。生成の試験の種では作れない（K-384）",
+   "covers": {
+    "test_post_tickets_id_timeline_seen_ok": "K384-API-001",
+    "test_post_tickets_id_timeline_seen_rejected_401": "K384-API-008",
+    "test_post_tickets_id_timeline_seen_rejected_403": "K384-API-007",
+    "test_post_tickets_id_timeline_seen_not_found": "K384-API-007",
+    "test_post_tickets_id_timeline_seen_rejected_422_2": "K384-API-009",
+    "test_post_tickets_id_timeline_seen_unavailable": "K384-API-011",
+    "test_post_tickets_id_timeline_seen_rate_limited": "K384-API-008",
+    "test_post_tickets_id_timeline_seen_shape": "K384-API-001",
+    "test_post_tickets_id_timeline_seen_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_timeline_seen_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_timeline_seen_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_timeline_seen_rejected_422": "冪等キーの 2 回目の扱いは入口の共通（K-144）。2 回目は入口が最初の答えをそのまま返し、この口の関数は呼ばれない。K384-API-005（冪等キーを使わない別々の 3 回）とは中身が違うので結ばない"
+   }
+  }
+ }
+}
