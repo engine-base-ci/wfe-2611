@@ -1,0 +1,79 @@
+/* 見え方（概要・カレンダー・ガント）が共有する色の段。値は正本のトークン（--k-*）だけを読む。
+   部品は data-f7-tone="<段>" を付け、--k-f7-tone（濃い色）・--k-f7-tone-soft（淡い面）・--k-f7-tone-ink（淡い面の上の字）を読む。
+   :root には書かない（段を付けた要素の中だけで効く） */
+
+[data-f7-tone="neutral"] {
+  --k-f7-tone: var(--k-neutral-strong);
+  --k-f7-tone-soft: var(--k-surface-variant);
+  --k-f7-tone-ink: var(--k-on-surface-variant);
+}
+[data-f7-tone="indigo"] {
+  --k-f7-tone: var(--k-d-indigo);
+  --k-f7-tone-soft: var(--k-primary-container);
+  --k-f7-tone-ink: var(--k-on-primary-container);
+}
+[data-f7-tone="tertiary"] {
+  --k-f7-tone: var(--k-tertiary);
+  --k-f7-tone-soft: var(--k-tertiary-container);
+  --k-f7-tone-ink: var(--k-on-tertiary-container);
+}
+[data-f7-tone="warning"] {
+  --k-f7-tone: var(--k-st-warning);
+  --k-f7-tone-soft: var(--k-st-warning-container);
+  --k-f7-tone-ink: var(--k-st-on-warning-container);
+}
+[data-f7-tone="progress"] {
+  --k-f7-tone: var(--k-st-progress);
+  --k-f7-tone-soft: var(--k-st-progress-container);
+  --k-f7-tone-ink: var(--k-st-on-progress-container);
+}
+[data-f7-tone="amber"] {
+  --k-f7-tone: var(--k-d-amber);
+  --k-f7-tone-soft: var(--k-st-warning-container);
+  --k-f7-tone-ink: var(--k-st-on-warning-container);
+}
+[data-f7-tone="success"] {
+  --k-f7-tone: var(--k-st-success);
+  --k-f7-tone-soft: var(--k-st-success-container);
+  --k-f7-tone-ink: var(--k-st-on-success-container);
+}
+[data-f7-tone="danger"] {
+  --k-f7-tone: var(--k-st-danger);
+  --k-f7-tone-soft: var(--k-st-danger-container);
+  --k-f7-tone-ink: var(--k-st-on-danger-container);
+}
+[data-f7-tone="hold"] {
+  --k-f7-tone: var(--k-on-surface-variant);
+  --k-f7-tone-soft: var(--k-surface-variant);
+  --k-f7-tone-ink: var(--k-on-surface-variant);
+}
+[data-f7-tone="teal"] {
+  --k-f7-tone: var(--k-d-teal);
+  --k-f7-tone-soft: var(--k-secondary-container);
+  --k-f7-tone-ink: var(--k-on-secondary-container);
+}
+[data-f7-tone="teal-light"] {
+  --k-f7-tone: var(--k-d-teal-light);
+  --k-f7-tone-soft: var(--k-secondary-container);
+  --k-f7-tone-ink: var(--k-on-secondary-container);
+}
+[data-f7-tone="lavender"] {
+  --k-f7-tone: var(--k-d-lavender);
+  --k-f7-tone-soft: var(--k-ai-container);
+  --k-f7-tone-ink: var(--k-on-tertiary-container);
+}
+[data-f7-tone="plum"] {
+  --k-f7-tone: var(--k-d-plum);
+  --k-f7-tone-soft: var(--k-ai-container);
+  --k-f7-tone-ink: var(--k-on-tertiary-container);
+}
+[data-f7-tone="coral"] {
+  --k-f7-tone: var(--k-d-coral);
+  --k-f7-tone-soft: var(--k-st-danger-container);
+  --k-f7-tone-ink: var(--k-st-on-danger-container);
+}
+[data-f7-tone="sage"] {
+  --k-f7-tone: var(--k-d-sage);
+  --k-f7-tone-soft: var(--k-st-success-container);
+  --k-f7-tone-ink: var(--k-st-on-success-container);
+}
