@@ -1,0 +1,941 @@
+{
+ "errors": [
+  {
+   "id": "E-GRP-001",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "グループの名前が無い・空・空白だけ・101 文字以上",
+   "false_when": "名前が 1〜100 文字で、空白だけでない",
+   "message": "名前は 1〜100 文字で入れてください",
+   "action": "名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "グループの小窓で名前を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-002",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "直す口の道の id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していないグループを指す",
+   "message": "直すグループが見つかりません。開き直してください",
+   "action": "メンバーの画面を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消したグループを直して保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-003",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "短い名前が無い・形が違う・T",
+   "false_when": "英字で始まる英数字の 1〜8 文字で、T だけでない",
+   "message": "短い名前は、英大文字で始まる英大文字と数字の 1〜8 文字で入れてください（T だけは使えません）",
+   "action": "短い名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "短い名前に「1A」を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-004",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "直す口の体が空",
+   "false_when": "名前・色・並び・マネージャーのどれかを送る",
+   "message": "変える項目がありません",
+   "action": "変える項目を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "何も変えずに保存を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-005",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "色が 6 つの tone の鍵のどれでもない",
+   "false_when": "色が teal・plum・indigo・amber・coral・sage のどれか",
+   "message": "色は、決まった 6 つから選んでください",
+   "action": "色を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "色に決まった 6 つ以外の値を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-006",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の名前が空・41 文字以上",
+   "false_when": "層の名前が 1〜40 文字",
+   "message": "層の名前は 1〜40 文字で入れてください",
+   "action": "層の名前を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "層の名前を 41 文字にして保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-007",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の道の id が無い",
+   "false_when": "同じ会社の消していない層を指す",
+   "message": "直す層が見つかりません。開き直してください",
+   "action": "メンバーの画面を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した層を直して保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-008",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "order_no・position が 0 以下",
+   "false_when": "並びの番号が 1 以上の整数",
+   "message": "並びの番号は 1 以上の整数にしてください",
+   "action": "並びを直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "並びの番号に 0 を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-009",
+   "class": "validation",
+   "where": {
+    "screen": "members"
+   },
+   "when": "人の数が上限を超えた",
+   "false_when": "マネージャー 10 人まで・メンバー 50 人まで",
+   "message": "マネージャーは 10 人まで、メンバーは 50 人までです",
+   "action": "選ぶ人を減らす",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "マネージャーを 11 人選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-010",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "会社のどのグループ（消した物も）の短い名前とも同じ",
+   "false_when": "会社のどのグループの短い名前とも違う",
+   "message": "その短い名前は、ほかのグループが使っています",
+   "action": "別の短い名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "ほかのグループと同じ短い名前で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-011",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "同じ上のグループの下に同じ名前",
+   "false_when": "同じ上のグループの下に同じ名前が無い",
+   "message": "同じ上のグループに、同じ名前のグループがあります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "同じ上のグループの下に同じ名前で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-012",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "消していないグループが 200 ある",
+   "false_when": "消していないグループが 200 未満",
+   "message": "グループは 1 つのワークスペースで 200 までです",
+   "action": "使っていないグループを消す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "グループが 200 ある会社でもう 1 つ作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-013",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "消していない層が 8 段ある",
+   "false_when": "消していない層が 8 段未満",
+   "message": "層は 8 段までです",
+   "action": "層を増やさずに作る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "層が 8 段ある会社でもう 1 段作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-014",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "parent_id が無い・別の会社・消した",
+   "false_when": "上のグループが同じ会社に在り消していない",
+   "message": "上のグループが見つかりません。選び直してください",
+   "action": "上のグループを選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した上のグループを選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-015",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "人が無い・別の会社・消した・抜けた・人でない",
+   "false_when": "選んだ人が同じ会社の人で在籍している",
+   "message": "選んだ人が見つかりません。選び直してください",
+   "action": "人を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "外した人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-016",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっている・招待中の人",
+   "false_when": "選んだ人が使える状態",
+   "message": "{名前}さんは今は選べません（{訳}）。別の人を選んでください",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "止まっている人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-017",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "閲覧のみの人をマネージャーにした",
+   "false_when": "マネージャーに選んだ人が閲覧のみでない",
+   "message": "{名前}さんは閲覧のみなので、マネージャーにはできません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "閲覧のみの人をマネージャーに選んで作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-019",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "層の名前が消していない層と同じ",
+   "false_when": "層の名前が消していない層のどれとも違う",
+   "message": "同じ名前の層があります",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "今ある層と同じ名前で層を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-GRP-020",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "layer_id が無い・別の会社・消した",
+   "false_when": "選んだ層が同じ会社に在り消していない",
+   "message": "選んだ層が見つかりません。選び直してください",
+   "action": "層を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した層を選んでグループを作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.17",
+    "D-125.116"
+   ]
+  },
+  {
+   "id": "E-MEM-002",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "道の id が無い・別の会社・消した・外した・AI",
+   "false_when": "同じ会社で在籍している人を指す",
+   "message": "この人は見つかりません。メンバーの一覧を開き直してください",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで外した人の詳細を開き直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-003",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "自分を指した役割・所属の変更",
+   "false_when": "ほかの人の役割・所属を変える",
+   "message": "自分の役割やグループは、自分では変えられません",
+   "action": "ほかの管理者に頼む",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "自分の詳細で役割を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-004",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "管理者が 1 人だけのとき、その人に対して",
+   "false_when": "管理者が 2 人以上いる・相手が管理者でない",
+   "message": "最後の管理者は、役割を下げることも、止めることも、外すこともできません",
+   "action": "先にほかの人を管理者にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "管理者が 1 人の会社でその人の役割を下げる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-005",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "自分を止める・外す",
+   "false_when": "ほかの人を止める・外す",
+   "message": "自分は止めることも外すこともできません。抜けるのは自分の設定からです",
+   "action": "自分の設定から抜ける",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "自分の詳細で止めるを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-006",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "scope_id・グループの id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していないグループを指す",
+   "message": "グループが見つかりません。選び直してください",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消したグループに移す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-007",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "グループの役割を直す相手がそのグループに居ない",
+   "false_when": "相手がそのグループに入っている",
+   "message": "この人は、そのグループに入っていません",
+   "action": "先にグループに入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "入っていないグループの役割を変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-008",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "主の所属を外す・主を兼務の外に出す",
+   "false_when": "主でない所属を外す",
+   "message": "主のグループは、別のグループに移してから外してください",
+   "action": "先に主のグループを移す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "主のグループを兼務から外す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-009",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっている人を止める",
+   "false_when": "止まっていない人を止める",
+   "message": "この人はもう止まっています",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで止めた人をもう一度止める"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-MEM-010",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "止まっていない人を戻す",
+   "false_when": "止まっている人を戻す",
+   "message": "この人は止まっていません",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで戻した人をもう一度戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.18",
+    "D-154.19",
+    "D-128.97"
+   ]
+  },
+  {
+   "id": "E-INV-016",
+   "class": "not_found",
+   "where": {
+    "screen": "members"
+   },
+   "when": "招待の道の id が無い・別の会社・消した",
+   "false_when": "同じ会社の消していない招待を指す",
+   "message": "この招待は見つかりません。メンバーの一覧を開き直してください",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "別のタブで消した招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-017",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "招待を受け入れて入った後に送り直す・取り消す",
+   "false_when": "まだ受け入れていない招待",
+   "message": "この招待はもう使われています",
+   "action": "メンバーの一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "受け入れ済みの招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-018",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "取り消した招待を送り直す・もう一度取り消す",
+   "false_when": "取り消していない招待",
+   "message": "この招待はもう取り消されています",
+   "action": "新しく招く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "取り消した招待を送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  },
+  {
+   "id": "E-INV-019",
+   "class": "conflict",
+   "where": {
+    "screen": "members"
+   },
+   "when": "同じ招待を 1 日に 2 回送り直す（D-154.12）",
+   "false_when": "その日にまだ送り直していない",
+   "message": "この招待は、今日もう送り直しました。明日また送れます",
+   "action": "明日また送る",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でメンバーの画面を開く",
+    "steps": [
+     "同じ招待を同じ日に 2 回送り直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.12",
+    "D-125.150"
+   ]
+  }
+ ]
+}
