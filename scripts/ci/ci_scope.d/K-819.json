@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/member/**", "apps/web/app/(work)/members/[id]/**"], "tests": ["apps/web/tests/k/k819-member-detail.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k819-member-detail.spec.ts": "小窓の登録口 apps/web/features/F10/member/detail-dialogs.tsx（DO_DIALOGS の行を字で読む・K819-UI-018）と道の一覧 apps/web/lib/built-routes.ts（/audit の有無・K819-UI-015）を読む（K-819）"
+ }
+}
