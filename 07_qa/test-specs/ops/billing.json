@@ -1,0 +1,149 @@
+{
+ "screen": "billing",
+ "mock": "06_mockup/v1/v1-billing.html",
+ "state_labels": {
+  "n": "プランと請求",
+  "c": "プランを変える",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:プランを変える",
+   "kind": "button",
+   "label": "プランを変える",
+   "target": null,
+   "states": [
+    "プランと請求",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:PDF",
+   "kind": "button",
+   "label": "PDF",
+   "target": null,
+   "states": [
+    "プランと請求",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:請求先",
+   "kind": "input",
+   "label": "請求先",
+   "target": null,
+   "states": [
+    "プランと請求",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:会社の設定で変える→company-settings",
+   "kind": "link",
+   "label": "会社の設定で変える",
+   "target": "company-settings",
+   "states": [
+    "プランと請求",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "radio:エントリー 30,000AI社員 2 · 担当業務 6 · 1 人 · 会社の層なし",
+   "kind": "radio",
+   "label": "エントリー 30,000AI社員 2 · 担当業務 6 · 1 人 · 会社の層なし",
+   "target": null,
+   "states": [
+    "プランを変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:スタンダード 80,000AI社員 5 · 担当業務 20 · 5 人 · 会社＋個人",
+   "kind": "radio",
+   "label": "スタンダード 80,000AI社員 5 · 担当業務 20 · 5 人 · 会社＋個人",
+   "target": null,
+   "states": [
+    "プランを変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:プロ 150,000AI社員 15 · 無制限 · 承認フロー · 会社が決めた層",
+   "kind": "radio",
+   "label": "プロ 150,000AI社員 15 · 無制限 · 承認フロー · 会社が決めた層",
+   "target": null,
+   "states": [
+    "プランを変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:下げる（止めるものを選ぶ）",
+   "kind": "button",
+   "label": "下げる（止めるものを選ぶ）",
+   "target": null,
+   "states": [
+    "プランを変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "プランを変える"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
