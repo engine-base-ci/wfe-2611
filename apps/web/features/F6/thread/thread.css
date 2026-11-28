@@ -1,0 +1,447 @@
+/* 段 7 のやり取り（右のパネルのタブ「やり取り」・キャンバス TdTalk）。下絵の部品（K-66 の切る段）。
+   値は正本のトークン（--k-*）だけを読む。正の絵はモック /dev/mock/f6（代表の OK answer=fabd031f9b37）。キャンバス TdTalk の細かな px（10・12 の余白・28 の顔）に寄せるかは K-382 の切る段で代表に聞いている。
+   形：タブ（数の札つき）→ 絞り込みの帯 → 1 本の時系列（日付の区切り・書き込み・変更の 1 行・AI の実行の 1 枚・消した跡）→ 下の書く欄。
+   1024 以上はパネルの高さの中で時系列だけがスクロールし、書く欄はパネルの下に残る。1023 以下はパネルが本文の下に回り、高さは中身なり */
+
+/* ---- タブの数の札（まだ読んでいない書き込みの数） ---- */
+.k-talk-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--k-c-detail-avatar-height);
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-full);
+  background: var(--k-st-warning);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- パネルの中の並び ---- */
+.k-talk {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.k-talk-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-approvals-chips-gap);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-approvals-note-border-top);
+}
+.k-talk-chip {
+  height: var(--k-c-run-chip-height);
+  padding: var(--k-c-run-chip-pad);
+  border: var(--k-c-run-chip-border);
+  border-radius: var(--k-c-run-chip-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-c-run-chip-text);
+  line-height: var(--k-c-run-chip-lh);
+  cursor: pointer;
+}
+.k-talk-chip[aria-pressed="true"] {
+  border: var(--k-c-approvals-chip-on-border);
+  background: var(--k-c-approvals-chip-on-bg);
+  color: var(--k-c-approvals-chip-on-fg);
+}
+.k-talk-order {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-label-md);
+  cursor: pointer;
+}
+.k-talk-thread {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--k-s-md) var(--k-s-sm);
+}
+.k-talk-more {
+  align-self: center;
+  margin-top: var(--k-s-sm);
+}
+.k-talk-day {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-talk-day::before,
+.k-talk-day::after {
+  content: "";
+  flex: 1;
+  border-top: var(--k-c-approvals-note-border-top);
+}
+
+/* ---- 顔（人の頭の字・色はデータの色の段） ---- */
+.k-talk-avatar {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-detail-avatar-width);
+  height: var(--k-c-detail-avatar-height);
+  border-radius: var(--k-r-full);
+  background: var(--k-d-lavender);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-label-xs);
+}
+.k-talk-avatar[data-glyph]::before {
+  content: attr(data-glyph);
+}
+.k-talk-avatar[data-size="sm"] {
+  width: var(--k-c-list-avatar-width);
+  height: var(--k-c-list-avatar-height);
+}
+.k-talk-avatar[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-talk-avatar[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+
+/* ---- 書き込み ---- */
+.k-talk-post {
+  display: flex;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0;
+}
+.k-talk-post[data-new] {
+  margin: 0 calc(var(--k-s-md) * -1);
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-st-warning-soft);
+  box-shadow: inset var(--k-s-xs) 0 0 var(--k-st-warning);
+}
+.k-talk-post-main {
+  flex: 1;
+  min-width: 0;
+}
+.k-talk-post-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-talk-post-head b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-talk-sub {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-talk-new {
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-full);
+  background: var(--k-st-warning);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-talk-body {
+  margin: 0;
+  line-height: var(--k-lh-body);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.k-talk-mention {
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+}
+.k-talk-quote {
+  margin: var(--k-s-xs) 0;
+  padding-left: var(--k-s-sm);
+  border-left: var(--k-c-approvals-card-border);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-talk-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin: var(--k-s-xs) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.k-talk-changes li {
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  background: var(--k-select);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-talk-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-xs);
+}
+.k-talk-act {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-label-md);
+  cursor: pointer;
+}
+.k-talk-act:hover {
+  color: var(--k-primary);
+}
+.k-talk-decided {
+  color: var(--k-st-success);
+  font-size: var(--k-text-label-md);
+}
+.k-talk-more-btn {
+  margin-left: auto;
+  min-width: var(--k-c-detail-avatar-width);
+}
+.k-talk-danger {
+  color: var(--k-st-danger);
+}
+
+/* ---- 変更の 1 行・消した跡 ---- */
+.k-talk-line {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) 0 var(--k-s-xs) var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-talk-line > span:not(.k-talk-avatar) {
+  flex: 1;
+  min-width: 0;
+}
+.k-talk-line b {
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+
+/* ---- AI の実行の 1 枚（実行の記録へ） ---- */
+.k-talk-run {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: var(--k-s-xs) 0;
+  padding: var(--k-s-sm);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-field);
+  color: var(--k-on-surface);
+  font-size: var(--k-text-body-sm);
+  text-decoration: none;
+}
+.k-talk-run-mark {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-detail-avatar-width);
+  height: var(--k-c-detail-avatar-height);
+  border-radius: var(--k-r-card);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-h1);
+}
+.k-talk-run-text {
+  flex: 1;
+  min-width: 0;
+}
+.k-talk-run-text .k-talk-sub {
+  display: block;
+}
+
+/* ---- 直している（その場で） ---- */
+.k-talk-edit-acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-xs);
+}
+
+/* ---- 空・読めない ---- */
+.k-talk-center {
+  display: grid;
+  justify-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-lg) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  text-align: center;
+}
+
+/* ---- 書く欄 ---- */
+.k-talk-composer {
+  flex: none;
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md) var(--k-s-md);
+  border-top: var(--k-c-approvals-card-border);
+  background: var(--k-card);
+}
+.k-talk-box {
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+}
+.k-talk-box:focus-within {
+  border: var(--k-c-approvals-chip-on-border);
+}
+.k-talk-box .k-field {
+  gap: 0;
+}
+/* 書く欄の字と高さ（代表の直し 2026-11-20：字が大きい）。広い幅は本文の書き込みと同じ字（13px・行 1.5）・1 行の高さから。
+   幅 767 以下の打った字は 16px のまま（16px 未満だと iPhone が入力のたびに拡大する・D-144.7 の下限）。薄い字（案内）はどの幅も本文の字 */
+.k-talk-box .k-input {
+  min-height: calc(var(--k-s-lg) + var(--k-s-md));
+  padding: var(--k-s-sm);
+  border: 0;
+  border-radius: var(--k-r-field) var(--k-r-field) 0 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body-sm);
+  resize: vertical;
+}
+.k-talk-box .k-input::placeholder {
+  font-size: var(--k-text-body);
+}
+@media (max-width: 767px) {
+  .k-talk-box .k-input {
+    font-size: var(--k-text-input);
+  }
+}
+.k-talk-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-top: var(--k-c-approvals-note-border-top);
+  border-radius: 0 0 var(--k-r-field) var(--k-r-field);
+  background: var(--k-page);
+}
+/* 箱の重なりの順は、メニューの型の置き場が持つ（K-381・components/k の .k-popup-layer）。ここでは当てない */
+.k-talk-menu {
+}
+.k-talk-stage-btn {
+  height: var(--k-c-run-chip-height);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-talk-stage-btn .k-detail-stage {
+  margin: 0 var(--k-s-xs);
+}
+.k-talk-stage-item {
+  gap: var(--k-s-sm);
+}
+.k-talk-stage-item .k-talk-sub {
+  margin-left: auto;
+}
+.k-talk-stage-btn b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-talk-mentions {
+  margin: 0;
+  padding: var(--k-s-xs);
+  list-style: none;
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+  box-shadow: var(--k-overlay-shadow);
+}
+.k-talk-mentions li {
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-radius: var(--k-r-md);
+}
+.k-talk-mentions li[aria-selected="true"] {
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+}
+.k-talk-mentions .k-talk-sub {
+  display: block;
+}
+.k-talk-notify {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-body-sm);
+}
+.k-talk-notify-who {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: 0 var(--k-s-xs) 0 0;
+  border-radius: var(--k-r-full);
+  background: var(--k-primary-soft);
+}
+.k-talk-notify-who button,
+.k-talk-notify-add {
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: transparent;
+  color: var(--k-primary);
+  font: inherit;
+  cursor: pointer;
+}
+.k-talk-send {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+/* 見出し「知らせる人」は折らずに 1 行。長い名前の札が並んだときは札の並びだけを折り返し、＋は並びの最後に付く（K-393） */
+.k-talk-send > .k-talk-sub {
+  flex: none;
+  white-space: nowrap;
+}
+.k-talk-send > .k-talk-notify {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.k-talk-send .k-btn {
+  margin-left: auto;
+}
+.k-talk-hold {
+  display: grid;
+  gap: var(--k-s-sm);
+}
+
+/* ---- 狭い幅の飛び先（パネルが本文の下に回る幅だけ） ---- */
+.k-talk-jump {
+  display: none;
+  color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+}
+@media (max-width: 1023px) {
+  .k-talk-jump {
+    display: inline-flex;
+    gap: var(--k-s-xs);
+    padding: 0 var(--k-s-md) var(--k-s-sm);
+  }
+  .k-talk-thread {
+    overflow: visible;
+  }
+}

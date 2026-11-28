@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {
+   "paths": ["packages/db/migrations/20261125030200_draft_talk_perm.sql"],
+   "tests": ["apps/api/test/features/F5/talk-draft-perm.test.ts", "apps/api/test/features/F5/talk-draft.test.ts"]
+  }
+ ]
+}
