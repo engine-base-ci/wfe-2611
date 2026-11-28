@@ -67,6 +67,9 @@ function swallowNextClick(): void {
   document.addEventListener("pointerdown", done, true);
 }
 
+/** 箱の中で Tab の止まる物（押せない物・隠れた物は除く） */
+const TABBABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function SearchLive({ query, onQuery, onClose, focusTick, apiRef }: SearchLiveProps) {
   const router = useRouter();
   const narrow = useNarrow();
@@ -109,6 +112,23 @@ export default function SearchLive({ query, onQuery, onClose, focusTick, apiRef 
     };
     document.addEventListener("pointerdown", onDown, true);
     return () => document.removeEventListener("pointerdown", onDown, true);
+  }, [narrow, onClose]);
+
+  // 広い幅：箱の最後の札から Tab で抜けると、箱は画面の最後に重なっているので焦点が画面の外へ出てしまう。
+  //   Esc と同じに閉じて焦点を本文へ置く（閉じるときの焦点は本文・K-471 の決め）。Shift+Tab と箱の中の Tab はそのまま
+  useEffect(() => {
+    if (narrow) return;
+    const onTab = (e: globalThis.KeyboardEvent) => {
+      if (e.key !== "Tab" || e.shiftKey || e.defaultPrevented) return;
+      const box = document.querySelector<HTMLElement>("section.k-f7-search");
+      if (!box || !(e.target instanceof Node) || !box.contains(e.target)) return;
+      const stops = [...box.querySelectorAll<HTMLElement>(TABBABLE)].filter((el) => el.tabIndex >= 0);
+      if (stops.at(-1) !== e.target) return;
+      e.preventDefault();
+      onClose("esc");
+    };
+    document.addEventListener("keydown", onTab, true);
+    return () => document.removeEventListener("keydown", onTab, true);
   }, [narrow, onClose]);
 
   const openHit = (hit: SearchHitView | undefined) => {
