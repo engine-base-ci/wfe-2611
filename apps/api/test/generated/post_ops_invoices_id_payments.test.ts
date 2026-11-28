@@ -34,8 +34,11 @@ describe("POST /api/v1/ops/invoices/:id/payments", () => {
     // 本物の試験：apps/api/test/features/F12/ops-invoice-payments.test.ts の「K982-API-013」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F12/ops-invoice-payments.test.ts", "utf8")).toContain("K982-API-013");
   });
-  // 当てはまらない（送る量の守り（1MB）は入口の共通（op.ts・K-144））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_post_ops_invoices_id_payments_too_large");
+  it("test_post_ops_invoices_id_payments_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_post_ops_invoices_id_payments_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/ops-invoice-payments.test.ts の「K982-API-016」（同じ CI の G3 で流れる）

@@ -34,3 +34,12 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF ロゴを DB に書けないなら、Kaname は 503 と E-PAGE-003 を返し、前のロゴのまま先に置いた実体を消す"},
     ],
 }
+
+# 契約に書けない値の決まり（K-144 の SHAPE_024）：口の振る舞いのまま 422。契約の形の表（scripts/ci/contract_shape.d/K-828.py）と同じ並び
+UNEXPRESSIBLE_422 = {
+    "uploadWorkspaceLogo": [
+        "file の欄が無い・ファイルでない（欄 file）",
+        "体が multipart/form-data でない・読めない（欄 body・入口 op.ts の multipart の道）",
+        "中身の先頭の印が PNG・JPEG・WebP でない（E-WS-011・content-type と名前は見ない）",
+    ],
+}

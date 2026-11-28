@@ -8,8 +8,8 @@ import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "./db.js";
 import { toOpsInquiryRow } from "./inbox-shape.js";
+import { isUuid } from "@kaname/contracts";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STATES = ["open", "done"] as const;
 
 export interface InquiryUpdate {
@@ -83,7 +83,7 @@ type Fn = { error?: string; data?: unknown } | null;
 export function createUpdateOpsInquiry(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a) => {
     const id = a.id ?? "";
-    if (!UUID.test(id)) return invalid([{ field: "id", message: "uuid の形" }]);
+    if (!isUuid(id)) return invalid([{ field: "id", message: "uuid の形" }]);
     const parsed = parseInquiryUpdate((a.input ?? {}) as Record<string, unknown>);
     if (!parsed.ok) return invalid(parsed.details);
     const v = parsed.value;

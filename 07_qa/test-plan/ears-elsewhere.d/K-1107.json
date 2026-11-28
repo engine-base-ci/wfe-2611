@@ -33,10 +33,13 @@
     "test_put_ops_invoice_template_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_put_ops_invoice_template_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_put_ops_invoice_template_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_put_ops_invoice_template_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
    }
   }

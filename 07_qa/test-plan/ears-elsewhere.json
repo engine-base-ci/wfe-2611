@@ -3546,11 +3546,13 @@
     "test_get_knowledge_approvals_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_knowledge_approvals_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
-   "na": {
-    "test_get_knowledge_approvals_session_unresolved_2": "読む口の DB の失敗は入口の共通の 503（K144-API-032 が受ける）。この口に固有の 503 の作りは無い（取引 1 つ・読むだけ）"
-   }
+   "na": {}
   },
   "approveKnowledgeRequest": {
    "file": "apps/api/test/features/F9/knowledge-approvals.test.ts",
@@ -3573,10 +3575,13 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_knowledge_requests_id_approve_conflict_2": "K688-API-011"
+    "test_post_knowledge_requests_id_approve_conflict_2": "K688-API-011",
+    "test_post_knowledge_requests_id_approve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
-    "test_post_knowledge_requests_id_approve_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は空）",
     "test_post_knowledge_requests_id_approve_conflict_3": "E-KNW-103 は頼んだあとにフォルダが別の棚へ付け替わったときの引き金の印（KNW_FOLDER_SHELF）を言い換えるだけ。付け替えは画面からは起きず、同じ番号の作りは K-687 の K687-API-004 が受ける"
    }
   },
@@ -3600,11 +3605,13 @@
     "test_post_knowledge_requests_id_decline_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_knowledge_requests_id_decline_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_knowledge_requests_id_decline_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 1 欄）"
-   }
+   "na": {}
   },
   "getKnowledgeShares": {
    "file": "apps/api/test/features/F9/knowledge-shares.test.ts",
@@ -3661,11 +3668,13 @@
     "test_put_knowledge_shares_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_put_knowledge_shares_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_put_knowledge_shares_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 4 欄）"
-   }
+   "na": {}
   },
   "copyKnowledgePage": {
    "file": "apps/api/test/features/F9/knowledge-copy.test.ts",
@@ -5228,13 +5237,16 @@
     "test_get_members_id_remove_preview_rejected_401": "K815-API-013",
     "test_get_members_id_remove_preview_rejected_403": "K815-API-013",
     "test_get_members_id_remove_preview_not_found": "K815-API-014",
-    "test_get_members_id_remove_preview_rejected_422": "K815-API-017"
+    "test_get_members_id_remove_preview_rejected_422": "K815-API-017",
+    "test_get_members_id_remove_preview_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    },
    "na": {
     "test_get_members_id_remove_preview_rate_limited": "入口の共通（429）は契約の op の共通の試験が受ける（K-419 と同じ前例）",
     "test_get_members_id_remove_preview_terms_pending": "入口の共通（同意し直し）",
     "test_get_members_id_remove_preview_mfa_pending": "入口の共通（2 段階認証の付け忘れ）",
-    "test_get_members_id_remove_preview_session_unresolved": "入口の共通（セッション）",
     "test_get_members_id_remove_preview_rejected_422_2": "K815-API-017 が受ける（道の値の uuid は K-800 の K144-API-1109）"
    }
   },
@@ -5250,13 +5262,16 @@
     "test_get_audit_events_rejected_422_3": {
      "file": "apps/api/test/features/F10/audit-search.test.ts",
      "mark": "K850-API-010"
+    },
+    "test_get_audit_events_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {
     "test_get_audit_events_rate_limited": "入口の上限は契約の共通の試験が持つ",
     "test_get_audit_events_terms_pending": "入口の共通の試験が持つ",
-    "test_get_audit_events_mfa_pending": "入口の共通の試験が持つ",
-    "test_get_audit_events_session_unresolved": "入口の共通の試験が持つ"
+    "test_get_audit_events_mfa_pending": "入口の共通の試験が持つ"
    }
   },
   "getWorkspaceSettings": {
@@ -5485,10 +5500,13 @@
     "test_post_me_avatar_terms_pending": {
      "file": "apps/api/test/features/F1/terms.test.ts",
      "mark": "K53-API-005"
+    },
+    "test_post_me_avatar_too_large_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_me_avatar_too_large_2": "体の 1 MB の守り（PAYLOAD_TOO_LARGE）は JSON の体の口の入口の決まり。この口は入口の multipart の道（K-828）で読み、上限は 5 MB の E-ME-010（K834-API-003）",
     "test_post_me_avatar_rate_limited": "上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-421 と同じ扱い）",
     "test_post_me_avatar_mfa_pending": "2 段階を付けるまで進めない（K-321）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-421 と同じ扱い）",
     "test_post_me_avatar_rejected_422_4": "行為 A74 の画面全体の誤り（E-ACT-040：名前・メール・パスワード・2 段階の保存の失敗）で、顔の写真の口の答えではない。顔の写真の失敗は E-ME-010〜012・E-PAGE-003 で K834-API-003・004・009・010 が見る"
@@ -5717,13 +5735,16 @@
     "test_delete_me_workspaces_id_not_found": "K838-API-009",
     "test_delete_me_workspaces_id_rejected_422": "K838-API-009",
     "test_delete_me_workspaces_id_conflict": "K838-API-003",
-    "test_delete_me_workspaces_id_conflict_2": "K838-API-004"
+    "test_delete_me_workspaces_id_conflict_2": "K838-API-004",
+    "test_delete_me_workspaces_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    },
    "na": {
     "test_delete_me_workspaces_id_rate_limited": "入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験）",
     "test_delete_me_workspaces_id_terms_pending": "規約の同意し直しが要る人を止める入口の共通の 403 で、この口の振る舞いではない",
     "test_delete_me_workspaces_id_mfa_pending": "2 段階を付けるまで進めない入口の共通の断り（K-319）で、この口の振る舞いではない",
-    "test_delete_me_workspaces_id_session_unresolved": "セッションが引けない要求を止める入口の共通の 401 で、この口に届かない",
     "test_delete_me_workspaces_id_rejected_422_2": "道の id の NUL を断る入口の共通の 422 で、この口に届かない（uuid の形は K838-API-009 と k144 の K144-API-1181）"
    }
   },
@@ -5752,12 +5773,15 @@
     "test_post_members_id_remove_conflict_2": "K848-API-015",
     "test_post_members_id_remove_conflict_3": "K848-API-004",
     "test_post_members_id_remove_conflict_4": "K848-API-007",
-    "test_post_members_id_remove_conflict_5": "K848-API-007"
+    "test_post_members_id_remove_conflict_5": "K848-API-007",
+    "test_post_members_id_remove_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
     "test_post_members_id_remove_rate_limited": "入口の共通の上限（60 回/分/人）で止まり、この口の振る舞いではない（受けは入口の共通の試験）",
-    "test_post_members_id_remove_mfa_pending": "2 段階を付けるまで進めない入口の共通の断り（K-319）で、この口の振る舞いではない",
-    "test_post_members_id_remove_too_large": "1MB を超える体は入口の共通の 413（D-130.1）で止まり、この口に届かない"
+    "test_post_members_id_remove_mfa_pending": "2 段階を付けるまで進めない入口の共通の断り（K-319）で、この口の振る舞いではない"
    }
   },
   "switchWorkspace": {
@@ -6482,11 +6506,13 @@
     "test_post_inquiries_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）で、口ごとに変わらない"
-   }
+   "na": {}
   },
   "uploadInquiryAttachment": {
    "file": "apps/api/test/features/F12/inquiry-upload.test.ts",
@@ -6509,11 +6535,13 @@
     "test_post_inquiries_attachments_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_attachments_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_attachments_too_large": "体は名前・種類・大きさの 3 つだけ。送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "listMyInquiries": {
    "file": "apps/api/test/features/F12/inquiry-read.test.ts",
@@ -6584,11 +6612,13 @@
     "test_post_inquiries_id_messages_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_id_messages_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "resolveMyInquiry": {
    "file": "apps/api/test/features/F12/inquiry-reply.test.ts",
@@ -6614,11 +6644,13 @@
     "test_post_inquiries_id_resolve_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_id_resolve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_id_resolve_too_large": "体は空の {} だけ。送る量の守りは入口の共通"
-   }
+   "na": {}
   },
   "listNotices": {
    "file": "apps/api/test/features/F12/notices-read.test.ts",
@@ -6665,11 +6697,13 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_notices_id_read_shape": "K954-API-016"
+    "test_post_notices_id_read_shape": "K954-API-016",
+    "test_post_notices_id_read_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
-   "na": {
-    "test_post_notices_id_read_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）で、口ごとに変わらない。体は空の {} だけ"
-   }
+   "na": {}
   },
   "getServiceStatusForMember": {
    "file": "apps/api/test/features/F12/service-status-member.test.ts",
@@ -6754,11 +6788,13 @@
     "test_patch_workspace_billing_contact_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_workspace_billing_contact_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_patch_workspace_billing_contact_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "listWorkspacePlans": {
    "file": "apps/api/test/features/F12/plans.test.ts",
@@ -6802,11 +6838,13 @@
     "test_post_workspace_plan_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_workspace_plan_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_workspace_plan_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "getOpsShell": {
    "file": "apps/api/test/features/F12/ops-workspaces.test.ts",
@@ -6915,11 +6953,13 @@
     "test_post_ops_workspaces_id_members_mid_resend_verification_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_members_mid_resend_verification_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_members_mid_resend_verification_too_large": "体は空の {} だけ。送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "getOpsWorkspaceBilling": {
    "file": "apps/api/test/features/F12/ops-workspace-billing.test.ts",
@@ -6964,11 +7004,13 @@
     "test_post_ops_workspaces_id_plan_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_plan_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_plan_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "openPeek": {
    "file": "apps/api/test/features/F12/ops-peek.test.ts",
@@ -6989,11 +7031,13 @@
     "test_post_ops_workspaces_id_peeks_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_peeks_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_peeks_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "closePeek": {
    "file": "apps/api/test/features/F12/ops-peek.test.ts",
@@ -7038,11 +7082,13 @@
     "test_post_ops_workspaces_id_stop_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_stop_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_stop_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "resumeWorkspace": {
    "file": "apps/api/test/features/F12/ops-stop.test.ts",
@@ -7066,11 +7112,13 @@
     "test_post_ops_workspaces_id_resume_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_resume_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_resume_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "listOpsInquiries": {
    "file": "apps/api/test/features/F12/ops-inbox-read.test.ts",
@@ -7136,11 +7184,13 @@
      "mark": "K144-API-032"
     },
     "test_patch_ops_inquiries_id_conflict": "K974-API-002",
-    "test_patch_ops_inquiries_id_conflict_2": "K974-API-006"
+    "test_patch_ops_inquiries_id_conflict_2": "K974-API-006",
+    "test_patch_ops_inquiries_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
-   "na": {
-    "test_patch_ops_inquiries_id_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "replyOpsInquiry": {
    "file": "apps/api/test/features/F12/ops-inbox-reply.test.ts",
@@ -7162,11 +7212,13 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_ops_inquiries_id_replies_conflict": "K975-API-006"
+    "test_post_ops_inquiries_id_replies_conflict": "K975-API-006",
+    "test_post_ops_inquiries_id_replies_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
-   "na": {
-    "test_post_ops_inquiries_id_replies_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "addOpsInquiryNote": {
    "file": "apps/api/test/features/F12/ops-inbox-reply.test.ts",
@@ -7187,11 +7239,13 @@
     "test_post_ops_inquiries_id_notes_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_inquiries_id_notes_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_inquiries_id_notes_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "listOpsNotices": {
    "file": "apps/api/test/features/F12/ops-notices-read.test.ts",
@@ -7274,11 +7328,13 @@
     "test_post_ops_notices_id_publish_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_publish_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_notices_id_publish_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "sendWorkspaceNotice": {
    "file": "apps/api/test/features/F12/ops-notices-publish.test.ts",
@@ -7301,11 +7357,13 @@
     "test_post_ops_workspaces_id_notices_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_notices_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_notices_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "addIncidentUpdate": {
    "file": "apps/api/test/features/F12/ops-notices-incident.test.ts",
@@ -7329,11 +7387,13 @@
     "test_post_ops_notices_id_updates_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_updates_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_notices_id_updates_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "issueOpsInvoices": {
    "file": "apps/api/test/features/F12/ops-invoices-issue.test.ts",
@@ -7358,6 +7418,10 @@
     "test_post_ops_invoices_issue_conflict_2": {
      "file": "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
      "mark": "K1013-DB-001"
+    },
+    "test_post_ops_invoices_issue_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
@@ -7384,10 +7448,13 @@
     "test_post_ops_invoices_id_payments_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_invoices_id_payments_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_ops_invoices_id_payments_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_invoices_id_payments_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
   },
@@ -7532,10 +7599,13 @@
     "test_post_ops_plan_proposals_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_ops_plan_proposals_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
     "test_post_ops_plan_proposals_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
@@ -7556,10 +7626,13 @@
     "test_patch_ops_plan_proposals_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_ops_plan_proposals_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_patch_ops_plan_proposals_id_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_patch_ops_plan_proposals_id_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
     "test_patch_ops_plan_proposals_id_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
@@ -7578,12 +7651,15 @@
     "test_post_ops_plan_proposals_id_submit_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_id_submit_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
     "test_post_ops_plan_proposals_id_submit_rejected_422": "体を受けない（道の id の形は K988-API-008）",
     "test_post_ops_plan_proposals_id_submit_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
-    "test_post_ops_plan_proposals_id_submit_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_id_submit_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
   },
@@ -7623,10 +7699,13 @@
      "mark": "K144-API-032"
     },
     "test_post_ops_plan_proposals_id_decide_conflict": "K990-API-005",
-    "test_post_ops_plan_proposals_id_decide_conflict_2": "K990-API-004"
+    "test_post_ops_plan_proposals_id_decide_conflict_2": "K990-API-004",
+    "test_post_ops_plan_proposals_id_decide_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
-    "test_post_ops_plan_proposals_id_decide_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_id_decide_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
    }
   },
@@ -7646,10 +7725,13 @@
      "mark": "K144-API-032"
     },
     "test_post_ops_plan_proposals_id_return_conflict": "K990-API-005",
-    "test_post_ops_plan_proposals_id_return_conflict_2": "K990-API-007"
+    "test_post_ops_plan_proposals_id_return_conflict_2": "K990-API-007",
+    "test_post_ops_plan_proposals_id_return_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
-    "test_post_ops_plan_proposals_id_return_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_id_return_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
    }
   },
@@ -7733,11 +7815,13 @@
     "test_post_ticket_kinds_template_updates_id_apply_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ticket_kinds_template_updates_id_apply_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ticket_kinds_template_updates_id_apply_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "listOpsPwned": {
    "file": "apps/api/test/features/F12/ops-pwned.test.ts",
@@ -7781,11 +7865,13 @@
     "test_post_ops_workspaces_id_pwned_ack_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_pwned_ack_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_pwned_ack_too_large": "体は空の {} だけ。送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "updateOpsMemberCaps": {
    "file": "apps/api/test/features/F12/ops-team-edit.test.ts",
@@ -7851,10 +7937,13 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_ops_templates_id_versions_conflict_2": "K1010-API-014"
+    "test_post_ops_templates_id_versions_conflict_2": "K1010-API-014",
+    "test_post_ops_templates_id_versions_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
-    "test_post_ops_templates_id_versions_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_templates_id_versions_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
     "test_post_ops_templates_id_versions_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
@@ -7948,11 +8037,13 @@
     "test_post_ops_notices_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_notices_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "updateOpsNotice": {
    "file": "apps/api/test/features/F12/ops-notices-write.test.ts",
@@ -7976,11 +8067,13 @@
     "test_patch_ops_notices_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_ops_notices_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_patch_ops_notices_id_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "getOpsInvoiceTemplate": {
    "file": "apps/api/test/features/F12/ops-invoice-template.test.ts",
@@ -8015,10 +8108,13 @@
     "test_put_ops_invoice_template_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_put_ops_invoice_template_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_put_ops_invoice_template_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_put_ops_invoice_template_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
    }
   },
@@ -8035,10 +8131,17 @@
     "test_post_ops_pwned_pending_ack_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_pwned_pending_ack_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_pwned_pending_ack_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_ops_pwned_pending_ack_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_pwned_pending_ack_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
    }
   }

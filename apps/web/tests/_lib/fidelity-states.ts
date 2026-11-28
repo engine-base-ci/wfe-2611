@@ -531,6 +531,13 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.locator('[data-part="auth-box"] [data-act="passkey"]')).toBeVisible();
   },
+  // 招待のリンクから来たログイン（K-855・キャンバス AuthLogin・形は login と同じ）：next に招待の画面の道を付けて開くだけ。招待の印は作り物
+  // prettier-ignore
+  "login-invite": async (page, path) => {
+    await loginApi(page);
+    await page.goto(path.replace("{ticket}", "inv-fidelity-0001"));
+    await expect(page.locator('[data-part="auth-box"] [data-act="passkey"]')).toBeVisible();
+  },
   // 確認のコード（K-221・キャンバス Auth2FA）：ログインの口を two_factor: true にし、メールとパスワードを入れて「次へ」まで進める
   "login-2fa": async (page, path) => {
     await loginApi(page);
@@ -592,6 +599,14 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
   },
   //   bridge-installed：この PC の口が答え（版 1.4）、つなぐと「別のアカウントでつながっている」（409）。押して「切り替える」が出るまで待つ
   "bridge-installed": async (page, path) => {
+    await shellApi(page, 2, { devices: [], local: localBridgeOtherAccount });
+    await page.goto(path);
+    await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
+    await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
+  },
+  // PC をつなぐの足の帯（K-367・キャンバス MePCInstalled・形は bridge-installed と同じ）：同じ整え方（この PC の口が答え・押して「切り替える」が出るまで）
+  // prettier-ignore
+  "bridge-setup-foot": async (page, path) => {
     await shellApi(page, 2, { devices: [], local: localBridgeOtherAccount });
     await page.goto(path);
     await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();

@@ -6,7 +6,7 @@
 //   似たもの：api.ts の claimBridge（前の道すじの口を直に叩くだけで Bridge の名乗りを通らない）・viewerViaApi（招待で入る人を作るが、役は viewer で会社も新しく作る）。
 //   api.ts は画面の試験のほとんどが読むので、ここでは変えない（変えると、チケットの範囲の CI が読んでいる試験を全部流す）
 import { randomBytes } from "node:crypto";
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { API, PW, addTestEntry, admin, api, sha256, testIp, uniqEmail } from "./api";
 import type { Newcomer } from "./newcomer";
 import { testPc, type TestPc } from "./test-pc";
@@ -58,7 +58,7 @@ export interface TicketSections {
 
 /** 区画ごとの文字を、本文 1 枚の文書の木（段落）に組む（段落は行ごと。text は口が doc から作るのでここでは作らない）。
  *  引数の形（区画の鍵 → 本文）は呼ぶ側の試験を替えないために残す。K-437 の口は body を受け、K-578 の後は sections を受けない */
-const bodyOf = (sections: TicketSections) => ({
+export const bodyOf = (sections: TicketSections) => ({
   doc: {
     type: "doc",
     content: [sections.purpose, sections.done, sections.todo]
@@ -116,4 +116,16 @@ export async function teammate(me: Newcomer, name = "同僚"): Promise<{ memberI
   );
   await addTestEntry(u[0]!.id); // 入り方を 1 つ持つ人にする（付けるまで進めないの印を下ろす・K-337）
   return { memberId: u[0]!.m, token: r.json.data.token };
+}
+
+/** 題の行の「AI に任せる」を押す（頁全体で役と名前で探す）。確認項目が 0 件のときの小窓（K-573・K-455）が出れば、
+ *  使わない理由を書いて「理由を書いて任せる」を押す（m3 の pressDelegate と同じ。小窓の無い形でも通る） */
+export async function pressDelegate(page: Page, reason = "定型の作業（試験）"): Promise<void> {
+  await page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+  const reasonBox = page.getByRole("dialog").getByRole("textbox", { name: "確認項目を使わない理由", exact: true });
+  await expect(reasonBox.or(page.getByRole("region", { name: "AI に任せる" }).getByText("に任せました"))).toBeVisible();
+  if (await reasonBox.isVisible()) {
+    await reasonBox.fill(reason);
+    await page.getByRole("dialog").getByRole("button", { name: "理由を書いて任せる", exact: true }).click();
+  }
 }

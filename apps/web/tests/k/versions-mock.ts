@@ -54,6 +54,8 @@ export interface VerRow {
   /** ISO の時刻（日本時間 11/21 09:40 は 2026-11-21T00:40:00Z） */
   at: string;
   restoredFrom?: number | null;
+  /** 口の答えの summary（渡さなければ 作成／版 N に戻した／本文を直した） */
+  summary?: string;
 }
 export const L1 = "目的：セイコー商事に 11 月分の請求を間違いなく届ける";
 export const L2 = "完了の条件：請求書が送られ、宛先が登録した連絡先と合っている";
@@ -185,7 +187,7 @@ export const failed = (): Reply => err(503, "server_error", "E-PAGE-003");
 const currentOf = (m: VersionsMock): VerRow => [...m.rows].sort((a, b) => b.version - a.version)[0]!;
 const who = (r: VerRow): { id: string; name: string } | null => (r.by === null ? null : { id: ME_ID, name: r.by });
 const summaryOf = (r: VerRow): string =>
-  r.version === 1 ? "作成" : r.restoredFrom ? `版 ${r.restoredFrom} に戻した` : "本文を直した";
+  r.summary ?? (r.version === 1 ? "作成" : r.restoredFrom ? `版 ${r.restoredFrom} に戻した` : "本文を直した");
 /** 道の問い合わせの番号（1 以上の整数の字だけ。違う形は null） */
 const pick = (raw: string | null): number | null | "bad" =>
   raw === null ? null : /^[1-9][0-9]{0,8}$/.test(raw) ? Number(raw) : "bad";

@@ -226,10 +226,18 @@ export const sortNotesOf = async (memberId: string, ticketId: string): Promise<n
 export const makeBtn = (page: Page): Locator =>
   page.locator("header.k-page-head").getByRole("button", { name: "作る", exact: true });
 export const bodyBox = (page: Page): Locator => page.getByRole("textbox", { name: "本文", exact: true });
-export const itemsGrid = (page: Page): Locator => page.getByRole("group", { name: "項目", exact: true });
+/** 項目の表：作る面は group「項目」、詳細は右のパネル（K-1153 の形・aside「チケットのパネル」） */
+export const itemsGrid = (page: Page): Locator =>
+  page
+    .getByRole("group", { name: "項目", exact: true })
+    .or(page.getByRole("complementary", { name: "チケットのパネル", exact: true }));
 /** 項目の表の行（名前の字で始まる組）。名前の列は読み上げから外れているので字で探す */
 export const pairOf = (page: Page, name: string): Locator =>
-  page.locator(".k-f4d-pair").filter({ has: page.locator(".k-f4d-name", { hasText: new RegExp(`^${esc(name)}`) }) });
+  page
+    .locator(".k-f4d-pair")
+    .filter({ has: page.locator(".k-f4d-name", { hasText: new RegExp(`^${esc(name)}`) }) })
+    // 詳細の右のパネルの行（K-1153：dt が名前の .k-detail-field）
+    .or(page.locator(".k-detail-field").filter({ has: page.locator("dt", { hasText: new RegExp(`^${esc(name)}$`) }) }));
 /** 左のメニューの「チケットを作る」で作る面を開く。本文の部品が出るまで待つ */
 export async function openCreateFromMenu(page: Page): Promise<void> {
   await page.goto("/tickets");
@@ -508,10 +516,12 @@ export async function setParentOnDetail(page: Page, entry: Locator, search: stri
 export const linkCard = (page: Page): Locator =>
   page.getByRole("region", { name: "子チケット・つながり", exact: true });
 export const linkDialog = (page: Page): Locator => page.getByRole("dialog", { name: "つながりを足す", exact: true });
-/** 詳細のカードを画面に入れる（見えたとき 1 回読む・K-452）。見出しが出るまで待つ */
+/** 詳細のカードを開く（閉じた形が既定で、「開く」で口を 1 回読む・K-452）。見出しが出るまで待つ */
 export async function showLinks(page: Page): Promise<void> {
   await expect(linkCard(page)).toBeVisible();
   await linkCard(page).scrollIntoViewIfNeeded();
+  const open = linkCard(page).getByRole("button", { name: "開く", exact: true });
+  if (await open.isVisible()) await open.click();
   await expect(linkCard(page).getByRole("heading", { level: 3, name: /^つながり \d+$/ })).toBeVisible();
 }
 export const linkRow = (page: Page, text: string | RegExp): Locator =>

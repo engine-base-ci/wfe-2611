@@ -14,7 +14,7 @@ import { API, admin, loginAs } from "../_lib/api";
 import { AI, ticketState, workOf, type Job, type PcWork } from "../_lib/f5-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { pairedPc, teammate, ticketOf } from "../_lib/prep";
+import { pairedPc, pressDelegate, teammate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -335,7 +335,7 @@ test.describe.serial("F5 とまたぐ：AI に任せている間と承認待ち�
 
   test("K399-X-001 AI に任せている間（実行中）：札は鍵の札でメニューを開かない・updateTicket に直に送ると 409・DB の段は running のまま・段の変更の 1 行は増えない", async () => {
     await openTicket(page, t, title);
-    await page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+    await pressDelegate(page);
     let got: Job | null = null;
     await expect.poll(async () => (got ??= await w.take()), "任せた仕事は任せた人の PC に渡る").not.toBeNull();
     job = got!;

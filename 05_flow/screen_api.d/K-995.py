@@ -38,6 +38,9 @@ LIST_DETAILS = {
 SUCCESS_STATUS = {"ackOpsPwned": 200}
 
 ERRORS_4XX = {
+    "listOpsPwned": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
     "ackOpsPwned": [
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},
          "trigger": "指した会社が無い・見えない（無い id・運営の会社・作りかけ・消した会社）。欄・details は付けない",

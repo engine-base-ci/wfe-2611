@@ -1120,6 +1120,26 @@ class ContractShapeTest(unittest.TestCase):
         # K-461：知らせの一覧（DB から limit+1 件取った行を次の分の有無を見た後に limit 件に戻す）と、payload の写しを短くする clip（文字の単位）
         "apps/api/src/features/F7/notifications/list.ts": [("rows.slice(0, q.limit)", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
         "apps/api/src/features/F7/notifications/shape.ts": [("Array.from(s).slice(0, CLIP_MAX)", "payload の写しを短くする（人が書く入力でない・文字（コードポイント）の単位で切る）")],
+        # 統合の枝（段11〜13）の口：一覧の上限・日付の形・ログの断りの頭・宛ての伏せ字・PC の結果・前からの行の引用（人が書く入力を黙って切る所は無い）
+        "apps/api/src/features/F10/audit/list.ts": [("rows.slice(0, q.limit)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F10/audit/patterns.ts": [("v.slice(0, 10)", "日時の字の頭の日付の部分を暦に在るかの確かめに使う（入力を切って残すのではない）")],
+        "apps/api/src/features/F10/audit/search.ts": [("rows.slice(0, n)", "DB から読んだ 1 回分の行を、読む数 n に揃える（入力でない）"),
+                                                       ("hits.slice(0, q.limit)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F10/me/email.ts": [("email.slice(0, Math.min(2, at))", "知らせに出すメールの宛てを頭 2 字だけ見せて伏せる（入力を切って残すのではない）")],
+        "apps/api/src/features/F11/portal/questions.ts": [("slice(0, QUESTION_CHARS)", "PC（AI）が返した結果の字を質問の長さにそろえる（人が書く欄でない）")],
+        "apps/api/src/features/F12/inquiries/read.ts": [("rows.slice(0, limit)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F12/notices/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F12/ops/inbox-reply.ts": [("word.slice(0, 40)", "DB の断りの言葉をログに頭 40 字だけ残す（入力でない）")],
+        "apps/api/src/features/F12/ops/inbox-update.ts": [("word.slice(0, 40)", "DB の断りの言葉をログに頭 40 字だけ残す（入力でない）")],
+        "apps/api/src/features/F12/ops/invoices-mail.ts": [("month.slice(0, 4)", "確かめ済みの年月 YYYY-MM から年を取り出す（入力を切って残すのではない）")],
+        "apps/api/src/features/F12/ops/invoices-pdf.ts": [("toISOString().slice(0, 10)", "月の終わりの日を日付の形にする（入力でない）")],
+        "apps/api/src/features/F12/ops/notices/incident.ts": [("word.slice(0, 40)", "DB の断りの言葉をログに頭 40 字だけ残す（入力でない）")],
+        "apps/api/src/features/F12/ops/notices/read.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F12/ops/plans/read.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、続きの有無を見た後に上限の件数に戻す（入力でない）")],
+        "apps/api/src/features/F12/ops/plans/write.ts": [("toISOString().slice(0, 10)", "日付の字が暦に在るかを比べる（入力を切って残すのではない）")],
+        "apps/api/src/features/F12/ops/team-edit.ts": [("String(r.error).slice(0, 40)", "DB の断りの言葉をログに頭 40 字だけ残す（入力でない）")],
+        "apps/api/src/features/F9/knowledge/review.ts": [("cps.slice(0, LINE_MAX)", "食い違いの点の文に、前から在るページの行を 60 字まで引く（書いた本文は切らない・見せる文の引用）")],
+        "apps/api/src/features/F9/knowledge/tree-parts/shared-rows.ts": [("xs.slice(0, left)", "共有された物の行を、木の上限の残りの数に戻す（入力でない）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:

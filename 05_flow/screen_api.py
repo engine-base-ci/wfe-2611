@@ -478,6 +478,9 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    "getOpsShell": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
     # パスワードで入る（K-301・D-042・D-128.141）。違う（401・残り回数）・会社の人が無い（403）・空と形（422）・5 回でロック（429）・写す所の失敗（500）
     "signInWithPassword": [
         {"status": 401, "code": "E-AUTH-001", "body": {"error": "auth", "code": "E-AUTH-001", "remaining": 4}, "errors": ["E-AUTH-001"],
@@ -1069,13 +1072,13 @@ RESPONSES = {
     #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
     "getOpsShell": ("OpsShell", {"operator": "object", "inbox": "object", "invoices": "object?", "workspaces": "object", "runs_month": "object", "pwned": "object"}),
     # 受信箱の 1 件（K-948・D-156.5）：一覧の 1 行の 10 欄と、やり取り（返事と社内メモ）・付いてきた画面の情報・右のワークスペースの様子
-    "getOpsInquiry": ("OpsInquiryDetail", {"id": "uuid", "title": "string", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
+    "getOpsInquiry": ("OpsInquiryDetail", {"id": "uuid", "title": "string?", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
                                            "owner": "object?", "later_until": "string?", "created_at": "string", "last_message_at": "string?",
                                            "messages": "array", "context": "object", "workspace_status": "object"}),
     # お知らせの 1 件（K-1004・D-156.5）：一覧の 1 行の 11 欄と本文・メンテ・影響・続報・届く数（16 欄）。作る・直す・出す・続報・1 社に送るも同じ形（断片 K-1004）
-    "getOpsNotice": ("OpsNoticeDetail", {"id": "uuid", "kind": "string", "title": "string", "audience": "object", "state": "string",
+    "getOpsNotice": ("OpsNoticeDetail", {"id": "uuid", "kind": "string", "title": "string?", "audience": "object", "state": "string",
                                          "placements": "string[]", "publish_at": "string?", "published_at": "string?", "author_name": "string?",
-                                         "incident_state": "string?", "admins_only": "boolean", "body": "string", "maintenance": "object?",
+                                         "incident_state": "string?", "admins_only": "boolean", "body": "string?", "maintenance": "object?",
                                          "impact": "string?", "updates": "array", "reach": "object"}),
     # いまの様子（K-307・誰でも）：直っていない障害（公開したお知らせに結んだもの）といま中のメンテナンスだけ。ログイン後の口の型 ServiceStatus とは分ける
     "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),

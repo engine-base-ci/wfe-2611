@@ -17,11 +17,13 @@
     "test_get_knowledge_approvals_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_knowledge_approvals_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
-   "na": {
-    "test_get_knowledge_approvals_session_unresolved_2": "読む口の DB の失敗は入口の共通の 503（K144-API-032 が受ける）。この口に固有の 503 の作りは無い（取引 1 つ・読むだけ）"
-   }
+   "na": {}
   },
   "approveKnowledgeRequest": {
    "file": "apps/api/test/features/F9/knowledge-approvals.test.ts",
@@ -44,10 +46,13 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_knowledge_requests_id_approve_conflict_2": "K688-API-011"
+    "test_post_knowledge_requests_id_approve_conflict_2": "K688-API-011",
+    "test_post_knowledge_requests_id_approve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
    "na": {
-    "test_post_knowledge_requests_id_approve_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は空）",
     "test_post_knowledge_requests_id_approve_conflict_3": "E-KNW-103 は頼んだあとにフォルダが別の棚へ付け替わったときの引き金の印（KNW_FOLDER_SHELF）を言い換えるだけ。付け替えは画面からは起きず、同じ番号の作りは K-687 の K687-API-004 が受ける"
    }
   },
@@ -71,11 +76,13 @@
     "test_post_knowledge_requests_id_decline_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_knowledge_requests_id_decline_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_knowledge_requests_id_decline_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 1 欄）"
-   }
+   "na": {}
   }
  }
 }

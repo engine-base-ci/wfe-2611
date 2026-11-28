@@ -118,7 +118,7 @@
 | EP-103 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-104 | DELETE | `/api/v1/invitations/:id` | 削除（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 422 409 503 429 403 403 503 |
 | EP-105 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 503 413 429 403 403 503 |
-| EP-106 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 422 404 503 413 429 403 403 503 |
+| EP-106 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 422 404 503 409 413 429 403 403 503 |
 | EP-107 | GET | `/api/v1/invoices/:id/pdf` | 取得（invoices）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 404 422 409 429 403 403 503 |
 | EP-108 | GET | `/api/v1/knowledge/approvals` | 取得（knowledge_requests）— 自分が承認できる承認待ち | A136 | 1 | member |  | 401 403 422 503 429 403 403 503 |
 | EP-109 | POST | `/api/v1/knowledge/folders` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 409 422 404 409 503 413 429 403 403 503 |
@@ -191,16 +191,16 @@
 | EP-176 | GET | `/api/v1/notifications` | 取得（notifications）— 自分宛ての知らせを新しい順に見る（ | A109 | 1 | member |  | 401 403 422 409 429 403 403 503 |
 | EP-177 | PATCH | `/api/v1/notifications/:id` | 更新（notifications）— 知らせを見てチケットへ行く | A109 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-178 | POST | `/api/v1/notifications/read-all` | 作成・実行（notifications）— 知らせを見てチケットへ行く | A109 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-179 | GET | `/api/v1/ops/inquiries` | 取得（inquiries）— 運営の受信箱（箱と何について で絞る・数は | A70 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-179 | GET | `/api/v1/ops/inquiries` | 取得（inquiries）— 運営の受信箱（箱と何について で絞る・数は | A70 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
 | EP-180 | GET | `/api/v1/ops/inquiries/:id` | 取得（ops）— 問い合わせに答える | A70 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
 | EP-181 | PATCH | `/api/v1/ops/inquiries/:id` | 更新（ops）— 問い合わせに答える | A70 | 1 | ops | C2 C6 | 401 403 404 422 409 409 413 429 403 403 503 |
 | EP-182 | POST | `/api/v1/ops/inquiries/:id/notes` | 作成・実行（ops）— 問い合わせに答える | A70 | 1 | ops | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-183 | POST | `/api/v1/ops/inquiries/:id/replies` | 作成・実行（ops）— 問い合わせに答える | A70 | 1 | ops | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-184 | GET | `/api/v1/ops/invoice-template` | 取得（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops |  | 401 403 422 429 403 403 503 |
-| EP-185 | PUT | `/api/v1/ops/invoice-template` | 置き換え（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops | C2 | 401 403 422 409 413 429 403 403 503 |
-| EP-186 | GET | `/api/v1/ops/invoices` | 取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払 | A72 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-184 | GET | `/api/v1/ops/invoice-template` | 取得（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
+| EP-185 | PUT | `/api/v1/ops/invoice-template` | 置き換え（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops | C2 | 401 403 422 409 404 413 429 403 403 503 |
+| EP-186 | GET | `/api/v1/ops/invoices` | 取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払 | A72 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
 | EP-187 | POST | `/api/v1/ops/invoices/:id/payments` | 作成・実行（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-188 | POST | `/api/v1/ops/invoices/issue` | 作成・実行（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops | C2 C4 | 401 403 409 422 409 413 429 403 403 503 |
+| EP-188 | POST | `/api/v1/ops/invoices/issue` | 作成・実行（ops）— 請求書を出し、入金を記録する | A72 | 1 | ops | C2 C4 | 401 403 409 422 409 404 413 429 403 403 503 |
 | EP-189 | GET | `/api/v1/ops/members` | 取得（ops_members）— 生きている運営の人を作った順に見る（で | A134 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
 | EP-190 | POST | `/api/v1/ops/members` | 作成・実行（ops）— 運営の人を足し、できることを決める | A134 | 1 | ops | C2 C4 | 401 403 409 422 409 503 413 429 403 403 503 |
 | EP-191 | PATCH | `/api/v1/ops/members/:id` | 更新（ops）— 運営の人を足し、できることを決める | A134 | 1 | ops | C2 C4 | 401 403 404 422 409 409 413 429 403 403 503 |
@@ -211,7 +211,7 @@
 | EP-196 | PATCH | `/api/v1/ops/notices/:id` | 更新（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 422 409 409 413 429 403 403 503 |
 | EP-197 | POST | `/api/v1/ops/notices/:id/publish` | 作成・実行（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 409 422 409 413 429 403 403 503 |
 | EP-198 | POST | `/api/v1/ops/notices/:id/updates` | 作成・実行（ops）— お知らせを出す | A71 | 1 | ops | C2 C6 | 401 403 404 409 422 409 413 429 403 403 503 |
-| EP-199 | GET | `/api/v1/ops/operations` | 取得（ops）— 操作の版を見る（読むだけ） | A80 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-199 | GET | `/api/v1/ops/operations` | 取得（ops）— 操作の版を見る（読むだけ） | A80 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
 | EP-200 | DELETE | `/api/v1/ops/peeks/:id` | 削除（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops | C2 | 401 403 404 422 409 429 403 403 503 |
 | EP-201 | GET | `/api/v1/ops/plan_history` | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | A133 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
 | EP-202 | GET | `/api/v1/ops/plan_proposals` | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | A133 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
@@ -222,13 +222,13 @@
 | EP-207 | POST | `/api/v1/ops/plan_proposals/:id/return` | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決め | A133 | 1 | ops | C2 C4 C6 | 401 403 404 409 422 409 413 429 403 403 503 |
 | EP-208 | POST | `/api/v1/ops/plan_proposals/:id/submit` | 作成・実行（ops）— プランの値段・中身を変える案を作り、別の人が決め | A133 | 1 | ops | C2 C4 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-209 | GET | `/api/v1/ops/plans` | 取得（ops）— プランの値段・中身を変える案を作り、別の人が決める | A133 | 1 | ops | C4 | 401 403 422 429 403 403 503 |
-| EP-210 | GET | `/api/v1/ops/pwned` | 取得（security_events）— 照合が使えなかった登録の会社を | A138 | 1 | ops |  | 401 403 422 429 403 403 503 |
-| EP-211 | POST | `/api/v1/ops/pwned/pending/ack` | 作成・実行（ops）— パスワードの照合が使えなかった登録を確かめる（件 | A138 | 1 | ops | C2 | 401 403 409 422 503 413 429 403 403 503 |
-| EP-212 | GET | `/api/v1/ops/shell` | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-210 | GET | `/api/v1/ops/pwned` | 取得（security_events）— 照合が使えなかった登録の会社を | A138 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
+| EP-211 | POST | `/api/v1/ops/pwned/pending/ack` | 作成・実行（ops）— パスワードの照合が使えなかった登録を確かめる（件 | A138 | 1 | ops | C2 | 401 403 409 422 503 404 413 429 403 403 503 |
+| EP-212 | GET | `/api/v1/ops/shell` | 取得（ops）— 各ワークスペースの様子を見る（気にかける） | A60 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
 | EP-213 | GET | `/api/v1/ops/templates` | 取得（distributions）— 運営のひな形（種別・状態・項目）を | A128 | 1 | ops |  | 401 403 422 429 403 403 503 |
 | EP-214 | GET | `/api/v1/ops/templates/:id` | 取得（ops）— ひな形（層・マスタ）を作って配る | A128 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
 | EP-215 | POST | `/api/v1/ops/templates/:id/versions` | 作成・実行（ops）— ひな形（層・マスタ）を作って配る | A128 | 1 | ops | C2 C6 | 401 403 404 409 422 409 413 429 403 403 503 |
-| EP-216 | GET | `/api/v1/ops/workspaces` | 取得（tenants）— 全社の一覧（名前・管理者のメールで探す・気にか | A60 | 1 | ops |  | 401 403 422 429 403 403 503 |
+| EP-216 | GET | `/api/v1/ops/workspaces` | 取得（tenants）— 全社の一覧（名前・管理者のメールで探す・気にか | A60 | 1 | ops |  | 401 403 422 404 429 403 403 503 |
 | EP-217 | GET | `/api/v1/ops/workspaces/:id` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
 | EP-218 | GET | `/api/v1/ops/workspaces/:id/audit` | 取得（ops_audit_events）— 1 社についての運営の人の操 | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
 | EP-219 | GET | `/api/v1/ops/workspaces/:id/billing` | 取得（ops）— ワークスペースの 1 社を扱う（いまの状態・メンバー・ | A64 | 1 | ops |  | 401 403 404 422 429 403 403 503 |
@@ -241,9 +241,9 @@
 | EP-226 | POST | `/api/v1/ops/workspaces/:id/pwned/ack` | 作成・実行（ops）— パスワードの照合が使えなかった登録を確かめる（件 | A138 | 1 | ops | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-227 | POST | `/api/v1/ops/workspaces/:id/resume` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-228 | POST | `/api/v1/ops/workspaces/:id/stop` | 作成・実行（ops）— ワークスペースを止める・再開する（理由・先に知ら | A127 | 1 | ops | C2 | 401 403 404 409 422 409 413 429 403 403 503 |
-| EP-229 | GET | `/api/v1/portal` | 取得（portal）— 見せてもらったチケットを見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
+| EP-229 | GET | `/api/v1/portal` | 取得（portal）— 見せてもらったチケットを見る | A125 | 1 | client |  | 401 403 422 404 429 403 403 503 |
 | EP-230 | POST | `/api/v1/portal/attachments` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 422 503 413 429 403 403 503 |
-| EP-231 | GET | `/api/v1/portal/notices` | 取得（portal）— 見せてもらったチケットを見る | A125 | 1 | client |  | 401 403 422 429 403 403 503 |
+| EP-231 | GET | `/api/v1/portal/notices` | 取得（portal）— 見せてもらったチケットを見る | A125 | 1 | client |  | 401 403 422 404 429 403 403 503 |
 | EP-232 | POST | `/api/v1/portal/requests` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-233 | GET | `/api/v1/portal/requests/:id` | 取得（portal）— 依頼を出す・やり取りする | A124 | 1 | client |  | 401 403 404 422 429 403 403 503 |
 | EP-234 | POST | `/api/v1/portal/requests/:id/messages` | 作成・実行（portal）— 依頼を出す・やり取りする | A124 | 1 | client | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |

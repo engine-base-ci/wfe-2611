@@ -112,10 +112,10 @@ test("K918-M1-01 招く → 参加：社内の人がゲストのグループを�
     role_id: string;
     guest_group_id: string | null;
     scope_id: string | null;
-    accepted_at: Date | null;
-  }>("select role_id, guest_group_id, scope_id, accepted_at from invitations where email = $1", [guest.email]);
+    accepted_member_id: string | null;
+  }>("select role_id, guest_group_id, scope_id, accepted_member_id from invitations where email = $1", [guest.email]);
   expect(inv).toMatchObject({ role_id: "requester", guest_group_id: r.groupId, scope_id: null });
-  expect(inv!.accepted_at).not.toBeNull();
+  expect(inv!.accepted_member_id, "受けた招待は受けた人を持つ（列は accepted_member_id）").not.toBeNull();
   // 先方の場所
   await expect(guest.page.getByRole("heading", { level: 1 })).toContainText(MSG.portalTitle);
   await expect(
@@ -190,7 +190,8 @@ test("K918-M1-03 受けて普通のチケット：社内が「チケットを作
   ).toEqual([r.groupId]);
   // 社内の一覧：ふつうのチケットとして並ぶ
   await page.goto("/tickets");
-  await expect(page.getByText(t.title, { exact: true }).first()).toBeVisible();
+  // 一覧は幅で表とカードを出し分ける（隠れている方にも同じ字が在る）。見えている物を見る
+  await expect(page.getByText(t.title, { exact: true }).filter({ visible: true }).first()).toBeVisible();
   // ゲストの受け箱に 1 件・メールは出さない
   await expect.poll(() => inboxCount(guest.memberId, "ticket.guest_shared"), "見せたらゲストの受け箱に 1 件").toBe(1);
   expect(box.mails(guest.email, /チケット|見せ/), "ゲストにメールは出ない").toHaveLength(0);
@@ -215,7 +216,11 @@ test("K918-M1-04 ゲストに見える形：ゲストの場所の「見せても
   await detailTo(t.id, DETAIL); // 詳細は書く画面が無いので DB で置き、ゲストの画面に出ることを見る
   // ホームの行
   await guest.page.goto("/portal");
-  const row = guest.page.getByRole("link", { name: new RegExp(t.title) }).first();
+  // 依頼の行（「済み」）も同じ題名を持つ。見せてもらったチケットの箱の中の行を見る
+  const row = guest.page
+    .getByRole("region", { name: MSG.boxTickets, exact: true })
+    .getByRole("link", { name: new RegExp(t.title) })
+    .first();
   await expect(row).toBeVisible();
   await expect(row).toContainText("作っている");
   // 開く：口の答えを横から読む（page.route で答えを作らない・待つだけ）

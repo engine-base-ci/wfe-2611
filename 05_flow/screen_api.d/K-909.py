@@ -6,7 +6,7 @@ INPUTS = {
     "uploadPortalAttachment": ("PortalAttachmentInput", {"name": "string", "content_type": "string", "data": "string"}),
 }
 RESPONSES = {
-    "uploadPortalAttachment": ("PortalAttachmentAdded", {"id": "uuid", "name": "string"}),
+    "uploadPortalAttachment": ("PortalAttachmentAdded", {"id": "uuid", "name": "string?"}),
 }
 REQUIRED_INPUTS = {
     "uploadPortalAttachment": ["name", "content_type", "data"],   # attachment.ts の input（無い欄は入口の strict な形が 422）
