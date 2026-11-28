@@ -243,8 +243,10 @@ test("K54-M1-04 確定済みでもう一度：同じリンクをもう一度 →
   }
   // 確定したブラウザ（ログイン中）で同じリンク → 二重に作らない（もう一度「登録できました」にしない）。
   //   自分の取得（GET /api/v1/me・K-70）が入ったので、K52-UI-010 のとおり中（チケットの画面）へ入る（前の注の読み替え・PM の決め 2026-11-28）
+  //   この人はまだパスキーも 2 段階も無いので、中の口は付けるまで進めない（K-308・K-321・D-128.141）。中へ入った後、
+  //   ログインと安全の画面へ戻される（next はチケットの画面）。どちらでも「登録できました」に戻らないことを見る
   await openLink(page, url);
-  await expect(page).toHaveURL(/\/tickets(\?|$)/);
+  await expect(page).toHaveURL(/\/tickets(\?|$)|\/mfa-setup\?next=%2Ftickets(&|$)/);
   await expect(heading(page, "登録できました")).toHaveCount(0);
   expect(await confirmed(w.email), "本人は 1 人のまま").toHaveLength(1);
 });
