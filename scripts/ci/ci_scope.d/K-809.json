@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/members/**", "apps/web/features/F10/invite/**"],
+   "tests": ["apps/web/tests/k/k809-invite-rows.spec.ts"]}
+ ]
+}
