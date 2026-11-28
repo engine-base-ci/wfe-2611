@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F4/sections-retire.test.ts": "03_architecture/db-catalog.json・08_api/openapi.yaml・07_qa/test-specs/errors.json・packages/errors/src/catalog.ts・packages/contracts/src/types.ts・packages/db/src/migrations.generated.ts・この葉の migration を readFileSync で読み、apps/api/src を歩いて字を探す（K578-API-007〜010）"
+ }
+}
