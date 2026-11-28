@@ -1,0 +1,321 @@
+/* ゲストの場所（段 12・F11・ゲストの側）の部品。キャンバス CpHome・CpNew・CpReview。値は正本のトークン（--k-*）だけ。クラスの頭は k-f11p- */
+.k-f11p-shell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* 中身が短くても地の色を画面の下まで（下の一文の下に別の色が出ない）。1 画面の高さのトークン（状態の頁と同じ） */
+  min-height: var(--k-c-auth-status-page-height);
+}
+.k-f11p-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-sm) var(--k-s-lg);
+  min-height: calc(var(--k-s-xl) + var(--k-s-sm));
+  box-sizing: border-box;
+  background: var(--k-surface);
+  border-bottom: var(--k-c-detail-card-border);
+}
+.k-f11p-mark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-h1);
+}
+.k-f11p-who {
+  display: grid;
+  min-width: 0;
+}
+.k-f11p-who b {
+  font-size: var(--k-text-body);
+}
+.k-f11p-who span {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f11p-me {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-left: auto;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f11p-av {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  border-radius: var(--k-r-full);
+  background: var(--k-d-amber);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+}
+.k-f11p-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--k-s-md);
+  width: 100%;
+  max-width: calc(var(--k-s-2xl) * 10);
+  margin: 0 auto;
+  padding: var(--k-s-lg) var(--k-s-md);
+  box-sizing: border-box;
+  min-width: 0;
+}
+.k-f11p-foot {
+  padding: var(--k-s-md);
+  text-align: center;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f11p-titlebar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f11p-titlebar h1,
+.k-f11p-h1 {
+  margin: 0;
+  font-size: var(--k-text-h1);
+  font-weight: var(--k-fw-h1);
+  line-height: var(--k-lh-h1);
+}
+.k-f11p-titlebar-act {
+  margin-left: auto;
+}
+/* 段の札 3 つ（作っている・確認中・完了） */
+.k-f11p-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin-left: auto;
+}
+.k-f11p-sub {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f11p-back {
+  align-self: flex-start;
+}
+
+/* ---- 2 つの箱（依頼・見せてもらったチケット） ---- */
+.k-f11p-card {
+  background: var(--k-surface);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-lg);
+  overflow: hidden;
+  min-width: 0;
+}
+.k-f11p-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+}
+.k-f11p-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-f11p-row-main {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: var(--k-s-xs);
+}
+.k-f11p-row-main b {
+  font-weight: var(--k-fw-h3);
+}
+.k-f11p-row-meta {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f11p-row-empty {
+  padding: var(--k-s-md);
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 依頼を出す・やり取り ---- */
+.k-f11p-form {
+  display: grid;
+  gap: var(--k-s-md);
+  max-width: calc(var(--k-s-2xl) * 7);
+  padding: var(--k-s-md);
+  background: var(--k-surface);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-lg);
+  box-sizing: border-box;
+  min-width: 0;
+}
+.k-f11p-two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--k-s-2xl) * 2), 1fr));
+  gap: var(--k-s-md);
+}
+.k-f11p-ai {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-primary-soft);
+  border: var(--k-c-band-info-border);
+  border-radius: var(--k-r-field);
+  font-size: var(--k-text-body);
+}
+.k-f11p-ai[aria-disabled="true"] {
+  background: var(--k-surface-variant);
+  border-color: var(--k-line);
+  color: var(--k-on-surface-variant);
+}
+.k-f11p-ai-mark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--k-s-md);
+  height: var(--k-s-md);
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-h1);
+}
+.k-f11p-ai-text {
+  display: grid;
+  flex: 1 1 0;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  line-height: var(--k-lh-body-md);
+}
+.k-f11p-ai-text small {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-f11p-attach {
+  display: grid;
+  gap: var(--k-s-sm);
+}
+.k-f11p-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-md);
+  font-size: var(--k-text-body);
+}
+.k-f11p-file[data-bad="true"] {
+  border-color: var(--k-st-danger-line);
+  color: var(--k-st-on-danger-container);
+}
+.k-f11p-acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--k-s-sm);
+}
+.k-f11p-thread {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-md);
+  background: var(--k-surface);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-lg);
+  min-width: 0;
+}
+.k-f11p-msg {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  min-width: 0;
+}
+.k-f11p-msg-body {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: var(--k-s-xs);
+}
+.k-f11p-msg-name {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f11p-msg-text {
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-surface-variant);
+  border-radius: var(--k-r-field);
+  line-height: var(--k-lh-body-md);
+}
+.k-f11p-msg[data-from="we"] .k-f11p-msg-text {
+  background: var(--k-primary-soft);
+}
+.k-f11p-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+
+.k-f11p-center {
+  display: grid;
+  place-items: center;
+  padding: var(--k-s-xl) var(--k-s-md);
+}
+.k-f11p-welcome {
+  display: grid;
+  gap: var(--k-s-md);
+  max-width: calc(var(--k-s-2xl) * 5);
+  padding: var(--k-s-lg);
+  background: var(--k-surface);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-lg);
+  box-sizing: border-box;
+  min-width: 0;
+}
+.k-f11p-list {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding-left: var(--k-s-md);
+}
+/* 見せてもらったチケットの本文（1 枚の文書）と、進んでいる仕事の行を押してチケットへ */
+.k-f11p-body {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md) var(--k-s-md);
+  font-size: var(--k-text-body);
+}
+.k-f11p-body p {
+  margin: 0;
+}
+.k-f11p-row-link {
+  color: inherit;
+  text-decoration: none;
+}
+/* チケットのやり取りの箱の中では、やり取りと書く欄を箱にしない（箱の中に箱を重ねない）。書く欄はやり取りの下に罫線 1 本 */
+.k-f11p-card > .k-f11p-thread,
+.k-f11p-card > .k-f11p-form {
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.k-f11p-card > .k-f11p-thread + .k-f11p-form {
+  border-top: var(--k-c-detail-card-border);
+}
