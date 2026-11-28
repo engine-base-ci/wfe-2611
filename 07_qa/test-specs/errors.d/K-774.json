@@ -1,0 +1,65 @@
+{
+ "errors": [
+  {
+   "id": "E-TALK-060",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "つながっている自分の PC が無い（まだつないでいない・外した）のに、チケットを作る画面の右の会話で言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がまだつながっていません。PC をつなぐと、AI と話しながらチケットを作れます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る画面を開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "作る画面の右の会話で言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-061",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話でない会話（自分の AI との会話・チケットに移った会話）に、作る画面の口から言った",
+   "false_when": "作る画面の会話（draft）に言った",
+   "message": "この会話は、チケットを作る画面の会話ではありません。新しく話し始めてください",
+   "action": "新しく話す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "チケットに移った会話の id を指して、作る画面の言う口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  }
+ ]
+}
