@@ -44,7 +44,7 @@ export interface DueOptions {
   due?: string | null;
   /** 段（既定は承認待ち。モックの f7-tidy-due と同じ） */
   stage?: string;
-  /** getTicket の can.due。undefined なら鍵ごと無い（前からの土台と同じ） */
+  /** getTicket の can.due。鍵を渡さなければ書ける人（true・K-483 が足す値）。undefined を渡すと鍵ごと無い（前からの土台と同じ） */
   canDue?: boolean | undefined;
   /** 承認する人の名前（approval.approver_name）。null なら承認の行が無い */
   approver?: string | null;
@@ -104,13 +104,17 @@ export async function mockDue(page: Page, o: DueOptions = {}): Promise<DueMock> 
       },
     },
   };
+  // getTicket を読んだ数は本当の要求で数える（土台は実行の一覧の答えを作るときにも on.ticket を読む・同じ形を数えない）
+  page.on("request", (r) => {
+    if (r.method() === "GET" && new URL(r.url()).pathname === `/api/v1/tickets/${TICKET}`) d.ticketReads++;
+  });
   api.on.ticket = () => {
-    d.ticketReads++;
     const base = ticketOf(band) as unknown as {
       ticket: Record<string, unknown>;
       can: Record<string, unknown>;
     } & Record<string, unknown>;
-    const can = { ...base.can, ...(o.canDue === undefined ? {} : { due: o.canDue }) };
+    const canDue = "canDue" in o ? o.canDue : true;
+    const can = { ...base.can, ...(canDue === undefined ? {} : { due: canDue }) };
     return ok(
       withBand(band, {
         ...base,
