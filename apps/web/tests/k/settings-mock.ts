@@ -89,7 +89,7 @@ export interface OptionA {
 export interface FieldA {
   id: string;
   name: string;
-  field_type: "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
+  field_type: "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check";
   required: boolean;
   description: string | null;
   options: OptionA[];
@@ -162,7 +162,7 @@ export const fieldsTaka = (): FieldA[] => [
   {
     id: F_AMOUNT,
     name: "請求額",
-    field_type: "number",
+    field_type: "money",
     required: false,
     description: "税を含まない額",
     options: [],

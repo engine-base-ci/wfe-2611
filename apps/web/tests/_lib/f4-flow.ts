@@ -107,7 +107,7 @@ export interface FieldSeed {
 export async function addField(
   me: Newcomer,
   name: string,
-  fieldType: "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check",
+  fieldType: "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check",
   o: { required?: boolean; options?: string[]; position?: number } = {},
 ): Promise<FieldSeed> {
   const [t] = await admin<{ t: string }>("select tenant_id as t from members where id = $1", [me.memberId]);

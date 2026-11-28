@@ -24,11 +24,12 @@ export const TONES: readonly { key: string; name: string }[] = [
 ];
 export const toneName = (key: string | undefined): string => TONES.find((t) => t.key === key)?.name ?? "—";
 
-/** 項目の種類（段 10 の 7 つ・K-1010 の契約の字と画面の字） */
+/** 項目の種類（段 10 の 7 つと金額・K-1010 の契約の字と画面の字・金額は answer=6280a4739b6e） */
 export const FIELD_TYPES: readonly { key: string; name: string }[] = [
   { key: "short_text", name: "1 行" },
   { key: "long_text", name: "複数行" },
   { key: "number", name: "数" },
+  { key: "money", name: "金額" },
   { key: "date", name: "日付" },
   { key: "select", name: "1 つ選ぶ" },
   { key: "multi_select", name: "複数選ぶ" },

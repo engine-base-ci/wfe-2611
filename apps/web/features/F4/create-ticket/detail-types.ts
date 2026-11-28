@@ -6,7 +6,8 @@ import type { RunView } from "@/features/F5/delegate/use-run";
 import type { SlotTicket } from "./detail-slots";
 
 /** 会社の項目の型（K-563 の field_type） */
-export type DetailFieldType = "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
+export type DetailFieldType =
+  "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check";
 
 /** 詳細の答えの会社の項目（鍵 8・並びの順・K-560） */
 export interface DetailField {

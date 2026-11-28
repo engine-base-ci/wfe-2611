@@ -30,7 +30,7 @@ export interface PanelValueProps {
 const same = (a: FieldValue, b: FieldValue): boolean => JSON.stringify(a) === JSON.stringify(b);
 /** 決めるボタンで決める型（Enter では決めない） */
 const BY_BUTTON = new Set(["long_text", "multi_select"]);
-const BY_ENTER = new Set(["short_text", "number", "date"]);
+const BY_ENTER = new Set(["short_text", "number", "money", "date"]);
 
 export function PanelValue(p: PanelValueProps) {
   return p.field.field_type === "check" ? <CheckValue {...p} /> : <EditValue {...p} />;

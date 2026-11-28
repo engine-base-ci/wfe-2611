@@ -10,7 +10,7 @@ import "./settings.css";
 const noop = (): void => undefined;
 
 /** 型の字（views.tsx の FieldsPanel の型と同じ 7 つ） */
-const TYPES: readonly FieldType[] = ["1 行", "複数行", "数", "日付", "1 つ選ぶ", "複数選ぶ", "チェック"];
+const TYPES: readonly FieldType[] = ["1 行", "複数行", "数", "金額", "日付", "1 つ選ぶ", "複数選ぶ", "チェック"];
 const isOptionType = (t: FieldType): boolean => t === "1 つ選ぶ" || t === "複数選ぶ";
 
 // ---------------------------------------------------------------- 項目を足す

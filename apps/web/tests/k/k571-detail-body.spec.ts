@@ -262,7 +262,8 @@ test("K571-UI-011 会社の項目の見せ方：日付「12/15（火）」・数
   await mockDetail(page);
   await openDetail(page);
   await expect(field(page, "支払期日")).toContainText("12/15（火）");
-  await expect(field(page, "請求額")).toContainText("95,000");
+  // 請求額は金額の種類（桁を区切り後ろに「円」・answer=6280a4739b6e）
+  await expect(field(page, "請求額")).toContainText("95,000 円");
   expect((await field(page, "PJコード").locator("dd").innerText()).trim()).toBe("");
   const p2 = await page.context().newPage();
   await mockDetail(p2, { fields: [] });

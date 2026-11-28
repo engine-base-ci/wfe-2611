@@ -23,7 +23,7 @@ REQUIRED_INPUTS = {
     "createTicketField": ["name", "field_type", "kind_ids"],   # apps/api/src/features/F9/settings/fields.ts（無いと 422・欄つき）
 }
 
-_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"]
+_TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]
 # 名前は前後の空白（全角・タブ・改行）を落とした後 1〜40 字を口が見る。契約の長さは落とす前の余裕を持たせて 80
 VALUE_RANGES = {
     "createTicketField": {
@@ -39,7 +39,7 @@ VALUE_RANGES = {
 INPUT_RULES = {
     "createTicketField": {"oneOf": [
         {"properties": {"field_type": {"enum": ["select", "multi_select"]}, "options": {"minItems": 1}}, "required": ["options"]},
-        {"properties": {"field_type": {"enum": ["short_text", "long_text", "number", "date", "check"]}, "options": {"maxItems": 0}}},
+        {"properties": {"field_type": {"enum": ["short_text", "long_text", "number", "money", "date", "check"]}, "options": {"maxItems": 0}}},
     ]},
 }
 

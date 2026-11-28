@@ -31,6 +31,7 @@ export const FIELD_TYPES: readonly string[] = [
   "short_text",
   "long_text",
   "number",
+  "money",
   "date",
   "select",
   "multi_select",

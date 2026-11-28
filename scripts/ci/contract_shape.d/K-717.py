@@ -1,5 +1,5 @@
 # K-717 項目を直す・消す・並べる口（updateTicketField・deleteTicketField・reorderTicketFields）の契約の形の表に足す分（K-325 の断片）
-_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"]
+_TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]
 _OPTION = {"type": "object", "required": ["name"], "additionalProperties": False,
            "properties": {"id": {"type": "string", "format": "uuid"}, "name": {"type": "string", "pattern": "\\S", "maxLength": 80}}}
 REQUIRED_INPUTS = {

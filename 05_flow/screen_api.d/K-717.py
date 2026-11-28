@@ -26,7 +26,7 @@ REQUIRED_INPUTS = {
     "reorderTicketFields": ["field_ids"],   # apps/api/src/features/F9/settings/fields-edit.ts（無い・空は 422・欄つき）
 }
 
-_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"]
+_TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]
 _OPTION = {"type": "object", "required": ["name"], "additionalProperties": False,
            "properties": {"id": {"type": "string", "format": "uuid"}, "name": {"type": "string", "pattern": "\\S", "maxLength": 80}}}
 # 名前は前後の空白（全角・タブ・改行）を落とした後 1〜40 字を口が見る。契約の長さは落とす前の余裕を持たせて 80（K-706 と同じ）
@@ -45,7 +45,7 @@ INPUT_RULES = {
     "updateTicketField": {"allOf": [
         {"anyOf": [{"required": [k]} for k in ("name", "field_type", "required", "description", "options", "kind_ids")]},
         {"not": {"required": ["field_type", "options"],
-                 "properties": {"field_type": {"enum": ["short_text", "long_text", "number", "date", "check"]}}}},
+                 "properties": {"field_type": {"enum": ["short_text", "long_text", "number", "money", "date", "check"]}}}},
     ]},
 }
 
