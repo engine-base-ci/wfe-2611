@@ -1,0 +1,231 @@
+{
+  "_doc": "速さの台帳（K-237）。api＝口ごとの 1 要求の DB の文と begin の上限（apps/api/test/k237_perf_budget.test.ts）・screens＝画面ごとの口の数と直列の段の上限と呼んでよい口（apps/web/tests/k/k237-screen-budget.spec.ts）・screens_excluded＝測らない画面と理由・staging＝ログインの要らない道の答えまでの時間の中央値の上限（scripts/ci/staging_perf.py）。目標より緩めるには scripts/ci/k237_perf_ledger_test.py を変えるチケットが要る。新しい画面・口を段 1 に足すチケットはここに行を足す",
+  "api": [
+    {
+      "name": "自分の情報",
+      "method": "GET",
+      "path": "/api/auth-ext/me",
+      "max_statements": 10,
+      "max_begins": 2
+    },
+    {
+      "name": "グループの一覧",
+      "method": "GET",
+      "path": "/api/v1/scopes",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
+      "name": "チケットの種類",
+      "method": "GET",
+      "path": "/api/v1/ticket_kinds",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
+      "name": "人の一覧",
+      "method": "GET",
+      "path": "/api/v1/members?limit=200",
+      "max_statements": 6,
+      "max_begins": 1
+    },
+    {
+      "name": "チケットの一覧",
+      "method": "GET",
+      "path": "/api/v1/tickets?limit=50",
+      "max_statements": 6,
+      "max_begins": 1
+    },
+    {
+      "name": "書きかけのチケット",
+      "method": "GET",
+      "path": "/api/v1/me/ticket-drafts",
+      "max_statements": 6,
+      "max_begins": 1
+    },
+    {
+      "name": "チケットの 1 件",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id",
+      "max_statements": 15,
+      "max_begins": 1
+    },
+    {
+      "name": "実行の一覧",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/runs",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
+      "name": "承認待ちの一覧",
+      "method": "GET",
+      "path": "/api/v1/approvals/queue",
+      "max_statements": 8,
+      "max_begins": 1
+    },
+    {
+      "name": "PC の一覧",
+      "method": "GET",
+      "path": "/api/v1/bridge/devices",
+      "max_statements": 3,
+      "max_begins": 0
+    },
+    {
+      "name": "はじめにやること",
+      "method": "GET",
+      "path": "/api/v1/me/setup-tasks",
+      "max_statements": 6,
+      "max_begins": 1
+    },
+    {
+      "name": "外枠（getShell）",
+      "method": "GET",
+      "path": "/api/v1/shell",
+      "max_statements": 9,
+      "max_begins": 1
+    },
+    {
+      "name": "やり取りの最初の 20 件",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/timeline?limit=20",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
+      "name": "決定の一覧",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/decisions",
+      "max_statements": 7,
+      "max_begins": 1
+    }
+  ],
+  "screens": [
+    {
+      "path": "/tickets",
+      "marks": [
+        "GET /api/v1/shell",
+        "GET /api/auth-ext/me",
+        "GET /api/v1/tickets"
+      ],
+      "calls": [
+        "/api/v1/shell",
+        "/api/auth-ext/me",
+        "/api/v1/approvals/queue",
+        "/api/v1/tickets",
+        "/api/v1/me/setup-tasks",
+        "/api/v1/ticket_kinds",
+        "/api/v1/members"
+      ],
+      "max_calls": 7,
+      "max_stages": 1
+    },
+    {
+      "path": "/tickets?new=1",
+      "marks": [
+        "GET /api/v1/shell",
+        "GET /api/auth-ext/me",
+        "GET /api/v1/ticket_kinds",
+        "GET /api/v1/members",
+        "GET /api/v1/me/ticket-drafts"
+      ],
+      "calls": [
+        "/api/v1/shell",
+        "/api/auth-ext/me",
+        "/api/v1/approvals/queue",
+        "/api/v1/tickets",
+        "/api/v1/me/setup-tasks",
+        "/api/v1/ticket_kinds",
+        "/api/v1/members",
+        "/api/v1/me/ticket-drafts"
+      ],
+      "max_calls": 8,
+      "max_stages": 1
+    },
+    {
+      "path": "/tickets/:id",
+      "marks": [
+        "GET /api/v1/tickets/:id",
+        "GET /api/v1/tickets/:id/runs",
+        "GET /api/v1/tickets/:id/decisions",
+        "GET /api/auth-ext/me",
+        "GET /api/v1/shell"
+      ],
+      "calls": [
+        "/api/v1/shell",
+        "/api/auth-ext/me",
+        "/api/v1/tickets/:id",
+        "/api/v1/tickets/:id/runs",
+        "/api/v1/tickets/:id/timeline",
+        "/api/v1/tickets/:id/decisions"
+      ],
+      "max_calls": 6,
+      "max_stages": 1
+    },
+    {
+      "path": "/approvals",
+      "marks": [
+        "GET /api/v1/approvals/queue",
+        "GET /api/v1/shell"
+      ],
+      "calls": [
+        "/api/v1/shell",
+        "/api/v1/approvals/queue"
+      ],
+      "max_calls": 2,
+      "max_stages": 1
+    }
+  ],
+  "screens_excluded": [
+    {
+      "path": "/setup/bridge",
+      "why": "PC の一覧を 5 秒ごとに読み続ける画面（K-57 の devices.ts）。止めを外した後も口が出続けるので、この数え方では段を数えられない"
+    },
+    {
+      "path": "/setup/bridge?from=%2Ftickets",
+      "why": "/setup/bridge と同じ画面（戻り先の問いが付いただけ）。PC の一覧を 5 秒ごとに読み続けるので段を数えられない"
+    },
+    {
+      "path": "/tickets?scope=22222222-0000-4000-8000-000000000001",
+      "why": "グループを確かめてから一覧を読む 2 段の画面（K-252 の list-page.tsx：グループの口 /api/v1/scopes の答えで見えるグループかを確かめてから一覧の口を呼ぶ）。段 1 にするのは別のチケット"
+    },
+    {
+      "path": "/password-reset",
+      "why": "ログインの要らない画面（パスワードを作り直す・K-320・K-638）。ログイン済みかを getMe で 1 回確かめるほかは、頼む・決めるの 2 つの口（POST）を押したときだけ呼ぶ。台帳の画面の数え方（段 1）に載せる物がない"
+    },
+    {
+      "path": "/login?next=%2Finvite%2F:id",
+      "why": "ログインの要らない画面（/login と同じ入口に、招待のリンクから来た戻り先の問いが付いただけ・K-855 の組 login-invite）。台帳の画面の数え方（ログインの要る画面の段）に載せる物がない"
+    }
+  ],
+  "staging": [
+    {
+      "name": "ログインの画面",
+      "base": "STAGING_BASE_URL",
+      "method": "GET",
+      "path": "/login",
+      "max_ms": 800
+    },
+    {
+      "name": "口の /health",
+      "base": "STAGING_API_BASE",
+      "method": "GET",
+      "path": "/health",
+      "max_ms": 400
+    },
+    {
+      "name": "規約の今の版の口",
+      "base": "STAGING_API_BASE",
+      "method": "GET",
+      "path": "/api/v1/auth/terms/current",
+      "max_ms": 400
+    },
+    {
+      "name": "口のプリフライト",
+      "base": "STAGING_API_BASE",
+      "method": "OPTIONS",
+      "path": "/api/v1/scopes",
+      "max_ms": 400
+    }
+  ]
+}
