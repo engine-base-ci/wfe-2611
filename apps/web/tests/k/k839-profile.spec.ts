@@ -54,6 +54,8 @@ const STATES: Record<string, { me?: Me; skip?: string[]; drive?: Drive }> = {
     me: VICTORIA,
     skip: ["meta:texts"],
     drive: async (page) => {
+      // 保存の時刻は下絵と同じ 11:20（日本時間）に止める。時計の進みは止めない（カード・欄の字にも時刻が入る）
+      await page.clock.setFixedTime(new Date("2026-11-02T02:20:00Z"));
       await nameBox(page).fill(LONG);
       await nameBox(page).press("Enter");
       await expect(page.getByText("保存しました", { exact: false })).toBeVisible();

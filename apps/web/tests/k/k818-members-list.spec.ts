@@ -396,10 +396,17 @@ test("K818-UI-017 「⋯」の行き先：名前・担当しているチケッ�
   page,
 }) => {
   const mk = await openList(page);
+  // 行き先は通った道で見る：1 人の画面は ?do= を読むと小窓を開いて URL から外す（K-820・K-821）ので、今の URL だけでは間に合わないことがある
+  const seen: string[] = [];
+  page.on("framenavigated", (f) => {
+    if (f === page.mainFrame()) seen.push(f.url());
+  });
   const go = async (g: string, who: string, item: RegExp, want: string) => {
     await moreBtn(page, g, who).click();
     await pick(page, item);
-    await expect(page).toHaveURL(new RegExp(`${want.replace("?", "\\?")}$`));
+    const re = new RegExp(`${want.replace("?", "\\?")}$`);
+    await expect.poll(() => seen.some((u) => re.test(u))).toBe(true);
+    seen.length = 0;
     await page.goBack();
     await expect(page.locator(".k-f10m-group")).toHaveCount(3);
   };

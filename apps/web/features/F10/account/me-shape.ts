@@ -1,5 +1,6 @@
 // 自分の設定（K-839）：口 getMe の答え（K-833 の「画面が使う答えの形」）→ 部品 ProfileBody の値。名前・呼ばれ方の確かめと時刻の字。
 //   純粋な関数だけ（@/ を読まない・試験と K-840・K-841 も使う）
+import { initialOf } from "../ws/settings-shape";
 import type { ProfileState, WsRow } from "./profile";
 
 export type MeRole = "admin" | "manager" | "member" | "viewer" | "requester";
@@ -103,7 +104,7 @@ export function clockText(iso: string): string {
 export function toWsRows(ws: readonly MeWorkspace[]): WsRow[] {
   return ws.map((w) => ({
     id: w.tenant_id,
-    mark: Array.from(w.name)[0] ?? "",
+    mark: initialOf(w.name), // 会社の種類の字を外した頭文字（下絵の「株式会社ENGINE BASE」→「E」・設定のロゴと同じ）
     name: w.name,
     role: w.own ? "自分だけ" : roleLabel(w.role),
     ...(w.group && !w.own ? { group: w.group } : {}),
@@ -123,5 +124,7 @@ export function toProfileState(a: MeAnswer): ProfileState {
     initial: m.avatar.initial,
     face: photo ? "photo" : "text",
     ...(photo ? { photoUrl: m.avatar.url! } : {}),
+    // 確かめ待ちのメール（K-840・行が「確かめ待ち」になり［送り直す］が出る）
+    ...(m.email_pending ? { emailPending: m.email_pending } : {}),
   };
 }
