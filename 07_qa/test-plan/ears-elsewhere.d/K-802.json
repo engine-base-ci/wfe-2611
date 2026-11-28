@@ -1,0 +1,33 @@
+{
+ "ops": {
+  "createScope": {
+   "file": "apps/api/test/features/F10/admin-scope-create.test.ts",
+   "reason": "グループを足す口は、権限・上のグループ・層・短い名前と名前の重なり・上限・人の状態・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-802）",
+   "covers": {
+    "test_post_scopes_ok": "K802-API-001",
+    "test_post_scopes_shape": "K802-API-001",
+    "test_post_scopes_rejected_401": "K802-API-012",
+    "test_post_scopes_rejected_403": "K802-API-012",
+    "test_post_scopes_not_found": "K802-API-005",
+    "test_post_scopes_conflict": "K802-API-006",
+    "test_post_scopes_rejected_422": "K802-API-004",
+    "test_post_scopes_rate_limited": "K802-API-012",
+    "test_post_scopes_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_scopes_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_scopes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_scopes_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  }
+ }
+}
