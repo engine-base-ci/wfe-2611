@@ -1,0 +1,95 @@
+{
+ "errors": [
+  {
+   "id": "E-WS-010",
+   "class": "limit",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴに 2 MB（2,097,152 バイト）を超える画像を選んで置いた",
+   "false_when": "2 MB 以下の画像",
+   "message": "ロゴは 2 MB までです。小さい画像を選んでください",
+   "action": "小さい画像を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "ロゴの［変える］で 2 MB を超える画像を選ぶ"
+    ],
+    "needs": "2 MB を超える画像"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-010"
+  },
+  {
+   "id": "E-WS-011",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴに PNG・JPEG・WebP でないファイル（SVG・GIF・空のファイル・画像でない物）を選んで置いた。種類は中身の先頭で見る",
+   "false_when": "中身が PNG・JPEG・WebP の画像（名前や種類の表示が違っても通る）",
+   "message": "ロゴは PNG・JPEG・WebP の画像にしてください",
+   "action": "別の画像を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "ロゴの［変える］で SVG か GIF の画像を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-011"
+  },
+  {
+   "id": "E-WS-012",
+   "class": "external",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-logo"
+   },
+   "when": "会社のロゴを置き場に置けなかった（置き場が答えない・書けない）",
+   "false_when": "置き場がふだんどおり答える",
+   "message": "ロゴを置けませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者でログインし、設定の画面を開いておく",
+    "steps": [
+     "置き場を止める",
+     "ロゴの［変える］で画像を選ぶ"
+    ],
+    "needs": "置き場を止められる環境"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.4"
+   ],
+   "support_code": "WS-012"
+  }
+ ]
+}
