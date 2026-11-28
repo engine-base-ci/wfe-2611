@@ -1,0 +1,11 @@
+{
+ "data_links": [
+  {
+   "paths": ["apps/web/app/(dev)/dev/mock/f11/mocks.tsx", "11_tickets/K-874.md"],
+   "tests": ["apps/web/tests/k/k874-guest-invite.spec.ts"]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k874-guest-invite.spec.ts": "部品 apps/web/features/F10/invite/views.tsx・guest-group-views.tsx の字（口を呼ばないこと）と、段 12 の下絵の置き場 apps/web/app/(dev)/dev/mock/f11/（stage9/ が無いこと・render-cu-mb.tsx の import・mocks.tsx の K-874 の状態）と 11_tickets/K-874.md の頭の mock: を読む（K874-UI-021・022・K-874）"
+ }
+}
