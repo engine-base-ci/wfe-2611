@@ -1,0 +1,63 @@
+{
+ "status": "PASS（A・B・C・T・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.135-ci-local-only",
+ "executed_at": "2026-11-04T14:07:06",
+ "change": "D-128.135（CI は GitHub では流さず、作った dagci だけで回す。v3-gate.yml は手で押したときだけ・dagci の段の元）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "05_flow/build_testplan.py",
+  "ci.yaml",
+  ".github/workflows/v3-gate.yml",
+  "spec-dependencies.yaml（.qa/skill-patches の層の記録）"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate 緑（D-128.135 は ci.yaml・v3-gate.yml に反映）"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "tier h"
+  }
+ ],
+ "next": [
+  "古い未着手のチケットをしまい、流れごとのまとまりに引き継ぐ・骨格のチケットを切る"
+ ]
+}
