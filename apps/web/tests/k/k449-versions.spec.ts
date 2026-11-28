@@ -19,6 +19,7 @@ import {
   L4_OLD,
   L5,
   L6,
+  DEFAULT_ROWS,
   NUMBER,
   TICKET,
   TITLE,
@@ -686,7 +687,9 @@ for (const [rid, id, query] of [
         id,
         w,
         async (page) => {
-          await mockVersions(page);
+          // 版の一覧の説明は下絵の字にそろえる（説明の字の長さで行が折れ、行の高さが変わる・幅 768 の一覧は 280px）
+          const said = ["作成", "本文に表と画像を足した", "本文に、完了の条件を足した"];
+          await mockVersions(page, { rows: DEFAULT_ROWS().map((r) => ({ ...r, summary: said[r.version - 1]! })) });
           await openVersions(page, query, w);
           await expect(diffOf(page)).toBeVisible();
         },
@@ -731,5 +734,10 @@ test("K449-UI-029 入口：URL に比べ方を持つ。?of=items&from=1&to=3 を
   expect((await lines(page)).slice(0, 2)).toEqual(["add:予定時間：2 時間", "del:期限：11/27（金）"]);
   await page.reload();
   await expect(page.getByText("項目の変更：版 1 → 版 3", { exact: true })).toBeVisible();
-  expect(m.lists).toHaveLength(0);
+  // 本文の差分は読まない。版の一覧は、項目の変更から開いたときに書けるか（meta.can_restore）を知るためだけに開くたび 1 回（K-579）
+  await expect.poll(() => m.lists.length).toBe(2);
+  expect(m.lists.map((q) => [q.get("from"), q.get("to")])).toEqual([
+    [null, null],
+    [null, null],
+  ]);
 });

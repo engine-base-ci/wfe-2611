@@ -7,6 +7,7 @@ import { expect, test, type Browser, type Page } from "@playwright/test";
 import { loginAs, signupViaApi } from "../_lib/api";
 import { USER_PAIRS, USER_WIDTHS, matchUser, overflowX } from "./f12-user-match";
 import { INV_OCT, PDF_URL, billingFree, billingOverdue, billingTaka, err, invalid, mockBilling } from "./billing-mock";
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const HOME = "/billing";
 const TABLE = ".k-f12-rt-table";
@@ -131,10 +132,13 @@ test("K960-UI-005 PDF を押すと downloadInvoicePdf を 1 回（その請求�
   page,
 }) => {
   const mk = await mockBilling(page);
+  // 署名 URL の先（置き場）は試験の外。新しい窓がそこへ移ったことだけを見るため、網の手前で空の PDF を返す
+  await page.context().route(PDF_URL, (r) => r.fulfill({ status: 200, contentType: "text/plain", body: "pdf" }));
   await openBills(page);
   const pop = page.waitForEvent("popup");
   await page.getByRole("link", { name: "10 月分の請求書（PDF）", exact: true }).click();
   const w = await pop;
+  await w.waitForURL(PDF_URL, { waitUntil: "commit" }); // 窓は空で開いてから署名 URL へ移る（置き場の中身は見ない）
   expect(w.url()).toBe(PDF_URL);
   expect(mk.count("pdf")).toBe(1);
   expect(mk.last("pdf")!.id).toBe(INV_OCT);
@@ -150,7 +154,9 @@ test("K960-UI-006 PDF が開けない（503）：alert「請求書を開けま�
   let popups = 0;
   page.on("popup", () => (popups += 1));
   await page.getByRole("link", { name: "10 月分の請求書（PDF）", exact: true }).click();
-  await expect(page.getByRole("alert")).toHaveText("請求書を開けませんでした。もう一度お試しください。");
+  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText(
+    "請求書を開けませんでした。もう一度お試しください。",
+  );
   expect(popups).toBe(0);
   await expect(page.locator(`${TABLE} tbody tr`)).toHaveCount(3);
 });
@@ -188,9 +194,9 @@ test("K960-UI-009 「変える」で小窓「請求先を変える」が今の 3
   await openBills(page);
   await page.getByRole("button", { name: "変える", exact: true }).click();
   const d = contactDlg(page);
-  await expect(d.getByLabel("会社名", { exact: true })).toHaveValue("株式会社ENGINE BASE");
-  await expect(d.getByLabel("宛名", { exact: true })).toHaveValue("経理 ご担当");
-  await expect(d.getByLabel("メール", { exact: true })).toHaveValue("keiri@engine-base.example");
+  await expect(d.getByLabel(/^会社名\*?$/)).toHaveValue("株式会社ENGINE BASE");
+  await expect(d.getByLabel(/^宛名\*?$/)).toHaveValue("経理 ご担当");
+  await expect(d.getByLabel(/^メール\*?$/)).toHaveValue("keiri@engine-base.example");
   await d.getByRole("button", { name: "やめる", exact: true }).click();
   await expect(d).toHaveCount(0);
   expect(mk.count("contact")).toBe(0);
@@ -203,8 +209,8 @@ test("K960-UI-010 保存する：前後の空白を落とした 3 欄で updateB
   await openBills(page);
   await page.getByRole("button", { name: "変える", exact: true }).click();
   const d = contactDlg(page);
-  await d.getByLabel("宛名", { exact: true }).fill("  経理部 山田 様 ");
-  await d.getByLabel("メール", { exact: true }).fill("yamada@engine-base.example");
+  await d.getByLabel(/^宛名\*?$/).fill("  経理部 山田 様 ");
+  await d.getByLabel(/^メール\*?$/).fill("yamada@engine-base.example");
   await d.getByRole("button", { name: "保存する", exact: true }).click();
   await expect(d).toHaveCount(0);
   expect(mk.last("contact")!.body).toEqual({
@@ -224,8 +230,8 @@ test("K960-UI-011 画面での確かめ：会社名を空・メールを「keiri
   await openBills(page);
   await page.getByRole("button", { name: "変える", exact: true }).click();
   const d = contactDlg(page);
-  await d.getByLabel("会社名", { exact: true }).fill(" ");
-  await d.getByLabel("メール", { exact: true }).fill("keiri@");
+  await d.getByLabel(/^会社名\*?$/).fill(" ");
+  await d.getByLabel(/^メール\*?$/).fill("keiri@");
   await d.getByRole("button", { name: "保存する", exact: true }).click();
   await expect(d.getByText("会社名を書いてください", { exact: true })).toBeVisible();
   await expect(d.getByText("メールの形が違います", { exact: true })).toBeVisible();
@@ -240,10 +246,10 @@ test("K960-UI-012 口の形の断り（422・欄 email）：小窓は開いた�
   await openBills(page);
   await page.getByRole("button", { name: "変える", exact: true }).click();
   const d = contactDlg(page);
-  await d.getByLabel("メール", { exact: true }).fill("keiri@engine-base.invalid");
+  await d.getByLabel(/^メール\*?$/).fill("keiri@engine-base.invalid");
   await d.getByRole("button", { name: "保存する", exact: true }).click();
   await expect(d.getByText("メールの形が違います", { exact: true })).toBeVisible();
-  await expect(d.getByLabel("メール", { exact: true })).toHaveValue("keiri@engine-base.invalid");
+  await expect(d.getByLabel(/^メール\*?$/)).toHaveValue("keiri@engine-base.invalid");
   expect(mk.count("contact")).toBe(1);
 });
 
@@ -255,10 +261,10 @@ test("K960-UI-013 保存が失敗（503 E-PAGE-003）：小窓の中に alert（
   await openBills(page);
   await page.getByRole("button", { name: "変える", exact: true }).click();
   const d = contactDlg(page);
-  await d.getByLabel("宛名", { exact: true }).fill("経理部 山田 様");
+  await d.getByLabel(/^宛名\*?$/).fill("経理部 山田 様");
   await d.getByRole("button", { name: "保存する", exact: true }).click();
   await expect(d.getByRole("alert")).toBeVisible();
-  await expect(d.getByLabel("宛名", { exact: true })).toHaveValue("経理部 山田 様");
+  await expect(d.getByLabel(/^宛名\*?$/)).toHaveValue("経理部 山田 様");
   await expect(page.locator(".k-ub-terms")).toContainText("経理 ご担当");
   expect(mk.count("billing")).toBe(1);
 });

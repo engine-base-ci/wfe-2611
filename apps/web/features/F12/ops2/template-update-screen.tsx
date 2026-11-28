@@ -50,7 +50,8 @@ export function TemplateUpdateScreen() {
     }
     // もう選んだ（409）・無い（404）は、この版を出さない
     if (r.err && (r.err.status === 409 || r.err.status === 404)) setChosen((xs) => [...xs, id]);
-    setAlert(errorText(r.err ? errorCodeOf(r.err) : SEND_FAILED).title);
+    // 目録の文を全部出す（E-OPS-025 は「この版はもう選んであります。別の版を選んでください」の 2 文で 1 つ・answer=f0c82aceaa62）
+    setAlert(errorText(r.err ? errorCodeOf(r.err) : SEND_FAILED).entry.message);
   };
 
   const body = (() => {

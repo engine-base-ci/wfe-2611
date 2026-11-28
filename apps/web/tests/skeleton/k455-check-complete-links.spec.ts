@@ -311,7 +311,8 @@ test("K455-M2-05 AI に任せる（確認項目が 0 件）：任せる口を呼
   await delegateBtn(page).click();
   await page.getByRole("dialog").getByRole("button", { name: "確認項目を足す", exact: true }).click();
   await expect(addDialog).toBeVisible();
-  await expect(panel).toBeVisible();
+  // 小窓（modal）が開いている間は、ほかの所が読み上げから外れる（aria-hidden）。パネルは読み上げから外れた物も含めて探す
+  await expect(page.getByRole("complementary", { name: "チケットのパネル", includeHidden: true })).toBeVisible();
   expect(posts.n).toBe(0);
   await addDialog.getByRole("button", { name: "やめる", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);

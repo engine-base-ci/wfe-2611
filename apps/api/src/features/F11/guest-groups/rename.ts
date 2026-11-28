@@ -11,7 +11,7 @@ import { badName, editRefused, NAME_MAX } from "./remove.js";
 
 /** 名前は入れた字のまま（全角・（）を NFKC で崩さない・K927-API-001）。入口の a.input は表記ゆらぎをそろえた後なので、
  *  入口が確かめた体を読み直す（チケットの題名の createTicket と同じ形）。読めなければそろえた後の値 */
-async function typedName(a: HookArgs): Promise<unknown> {
+export async function typedName(a: HookArgs): Promise<unknown> {
   try {
     const j: unknown = await a.c.req.json();
     if (

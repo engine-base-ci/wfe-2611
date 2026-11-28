@@ -7,6 +7,7 @@ import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
+import { isUuid } from "@kaname/contracts";
 
 /** 正本のエラーを、欄も明細も付けない答えにする（在るかを漏らさない・K893-API-004〜006） */
 export function bare(status: number, code: string): HookReply {
@@ -46,12 +47,10 @@ export function refusal(where: string, e: unknown): HookReply {
   return unavailable(where, e);
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export function createUpdateClientRequest(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs) => {
     const route = a.input["route_id"];
-    if (typeof route !== "string" || !UUID.test(route)) return invalid("route_id", "届け先のグループを選んでください");
+    if (typeof route !== "string" || !isUuid(route)) return invalid("route_id", "届け先のグループを選んでください");
     let v: { route_name?: unknown } | null;
     try {
       v = await withTenant(appPool, a.ctx, async (cl) => {

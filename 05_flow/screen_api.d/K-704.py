@@ -46,7 +46,7 @@ UNEXPRESSIBLE_422 = {
     "updateTicketKind": ["前後の空白を落として 41 字以上の名前", "NUL を含む名前", "本文のひな形の木の節ごとの子の決まり・中身の無い節（validateDoc）"],
 }
 
-_SETTING = ("TicketKindSetting", {"id": "uuid", "name": "string", "color_key": "string", "position": "integer", "is_builtin": "boolean", "body_template": "object?"})
+_SETTING = ("TicketKindSetting", {"id": "uuid", "name": "string", "color_key": "string?", "position": "integer", "is_builtin": "boolean", "body_template": "object?"})
 RESPONSES = {
     "createTicketKind": _SETTING,
     "updateTicketKind": _SETTING,

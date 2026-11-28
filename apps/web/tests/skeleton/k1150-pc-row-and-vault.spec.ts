@@ -18,7 +18,7 @@ import { API, PW, admin, hideRealBridge } from "../_lib/api";
 import { ticketState, workOf, type Job, type PcWork } from "../_lib/f5-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { pairedPc, ticketOf } from "../_lib/prep";
+import { pairedPc, pressDelegate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -212,7 +212,7 @@ test.describe.serial("中間 M1：PC の行と預けたログイン情報を、1
     const t = await ticketOf(page, me, title, SECTIONS);
     const r = await page.goto(`/tickets/${t}`);
     expect(r?.status()).toBe(200);
-    await page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+    await pressDelegate(page);
     let job: Job | null = null;
     await expect.poll(async () => (job ??= await w.take()), "任せた仕事がその PC に渡る").not.toBeNull();
     expect(job!.ticket_id).toBe(t);

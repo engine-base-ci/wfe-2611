@@ -12231,7 +12231,7 @@ components:
         fields:
           type: object
           propertyNames:
-            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+            format: uuid
           additionalProperties:
             anyOf:
             - type: string
@@ -19193,6 +19193,9 @@ components:
           format: uuid
       additionalProperties: false
       x-operation: updateClientRequest
+      required:
+      - route_id
+      x-required-by: hooks
     ClientRequestReplyInput:
       type: object
       properties:
@@ -19201,6 +19204,9 @@ components:
           minLength: 1
       additionalProperties: false
       x-operation: replyToClientRequest
+      required:
+      - body
+      x-required-by: hooks
     ClientRequestAcceptInput:
       type: object
       properties:
@@ -19234,6 +19240,11 @@ components:
           maxItems: 20
       additionalProperties: false
       x-operation: acceptClientRequest
+      required:
+      - assignee_member_id
+      - due_on
+      - scope_id
+      x-required-by: hooks
     ClientRequestDeclineInput:
       type: object
       properties:
@@ -19243,6 +19254,9 @@ components:
           maxLength: 2000
       additionalProperties: false
       x-operation: declineClientRequest
+      required:
+      - reason
+      x-required-by: hooks
     ClientRequestDraftInput:
       type: object
       properties: {}
@@ -21651,6 +21665,7 @@ components:
           format: uuid
         title:
           type: string
+          nullable: true
         topic:
           type: string
         state:
@@ -21689,6 +21704,7 @@ components:
           type: string
         title:
           type: string
+          nullable: true
         audience:
           type: object
         state:
@@ -21713,6 +21729,7 @@ components:
           type: boolean
         body:
           type: string
+          nullable: true
         maintenance:
           type: object
           nullable: true
@@ -22631,6 +22648,7 @@ components:
         page_id:
           type: string
           format: uuid
+          nullable: true
         to_name:
           type: string
         at:
@@ -22732,6 +22750,7 @@ components:
           type: string
         color_key:
           type: string
+          nullable: true
         position:
           type: integer
         is_builtin:
@@ -23140,12 +23159,14 @@ components:
           type: string
         ticket_prefix:
           type: string
+          nullable: true
         color:
           type: string
           nullable: true
         parent_id:
           type: string
           format: uuid
+          nullable: true
         layer:
           type: object
           nullable: true
@@ -23221,6 +23242,7 @@ components:
           type: string
         ticket_prefix:
           type: string
+          nullable: true
         color:
           type: string
           nullable: true
@@ -23286,6 +23308,7 @@ components:
           format: uuid
         email:
           type: string
+          nullable: true
         expires_at:
           type: string
         mail:
@@ -23635,6 +23658,7 @@ components:
           format: uuid
         name:
           type: string
+          nullable: true
       x-operation: uploadPortalAttachment
     GuestGroupRenamed:
       type: object
@@ -23666,6 +23690,7 @@ components:
           format: uuid
         title:
           type: string
+          nullable: true
         topic:
           type: string
         state:
@@ -23686,6 +23711,7 @@ components:
           format: uuid
         title:
           type: string
+          nullable: true
         topic:
           type: string
         state:
@@ -23715,12 +23741,15 @@ components:
           type: string
         author_name:
           type: string
+          nullable: true
         body:
           type: string
+          nullable: true
         attachments:
           type: array
           items:
             type: object
+          nullable: true
         created_at:
           type: string
       x-operation: postInquiryMessage
@@ -23745,6 +23774,7 @@ components:
           format: uuid
         title:
           type: string
+          nullable: true
         topic:
           type: string
         state:
@@ -23773,14 +23803,18 @@ components:
           format: uuid
         kind:
           type: string
+          nullable: true
         author_name:
           type: string
+          nullable: true
         body:
           type: string
+          nullable: true
         attachments:
           type: array
           items:
             type: object
+          nullable: true
         created_at:
           type: string
       x-operation: addOpsInquiryNote
@@ -23816,10 +23850,12 @@ components:
           type: string
         name:
           type: string
+          nullable: true
         version:
           type: integer
         price_monthly:
           type: integer
+          nullable: true
         member_limit:
           type: integer
         trial_days:
@@ -23846,8 +23882,10 @@ components:
           type: string
         from_version:
           type: integer
+          nullable: true
         to_version:
           type: integer
+          nullable: true
         before:
           type: object
         changes:
@@ -23924,6 +23962,7 @@ components:
           type: string
         name:
           type: string
+          nullable: true
         summary:
           type: string
         version:
@@ -23947,6 +23986,7 @@ components:
           type: string
         name:
           type: string
+          nullable: true
         summary:
           type: string
         version:
@@ -24022,8 +24062,10 @@ components:
           type: string
         title:
           type: string
+          nullable: true
         body:
           type: string
+          nullable: true
         state:
           type: string
           nullable: true
@@ -24058,6 +24100,7 @@ components:
           type: string
         title:
           type: string
+          nullable: true
         audience:
           type: object
         state:
@@ -24113,6 +24156,7 @@ components:
           type: object
         plan_name:
           type: string
+          nullable: true
         month:
           type: string
         amount_total:
@@ -24125,6 +24169,7 @@ components:
           type: integer
         due_on:
           type: string
+          nullable: true
         can_record_payment:
           type: boolean
         payments:
@@ -24160,6 +24205,7 @@ components:
           format: uuid
         title:
           type: string
+          nullable: true
         topic:
           type: string
         asker_name:
@@ -28977,7 +29023,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ClientRequestDraftResultInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -30801,7 +30847,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ClientRequestDeclineInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -34150,7 +34196,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InquiryResolveInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -34653,6 +34699,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-PLAN-003
           content:
             application/json:
               schema:
@@ -39669,7 +39721,7 @@ paths:
             schema:
               $ref: '#/components/schemas/WorkspaceSwitchInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -40863,7 +40915,7 @@ paths:
             schema:
               $ref: '#/components/schemas/NoticeReadInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -41280,6 +41332,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -41718,6 +41776,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -41793,6 +41857,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '409':
           description: E-BILL-007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -41897,6 +41967,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -42080,6 +42156,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -43088,6 +43170,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -44117,6 +44205,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -44199,6 +44293,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -44261,6 +44361,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -44628,6 +44734,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -45941,6 +46053,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -46129,6 +46247,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -46435,7 +46559,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PortalQuestionsInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -51136,7 +51260,11 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^(?:none|any|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          anyOf:
+          - enum:
+            - none
+            - any
+          - format: uuid
       - name: fields
         in: query
         allowEmptyValue: true
@@ -53556,7 +53684,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ItemRestoreInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -55752,11 +55880,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-WS-011／VALIDATION_ERROR
+          description: E-WS-011／VALIDATION_ERROR（契約に書けない値の決まり：file の欄が無い・ファイルでない（欄 file）・体が multipart/form-data でない・読めない（欄 body・入口 op.ts の multipart の道）・中身の先頭の印が PNG・JPEG・WebP でない（E-WS-011・content-type
+            と名前は見ない））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - file の欄が無い・ファイルでない（欄 file）
+          - 体が multipart/form-data でない・読めない（欄 body・入口 op.ts の multipart の道）
+          - 中身の先頭の印が PNG・JPEG・WebP でない（E-WS-011・content-type と名前は見ない）
         '413':
           description: E-WS-010／PAYLOAD_TOO_LARGE
           content:

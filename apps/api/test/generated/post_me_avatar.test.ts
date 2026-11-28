@@ -49,8 +49,11 @@ describe("POST /api/v1/me/avatar", () => {
     // 本物の試験：apps/api/test/features/F10/me-avatar.test.ts の「K834-API-010」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/me-avatar.test.ts", "utf8")).toContain("K834-API-010");
   });
-  // 当てはまらない（体の 1 MB の守り（PAYLOAD_TOO_LARGE）は JSON の体の口の入口の決まり。この口は入口の multipart の道（K-828）で読み、上限は 5 MB の E-ME-010（K834-API-003））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_post_me_avatar_too_large_2");
+  it("test_post_me_avatar_too_large_2", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   // 当てはまらない（上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-421 と同じ扱い））：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_me_avatar_rate_limited");
   it("test_post_me_avatar_terms_pending", () => {

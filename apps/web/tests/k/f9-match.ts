@@ -60,7 +60,12 @@ export const KN_PAIRS: FidelityPair[] = [
   pair("editor", ".k-f4d-editor", [...BOX]),
   pair("bar", ".k-f4d-bar", [...BOX]),
   pair("foot", ".k-f9-pfoot", ["x", ...TEXT]),
-  pair("state", ".k-f9-card [role='status'], .k-f9-card [role='alert'], .k-f9-main .k-empty", ["x", "width", ...TEXT]),
+  // 空の形は部品 Empty（section.k-state[data-state="empty"]）。.k-empty は無いので当たっていなかった（PM の決め 2026-11-28：比べ方の直し）
+  pair(
+    "state",
+    ".k-f9-card [role='status'], .k-f9-card [role='alert'], .k-f9-main .k-empty, .k-f9-main [data-state='empty']",
+    ["x", "width", ...TEXT],
+  ),
   pair("dialog", ".k-dialog", ["width", "x", "y", "background-color", "border-top-left-radius"]),
   pair("dialog-title", ".k-dialog h2", ["x", "y", ...TEXT]),
   pair("dialog-label", ".k-dialog .k-label", TEXT),

@@ -38,7 +38,7 @@ VALUE_RANGES = {
 
 # 出すも下書きも 201（契約は 1 つの口に 2xx を 1 つ）。data はひな形の一覧の 1 行（K-992 の 8 欄）。操作の 1 行は 6 欄
 RESPONSES = {
-    "releaseOpsTemplate": ("OpsTemplateRow", {"id": "uuid", "key": "string", "name": "string", "summary": "string", "version": "integer",
+    "releaseOpsTemplate": ("OpsTemplateRow", {"id": "uuid", "key": "string", "name": "string?", "summary": "string", "version": "integer",
                                               "using": "integer", "took": "object?", "last_released_at": "string?"}),
     "listOperations": ("OpsOperation", {"id": "uuid", "key": "string", "name": "string", "version_label": "string?",
                                         "description": "string?", "check_state": "string"}),
@@ -55,6 +55,9 @@ RATES = {
 }
 
 ERRORS_4XX = {
+    "listOperations": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
     "releaseOpsTemplate": [
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "配るもの（ひな形）が無い・消した（欄も details も付けない）",

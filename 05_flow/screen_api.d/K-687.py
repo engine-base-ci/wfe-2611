@@ -22,7 +22,7 @@ VALUE_RANGES = {
 }
 
 RESPONSES = {
-    "requestKnowledgeRaise": ("KnowledgeRequest", {"id": "uuid", "kind": "string", "state": "string", "page_id": "uuid", "to_name": "string", "at": "string"}),
+    "requestKnowledgeRaise": ("KnowledgeRequest", {"id": "uuid", "kind": "string", "state": "string", "page_id": "uuid?", "to_name": "string", "at": "string"}),
     "withdrawKnowledgeRequest": ("KnowledgeRequestEnded", {"id": "uuid", "state": "string"}),
     "dismissKnowledgeRequest": ("KnowledgeRequestEnded", {"id": "uuid", "state": "string"}),
 }

@@ -56,6 +56,8 @@ const SHELL_GROUPS = SCOPES.map((g) => ({
 const R1 = mk(1, "12 月分の作業報告書もほしい", "new");
 const R2 = mk(2, "管理画面に検索の絞り込みを足したい", "asking", "JD 受託開発");
 const R3 = mk(3, "10 月分の請求書の再発行", "done", "KR 経理");
+/** 下絵の一覧と同じ並び（4 件）にするための 1 件（突き合わせの行だけで使う） */
+const R4 = mk(4, "ログイン画面の文言を直してほしい", "new", "JD 受託開発");
 const BODY = "いつもありがとうございます。11 月分と同じ形で、12 月分の作業報告書もいただけますか。";
 
 interface Call {
@@ -229,6 +231,7 @@ for (const [mock, path, step] of [
             once: step === "failed" ? { accept: err(503, "SERVICE_UNAVAILABLE") } : {},
             // 下絵 rq-create-bad は担当と期限が空の形なので、案の無い依頼で開く（案があれば初期値が入る・D-155.8）
             draft: step !== "bad",
+            items: [R1, R2, R4, R3], // 下絵の一覧は 4 件（幅 768 は一覧の下に本文が来るので件数で見出しの位置が変わる）
           });
           await loginAs(page, u.token);
           await mockWorld(page, world0);
@@ -245,6 +248,8 @@ for (const [mock, path, step] of [
           }
           if (step === "accepted") await expect(page.getByText(/チケットを作りました/)).toBeVisible();
           else await expect(dlg(page, "チケットを作る")).toBeVisible();
+          // 下の「チケットを作る」を押すと頁が下へ送られる。y は頁の上からの位置で読むので、下絵と同じく頁の頭に戻してから比べる
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         {
           base: "/dev/mock/f11",

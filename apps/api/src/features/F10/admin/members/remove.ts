@@ -6,6 +6,7 @@ import { withTenant } from "@kaname/db/context";
 import { replyOf } from "../gate.js";
 import type { AdminOp } from "../op.js";
 import { dataReply } from "../shape.js";
+import { isUuid } from "@kaname/contracts";
 
 export const ready = true as boolean;
 
@@ -18,7 +19,6 @@ const uuidOrNull = (v: unknown): string | null => (typeof v === "string" && v ? 
 
 /** transfers の上限（K-800 の VALUE_RANGES） */
 const TRANSFERS_MAX = 500;
-const UUID_RX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** 入口（zod）が読まない形の決まり：両方を指さない・transfers は 500 件まで・1 件は ticket_id と to_member_id の uuid だけ（契約の INPUT_RULES・VALUE_RANGES） */
 function shapeIssue(input: Record<string, unknown>): string | null {
@@ -30,11 +30,7 @@ function shapeIssue(input: Record<string, unknown>): string | null {
     if (!x || typeof x !== "object" || Array.isArray(x)) return false;
     const o = x as Record<string, unknown>;
     const keys = Object.keys(o).sort().join(",");
-    return (
-      keys === "ticket_id,to_member_id" &&
-      UUID_RX.test(String(o["ticket_id"])) &&
-      UUID_RX.test(String(o["to_member_id"]))
-    );
+    return keys === "ticket_id,to_member_id" && isUuid(String(o["ticket_id"])) && isUuid(String(o["to_member_id"]));
   });
   return ok ? null : "transfers の 1 件は ticket_id と to_member_id（uuid）";
 }

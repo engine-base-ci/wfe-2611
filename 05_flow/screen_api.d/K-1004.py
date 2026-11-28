@@ -49,14 +49,14 @@ LIST_DETAILS = {
 }
 
 # 利用者の 1 行（9 欄）。state は障害の状態 4 つか null。maintenance は { from, to, impact } か null。updates は障害の続報 { state, body, at }[]
-_NOTICE = {"id": "uuid", "kind": "string", "title": "string", "body": "string", "state": "string?", "published_at": "string",
+_NOTICE = {"id": "uuid", "kind": "string", "title": "string?", "body": "string?", "state": "string?", "published_at": "string",
            "unread": "boolean", "maintenance": "object?", "updates": "array"}
 # 運営の一覧の 1 行（11 欄）。audience は { mode, plans, workspaces: { id, name }[] }。incident_state は障害の今の状態（一覧の札・K-980）
-_OPS_ROW = {"id": "uuid", "kind": "string", "title": "string", "audience": "object", "state": "string",
+_OPS_ROW = {"id": "uuid", "kind": "string", "title": "string?", "audience": "object", "state": "string",
             "placements": "string[]", "publish_at": "string?", "published_at": "string?", "author_name": "string?",
             "incident_state": "string?", "admins_only": "boolean"}
 # 1 件（16 欄）：本体の getOpsNotice と同じ形。reach は { workspaces, members }（出すと届く数）
-_OPS_DETAIL = {**_OPS_ROW, "body": "string", "maintenance": "object?", "impact": "string?", "updates": "array", "reach": "object"}
+_OPS_DETAIL = {**_OPS_ROW, "body": "string?", "maintenance": "object?", "impact": "string?", "updates": "array", "reach": "object"}
 RESPONSES = {
     "listNotices": ("Notice", dict(_NOTICE)),
     "markNoticeRead": ("NoticeRead", {"id": "uuid", "read_at": "string"}),
@@ -66,4 +66,14 @@ RESPONSES = {
     "publishOpsNotice": ("OpsNoticeDetail", dict(_OPS_DETAIL)),
     "addIncidentUpdate": ("OpsNoticeDetail", dict(_OPS_DETAIL)),
     "sendWorkspaceNotice": ("OpsNoticeDetail", dict(_OPS_DETAIL)),
+}
+
+# 答えの欄で DB は null を許すが口は null を返さない物（K-144 の SHAPE_013・統合の枝）
+NOT_NULL_ANSWERS = {
+    "markNoticeRead.read_at": "口が読んだ印を付けた行の時刻（2 回目は最初の時刻）をいつも返し、null にはしない（notice_deliveries.read_at は null 可）",
+}
+
+# 口が返す成功の状態コード（契約を口に合わせる・K-144 の SHAPE_010・統合の枝）
+SUCCESS_STATUS = {
+    "markNoticeRead": 200,   # 作らず状態を変えるだけ・口は 200 を返す
 }

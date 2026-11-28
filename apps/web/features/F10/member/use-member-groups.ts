@@ -3,6 +3,7 @@
 //   選び：開くたびにグループの一覧を getWorkspaceMembers の groups[]（id・name）から 1 回読む（口を増やさない）。
 //   送る：updateMemberGroups（K-812・PATCH /api/v1/members/<id>/groups）の体 { primary_scope_id? , add_scope_ids?, remove_scope_ids? }。role_key は送らない。
 //   403・STEP_UP_REQUIRED → getMySecurity を 1 回読んで取り直しの小窓 → 通ったら同じ体で 1 回だけやり直す・やめたら何も送らない（K-363 と同じ形）。
+//   やめた後に押し直しても口には送らず、取り直しの小窓から（取り直すまで前の 403 を繰り返さない・K820-UI-005）。
 //   失敗の出し分けは答えの code：E-MEM-002（もう居ない）→ 閉じて詳細を読み直す／E-MEM-006・007（グループが変わった）→ 赤い箱＋選びを読み直す／ほか → 赤い箱（中身は残る）
 import { useCallback, useRef, useState } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
@@ -61,6 +62,8 @@ export function useMemberGroups(id: string, { onChanged, onGone }: UseMemberGrou
   const [stepUp, setStepUp] = useState<StepUpNeed | null>(null);
   const sending = useRef(false);
   const pending = useRef<GroupsBody | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても口に送らず取り直しの小窓から（前の送りを繰り返さない・口は 2 回・K820-UI-005）
+  const needStepUp = useRef<StepUpNeed | null>(null);
 
   /** グループの一覧を 1 回読む（読めなければ選びは空のまま・赤い箱） */
   const loadChoices = useCallback(async (): Promise<void> => {
@@ -79,6 +82,7 @@ export function useMemberGroups(id: string, { onChanged, onGone }: UseMemberGrou
     setError(null);
     setStepUp(null);
     pending.current = null;
+    needStepUp.current = null;
     setChoices(null);
     void loadChoices();
   }, [loadChoices]);
@@ -86,17 +90,27 @@ export function useMemberGroups(id: string, { onChanged, onGone }: UseMemberGrou
   const askStepUp = async (): Promise<void> => {
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = (s.ok ? s.data : {}) as { two_factor?: boolean; has_password?: boolean };
-    setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+    const need = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    needStepUp.current = need;
+    setStepUp(need);
   };
 
   /** 送る。成功なら true（呼ぶ側が小窓を閉じて知らせを出す） */
   const send = async (body: GroupsBody, retried = false): Promise<boolean> => {
     if (sending.current) return false;
+    if (!retried && needStepUp.current) {
+      // まだ取り直していない：送らずに同じ取り直しの小窓を出す
+      pending.current = body;
+      setError(null);
+      setStepUp(needStepUp.current);
+      return false;
+    }
     sending.current = true;
     setBusy(true);
     setError(null);
     try {
       const r = await call("updateMemberGroups", { params: { id }, body, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) {
         pending.current = null;
         onChanged(((r.data as unknown as GroupsAnswer).groups ?? []) as MemberGroupRef[]);

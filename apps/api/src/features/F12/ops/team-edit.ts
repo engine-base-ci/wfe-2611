@@ -8,8 +8,8 @@ import { OPS_ALL_CAPS } from "@kaname/auth/ops-first";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "./db.js";
+import { isUuid } from "@kaname/contracts";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const KNOWN_CAPS: ReadonlySet<string> = new Set(OPS_ALL_CAPS);
 /** 最後の 1 人の印（関数が detail.cap に返す字） */
 const LOCKABLE_CAPS: ReadonlySet<string> = new Set(["ops_people", "plan_decide"]);
@@ -43,7 +43,7 @@ function refusalReply(r: FnResult): HookReply {
 
 /** 道の id（members.id）。入口も uuid を確かめるが、ここでも確かめる（入口に頼らない 2 層目） */
 function idIssues(id: string | null): Issue[] {
-  return id && UUID.test(id) ? [] : [{ field: "id", message: "uuid の形" }];
+  return id && isUuid(id) ? [] : [{ field: "id", message: "uuid の形" }];
 }
 
 /** 体を確かめる（caps だけ・9 つの字・1〜9 個・重ならない）。できることは決まった並びにそろえる */

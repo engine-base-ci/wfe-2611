@@ -36,6 +36,7 @@ function GroupBand({ handover, ticket }: { handover: HandoverView; ticket: BandS
     try {
       const r = await call("withdrawTicketHandover", {
         params: { id: handover.id },
+        body: {},
         idempotencyKey: key.current,
         screenId: "tickets",
       });

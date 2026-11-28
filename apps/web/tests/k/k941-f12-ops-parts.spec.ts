@@ -293,7 +293,7 @@ test("K941-UI-012 回収：一覧の上に「パスワードの照合が使え�
 }) => {
   await guard(page);
   await openState(page, DIR, "op-list-pwned", 1440);
-  await expect(page.getByText("パスワードの照合が使えなかった登録が 3 件あります", { exact: true })).toBeVisible();
+  await expect(page.getByText("パスワードの照合が使えなかった登録が 4 件あります", { exact: true })).toBeVisible(); // 下絵 op-list-pwned は 4 件（mocks.tsx の説明と render.tsx の pwned={4}）
   await expect(page.getByRole("button", { name: "見る", exact: true })).toBeVisible();
   await openState(page, DIR, "op-pwned", 1440);
   const dlg = dialogOf(page, "パスワードの照合が使えなかった登録");

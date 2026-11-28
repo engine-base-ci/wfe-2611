@@ -37,10 +37,14 @@ RESPONSES = {
 }
 
 ERRORS_4XX = {
+    "getOpsInvoiceTemplate": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
     "updateOpsInvoiceTemplate": [
         {"status": 409, "code": "E-BILL-007", "body": {"error": "conflict", "code": "E-BILL-007"}, "errors": ["E-BILL-007"],
          "trigger": "読んだときの版（version）が今の版と違う＝ほかの運営の人が先に直した（同時に 2 人が保存した後の 1 つも同じ）。欄も details も付けない",
          "ears_form": "UNWANTED: IF 送られた版が請求書の型の今の版と違うなら、Kaname は 409 と E-BILL-007 を返し、型も記録も書かない"},
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
     ],
 }
 

@@ -30,7 +30,7 @@ VALUE_RANGES = {
 RESPONSES = {
     "resendOpsVerification": ("OpsVerificationResent", {"sent_at": "string"}),
     # topic は usage・trouble・billing・other・state は open・waiting・later・done。担当がいなければ owner_name は null
-    "listOpsWorkspaceInquiries": ("OpsWorkspaceInquiry", {"id": "uuid", "title": "string", "topic": "string", "asker_name": "string", "owner_name": "string?",
+    "listOpsWorkspaceInquiries": ("OpsWorkspaceInquiry", {"id": "uuid", "title": "string?", "topic": "string", "asker_name": "string", "owner_name": "string?",
                                                            "state": "string", "created_at": "string"}),
     # 運営の人の操作の記録（消せない）。action は種類の鍵（peek.open など）・action_label は画面の字
     "listOpsWorkspaceAudit": ("OpsWorkspaceAuditRow", {"id": "uuid", "at": "string", "actor_name": "string", "action": "string", "action_label": "string",
@@ -57,4 +57,11 @@ QUERY_RANGES = {
 NOT_NULL_ANSWERS = {
     "openPeek.reason": "口が必須の理由（1〜200 字）を入れた行を返し、null にはしない（support_access_grants.reason は前からの行のために null 可）",
     "closePeek.reason": "openPeek が理由を必須で入れた行だけを閉じて返し、null にはしない（support_access_grants.reason は前からの行のために null 可）",
+}
+
+# 口が返す断り（K-144 の SHAPE_010・統合の枝で契約に足した）
+ERRORS_4XX = {
+    "listOpsWorkspaces": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
 }

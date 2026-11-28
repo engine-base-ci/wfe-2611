@@ -237,7 +237,7 @@ export function MembersPage({
       <header className="k-page-head">
         <h1 id="members-title">メンバー</h1>
         <p className="k-page-sub">グループごとに並ぶ。役割はその場で変えられる</p>
-        <div className="k-page-acts">
+        <div className="k-page-acts k-f10m-acts">
           <Button
             variant="outlined"
             {...inertIf(disabledButtons.includes("addGroup"))}

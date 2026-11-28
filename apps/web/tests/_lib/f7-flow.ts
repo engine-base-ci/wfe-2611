@@ -10,7 +10,7 @@
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type Response } from "@playwright/test";
 import { admin, loginAs } from "./api";
 import type { Newcomer } from "./newcomer";
-import { asPerson, teammate, type TicketSections } from "./prep";
+import { asPerson, bodyOf, teammate, type TicketSections } from "./prep";
 
 /** 2 人目（同じ会社のメンバー）。自分のブラウザ（別の印・別の文脈）を持つ */
 export interface Mate {
@@ -157,7 +157,7 @@ export async function ticketFor(
     assignee_member_id: o.assignee ?? me.memberId,
     ...(o.parent ? { parent_ticket_id: o.parent } : {}),
     ...(o.dueDays === null ? {} : { due_on: jst(o.dueDays ?? 3) }),
-    sections: o.sections ?? { purpose: "毎日見る試験の準備", done: "確かめた", todo: "- 確かめる" },
+    body: bodyOf(o.sections ?? { purpose: "毎日見る試験の準備", done: "確かめた", todo: "- 確かめる" }),
   });
   if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Record<string, unknown> | undefined)?.["id"]) as
@@ -175,6 +175,9 @@ export const openTicket = async (page: Page, ticketId: string, title: string): P
 export const bell = (page: Page): Locator => page.getByRole("button", { name: /^お知らせ/ }).first();
 /** 鈴の未読の数（名前に件数が無ければ 0・99 件以上は 99） */
 export async function bellCount(page: Page): Promise<number> {
+  // 数は外枠の口 getShell の答え（K-466）。開いた直後は答えの前なので、口が落ち着いて鈴が押せる形になってから読む
+  await page.waitForLoadState("networkidle");
+  await expect(bell(page)).toBeEnabled();
   const name = (await bell(page).getAttribute("aria-label")) ?? "";
   const m = /（(\d+) 件）/.exec(name);
   return m ? Number(m[1]) : /99 件以上/.test(name) ? 99 : 0;

@@ -9,12 +9,12 @@ import type pg from "pg";
 import type { HookArgs, HookReply } from "../../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "../db.js";
 import { toOpsNoticeDetail, toOpsNoticeRow } from "./shape.js";
+import { isUuid } from "@kaname/contracts";
 
 /** 返す件数の上限 */
 export const LIST_MAX = 100;
 export const KINDS = ["incident", "maintenance", "release"] as const;
 export const STATES = ["draft", "scheduled", "published", "resolved"] as const;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface Issue {
   field: string;
@@ -76,7 +76,7 @@ export function createListOpsNotices(appPool: pg.Pool): (a: HookArgs) => Promise
 export function createGetOpsNotice(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a) => {
     const id = a.id ?? "";
-    if (!UUID.test(id)) return invalid([{ field: "id", message: "uuid の形" }]);
+    if (!isUuid(id)) return invalid([{ field: "id", message: "uuid の形" }]);
     try {
       const data = await opsTx(appPool, a.ctx, async (cl) => {
         const r = await cl.query<{ j: unknown }>("select app.ops_notice_detail($1::uuid) as j", [id]);

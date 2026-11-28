@@ -25,11 +25,13 @@
     "test_post_ops_notices_id_publish_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_notices_id_publish_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_notices_id_publish_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "sendWorkspaceNotice": {
    "file": "apps/api/test/features/F12/ops-notices-publish.test.ts",
@@ -52,11 +54,13 @@
     "test_post_ops_workspaces_id_notices_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_notices_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_ops_workspaces_id_notices_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   }
  }
 }

@@ -268,6 +268,7 @@ function BillsBody({ q, now }: { q: BillsQuery; now: Date }) {
           if (r) setPay({ id, form: payFormOf(r, now), error: null });
         }}
         status={status}
+        templateHref="/ops/billing/template"
       />
       {issue?.draft ? (
         <BillsIssueConfirm

@@ -12,12 +12,20 @@
     "test_post_ops_workspaces_id_peeks_rejected_422": "K969-API-008",
     "test_post_ops_workspaces_id_peeks_rejected_422_2": "K969-API-008",
     "test_post_ops_workspaces_id_peeks_rate_limited": "K969-API-017",
-    "test_post_ops_workspaces_id_peeks_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"},
-    "test_post_ops_workspaces_id_peeks_session_unresolved": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"}
+    "test_post_ops_workspaces_id_peeks_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_peeks_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_peeks_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    },
-   "na": {
-    "test_post_ops_workspaces_id_peeks_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "closePeek": {
    "file": "apps/api/test/features/F12/ops-peek.test.ts",
@@ -29,9 +37,18 @@
     "test_delete_ops_peeks_id_rejected_401": "K969-API-007",
     "test_delete_ops_peeks_id_rejected_403": "K969-API-007",
     "test_delete_ops_peeks_id_rejected_422": "K969-API-008",
-    "test_delete_ops_peeks_id_rate_limited": {"file": "apps/api/test/features/F12/ops-peek.test.ts", "mark": "K969-API-017"},
-    "test_delete_ops_peeks_id_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"},
-    "test_delete_ops_peeks_id_session_unresolved": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"}
+    "test_delete_ops_peeks_id_rate_limited": {
+     "file": "apps/api/test/features/F12/ops-peek.test.ts",
+     "mark": "K969-API-017"
+    },
+    "test_delete_ops_peeks_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ops_peeks_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   }
  }

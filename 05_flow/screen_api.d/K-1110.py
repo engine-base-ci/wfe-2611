@@ -27,6 +27,7 @@ ERRORS_4XX = {
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "確かめた時刻・運営の記録を書く DB（app.ops_pwned_pending_ack）が落ちた・使えない",
          "ears_form": "UNWANTED: IF 確かめた時刻を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、印も記録も残さない"},
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
     ],
 }
 

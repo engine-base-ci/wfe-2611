@@ -231,7 +231,8 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
 
   const treeProps: KnowledgeTreeProps = {
     data: tree.data ? shapeTree(tree.data, openFolders) : EMPTY_TREE,
-    current: pageId,
+    // 読めなかったページの行は「今いる行」にしない（下絵 kn-failed・PM の決め 2026-11-28）
+    current: page.isError ? undefined : pageId,
     ...(tree.data?.admin_counts ? { admin: tree.data.admin_counts } : {}),
     drawerOpen,
     state: tree.data ? "ready" : "loading",
@@ -258,7 +259,15 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
           else next.add(id);
           return next;
         }),
-      ...(merged.add ? { onAdd: merged.add } : { inertAdd: true }),
+      // 木の「＋」で小窓を開いたら、引き出しの木は閉じる（下絵 kn-add は狭い幅で木を出さない・PM の決め 2026-11-28）
+      ...(merged.add
+        ? {
+            onAdd: (target: Parameters<NonNullable<typeof merged.add>>[0]) => {
+              setDrawerOpen(false);
+              merged.add?.(target);
+            },
+          }
+        : { inertAdd: true }),
     },
   };
 

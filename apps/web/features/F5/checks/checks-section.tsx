@@ -90,6 +90,8 @@ function useNoSpecReason(ticketId: string | undefined, need: boolean): string | 
     queryKey: ticketKey(ticketId ?? ""),
     enabled: need && Boolean(ticketId),
     retry: false,
+    // 詳細がもう読んだ答え（同じ鍵）をそのまま使い、区画が出たときに読み直さない（詳細を開いた getTicket は 1 回・K484-UI-023）
+    staleTime: Infinity,
     queryFn: () => readTicket<{ no_spec_reason?: string | null }>(ticketId ?? ""),
   });
   const reason = (q.data as { no_spec_reason?: string | null } | undefined)?.no_spec_reason;

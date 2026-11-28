@@ -24,8 +24,11 @@ describe("PATCH /api/v1/workspace/billing-contact", () => {
     // 本物の試験：apps/api/test/features/F12/billing-contact.test.ts の「K959-API-003」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F12/billing-contact.test.ts", "utf8")).toContain("K959-API-003");
   });
-  // 当てはまらない（送る量の守り（1MB）は入口の共通（op.ts・K-144））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_patch_workspace_billing_contact_too_large");
+  it("test_patch_workspace_billing_contact_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_patch_workspace_billing_contact_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/billing-contact.test.ts の「K959-API-010」（同じ CI の G3 で流れる）

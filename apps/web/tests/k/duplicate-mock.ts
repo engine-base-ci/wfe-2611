@@ -16,6 +16,7 @@ import type { Page, Request, Route } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import {
   API_RE,
+  TICKET,
   mockApi,
   ticketOf,
   withBand,
@@ -273,8 +274,11 @@ export async function setupDetail(page: Page, o: DetailOptions = {}): Promise<{ 
   const api = await mockApi(page, band);
   const post = await routeCreate(page);
   const d: DetailDup = { ticketReads: 0, post };
+  // getTicket を読んだ数は本当の要求で数える（土台は実行の一覧の答えを作るときにも on.ticket を読む・同じ形を数えない）
+  page.on("request", (r) => {
+    if (r.method() === "GET" && new URL(r.url()).pathname === `/api/v1/tickets/${TICKET}`) d.ticketReads++;
+  });
   api.on.ticket = () => {
-    d.ticketReads++;
     const base = ticketOf(band) as unknown as { ticket: Record<string, unknown> } & Record<string, unknown>;
     return ok(
       withBand(band, {
