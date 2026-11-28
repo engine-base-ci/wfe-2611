@@ -1,0 +1,49 @@
+{
+ "errors": [
+  {
+   "id": "E-ME-010",
+   "class": "limit",
+   "where": {"act": "A74", "screen": "account", "choke_point": "C4"},
+   "when": "顔の写真のファイルが 5 MB（5,242,880 バイト）を超えた",
+   "false_when": "5 MB ちょうどまでの写真",
+   "message": "写真は 5 MB までです。小さい写真を選んでください",
+   "action": "小さい写真を選ぶ",
+   "undo": false,
+   "layers": ["UI", "API"],
+   "must_not": false,
+   "reproduce": {"setup": "自分の設定 › プロフィールを開く", "steps": ["5 MB を超える写真を選ぶ"], "needs": "5 MB を超える画像"},
+   "severity": "low",
+   "source": ["D-154.57"]
+  },
+  {
+   "id": "E-ME-011",
+   "class": "validation",
+   "where": {"act": "A74", "screen": "account"},
+   "when": "顔の写真のファイルの中身が PNG・JPEG・WebP でない（SVG・GIF・空・画像でない。名前と種類の申告は信じない）",
+   "false_when": "中身が PNG・JPEG・WebP の写真（名前や種類の申告が違っていても通る）",
+   "message": "写真は PNG・JPEG・WebP の画像にしてください",
+   "action": "PNG・JPEG・WebP の写真を選ぶ",
+   "undo": false,
+   "layers": ["UI", "API"],
+   "must_not": false,
+   "reproduce": {"setup": "自分の設定 › プロフィールを開く", "steps": ["GIF か SVG の画像を選ぶ"], "needs": "GIF か SVG の画像"},
+   "severity": "low",
+   "source": ["D-154.57"]
+  },
+  {
+   "id": "E-ME-012",
+   "class": "external",
+   "where": {"act": "A74", "screen": "account", "choke_point": "C4"},
+   "when": "顔の写真を置き場に置けなかった（置き場が落ちている・断った）",
+   "false_when": "置き場に置けた",
+   "message": "写真を置けませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": ["UI", "API"],
+   "must_not": false,
+   "reproduce": {"setup": "自分の設定 › プロフィールを開く", "steps": ["置き場を止めて写真を選ぶ"], "needs": "置き場を止められる環境"},
+   "severity": "medium",
+   "source": ["D-154.57"]
+  }
+ ]
+}
