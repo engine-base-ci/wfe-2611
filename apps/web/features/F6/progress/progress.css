@@ -1,0 +1,97 @@
+/* 段 7 の「自分で進める」（頭の行の段の札のメニュー・保留・実績）。下絵の部品（K-66 の切る段）。値は正本のトークン（--k-*）だけ。
+   段の札そのものの塗りは詳細の CSS（.k-detail-stage・data-stage）をそのまま使い、押せる形の印（▾）と鍵の印だけをここで足す */
+
+.k-prog-stage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+.k-prog-stage-btn:focus-visible {
+  outline: var(--k-c-approvals-chip-on-border);
+  outline-offset: var(--k-s-xs);
+}
+/* 鍵の札は、印と字の間の分を左右の余白から引き、鍵の無い札と同じ幅にする（幅 375 の頭の行で札が次の行へ落ちない・K-1100）。
+   .k-detail-stage の余白に勝つよう 2 つの組で当てる */
+.k-detail-stage.k-prog-stage-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-detail-stage-locked-gap);
+  padding: var(--k-c-detail-stage-locked-pad);
+}
+/* 箱を本文の道具の帯（詳細の上に貼り付く）より上に出すのは、メニューの型の置き場の重なりの順（K-381・components/k の .k-popup-layer）。ここでは当てない */
+.k-prog-menu {
+  min-width: calc(var(--k-s-2xl) * 2);
+}
+.k-prog-item {
+  gap: var(--k-s-sm);
+}
+.k-prog-item-note {
+  margin-left: auto;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-prog-reason-btn {
+  border: 0;
+  background: transparent;
+  padding: 0 var(--k-s-xs);
+  color: var(--k-primary);
+  font-family: inherit;
+  font-size: var(--k-text-label-md);
+  cursor: pointer;
+}
+.k-prog-reason-btn:focus-visible {
+  outline: var(--k-c-approvals-chip-on-border);
+  outline-offset: var(--k-s-xs);
+}
+.k-prog-reason {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: calc(var(--k-s-2xl) * 2);
+  padding: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-prog-reason p {
+  margin: 0;
+}
+.k-prog-reason-by {
+  color: var(--k-on-surface-variant);
+}
+.k-prog-sep {
+  margin: var(--k-s-xs) 0;
+  border: 0;
+  border-top: var(--k-c-approvals-note-border-top);
+}
+
+/* ---- 実績（右のパネルの属性・日付と時間） ---- */
+.k-prog-time {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+}
+.k-prog-time-sub {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-prog-time-edit {
+  display: grid;
+  gap: var(--k-s-xs);
+}
+.k-prog-time-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--k-s-xs);
+}
+.k-prog-time-row .k-field {
+  width: var(--k-s-2xl);
+}
+.k-prog-time-acts {
+  display: flex;
+  gap: var(--k-s-sm);
+}
+
+/* 幅 767 以下の頭の行（開始日・期限・段の札を横に並べて 2 行まで・代表の直し answer=fabd031f9b37）は、詳細の CSS（features/F4/create-ticket/ticket-detail.css）の 1 か所が持つ（K-380）。ここに同じ物を持たない */
