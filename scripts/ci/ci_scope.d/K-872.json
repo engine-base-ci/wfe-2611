@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k872-f11-request-dialogs.spec.ts": "段 12 の下絵の置き場 apps/web/app/(dev)/dev/mock/f11/（mocks.tsx の rq- の状態と持ち主・render-cu-rq.tsx の case）と部品 apps/web/features/F11/requests/dialogs.tsx の字を読み、状態の数・見た目だけの小窓・使わない字を見る（K872-MK-001〜003）。子プロセスも生成物も読まないので data_links は要らない（K-872）"
+ }
+}
