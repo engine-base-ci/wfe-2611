@@ -277,10 +277,11 @@ test("K751-UI-010 失敗：手順 S1 の失敗（409・E-APR-010）は小窓を�
   const n = h.asked.length;
   await undoRow(page).getByRole("button", { name: "取り消す", exact: true }).click();
   await confirmBtn(page).click();
+  // 決めた履歴の板（modal）は開いたままなので、後ろの承認待ちの画面は読み上げの木から外れる（aria-hidden）。見えているかで確かめる
   await expect(
     page
       .locator("#k-main")
-      .getByRole("alert")
+      .getByRole("alert", { includeHidden: true })
       .filter({ hasText: "もう実行が始まっているので、取り消せません。差し戻しの書き込みで知らせてください" }),
   ).toBeVisible();
   await expect.poll(() => h.asked.length).toBeGreaterThan(n);
@@ -301,7 +302,9 @@ test("K751-UI-011 失敗：手順 S1 の失敗（409・E-APR-011・403・503）�
     h.w.next.push(r);
     await undoRow(page).getByRole("button", { name: "取り消す", exact: true }).click();
     await confirmBtn(page).click();
-    await expect(page.locator("#k-main").getByRole("alert").filter({ hasText: text })).toBeVisible();
+    await expect(
+      page.locator("#k-main").getByRole("alert", { includeHidden: true }).filter({ hasText: text }),
+    ).toBeVisible(); // 板（modal）が開いたままの後ろの画面（aria-hidden）なので includeHidden で探し、見えているかで確かめる
   }
 });
 
