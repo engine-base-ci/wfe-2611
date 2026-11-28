@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-150",
+   "class": "not_found",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "work"
+   },
+   "when": "結果を返そうとした仕事が、無い・この PC の物でない・案の仕事でない・もう終わっている",
+   "false_when": "その PC が受け取った動いている案の仕事の結果を返す",
+   "message": "この仕事はもう終わっているか、見つかりません",
+   "action": "何もしない（PC は次の仕事を取る）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC をつなぎ、案の仕事を取って結果を返す",
+    "steps": [
+     "同じ結果をもう一度返す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.11",
+    "D-128.101"
+   ]
+  }
+ ]
+}

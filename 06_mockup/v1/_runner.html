@@ -1,0 +1,16 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>runner</title></head><body style="margin:0">
+<pre id="log" style="font:12px monospace"></pre><div id="host"></div>
+<script>
+const q=new URLSearchParams(location.search); const dirs=(q.get('d')||'_st').split(','); const n=+(q.get('n')||20); const fn=q.get('fn')||'audit'; const pre=q.get('pre')||'st';
+const jobs=[]; for(const d of dirs) for(let i=0;i<n;i++) jobs.push({d,u:`${d}/${pre}${i}.html`});
+window.RES=[];window.DONE=false;window.ERR=[];
+const log=s=>{document.getElementById('log').textContent+=s+'\n';};
+(async()=>{for(const j of jobs){const f=document.createElement('iframe');f.style.cssText=`width:1500px;height:900px;border:0;display:block`;
+ document.getElementById('host').replaceChildren(f);
+ await new Promise(r=>{f.onload=r;f.src=j.u;}); await new Promise(r=>setTimeout(r,700));
+ try{const inner=[...f.contentDocument.querySelectorAll('iframe')];
+  await Promise.all(inner.map(x=>x.contentDocument&&x.contentDocument.readyState==='complete'?0:new Promise(r=>{x.addEventListener('load',r,{once:true});setTimeout(r,4000);})));
+  const t0=Date.now();const r=await f.contentWindow[fn](); window.RES.push({d:j.d,u:j.u,r,ms:Date.now()-t0});log(`${j.u} ok ${Date.now()-t0}ms`);}
+ catch(e){window.ERR.push({u:j.u,e:String(e)});log(`${j.u} ERR ${e}`);}
+}window.DONE=true;log('DONE');})();
+</script></body></html>
