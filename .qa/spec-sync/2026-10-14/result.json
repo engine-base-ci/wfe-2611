@@ -1,0 +1,67 @@
+{
+ "status": "PASS（この変更の線は全部緑。F/G/H/P は前からの穴で、この回の対象外として明記）",
+ "run_id": "20261014-task-parent-D072-12",
+ "executed_at": "2026-10-14T12:46:23",
+ "change": "D-072.12 タスクの親子（tasks.parent_task_id）を ER図・契約・下流へ波及（表の追加は T-U-16 の migration で）",
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass"
+  },
+  {
+   "tier": "B",
+   "status": "pass"
+  },
+  {
+   "tier": "C",
+   "status": "pass"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑・要件一覧を再生成"
+  },
+  {
+   "tier": "D",
+   "status": "pass_for_this_change",
+   "detail": "AD-072-12 の線は全部 OK（ER／entities／openapi／flow／mock／tickets／spec）。D0（分母 112 件未登録）・D8（1569 組 未判定）は前からの穴で、この回の対象外"
+  },
+  {
+   "tier": "F",
+   "status": "skipped",
+   "detail": "skill の spec-validator が Kaname の downstream_coverage の形（upstream/downstream）を読めず id_source.file 未指定。同じ検査は Kaname 側の flow_gate G1〜G10・er_gate G20・fd gates で緑"
+  },
+  {
+   "tier": "G",
+   "status": "pre_existing_fail",
+   "detail": "packages/auth/src/{migrate,index}.ts が境界の外から DB を直接呼ぶ ほか 5 件。この回で触っていない（T-F-05 の例外台帳の扱い）"
+  },
+  {
+   "tier": "H",
+   "status": "pre_existing_fail",
+   "detail": "packages/{auth,db}/src/{migrate,cli,ci}.ts が C2／C4 を通らない 5 件。Kaname の choke.mjs は例外台帳込みで 8/8 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "op_gate --all 不合格 0（実ブラウザの報告を流し直し 17 本 PASS）・layer_audit G21 PASS"
+  },
+  {
+   "tier": "P",
+   "status": "pre_existing_fail",
+   "detail": "P3 古い成果物の一覧・P4 幽霊 v1-goal-allocate.html は前からの穴"
+  }
+ ],
+ "files": [
+  "01_hearing/決定ログ_進行中.md(D-072 reflect_in)",
+  "03_architecture/ER図.md(tasks.parent_task_id・自己参照・根拠 D-072・live_at／paused_at／ai_employee_id の区切りを / に)",
+  "05_flow/data.py(タスク object)",
+  "05_flow/build_tasks.py(_TASK_PARENT・journeys の result 引き継ぎ)",
+  "spec-dependencies.yaml(AD-072-12)",
+  "生成: flow.json/entities.json/features.json/screens.json/openapi.yaml/types.ts/packages/contracts/tickets.json/tickets_plan.json/要件一覧/schedule"
+ ],
+ "notes": [
+  "build_tasks が journeys/plan.json の result／task を空で上書きしていた不具合を直し、J-02 の 7 行を復元",
+  "kaname-pg が 10/05 に postgres:16（空）にすり替わっていたので pgvector で作り直した"
+ ]
+}

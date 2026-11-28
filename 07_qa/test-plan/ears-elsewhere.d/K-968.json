@@ -1,0 +1,55 @@
+{
+ "ops": {
+  "getOpsWorkspaceBilling": {
+   "file": "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+   "reason": "その会社の契約・人数・請求書で答えが変わる。種では作れない（K-968）",
+   "covers": {
+    "test_get_ops_workspaces_id_billing_ok": "K968-API-011",
+    "test_get_ops_workspaces_id_billing_shape": "K968-API-011",
+    "test_get_ops_workspaces_id_billing_not_found": "K968-API-006",
+    "test_get_ops_workspaces_id_billing_rejected_401": "K968-API-008",
+    "test_get_ops_workspaces_id_billing_rejected_403": "K968-API-008",
+    "test_get_ops_workspaces_id_billing_rejected_422": "K968-API-009",
+    "test_get_ops_workspaces_id_billing_rate_limited": {
+     "file": "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+     "mark": "K968-API-014"
+    },
+    "test_get_ops_workspaces_id_billing_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_ops_workspaces_id_billing_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "changeOpsWorkspacePlan": {
+   "file": "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+   "reason": "今の契約・人数・問い合わせの持ち主・本人確認の取り直しで答えが変わり、運営の記録を書く。種では作れない（K-968）",
+   "covers": {
+    "test_post_ops_workspaces_id_plan_ok": "K968-API-001",
+    "test_post_ops_workspaces_id_plan_shape": "K968-API-001",
+    "test_post_ops_workspaces_id_plan_not_found": "K968-API-005",
+    "test_post_ops_workspaces_id_plan_conflict": "K968-API-004",
+    "test_post_ops_workspaces_id_plan_rejected_401": "K968-API-008",
+    "test_post_ops_workspaces_id_plan_rejected_403": "K968-API-008",
+    "test_post_ops_workspaces_id_plan_rejected_422": "K968-API-009",
+    "test_post_ops_workspaces_id_plan_rate_limited": "K968-API-014",
+    "test_post_ops_workspaces_id_plan_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_plan_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_plan_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  }
+ }
+}
