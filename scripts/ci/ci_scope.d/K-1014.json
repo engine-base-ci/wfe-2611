@@ -1,0 +1,44 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-notices-write.ts",
+    "apps/api/src/features/F12/ops/notices/write.ts",
+    "packages/db/migrations/20261128015400_ops_notices_write.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-notices-write.test.ts",
+    "apps/api/test/features/F12/ops-notices-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-1014.py",
+    "scripts/ci/contract_shape.d/K-1014.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-notices-write.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-notices-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ops_notices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-notices-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_notices.test.ts"
+   ]
+  }
+ ]
+}
