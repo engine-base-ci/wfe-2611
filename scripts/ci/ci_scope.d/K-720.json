@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F9/settings/**", "apps/web/app/(dev)/dev/mock/f9/**"],
+   "tests": ["apps/web/tests/k/k720-settings-fields-add.spec.ts", "apps/web/test/k720-field-edit-shape.test.ts"]}
+ ]
+}
