@@ -1,0 +1,22 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "04_design/canvas-screens.json",
+    "04_design/DESIGN-kaname.md",
+    "05_flow/flow.json",
+    "scripts/ci/canvas_layout_ledger.json",
+    "scripts/ci/canvas_gate.py",
+    "scripts/ci/canvas_design_gate.py"
+   ],
+   "tests": [
+    "scripts/ci/k925_canvas_guest_test.py"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "scripts/ci/k925_canvas_guest_test.py": "絵 04_design/canvas/*.dc.html と canvas.json・作り手 04_design/canvas_gen/*.py（op.py を含む）・対応表 04_design/canvas-screens.json・幅の台帳 scripts/ci/canvas_layout_ledger.json を読み、canvas_gate.py（05_flow/flow.json を読む）・canvas_design_gate.py（04_design/DESIGN-kaname.md を読む）を子プロセスで流す（K-925）"
+ }
+}
