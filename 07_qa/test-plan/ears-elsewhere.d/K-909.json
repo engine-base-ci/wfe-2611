@@ -1,0 +1,34 @@
+{
+ "ops": {
+  "uploadPortalAttachment": {
+   "file": "apps/api/test/features/F11/portal-attachment.test.ts",
+   "reason": "添付を足す口は、ゲストの所属・ファイルの大きさと種類・下書きの数・置き場の状態で答えが変わる。生成の試験の種ではゲストもファイルも作れない（K-909）",
+   "covers": {
+    "test_post_portal_attachments_ok": "K909-API-001",
+    "test_post_portal_attachments_shape": "K909-API-001",
+    "test_post_portal_attachments_rejected_401": "K909-API-008",
+    "test_post_portal_attachments_rejected_403": "K909-API-008",
+    "test_post_portal_attachments_rejected_422": "K909-API-006",
+    "test_post_portal_attachments_rejected_422_2": "K909-API-002",
+    "test_post_portal_attachments_rate_limited": "K909-API-009",
+    "test_post_portal_attachments_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_portal_attachments_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_portal_attachments_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_portal_attachments_rejected_422_3": "K909-API-006",
+    "test_post_portal_attachments_unavailable": "K909-API-010"
+   },
+   "na": {
+    "test_post_portal_attachments_mfa_pending": "2 段階を付けるまで進めない（K-321）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403・op.ts の 1 か所）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  }
+ }
+}

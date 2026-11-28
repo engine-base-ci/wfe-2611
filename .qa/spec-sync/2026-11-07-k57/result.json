@@ -1,0 +1,63 @@
+{
+ "status": "PASS（A・B・C・T・K・D・F・G・H すべて緑）",
+ "run_id": "20261107-D128.174-k57-intake",
+ "executed_at": "2026-11-07T03:09:59",
+ "change": "D-128.174（同じ PC かどうかは名前ではなく Bridge が PC ごとに持つ印 machine_id で見分ける・PC の名前の既定はホスト名）と K-57 PC をつなぐ の取り込み",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "11_tickets/K-57・K-50",
+  "05_flow/screen_api.py → 08_api・packages/contracts",
+  "07_qa/test-plan",
+  "packages/db/migrations/0089"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0（spec_check）"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate 緑"
+  },
+  {
+   "tier": "K",
+   "status": "pass",
+   "detail": "build_index・test_owner_gate 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "tier h"
+  }
+ ],
+ "next": [
+  "K-60 チケットを作る の取り込み"
+ ]
+}
