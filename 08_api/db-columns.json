@@ -3359,64 +3359,6 @@
     "nullable": true
    }
   },
-  "knowledge_shares": {
-   "created_at": {
-    "type": "timestamp with time zone",
-    "nullable": false
-   },
-   "created_by": {
-    "type": "uuid",
-    "nullable": true
-   },
-   "deleted_at": {
-    "type": "timestamp with time zone",
-    "nullable": true
-   },
-   "ended_at": {
-    "type": "timestamp with time zone",
-    "nullable": true
-   },
-   "ended_by": {
-    "type": "uuid",
-    "nullable": true
-   },
-   "folder_id": {
-    "type": "uuid",
-    "nullable": true
-   },
-   "group_id": {
-    "type": "uuid",
-    "nullable": false
-   },
-   "id": {
-    "type": "uuid",
-    "nullable": false
-   },
-   "page_id": {
-    "type": "uuid",
-    "nullable": true
-   },
-   "request_id": {
-    "type": "uuid",
-    "nullable": true
-   },
-   "shared_by": {
-    "type": "uuid",
-    "nullable": false
-   },
-   "tenant_id": {
-    "type": "uuid",
-    "nullable": false
-   },
-   "updated_at": {
-    "type": "timestamp with time zone",
-    "nullable": false
-   },
-   "updated_by": {
-    "type": "uuid",
-    "nullable": true
-   }
-  },
   "knowledge_limits": {
    "must_max": {
     "type": "integer",
@@ -3662,6 +3604,150 @@
    },
    "verify_interval_days": {
     "type": "integer",
+    "nullable": true
+   }
+  },
+  "knowledge_requests": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decided_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "decided_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "decline_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "dismissed_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "from_is_personal": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "from_scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind": {
+    "type": "text",
+    "nullable": false
+   },
+   "message": {
+    "type": "text",
+    "nullable": true
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "requested_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "state": {
+    "type": "text",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "to_folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "to_scope_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "knowledge_shares": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "ended_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "folder_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "page_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "request_id": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "shared_by": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
     "nullable": true
    }
   },
@@ -7580,6 +7666,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "stop_notice": {
+    "type": "text",
+    "nullable": true
+   },
    "stop_noticed_at": {
     "type": "timestamp with time zone",
     "nullable": true
@@ -7953,6 +8043,48 @@
     "nullable": false
    }
   },
+  "ticket_guest_shares": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "guest_group_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "shared_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
   "ticket_handovers": {
    "answered_by": {
     "type": "uuid",
@@ -8253,6 +8385,14 @@
    "edited_at": {
     "type": "timestamp with time zone",
     "nullable": true
+   },
+   "from_request": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "guest_visible": {
+    "type": "boolean",
+    "nullable": false
    },
    "id": {
     "type": "uuid",

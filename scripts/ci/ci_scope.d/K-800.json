@@ -1,7 +1,24 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/f10-admin.ts", "apps/api/src/features/F10/admin/**"],
-   "tests": ["apps/api/test/features/F10/admin-base.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/hooks/f10-admin.ts",
+    "apps/api/src/features/F10/admin/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-base.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "03_architecture/catalog.json",
+    "11_tickets/K-70.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-base.test.ts"
+   ]
+  }
  ],
  "reads_ok": {
   "apps/api/test/features/F10/admin.harness.ts": "口の hooks のファイル apps/api/src/hooks/f10-admin.ts と K-419 の hooks/workspace-invitations.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-800。後ろの葉は自分の断片に paths → 自分の試験の 1 行を足す",

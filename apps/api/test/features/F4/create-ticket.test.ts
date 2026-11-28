@@ -486,7 +486,13 @@ describe("K-60 入力・失敗・操作の揺れ・守り", () => {
     expect(m.every((x) => x.tenant_id === T.tenantId)).toBe(true);
     expect(m.map((x) => x.id)).not.toContain(outsider.id);
     const s = await json(await f.req("GET", "/scopes", { headers: writer.auth }));
-    expect((s.data as unknown as { tenant_id: string }[]).every((x) => x.tenant_id === T.tenantId)).toBe(true);
+    // 答えは契約 ScopeListItem の鍵だけ（tenant_id は出さない・K-804）。返した id の会社を DB で引いて確かめる
+    const sid = (s.data as unknown as { id: string }[]).map((x) => x.id);
+    expect(sid.length).toBeGreaterThan(0);
+    expect(
+      await count("select count(*) as n from scopes where id = any($1::uuid[]) and tenant_id <> $2", [sid, T.tenantId]),
+    ).toBe(0);
+    expect(await count("select count(*) as n from scopes where id = any($1::uuid[])", [sid])).toBe(sid.length);
     expect((s["meta"] as { writable: string[] }).writable).toContain(T.rootScope);
     const sv = await json(await f.req("GET", "/scopes", { headers: viewer.auth }));
     expect((sv["meta"] as { writable: string[] }).writable).toEqual([]);

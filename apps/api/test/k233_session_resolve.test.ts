@@ -95,6 +95,16 @@ async function person(company = "K233 の会社"): Promise<Who> {
     .rows[0]!;
   return { token: v.token, userId: v.userId, memberId: m.id, tenantId: m.tenant_id, authSessionId: s.id };
 }
+/** 返したグループの id が属する会社（重ねずに並べる）。返した id が DB に全部在ることも見る */
+async function tenantsOf(rows: { id: string }[]): Promise<string[]> {
+  const ids = rows.map((r) => r.id);
+  const q = await admin.query<{ id: string; tenant_id: string }>(
+    "select id, tenant_id from scopes where id = any($1::uuid[])",
+    [ids],
+  );
+  expect(q.rows.length, "返した id が DB に全部在る").toBe(ids.length);
+  return [...new Set(q.rows.map((r) => r.tenant_id))];
+}
 const head = (t: string, o: { country?: string; ip?: string } = {}) => ({
   authorization: `Bearer ${t}`,
   "user-agent": UA,
@@ -187,9 +197,10 @@ describe("K-233 数（直す前と後で同じ測り方）", () => {
     await scopes(w.token); // 端末と国を決める 1 回目（見張りの初回の書き込みを数えない）
     const { out, sql } = await counted(() => scopes(w.token));
     expect(out.status, await out.clone().text()).toBe(200);
-    const body = (await out.json()) as { data: { id: string; tenant_id: string }[] };
+    const body = (await out.json()) as { data: { id: string }[] };
     expect(body.data.length).toBeGreaterThan(0);
-    expect(body.data.every((s) => s.tenant_id === w.tenantId)).toBe(true);
+    // 答えは契約 ScopeListItem の鍵だけ（tenant_id は出さない・K-804）。返した id の会社を DB で引いて確かめる
+    expect(await tenantsOf(body.data)).toEqual([w.tenantId]);
     expect(sql.length, sql.join("\n")).toBeLessThanOrEqual(10);
     expect(beforeFirstBegin(sql).length, sql.join("\n")).toBe(2);
     expect(n(sql, /member_left/), sql.join("\n")).toBe(0);
@@ -350,12 +361,13 @@ describe("K-233 振る舞いは今のまま", () => {
     const ids = async (w: Who) => {
       const r = await scopes(w.token);
       expect(r.status).toBe(200);
-      return ((await r.json()) as { data: { id: string; tenant_id: string }[] }).data;
+      return ((await r.json()) as { data: { id: string }[] }).data;
     };
     const da = await ids(a);
     const db = await ids(b);
-    expect(da.every((s) => s.tenant_id === a.tenantId)).toBe(true);
-    expect(db.every((s) => s.tenant_id === b.tenantId)).toBe(true);
+    // 答えは契約 ScopeListItem の鍵だけ（tenant_id は出さない・K-804）。返した id の会社を DB で引いて確かめる
+    expect(await tenantsOf(da)).toEqual([a.tenantId]);
+    expect(await tenantsOf(db)).toEqual([b.tenantId]);
     const bIds = new Set(db.map((s) => s.id));
     expect(da.some((s) => bIds.has(s.id))).toBe(false);
   });

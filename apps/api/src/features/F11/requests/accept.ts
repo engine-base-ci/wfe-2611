@@ -57,7 +57,7 @@ function thrown(e: unknown): HookReply {
 function refusedCreate(v: Answer): HookReply {
   const field = typeof v.field === "string" ? v.field : "body";
   if (v.status === 403) return forbidden(field);
-  // 選べない担当・種別・本文の形は 422（欄つき）。番号は入口の形の誤りと同じ VALIDATION_ERROR（前に使っていた E-VAL-014 は K-437 が正本から外した）
+  // 選べない担当・種別・本文の形は 422（欄つき）。番号は入口の形の誤りと同じ VALIDATION_ERROR（前に使っていた作る口の 422 の番号は K-437 が正本から外した）
   return {
     status: 422,
     body: {

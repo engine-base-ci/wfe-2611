@@ -234,7 +234,8 @@ test("K571-UI-009 右のパネルのタブ：項目（今いる・aria-current�
   const tabs = panel(page).getByRole("navigation", { name: "パネルのタブ" });
   await expect(tabs.getByRole("button")).toHaveText(["項目", "やり取り", "高本のAI"]);
   await expect(tabs.getByRole("button", { name: "項目", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(tabs.getByRole("button", { name: "高本のAI" })).toHaveAttribute("aria-disabled", "true");
+  // AI のタブは K-764（段 6・右のパネルの「〈名〉のAI」）が押せる形にした。押せない形の印は付かない
+  await expect(tabs.getByRole("button", { name: "高本のAI" })).not.toHaveAttribute("aria-disabled", "true");
 });
 
 test("K571-UI-010 項目の並び：担当（担当者・承認する人・優先度）・日付と時間（開始日・期限・予定時間・実績時間と、日付の会社の項目）・関連（グループ・節目・親と、ほかの会社の項目）・確認項目の 4 つの区。会社の項目は用意してある項目と同じ並びに入る（見出しで分けない）", async ({
@@ -728,13 +729,16 @@ test("K571-UI-025 口の数：詳細を開いたときの口は台帳の 6 本�
   const api = m.seen.filter((s) => !s.includes("get-session"));
   const kinds = new Set(api.map((s) => s.replace(TID, ":id")));
   expect([...kinds].sort()).toEqual(
+    // 外枠の 3 本（approvals/queue・bridge/devices・scopes）は getShell 1 本に（K-466）。障害の帯の service-status（K-957）・
+    // 決定ログの区画の decisions（K-397）・やり取りの timeline（K-392）は、それぞれの葉が足した口。本文・項目のための口は 0 のまま
     [
       "GET /api/auth-ext/me",
-      "GET /api/v1/approvals/queue",
-      "GET /api/v1/bridge/devices",
-      "GET /api/v1/scopes",
+      "GET /api/v1/service-status",
+      "GET /api/v1/shell",
       "GET /api/v1/tickets/:id",
+      "GET /api/v1/tickets/:id/decisions",
       "GET /api/v1/tickets/:id/runs",
+      "GET /api/v1/tickets/:id/timeline",
     ].sort(),
   );
   expect(api.filter((s) => s === `GET /api/v1/tickets/${TID}`)).toHaveLength(1);
