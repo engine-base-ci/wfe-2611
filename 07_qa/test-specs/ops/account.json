@@ -1,0 +1,203 @@
+{
+ "screen": "account",
+ "mock": "06_mockup/v1/v1-account.html",
+ "state_labels": {
+  "n": "自分のアカウント",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "input:名前",
+   "kind": "input",
+   "label": "名前",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:メールアドレス",
+   "kind": "input",
+   "label": "メールアドレス",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:表示する名前の AI",
+   "kind": "input",
+   "label": "表示する名前の AI",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:今のパスワード",
+   "kind": "input",
+   "label": "今のパスワード",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:新しいパスワード",
+   "kind": "input",
+   "label": "新しいパスワード",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:パスワードを変える",
+   "kind": "button",
+   "label": "パスワードを変える",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:再設定",
+   "kind": "button",
+   "label": "再設定",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:回復コードを出し直す",
+   "kind": "button",
+   "label": "回復コードを出し直す",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:この端末以外を切る",
+   "kind": "button",
+   "label": "この端末以外を切る",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:切る",
+   "kind": "button",
+   "label": "切る",
+   "target": null,
+   "states": [
+    "自分のアカウント",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
