@@ -1,0 +1,37 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-switch.ts",
+    "apps/api/src/features/F10/me/switch.ts",
+    "packages/db/migrations/20261126005100_me_switch.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-switch.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/me-switch.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/me-switch.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_me_workspaces_id_switch.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-851.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で入口の uuid の行を足した）・K-851"
+ }
+}
