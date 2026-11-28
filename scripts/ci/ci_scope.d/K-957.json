@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/help/**",
+    "apps/web/features/F4/create-ticket/ticket-shell.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k957-service-bands.spec.ts",
+    "apps/web/test/k957-bands-shape.test.ts"
+   ]
+  }
+ ]
+}
