@@ -1,0 +1,9 @@
+﻿T-I-09　流れ J-01 P0 契約・登録（1回だけ） を最後まで通す（L2）,,,,
+http://localhost:3124,,,,
+その前に,,,,
+・`bash scripts/dev/up.sh` を実行する（DB → API → 画面が立つ）,,,,
+#,何をする,こうなれば OK,結果,気づいたこと
+1,会社名とメールを入れる（http://localhost:3124/signup）,アカウントと会社を作る,未確認,
+2,届いたリンクを押す（http://localhost:3124/verify-email）,本人確認を記録,未確認,
+3,招待リンクを押して名前を入れる（http://localhost:3124/invite/:token）,メンバーを作り、スコープを結ぶ,未確認,
+4,認証アプリを登録する（http://localhost:3124/mfa-setup）,TOTPシークレットを暗号化保管,未確認,
