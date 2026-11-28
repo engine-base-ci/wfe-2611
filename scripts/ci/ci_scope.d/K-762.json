@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/app/(app)/ai/chat/", "apps/web/app/page.tsx", "apps/web/features/F5/room/room-talk.tsx", "apps/web/features/F5/room/use-talk.ts", "apps/web/features/F5/room/talk-stream.ts", "apps/web/features/F5/room/talk-words.ts", "apps/web/features/F5/room/talk.tsx", "apps/web/app/(work)/ai/talk/"], "tests": ["apps/web/tests/k/k762-talk.spec.ts"]}
+ ]
+}
