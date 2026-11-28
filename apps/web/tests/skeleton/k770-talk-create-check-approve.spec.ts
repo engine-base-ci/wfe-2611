@@ -210,6 +210,14 @@ const bodyBox = (page: Page): Locator => page.getByRole("textbox", { name: /^本
 const checksBlock = (page: Page): Locator => page.getByRole("region", { name: "確認項目", exact: true });
 const useAll = (card: Locator): Locator => card.getByRole("button", { name: "全部使う", exact: true });
 
+/** 作る画面を開き、作り方の「AI と話して作る」を押して右に会話を開く（K-767-UI-001：会話は押してから開く・道に how=ai） */
+async function openCreateWithAi(page: Page): Promise<void> {
+  await openCreateFromMenu(page);
+  const how = page.locator(".k-create-how").getByRole("button", { name: "AI と話して作る", exact: true });
+  await expect(how, "「AI と話して作る」は押せない形ではない").not.toHaveAttribute("aria-disabled", "true");
+  await how.click();
+  await expect(page).toHaveURL(/[?&]how=ai/);
+}
 /** 作る画面で言う。画面が会話を始める口（初回だけ）と言う口を呼び、言う口が 201 を答えるまで待つ */
 async function talkSay(page: Page, text: string): Promise<void> {
   await sayBox(page).fill(text);
@@ -286,7 +294,7 @@ test("K770-M1-01 話して作る：作る画面で言う → PC の AI が案の
     body: "11 月分と同じ形で、12 月分の作業報告書を作ります。できたら PDF にして山田様にメールで送ります。",
     checks: [SPEC.a, SPEC.b],
   };
-  await openCreateFromMenu(page);
+  await openCreateWithAi(page);
   // F4 → F5：段 5 の作る面の「AI と話して作る」の差し込み口に会話が入り、PC の幅では右に出る（段 5 では押せない形だった）
   await expect(chat(page), "作る画面の右に AI との会話が出る").toBeVisible();
   await expect(
@@ -354,7 +362,7 @@ async function editedTitleState(page: Page, r: Ready, tag: string) {
     checks: [SPEC.a, SPEC.b],
   };
   const mine = `作業報告書を 12/26 までに送る（人が直した）${tag}`;
-  await openCreateFromMenu(page);
+  await openCreateWithAi(page);
   await talkSay(page, ASK);
   await answer(r, await takeChat(r), p1, MSG.reply);
   await useAll(cards(page).first()).click();
@@ -448,7 +456,7 @@ test("K770-M1-03 PC がまだ：PC をつなぐまで作る画面では話せず
   page,
 }) => {
   const me = await newcomer(page, box, "PC なし");
-  await openCreateFromMenu(page);
+  await openCreateWithAi(page);
   await expect(
     chat(page)
       .getByRole("status")
