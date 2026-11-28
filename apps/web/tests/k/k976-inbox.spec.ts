@@ -36,7 +36,7 @@ const PAIRS: FidelityPair[] = [
   pair("thread", ".k-oq-thread", BOX),
   pair("msg", ".k-oq-msg", BOX),
   pair("callout", ".k-oq-thread .k-callout", [...BOX, "texts"]),
-  pair("side", ".k-oq-inbox .k-card", BOX),
+  pair("side", ".k-oq-inbox .k-ops2-side", BOX),
   pair("empty", ".k-state[data-state='empty']", ["x", "width", ...TEXT]),
 ];
 const INBOX = { unassigned: 2, mine: 3, waiting: 4, later: 1 };
@@ -156,7 +156,7 @@ test.describe("K-976 箱と一覧", () => {
     await expect(thread.locator(".k-oq-msg")).toHaveCount(2);
     await expect(thread.locator(".k-oq-msg[data-kind='memo']")).toContainText("社内メモ ・ 先方には見えない");
     await expect(thread).toContainText("Chrome 130");
-    const side = page.locator(".k-oq-inbox .k-card");
+    const side = page.locator(".k-oq-inbox .k-ops2-side");
     for (const s of ["チーム", "8 人", "つながっている", "3 件"]) await expect(side).toContainText(s);
     expect(m.calls.filter((c) => c === `GET /api/v1/ops/inquiries/${ID}`).length).toBe(1);
   });

@@ -184,7 +184,10 @@ test.describe("K-972 中を見る", () => {
     await dialog(page, "中を見る").getByRole("button", { name: "見るだけで開く", exact: true }).click();
     await dialog(page, "本人か確かめます").getByRole("button", { name: "パスキーで確かめる", exact: true }).click();
     await expect(dialog(page, "中を見る")).toHaveCount(0);
-    expect([count(ws, "GET /api/v1/me/security"), count(ws, "POST /api/v1/auth/step-up"), n]).toEqual([1, 1, 2]);
+    // やり直しの口は取り直しの答えの後に出る（小窓が閉じた時点ではまだのことがある）
+    await expect
+      .poll(() => [count(ws, "GET /api/v1/me/security"), count(ws, "POST /api/v1/auth/step-up"), n])
+      .toEqual([1, 1, 2]);
     expect(ws.bodies.peekOpen![1]).toEqual(ws.bodies.peekOpen![0]);
   });
 

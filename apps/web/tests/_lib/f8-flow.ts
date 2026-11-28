@@ -8,7 +8,7 @@
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type Response } from "@playwright/test";
 import { admin, loginAs } from "./api";
 import type { Newcomer } from "./newcomer";
-import { asPerson, teammate, type TicketSections } from "./prep";
+import { asPerson, bodyOf, teammate, type TicketSections } from "./prep";
 
 /** 2 人目（同じ会社のメンバー）。自分のブラウザ（別の印・別の文脈）を持つ */
 export interface Mate {
@@ -56,7 +56,7 @@ export async function childOf(
     assignee_member_id: assigneeMemberId,
     parent_ticket_id: parentId,
     due_on: due,
-    sections,
+    body: bodyOf(sections), // K-578 の後は口が sections を受けない（422）。ticketOf と同じく本文 1 枚で送る
   });
   if (r.status !== 201) throw new Error(`子チケットを作る口が ${r.status}`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Record<string, unknown> | undefined)?.["id"]) as
