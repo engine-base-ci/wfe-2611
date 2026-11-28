@@ -465,9 +465,7 @@ test("K455-M2-10 つながり：関連は両方の詳細に出て、片方で外
   await showLinks(page);
   let d = await openLinkDialog(page, "関連", tag, nb);
   expect((await submitLink(page, d)).status(), "つながりを足す口が受ける").toBe(201);
-  await expect(
-    page.getByRole("region", { name: /知らせ/ }).getByText(MSG.linked(nb), { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("region", { name: /知らせ/ }).getByText(MSG.linked(nb), { exact: true })).toBeVisible();
   await expect(linkRow(page, numRe(nb))).toContainText("関連");
   expect(await linksOf(a)).toHaveLength(1);
   await openTicket(page, b, bTitle);
@@ -496,12 +494,18 @@ test("K455-M2-10 つながり：関連は両方の詳細に出て、片方で外
   await ld.getByRole("radio", { name: /^派生元/ }).check();
   await ld.getByLabel("チケットを探す", { exact: true }).fill(tag);
   await expect(
-    ld.getByRole("list", { name: "候補", exact: true }).getByRole("button").filter({ hasText: numRe(na) }),
+    ld
+      .getByRole("list", { name: "候補", exact: true })
+      .getByRole("button")
+      .filter({ hasText: numRe(na) }),
     "つながっている相手は押せない",
   ).toHaveAttribute("aria-disabled", "true");
   await ld.getByRole("button", { name: "やめる", exact: true }).click();
   // 口の層（最後の砦）：逆向きの派生元を直に足すと 409（輪）
-  const loop = await asPerson(page, me.token, "POST", `/tickets/${b}/links`, { other_ticket_id: a, kind: "derived_from" });
+  const loop = await asPerson(page, me.token, "POST", `/tickets/${b}/links`, {
+    other_ticket_id: a,
+    kind: "derived_from",
+  });
   expect(loop.status, "派生元が輪になる").toBe(409);
   expect(loop.code).toBe(MSG.cycle);
   expect(await linksOf(b)).toHaveLength(1);
