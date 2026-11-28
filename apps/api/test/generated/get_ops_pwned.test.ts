@@ -1,0 +1,45 @@
+// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。GET /api/v1/ops/pwned
+// 確かめた印と出来事の時刻の並びで行が決まる（共用の DB の全社を数える）。種では作れない（K-995）
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+describe("GET /api/v1/ops/pwned", () => {
+  it("test_get_ops_pwned_ok", () => {
+    // EVENT-DRIVEN: WHEN GET /api/v1/ops/pwned が「一覧の上の帯から小窓を開き、本人に連絡して「確かめた」を押す」として呼ばれたとき THEN Kaname は「照合が使えなかった記録を数えて出す。確かめた人と日時を運営の記録に残す」を行い 2xx を返す
+    // 本物の試験：apps/api/test/features/F12/ops-pwned.test.ts の「K995-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F12/ops-pwned.test.ts", "utf8")).toContain("K995-API-001");
+  });
+  it("test_get_ops_pwned_rejected_401", () => {
+    // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+    // 本物の試験：apps/api/test/features/F12/ops-pwned.test.ts の「K995-API-011」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F12/ops-pwned.test.ts", "utf8")).toContain("K995-API-011");
+  });
+  it("test_get_ops_pwned_rejected_403", () => {
+    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // 本物の試験：apps/api/test/features/F12/ops-pwned.test.ts の「K995-API-011」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F12/ops-pwned.test.ts", "utf8")).toContain("K995-API-011");
+  });
+  // 当てはまらない（絞り込みを持たない（会社の数までを全部返す）。cursor・limit の形は入口の共通の確かめ（op.ts・K-144）で、口は読まない）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  it.todo("test_get_ops_pwned_rejected_422");
+  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-pwned.test.ts）：UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない
+  it.todo("test_get_ops_pwned_not_found");
+  // 当てはまらない（読む口の上限は入口の共通（op.ts・K-144）。書く口の上限は K995-API-013）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_get_ops_pwned_rate_limited");
+  it("test_get_ops_pwned_terms_pending", () => {
+    // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+    // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-005");
+  });
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_get_ops_pwned_mfa_pending");
+  it("test_get_ops_pwned_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
+  it("test_get_ops_pwned_shape", () => {
+    // UBIQUITOUS: GET /api/v1/ops/pwned の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // 本物の試験：apps/api/test/features/F12/ops-pwned.test.ts の「K995-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F12/ops-pwned.test.ts", "utf8")).toContain("K995-API-001");
+  });
+});

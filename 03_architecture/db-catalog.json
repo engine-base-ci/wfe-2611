@@ -1,0 +1,657 @@
+{
+ "_doc": "DB の表の目録（D-128.127）。表はどれも 骨格（skeleton）・中で使う（internal）・凍結（frozen）のどれか。凍結の表は消さずに残し、コードが使い始めたら scripts/ci/flow_db_gate.py の FD3 で赤。新しい表は区分を決めてここに足す",
+ "classes": {
+  "skeleton": "第1フェーズの骨格（第1フェーズの口が使う）",
+  "internal": "中で使う（口は無いが、認証・Bridge・記録などのコードが使う）",
+  "frozen": "凍結（後のフェーズ用に先に作ってあった表・今は使わない・D-128.127）"
+ },
+ "source": [
+  "D-128.127"
+ ],
+ "tables": {
+  "abilities": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
+  },
+  "acceptances": {
+   "class": "frozen",
+   "why": "検収を作らない（D-155.44）。コードは使わない"
+  },
+  "account_event_items": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "account_events": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "action_runs": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "agent_usage_snapshots": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ai_employees": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "approvals": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "artifact_versions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "artifacts": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "attachments": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "audit_events": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "billing_events": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "bridge_job_events": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "bridge_job_states": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "bridge_jobs": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "bridge_pairing_codes": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "bridge_pairings": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "checks": {
+   "class": "frozen",
+   "why": "確認項目は文とチェックだけで、種類・判定の型・検査の結果の表は持たない（D-150.39・D-150.40）。口は無く、コードも書かない。表と行は消さない（K-741）"
+  },
+  "class_axes": {
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない"
+  },
+  "class_values": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "client_contacts": {
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
+  },
+  "client_groups": {
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
+  },
+  "client_request_messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（届いた依頼のやり取り・K-892 の getClientRequest・08_api/endpoints.json）"
+  },
+  "client_requests": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "clients": {
+   "class": "frozen",
+   "why": "取引先を持たない（D-155.35）。ゲストのグループに替わった。コードは使わない"
+  },
+  "clones": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "conversations": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "credential_kinds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "credentials": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "custom_field_kinds": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
+  },
+  "custom_fields": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
+  },
+  "daily_plans": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "disclosure_versions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "distribution_versions": {
+   "class": "internal",
+   "why": "口は無いが、ひな形の配る版の関数（新しい版を出す K-1010・届いた版を選ぶ K-993）が読み書きする版の表。凍結から外した（PM の決め 2026-11-28・D-128.127）"
+  },
+  "distributions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "duties": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "duty_versions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "erasure_certificates": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "error_events": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
+  },
+  "export_jobs": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "goal_allocations": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "goal_contributions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "goal_kinds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "goal_versions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "goals": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "guest_group_members": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
+  "guest_groups": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json・listGuestGroups・createGuestGroup・K-876）"
+  },
+  "handover_rules": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "hypotheses": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "imports": {
+   "class": "frozen",
+   "why": "ナレッジの取り込みは下絵 v2 に無く使わない（D-152.9・D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "inquiries": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "integrations": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "invitations": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "invoices": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "kaname_auth": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（apps/api/src/auth/ext.ts ほか）"
+  },
+  "kind_sections": {
+   "class": "frozen",
+   "why": "本文が 1 枚になり、区画の形（見出し・必須・並び）を使わない（K-578・D-150.35）。口は読まない・書かない・消さない。DB の関数 2 つ（app.ticket_tool_read・app.bridge_finish_job）がまだ引く。表と行の扱いは段 10 が決める"
+  },
+  "knowledge_links": {
+   "class": "frozen",
+   "why": "ナレッジのつながりは下絵 v2 に無く使わない（D-152.9・D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "knowledge_folders": {
+   "class": "skeleton",
+   "why": "ナレッジの口が使う（K-674）"
+  },
+  "knowledge_shares": {
+   "class": "skeleton",
+   "why": "グループを選んで共有の口と見える関数が使う（K-689）"
+  },
+  "knowledge_limits": {
+   "class": "skeleton",
+   "why": "必ず守るの付け外しの口が上限を読む（K-685）"
+  },
+  "knowledge_page_versions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "knowledge_pages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "knowledge_requests": {
+   "class": "skeleton",
+   "why": "上の棚に上げる頼み（頼む・取り下げる・帯を消す）の口が使う。K-688 の承認・断る、K-689 の共有も同じ表（K-687）"
+  },
+  "layers": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "learned_procedures": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "learning_candidates": {
+   "class": "frozen",
+   "why": "覚えたいことの候補は物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "ledger_definitions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ledger_fields": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ledger_records": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ledger_stages": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ledger_views": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "llm_capabilities": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "llm_routes": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "login_attempts": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/auth/src/signup.ts ほか）"
+  },
+  "measures": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "member_email_changes": {
+   "class": "internal",
+   "why": "メールを変える待ち（app スキーマ・アプリの役は直に触れない）。関数 app.me_email_change_* が読み書きする（K-835）"
+  },
+  "member_kinds": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
+  },
+  "members": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "memories": {
+   "class": "frozen",
+   "why": "AI の記憶は物として無くした（D-152.20）。AI に覚えさせたいことはナレッジのページで受ける。口もコードも読まない・書かない。表と行は残す（AI の「覚えて」の印と道具 remember が DB の関数で書く間は行が増える。読む所は無い・K-712）"
+  },
+  "memory_digests": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "memory_kinds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "memory_proposals": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notice_deliveries": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notices": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notification_preferences": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "notification_settings": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notifications": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "operations": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ops_audit_events": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ops_members": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ops_plan_proposals": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ops_setup_links": {
+   "class": "internal",
+   "why": "口は無いが、関数 app.ops_setup_consume などだけが触る裏の表（運営の人のパスキーを付けるリンク・K-945）"
+  },
+  "payment_methods": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "payments": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "permission_rules": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "permissions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "plan_change_requests": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "plan_versions": {
+   "class": "internal",
+   "why": "口は無いが、プランの関数（app.plan_now・試しの期間・規約の版・K-1157・K-1104・K-1017）が読み書きする版の表。凍結から外した（PM の決め 2026-11-28・D-128.127）"
+  },
+  "plans": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "policies": {
+   "class": "frozen",
+   "why": "決まり・守ることは物として無くした（D-152.20）。AI に従わせたいことはナレッジのページ（必ず守る）で受ける。口もコードも読まない・書かない。表と行は残す（後のフェーズに送ったはじめの設定の関数 onboard_golive だけが読む）"
+  },
+  "procedure_steps": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "push_devices": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "reference_logs": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "retention_holds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "review_requests": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "revoke_reasons": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "role_bundle_defaults": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "rollup_kinds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "saved_views": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "schema_migrations": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/db/src/migrate.ts ほか）"
+  },
+  "scope_memberships": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "scopes": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "security_events": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "service_registry": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "service_registry_versions": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "service_requests": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "session_kinds": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "sessions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "setup_steps": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "skill_attachments": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "skill_test_runs": {
+   "class": "frozen",
+   "why": "業務の型の試しは物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "skill_versions": {
+   "class": "frozen",
+   "why": "業務の型の版は物として無くした（D-152.20）。口もコードも読まない・書かない。表と行は残す"
+  },
+  "skills": {
+   "class": "frozen",
+   "why": "業務の型は物として無くした（D-152.20）。種別の本文のひな形とナレッジのページで受ける。口もコードも読まない・書かない。表と行は残す"
+  },
+  "status_incidents": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "subprocessors": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "subscriptions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "support_access_grants": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "target_kinds": {
+   "class": "internal",
+   "why": "口は無いがコードが使う（packages/db/src/seeds.ts ほか）"
+  },
+  "task_handovers": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "tasks": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "tenant_distributions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "tenant_memberships": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "tenants": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "terms_consents": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "terms_versions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "test_specs": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_class_values": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "ticket_decisions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_drafts": {
+   "class": "internal",
+   "why": "書きかけのチケットの下書き（app スキーマ・アプリの役は直に触れない）。作る口と下書きの口が関門 C2 の関数（app.ticket_draft_save・app.ticket_drafts_mine・app.ticket_create）で使う（K-60・D-128.138）"
+  },
+  "ticket_drafts_used": {
+   "class": "internal",
+   "why": "作るときに使った下書きの id（app スキーマ・アプリの役は直に触れない）。作った後に届いた保存を残さないために app.ticket_create が書き、app.ticket_draft_save が読む（K-60）"
+  },
+  "ticket_field_values": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
+  },
+  "ticket_handovers": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_imports": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_guest_shares": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）・K-881 のチケットの見せる相手"
+  },
+  "ticket_kinds": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_links": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_messages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_section_versions": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_sections": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_stages": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_thread_seen": {
+   "class": "internal",
+   "why": "人ごと・チケットごとの最後にやり取りを開いた時刻（app スキーマ・アプリの役は直に触れない）。やり取りを読む口が関門 C2 の関数 app.ticket_timeline で読み（「新しい」の印と数）、K-384 の口が書く（K-383）"
+  },
+  "tickets": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "triggers": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "units": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "usage_meters": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "validations": {
+   "class": "frozen",
+   "why": "どの口もコードも使わない。後のフェーズ用に先に作ってあった表（D-128.127）"
+  },
+  "knowledge_breaches": {
+   "class": "skeleton",
+   "why": "破られた数を数える関数と引き金が書き、管理の見直すページ（K-695）が読む（K-700）"
+  },
+  "ops_invoice_templates": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "notice_updates": {
+   "class": "internal",
+   "why": "口は無いが、お知らせの関数だけが触る続報の履歴の表（書くのは運営の葉 K-977・K-979・一覧は app の関数が返す・K-954）"
+  }
+ }
+}
