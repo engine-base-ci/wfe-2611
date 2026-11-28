@@ -1,0 +1,45 @@
+/* メンバーの画面（グループごと → グループを押すとメンバー）の下絵。1 人 1 行とグループの箱は段 9 の invite.css のまま。
+   ここは「押して開くグループの頭」だけ。色・字・余白は正本のトークン（--k-*）だけ。クラスの頭は k-f9m- */
+
+.k-f9m-head {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  width: 100%;
+  min-height: var(--k-s-xl);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: 0;
+  border-radius: var(--k-r-card);
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-f9m-head:hover {
+  background: var(--k-select);
+}
+.k-f9m-head > svg {
+  flex: none;
+  color: var(--k-neutral-strong);
+}
+.k-f9m-group[data-open] .k-f9m-head {
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+  border-radius: var(--k-r-card) var(--k-r-card) 0 0;
+}
+.k-f9m-manager {
+  margin-left: auto;
+}
+@media (max-width: 767px) {
+  .k-f9m-manager {
+    flex-basis: 100%;
+    margin-left: calc(var(--k-s-md) + var(--k-s-sm));
+  }
+}
+
+/* グループに人がいないときの一文（字は k-inv-sub のまま・K-707） */
+.k-f9m-empty {
+  display: block;
+}
