@@ -1,0 +1,61 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table bridge_jobs enable row level security;
+alter table bridge_jobs force row level security;
+drop policy if exists bridge_jobs_tenant_read on bridge_jobs;
+create policy bridge_jobs_tenant_read on bridge_jobs for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists bridge_jobs_self_only_write_insert on bridge_jobs;
+create policy bridge_jobs_self_only_write_insert on bridge_jobs for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_jobs_self_only_write_update on bridge_jobs;
+create policy bridge_jobs_self_only_write_update on bridge_jobs for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id())) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_jobs_self_only_write_delete on bridge_jobs;
+create policy bridge_jobs_self_only_write_delete on bridge_jobs for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_jobs_permission_write_insert on bridge_jobs;
+create policy bridge_jobs_permission_write_insert on bridge_jobs for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_jobs', scope_id, 'edit')));
+drop policy if exists bridge_jobs_permission_write_update on bridge_jobs;
+create policy bridge_jobs_permission_write_update on bridge_jobs for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_jobs', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_jobs', scope_id, 'edit')));
+drop policy if exists bridge_jobs_permission_write_delete on bridge_jobs;
+create policy bridge_jobs_permission_write_delete on bridge_jobs for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_jobs', scope_id, 'edit')));
+drop policy if exists bridge_jobs_ops_read_with_grant on bridge_jobs;
+create policy bridge_jobs_ops_read_with_grant on bridge_jobs for select using (app.ops_grant_ok(bridge_jobs.tenant_id));
+
+alter table bridge_job_events enable row level security;
+alter table bridge_job_events force row level security;
+drop policy if exists bridge_job_events_tenant_read on bridge_job_events;
+create policy bridge_job_events_tenant_read on bridge_job_events for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists bridge_job_events_self_only_write_insert on bridge_job_events;
+create policy bridge_job_events_self_only_write_insert on bridge_job_events for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_job_events_self_only_write_update on bridge_job_events;
+create policy bridge_job_events_self_only_write_update on bridge_job_events for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id())) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_job_events_self_only_write_delete on bridge_job_events;
+create policy bridge_job_events_self_only_write_delete on bridge_job_events for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND member_id = app.user_id()));
+drop policy if exists bridge_job_events_permission_write_insert on bridge_job_events;
+create policy bridge_job_events_permission_write_insert on bridge_job_events for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_job_events', scope_id, 'edit')));
+drop policy if exists bridge_job_events_permission_write_update on bridge_job_events;
+create policy bridge_job_events_permission_write_update on bridge_job_events for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_job_events', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_job_events', scope_id, 'edit')));
+drop policy if exists bridge_job_events_permission_write_delete on bridge_job_events;
+create policy bridge_job_events_permission_write_delete on bridge_job_events for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'bridge_job_events', scope_id, 'edit')));
+drop policy if exists bridge_job_events_ops_read_with_grant on bridge_job_events;
+create policy bridge_job_events_ops_read_with_grant on bridge_job_events for select using (app.ops_grant_ok(bridge_job_events.tenant_id));
+
+alter table bridge_job_states enable row level security;
+alter table bridge_job_states force row level security;
+drop policy if exists bridge_job_states_all_read on bridge_job_states;
+create policy bridge_job_states_all_read on bridge_job_states for select using (coalesce(current_setting('app.user_id', true), '') <> '' AND (true));
+drop policy if exists bridge_job_states_ops_write_insert on bridge_job_states;
+create policy bridge_job_states_ops_write_insert on bridge_job_states for insert with check (current_setting('app.role', true) = 'ops');
+drop policy if exists bridge_job_states_ops_write_update on bridge_job_states;
+create policy bridge_job_states_ops_write_update on bridge_job_states for update using (current_setting('app.role', true) = 'ops') with check (current_setting('app.role', true) = 'ops');
+drop policy if exists bridge_job_states_ops_write_delete on bridge_job_states;
+create policy bridge_job_states_ops_write_delete on bridge_job_states for delete using (current_setting('app.role', true) = 'ops');
+
+alter table setup_steps enable row level security;
+alter table setup_steps force row level security;
+drop policy if exists setup_steps_all_read on setup_steps;
+create policy setup_steps_all_read on setup_steps for select using (coalesce(current_setting('app.user_id', true), '') <> '' AND (true));
+drop policy if exists setup_steps_ops_write_insert on setup_steps;
+create policy setup_steps_ops_write_insert on setup_steps for insert with check (current_setting('app.role', true) = 'ops');
+drop policy if exists setup_steps_ops_write_update on setup_steps;
+create policy setup_steps_ops_write_update on setup_steps for update using (current_setting('app.role', true) = 'ops') with check (current_setting('app.role', true) = 'ops');
+drop policy if exists setup_steps_ops_write_delete on setup_steps;
+create policy setup_steps_ops_write_delete on setup_steps for delete using (current_setting('app.role', true) = 'ops');
