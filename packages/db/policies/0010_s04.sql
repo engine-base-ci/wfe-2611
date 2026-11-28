@@ -1,0 +1,83 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table duties enable row level security;
+alter table duties force row level security;
+drop policy if exists duties_tenant_read on duties;
+create policy duties_tenant_read on duties for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists duties_permission_write_insert on duties;
+create policy duties_permission_write_insert on duties for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duties', scope_id, 'edit')));
+drop policy if exists duties_permission_write_update on duties;
+create policy duties_permission_write_update on duties for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duties', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duties', scope_id, 'edit')));
+drop policy if exists duties_permission_write_delete on duties;
+create policy duties_permission_write_delete on duties for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duties', scope_id, 'edit')));
+drop policy if exists duties_ops_read_with_grant on duties;
+create policy duties_ops_read_with_grant on duties for select using (app.ops_grant_ok(duties.tenant_id));
+
+alter table duty_versions enable row level security;
+alter table duty_versions force row level security;
+drop policy if exists duty_versions_tenant_read on duty_versions;
+create policy duty_versions_tenant_read on duty_versions for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists duty_versions_permission_write_insert on duty_versions;
+create policy duty_versions_permission_write_insert on duty_versions for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duty_versions', NULL, 'edit')));
+drop policy if exists duty_versions_permission_write_update on duty_versions;
+create policy duty_versions_permission_write_update on duty_versions for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duty_versions', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duty_versions', NULL, 'edit')));
+drop policy if exists duty_versions_permission_write_delete on duty_versions;
+create policy duty_versions_permission_write_delete on duty_versions for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'duty_versions', NULL, 'edit')));
+drop policy if exists duty_versions_ops_read_with_grant on duty_versions;
+create policy duty_versions_ops_read_with_grant on duty_versions for select using (app.ops_grant_ok(duty_versions.tenant_id));
+
+alter table learned_procedures enable row level security;
+alter table learned_procedures force row level security;
+drop policy if exists learned_procedures_tenant_read on learned_procedures;
+create policy learned_procedures_tenant_read on learned_procedures for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists learned_procedures_permission_write_insert on learned_procedures;
+create policy learned_procedures_permission_write_insert on learned_procedures for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'learned_procedures', scope_id, 'edit')));
+drop policy if exists learned_procedures_permission_write_update on learned_procedures;
+create policy learned_procedures_permission_write_update on learned_procedures for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'learned_procedures', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'learned_procedures', scope_id, 'edit')));
+drop policy if exists learned_procedures_permission_write_delete on learned_procedures;
+create policy learned_procedures_permission_write_delete on learned_procedures for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'learned_procedures', scope_id, 'edit')));
+drop policy if exists learned_procedures_ops_read_with_grant on learned_procedures;
+create policy learned_procedures_ops_read_with_grant on learned_procedures for select using (app.ops_grant_ok(learned_procedures.tenant_id));
+
+alter table procedure_steps enable row level security;
+alter table procedure_steps force row level security;
+drop policy if exists procedure_steps_tenant_read on procedure_steps;
+create policy procedure_steps_tenant_read on procedure_steps for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists procedure_steps_permission_write_insert on procedure_steps;
+create policy procedure_steps_permission_write_insert on procedure_steps for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'procedure_steps', NULL, 'edit')));
+drop policy if exists procedure_steps_permission_write_update on procedure_steps;
+create policy procedure_steps_permission_write_update on procedure_steps for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'procedure_steps', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'procedure_steps', NULL, 'edit')));
+drop policy if exists procedure_steps_permission_write_delete on procedure_steps;
+create policy procedure_steps_permission_write_delete on procedure_steps for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'procedure_steps', NULL, 'edit')));
+drop policy if exists procedure_steps_ops_read_with_grant on procedure_steps;
+create policy procedure_steps_ops_read_with_grant on procedure_steps for select using (app.ops_grant_ok(procedure_steps.tenant_id));
+
+alter table memory_kinds enable row level security;
+alter table memory_kinds force row level security;
+drop policy if exists memory_kinds_all_read on memory_kinds;
+create policy memory_kinds_all_read on memory_kinds for select using (coalesce(current_setting('app.user_id', true), '') <> '' AND (true));
+drop policy if exists memory_kinds_ops_write_insert on memory_kinds;
+create policy memory_kinds_ops_write_insert on memory_kinds for insert with check (current_setting('app.role', true) = 'ops');
+drop policy if exists memory_kinds_ops_write_update on memory_kinds;
+create policy memory_kinds_ops_write_update on memory_kinds for update using (current_setting('app.role', true) = 'ops') with check (current_setting('app.role', true) = 'ops');
+drop policy if exists memory_kinds_ops_write_delete on memory_kinds;
+create policy memory_kinds_ops_write_delete on memory_kinds for delete using (current_setting('app.role', true) = 'ops');
+
+alter table memories enable row level security;
+alter table memories force row level security;
+drop policy if exists memories_tenant_read on memories;
+create policy memories_tenant_read on memories for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists memories_self_only_write_insert on memories;
+create policy memories_self_only_write_insert on memories for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND owner_member_id = app.user_id()));
+drop policy if exists memories_self_only_write_update on memories;
+create policy memories_self_only_write_update on memories for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND owner_member_id = app.user_id())) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND owner_member_id = app.user_id()));
+drop policy if exists memories_self_only_write_delete on memories;
+create policy memories_self_only_write_delete on memories for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND owner_member_id = app.user_id()));
+drop policy if exists memories_permission_write_insert on memories;
+create policy memories_permission_write_insert on memories for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'memories', scope_id, 'edit')));
+drop policy if exists memories_permission_write_update on memories;
+create policy memories_permission_write_update on memories for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'memories', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'memories', scope_id, 'edit')));
+drop policy if exists memories_permission_write_delete on memories;
+create policy memories_permission_write_delete on memories for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'memories', scope_id, 'edit')));
+drop policy if exists memories_ops_read_with_grant on memories;
+create policy memories_ops_read_with_grant on memories for select using (app.ops_grant_ok(memories.tenant_id));
