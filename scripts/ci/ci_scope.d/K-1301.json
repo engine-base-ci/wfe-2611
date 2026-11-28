@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["04_design/fidelity.json", "04_design/canvas/MobileList.dc.html", "04_design/canvas_gen/mb.py"], "tests": ["apps/web/tests/k/k1301-mobile-list-wrap.spec.ts"]}
+ ],
+ "reads_ok": {
+  "scripts/ci/k1301_fidelity_at_test.py": "見た目の突き合わせの設定 04_design/fidelity.json・絵 04_design/canvas/MobileList.dc.html と作り手 04_design/canvas_gen/mb.py・組の canvas を読む読み手のソース（apps/web/tests と scripts/ci の .ts・.mjs）・G65 の置き場 scripts/ci/g65.d/*.txt・検査の頭の説明 scripts/ci/fidelity_config.py を読み、mb.py を写しの置き場で子プロセスで流す（K1301-FA-009〜013）。G65 が毎回流す（K-1301）",
+  "apps/web/tests/k/k1301-mobile-list-wrap.spec.ts": "絵 04_design/canvas/MobileList.dc.html を実ブラウザで開き、包みが見た目を変えないかを見る（K1301-FA-017・018）。絵と作り手の変更でも流れるよう data_links で結ぶ（K-1301）"
+ }
+}
