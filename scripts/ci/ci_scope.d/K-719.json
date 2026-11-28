@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F9/knowledge/tree-parts/shared-rows.ts", "apps/api/src/features/F9/knowledge/page-parts/act-share.ts", "apps/api/src/features/F9/knowledge/page-parts/shared-from.ts", "apps/api/src/features/F9/knowledge/folder-guard-share.ts", "apps/api/src/features/F9/knowledge/page-guards/shared.ts"],
+   "tests": ["apps/api/test/features/F9/knowledge-share-views.test.ts"]}
+ ]
+}
