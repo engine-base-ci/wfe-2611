@@ -1,0 +1,141 @@
+{
+ "screen": "ops-notices",
+ "mock": "06_mockup/v1/v1-ops-notices.html",
+ "state_labels": {
+  "n": "お知らせ",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "select:種類",
+   "kind": "select",
+   "label": "種類",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:対象",
+   "kind": "select",
+   "label": "対象",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:題名",
+   "kind": "input",
+   "label": "題名",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:本文",
+   "kind": "textarea",
+   "label": "本文",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:公開",
+   "kind": "select",
+   "label": "公開",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:通知",
+   "kind": "select",
+   "label": "通知",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:出す",
+   "kind": "button",
+   "label": "出す",
+   "target": null,
+   "states": [
+    "お知らせ",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:下書き",
+   "kind": "button",
+   "label": "下書き",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:障害を登録する",
+   "kind": "button",
+   "label": "障害を登録する",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:メンテを登録する",
+   "kind": "button",
+   "label": "メンテを登録する",
+   "target": null,
+   "states": [
+    "お知らせ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
