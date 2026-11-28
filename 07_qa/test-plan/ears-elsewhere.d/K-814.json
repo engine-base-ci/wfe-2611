@@ -1,0 +1,74 @@
+{
+ "ops": {
+  "suspendMember": {
+   "file": "apps/api/test/features/F10/admin-member-suspend.test.ts",
+   "reason": "止める口は、相手の状態・自分・最後の管理者・セッションと PC の仕事を切る・本人確認・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-814）",
+   "covers": {
+    "test_post_members_id_suspend_ok": "K814-API-001",
+    "test_post_members_id_suspend_shape": "K814-API-001",
+    "test_post_members_id_suspend_rejected_401": "K814-API-011",
+    "test_post_members_id_suspend_rejected_403": "K814-API-011",
+    "test_post_members_id_suspend_rejected_403_2": "K814-API-011",
+    "test_post_members_id_suspend_not_found": "K814-API-005",
+    "test_post_members_id_suspend_conflict": "K814-API-004",
+    "test_post_members_id_suspend_conflict_2": "K814-API-004",
+    "test_post_members_id_suspend_conflict_3": "K814-API-006",
+    "test_post_members_id_suspend_rate_limited": "K814-API-011",
+    "test_post_members_id_suspend_session_unresolved": "K814-API-007",
+    "test_post_members_id_suspend_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-800.ts",
+     "mark": "K144-API-1107"
+    },
+    "test_post_members_id_suspend_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_members_id_suspend_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_members_id_suspend_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_members_id_suspend_rejected_422_2": "A62 の機能の文（抜ける人の依存の引き継ぎ・E-ACT-035）から来た行。止める・戻すは引き継ぎを求めない（担当・所属はそのまま・D-154.33）。外すときの引き継ぎは K-848 の removeMember"
+   }
+  },
+  "resumeMember": {
+   "file": "apps/api/test/features/F10/admin-member-suspend.test.ts",
+   "reason": "戻す口は、相手が止まっているかと権限・本人確認で答えが変わる（K-814）",
+   "covers": {
+    "test_post_members_id_resume_ok": "K814-API-008",
+    "test_post_members_id_resume_shape": "K814-API-008",
+    "test_post_members_id_resume_rejected_401": "K814-API-011",
+    "test_post_members_id_resume_rejected_403": "K814-API-011",
+    "test_post_members_id_resume_rejected_403_2": "K814-API-011",
+    "test_post_members_id_resume_not_found": "K814-API-005",
+    "test_post_members_id_resume_conflict": "K814-API-009",
+    "test_post_members_id_resume_rate_limited": "K814-API-011",
+    "test_post_members_id_resume_session_unresolved": "K814-API-010",
+    "test_post_members_id_resume_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-800.ts",
+     "mark": "K144-API-1108"
+    },
+    "test_post_members_id_resume_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_members_id_resume_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_members_id_resume_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_members_id_resume_rejected_422_2": "A62 の機能の文（抜ける人の依存の引き継ぎ・E-ACT-035）から来た行。止める・戻すは引き継ぎを求めない（担当・所属はそのまま・D-154.33）。外すときの引き継ぎは K-848 の removeMember"
+   }
+  }
+ }
+}
