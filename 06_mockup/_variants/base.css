@@ -1,0 +1,92 @@
+/* 今日 3 案の共通土台（Linear / Notion 寄り）：中間色 1 つ・文字中心・罫線と余白・枠を減らす */
+:root{
+  --bg:#FFFFFF; --bg2:#F7F7F8; --bg3:#F1F1F3; --line:#E6E6EA; --line2:#EEEEF1;
+  --fg:#1B1D22; --fg2:#5B5F6B; --fg3:#8A8F9B;
+  --accent:#22345C; --accent-bg:#EAEEF6; --ai:#6D4AA6; --ai-bg:#F0EBF8;
+  --ok:#1E7A46; --warn:#B45309; --warn-bg:#FFF7ED; --bad:#B91C1C; --bad-bg:#FEF2F2;
+  --font:'M PLUS 2','Inter','Hiragino Sans',system-ui,sans-serif; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:6px; --r2:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg{width:15px;height:15px;flex:none}
+kbd{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--fg2)}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* 枠：細い中間色のサイドバー（紺の面をやめる） */
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.nav{background:var(--bg2);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh}
+.nav .ws{display:flex;align-items:center;gap:8px;padding:6px 8px 14px;font-weight:700;font-size:13px}
+.nav .ws .mk{width:20px;height:20px;border-radius:5px;background:var(--accent);display:grid;place-items:center;color:#fff;font-size:11px}
+.nav a{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:var(--r);font-size:13px;color:var(--fg2)}
+.nav a:hover{background:var(--bg3);color:var(--fg)}
+.nav a.on{background:var(--bg3);color:var(--fg);font-weight:600}
+.nav a .n{margin-left:auto;font-size:11.5px;color:var(--fg3);font-variant-numeric:tabular-nums}
+.nav a .n.w{color:var(--warn);font-weight:700}
+.nav .sec{font-size:11px;font-weight:600;color:var(--fg3);letter-spacing:.06em;padding:14px 8px 4px}
+.nav .me{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px;font-size:12.5px;color:var(--fg2)}
+.nav .me .av{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+/* 本文の共通 */
+.top{display:flex;align-items:center;gap:12px;padding:14px 28px;border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg);z-index:3;min-height:52px}
+.top h1{font-size:15px;font-weight:700}
+.top .date{color:var(--fg3);font-size:13px}
+.top .sp{flex:1}
+.top .hint{color:var(--fg3);font-size:12px;display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--bg);color:var(--fg);min-height:28px}
+.btn:hover{background:var(--bg2)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.p:hover{background:#1a2848}
+.btn.ghost{border-color:transparent;color:var(--fg2)}
+.btn.ghost:hover{background:var(--bg3);color:var(--fg)}
+.btn.sm{padding:3px 8px;font-size:12.5px;min-height:24px}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--fg2);white-space:nowrap}
+.st i{width:7px;height:7px;border-radius:50%;background:var(--fg3);display:inline-block}
+.st.ok i{background:var(--ok)}.st.warn i{background:var(--warn)}.st.bad i{background:var(--bad)}.st.ai i{background:var(--ai)}.st.run i{background:var(--accent)}
+.ai-name{color:var(--ai);font-weight:600}
+.late{color:var(--bad);font-weight:600}
+.muted{color:var(--fg3)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--bg3);color:var(--fg2)}
+.tag.ai{background:var(--ai-bg);color:var(--ai)}.tag.warn{background:var(--warn-bg);color:var(--warn)}.tag.acc{background:var(--accent-bg);color:var(--accent)}
+/* 会話（右）：常に見える */
+.chat{border-left:1px solid var(--line);display:flex;flex-direction:column;background:var(--bg);position:sticky;top:0;height:100vh}
+.chat .h{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line2);font-size:13px;font-weight:600}
+.chat .h .av{width:22px;height:22px;border-radius:50%;background:var(--ai-bg);color:var(--ai);display:grid;place-items:center}
+.chat .h .ctx{margin-left:auto;font-weight:400;color:var(--fg3);font-size:12px}
+.chat .b{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px;font-size:13.5px;line-height:1.7}
+.chat .m{max-width:100%}
+.chat .m.u{align-self:flex-end;background:var(--bg3);border-radius:12px 12px 2px 12px;padding:8px 12px;max-width:88%}
+.chat .m.a .who{font-size:11.5px;color:var(--ai);font-weight:600;margin-bottom:2px}
+.chat .m.a p{margin:0 0 6px}
+.chat .m.a .ops{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.chat .m.a .ops button{font-size:12.5px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.chat .m.a .ops button:hover{background:var(--bg2)}
+.chat .c{border-top:1px solid var(--line2);padding:10px 12px}
+.chat .c .box{display:flex;gap:8px;align-items:flex-end;border:1px solid var(--line);border-radius:var(--r2);padding:8px 10px;background:var(--bg)}
+.chat .c .box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.chat .c textarea{flex:1;border:0;resize:none;font:inherit;font-size:13.5px;min-height:22px;outline:none;background:none}
+.chat .c .k{font-size:11.5px;color:var(--fg3);margin-top:6px;display:flex;gap:10px}
+/* 一覧の行（Linear 型：詰めて 1 行、ホバーで操作） */
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 8px;border-radius:var(--r);min-height:36px}
+.row:hover{background:var(--bg2)}
+.row.sel{background:var(--accent-bg)}
+.row .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t small{font-weight:400;color:var(--fg3);margin-left:8px}
+.row .r{display:flex;gap:14px;align-items:center;font-size:12.5px;color:var(--fg2);white-space:nowrap}
+.row .ops{display:none;gap:2px}
+.row:hover .ops,.row.sel .ops{display:flex}
+.row .ops button{width:26px;height:26px;border-radius:5px;display:grid;place-items:center;color:var(--fg2)}
+.row .ops button:hover{background:var(--bg3);color:var(--fg)}
+.row .ops svg{width:14px;height:14px}
+.row input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent)}
+.row.done .t{text-decoration:line-through;color:var(--fg3)}
+.grp{display:flex;align-items:center;gap:8px;padding:18px 8px 6px;font-size:12px;font-weight:600;color:var(--fg2)}
+.grp .n{color:var(--fg3);font-weight:500}
+.grp .sp{flex:1}
+.grp .a{font-weight:500;color:var(--fg3)}
+.grp .a:hover{color:var(--fg)}
+.hr{height:1px;background:var(--line2);margin:8px 0}
+@media(max-width:1100px){.chat{display:none}}
