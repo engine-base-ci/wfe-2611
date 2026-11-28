@@ -1,0 +1,2 @@
+python3 scripts/ci/k1301_fidelity_at_test.py
+node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k1301-mjs.xml scripts/ci/k1301_fidelity_at.test.mjs
