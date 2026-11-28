@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["04_design/canvas_gen/k257.py", "04_design/canvas/TicketDetail.dc.html", "04_design/canvas/StRunning.dc.html", "04_design/canvas/StFailed.dc.html", "04_design/canvas/StBefore.dc.html", "04_design/canvas/StConfirmDone.dc.html", "04_design/canvas/StDone.dc.html", "04_design/canvas/StDelegated.dc.html"], "tests": ["apps/web/tests/k/k380-detail-slots.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）"
+ }
+}
