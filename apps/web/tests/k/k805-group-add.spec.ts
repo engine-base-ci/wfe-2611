@@ -504,8 +504,10 @@ test("K805-UI-020 キーボード：「＋ グループ」から Enter で開き
   await expect(nameF(page)).toBeFocused();
   for (let i = 0; i < 20; i++) {
     await page.keyboard.press("Tab");
-    const inside = await page.evaluate(() => !!document.activeElement?.closest(".k-dialog"));
-    expect(inside, `Tab ${i + 1} 回目`).toBe(true);
+    // 最後の欄の次は小窓の部品の見張り（Base UI の focus guard・小窓の外の要素）が受けて、次の描きで小窓の頭へ戻す。戻った後を見る
+    await expect
+      .poll(() => page.evaluate(() => !!document.activeElement?.closest(".k-dialog")), { message: `Tab ${i + 1} 回目` })
+      .toBe(true);
   }
   await page.keyboard.press("Escape");
   await expect(addBtn(page)).toBeFocused();
