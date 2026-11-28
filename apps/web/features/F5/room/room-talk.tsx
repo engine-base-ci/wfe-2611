@@ -105,8 +105,10 @@ function RoomTalk({ c, isNew, mview }: { c: string | null; isNew: boolean; mview
   const refetch = useRef(conv.refetch);
   refetch.current = conv.refetch;
   // 読んでいる最中に来た知らせは、その読みに相乗りすると変わる前の答えのまま終わる。読み終えた後にもう 1 回読む（K762-UI-013）
-  const fetching = useRef(conv.isFetching);
-  fetching.current = conv.isFetching;
+  //   読み中かは、描いた時の値（isFetching）ではなく、呼んだ瞬間の読みの箱の状態で見る。読み終えてから描き直すまでの間に
+  //   知らせが来ると、描いた時の値は「読み中」のままで、読み終えた後に 2 回読んでしまう
+  const convId = useRef(openId);
+  convId.current = openId;
   const inflight = useRef(false);
   const again = useRef(false);
   const reread = useCallback(async () => {
@@ -118,14 +120,15 @@ function RoomTalk({ c, isNew, mview }: { c: string | null; isNew: boolean; mview
     try {
       do {
         again.current = false;
-        const joined = fetching.current;
+        const id = convId.current;
+        const joined = id !== null && qc.isFetching({ queryKey: convKey(id), exact: true }) > 0;
         await refetch.current({ cancelRefetch: false });
         if (joined) await refetch.current({ cancelRefetch: false });
       } while (again.current);
     } finally {
       inflight.current = false;
     }
-  }, []);
+  }, [qc]);
 
   // 流れは会話ごとに 1 本。StrictMode の付け外しで 2 本開かないよう、次の番に開く
   useEffect(() => {
