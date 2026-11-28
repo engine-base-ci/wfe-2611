@@ -1,0 +1,79 @@
+{
+ "ops": {
+  "listConversations": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_ok": "K757-API-001",
+    "test_get_conversations_shape": "K757-API-001",
+    "test_get_conversations_rejected_401": "K757-API-020",
+    "test_get_conversations_rate_limited": "K757-API-020",
+    "test_get_conversations_rejected_422": "K757-API-004",
+    "test_get_conversations_session_unresolved": "K757-API-018",
+    "test_get_conversations_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_rejected_403": "自分の会話だけを返す一覧で、権限の 403 は無い（他人の会話は出ない・受けは K757-API-002）"
+   }
+  },
+  "getConversation": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_ok": "K757-API-006",
+    "test_get_conversations_id_shape": "K757-API-006",
+    "test_get_conversations_id_rejected_401": "K757-API-020",
+    "test_get_conversations_id_rate_limited": "K757-API-020",
+    "test_get_conversations_id_not_found": "K757-API-008",
+    "test_get_conversations_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-757.ts",
+     "mark": "K144-API-920"
+    },
+    "test_get_conversations_id_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）"
+   }
+  },
+  "listConversationMessages": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_messages_ok": "K757-API-013",
+    "test_get_conversations_id_messages_shape": "K757-API-013",
+    "test_get_conversations_id_messages_rejected_401": "K757-API-020",
+    "test_get_conversations_id_messages_rate_limited": "K757-API-020",
+    "test_get_conversations_id_messages_not_found": "K757-API-008",
+    "test_get_conversations_id_messages_rejected_422": "K757-API-014",
+    "test_get_conversations_id_messages_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_messages_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）",
+    "test_get_conversations_id_messages_upstream_failed": "外を呼ばない（C4 は契約の口の宣言に付いているだけ・会話の行を DB から読むだけ）"
+   }
+  }
+ }
+}
