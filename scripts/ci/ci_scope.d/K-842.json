@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/account/sessions-*.tsx", "apps/web/features/F10/account/sessions-*.ts", "apps/web/features/F10/account/use-sessions.ts", "apps/web/features/F10/account/login.tsx", "apps/web/features/F1/security/**"], "tests": ["apps/web/tests/k/k842-sessions.spec.ts", "apps/web/tests/k/k318-security.spec.ts"]}
+ ]
+}
