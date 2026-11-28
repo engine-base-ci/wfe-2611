@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/member/**"], "tests": ["apps/web/tests/k/k821-member-suspend.spec.ts"]}
+ ]
+}
