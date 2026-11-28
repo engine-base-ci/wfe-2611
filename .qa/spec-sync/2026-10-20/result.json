@@ -1,0 +1,91 @@
+{
+ "status": "PASS（八段＋P／L の全部が緑。D0／D8／F／G／H／P の前からの穴を 2026-10-20 に塞いだ）",
+ "run_id": "20261020-happy-omnara-D122-124-TB42-full-repair",
+ "executed_at": "2026-10-20T14:11:27",
+ "change": "D-122〜D-124・T-B-42 の横断監査。user「完璧に治さないとまずは」→ 前回「対象外」と書いた穴を全部塞いだ",
+ "checks": [
+  {
+   "tier": "impl_gate",
+   "status": "pass",
+   "detail": "skill_impl_gate SK1〜SK4 緑"
+  },
+  {
+   "tier": "A",
+   "status": "pass"
+  },
+  {
+   "tier": "B",
+   "status": "pass"
+  },
+  {
+   "tier": "C",
+   "status": "pass"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（要件一覧を --index で再生成）。決定ログの reflect_in の古い画面名 19 件（bridge→bridge-setup・chat→clone-chat・procedures→duties 等）と D-093（mockup→mockup/clone-chat）・D-014（duties→services）・D-025（mockup/all→編集の経路を持つ 9 画面）をいまの画面 id に付け替えた"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "D0 116/116・D8 1539/1539（tier_d --register／--register-pairs で正本から機械登録し、生成された線の空回り（フォルダを指す・画面でない層の trace・count:all の v1-index）を直した）。AD-010／011／062／103 は全画面に効く gate（flow_gate・製品名の検査・chat_one）、AD-082／083 の v1 画面は todo（段階 2）、AD-049／102 は not_applicable。flow の source に D-036／D-073／D-111 を書き戻し"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator を Kaname の downstream_coverage の形（command）で回せるようにした（skill 側の修正）"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "G7／G8／G9 の実物 scripts/ci/boundary.mjs（import 境界・ee/ ライセンス・台帳）を作り gate_pending を置き換えた。B5 に source、B2 に画面側の口（apps/web/lib/auth/client.ts）、portability-ledger.md に L-001（packages/auth の pg 直 import）。台帳の読み方（backtick の path・期限の列）を skill 側で直した"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "台帳の期限の誤読（理由の文の日付）を直して緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit G21：層 107・検査の無い層 0。packages/db の migration／policy・設定ファイル・監査の記録・handoff・研究記録 等に check か manual（理由）を足した。done なのに監査の記録が無い 25 本は backfill_audit.py で事後の記録（証拠の写し・でっち上げ無し）を作った。kaname_test が無く DB の試験が落ちていたのを作り直し、up.sh を毎回作る形に"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit：P1 0／P2 0／P3 0（stale_ok 24 件・理由つき）／P4 0（幽霊 goal-allocate→goal-allocation・17 の旧画面名）。ルート直下の迷子 flow.json／proposals_objects.json／v1 を消した"
+  },
+  {
+   "tier": "qa_delta",
+   "status": "pass",
+   "detail": "errors.md の行（E-…-A/B/C）を行として読むようにし、E- の誤報を消した"
+  },
+  {
+   "tier": "pipeline",
+   "status": "pass",
+   "detail": "無かった scripts/ci/pipeline-next.py を作り、Kaname の skill-pipeline.yaml を置いた（check-spec-sync／check-staging／mark）"
+  },
+  {
+   "tier": "spec-scan",
+   "status": "pass",
+   "detail": "counters が list の地図でも読めるようにした（skill 側）"
+  }
+ ],
+ "files": [
+  "spec-dependencies.yaml（AD 112 件＋線・layer_checks 104・project_audit ignore/stale_ok）",
+  "01_hearing/決定ログ_進行中.md（reflect_in の画面名）",
+  "05_flow/data.py（goals・members・ops-support・clone-chat の source）",
+  "03_architecture/{dependency-boundaries.json,portability-ledger.md}",
+  "scripts/ci/{boundary.mjs,bridge_release_check.mjs,pipeline-next.py,backfill_audit.py,qa_delta.py}",
+  "skill-pipeline.yaml",
+  "scripts/dev/up.sh",
+  "07_tasks/audit/*.md（25 本の事後記録）",
+  "apps/bridge/src/main.ts・test/fake-claude.mjs（eslint 4 件）",
+  "~/.claude/skills/spec-sync-orchestrator/assets/scripts/{tier_d,tier_g,tier_h,spec-validator,spec-scan}.py"
+ ],
+ "notes": [
+  "最初の run は D0／D8／F／G／H／P を「前からの穴・対象外」と書いて緑にしていた。user の指摘で全部塞いだ。以後「対象外」は書かない",
+  "T-U-17 の spec 行 364 のうち空 166 は残っている（op_gate は操作の行だけ見る）。別の回で埋める"
+ ]
+}

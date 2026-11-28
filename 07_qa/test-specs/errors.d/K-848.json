@@ -1,0 +1,129 @@
+{
+ "errors": [
+  {
+   "id": "E-MEM-020",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "担当があるのに引き継ぎ先が決まっていない・1 件ずつの引き継ぎ先が担当の全部でない・下見のあとで担当が変わった",
+   "false_when": "担当の全部に引き継ぎ先がちょうど 1 回ずつ決まっている／担当が 0 件",
+   "message": "引き継ぎ先が決まっていない担当があります。もう一度確かめてください",
+   "action": "下見を読み直して引き継ぎ先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "担当しているチケットがある人の外す小窓を開いておく",
+    "steps": [
+     "別の画面で担当を 1 件足してから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6"
+   ],
+   "support_code": "MEM-020"
+  },
+  {
+   "id": "E-MEM-021",
+   "class": "not_found",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が別の会社の人・在らない・もう外した・招待中",
+   "false_when": "引き継ぎ先が同じ会社の有効な人",
+   "message": "引き継ぎ先の人が見つかりません",
+   "action": "メンバーの並びを読み直して引き継ぎ先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を外してから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6"
+   ],
+   "support_code": "MEM-021"
+  },
+  {
+   "id": "E-MEM-022",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が止めた人・外す本人",
+   "false_when": "引き継ぎ先が止めていない、外す本人でない人",
+   "message": "この人は引き継ぎ先にできません",
+   "action": "ほかの人を引き継ぎ先に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を一時的に止めてから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.6",
+    "D-154.39"
+   ],
+   "support_code": "MEM-022"
+  },
+  {
+   "id": "E-MEM-023",
+   "class": "conflict",
+   "where": {
+    "screen": "member-detail",
+    "state": "remove"
+   },
+   "when": "引き継ぎ先が閲覧のみ・依頼する側",
+   "false_when": "引き継ぎ先の会社の役割が閲覧のみ・依頼する側でない",
+   "message": "閲覧のみの人は担当にできません",
+   "action": "ほかの人を引き継ぎ先に選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "外す小窓で引き継ぎ先を選んでおく",
+    "steps": [
+     "別の画面でその引き継ぎ先を閲覧のみにしてから「本人確認して外す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.39"
+   ],
+   "support_code": "MEM-023"
+  }
+ ]
+}
