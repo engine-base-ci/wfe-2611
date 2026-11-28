@@ -12,6 +12,7 @@ export function DecisionsSection({
   label,
   intro,
   onSource,
+  reloadDetail,
 }: {
   ticketId: string;
   myName: string;
@@ -19,10 +20,12 @@ export function DecisionsSection({
   intro: string | undefined;
   /** 「元：やり取り … →」を押した（元の書き込みの id） */
   onSource?: (messageId: string) => void;
+  /** 詳細を読み直す（SlotTicket.reload・決定の数が詳細の答えにも載る） */
+  reloadDetail?: () => Promise<void>;
 }) {
   const read = useDecisions(ticketId);
   // 決定にした・改めた・取り消した後は、決定の一覧とやり取りを 1 回ずつ読み直す
-  const reload = useReloadAll(ticketId);
+  const reload = useReloadAll(ticketId, reloadDetail);
   const addRef = useRef<HTMLButtonElement>(null);
   // 小窓を閉じたら焦点を「＋ 決定を足す」に戻す（押したボタンへ）
   const back = useCallback(() => void requestAnimationFrame(() => addRef.current?.focus()), []);

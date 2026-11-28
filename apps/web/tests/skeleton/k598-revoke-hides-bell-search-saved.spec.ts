@@ -45,6 +45,8 @@ interface World {
   ticket: string;
   title: string;
   viewName: string;
+  /** 2 人目のメール（権限を変えるとセッションが切れるので、入り直しに使う・G-14） */
+  mateEmail: string;
 }
 const grant = async (member: string, group: string, tenant: string, ability: "view" | "edit"): Promise<void> => {
   await admin(
@@ -111,7 +113,13 @@ async function world(page: Page, browser: Parameters<typeof mateOf>[0], tag: str
     filters: { v: 1, view: "all", params: { done: "false" } }, // params は字（K-479・readFilters は字でない値を読めない中身にする）
   });
   expect(made.status, "グループに見せた保存した条件を作る（K-475）").toBe(201);
-  return { me, mate, group: g!.id, key, ticket, title, viewName };
+  return { me, mate, group: g!.id, key, ticket, title, viewName, mateEmail: mu!.email };
+}
+/** 権限を変えた直後：2 人目の今のセッションは切れている（古い印は 401・G-14）→ 入り直して新しい印を持つ */
+async function cutThenSignIn(w: World): Promise<void> {
+  const old = await asPerson(w.mate.page, w.mate.token, "GET", "/saved_views");
+  expect(old.status, "権限を変えるとセッションが切れる（G-14）").toBe(401);
+  w.mate = { ...w.mate, token: await signInAgain(w.mate.page, w.mateEmail) };
 }
 const viewNames = async (m: Mate): Promise<string[]> => {
   const r = await asPerson(m.page, m.token, "GET", "/saved_views");
@@ -120,7 +128,10 @@ const viewNames = async (m: Mate): Promise<string[]> => {
 };
 /** 探すの結果のうちチケットの行（決定の行もチケットの題名を添えて出すので、決定の字の無い方） */
 const ticketHit = (found: Locator, w: World): Locator =>
-  found.getByRole("link").filter({ hasText: w.title }).filter({ hasNotText: `${w.key} 経理の決めごと` });
+  found
+    .getByRole("link")
+    .filter({ hasText: w.title })
+    .filter({ hasNotText: `${w.key} 経理の決めごと` });
 const menuLink = (p: Page, name: string) =>
   p.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name });
 const reopen = async (m: Mate): Promise<void> => {
@@ -153,6 +164,7 @@ test("K598-X2-02 外した直後は出ない：権限を外すと、2 人目の�
   await reopen(w.mate);
   expect(await bellCount(w.mate.page)).toBe(1);
   await revoke(w.mate.memberId, w.group);
+  await cutThenSignIn(w);
   await reopen(w.mate);
   expect(await bellCount(w.mate.page), "鈴の数が 0 になる").toBe(0);
   await openBell(w.mate.page);
@@ -179,9 +191,11 @@ test("K598-X2-03 付け直すと戻る：権限を付け直すと、同じお知
   const w = await world(page, browser, "付け直す");
   const [t] = await admin<{ t: string }>("select tenant_id as t from members where id = $1", [w.me.memberId]);
   await revoke(w.mate.memberId, w.group);
+  await cutThenSignIn(w);
   await reopen(w.mate);
   expect(await bellCount(w.mate.page)).toBe(0);
   await grant(w.mate.memberId, w.group, t!.t, "view");
+  await cutThenSignIn(w);
   await reopen(w.mate);
   expect(await bellCount(w.mate.page), "鈴の数が 1 に戻る").toBe(1);
   expect(await viewNames(w.mate)).toContain(w.viewName);
@@ -202,7 +216,9 @@ test("K598-X2-04 開いたまま外された：鈴の箱を開いて行を見て
     .filter({ hasText: /書き込み|担当/ });
   await expect(row).toHaveCount(1);
   await revoke(w.mate.memberId, w.group);
-  await row.click();
+  // 外すとセッションが切れる（G-14）。入り直してから、行の先（そのチケット）を開くと見つかりません
+  await cutThenSignIn(w);
+  expect((await w.mate.page.goto(`/tickets/${w.ticket}`))?.status()).toBe(200);
   await expect(w.mate.page.getByText(MSG.notFound), "押した先は見つかりません").toBeVisible();
   await w.mate.page.goto("/tickets");
   await bell(w.mate.page).click();

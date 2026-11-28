@@ -8,8 +8,9 @@
 //   PC は K-58 の試験の PC（_lib/test-pc.ts）・AI は決まった答え（_lib/f5-flow.ts の AI）。この PC の中だけの口（38617）は開かない（本人の Bridge に触らない）。
 //   本人確認の取り直しは、取り直しの時刻（sessions.step_up_at）を DB で置いて決める（15 分の内なら省く・D-154.18）。固定の待ちは置かない。
 //   1 本ずつ順に流し、前の筋の人とチケットを次の筋が使う（1 回の通し）。テストはチケットを切る人が書き、実装する人は変えない（D-128.125）
+import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type BrowserContext, type Locator, type Page } from "@playwright/test";
-import { PW, addTestEntry, admin, uniqEmail } from "../_lib/api";
+import { API, PW, addTestEntry, admin, testIp, uniqEmail } from "../_lib/api";
 import { AI, delegatedMark, workOf } from "../_lib/f5-flow";
 import { answered, assigneeOf, handoversOf, openQueue, passOnScreen, queueRow } from "../_lib/f8-flow";
 import { Mailbox, type Mail } from "../_lib/mailbox";
@@ -143,6 +144,20 @@ async function loginOnScreen(page: Page, email: string): Promise<void> {
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "次へ", exact: true }).click();
 }
+/** 入り直す（ログインの口をその画面と同じ名乗りで呼び、新しい印をその画面に持たせる・K-598 の signInAgain と同じ形）。返すのは新しい印 */
+async function signInAgain(page: Page, email: string): Promise<string> {
+  const ua = await page.evaluate(() => navigator.userAgent);
+  const res = await fetch(`${API}/api/v1/auth/sign-in`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "user-agent": ua, "x-forwarded-for": testIp() },
+    body: JSON.stringify({ email, password: PW }),
+  });
+  const j = (await res.json().catch(() => ({}))) as { data?: { token?: string | null } };
+  const token = res.status === 201 ? (j.data?.token ?? null) : null;
+  expect(token, `入り直すと印を持つ（${res.status}）`).toBeTruthy();
+  await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), token!);
+  return token!;
+}
 const membershipsOf = (memberId: string) =>
   admin<{ scope_id: string; role: string; is_primary: boolean }>(
     "select scope_id, role, is_primary from scope_memberships where member_id = $1 and deleted_at is null order by is_primary desc, scope_id",
@@ -269,8 +284,10 @@ test("K845-M1-02 役割を変える × 違う層のマネージャーを兼ね�
     { scope_id: s.groups.sales, role: "manager", is_primary: true },
     { scope_id: s.groups.tokyo, role: "manager", is_primary: false },
   ]);
-  // 役割を変えてもその人の画面は切れない（止める・外すとは違う）
-  expect((await asPerson(s.c.page, s.c.token, "GET", "/ticket_kinds")).status, "田中さんの印は生きている").toBe(200);
+  // 役割・兼ねるグループを変えると、その人のセッションは切れる（app.on_permission_change・G-14）→ 入り直すと新しい役割で使える
+  expect((await asPerson(s.c.page, s.c.token, "GET", "/ticket_kinds")).status, "田中さんの古い印は 401").toBe(401);
+  s.c = { ...s.c, token: await signInAgain(s.c.page, s.c.email) };
+  expect((await asPerson(s.c.page, s.c.token, "GET", "/ticket_kinds")).status, "入り直した印は使える").toBe(200);
 });
 
 test("K845-M1-03 別の部署に作業員として兼ねる：佐藤さんに経理部を兼ねさせると、営業部（主）と経理部の両方の行に出て、経理部でもチケットを持てる", async ({
@@ -289,6 +306,9 @@ test("K845-M1-03 別の部署に作業員として兼ねる：佐藤さんに経
   await openMembers(page, [G.sales, G.acct]);
   await expect(rowOf(page, G.sales, s.b.name)).toContainText("メンバー");
   await expect(rowOf(page, G.acct, s.b.name)).toContainText("兼ねている");
+  // 兼ねるグループを変えると、その人のセッションは切れる（app.on_permission_change・G-14）→ 入り直してから持つ
+  expect((await asPerson(s.b.page, s.b.token, "GET", "/ticket_kinds")).status, "佐藤さんの古い印は 401").toBe(401);
+  s.b = { ...s.b, token: await signInAgain(s.b.page, s.b.email) };
   // 佐藤さんが 2 つの部署のチケットを持つ（後の筋が外すときに引き継ぐ物）
   s.t1 = await ticketOf(s.b.page, { ...s.b, company: "" }, s.t1Title, SECTIONS);
   s.t2 = await ticketIn(s.b.page, s.b, s.groups.acct, s.t2Title);
@@ -344,7 +364,11 @@ test("K845-M1-05 外す前：佐藤さんの営業部のチケットが承認待
   page,
 }) => {
   const s = W();
-  // 佐藤さんの PC で 1 枚目を承認待ちにする（段 5 の承認・承認する人は担当者）
+  // 佐藤さんの PC で 1 枚目を承認待ちにする（段 5 の承認・承認する人は担当者）。
+  //   入り直した後の画面が「PC をつなぐ」の段で接続コードを出すと、後から出した方だけが使える（前のコードは使えない）。
+  //   画面のコードが出終わってから、試験の PC のコードを出す
+  await s.b.page.goto(`/tickets/${s.t1}`);
+  await s.b.page.waitForLoadState("networkidle");
   const pc = await pairedPc(s.b.page, s.b.token, "中間 段11 の MacBook");
   pcs.push(pc);
   const pw = workOf(pc);
@@ -352,9 +376,10 @@ test("K845-M1-05 外す前：佐藤さんの営業部のチケットが承認待
   await pressDelegate(s.b.page);
   let job: Awaited<ReturnType<typeof pw.take>> = null;
   await expect.poll(async () => (job ??= await pw.take()), "任せた仕事が佐藤さんの PC に渡る").not.toBeNull();
-  expect(
-    await pw.finish(job!.job_id, { state: "done", result: AI.made, agent_session_id: `k845-${Date.now()}` }),
-  ).toEqual({ status: 201, outcome: "awaiting_approval" });
+  expect(await pw.finish(job!.job_id, { state: "done", result: AI.made, agent_session_id: randomUUID() })).toEqual({
+    status: 201,
+    outcome: "awaiting_approval",
+  });
   // 2 枚目を管理者に引き継いでもらう（段 9 の渡し・待っている）
   await s.b.page.goto(`/tickets/${s.t2}`);
   expect(await passOnScreen(s.b.page, s.a.name, { reason: "経理の締めは管理者が詳しい" })).toBe(201);

@@ -200,7 +200,7 @@ test.describe.serial("通し：自分でやるチケットを進めて、話し�
     expect(decs).toEqual([{ text: "宛名は経理部 山田様", source_message_id: post!.id, decided_by: me.memberId }]);
     await expect(panel(page)).toContainText(MSG.decisionLine);
     // 元の書き込みへ戻る（区画のリンク → やり取りのタブのその書き込み）
-    await tab(page, /^属性/).click();
+    await tab(page, /^項目/).click();
     await logSec(page)
       .locator(".k-dec-item")
       .first()
@@ -211,7 +211,7 @@ test.describe.serial("通し：自分でやるチケットを進めて、話し�
   });
 
   test("K399-T1-004 実績を 1 時間にする：「1 時間」・DB の actual_minutes が 60・やり取りに実績の 1 行", async () => {
-    await tab(page, /^属性/).click();
+    await tab(page, /^項目/).click();
     const actual = panel(page)
       .getByRole("region", { name: "日付と時間" })
       .locator(".k-detail-field")
