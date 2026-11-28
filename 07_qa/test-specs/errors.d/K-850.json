@@ -1,0 +1,32 @@
+{
+ "errors": [
+  {
+   "id": "E-AUD-010",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録を探すことばが空・空白だけ・101 字以上",
+   "false_when": "1〜100 字のことば（前後と間の空白はそろえて探す）",
+   "message": "探すことばは 1〜100 字で入れてください",
+   "action": "ことばを入れ直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、空白だけのことば（q=%20%20）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  }
+ ]
+}
