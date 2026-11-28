@@ -1,0 +1,1072 @@
+diff -ruN a/test-verification/SKILL.md b/test-verification/SKILL.md
+--- a/test-verification/SKILL.md	2026-11-04 13:13:47.680610341 +0000
++++ b/test-verification/SKILL.md	2026-11-04 13:13:47.686801161 +0000
+@@ -24,6 +24,24 @@
+ ---
+ 
+ 
++## 🧩 テストの型のナレッジ（分類ごと・どのプロジェクトでも使う・2026-11-04 追加・必須）
++
++テストを作るときは、まず**テストの型のナレッジ**を読む。私が覚えていることに頼らず、型で漏れを止める（書いていない＝漏れ）。
++
++- 置き場：`references/test-patterns/patterns.json`（機械が読むシート）と、分類ごとの表 `references/test-patterns/<分類>.md`（`scripts/build_test_patterns.py` が作る。手で直さない）
++- 分類：登録・本人確認（REG）・ログイン・セッション（AUTH）・パスワードの再設定（RESET）・招待・参加（INV）・権限・役割（PERM）・作る・直す・消す（CRUD）・一覧・検索（LIST）・ファイル（FILE）・メール・通知（MAIL）・支払い・請求（PAY）・外とのつなぎ（EXT）・時間で動く処理・待ち行列（JOB）・AI の実行（AI）・CI の台本（TOOL）
++- 観点は 8 つ：入力・対象の状態（どの時点で確定するかを必ず書く）・時間の流れ（期限切れ・使い終わった・取り消し・やり直し・送り直し）・入口（メールのリンク・ブックマーク・戻る・再読み込み・別の端末・古いリンク）・利用者の状態（ログインしていない・ログイン中・セッション切れ・長く入っていない・別のアカウント・権限が無い）・失敗・操作の揺れ・守り
++- 状態を持つもの（期限・使い終わった時刻・状態の列を持つ表）は「対象の状態 × 入口 × 利用者の状態」の表を書き、どのマスにも結果・受け持ちのチケット・テストを書く
++
++使い方（チケットごと）：
++1. チケットに `分類: REG, MAIL` のように分類を書く
++2. その分類の型を全部、テストの行に ID（例 TP-REG-02）で書くか、`要らない: TP-REG-05 理由` と書く
++3. `python3 <skill>/scripts/pattern_gate.py <チケット.md> --local <プロジェクトの test-patterns.local.json>` が緑になるまで直す（CI にも入れる）
++
++型を育てる：
++- プロジェクトで、型に無い抜けが見つかったら（テスター・統合テスト・人の確認で）、まずプロジェクトの足し分 `test-patterns.local.json` に 1 行足す（`patterns.json` と同じ形・ID は `TP-<分類>-L01` のようにスキルと重ならない形）
++- 他のプロジェクトでも効く型は、このスキルの `patterns.json` に戻す（スキルの更新の差分にする）。出典に、どのプロジェクトのどんな抜けから生まれたかを書く
++
+ ## 表記ゆらぎ・負荷を戦略に組み込む
+ 
+ - **表記ゆらぎ**は unit で網羅する（正規化関数の入出力表）。E2E で全軸を回すと高い。
+diff -ruN a/test-verification/references/test-patterns/AI.md b/test-verification/references/test-patterns/AI.md
+--- a/test-verification/references/test-patterns/AI.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/AI.md	2026-11-04 13:13:47.687713302 +0000
+@@ -0,0 +1,10 @@
++# AI の実行（AI）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-AI-01 | 守り | 外に出す前 | 人の承認が無ければ出さない | 単体・中間 | Kaname 2026-11-04 |
++| TP-AI-02 | 利用者の状態 | 止める・取り下げ・PC が閉じている | 止まった理由と次の一手を出す | 単体・中間 | Kaname 2026-11-04 |
++| TP-AI-03 | 守り | 利用量の上限を越えた | 止めて、いつ戻るかを出す | 単体 | Kaname 2026-11-04 |
++| TP-AI-04 | 失敗 | 予期しない出力（とても長い・空・形が違う） | 落ちずに失敗として扱う | 単体 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/AUTH.md b/test-verification/references/test-patterns/AUTH.md
+--- a/test-verification/references/test-patterns/AUTH.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/AUTH.md	2026-11-04 13:13:47.687373272 +0000
+@@ -0,0 +1,15 @@
++# ログイン・セッション（AUTH）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-AUTH-01 | 守り | 誤ったパスワードと、無いメール | 同じ返事・同じくらいの時間（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-02 | 守り | 続けて失敗する | 回数の上限・待ち時間。本人は再設定で戻れる | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-03 | 時間の流れ | 2 段階のコードの期限切れ・使い回し・誤り | どれも通さない。使い回しは 1 回目だけ | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-04 | 利用者の状態 | セッションが切れた・長く入っていない状態で操作する・戻ってくる | ログインへ案内し、入り直したら元の画面へ。書きかけは失わない | 単体・中間 | Kaname 2026-11-04 |
++| TP-AUTH-05 | 入口 | ログアウトした後に、戻る・ブックマークで中の画面を開く | 中は見えず、ログインへ | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-06 | 時間の流れ | パスワードを変えた・端末を外した | ほかのセッションが切れる | 単体・中間 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-07 | 時間の流れ | 本人確認の取り直し（大事な操作の前）の期限 | 期限を過ぎたらもう一度確かめる | 単体 | OWASP ASVS（認証・セッション） |
++| TP-AUTH-08 | 守り | ログインの後に戻す先が外の道 | 外へは飛ばさず、中の道だけに戻す | 単体 | OWASP Testing Guide |
++| TP-AUTH-09 | 利用者の状態 | 国・端末が変わった | 決めたとおりに切る／記録する | 単体 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/CRUD.md b/test-verification/references/test-patterns/CRUD.md
+--- a/test-verification/references/test-patterns/CRUD.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/CRUD.md	2026-11-04 13:13:47.687446557 +0000
+@@ -0,0 +1,12 @@
++# 作る・直す・消す（CRUD）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-CRUD-01 | 操作の揺れ | 2 人が同時に直す | 後の人の保存は版のずれとして止め、どちらも失わない | 単体 | OWASP Testing Guide |
++| TP-CRUD-02 | 時間の流れ | 消したものを古いリンクで開く・直す | 見つからない（消された・移された）の画面 | 単体 | Kaname 2026-11-04 |
++| TP-CRUD-03 | 時間の流れ | 消す → 戻す、子のあるものを消す | 子の扱いを決めて書き、そのとおり | 単体 | Kaname 2026-11-04 |
++| TP-CRUD-04 | 操作の揺れ | 2 回押し | 1 つしかできない（冪等キー） | 単体 | OWASP Testing Guide |
++| TP-CRUD-05 | 失敗 | 保存の途中で失敗 | 途中まで残らない（全部戻る） | 単体 | OWASP Testing Guide |
++| TP-CRUD-06 | 入口 | 書きかけで戻る・再読み込み・セッション切れ | 書きかけが失われない | 単体 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/EXT.md b/test-verification/references/test-patterns/EXT.md
+--- a/test-verification/references/test-patterns/EXT.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/EXT.md	2026-11-04 13:13:47.687667991 +0000
+@@ -0,0 +1,9 @@
++# 外とのつなぎ（EXT）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-EXT-01 | 失敗 | 外のサービスが落ちた・遅い・時間切れ | 止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる | 単体 | Kaname 2026-11-04 |
++| TP-EXT-02 | 失敗 | 外が想定外の形を返す | 落ちずに失敗として扱う | 単体 | OWASP Testing Guide |
++| TP-EXT-03 | 操作の揺れ | 同じ通知が 2 回届く | 1 回分だけ反映 | 単体 | OWASP Testing Guide |
+diff -ruN a/test-verification/references/test-patterns/FILE.md b/test-verification/references/test-patterns/FILE.md
+--- a/test-verification/references/test-patterns/FILE.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/FILE.md	2026-11-04 13:13:47.687543858 +0000
+@@ -0,0 +1,11 @@
++# ファイル（FILE）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-FILE-01 | 入力 | 大きさの上限・0 バイト | 上限で止め、理由を出す | 単体 | OWASP Testing Guide |
++| TP-FILE-02 | 守り | 拡張子と中身の種類が違う | 中身で見分けて止める | 単体 | OWASP Testing Guide |
++| TP-FILE-03 | 入力 | 名前（日本語・記号・とても長い・同じ名前） | 化けず、上書きの扱いを決めて書く | 単体 | Kaname 2026-11-04 |
++| TP-FILE-04 | 失敗 | 上げる途中で切れた・同時に上げる | 半端なファイルが残らない | 単体 | OWASP Testing Guide |
++| TP-FILE-05 | 守り | 他の人のファイルの URL を直接開く | 見えない（期限つきの URL・権限の確認） | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN a/test-verification/references/test-patterns/INV.md b/test-verification/references/test-patterns/INV.md
+--- a/test-verification/references/test-patterns/INV.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/INV.md	2026-11-04 13:13:47.687414422 +0000
+@@ -0,0 +1,11 @@
++# 招待・参加（INV）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-INV-01 | 時間の流れ | 招待の期限切れ・取り消し・使い終わった招待を開く | 参加できず、理由と次の一手 | 単体・中間 | Kaname 2026-11-04 |
++| TP-INV-02 | 利用者の状態 | 招待されたメールと違うアカウントでログイン中に開く | 勝手に参加させない。どちらのアカウントで入るかの案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-INV-03 | 対象の状態 | 既にメンバーの人が開く | 二重に参加させず、その会社へ案内 | 単体 | Kaname 2026-11-04 |
++| TP-INV-04 | 時間の流れ | 招待した人が権限を失った・抜けた後に開く | 決めたとおり（使える／使えない） | 単体 | Kaname 2026-11-04 |
++| TP-INV-05 | 操作の揺れ | 同じ人を 2 回招待する | 招待は 1 つ（前のものの扱いを決めて書く） | 単体 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/JOB.md b/test-verification/references/test-patterns/JOB.md
+--- a/test-verification/references/test-patterns/JOB.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/JOB.md	2026-11-04 13:13:47.687691694 +0000
+@@ -0,0 +1,9 @@
++# 時間で動く処理・待ち行列（JOB）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-JOB-01 | 失敗 | 途中で止まった・再起動・やり直し | 二重にならず、続きから | 単体 | OWASP Testing Guide |
++| TP-JOB-02 | 時間の流れ | 日付の変わり目・月末・タイムゾーン | 決めた時刻の扱い（保存は世界標準時・表示は現地）どおり | 単体 | Kaname 2026-11-04 |
++| TP-JOB-03 | 時間の流れ | 処理の途中で対象が消えた | 落ちずに飛ばして記録 | 単体 | OWASP Testing Guide |
+diff -ruN a/test-verification/references/test-patterns/LIST.md b/test-verification/references/test-patterns/LIST.md
+--- a/test-verification/references/test-patterns/LIST.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/LIST.md	2026-11-04 13:13:47.687518146 +0000
+@@ -0,0 +1,10 @@
++# 一覧・検索（LIST）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-LIST-01 | 対象の状態 | 0 件・1 件・ページの境目の件数 | 空の画面・境目で抜けも重なりも無い | 単体 | OWASP Testing Guide |
++| TP-LIST-02 | 対象の状態 | 並び替えの値が同じものが多い | ページをまたいでも並びが揺れない | 単体 | OWASP Testing Guide |
++| TP-LIST-03 | 入口 | 絞り込みの組み合わせを URL で開き直す・共有する | 同じ結果が出る | 単体 | Kaname 2026-11-04 |
++| TP-LIST-04 | 入力 | 表記ゆれ・記号・とても長い語で探す | 正規化して探し、落ちない | 単体 | OWASP Testing Guide |
+diff -ruN a/test-verification/references/test-patterns/MAIL.md b/test-verification/references/test-patterns/MAIL.md
+--- a/test-verification/references/test-patterns/MAIL.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/MAIL.md	2026-11-04 13:13:47.687568449 +0000
+@@ -0,0 +1,9 @@
++# メール・通知（MAIL）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-MAIL-01 | 失敗 | 送れなかった | 送れたと嘘をつかず、送り直せる | 単体 | Kaname 2026-11-04 |
++| TP-MAIL-02 | 操作の揺れ | 同じ知らせが二重に出る | 1 通だけ | 単体 | Kaname 2026-11-04 |
++| TP-MAIL-03 | 守り | 本文 | 秘密や他人の情報を入れない。リンクは期限つき | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN a/test-verification/references/test-patterns/PAY.md b/test-verification/references/test-patterns/PAY.md
+--- a/test-verification/references/test-patterns/PAY.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/PAY.md	2026-11-04 13:13:47.687634373 +0000
+@@ -0,0 +1,10 @@
++# 支払い・請求（PAY）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-PAY-01 | 入力 | 金額の端数 | 決めた丸め方（例：税は請求書ごと・税率ごとに 1 回） | 単体 | Kaname 2026-11-04 |
++| TP-PAY-02 | 操作の揺れ | 二重の請求・入金の二重記録 | 1 回だけ | 単体 | OWASP Testing Guide |
++| TP-PAY-03 | 時間の流れ | プランを月の途中で変える | 決めた計算どおり | 単体 | Kaname 2026-11-04 |
++| TP-PAY-04 | 守り | 外の決済の通知 | 署名を確かめ、順番が逆に届いても壊れない | 単体 | OWASP Testing Guide |
+diff -ruN a/test-verification/references/test-patterns/PERM.md b/test-verification/references/test-patterns/PERM.md
+--- a/test-verification/references/test-patterns/PERM.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/PERM.md	2026-11-04 13:13:47.687430401 +0000
+@@ -0,0 +1,11 @@
++# 権限・役割（PERM）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-PERM-01 | 利用者の状態 | 役が合わない人 | 画面に見えない・押せない。口は 403 で、副作用は起きない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-02 | 時間の流れ | 権限を外した直後に、開いていた画面で押す | 口で止まる（画面の表示に頼らない） | 単体・中間 | Kaname 2026-11-04 |
++| TP-PERM-03 | 守り | 他の会社の ID を直接指定する | 見つからない扱い（403／404）で、中身は返らない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-04 | 守り | 一覧・数・検索 | 他の会社や見えないものが件数にも混ざらない | 単体 | OWASP ASVS（認証・セッション） |
++| TP-PERM-05 | 時間の流れ | 権限を付けた直後 | 入り直さなくても効く（または効く時点を書く） | 単体・中間 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/README.md b/test-verification/references/test-patterns/README.md
+--- a/test-verification/references/test-patterns/README.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/README.md	2026-11-04 13:13:47.687757118 +0000
+@@ -0,0 +1,20 @@
++# テストの型（分類ごと）
++
++> 生成物（scripts/build_test_patterns.py ← patterns.json）。手で直さない。型を足すときは patterns.json（プロジェクトなら test-patterns.local.json）に足す。
++
++| 分類 | 型の数 | 表 |
++|---|---|---|
++| 登録・本人確認（REG） | 14 | [REG.md](REG.md) |
++| ログイン・セッション（AUTH） | 9 | [AUTH.md](AUTH.md) |
++| パスワードの再設定（RESET） | 3 | [RESET.md](RESET.md) |
++| 招待・参加（INV） | 5 | [INV.md](INV.md) |
++| 権限・役割（PERM） | 5 | [PERM.md](PERM.md) |
++| 作る・直す・消す（CRUD） | 6 | [CRUD.md](CRUD.md) |
++| 一覧・検索（LIST） | 4 | [LIST.md](LIST.md) |
++| ファイル（FILE） | 5 | [FILE.md](FILE.md) |
++| メール・通知（MAIL） | 3 | [MAIL.md](MAIL.md) |
++| 支払い・請求（PAY） | 4 | [PAY.md](PAY.md) |
++| 外とのつなぎ（EXT） | 3 | [EXT.md](EXT.md) |
++| 時間で動く処理・待ち行列（JOB） | 3 | [JOB.md](JOB.md) |
++| AI の実行（AI） | 4 | [AI.md](AI.md) |
++| CI の台本（検査そのもの）（TOOL） | 3 | [TOOL.md](TOOL.md) |
+diff -ruN a/test-verification/references/test-patterns/REG.md b/test-verification/references/test-patterns/REG.md
+--- a/test-verification/references/test-patterns/REG.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/REG.md	2026-11-04 13:13:47.687337218 +0000
+@@ -0,0 +1,20 @@
++# 登録・本人確認（REG）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-REG-01 | 対象の状態 | 登録が確定する時点（保留 → 確定） | どの操作で確定するかを書き、確定する前と後で何ができるかを分ける | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-02 | 時間の流れ | 確認のリンクの期限が切れてから開く | 期限切れの画面と、やり直しの案内。申し込みは使えない | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-03 | 時間の流れ | 確定した後に、同じ確認のリンクをもう一度開く | 「登録は済んでいます」とログインへの案内。二重に作らない | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-04 | 時間の流れ | 送り直した後に、前のリンクを開く | 前のリンクは使えず、新しいメールのリンクへ案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-05 | 入口 | 確認のリンクを別の端末・別のブラウザで開く | 決めたとおり（確定できる／できない）に動く | 中間 | Kaname 2026-11-04 |
++| TP-REG-06 | 利用者の状態 | ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く | 勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内 | 単体・中間 | Kaname 2026-11-04 |
++| TP-REG-07 | 守り | 登録済みのメールで登録する | 登録の有無を余計に見せない文言（ログインか再設定の案内だけ） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-08 | 入力 | メールの大文字小文字・前後の空白・全角 | 正規化して同じ人として扱う | 単体 | Kaname 2026-11-04 |
++| TP-REG-09 | 入力 | 漏れたことのあるパスワード | 弾く。照合先が落ちたときの扱い（止める／通して記録）を決めて書く | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-10 | 入力 | パスワードの長さの境目の両側 | 短い側は弾き、境目は通す | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-11 | 守り | 同じ所から短い時間に何度も登録する | 回数の上限で止め、待つ時間を出す | 単体 | OWASP ASVS（認証・セッション） |
++| TP-REG-12 | 操作の揺れ | 同じメールで同時に 2 回・2 回押し | 申し込みは 1 つ・メールは 1 通 | 単体 | Kaname 2026-11-04 |
++| TP-REG-13 | 対象の状態 | 同意した規約の版と時刻 | 残る。規約が変わったら次のログインで同意し直す | 単体 | Kaname 2026-11-04 |
++| TP-REG-14 | 守り | DB とログにパスワード・リンクの手がかりが平文で残らない | パスワードは包む・手がかりはハッシュだけ・ログに出さない | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN a/test-verification/references/test-patterns/RESET.md b/test-verification/references/test-patterns/RESET.md
+--- a/test-verification/references/test-patterns/RESET.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/RESET.md	2026-11-04 13:13:47.687392656 +0000
+@@ -0,0 +1,9 @@
++# パスワードの再設定（RESET）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-RESET-01 | 守り | 無いメールで再設定を頼む | 同じ返事（登録の有無を見せない） | 単体 | OWASP ASVS（認証・セッション） |
++| TP-RESET-02 | 時間の流れ | 再設定のリンクの期限切れ・使い終わった・新しく頼んだ後の前のリンク | どれも使えず、頼み直しの案内 | 単体・中間 | OWASP ASVS（認証・セッション） |
++| TP-RESET-03 | 時間の流れ | 再設定した | ほかのセッションが切れる | 単体 | OWASP ASVS（認証・セッション） |
+diff -ruN a/test-verification/references/test-patterns/TOOL.md b/test-verification/references/test-patterns/TOOL.md
+--- a/test-verification/references/test-patterns/TOOL.md	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/TOOL.md	2026-11-04 13:13:47.687734873 +0000
+@@ -0,0 +1,9 @@
++# CI の台本（検査そのもの）（TOOL）
++
++> 生成物。手で直さない。
++
++| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |
++|---|---|---|---|---|---|
++| TP-TOOL-01 | 入力 | 日本語の名前のファイル | 検査の台本が読み落とさない（git ls-files は -z で読む） | 単体 | Kaname 2026-11-04 |
++| TP-TOOL-02 | 守り | 検査が何も見ていないのに緑 | 自己試験でわざと壊し、赤になるのを見る | 単体 | Kaname 2026-11-04 |
++| TP-TOOL-03 | 失敗 | 容れ物の中と手元で設定・証明書・版が違う | 同じ結果になる（違いは設定で吸収して書く） | 単体 | Kaname 2026-11-04 |
+diff -ruN a/test-verification/references/test-patterns/patterns.json b/test-verification/references/test-patterns/patterns.json
+--- a/test-verification/references/test-patterns/patterns.json	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/patterns.json	2026-11-04 13:13:47.687287765 +0000
+@@ -0,0 +1,670 @@
++{
++ "_doc": "テストの型のナレッジ（機械が読むシート）。チケットは分類（categories）を書き、その分類の型を全部「テストにある」か「要らない理由」で受ける。どちらも無ければ scripts/pattern_gate.py が赤。プロジェクトで新しく出た型は、プロジェクトの足し分（test-patterns.local.json）に書き、他でも効くものはここに戻す",
++ "axes": [
++  "入力",
++  "対象の状態",
++  "時間の流れ",
++  "入口",
++  "利用者の状態",
++  "失敗",
++  "操作の揺れ",
++  "守り"
++ ],
++ "categories": {
++  "REG": "登録・本人確認",
++  "AUTH": "ログイン・セッション",
++  "RESET": "パスワードの再設定",
++  "INV": "招待・参加",
++  "PERM": "権限・役割",
++  "CRUD": "作る・直す・消す",
++  "LIST": "一覧・検索",
++  "FILE": "ファイル",
++  "MAIL": "メール・通知",
++  "PAY": "支払い・請求",
++  "EXT": "外とのつなぎ",
++  "JOB": "時間で動く処理・待ち行列",
++  "AI": "AI の実行",
++  "TOOL": "CI の台本（検査そのもの）"
++ },
++ "patterns": [
++  {
++   "id": "TP-REG-01",
++   "category": "REG",
++   "axis": "対象の状態",
++   "branch": "登録が確定する時点（保留 → 確定）",
++   "expect": "どの操作で確定するかを書き、確定する前と後で何ができるかを分ける",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-02",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "確認のリンクの期限が切れてから開く",
++   "expect": "期限切れの画面と、やり直しの案内。申し込みは使えない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-03",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "確定した後に、同じ確認のリンクをもう一度開く",
++   "expect": "「登録は済んでいます」とログインへの案内。二重に作らない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-04",
++   "category": "REG",
++   "axis": "時間の流れ",
++   "branch": "送り直した後に、前のリンクを開く",
++   "expect": "前のリンクは使えず、新しいメールのリンクへ案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-05",
++   "category": "REG",
++   "axis": "入口",
++   "branch": "確認のリンクを別の端末・別のブラウザで開く",
++   "expect": "決めたとおり（確定できる／できない）に動く",
++   "levels": "中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-06",
++   "category": "REG",
++   "axis": "利用者の状態",
++   "branch": "ログイン中・別のアカウントでログイン中に、登録の画面や確認のリンクを開く",
++   "expect": "勝手にアカウントを切り替えない。今のアカウントへの案内か、ログアウトの案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-07",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "登録済みのメールで登録する",
++   "expect": "登録の有無を余計に見せない文言（ログインか再設定の案内だけ）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-08",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "メールの大文字小文字・前後の空白・全角",
++   "expect": "正規化して同じ人として扱う",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-09",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "漏れたことのあるパスワード",
++   "expect": "弾く。照合先が落ちたときの扱い（止める／通して記録）を決めて書く",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-10",
++   "category": "REG",
++   "axis": "入力",
++   "branch": "パスワードの長さの境目の両側",
++   "expect": "短い側は弾き、境目は通す",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-11",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "同じ所から短い時間に何度も登録する",
++   "expect": "回数の上限で止め、待つ時間を出す",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-REG-12",
++   "category": "REG",
++   "axis": "操作の揺れ",
++   "branch": "同じメールで同時に 2 回・2 回押し",
++   "expect": "申し込みは 1 つ・メールは 1 通",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-13",
++   "category": "REG",
++   "axis": "対象の状態",
++   "branch": "同意した規約の版と時刻",
++   "expect": "残る。規約が変わったら次のログインで同意し直す",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-REG-14",
++   "category": "REG",
++   "axis": "守り",
++   "branch": "DB とログにパスワード・リンクの手がかりが平文で残らない",
++   "expect": "パスワードは包む・手がかりはハッシュだけ・ログに出さない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-01",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "誤ったパスワードと、無いメール",
++   "expect": "同じ返事・同じくらいの時間（登録の有無を見せない）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-02",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "続けて失敗する",
++   "expect": "回数の上限・待ち時間。本人は再設定で戻れる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-03",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "2 段階のコードの期限切れ・使い回し・誤り",
++   "expect": "どれも通さない。使い回しは 1 回目だけ",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-04",
++   "category": "AUTH",
++   "axis": "利用者の状態",
++   "branch": "セッションが切れた・長く入っていない状態で操作する・戻ってくる",
++   "expect": "ログインへ案内し、入り直したら元の画面へ。書きかけは失わない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AUTH-05",
++   "category": "AUTH",
++   "axis": "入口",
++   "branch": "ログアウトした後に、戻る・ブックマークで中の画面を開く",
++   "expect": "中は見えず、ログインへ",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-06",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "パスワードを変えた・端末を外した",
++   "expect": "ほかのセッションが切れる",
++   "levels": "単体・中間",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-07",
++   "category": "AUTH",
++   "axis": "時間の流れ",
++   "branch": "本人確認の取り直し（大事な操作の前）の期限",
++   "expect": "期限を過ぎたらもう一度確かめる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-AUTH-08",
++   "category": "AUTH",
++   "axis": "守り",
++   "branch": "ログインの後に戻す先が外の道",
++   "expect": "外へは飛ばさず、中の道だけに戻す",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-AUTH-09",
++   "category": "AUTH",
++   "axis": "利用者の状態",
++   "branch": "国・端末が変わった",
++   "expect": "決めたとおりに切る／記録する",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-RESET-01",
++   "category": "RESET",
++   "axis": "守り",
++   "branch": "無いメールで再設定を頼む",
++   "expect": "同じ返事（登録の有無を見せない）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-RESET-02",
++   "category": "RESET",
++   "axis": "時間の流れ",
++   "branch": "再設定のリンクの期限切れ・使い終わった・新しく頼んだ後の前のリンク",
++   "expect": "どれも使えず、頼み直しの案内",
++   "levels": "単体・中間",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-RESET-03",
++   "category": "RESET",
++   "axis": "時間の流れ",
++   "branch": "再設定した",
++   "expect": "ほかのセッションが切れる",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-INV-01",
++   "category": "INV",
++   "axis": "時間の流れ",
++   "branch": "招待の期限切れ・取り消し・使い終わった招待を開く",
++   "expect": "参加できず、理由と次の一手",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-02",
++   "category": "INV",
++   "axis": "利用者の状態",
++   "branch": "招待されたメールと違うアカウントでログイン中に開く",
++   "expect": "勝手に参加させない。どちらのアカウントで入るかの案内",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-03",
++   "category": "INV",
++   "axis": "対象の状態",
++   "branch": "既にメンバーの人が開く",
++   "expect": "二重に参加させず、その会社へ案内",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-04",
++   "category": "INV",
++   "axis": "時間の流れ",
++   "branch": "招待した人が権限を失った・抜けた後に開く",
++   "expect": "決めたとおり（使える／使えない）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-INV-05",
++   "category": "INV",
++   "axis": "操作の揺れ",
++   "branch": "同じ人を 2 回招待する",
++   "expect": "招待は 1 つ（前のものの扱いを決めて書く）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PERM-01",
++   "category": "PERM",
++   "axis": "利用者の状態",
++   "branch": "役が合わない人",
++   "expect": "画面に見えない・押せない。口は 403 で、副作用は起きない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-02",
++   "category": "PERM",
++   "axis": "時間の流れ",
++   "branch": "権限を外した直後に、開いていた画面で押す",
++   "expect": "口で止まる（画面の表示に頼らない）",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PERM-03",
++   "category": "PERM",
++   "axis": "守り",
++   "branch": "他の会社の ID を直接指定する",
++   "expect": "見つからない扱い（403／404）で、中身は返らない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-04",
++   "category": "PERM",
++   "axis": "守り",
++   "branch": "一覧・数・検索",
++   "expect": "他の会社や見えないものが件数にも混ざらない",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PERM-05",
++   "category": "PERM",
++   "axis": "時間の流れ",
++   "branch": "権限を付けた直後",
++   "expect": "入り直さなくても効く（または効く時点を書く）",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-01",
++   "category": "CRUD",
++   "axis": "操作の揺れ",
++   "branch": "2 人が同時に直す",
++   "expect": "後の人の保存は版のずれとして止め、どちらも失わない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-02",
++   "category": "CRUD",
++   "axis": "時間の流れ",
++   "branch": "消したものを古いリンクで開く・直す",
++   "expect": "見つからない（消された・移された）の画面",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-03",
++   "category": "CRUD",
++   "axis": "時間の流れ",
++   "branch": "消す → 戻す、子のあるものを消す",
++   "expect": "子の扱いを決めて書き、そのとおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-CRUD-04",
++   "category": "CRUD",
++   "axis": "操作の揺れ",
++   "branch": "2 回押し",
++   "expect": "1 つしかできない（冪等キー）",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-05",
++   "category": "CRUD",
++   "axis": "失敗",
++   "branch": "保存の途中で失敗",
++   "expect": "途中まで残らない（全部戻る）",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-CRUD-06",
++   "category": "CRUD",
++   "axis": "入口",
++   "branch": "書きかけで戻る・再読み込み・セッション切れ",
++   "expect": "書きかけが失われない",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-LIST-01",
++   "category": "LIST",
++   "axis": "対象の状態",
++   "branch": "0 件・1 件・ページの境目の件数",
++   "expect": "空の画面・境目で抜けも重なりも無い",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-LIST-02",
++   "category": "LIST",
++   "axis": "対象の状態",
++   "branch": "並び替えの値が同じものが多い",
++   "expect": "ページをまたいでも並びが揺れない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-LIST-03",
++   "category": "LIST",
++   "axis": "入口",
++   "branch": "絞り込みの組み合わせを URL で開き直す・共有する",
++   "expect": "同じ結果が出る",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-LIST-04",
++   "category": "LIST",
++   "axis": "入力",
++   "branch": "表記ゆれ・記号・とても長い語で探す",
++   "expect": "正規化して探し、落ちない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-01",
++   "category": "FILE",
++   "axis": "入力",
++   "branch": "大きさの上限・0 バイト",
++   "expect": "上限で止め、理由を出す",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-02",
++   "category": "FILE",
++   "axis": "守り",
++   "branch": "拡張子と中身の種類が違う",
++   "expect": "中身で見分けて止める",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-03",
++   "category": "FILE",
++   "axis": "入力",
++   "branch": "名前（日本語・記号・とても長い・同じ名前）",
++   "expect": "化けず、上書きの扱いを決めて書く",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-FILE-04",
++   "category": "FILE",
++   "axis": "失敗",
++   "branch": "上げる途中で切れた・同時に上げる",
++   "expect": "半端なファイルが残らない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-FILE-05",
++   "category": "FILE",
++   "axis": "守り",
++   "branch": "他の人のファイルの URL を直接開く",
++   "expect": "見えない（期限つきの URL・権限の確認）",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-MAIL-01",
++   "category": "MAIL",
++   "axis": "失敗",
++   "branch": "送れなかった",
++   "expect": "送れたと嘘をつかず、送り直せる",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-MAIL-02",
++   "category": "MAIL",
++   "axis": "操作の揺れ",
++   "branch": "同じ知らせが二重に出る",
++   "expect": "1 通だけ",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-MAIL-03",
++   "category": "MAIL",
++   "axis": "守り",
++   "branch": "本文",
++   "expect": "秘密や他人の情報を入れない。リンクは期限つき",
++   "levels": "単体",
++   "source": "OWASP ASVS（認証・セッション）"
++  },
++  {
++   "id": "TP-PAY-01",
++   "category": "PAY",
++   "axis": "入力",
++   "branch": "金額の端数",
++   "expect": "決めた丸め方（例：税は請求書ごと・税率ごとに 1 回）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PAY-02",
++   "category": "PAY",
++   "axis": "操作の揺れ",
++   "branch": "二重の請求・入金の二重記録",
++   "expect": "1 回だけ",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-PAY-03",
++   "category": "PAY",
++   "axis": "時間の流れ",
++   "branch": "プランを月の途中で変える",
++   "expect": "決めた計算どおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-PAY-04",
++   "category": "PAY",
++   "axis": "守り",
++   "branch": "外の決済の通知",
++   "expect": "署名を確かめ、順番が逆に届いても壊れない",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-EXT-01",
++   "category": "EXT",
++   "axis": "失敗",
++   "branch": "外のサービスが落ちた・遅い・時間切れ",
++   "expect": "止めるか通すかを決めて書き、そのとおり。通すなら記録して知らせる",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-EXT-02",
++   "category": "EXT",
++   "axis": "失敗",
++   "branch": "外が想定外の形を返す",
++   "expect": "落ちずに失敗として扱う",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-EXT-03",
++   "category": "EXT",
++   "axis": "操作の揺れ",
++   "branch": "同じ通知が 2 回届く",
++   "expect": "1 回分だけ反映",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-JOB-01",
++   "category": "JOB",
++   "axis": "失敗",
++   "branch": "途中で止まった・再起動・やり直し",
++   "expect": "二重にならず、続きから",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-JOB-02",
++   "category": "JOB",
++   "axis": "時間の流れ",
++   "branch": "日付の変わり目・月末・タイムゾーン",
++   "expect": "決めた時刻の扱い（保存は世界標準時・表示は現地）どおり",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-JOB-03",
++   "category": "JOB",
++   "axis": "時間の流れ",
++   "branch": "処理の途中で対象が消えた",
++   "expect": "落ちずに飛ばして記録",
++   "levels": "単体",
++   "source": "OWASP Testing Guide"
++  },
++  {
++   "id": "TP-AI-01",
++   "category": "AI",
++   "axis": "守り",
++   "branch": "外に出す前",
++   "expect": "人の承認が無ければ出さない",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-02",
++   "category": "AI",
++   "axis": "利用者の状態",
++   "branch": "止める・取り下げ・PC が閉じている",
++   "expect": "止まった理由と次の一手を出す",
++   "levels": "単体・中間",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-03",
++   "category": "AI",
++   "axis": "守り",
++   "branch": "利用量の上限を越えた",
++   "expect": "止めて、いつ戻るかを出す",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-AI-04",
++   "category": "AI",
++   "axis": "失敗",
++   "branch": "予期しない出力（とても長い・空・形が違う）",
++   "expect": "落ちずに失敗として扱う",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-01",
++   "category": "TOOL",
++   "axis": "入力",
++   "branch": "日本語の名前のファイル",
++   "expect": "検査の台本が読み落とさない（git ls-files は -z で読む）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-02",
++   "category": "TOOL",
++   "axis": "守り",
++   "branch": "検査が何も見ていないのに緑",
++   "expect": "自己試験でわざと壊し、赤になるのを見る",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  },
++  {
++   "id": "TP-TOOL-03",
++   "category": "TOOL",
++   "axis": "失敗",
++   "branch": "容れ物の中と手元で設定・証明書・版が違う",
++   "expect": "同じ結果になる（違いは設定で吸収して書く）",
++   "levels": "単体",
++   "source": "Kaname 2026-11-04"
++  }
++ ]
++}
+\ No newline at end of file
+diff -ruN a/test-verification/references/test-patterns/test-patterns.local.example.json b/test-verification/references/test-patterns/test-patterns.local.example.json
+--- a/test-verification/references/test-patterns/test-patterns.local.example.json	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/references/test-patterns/test-patterns.local.example.json	2026-11-04 13:13:47.687780999 +0000
+@@ -0,0 +1,7 @@
++{
++ "_doc": "プロジェクトの足し分の見本。プロジェクトの根（例 07_qa/test-patterns.local.json）に写して使う。他のプロジェクトでも効く型は、スキルの patterns.json に戻す",
++ "categories": {},
++ "patterns": [
++  {"id": "TP-REG-L01", "category": "REG", "axis": "入口", "branch": "（例）QR コードから登録の画面を開く", "expect": "（例）紹介元が残る", "levels": "単体", "source": "プロジェクト名 日付・どんな抜けから"}
++ ]
++}
+diff -ruN a/test-verification/scripts/build_test_patterns.py b/test-verification/scripts/build_test_patterns.py
+--- a/test-verification/scripts/build_test_patterns.py	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/scripts/build_test_patterns.py	2026-11-04 13:13:47.689340162 +0000
+@@ -0,0 +1,48 @@
++#!/usr/bin/env python3
++"""テストの型のナレッジ（references/test-patterns/patterns.json）から、分類ごとの表（人が読む版）を作る。手で表を直さない。
++
++  python3 <skill>/scripts/build_test_patterns.py [--local <プロジェクトの test-patterns.local.json>] [--out <置き場>]
++既定はスキルの references/test-patterns/ に書く。--local を付けると、プロジェクトの足し分も合わせた表を --out に書く。
++"""
++from __future__ import annotations
++import json, os, sys
++
++HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++BASE = os.path.join(HERE, "references/test-patterns/patterns.json")
++
++
++def load(local: str | None) -> dict:
++    d = json.load(open(BASE, encoding="utf-8"))
++    if local and os.path.exists(local):
++        L = json.load(open(local, encoding="utf-8"))
++        d["categories"].update(L.get("categories") or {})
++        ids = {p["id"] for p in d["patterns"]}
++        for p in L.get("patterns") or []:
++            if p["id"] in ids:
++                sys.exit(f"足し分の型 {p['id']} がスキルの型と同じ ID（別の ID にする）")
++            d["patterns"].append({**p, "local": True})
++    return d
++
++
++def main() -> int:
++    local = sys.argv[sys.argv.index("--local") + 1] if "--local" in sys.argv else None
++    out = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.dirname(BASE)
++    d = load(local)
++    os.makedirs(out, exist_ok=True)
++    idx = ["# テストの型（分類ごと）", "", "> 生成物（scripts/build_test_patterns.py ← patterns.json）。手で直さない。型を足すときは patterns.json（プロジェクトなら test-patterns.local.json）に足す。", "",
++           "| 分類 | 型の数 | 表 |", "|---|---|---|"]
++    for c, name in d["categories"].items():
++        ps = [p for p in d["patterns"] if p["category"] == c]
++        if not ps:
++            continue
++        L = [f"# {name}（{c}）", "", "> 生成物。手で直さない。", "", "| ID | 観点 | 分岐 | 期待する結果 | 段 | 出典 |", "|---|---|---|---|---|---|"]
++        L += [f"| {p['id']}{'（足し分）' if p.get('local') else ''} | {p['axis']} | {p['branch']} | {p['expect']} | {p['levels']} | {p['source']} |" for p in ps]
++        open(os.path.join(out, f"{c}.md"), "w", encoding="utf-8").write("\n".join(L) + "\n")
++        idx.append(f"| {name}（{c}） | {len(ps)} | [{c}.md]({c}.md) |")
++    open(os.path.join(out, "README.md"), "w", encoding="utf-8").write("\n".join(idx) + "\n")
++    print(f"型 {len(d['patterns'])}・分類 {len(d['categories'])} → {out}")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -ruN a/test-verification/scripts/pattern_gate.py b/test-verification/scripts/pattern_gate.py
+--- a/test-verification/scripts/pattern_gate.py	1970-01-01 00:00:00.000000000 +0000
++++ b/test-verification/scripts/pattern_gate.py	2026-11-04 13:13:47.689549131 +0000
+@@ -0,0 +1,67 @@
++#!/usr/bin/env python3
++"""チケットが、自分の分類のテストの型を全部受けているか（書いていない＝漏れ）。
++
++  python3 <skill>/scripts/pattern_gate.py <チケットの .md ...> [--local <test-patterns.local.json>]
++  python3 <skill>/scripts/pattern_gate.py --selftest
++
++チケットの書き方:
++  - 「分類:」の行に分類の ID を書く（例 `分類: REG, MAIL`）。分類の ID は patterns.json の categories
++  - その分類の型の ID（例 TP-REG-02）を、テストの表の行に書くか、「要らない: TP-REG-05 理由」と書く
++赤になるもの:
++  P1 分類の行が無い・知らない分類
++  P2 その分類の型の ID が、テストにも「要らない」にも無い（書いていない＝漏れ）
++  P3 「要らない」に理由が無い
++"""
++from __future__ import annotations
++import json, os, re, sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++from build_test_patterns import load  # noqa: E402
++
++
++def check(text: str, d: dict) -> list[str]:
++    m = re.search(r"^[\s|*-]*分類[\s*|]*[:：|]\s*([A-Z0-9_ ,、・]+)", text, re.M)
++    if not m:
++        return ["P1 「分類:」の行が無い（例 `分類: REG, MAIL`）"]
++    cats = [c for c in re.split(r"[ ,、・]+", m.group(1).strip()) if c]
++    fails = [f"P1 知らない分類 {c}" for c in cats if c not in d["categories"]]
++    for p in d["patterns"]:
++        if p["category"] not in cats:
++            continue
++        lines = [ln for ln in text.splitlines() if p["id"] in ln]
++        if not lines:
++            fails.append(f"P2 {p['id']}（{p['branch']}）が、テストにも「要らない」にも無い")
++            continue
++        for ln in lines:
++            r = re.search(r"要らない\s*[:：]\s*" + re.escape(p["id"]) + r"\s*(.*)", ln)
++            if r and len(r.group(1).strip(" |。")) < 4:
++                fails.append(f"P3 {p['id']} を要らないとした理由が無い")
++    return fails
++
++
++def main() -> int:
++    local = sys.argv[sys.argv.index("--local") + 1] if "--local" in sys.argv else None
++    d = load(local)
++    if "--selftest" in sys.argv:
++        t = {"categories": {"X": "x"}, "patterns": [{"id": "TP-X-01", "category": "X", "branch": "a"}, {"id": "TP-X-02", "category": "X", "branch": "b"}, {"id": "TP-X-03", "category": "X", "branch": "c"}]}
++        ok = (any(f.startswith("P1") for f in check("本文", t))
++              and any("TP-X-02" in f and f.startswith("P2") for f in check("分類: X\n| TP-X-01 | テスト |\n要らない: TP-X-03 外の会社に無い機能のため", t))
++              and any(f.startswith("P3") for f in check("分類: X\n| TP-X-01 |\n| TP-X-02 |\n要らない: TP-X-03", t))
++              and not check("分類: X\n| TP-X-01 |\n| TP-X-02 |\n要らない: TP-X-03 この画面は一覧を持たない", t)
++              and any("知らない分類" in f for f in check("分類: Y", t)))
++        print("PASS — 分類の行が無い・型の書き漏れ・理由の無い要らない・知らない分類を赤にした" if ok else "FAIL — 見つけられない")
++        return 0 if ok else 1
++    files = [a for a in sys.argv[1:] if not a.startswith("--") and a != local]
++    bad = 0
++    for f in files:
++        fs = check(open(f, encoding="utf-8").read(), d)
++        for x in fs:
++            print(f"  ★ {f}: {x}")
++        bad += bool(fs)
++    print(f"チケット {len(files)}・型 {len(d['patterns'])}")
++    print("FAIL — 型を受けていないチケットがある" if bad else "PASS — どのチケットも、自分の分類の型を全部受けている")
++    return 1 if bad else 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
