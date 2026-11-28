@@ -12,6 +12,7 @@ import { call, type CallErr } from "@/lib/api/call";
 import { useMyRoles } from "@/lib/auth/role";
 import { StepUp } from "@/features/F1/security/step-up";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
+import { useMembers } from "@/features/F10/invite/use-members";
 import { WsHead, WsSub } from "@/features/F10/invite/views";
 import { PlanRow } from "@/features/F12/billing/plan-row";
 import { usePlans } from "@/features/F12/billing/use-plans";
@@ -80,6 +81,8 @@ export function SettingsScreen() {
   const q = useSettings(roles !== undefined && !blocked);
   // プランの読み（K-962）を設定の読みと同時に始める（同じ鍵を PlanRow が読む・閲覧のみの役では呼ばない）
   usePlans(roles !== undefined && !blocked);
+  // 第 2 ナビの「メンバー」の札（人＋招待中の数・下絵のとおり。チケットの設定の画面と同じ口・同じ鍵）
+  const members = useMembers(roles !== undefined && !blocked);
   const patch = usePatchSettings();
   const dialogs = useOpenDialog();
   const [denied, setDenied] = useState(false);
@@ -206,7 +209,7 @@ export function SettingsScreen() {
     <Frame>
       <WsHead name={company} initial={initialOf(company)} />
       <div className="k-me-wrap">
-        <WsSub active="settings" />
+        <WsSub active="settings" {...(members.data ? { members: members.data.count } : {})} />
         <SettingsPage
           s={{
             name: company,

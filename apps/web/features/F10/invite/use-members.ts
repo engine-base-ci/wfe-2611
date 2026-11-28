@@ -131,9 +131,11 @@ export function toView(a: MembersAnswer): MembersView {
   return { groups, scopes: a.groups.map((g) => ({ id: g.id, name: g.name })), count: a.count, answer: a };
 }
 
-export function useMembers() {
+/** enabled＝false なら読まない（ワークスペースの管理の第 2 ナビの札だけに使う画面が、権限の無い役で呼ばない・K-831・K-825） */
+export function useMembers(enabled = true) {
   return useQuery({
     queryKey: MEMBERS_KEY,
+    enabled,
     retry: false,
     refetchOnWindowFocus: false,
     queryFn: async (): Promise<MembersView> => {

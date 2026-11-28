@@ -44,6 +44,8 @@ const STATES: Record<
   "st-name-saved": {
     skip: ["meta:texts"],
     drive: async (page) => {
+      // 保存の時刻は下絵と同じ 11:20（日本時間）に止める。時計の進みは止めない（カード・欄の字にも時刻が入る）
+      await page.clock.setFixedTime(new Date("2026-11-02T02:20:00Z"));
       await nameBox(page).fill("ENGINE BASE 株式会社");
       await nameBox(page).press("Enter");
       await expect(page.getByText("保存しました", { exact: false })).toBeVisible();
@@ -336,15 +338,21 @@ test("K831-UI-017 プランと支払い：差し込み口 planRow を渡さな�
   page,
 }) => {
   const mk = await mockOps(page);
+  const src = readFileSync(join(ROOT, "apps/web/features/F10/ws/settings-screen.tsx"), "utf8");
+  expect(src).toMatch(/planRow\??:\s*ReactNode|planRow=\{/);
   await openAt(page, owner.token, PATH);
+  // 段 13 の K-962 が planRow を渡した後は、2 つのボタンは押せる形（押した後の動きは K-962 の試験が受ける）。渡す前は押せない形で口を呼ばない
+  const plugged = /planRow=\{/.test(src);
   for (const name of ["プランを変える", "請求書"]) {
     const b = card(page, "プランと支払い").getByRole("button", { name, exact: true });
+    if (plugged) {
+      await expect(b).not.toHaveAttribute("aria-disabled", "true");
+      continue;
+    }
     await expect(b).toHaveAttribute("aria-disabled", "true");
     await b.click({ force: true });
   }
   expect(mk.calls.map((c) => c.op)).toEqual(["settings"]);
-  const src = readFileSync(join(ROOT, "apps/web/features/F10/ws/settings-screen.tsx"), "utf8");
-  expect(src).toMatch(/planRow\??:\s*ReactNode|planRow=\{/);
 });
 
 test("K831-UI-018 作らない物が無い：「取引先」の区画・取引先の見える人の既定・書き出し・ダウンロードの字が画面に無い（D-154.22・D-154.4）", async ({
@@ -381,7 +389,9 @@ test("K831-UI-020 権限が無い人：閲覧のみ（依頼する側）は「�
   const mk = await mockOps(page);
   await openAt(page, viewer.token, PATH);
   await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "メニュー" }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveCount(0);
   expect(mk.count("settings")).toBe(0);
   const mk2 = await mockOps(page);
   mk2.set("settings", () => err(403, "FORBIDDEN"));
