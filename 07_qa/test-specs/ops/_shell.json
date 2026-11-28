@@ -1,0 +1,744 @@
+{
+ "screen": "_shell",
+ "from": "06_mockup/v1/v1-today.html",
+ "regions": {
+  "side": [
+   {
+    "key": "link:今日→today",
+    "kind": "link",
+    "label": "今日",
+    "target": "today",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:高本AI",
+    "kind": "button",
+    "label": "高本AI",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:高本AIと話す→clone-chat",
+    "kind": "link",
+    "label": "高本AIと話す",
+    "target": "clone-chat",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI社員の動き→ai-activity",
+    "kind": "link",
+    "label": "AI社員の動き",
+    "target": "ai-activity",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:高本AIとAI社員のやりとり→clone-thread",
+    "kind": "link",
+    "label": "高本AIとAI社員のやりとり",
+    "target": "clone-thread",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:高本AIの記憶→clone-memory",
+    "kind": "link",
+    "label": "高本AIの記憶",
+    "target": "clone-memory",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:仕事",
+    "kind": "button",
+    "label": "仕事",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:承認待ち→approvals",
+    "kind": "link",
+    "label": "承認待ち",
+    "target": "approvals",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:タスク→tasks",
+    "kind": "link",
+    "label": "タスク",
+    "target": "tasks",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:台帳→records",
+    "kind": "link",
+    "label": "台帳",
+    "target": "records",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:自分の目標→my-progress",
+    "kind": "link",
+    "label": "自分の目標",
+    "target": "my-progress",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:目標",
+    "kind": "button",
+    "label": "目標",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:目標→goals",
+    "kind": "link",
+    "label": "目標",
+    "target": "goals",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:目標の配分→goal-allocation",
+    "kind": "link",
+    "label": "目標の配分",
+    "target": "goal-allocation",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:目標を改訂する→goal-edit",
+    "kind": "link",
+    "label": "目標を改訂する",
+    "target": "goal-edit",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:ふりかえり→review",
+    "kind": "link",
+    "label": "ふりかえり",
+    "target": "review",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:仮説と施策→hypotheses",
+    "kind": "link",
+    "label": "仮説と施策",
+    "target": "hypotheses",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:会社モデル",
+    "kind": "button",
+    "label": "会社モデル",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:会社モデル→company-model",
+    "kind": "link",
+    "label": "会社モデル",
+    "target": "company-model",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:担当業務→duties",
+    "kind": "link",
+    "label": "担当業務",
+    "target": "duties",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI社員→ai-staff",
+    "kind": "link",
+    "label": "AI社員",
+    "target": "ai-staff",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:台帳の形→ledger-def",
+    "kind": "link",
+    "label": "台帳の形",
+    "target": "ledger-def",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:メンバー→members",
+    "kind": "link",
+    "label": "メンバー",
+    "target": "members",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:メンバーの1人→member-detail",
+    "kind": "link",
+    "label": "メンバーの1人",
+    "target": "member-detail",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:ルール→policies",
+    "kind": "link",
+    "label": "ルール",
+    "target": "policies",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:設定と記録",
+    "kind": "button",
+    "label": "設定と記録",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:自分のアカウント→account",
+    "kind": "link",
+    "label": "自分のアカウント",
+    "target": "account",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:会社の設定→company-settings",
+    "kind": "link",
+    "label": "会社の設定",
+    "target": "company-settings",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:お知らせと通知→notices",
+    "kind": "link",
+    "label": "お知らせと通知",
+    "target": "notices",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:問い合わせ→inquiry",
+    "kind": "link",
+    "label": "問い合わせ",
+    "target": "inquiry",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:プランと請求→billing",
+    "kind": "link",
+    "label": "プランと請求",
+    "target": "billing",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:取り込み→import",
+    "kind": "link",
+    "label": "取り込み",
+    "target": "import",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:外部サービスの連携→services",
+    "kind": "link",
+    "label": "外部サービスの連携",
+    "target": "services",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:自分のPCをつなぐ→bridge-setup",
+    "kind": "link",
+    "label": "自分のPCをつなぐ",
+    "target": "bridge-setup",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:ログイン情報を預ける→credentials",
+    "kind": "link",
+    "label": "ログイン情報を預ける",
+    "target": "credentials",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:覚え直させる→automation-repair",
+    "kind": "link",
+    "label": "覚え直させる",
+    "target": "automation-repair",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:証跡→audit",
+    "kind": "link",
+    "label": "証跡",
+    "target": "audit",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:この製品でできること・できないこと→security-brief",
+    "kind": "link",
+    "label": "この製品でできること・できないこと",
+    "target": "security-brief",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:持ち出す→export",
+    "kind": "link",
+    "label": "持ち出す",
+    "target": "export",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:退会する→account-close",
+    "kind": "link",
+    "label": "退会する",
+    "target": "account-close",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   }
+  ],
+  "aipanel": [
+   {
+    "key": "link:新しく話す（新しい会話）→clone-chat",
+    "kind": "link",
+    "label": "新しく話す（新しい会話）",
+    "target": "clone-chat",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:会話モードで開く（一覧から前の会話へ）→clone-chat",
+    "kind": "link",
+    "label": "会話モードで開く（一覧から前の会話へ）",
+    "target": "clone-chat",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:閉じる",
+    "kind": "button",
+    "label": "閉じる",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:差し戻しの経緯",
+    "kind": "button",
+    "label": "差し戻しの経緯",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI社員の動き→ai-activity",
+    "kind": "link",
+    "label": "AI社員の動き",
+    "target": "ai-activity",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:話すへ→onboard-interview",
+    "kind": "link",
+    "label": "話すへ",
+    "target": "onboard-interview",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": [
+     "PS1"
+    ]
+   },
+   {
+    "key": "button:あとで",
+    "kind": "button",
+    "label": "あとで",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": [
+     "PS1"
+    ]
+   },
+   {
+    "key": "toggle:この会話の動き（誰が何をしたか）",
+    "kind": "toggle",
+    "label": "この会話の動き（誰が何をしたか）",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:動きを全部見る →→ai-activity",
+    "kind": "link",
+    "label": "動きを全部見る →",
+    "target": "ai-activity",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:この画面：今日を外す",
+    "kind": "button",
+    "label": "この画面：今日を外す",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "textarea:自分のAIに書く",
+    "kind": "textarea",
+    "label": "自分のAIに書く",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:資料・画像を付ける",
+    "kind": "button",
+    "label": "資料・画像を付ける",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:声で入力",
+    "kind": "button",
+    "label": "声で入力",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:毎回聞く",
+    "kind": "button",
+    "label": "毎回聞く",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:使うもの 3",
+    "kind": "button",
+    "label": "使うもの 3",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:Opus 5.5",
+    "kind": "button",
+    "label": "Opus 5.5",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:中",
+    "kind": "button",
+    "label": "中",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "button:送る",
+    "kind": "button",
+    "label": "送る",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   }
+  ],
+  "tabbar": [
+   {
+    "key": "link:4今日→today",
+    "kind": "link",
+    "label": "4今日",
+    "target": "today",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:高本AIと話す→clone-chat",
+    "kind": "link",
+    "label": "高本AIと話す",
+    "target": "clone-chat",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI社員の動き→ai-activity",
+    "kind": "link",
+    "label": "AI社員の動き",
+    "target": "ai-activity",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:1高本AIとAI社員のやりとり→clone-thread",
+    "kind": "link",
+    "label": "1高本AIとAI社員のやりとり",
+    "target": "clone-thread",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:メニュー",
+    "kind": "link",
+    "label": "メニュー",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   }
+  ],
+  "head": [
+   {
+    "key": "button:高本AI1",
+    "kind": "button",
+    "label": "高本AI1",
+    "target": null,
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:AI は止まっています→automation-repair",
+    "kind": "link",
+    "label": "AI は止まっています",
+    "target": "automation-repair",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   },
+   {
+    "key": "link:PC をつなぐと話せます→bridge-setup",
+    "kind": "link",
+    "label": "PC をつなぐと話せます",
+    "target": "bridge-setup",
+    "states": [
+     "共通"
+    ],
+    "roles": [],
+    "ps": []
+   }
+  ]
+ }
+}
