@@ -1,0 +1,467 @@
+{
+ "screen": "onboard-interview",
+ "mock": "06_mockup/v1/v1-onboard-interview.html",
+ "state_labels": {
+  "nb": "Bridge 未接続",
+  "n": "途中",
+  "0": "最初",
+  "f": "資料を読ませる",
+  "stp": "止まりました"
+ },
+ "ops": [
+  {
+   "key": "link:1. PCをつなぐ→bridge-setup",
+   "kind": "link",
+   "label": "1. PCをつなぐ",
+   "target": "bridge-setup",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:2. 話す→onboard-interview",
+   "kind": "link",
+   "label": "2. 話す",
+   "target": "onboard-interview",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:3. たたき台→onboard-draft",
+   "kind": "link",
+   "label": "3. たたき台",
+   "target": "onboard-draft",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:4. ログイン情報→credentials",
+   "kind": "link",
+   "label": "4. ログイン情報",
+   "target": "credentials",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:5. テスト→onboard-testrun",
+   "kind": "link",
+   "label": "5. テスト",
+   "target": "onboard-testrun",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:6. 本番へ→onboard-golive",
+   "kind": "link",
+   "label": "6. 本番へ",
+   "target": "onboard-golive",
+   "states": [
+    "Bridge 未接続",
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0",
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:PCをつなぐ→bridge-setup",
+   "kind": "link",
+   "label": "PCをつなぐ",
+   "target": "bridge-setup",
+   "states": [
+    "Bridge 未接続"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:コピー",
+   "kind": "button",
+   "label": "コピー",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:タスクにする",
+   "kind": "button",
+   "label": "タスクにする",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:直して送り直す",
+   "kind": "button",
+   "label": "直して送り直す",
+   "target": null,
+   "states": [
+    "途中",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:営業のアプローチ",
+   "kind": "button",
+   "label": "営業のアプローチ",
+   "target": null,
+   "states": [
+    "途中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:見積・提案書",
+   "kind": "button",
+   "label": "見積・提案書",
+   "target": null,
+   "states": [
+    "途中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:請求と入金確認",
+   "kind": "button",
+   "label": "請求と入金確認",
+   "target": null,
+   "states": [
+    "途中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:進行の管理",
+   "kind": "button",
+   "label": "進行の管理",
+   "target": null,
+   "states": [
+    "途中"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:その他（自分で書く）",
+   "kind": "button",
+   "label": "その他（自分で書く）",
+   "target": null,
+   "states": [
+    "途中",
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "textarea:自分のAIに書く",
+   "kind": "textarea",
+   "label": "自分のAIに書く",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:資料・画像を付ける",
+   "kind": "button",
+   "label": "資料・画像を付ける",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:声で入力",
+   "kind": "button",
+   "label": "声で入力",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:毎回聞く",
+   "kind": "button",
+   "label": "毎回聞く",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:使うもの 3",
+   "kind": "button",
+   "label": "使うもの 3",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:Opus 5.5",
+   "kind": "button",
+   "label": "Opus 5.5",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:中",
+   "kind": "button",
+   "label": "中",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:送る",
+   "kind": "button",
+   "label": "送る",
+   "target": null,
+   "states": [
+    "途中",
+    "最初",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "link:次へ：3. たたき台→onboard-draft",
+   "kind": "link",
+   "label": "次へ：3. たたき台",
+   "target": "onboard-draft",
+   "states": [
+    "途中",
+    "資料を読ませる",
+    "止まりました"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:受託・制作",
+   "kind": "button",
+   "label": "受託・制作",
+   "target": null,
+   "states": [
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:店舗・サービス業",
+   "kind": "button",
+   "label": "店舗・サービス業",
+   "target": null,
+   "states": [
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:EC・物販",
+   "kind": "button",
+   "label": "EC・物販",
+   "target": null,
+   "states": [
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:その他",
+   "kind": "button",
+   "label": "その他",
+   "target": null,
+   "states": [
+    "最初"
+   ],
+   "roles": [],
+   "ps": [
+    "PS1"
+   ]
+  },
+  {
+   "key": "button:次の質問へ",
+   "kind": "button",
+   "label": "次の質問へ",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  }
+ ]
+}
