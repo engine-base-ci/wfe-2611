@@ -9,7 +9,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, type ReactNode } from "react";
-import { Button, ErrorState, Loading, NoAccess, PAGE_ERROR, Toaster, errorCodeOf, type Crumb } from "@/components/k";
+import { Button, ErrorState, Loading, NoAccess, PAGE_ERROR, errorCodeOf, type Crumb } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { BUILT_ROUTES } from "@/lib/built-routes";
@@ -62,11 +62,9 @@ export function MemberDetailPage({ id }: { id: string }) {
   else body = <AdminBody id={id} member={member} />;
 
   return (
-    <Toaster>
-      <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
-        {body}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
+      {body}
+    </TicketShell>
   );
 }
 
