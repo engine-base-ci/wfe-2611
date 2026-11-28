@@ -1,0 +1,64 @@
+{
+ "errors": [
+  {
+   "id": "E-ME-040",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "notify"
+   },
+   "when": "止められない出来事（新しい端末で入った）のベルかメールを切った",
+   "false_when": "ほかの出来事を切る・新しい端末で入ったを入れ直す",
+   "message": "この知らせは安全のため止められません",
+   "action": "そのままにする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › 知らせを開く",
+    "steps": [
+     "「新しい端末で入った」のメールを切る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.24",
+    "D-154.27"
+   ]
+  },
+  {
+   "id": "E-ME-041",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "notify-copy"
+   },
+   "when": "「ほかのワークスペースにも写す」の写し先に、写し元のワークスペースを選んだ",
+   "false_when": "写し元でないワークスペースだけを写し先に選ぶ",
+   "message": "写し先に、写し元は選べません",
+   "action": "写し先を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › 知らせを開く",
+    "steps": [
+     "写す小窓で、今のワークスペースを写し先にも選んで写す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.24",
+    "D-154.27"
+   ]
+  }
+ ]
+}
