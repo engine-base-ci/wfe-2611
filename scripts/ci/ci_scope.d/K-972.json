@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops/ws-dialogs*", "apps/web/features/F12/ops/tenant-dialogs.tsx", "apps/web/features/F12/ops/tenant-frame.tsx", "apps/web/features/F12/ops/ws-tenant-screen.tsx"], "tests": ["apps/web/tests/k/k972-ws-dialogs.spec.ts", "apps/web/test/k972-ws-dialogs-shape.test.ts", "apps/web/tests/k/k971-ws-tenant.spec.ts", "apps/web/tests/k/k941-f12-ops-parts.spec.ts"]}
+ ]
+}

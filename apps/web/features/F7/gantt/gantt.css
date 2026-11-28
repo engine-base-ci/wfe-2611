@@ -1,0 +1,331 @@
+/* ガント（段 8・F7・切る段の下絵）。値は正本のトークン（--k-*）だけを読む。生の色・大きさ・余白・影を書かない。
+   @media の区切りの幅だけは CSS の決まりで生の値。svar-gantt の見た目は、その変数（--wx-*）を正本のトークンに置き換えて合わせる。
+   箱・札・道具は features/F4/ticket-list（k-list-*）と同じトークンを借りる */
+
+/* ---- 箱・道具 ---- */
+.k-f7-gantt-card {
+  min-width: 0;
+  border: var(--k-c-list-panel-border);
+  border-radius: var(--k-c-list-panel-radius);
+  background: var(--k-c-list-panel-bg);
+}
+.k-f7-gantt-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-filter-gap);
+  padding: var(--k-c-list-filter-pad);
+  border-bottom: var(--k-c-list-filter-border-bottom);
+}
+.k-f7-gantt-nav {
+  display: inline-flex;
+  gap: var(--k-c-list-tools-gap);
+}
+.k-f7-gantt-seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: var(--k-c-list-search-seg-border);
+  border-radius: var(--k-c-list-search-seg-radius);
+}
+.k-f7-gantt-seg > button {
+  height: var(--k-c-list-search-seg-item-height);
+  padding: var(--k-c-list-search-seg-item-pad);
+  border: 0;
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-c-list-search-seg-item-text);
+  cursor: pointer;
+}
+.k-f7-gantt-seg > button[aria-pressed="true"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f7-gantt-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-list-search-field-gap);
+  color: var(--k-c-list-search-field-fg);
+  font-size: var(--k-c-list-search-field-text);
+}
+.k-f7-gantt-select {
+  box-sizing: border-box;
+  height: var(--k-c-list-search-input-height);
+  padding: var(--k-c-list-search-input-pad);
+  border: var(--k-c-list-search-input-border);
+  border-radius: var(--k-c-list-search-input-radius);
+  background: var(--k-c-list-search-input-bg);
+  color: var(--k-c-list-search-input-fg);
+  font: inherit;
+  font-size: var(--k-c-list-search-input-text);
+}
+.k-f7-gantt-anchor {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-list-tools-gap);
+  margin-left: auto;
+}
+.k-f7-gantt-anchor > .k-list-tool[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 凡例 ---- */
+.k-f7-gantt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-md);
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-list-filter-border-bottom);
+  list-style: none;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-gantt-legend > li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+}
+.k-f7-gantt-swatch {
+  width: var(--k-s-sm);
+  height: var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  background: var(--k-f7-tone);
+}
+.k-f7-gantt-swatch[data-late] {
+  background: transparent;
+  box-shadow: inset 0 0 0 calc(var(--k-s-xs) / 2) var(--k-error);
+}
+
+/* ---- 本体（svar-gantt）の置き場と、変数の置き換え ---- */
+/* 高さは目盛り 2 段（月と日）＋行 18 本（PC の 1 画面に 18 行ほど・それより多い行は本体の中で縦に送る・K-482） */
+.k-f7-gantt-body {
+  position: relative;
+  min-width: 0;
+  height: calc(var(--k-c-gantt-scale-height) * 2 + var(--k-c-gantt-row-height) * 18);
+  overflow: hidden;
+}
+/* 棒をつかんで期限を動かす以外のつまみは出さない（つながりを作る・進み具合。どちらも口に送らず保存されない・K-482） */
+.k-f7-gantt-body .wx-link,
+.k-f7-gantt-body .wx-progress-marker {
+  display: none;
+}
+.k-f7-gantt-body .wx-willow-theme {
+  height: 100%;
+  --wx-font-family: var(--k-font);
+  --wx-font-size: var(--k-text-body-sm);
+  --wx-font-size-sm: var(--k-text-label-md);
+  --wx-color-font: var(--k-on-surface);
+  --wx-color-primary: var(--k-primary);
+  --wx-color-danger: var(--k-error);
+  --wx-background: var(--k-card);
+  --wx-background-alt: var(--k-table-head);
+  --wx-background-hover: var(--k-select);
+  --wx-border-color: var(--k-line);
+  --wx-icon-color: var(--k-on-surface-variant);
+  --wx-table-border: var(--k-c-list-td-border-bottom);
+  --wx-table-header-background: var(--k-table-head);
+  --wx-gantt-border-color: var(--k-line);
+  --wx-gantt-border: var(--k-c-list-td-border-bottom);
+  --wx-gantt-bar-border-radius: var(--k-r-sm);
+  --wx-gantt-bar-shadow: none;
+  --wx-gantt-task-color: var(--k-d-indigo);
+  --wx-gantt-task-fill-color: var(--k-d-indigo);
+  --wx-gantt-task-border-color: var(--k-d-indigo);
+  --wx-gantt-summary-color: var(--k-primary);
+  --wx-gantt-summary-fill-color: var(--k-primary);
+  --wx-gantt-summary-border-color: var(--k-primary);
+  --wx-gantt-milestone-color: var(--k-st-warning);
+  --wx-gantt-select-color: var(--k-select);
+  --wx-gantt-holiday-background: var(--k-table-head);
+  --wx-gantt-holiday-color: var(--k-neutral);
+  --wx-grid-header-font-color: var(--k-on-surface-variant);
+  --wx-grid-header-text-transform: none;
+  --wx-grid-body-font-color: var(--k-on-surface);
+  --wx-grid-body-row-border: var(--k-c-list-td-border-bottom);
+  --wx-timescale-font-color: var(--k-on-surface-variant);
+  --wx-timescale-border: var(--k-c-list-td-border-bottom);
+}
+.k-f7-gantt-loading {
+  padding: var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+/* 今日の列（キャンバス Gantt：今日の日付が赤の札。ここでは列を淡く） */
+.k-f7-gantt-body .k-f7-gantt-today {
+  background: var(--k-primary-soft);
+}
+
+/* ---- 棒：外側は透明にして、中身（k-f7-gantt-bar）が状態の色を塗る ---- */
+.k-f7-gantt-body .wx-bar.wx-task {
+  border-color: transparent;
+  background: transparent;
+}
+.k-f7-gantt-bar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 var(--k-s-sm);
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--k-f7-tone);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  white-space: nowrap;
+}
+.k-f7-gantt-bar[data-kind="parent"] {
+  padding: 0;
+  background: none;
+}
+.k-f7-gantt-bar[data-late] {
+  box-shadow: inset 0 0 0 calc(var(--k-s-xs) / 2) var(--k-error);
+}
+.k-f7-gantt-bar[data-done] {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+
+/* ---- 節目の旗：ひし形は出さず、旗の字を日の位置から ---- */
+.k-f7-gantt-body .wx-bar.wx-milestone .wx-content {
+  display: none;
+}
+/* 旗の字の置き場（svar の .wx-text-out の置き方を自前の名前で写した：棒の上に重ね、押せない。左は日の位置から） */
+.k-f7-gantt-flag-label {
+  position: absolute;
+  left: 0;
+  display: block;
+  padding: 0 calc(var(--k-s-xs) / 2);
+  line-height: normal;
+  color: var(--wx-color-font);
+  pointer-events: none;
+}
+.k-f7-gantt-flag {
+  color: var(--k-st-warning);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  white-space: nowrap;
+}
+
+/* ---- 左の表の状態の札・詰まりの印 ---- */
+.k-f7-gantt-stage {
+  display: inline-block;
+  padding: var(--k-c-list-tag-pad);
+  border-radius: var(--k-c-list-tag-radius);
+  background: var(--k-f7-tone);
+  color: var(--k-on-primary);
+  font-size: var(--k-c-list-tag-text);
+  font-weight: var(--k-c-list-tag-fw);
+  white-space: nowrap;
+}
+.k-f7-gantt-stuck {
+  padding: var(--k-c-list-tag-pad);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-c-list-tag-radius);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-c-list-tag-text);
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 保留を指したときの出し方 ---- */
+.k-f7-gantt-hint {
+  padding: var(--k-s-md);
+  border-top: var(--k-c-list-filter-border-bottom);
+}
+.k-f7-gantt-hold {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-md);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-surface);
+}
+.k-f7-gantt-hold-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f7-gantt-hold-head .k-f7-gantt-stuck {
+  margin-left: auto;
+}
+.k-f7-gantt-hold-body {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+}
+.k-f7-gantt-hold-body dt {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-gantt-hold-body dd {
+  margin: 0;
+}
+
+/* ---- 期限を動かす小窓 ---- */
+.k-f7-gantt-move-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f7-gantt-move-parent {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-gantt-move-parent[data-fits="true"] {
+  color: var(--k-st-success);
+}
+.k-f7-gantt-move-parent[data-fits="false"] {
+  color: var(--k-error);
+}
+.k-f7-gantt-move-follow {
+  display: grid;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-surface);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-gantt-move-follow[aria-disabled="true"],
+.k-f7-gantt-move-check[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-f7-gantt-move-checks {
+  display: grid;
+  gap: var(--k-s-sm);
+}
+.k-f7-gantt-move-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+}
+.k-f7-gantt-move-check > span > .k-list-dim {
+  display: block;
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- スマホはガントを出さない（案の一言だけ） ---- */
+.k-f7-gantt-phone-note {
+  display: none;
+  margin: 0;
+  padding: var(--k-s-lg) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  text-align: center;
+}
+@media (max-width: 767px) {
+  .k-f7-gantt-tools,
+  .k-f7-gantt-legend,
+  .k-f7-gantt-body,
+  .k-f7-gantt-hint {
+    display: none;
+  }
+  .k-f7-gantt-phone-note {
+    display: block;
+  }
+}
