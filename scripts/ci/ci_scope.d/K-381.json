@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["04_design/DESIGN-kaname.md", "04_design/gen_tokens.py", "scripts/ci/design_gate.py", "design-gate.json"], "tests": ["apps/web/tests/k/k381-popup-layer.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）"
+ }
+}
