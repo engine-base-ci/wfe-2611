@@ -86,6 +86,12 @@ const gets = (w: World) => w.calls.filter((c) => c.method === "GET" && c.path ==
 const send = (route: Route, r: Reply) =>
   route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
 
+// once の網・サーバーの失敗（5xx）は 1 回だけ当てる（使ったら消す。押し直しの 2 回目は普通の答え）。4xx（見られない・期限切れ）は続ける
+function takeOnce<K extends keyof World["once"]>(w: World, k: K): World["once"][K] {
+  const v = w.once[k];
+  if (v && !Array.isArray(v) && (v as { status: number }).status >= 500) delete w.once[k];
+  return v;
+}
 async function mockWorld(page: Page, w: World) {
   await page.route(/127\.0\.0\.1:38617/, (r) => r.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route, req) => {
@@ -122,7 +128,7 @@ async function mockWorld(page: Page, w: World) {
       await w.gate;
       return send(
         route,
-        w.once.get ??
+        takeOnce(w, "get") ??
           ok({
             ticket: {
               id: TID,
@@ -139,7 +145,7 @@ async function mockWorld(page: Page, w: World) {
     }
     if (method === "POST" && p === `/api/v1/portal/tickets/${TID}/messages`) {
       if (w.hold) return never();
-      const r = w.once.post ?? ok({ id: "c9" }, 201);
+      const r = takeOnce(w, "post") ?? ok({ id: "c9" }, 201);
       if (r.status === 201)
         w.messages = [
           ...w.messages,
@@ -182,7 +188,8 @@ for (const [mock, o] of [
           await mockWorld(page, world(o as Partial<World>));
           await page.goto(PATH);
           await expect(
-            page.locator("[data-portal-frame] main h1, [data-portal-frame] main [role='heading']").first(),
+            // 見られない形の見出しは h2（「この仕事は見られません」）。h1〜h2 のどれかが出たら描き終わり
+            page.locator("[data-portal-frame] main :is(h1, h2), [data-portal-frame] main [role='heading']").first(),
           ).toBeVisible();
         },
         {

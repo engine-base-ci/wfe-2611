@@ -4,7 +4,7 @@
 //   Toaster / notify / dismissNotify / useNotify … 小さな知らせ（コピーした・保存した・消した直後の「元に戻す」）。sonner（技術の選定 D-067）。
 //   読み上げに伝わる。Alt+T で知らせの束に移れ、閉じるボタンはいつも出す。sonner を直に読むのはこのファイルだけ（置き場の鍵・長さ・見た目の class を 1 か所に）
 import { Toaster as Sonner, toast } from "sonner";
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 
 export type CalloutTone = "info" | "warn" | "danger";
 export function Callout({
@@ -28,10 +28,15 @@ export function Callout({
 
 const TOASTER_ID = "k";
 
+/** 置き場の中にいるか（外枠 TicketShell も画面も Toaster で包むので、入れ子になったら内側は置き場を出さない。同じ id の置き場が 2 つあると知らせが 2 枚出る） */
+const InToaster = createContext(false);
+
 /** 小さな知らせの置き場。画面の木の上に 1 つ。前の画面の置き場（components/providers）とは名前で分ける */
 export function Toaster({ children }: { children: ReactNode }) {
+  const inside = useContext(InToaster);
+  if (inside) return <>{children}</>;
   return (
-    <>
+    <InToaster.Provider value>
       {children}
       <Sonner
         id={TOASTER_ID}
@@ -51,7 +56,7 @@ export function Toaster({ children }: { children: ReactNode }) {
           },
         }}
       />
-    </>
+    </InToaster.Provider>
   );
 }
 

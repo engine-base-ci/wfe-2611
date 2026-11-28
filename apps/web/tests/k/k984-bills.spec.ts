@@ -355,8 +355,8 @@ test.describe("K-984 守り", () => {
     await open(page, baseURL);
     const tpl = page.locator(".k-page-head").getByText("請求書の型", { exact: true });
     await expect(tpl).toBeVisible();
-    await expect(tpl).toHaveAttribute("aria-disabled", "true");
-    expect(await tpl.getAttribute("href")).toBeNull();
+    // K-1108 が入口を付けた（11_tickets/K-1108.md：押せる形になる。行き先は /ops/billing/template）
+    await expect(tpl).toHaveAttribute("href", "/ops/billing/template");
     await expect(page.locator('a[href^="/dev/"]')).toHaveCount(0);
   });
 
@@ -372,7 +372,7 @@ test.describe("K-984 守り", () => {
     });
     const m = await mockBills(page);
     await signInOps(page, local(baseURL), "/ops/billing", 1440);
-    await expect(page.getByText("見る権限がありません", { exact: true })).toBeVisible();
+    await expect(page.getByText("見る権限がありません", { exact: false })).toBeVisible(); // 字は NoAccess の「この画面を見る権限がありません。」（K-984・k971 と同じ見方）
     expect(m.calls.filter((c) => c.includes("/ops/invoices"))).toEqual([]);
   });
 

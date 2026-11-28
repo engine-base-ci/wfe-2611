@@ -6,6 +6,7 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { loginAs } from "../_lib/api";
 import { err, never, ok, pair, person, type Reply } from "./credentials-mock";
+import { shellReply } from "./shell-answer";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
 /** 答えの meta（一覧の limit・書けるグループ）を付けて返す（ok の 2 つ目は状態コードなので meta を渡せない） */
@@ -81,6 +82,9 @@ async function mockWorld(page: Page, w: World) {
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route, req) => {
     const p = new URL(req.url()).pathname;
     const method = req.method();
+    // 外枠の口 getShell（K-466）：外枠とグループの選び肢は同じ答えを読む（形の外れた答えは外枠が読めない扱い）
+    if (p === "/api/v1/shell")
+      return send(route, shellReply({ groups: SCOPES.map((g) => ({ ...g, writable: true, open_count: 0 })) }));
     if (p === "/api/v1/members") return send(route, okMeta(MEMBERS, { limit: 200 }));
     if (p === "/api/v1/scopes") return send(route, okMeta(SCOPES, { limit: 200, writable: ["g-eg", "g-jd"] }));
     if (!/^\/api\/v1\/client_requests/.test(p)) return send(route, ok([]));
@@ -262,7 +266,11 @@ test("K899-UI-008 PC が閉じていると「案を作る」は無く、口も�
 
 test("K899-UI-009 案は小窓の初期値に入る・手書きの題名と期限もそのまま入る", async ({ page }) => {
   await open(page, world());
-  await page.getByRole("button", { name: "チケットを作る", exact: true }).click();
+  await page
+    .locator("#k-main")
+    .getByRole("button", { name: "チケットを作る", exact: true })
+    .and(page.locator(":not(.k-nav-create):not(.k-tab-create)"))
+    .click(); // 外枠の左と下の同じ名前のボタンと分ける
   const d = page.getByRole("dialog", { name: "チケットを作る", exact: true });
   await expect(d.getByRole("textbox", { name: "題", exact: true })).toHaveValue(DRAFT.title);
   await expect(d.getByRole("textbox", { name: "期限", exact: true })).toHaveValue("12/26");
@@ -276,7 +284,11 @@ test("K899-UI-009 案は小窓の初期値に入る・手書きの題名と期�
   await page.goto(`/requests/${RID}`);
   await card(page).getByRole("textbox", { name: "題名", exact: true }).fill("手書きの題名");
   await card(page).getByRole("textbox", { name: "期限", exact: true }).fill("12/20");
-  await page.getByRole("button", { name: "チケットを作る", exact: true }).click();
+  await page
+    .locator("#k-main")
+    .getByRole("button", { name: "チケットを作る", exact: true })
+    .and(page.locator(":not(.k-nav-create):not(.k-tab-create)"))
+    .click(); // 外枠の左と下の同じ名前のボタンと分ける
   const d2 = page.getByRole("dialog", { name: "チケットを作る", exact: true });
   await expect(d2.getByRole("textbox", { name: "題", exact: true })).toHaveValue("手書きの題名");
   await expect(d2.getByRole("textbox", { name: "期限", exact: true })).toHaveValue("12/20");

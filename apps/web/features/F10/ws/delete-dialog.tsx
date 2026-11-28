@@ -2,7 +2,7 @@
 // ワークスペースを消す小窓（キャンバス EdDeleteWs）。消えるものを出す・名前を打って確かめる（書き出しは作らない・D-154.4）・本人確認・14 日は取り消せる。
 //   値を受け取って描くだけ（口は呼ばない）。名前が合うまで足の主ボタンは押せない
 //   K-832：口につなぐための任意の props（打った字・送る・やめる・処理中・誤り・消えるものの数・開くか）を足した。渡さない呼び方（下絵）は前の見た目のまま
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { Button, Callout, Dialog } from "@/components/k";
 import "@/features/F10/invite/invite.css";
 import "./ws.css";
@@ -43,6 +43,8 @@ export function DeleteWsDialog({
   counts = MOCK_COUNTS,
 }: DeleteWsDialogProps) {
   const matched = typed === name;
+  // 欄の名前は見出しの字だけ（「名前が合うと押せる」は説明）。label の中に説明があるので、名前と説明を id でつなぐ
+  const uid = useId();
   return (
     <Dialog
       open={open}
@@ -78,15 +80,21 @@ export function DeleteWsDialog({
         </ul>
         {notice ? <Callout tone="danger">{notice}</Callout> : null}
         <label className="k-field">
-          <span className="k-label">確かめのため、ワークスペースの名前を打ってください</span>
+          <span className="k-label" id={`${uid}-l`}>
+            確かめのため、ワークスペースの名前を打ってください
+          </span>
           <input
             className="k-input"
+            aria-labelledby={`${uid}-l`}
+            aria-describedby={`${uid}-d`}
             value={typed}
             placeholder={name}
             {...(onTyped ? { onChange: (e) => onTyped(e.target.value) } : { readOnly: true })}
             aria-invalid={error || (typed !== "" && !matched) ? true : undefined}
           />
-          <span className="k-inv-sub">{matched ? "名前が合いました" : "名前が合うと押せる"}</span>
+          <span className="k-inv-sub" id={`${uid}-d`}>
+            {matched ? "名前が合いました" : "名前が合うと押せる"}
+          </span>
           {error ? (
             <span className="k-err" role="alert">
               {error}

@@ -75,7 +75,7 @@ test.describe("K-1015 書く画面の見た目", () => {
       async (page) => {
         await fillMaint(page);
         await page.getByRole("button", { name: "11/03 10:00 に出す", exact: true }).click();
-        await expect(page.getByRole("dialog")).toBeVisible();
+        await expect(page.getByRole("alertdialog")).toBeVisible();
       },
     ],
   ];
@@ -212,7 +212,7 @@ test.describe("K-1015 書く", () => {
     const m = await open(page, baseURL);
     await fillMaint(page);
     await page.getByRole("button", { name: "11/03 10:00 に出す", exact: true }).click();
-    const dlg = page.getByRole("dialog");
+    const dlg = page.getByRole("alertdialog");
     await expect(dlg).toContainText("48 か所・延べ 312 人");
     await expect(dlg).toContainText("管理者にメールも届く");
     await dlg.getByRole("button", { name: "出す", exact: true }).click();
@@ -230,7 +230,7 @@ test.describe("K-1015 書く", () => {
     await page.getByLabel("題", { exact: true }).fill("リリース");
     await page.getByLabel("本文", { exact: true }).fill("本文");
     await page.getByRole("button", { name: "出す", exact: true }).click();
-    const dlg = page.getByRole("dialog");
+    const dlg = page.getByRole("alertdialog");
     await expect(dlg).toBeVisible();
     await expect(dlg).not.toContainText("メール");
     await dlg.getByRole("button", { name: "やめる", exact: true }).click();
@@ -251,8 +251,8 @@ test.describe("K-1015 書く", () => {
     m.on.create = () => ({ status: 201, body: { data: maintOf() } });
     m.on.publish = () => ({ status: 409, body: { error: "conflict", code: "E-OPS-010" } });
     await page.getByRole("button", { name: "11/03 10:00 に出す", exact: true }).click();
-    await page.getByRole("dialog").getByRole("button", { name: "出す", exact: true }).click();
-    await expect(page.getByRole("dialog").locator("[role='alert']")).toContainText(
+    await page.getByRole("alertdialog").getByRole("button", { name: "出す", exact: true }).click();
+    await expect(page.getByRole("alertdialog").locator("[role='alert']")).toContainText(
       "メンテの時間を書いてから出してください",
     );
   });

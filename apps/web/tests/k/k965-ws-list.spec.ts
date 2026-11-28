@@ -8,6 +8,7 @@ import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 import { FORBIDDEN, overflowX } from "./f12-mock-kit";
 import { local, mockOps, signInOps, shellOf, WS_A, type OpsMock } from "./ops-mock";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const BOX = ["width", "height", "x", "y", "background-color", "border-top-color", "border-top-left-radius"];
 const TEXT = ["font-size", "font-weight", "color", "line-height", "texts"];
@@ -118,7 +119,7 @@ test.describe("K-965 一覧の動き", () => {
     await page.waitForURL(/\/ops\?view=attention$/);
     await expect(chip(page, "気にかける")).toHaveAttribute("aria-pressed", "true");
     await expect(rowsShown(page)).toHaveCount(3);
-    expect(lists(m).at(-1)).toBe(`GET ${LIST}?view=attention`);
+    await expect.poll(() => lists(m).at(-1)).toBe(`GET ${LIST}?view=attention`);
     await chip(page, "すべて").click();
     await page.waitForURL(/\/ops$/);
     await expect(rowsShown(page)).toHaveCount(8);
@@ -131,25 +132,25 @@ test.describe("K-965 一覧の動き", () => {
     const m = await open(page, baseURL);
     await chip(page, "チーム").click();
     await page.waitForURL(/\/ops\?plan=team$/);
-    expect(lists(m).at(-1)).toBe(`GET ${LIST}?plan=team`);
+    await expect.poll(() => lists(m).at(-1)).toBe(`GET ${LIST}?plan=team`);
     await chip(page, "チーム").click();
     await page.waitForURL(/\/ops$/);
   });
 
   test("K965-UI-007 探す：欄に書いて Enter で ?q=…・一覧の口に q。前後の空白は落とす", async ({ page, baseURL }) => {
     const m = await open(page, baseURL);
-    const box = page.getByLabel("探す", { exact: true });
+    const box = page.getByLabel(/^探す\*?$/);
     await box.fill("  ミナト  ");
     await box.press("Enter");
     await page.waitForURL((u) => u.searchParams.get("q") === "ミナト");
-    expect(m.listQueries.at(-1)?.get("q")).toBe("ミナト");
+    await expect.poll(() => m.listQueries.at(-1)?.get("q")).toBe("ミナト");
   });
 
   test("K965-UI-008 並びを「人数」に：?sort=members で一覧の口に sort=members", async ({ page, baseURL }) => {
     const m = await open(page, baseURL);
-    await page.getByLabel("並び", { exact: true }).selectOption({ label: "人数" });
+    await page.getByLabel(/^並び\*?$/).selectOption({ label: "人数" });
     await page.waitForURL(/\/ops\?sort=members$/);
-    expect(m.listQueries.at(-1)?.get("sort")).toBe("members");
+    await expect.poll(() => m.listQueries.at(-1)?.get("sort")).toBe("members");
   });
 
   test("K965-UI-009 URL を直に開く（?view=stopped&q=ハル）：止めている が押した印・探す欄に「ハル」・一覧の口は両方の値で 1 回だけ", async ({
@@ -158,7 +159,7 @@ test.describe("K-965 一覧の動き", () => {
   }) => {
     const m = await open(page, baseURL, `/ops?view=stopped&q=${encodeURIComponent("ハル")}`);
     await expect(chip(page, "止めている")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByLabel("探す", { exact: true })).toHaveValue("ハル");
+    await expect(page.getByLabel(/^探す\*?$/)).toHaveValue("ハル");
     expect(lists(m).length).toBe(1);
     expect([m.listQueries[0]!.get("view"), m.listQueries[0]!.get("q")]).toEqual(["stopped", "ハル"]);
   });
@@ -173,7 +174,7 @@ test.describe("K-965 一覧の動き", () => {
     await page.getByRole("button", { name: "探す欄を空にする", exact: true }).click();
     await page.waitForURL(/\/ops$/);
     await expect(rowsShown(page)).toHaveCount(8);
-    expect(lists(m).at(-1)).toBe(`GET ${LIST}`);
+    await expect.poll(() => lists(m).at(-1)).toBe(`GET ${LIST}`);
   });
 
   test("K965-UI-017 絞り込みだけで 0 件（?view=stopped&plan=team&sort=members）：「この絞り込みに合うワークスペースはありません」と［絞り込みを『すべて』に戻す］。押すと sort だけ残して一覧の口を呼び直す", async ({
@@ -189,7 +190,7 @@ test.describe("K-965 一覧の動き", () => {
     await page.getByRole("button", { name: "絞り込みを『すべて』に戻す", exact: true }).click();
     await page.waitForURL(/\/ops\?sort=members$/);
     await expect(rowsShown(page)).toHaveCount(8);
-    expect(lists(m).at(-1)).toBe(`GET ${LIST}?sort=members`);
+    await expect.poll(() => lists(m).at(-1)).toBe(`GET ${LIST}?sort=members`);
   });
 
   // sort だけ在る URL は絞り込みではない（前提：探す語も絞り込みも無い）。「URL に何か在れば絞り込みの 0 件」と読む実装はここで赤になる

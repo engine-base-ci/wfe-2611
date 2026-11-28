@@ -148,7 +148,9 @@ async function signedIn(page: Page, base: string, width = 1440) {
   await openLogin(page, base, width);
   await page.getByRole("button", { name: "パスキーで入る", exact: true }).click();
   await page.waitForURL(/\/ops$/);
-  await expect(page.locator(MENU).getByText("ワークスペース", { exact: true })).toBeVisible();
+  // メニューの字が見えるのは 1024 以上だけ（768〜1023 はレールで字を隠す・767 以下は引き出し・外枠 shell.css と ops-shell.css）
+  const label = page.locator(MENU).getByText("ワークスペース", { exact: true });
+  await (width >= 1024 ? expect(label).toBeVisible() : expect(label).toBeAttached());
 }
 
 test.describe("K-946 運営のログイン", () => {
@@ -205,7 +207,7 @@ test.describe("K-946 運営のログイン", () => {
     await authenticator(page);
     await openLogin(page, local(baseURL));
     await page.getByRole("button", { name: "パスキーで入る", exact: true }).click();
-    await expect(page.getByRole("alert")).toHaveText(MSG.failed);
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText(MSG.failed);
     await expect(page).toHaveURL(/\/ops\/login/);
     await expect(page.getByRole("button", { name: "パスキーで入る", exact: true })).toBeEnabled();
   });
@@ -220,7 +222,7 @@ test.describe("K-946 運営のログイン", () => {
     });
     await openLogin(page, local(baseURL));
     await page.getByRole("button", { name: "パスキーで入る", exact: true }).click();
-    await expect(page.getByRole("alert")).toHaveText(MSG.failed);
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText(MSG.failed);
     expect(m.calls.filter((c) => /verify-authentication/.test(c)).length).toBe(0);
   });
 

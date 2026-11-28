@@ -71,8 +71,11 @@ export const WS_PAIRS: FidelityPair[] = [
   pair("dialog-btn", ".k-dialog button[data-variant]", ["x", "y", ...CTRL]),
 ];
 
-const settle = (p: Page) =>
-  p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
+// 本文の編集欄（K-567 の DocEditor）は遅く読む。読み込みの間の枠（aria-busy）と読み終えた欄は高さが違うので、読み終えてから比べる
+const settle = async (p: Page) => {
+  await expect(p.locator('.k-f4d-ed2[aria-busy="true"]')).toHaveCount(0);
+  await p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
+};
 
 /** モックの状態 id と、本番の画面をその状態にする手順を受け、同じ幅で値を比べた行を返す */
 export async function matchWs(

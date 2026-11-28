@@ -79,6 +79,12 @@ const count = (w: World, p: string) => w.calls.filter((c) => c === p).length;
 const send = (route: Route, r: Reply) =>
   route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
 
+// once の網・サーバーの失敗（5xx）は 1 回だけ当てる（使ったら消す。押し直しの 2 回目は普通の答え）。4xx（見られない・期限切れ）は続ける
+function takeOnce<K extends keyof World["once"]>(w: World, k: K): World["once"][K] {
+  const v = w.once[k];
+  if (v && !Array.isArray(v) && (v as { status: number }).status >= 500) delete w.once[k];
+  return v;
+}
 async function mockWorld(page: Page, w: World) {
   await page.route(/127\.0\.0\.1:38617/, (r) => r.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route, req) => {
@@ -100,7 +106,7 @@ async function mockWorld(page: Page, w: World) {
       await w.gate;
       return send(
         route,
-        w.once.home ??
+        takeOnce(w, "home") ??
           ok({
             group_name: GROUP,
             tenant_name: w.tenant,
@@ -113,7 +119,7 @@ async function mockWorld(page: Page, w: World) {
     }
     if (p === "/api/v1/portal/notices") {
       w.calls.push(p);
-      return send(route, w.once.notices ?? ok(w.notices));
+      return send(route, takeOnce(w, "notices") ?? ok(w.notices));
     }
     return send(route, ok([]));
   });

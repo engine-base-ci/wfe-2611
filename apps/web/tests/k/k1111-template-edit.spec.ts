@@ -205,10 +205,10 @@ test.describe("K-1111 直す", () => {
     const { m } = await open(page, baseURL);
     await btn(page, "QA を直す").click();
     const d = page.getByRole("dialog");
-    await expect(d.getByLabel("名前", { exact: true })).toHaveValue("QA");
+    await expect(d.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("QA");
     await expect(d.getByRole("radiogroup", { name: "色", exact: true })).toBeVisible();
     await expect(d.getByText("本文のひな形", { exact: true })).toBeVisible();
-    await d.getByLabel("名前", { exact: true }).fill("品質確認");
+    await d.getByRole("textbox", { name: "名前", exact: true }).fill("品質確認");
     await d.getByRole("button", { name: "保存する", exact: true }).click();
     await expect(row(page, "品質確認")).toContainText("直した");
     await expect(page.locator(".k-op-card").filter({ hasText: "今の版 v3 との差" })).toContainText(
@@ -224,7 +224,7 @@ test.describe("K-1111 直す", () => {
     await open(page, baseURL);
     await btn(page, "種別を足す").click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("名前", { exact: true }).fill("見積");
+    await d.getByRole("textbox", { name: "名前", exact: true }).fill("見積");
     await d.getByRole("radio", { name: "葡萄", exact: true }).check();
     await d.getByRole("button", { name: "保存する", exact: true }).click();
     await expect(row(page, "見積")).toContainText("足した");
@@ -358,7 +358,7 @@ test.describe("K-1111 出す", () => {
     m.on.release = () => replies.shift() ?? "abort";
     for (let i = 0; i < 2; i++) {
       await btn(page, "v4 を出す").click();
-      await expect(page.getByRole("alert").first()).toBeVisible();
+      await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toBeVisible();
       await expect(row(page, "見積")).toContainText("足した");
     }
     expect(m.releases).toHaveLength(2);
@@ -385,14 +385,14 @@ test.describe("K-1111 部・守り", () => {
     await open(page, baseURL, { id: STATE.id });
     await btn(page, "未着手 を直す").click();
     let d = page.getByRole("dialog");
-    await expect(d.getByLabel("名前", { exact: true })).toHaveValue("未着手");
+    await expect(d.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("未着手");
     await expect(d.getByRole("radiogroup", { name: "色", exact: true })).toBeVisible();
     await expect(d.getByText("本文のひな形", { exact: true })).toHaveCount(0);
     await d.getByRole("button", { name: "やめる", exact: true }).click();
     await page.goto(`${local(baseURL)}${NEW(FIELD.id)}`);
     await btn(page, "項目を足す").click();
     d = page.getByRole("dialog");
-    for (const l of ["名前", "種類", "説明"]) await expect(d.getByLabel(l, { exact: true })).toBeVisible();
+    for (const l of ["名前", "種類", "説明"]) await expect(d.getByLabel(new RegExp(`^${l}\\*?$`))).toBeVisible(); // 必須の印 * は見出しの字に入る
     await expect(d.getByRole("checkbox", { name: "必須", exact: true })).toBeVisible();
   });
 
@@ -459,10 +459,10 @@ test.describe("K-1111 部・守り", () => {
     await expect(row(page, "種別5")).toContainText("そのまま");
     await btn(page, "種別を足す").click();
     const d = page.getByRole("dialog");
-    await d.getByLabel("名前", { exact: true }).fill("見積");
+    await d.getByRole("textbox", { name: "名前", exact: true }).fill("見積");
     await d.getByRole("button", { name: "保存する", exact: true }).click();
     await expect(d).toContainText("種別は 10 まで");
-    await expect(d.getByLabel("名前", { exact: true })).toHaveValue("見積");
+    await expect(d.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("見積");
     await expect(page.locator(".k-f12-rt tr, .k-f12-rt-card").filter({ hasText: "見積" })).toHaveCount(0);
     expect(writes(m)).toEqual([]);
   });

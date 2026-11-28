@@ -12,7 +12,8 @@ import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
 const PATH = "/account";
 const KYOTO = "京蟻システム株式会社";
-const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true });
+// 小窓が開いている間は後ろの区画が読み上げから外れる（aria-hidden）。小窓を開いたまま後ろの行を見る試験（「行は残る」）のため hidden も探す
+const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true, includeHidden: true });
 const rows = (page: Page) => card(page, "入っているワークスペース").locator(".k-set-row");
 const kyoto = (page: Page) => rows(page).filter({ hasText: KYOTO });
 const dlg = (page: Page) => page.getByRole("dialog", { name: `${KYOTO} から抜ける`, exact: true });
@@ -93,6 +94,8 @@ for (const [id, who] of Object.entries(STATES)) {
           await mockOps(page, who ? { me: who } : {});
           await openAt(page, owner.token, PATH, w);
           await open(page);
+          // ［抜ける］を押すと行まで下に動く。小窓は画面に貼り付くので、下絵（上の端）と同じく頁の上の端で位置を読む
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         { pairs: ME_PAIRS, base: MOCK_BASE, blur: false },
       );

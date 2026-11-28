@@ -39,7 +39,8 @@ const BOX = `${EDIT} [role="alert"]`;
 const SAVED_RE = /自動で保存しました（\d\d:\d\d）/;
 
 const body = (p: Page) => p.getByRole("textbox", { name: "本文", exact: true });
-const titleF = (p: Page) => p.getByLabel("題名", { exact: true });
+// 項目名に必須の印（*・aria-hidden）が付くので、名前は読み上げの名前（aria-label）で探す
+const titleF = (p: Page) => p.getByRole("textbox", { name: "題名", exact: true });
 const descF = (p: Page) => p.getByLabel("1 行の説明", { exact: true });
 const done = (p: Page) => p.getByRole("button", { name: "書き終える", exact: true });
 const quit = (p: Page) => p.getByRole("button", { name: "やめる", exact: true });
