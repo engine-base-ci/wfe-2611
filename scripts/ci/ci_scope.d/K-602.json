@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-sort-fields.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {}
+}

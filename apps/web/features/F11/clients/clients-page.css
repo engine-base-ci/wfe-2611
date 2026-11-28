@@ -1,0 +1,41 @@
+/* 段 12（F11）の共通の字と欄（補足の字・PC が要る所・選ぶ欄・小窓の並べ方・読めない箱）。値は正本のトークン（--k-*）だけ */
+.k-f11c-sub-text {
+  display: block;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body-sm);
+}
+
+.k-f11c-needpc {
+  color: var(--k-on-surface-variant);
+  cursor: not-allowed;
+  opacity: var(--k-c-button-disabled-opacity);
+}
+
+.k-f11c-menu {
+  min-width: calc(var(--k-s-2xl) * 2);
+}
+
+.k-f11c-fieldset {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.k-f11c-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+}
+
+/* ---- 読めない・権限が無いの箱 ---- */
+.k-f11c-page {
+  min-width: 0;
+  flex: 1 1 0;
+}
+.k-f11c-msg-page {
+  padding: var(--k-s-lg);
+}

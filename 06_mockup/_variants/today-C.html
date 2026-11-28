@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>今日 C ── 選んで裁く（三画面）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+.app{grid-template-columns:220px minmax(320px,440px) minmax(0,1fr)}
+.queue{border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column}
+.queue .top{padding:12px 16px}
+.queue .list{padding:4px 8px 20px}
+.queue .row{grid-template-columns:20px minmax(0,1fr);padding:8px 10px;align-items:start}
+.queue .row .t{white-space:normal;line-height:1.45}
+.queue .row .sub{font-size:12px;color:var(--fg3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.queue .grp{padding:14px 10px 4px}
+.detail{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh;position:sticky;top:0}
+.detail .card{padding:22px 30px;overflow:auto}
+.detail .kind{font-size:12px;font-weight:600;color:var(--warn);letter-spacing:.06em}
+.detail h2{font-size:22px;font-weight:700;letter-spacing:-.01em;margin:4px 0 14px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:13px;margin-bottom:16px}
+.kv dt{color:var(--fg3)}
+.mail{border:1px solid var(--line);border-radius:var(--r2);padding:16px 18px;font-size:14px;line-height:1.85;white-space:pre-wrap;background:var(--bg2)}
+.ainote{margin-top:14px;border-left:3px solid var(--ai);padding:8px 12px;font-size:13px;color:var(--fg2);background:var(--ai-bg);border-radius:0 var(--r) var(--r) 0}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.chat2{border-top:1px solid var(--line);display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:260px;max-height:42vh}
+.chat2 .h{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--line2)}
+.chat2 .h .av{width:22px;height:22px;border-radius:50%;background:var(--ai-bg);color:var(--ai);display:grid;place-items:center}
+.chat2 .b{overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.7}
+.chat2 .m.u{align-self:flex-end;background:var(--bg3);border-radius:12px 12px 2px 12px;padding:7px 12px}
+.chat2 .m.a .who{font-size:11.5px;color:var(--ai);font-weight:600}
+.chat2 .m.a .ops{display:flex;gap:8px;margin-top:6px}
+.chat2 .m.a .ops button{font-size:12.5px;padding:4px 10px;border:1px solid var(--line);border-radius:999px}
+.chat2 .c{padding:10px 16px;border-top:1px solid var(--line2)}
+.chat2 .c .box{display:flex;gap:8px;align-items:flex-end;border:1px solid var(--line);border-radius:var(--r2);padding:8px 10px}
+.chat2 .c textarea{flex:1;border:0;resize:none;font:inherit;font-size:13.5px;min-height:22px;outline:none}
+</style></head><body>
+<div class="app">
+ <nav class="nav">
+  <div class="ws"><span class="mk">K</span>ENGINE BASE</div>
+  <a class="on" href="#">今日<span class="n w">4</span></a><a href="#">高本AIと話す</a><a href="#">タスク<span class="n">3</span></a><a href="#">承認待ち<span class="n w">3</span></a><a href="#">目標</a><a href="#">台帳</a>
+  <div class="sec">会社</div><a href="#">AI社員の動き</a><a href="#">担当業務</a><a href="#">会社モデル</a>
+  <div class="me"><span class="av">高</span>高本 雅人</div>
+ </nav>
+ <section class="queue">
+  <div class="top"><h1>今日</h1><span class="date">9/10（水）· 6 件</span><span class="sp"></span><span class="hint"><span><kbd>j</kbd><kbd>k</kbd></span><span><kbd>a</kbd> 承認</span><span><kbd>e</kbd> 終わり</span></span></div>
+  <div class="list">
+   <div class="grp">押してほしいもの<span class="n">3</span></div>
+   <div class="rows">
+    <div class="row sel"><span class="st warn"><i></i></span><div><div class="t">セイコー 山田様へ 追いメール</div><div class="sub"><span>営業社員</span><span class="late">先方の期限 明後日</span></div></div></div>
+    <div class="row"><span class="st warn"><i></i></span><div><div class="t">京蟻 請求書 1,826,000円（税込）</div><div class="sub"><span>経理社員</span><span>14 時間</span></div></div></div>
+    <div class="row"><span class="st warn"><i></i></span><div><div class="t">X 週次の実績投稿</div><div class="sub"><span>営業社員</span><span>1 日</span></div></div></div>
+   </div>
+   <div class="grp">今日やる分<span class="n">残り 3 · 見込み 1h35 / 使える 4h00</span></div>
+   <div class="rows">
+    <div class="row"><input type="checkbox"><div><div class="t">セイコー様へ提案の一次返信を取りに行く</div><div class="sub"><span>山田様に電話（11:00 の商談前）</span><span class="mono">30分</span><span class="late">今日</span></div></div></div>
+    <div class="row"><input type="checkbox"><div><div class="t">京蟻 契約書案を送る</div><div class="sub"><span>押印欄だけ足す</span><span class="mono">45分</span><span>明日</span></div></div></div>
+    <div class="row"><input type="checkbox"><div><div class="t">ScoliVio 会津データ受領の段取り確認</div><div class="sub"><span class="ai-name">次の一手が空 · 高本AIが下書きします</span><span class="mono">20分</span></div></div></div>
+    <div class="row"><span class="st run"><i></i></span><div><div class="t">発注ナビ 新着の確認（今日ぶん）</div><div class="sub"><span class="ai-name">AI営業社員 · 実行中</span><span>41 → 53</span></div></div></div>
+    <div class="row done"><span class="st ok"><i></i></span><div><div class="t">週次の売上を台帳から締める</div><div class="sub"><span>実 11分</span></div></div></div>
+   </div>
+   <div class="grp">夕方<span class="n">18:00 に高本AIが残りを振り分け</span></div>
+  </div>
+ </section>
+ <section class="detail">
+  <div class="card">
+   <div class="kind">承認待ち · メール送信 · 高本AI確認済み</div>
+   <h2>セイコー 山田様へ 追いメール</h2>
+   <dl class="kv"><dt>宛先</dt><dd>山田 様 &lt;yamada@seiko-example.co.jp&gt;</dd><dt>件名</dt><dd>ご提案の件（食品パッケージ画像編集SaaS）</dd><dt>作った人</dt><dd>営業社員</dd><dt>経路</dt><dd>Google Workspace（正規API）</dd><dt>期限</dt><dd class="late">先方の検討期限 9/12</dd></dl>
+   <div class="mail">山田様
+
+先日はお時間をいただきありがとうございました。
+ご提案した画像編集SaaSについて、ご検討状況はいかがでしょうか。
+ご不明な点や追加でご説明が必要な点があれば、いつでもお声がけください。
+
+高本</div>
+   <div class="ainote">前回のやり取りで山田様はメールを好まれていたので、電話ではなくメールにしました。文面はあなたの過去の追いメール 3 通の書き方に寄せています。金額や期日には触れていません。</div>
+   <div class="acts"><button class="btn p">承認して送る</button><button class="btn">直してから送る</button><button class="btn ghost">止める（AI社員に戻す）</button><button class="btn ghost">誰が何をしたか</button></div>
+  </div>
+  <div class="chat2">
+   <div class="h"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/></svg></span>高本AI<span class="muted" style="font-weight:400;margin-left:auto;font-size:12px">この件について</span></div>
+   <div class="b">
+    <div class="m a"><div class="who">申し送り · 7:30</div><p>夜のうちに 3 体が動きました。<b>まずセイコー様です。</b>先方の検討期限が明後日なので、今日中に押してもらえると間に合います。京蟻の請求書は私が差し戻して直させました。</p></div>
+    <div class="m u">もう少し柔らかくして</div>
+    <div class="m a"><div class="who">高本AI</div><p>直させました。「ご検討状況はいかがでしょうか」を「もしお時間があれば」に。上の本文に反映しています。</p><div class="ops"><button>この文面で承認</button><button>元に戻す</button></div></div>
+   </div>
+   <div class="c"><div class="box"><textarea rows="1" placeholder="この件について頼む・聞く"></textarea><button class="btn p sm">送る</button></div></div>
+  </div>
+ </section>
+</div>
+</body></html>
