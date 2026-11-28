@@ -24,7 +24,7 @@ import { Band, Callout, Confirm, Loading, NoAccess, useNotify } from "@/componen
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { me } from "@/lib/auth/ext";
-import { useMyRoles } from "@/lib/auth/role";
+import { RequireRole, useMyRoles } from "@/lib/auth/role";
 import { StepUp } from "@/features/F1/security/step-up";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { isEmail, MEMBERS_KEY, SCREEN, splitEmails, useMembers } from "./use-members";
@@ -199,7 +199,9 @@ function Tabs({ guest, members, guests }: { guest: boolean; members: number; gue
 /** 見られる人かを先に見る（見られない人には並びの口を呼ばない） */
 export function MembersPage() {
   const router = useRouter();
-  const { roles } = useMyRoles();
+  const { roles, isGuest } = useMyRoles();
+  // ゲスト（requester）は社内の外枠に入れず「いまの権限では開けません」と戻る先 /portal（K-877・RequireRole の形）
+  if (isGuest) return <RequireRole screen="members">{null}</RequireRole>;
   if (roles === undefined)
     return (
       <TicketShell screen="members" crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}>
