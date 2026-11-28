@@ -1,0 +1,34 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-inbox-reply.ts",
+    "apps/api/src/features/F12/ops/inbox-reply.ts",
+    "packages/db/migrations/20261128011500_ops_inbox_reply.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-inbox-reply.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/F12/ops-inbox-reply.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-inbox-reply.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_inquiries_id_replies.test.ts",
+    "apps/api/test/generated/post_ops_inquiries_id_notes.test.ts"
+   ]
+  }
+ ]
+}

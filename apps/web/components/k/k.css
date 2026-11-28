@@ -1,0 +1,1026 @@
+/* 新しい画面の部品の見た目（K-24・D-128.78）。値は全部 --k-*（04_design/gen_tokens.py --web が正本から作る）。
+   ここに生の色・文字の大きさ・角丸を書かない（apps/web/test/k-raw-values.test.ts が見張る）。
+   操作の状態（hover / focus / active / disabled）は部品ごとに同じ書き方をする */
+
+.k-root {
+  /* 入力欄・スクロールの棒もテーマに合わせる（前の画面には効かせない：:root でなく .k-root に置く） */
+  color-scheme: var(--k-scheme);
+  background: var(--k-page);
+  color: var(--k-on-surface);
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-root :focus-visible {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 2px;
+}
+/* クラスの無い見出しを本文（13px・400）に戻さない（K-217）。強さ 0 なので、クラスつきの決まり（.k-section h2 など）に必ず負ける。
+   tailwind の土台（preflight）は @layer base の中で、ここは層の外なので勝つ。入口の枠（.k-auth）は外す（規約の文面の見出しを変えない） */
+:where(.k-root:not(.k-auth)) :where(h1, h2, h3) {
+  font-weight: var(--k-fw-page-title);
+}
+:where(.k-root:not(.k-auth)) :where(h1) {
+  font-size: var(--k-text-page-title);
+  line-height: var(--k-lh-page-title);
+}
+:where(.k-root:not(.k-auth)) :where(h2) {
+  font-size: var(--k-text-section-title);
+  line-height: var(--k-lh-section-title);
+}
+:where(.k-root:not(.k-auth)) :where(h3) {
+  font-size: var(--k-text-body);
+}
+
+/* ---- ボタン（正本 components.button-*）。1 画面に主ボタンは 1 つ ----
+   大きさは 2 つ（K-218・キャンバス）：作業の画面（既定・高さ 32）と入口の画面（data-size="lg"・高さ 44）。表の中の小さな操作は sm（28）。
+   高さは min-height で持つ（帯の中のボタンは page.css が 30 に上書きする・K-217） */
+.k-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-button-primary-height);
+  padding: var(--k-c-button-primary-pad);
+  border: 0;
+  border-radius: var(--k-c-button-primary-radius);
+  font: inherit;
+  font-size: var(--k-c-button-primary-text);
+  line-height: var(--k-c-button-primary-lh);
+  font-weight: var(--k-c-button-primary-fw);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+.k-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.k-btn:disabled,
+.k-btn[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-btn[data-variant="primary"] {
+  background: var(--k-c-button-primary-bg);
+  color: var(--k-c-button-primary-fg);
+}
+.k-btn[data-variant="primary"]:hover:not(:disabled) {
+  background: var(--k-primary-hover);
+}
+.k-btn[data-variant="secondary"] {
+  background: var(--k-c-button-secondary-bg);
+  color: var(--k-c-button-secondary-fg);
+}
+.k-btn[data-variant="outlined"] {
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  border: var(--k-c-button-outlined-border);
+  font-weight: var(--k-c-button-outlined-fw);
+  padding: var(--k-c-button-outlined-pad);
+}
+.k-btn[data-variant="inverted"] {
+  background: var(--k-c-button-inverted-bg);
+  color: var(--k-c-button-inverted-fg);
+}
+.k-btn[data-variant="ghost"] {
+  background: transparent;
+  color: var(--k-on-surface-variant);
+}
+.k-btn[data-variant="danger"] {
+  background: transparent;
+  color: var(--k-error);
+  border: 1.5px solid var(--k-error);
+}
+/* 大きさは色の変種より後に置く（線のある従ボタンも sm・lg の余白になる） */
+.k-btn[data-size="sm"] {
+  min-height: 28px;
+  padding: var(--k-s-xs) var(--k-s-sm);
+  font-size: var(--k-text-label-md);
+}
+.k-btn[data-size="lg"] {
+  min-height: var(--k-c-button-primary-lg-height);
+  padding: var(--k-c-button-primary-lg-pad);
+  border-radius: var(--k-c-button-primary-lg-radius);
+  font-size: var(--k-c-button-primary-lg-text);
+  line-height: var(--k-c-button-primary-lg-lh);
+  font-weight: var(--k-c-button-primary-lg-fw);
+}
+.k-btn[data-variant="secondary"]:hover:not(:disabled),
+.k-btn[data-variant="outlined"]:hover:not(:disabled),
+.k-btn[data-variant="inverted"]:hover:not(:disabled),
+.k-btn[data-variant="ghost"]:hover:not(:disabled),
+.k-btn[data-variant="danger"]:hover:not(:disabled) {
+  background-image: linear-gradient(
+    color-mix(in srgb, currentColor 10%, transparent),
+    color-mix(in srgb, currentColor 10%, transparent)
+  );
+}
+.k-spin {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--k-r-full);
+  animation: k-spin 0.8s linear infinite;
+}
+@keyframes k-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- 入力（正本 components.input）---- */
+.k-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-field-gap);
+  min-width: 0;
+}
+.k-field[data-size="lg"] {
+  gap: var(--k-c-field-lg-gap);
+}
+/* 項目名（K-218）：作業の画面は太さを付けない灰の字、入口は 500 の黒い字 */
+.k-label {
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+  font-weight: var(--k-c-label-fw);
+  color: var(--k-c-label-fg);
+}
+.k-field[data-size="lg"] .k-label {
+  font-size: var(--k-c-label-lg-text);
+  font-weight: var(--k-c-label-lg-fw);
+  color: var(--k-c-label-lg-fg);
+}
+/* 項目名の横の括弧書きの補足（K-255・キャンバス AuthSignup）。項目名に続けて同じ行に流し、折り返しは箱の左から（キャンバスどおり・どの幅でも） */
+.k-label-row {
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+}
+.k-label-row .k-hint {
+  display: inline;
+}
+.k-hint {
+  margin: 0 0 0 var(--k-s-xs);
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+  font-weight: var(--k-fw-body);
+  color: var(--k-on-surface-variant);
+}
+.k-req {
+  color: var(--k-error);
+  margin-left: var(--k-s-xs);
+}
+.k-desc {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-err {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-error);
+}
+/* 入力欄（K-218・キャンバスの Create・StModal）：白地・line-strong の線・13px。入口（.k-field[data-size="lg"]）は高さ 42・14px */
+.k-input,
+.k-select-trigger {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--k-c-input-pad);
+  background: var(--k-c-input-bg);
+  color: var(--k-c-input-fg);
+  border: var(--k-c-input-border);
+  border-radius: var(--k-c-input-radius);
+  font: inherit;
+  font-size: var(--k-c-input-text);
+  line-height: var(--k-c-input-lh);
+}
+.k-field[data-size="lg"] .k-input {
+  min-height: var(--k-c-input-lg-height);
+  padding: var(--k-c-input-lg-pad);
+  background: var(--k-c-input-lg-bg);
+  border: var(--k-c-input-lg-border);
+  border-radius: var(--k-c-input-lg-radius);
+  font-size: var(--k-c-input-lg-text);
+  line-height: var(--k-c-input-lg-lh);
+}
+/* 幅 767 以下は入力の字を 16px（16px 未満だと iPhone が入力のたびに拡大する・D-144.7） */
+@media (max-width: 767px) {
+  .k-input,
+  .k-select-trigger,
+  .k-field[data-size="lg"] .k-input {
+    font-size: var(--k-text-input);
+  }
+}
+.k-input::placeholder {
+  color: var(--k-on-surface-variant);
+}
+.k-input:hover,
+.k-select-trigger:hover {
+  border-color: var(--k-on-surface-variant);
+}
+.k-input[data-invalid],
+.k-input[aria-invalid="true"] {
+  border-color: var(--k-error);
+}
+.k-input:disabled {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* パスワードの見る・隠す（D-087）。ボタンは欄の右の中に置き、的は 32px（24px 以上） */
+.k-pw {
+  position: relative;
+}
+.k-pw .k-input {
+  padding-right: calc(var(--k-s-md) + 32px);
+}
+.k-pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--k-s-xs);
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-pw-toggle:hover {
+  color: var(--k-on-surface);
+  background: var(--k-surface-variant);
+}
+textarea.k-input {
+  resize: vertical;
+  min-height: 96px;
+}
+
+/* ---- 選ぶ（Base UI Select）---- */
+.k-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  cursor: pointer;
+  text-align: left;
+}
+/* 開いた箱（メニュー・選ぶ欄）の置き場の重なりの順は正本の popup-layer（K-381）。
+   層の並び：本文の帯 1・上の帯 20・右のパネル 30・下のタブ 40・引き出し 45・前の外枠 50〜60・成果物の板 61 ＜ 浮く箱 ＜ 小窓の幕 80 */
+.k-popup-layer {
+  z-index: var(--k-c-popup-layer-z);
+}
+/* 選ぶ欄の一覧は、小窓（.k-dialog・81）の中の選ぶ欄でも小窓より上に出す（小窓の裏に隠れて押せなかった・K-372）。メニューは小窓の中では開かない */
+.k-popup-layer:has(> .k-select-field) {
+  z-index: var(--k-c-popup-layer-field-z);
+}
+.k-select-popup {
+  min-width: var(--anchor-width);
+  max-height: var(--available-height);
+  overflow-y: auto;
+  padding: var(--k-s-xs);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-field);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 14%, transparent);
+  outline: 0;
+}
+.k-select-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: 36px;
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  font-size: var(--k-text-body-md);
+  cursor: default;
+  outline: 0;
+}
+.k-select-item[data-highlighted] {
+  background: var(--k-select);
+}
+.k-select-item[data-selected] {
+  font-weight: var(--k-fw-h3);
+}
+.k-select-check {
+  width: 1em;
+  color: var(--k-primary);
+}
+.k-select-check::before {
+  content: "✓" / "";
+}
+
+/* ---- 表 ---- */
+.k-table-wrap {
+  /* 表の中の読み上げ用の字（sr-only・位置は absolute）が箱の外へ逃げて、狭い幅でページを広げないよう、箱を位置の基準にする（K-964） */
+  position: relative;
+  overflow-x: auto;
+  background: var(--k-card);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-card);
+}
+.k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--k-text-body);
+}
+.k-table caption {
+  text-align: left;
+  padding: var(--k-s-sm) var(--k-s-md);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-table th {
+  background: var(--k-table-head);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h3);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-table th,
+.k-table td {
+  height: 36px;
+  padding: 0 var(--k-s-md);
+  border-top: 1px solid var(--k-line-soft);
+}
+.k-table tbody tr:hover > td {
+  background: var(--k-select);
+}
+.k-table td[data-num],
+.k-table th[data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 札（状態の淡い面と濃い文字の対・D-052）---- */
+.k-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: var(--k-c-chat-chip-pad);
+  border-radius: var(--k-r-full);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  line-height: var(--k-lh-body-sm);
+  white-space: nowrap;
+}
+.k-badge[data-tone="neutral"] {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+}
+.k-badge[data-tone="success"] {
+  background: var(--k-st-success-container);
+  color: var(--k-st-on-success-container);
+}
+.k-badge[data-tone="warning"] {
+  background: var(--k-st-warning-container);
+  color: var(--k-st-on-warning-container);
+}
+.k-badge[data-tone="danger"] {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+.k-badge[data-tone="progress"] {
+  background: var(--k-st-progress-container);
+  color: var(--k-st-on-progress-container);
+}
+.k-badge[data-tone="ai"] {
+  background: var(--k-tertiary-container);
+  color: var(--k-on-tertiary-container);
+}
+
+/* ---- タブ（Base UI Tabs）---- */
+.k-tabs-list {
+  position: relative;
+  display: flex;
+  gap: var(--k-s-xs);
+  border-bottom: 1px solid var(--k-line);
+  overflow-x: auto;
+}
+.k-tab {
+  flex: none;
+  min-height: 36px;
+  padding: 0 var(--k-s-md);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-body-md);
+  cursor: pointer;
+}
+.k-tab:hover {
+  color: var(--k-on-surface);
+}
+.k-tab[data-selected] {
+  color: var(--k-primary);
+  border-bottom-color: var(--k-primary);
+  font-weight: var(--k-fw-h3);
+}
+.k-tab[data-disabled] {
+  opacity: var(--k-c-tab-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-tab-panel {
+  padding-top: var(--k-s-md);
+  outline: 0;
+}
+
+/* ---- 知らせ（帯：正本 components.callout-*）---- */
+.k-callout {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  padding: var(--k-c-callout-info-pad);
+  border-radius: var(--k-c-callout-info-radius);
+  font-size: var(--k-text-body);
+}
+.k-callout[data-tone="info"] {
+  background: var(--k-c-callout-info-bg);
+  color: var(--k-c-callout-info-fg);
+}
+.k-callout[data-tone="warn"] {
+  background: var(--k-c-callout-warn-bg);
+  color: var(--k-c-callout-warn-fg);
+}
+.k-callout[data-tone="danger"] {
+  background: var(--k-c-callout-danger-bg);
+  color: var(--k-c-callout-danger-fg);
+}
+.k-callout-title {
+  font-weight: var(--k-fw-h3);
+}
+
+/* ---- 知らせ（小さな知らせ：sonner・D-067）---- */
+.k-toast {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-on-surface);
+  color: var(--k-surface);
+  border-radius: var(--k-r-field);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 20%, transparent);
+  font-size: var(--k-text-body);
+}
+.k-toast-error {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+/* 知らせのボタン（「元に戻す」など・notify の action）。知らせの地の上の字の色をそのまま使う（濃い地に紺の字は読めない） */
+.k-toast-action {
+  flex: none;
+  margin-left: auto;
+  min-height: var(--k-c-list-target-height);
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-label-md);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.k-toast-close {
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+/* ---- ダイアログ（Base UI Dialog）---- */
+.k-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--k-on-surface) 40%, transparent);
+}
+.k-dialog {
+  /* 置き場（K-229・キャンバス）：上から 60px・左右の真ん中・左右は画面の端から lg。幅は data-size（form 420・confirm 380） */
+  position: fixed;
+  z-index: 81;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: var(--k-c-dialog-margin);
+  width: var(--k-c-dialog-form-width);
+  max-width: calc(100vw - 2 * var(--k-s-lg));
+  max-height: calc(100dvh - 2 * var(--k-s-xl));
+  /* 頭と足（ボタン）はいつも見え、中身だけがスクロールする（段 4 の下絵の代表の直し 2026-11-18：どの小窓でもボタンは固定） */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0;
+  background: var(--k-c-dialog-bg);
+  color: var(--k-on-surface);
+  /* 小窓は .k-root の外（body の直下）に出るので、字の大きさと行の高さを本文に戻す */
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  /* 縁は箱の外の輪（大きさに足さない）と影（正本の dialog の shadow。暗いテーマは輪だけ） */
+  border: 0;
+  box-shadow: var(--k-c-dialog-shadow);
+  border-radius: var(--k-c-dialog-radius);
+  outline: 0;
+}
+.k-dialog-head {
+  /* 頭（StModal）：題と右上の ×・下に線。本文と足は左右 18px */
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-dialog-head-pad);
+  border-bottom: var(--k-c-dialog-head-border-bottom);
+}
+.k-dialog-title {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--k-c-dialog-title-text);
+  line-height: var(--k-c-dialog-title-lh);
+  font-weight: var(--k-c-dialog-title-fw);
+}
+.k-dialog-close {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-dialog-close-width);
+  height: var(--k-c-dialog-close-height);
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-dialog-close:hover {
+  color: var(--k-on-surface);
+  background: var(--k-surface-variant);
+}
+.k-dialog[data-size="confirm"] {
+  width: var(--k-c-dialog-confirm-width);
+}
+/* PC をつなぐの小窓（K-230・EdPC）：幅 580。置き場・影・余白は型のまま。題の下に補足を置き、足のボタンは 30 */
+.k-dialog[data-size="connect"] {
+  width: var(--k-c-dialog-connect-width);
+}
+.k-dialog-titles {
+  min-width: 0;
+}
+.k-dialog-sub {
+  color: var(--k-c-dialog-sub-fg);
+  font-size: var(--k-c-dialog-sub-text);
+  line-height: var(--k-c-dialog-sub-lh);
+  font-weight: var(--k-c-dialog-sub-fw);
+}
+.k-dialog[data-size="connect"] .k-dialog-actions .k-btn {
+  min-height: var(--k-c-dialog-connect-button-height);
+}
+.k-dialog-body {
+  /* 中身だけがスクロールする（頭と足は固定） */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
+  padding: var(--k-c-dialog-body-pad);
+  min-width: 0;
+}
+.k-dialog-body:empty {
+  display: none;
+}
+.k-dialog-desc {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+}
+.k-dialog-actions {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-dialog-actions-pad);
+  border-top: var(--k-c-dialog-actions-border-top);
+}
+/* 足のボタンは高さ 34（StModal）。ふつうの大きさ（md）のボタンだけ（sm・lg は替えない） */
+.k-dialog-actions .k-btn[data-size="md"] {
+  min-height: var(--k-c-dialog-button-height);
+}
+/* 確かめの小窓の説明（赤い箱と説明の文をまとめて読み上げにつなぐ）。段の間は本文と同じ */
+.k-dialog-describe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
+  min-width: 0;
+}
+/* 取り消せない注意の赤い箱（StApproveModal） */
+.k-dialog-caution {
+  margin: 0;
+  padding: var(--k-c-dialog-caution-pad);
+  background: var(--k-c-dialog-caution-bg);
+  color: var(--k-c-dialog-caution-fg);
+  border: var(--k-c-dialog-caution-border);
+  border-radius: var(--k-c-dialog-caution-radius);
+  overflow-wrap: anywhere;
+}
+.k-dialog-caution p {
+  margin: 0;
+}
+/* 頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
+.k-dialog-target {
+  margin: 0;
+  color: var(--k-c-dialog-target-fg);
+  font-size: var(--k-c-dialog-target-text);
+  line-height: var(--k-c-dialog-target-lh);
+  overflow-wrap: anywhere;
+}
+/* 小窓の中の項目の枠（fieldset：実施事項・次は誰が直すか） */
+.k-dialog-group {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: var(--k-c-dialog-group-pad);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+}
+.k-dialog-group legend {
+  padding: 0 var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+}
+/* 項目の多い小窓の段（StReturnModal：段の間 12px）。項目名は 12px・行の高さ 1.6 */
+.k-dialog-stack {
+  display: grid;
+  gap: var(--k-c-dialog-stack-gap);
+  min-width: 0;
+}
+.k-dialog-stack .k-label {
+  line-height: var(--k-c-dialog-check-lh);
+}
+.k-dialog-stack select.k-input {
+  min-height: var(--k-c-dialog-select-height);
+}
+.k-dialog-stack textarea.k-input {
+  min-height: var(--k-c-dialog-textarea-height);
+}
+/* 小窓の中のチェック・選ぶ印の行（12px・印と字の間 6px） */
+.k-dialog-check {
+  display: flex;
+  gap: var(--k-c-dialog-check-gap);
+  align-items: flex-start;
+  min-width: 0;
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+}
+.k-dialog-check input {
+  flex: none;
+  accent-color: var(--k-primary); /* 余白はブラウザの既定のまま（キャンバスと同じ・左 4px） */
+}
+/* 押せない欄（正本の input-disabled：input そのものを薄く） */
+.k-dialog input:disabled,
+.k-dialog select:disabled,
+.k-dialog [aria-disabled="true"]:is(input, select, button[role="combobox"]) {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 必須の印（StReturnModal「必須」） */
+.k-field-required {
+  color: var(--k-c-field-required-fg);
+  font-size: var(--k-c-field-required-text);
+}
+
+/* ---- 見た目の切り替え（システム・明るい・暗い・D-128.55）---- */
+.k-theme {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--k-surface-variant);
+  border-radius: var(--k-r-full);
+  border: 0;
+  margin: 0;
+}
+.k-theme label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-full);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-theme input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.k-theme label:has(input:checked) {
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-h3);
+}
+.k-theme label:has(input:focus-visible) {
+  outline: 2px solid var(--k-primary);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-spin {
+    animation-duration: 2.4s;
+  }
+}
+
+/* ---- 4 つの状態とエラーの 1 件（K-26）---- */
+.k-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-lg) 0;
+  max-width: 560px;
+}
+/* 空のとき（K-218・OnHome ほか）：白地の点線の箱を本文の幅いっぱいに、中は中央寄せ */
+.k-state[data-state="empty"] {
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--k-c-state-empty-gap);
+  max-width: none;
+  padding: var(--k-c-state-empty-pad);
+  background: var(--k-c-state-empty-bg);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-c-state-empty-radius);
+  text-align: center;
+}
+.k-state[data-state="empty"] .k-state-actions {
+  justify-content: center;
+}
+.k-state[data-state="loading"] {
+  flex-direction: row;
+  align-items: center;
+  min-height: 24px;
+  color: var(--k-on-surface-variant);
+}
+.k-state-title {
+  margin: 0;
+  font-size: var(--k-text-h2);
+  line-height: var(--k-lh-h2);
+  font-weight: var(--k-fw-h2);
+}
+.k-state-body {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-md);
+  line-height: var(--k-lh-body-md);
+}
+.k-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-sm);
+}
+.k-state-actions a.k-btn {
+  text-decoration: none;
+}
+.k-state-code {
+  margin: var(--k-s-sm) 0 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-error-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--k-s-lg) var(--k-s-md);
+  box-sizing: border-box;
+}
+.k-error-card {
+  width: min(560px, 100%);
+  padding: var(--k-s-lg);
+  background: var(--k-card);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-lg);
+  box-sizing: border-box;
+}
+
+/* ---- 本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create） ----
+   道具はどれもまだ使えない（押せない形・正本の使えない状態の薄さ）。最小の幅（doc-tool-min）は字の短い道具の幅（「見出し」などは字に合わせて広がる） */
+.k-doc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-doc-toolbar-gap);
+  padding: var(--k-c-doc-toolbar-pad);
+  background: var(--k-c-doc-toolbar-bg);
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-doc-tools button {
+  min-width: var(--k-c-doc-tool-min-width);
+  height: var(--k-c-doc-tool-height);
+  padding: var(--k-c-doc-tool-pad);
+  border: 0;
+  border-radius: var(--k-r-sm);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.k-doc-tools button[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-doc-tools-note {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 詳細の帯（正本 components.band-*・キャンバス TicketDetail の main article [role="status"]・K-227）。
+   1 行目に題と要約の塊（幅いっぱい）、次の行に右寄せのボタンの並び。tone の色は承認待ち（approval）。ほかの tone は K-228 が足す ---- */
+.k-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-band-approval-gap);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-band[data-tone="approval"] {
+  padding: var(--k-c-band-approval-pad);
+  border: var(--k-c-band-approval-border);
+  border-radius: var(--k-c-band-approval-radius);
+  background: var(--k-c-band-approval-bg);
+  color: var(--k-c-band-approval-fg);
+}
+.k-band-main {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+.k-band .k-band-title {
+  margin: 0;
+  font-size: var(--k-c-band-title-text);
+  line-height: var(--k-c-band-title-lh);
+  font-weight: var(--k-c-band-title-fw);
+  color: inherit;
+}
+.k-band-sub,
+.k-band-line {
+  font-size: var(--k-c-band-sub-text);
+  line-height: var(--k-c-band-sub-lh);
+  font-weight: var(--k-c-band-sub-fw);
+}
+.k-band-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-band-acts-gap);
+  margin-left: auto;
+}
+.k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-bg);
+  border: var(--k-c-band-button-border);
+}
+.k-band-caution {
+  margin: var(--k-c-band-caution-margin);
+  padding: var(--k-c-band-caution-pad);
+  border: var(--k-c-band-caution-border);
+  border-radius: var(--k-c-band-caution-radius);
+  background: var(--k-c-band-caution-bg);
+  color: var(--k-c-band-caution-fg);
+  font-size: var(--k-c-band-caution-text);
+  line-height: var(--k-c-band-caution-lh);
+  font-weight: var(--k-c-band-caution-fw);
+}
+.k-band-notice {
+  padding: var(--k-c-band-notice-pad);
+  border: var(--k-c-band-notice-border);
+  border-radius: var(--k-c-band-notice-radius);
+  background: var(--k-c-band-notice-bg);
+  color: var(--k-c-band-notice-fg);
+  font-size: var(--k-text-body);
+}
+.k-band-notice[data-tone="warn"] {
+  padding: var(--k-c-band-notice-warn-pad);
+  border: var(--k-c-band-notice-warn-border);
+  border-radius: var(--k-c-band-notice-warn-radius);
+  background: var(--k-c-band-notice-warn-bg);
+  color: var(--k-c-band-notice-warn-fg);
+}
+
+/* ---- 詳細の帯（2）（K-228・キャンバス StRunning・StFailed・StBefore・StConfirmDone・StDone・StDelegated）。
+   承認待ち（approval）のほかの tone は箱の寸法が band-state（余白 12px 14px・ボタン 30）。色は tone ごと ---- */
+.k-band:not([data-tone="approval"]) {
+  padding: var(--k-c-band-state-pad);
+  border-radius: var(--k-c-band-state-radius);
+  gap: var(--k-c-band-state-gap);
+}
+.k-band[data-tone="info"] {
+  border: var(--k-c-band-info-border);
+  background: var(--k-c-band-info-bg);
+  color: var(--k-c-band-info-fg);
+}
+.k-band[data-tone="danger"] {
+  border: var(--k-c-band-danger-border);
+  background: var(--k-c-band-danger-bg);
+  color: var(--k-c-band-danger-fg);
+}
+.k-band[data-tone="ok"] {
+  border: var(--k-c-band-ok-border);
+  background: var(--k-c-band-ok-bg);
+  color: var(--k-c-band-ok-fg);
+}
+.k-band[data-tone="wait"] {
+  border: var(--k-c-band-wait-border);
+  background: var(--k-c-band-wait-bg);
+  color: var(--k-c-band-wait-fg);
+}
+.k-band[data-tone="plain"] {
+  border: var(--k-c-band-plain-border);
+  background: var(--k-c-band-plain-bg);
+  color: var(--k-c-band-plain-fg);
+}
+/* 要約は 1 語の途中で折り返さない（キャンバスの word-break: keep-all）。理由の全文は .k-band-line で折り返す */
+.k-band-sub {
+  word-break: keep-all;
+}
+.k-band:not([data-tone="approval"]) .k-band-acts .k-btn {
+  min-height: var(--k-c-band-state-button-height);
+  padding: var(--k-c-band-state-button-pad);
+  border-radius: var(--k-c-band-state-button-radius);
+  font-size: var(--k-c-band-state-button-text);
+}
+.k-band[data-tone="info"] .k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-info-bg);
+  border: var(--k-c-band-button-info-border);
+}
+.k-band[data-tone="danger"] .k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-danger-bg);
+  border: var(--k-c-band-button-danger-border);
+}
+/* 作っている間の進みの 5 段（済＝緑の上線・今＝青の上線と濃い青の字・先＝灰の上線） */
+.k-run-steps {
+  display: flex;
+  gap: var(--k-c-run-steps-gap);
+  margin: var(--k-c-run-steps-margin);
+  padding: 0;
+  list-style: none;
+}
+.k-run-steps > li {
+  flex: 1 0 auto;
+  white-space: nowrap;
+  padding: var(--k-c-run-step-pad);
+  border-top: var(--k-c-run-step-border-top);
+  color: var(--k-c-run-step-fg);
+  font-size: var(--k-c-run-step-text);
+  line-height: var(--k-c-run-step-lh);
+  font-weight: var(--k-c-run-step-fw);
+}
+.k-run-steps > li[data-state="done"] {
+  border-top: var(--k-c-run-step-done-border-top);
+}
+.k-run-steps > li[data-state="now"] {
+  border-top: var(--k-c-run-step-now-border-top);
+  color: var(--k-c-run-step-now-fg);
+  font-weight: var(--k-c-run-step-now-fw);
+}
+/* 止まった（作る段）の確認の結果の表（キャンバス StFailed）：器は帯の箱と同じ左右。狭い幅では器の中で横に送る */
+.k-check-stack {
+  display: grid;
+  gap: var(--k-c-check-stack-gap);
+  min-width: 0;
+}
+.k-check-table {
+  min-width: 0;
+  overflow-x: auto;
+}
+.k-check-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-check-table th {
+  padding: var(--k-c-check-table-head-pad);
+  border-top: var(--k-c-check-table-head-border-top);
+  border-bottom: var(--k-c-check-table-head-border-bottom);
+  background: var(--k-c-check-table-head-bg);
+  color: var(--k-c-check-table-head-fg);
+  font-size: var(--k-c-check-table-head-text);
+  line-height: var(--k-c-check-table-head-lh);
+  font-weight: var(--k-c-check-table-head-fw);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-check-empty {
+  padding: var(--k-c-check-empty-pad);
+  color: var(--k-c-check-empty-fg);
+  font-size: var(--k-c-check-empty-text);
+  line-height: var(--k-c-check-empty-lh);
+}

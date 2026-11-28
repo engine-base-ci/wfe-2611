@@ -1,0 +1,95 @@
+/* 決めた履歴の板（K-751）。more.css から移した（承認待ちの本番の頁は more.css を読まない・統合の枝の直し 2026-11-28） */
+/* ---- 決めた履歴の板（K-751）：右から出る板。板の枠は k62-run-sheet を使い回す ---- */
+.k-more-hist {
+  display: grid;
+  align-content: start;
+  gap: var(--k-s-md);
+}
+.k62-run-sheet .k-more-hist-head .k62-run-chips {
+  padding: 0;
+  border-bottom: 0;
+}
+.k-more-hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  justify-content: space-between;
+  padding: var(--k-c-dialog-body-pad);
+  border-bottom: var(--k-c-dialog-head-border-bottom);
+}
+.k-more-day {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-hist-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-more-hist-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0;
+  border-bottom: var(--k-c-approvals-td-border-bottom);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-more-hist-row time {
+  font-variant-numeric: tabular-nums;
+  color: var(--k-on-surface-variant);
+}
+.k-more-hist-title {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-more-hist-title b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-more-hist-sub {
+  color: var(--k-on-surface-variant);
+}
+.k-more-hist-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+@media (max-width: 767px) {
+  /* ---- 決めた履歴：全画面の板の中を 1 件 1 枚のカードに ---- */
+  .k-more-hist-head {
+    flex-wrap: nowrap;
+    gap: var(--k-s-sm);
+  }
+  .k62-run-sheet .k-more-hist-head .k62-run-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .k-more-hist-head .k-ap-sort {
+    flex: none;
+    white-space: nowrap;
+  }
+  .k-more-hist-list {
+    gap: var(--k-s-sm);
+  }
+  .k-more-hist-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--k-s-sm) var(--k-s-md);
+    border: var(--k-c-card-border);
+    border-radius: var(--k-r-card);
+    background: var(--k-card);
+  }
+  .k-more-hist-row > time {
+    grid-column: 1 / -1;
+  }
+}
