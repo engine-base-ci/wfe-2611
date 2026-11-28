@@ -1,0 +1,278 @@
+{
+ "screen": "ops-tenant",
+ "mock": "06_mockup/v1/v1-ops-tenant.html",
+ "state_labels": {},
+ "ops": [
+  {
+   "key": "button:返答する",
+   "kind": "button",
+   "label": "返答する",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:入金を記録する",
+   "kind": "button",
+   "label": "入金を記録する",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:連絡した記録を残す",
+   "kind": "button",
+   "label": "連絡した記録を残す",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認する",
+   "kind": "button",
+   "label": "承認する",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:却下",
+   "kind": "button",
+   "label": "却下",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:開く",
+   "kind": "button",
+   "label": "開く",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:返答（発注ナビの取り込みが止まっている）",
+   "kind": "textarea",
+   "label": "返答（発注ナビの取り込みが止まっている）",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:返答を送る",
+   "kind": "button",
+   "label": "返答を送る",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:定型の対処を差し込む",
+   "kind": "button",
+   "label": "定型の対処を差し込む",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:版を送る",
+   "kind": "button",
+   "label": "版を送る",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認して公開する",
+   "kind": "button",
+   "label": "承認して公開する",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:置き換えを依頼",
+   "kind": "button",
+   "label": "置き換えを依頼",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:書き出す",
+   "kind": "button",
+   "label": "書き出す",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:許可の範囲で見る",
+   "kind": "button",
+   "label": "許可の範囲で見る",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:追加の許可を依頼する",
+   "kind": "button",
+   "label": "追加の許可を依頼する",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:種類",
+   "kind": "select",
+   "label": "種類",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:題名",
+   "kind": "input",
+   "label": "題名",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:本文",
+   "kind": "textarea",
+   "label": "本文",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:この会社に出す",
+   "kind": "button",
+   "label": "この会社に出す",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:下書き",
+   "kind": "button",
+   "label": "下書き",
+   "target": null,
+   "states": [
+    "n"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:対処を送る",
+   "kind": "button",
+   "label": "対処を送る",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  }
+ ]
+}
