@@ -1,0 +1,207 @@
+{
+ "errors": [
+  {
+   "id": "E-KNW-100",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ページが会社の棚にあるのに、上の棚へ上げる",
+   "false_when": "グループ・自分の棚のページ",
+   "message": "このページは会社の棚にあるので、これより上へは上げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ページが会社の棚にあるのに、上の棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-101",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを、上げる先のグループを選ばずに上げる",
+   "false_when": "上げる先のグループを選んだ・グループの棚のページ",
+   "message": "上げる先のグループを選んでください",
+   "action": "グループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "自分の棚のページを、上げる先のグループを選ばずに上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-102",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "承認できる人（マネージャー・管理者）がいない棚へ上げる",
+   "false_when": "承認できる人がいる棚・自分が書ける棚",
+   "message": "上げる先に承認できる人がいません。管理者に知らせてください",
+   "action": "管理者に知らせる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "承認できる人（マネージャー・管理者）がいない棚へ上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-103",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "入れるフォルダを、上げる先でない棚から選んで上げる",
+   "false_when": "上げる先の棚のフォルダ・フォルダを選ばない",
+   "message": "入れるフォルダは、上げる先の棚から選んでください",
+   "action": "フォルダを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "入れるフォルダを、上げる先でない棚から選んで上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-104",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる",
+   "false_when": "承認待ちの頼み",
+   "message": "この頼みはもう決まっているので、取り下げられません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "もう決まった（承認・断り・取り下げ済みの）頼みを取り下げる（口 withdrawKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-105",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す",
+   "false_when": "断られて帯をまだ消していない頼み",
+   "message": "消せるのは、断られた頼みの帯だけです",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "断られた頼みでない（承認待ち・承認済み・取り下げ済み・もう消した）帯を消す（口 dismissKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-106",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "ほかのグループに共有している（上のフォルダを含む）ページを上げる",
+   "false_when": "共有していないページ",
+   "message": "共有しているページは上げられません。先に共有をやめてください",
+   "action": "共有をやめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ナレッジの画面でページを開く",
+    "steps": [
+     "ほかのグループに共有している（上のフォルダを含む）ページを上げる（口 requestKnowledgeRaise）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  }
+ ]
+}
