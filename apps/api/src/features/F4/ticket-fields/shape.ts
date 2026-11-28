@@ -4,7 +4,16 @@
 //   会社の id・作った人・時刻は出さない
 
 /** 項目の型（D-150.37）。選ぶ型は SELECT_TYPES */
-export const FIELD_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"] as const;
+export const FIELD_TYPES = [
+  "short_text",
+  "long_text",
+  "number",
+  "money",
+  "date",
+  "select",
+  "multi_select",
+  "check",
+] as const;
 export type FieldType = (typeof FIELD_TYPES)[number];
 export const SELECT_TYPES: readonly string[] = ["select", "multi_select"];
 

@@ -482,6 +482,22 @@ describe("K-564 会社の項目の値（updateTicket の fields）", () => {
     expect((await lines(t.id)).length).toBe(0);
   });
 
+  it("K564-API-024 金額の種類（money）：円の整数は保存され、やり取りの 1 行の値は「95,000 円」。小数・文字は 409・E-FLD-003 で何も書かない", async () => {
+    const w = await world();
+    const amt = await fld(w, { type: "money" });
+    const t = await mk(w);
+    for (const [label, value] of [
+      ["金額に小数", 12.5],
+      ["金額に文字", "95000"],
+    ] as const)
+      await refuse(await set(w.boss, t.id, { [amt.id]: value }), 409, "E-FLD-003", label);
+    expect(await live(t.id)).toEqual({});
+    const r = await set(w.boss, t.id, { [amt.id]: 95000 });
+    expect(r.status, await r.clone().text()).toBe(200);
+    expect(await live(t.id)).toEqual({ [amt.id]: 95000 });
+    expect(JSON.stringify(await lines(t.id))).toContain("95,000 円");
+  });
+
   it("K564-API-010 契約の形（422・欄 fields）：fields が object でない・空・鍵が uuid でない・値が文字・数・真偽・文字の並び・null のどれでもない・NUL → 行は書かない", async () => {
     const w = await world();
     const cust = await fld(w);

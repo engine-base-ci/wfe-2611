@@ -53,6 +53,10 @@ function staleChoice(f: MasterLike, v: unknown): boolean {
 function wrongType(f: MasterLike, v: unknown): boolean {
   if (typeof v !== "string" || v.trim() === "") return false;
   if (f.field_type === "number") return parseNumber(v) === null;
+  if (f.field_type === "money") {
+    const n = parseNumber(v);
+    return n === null || !Number.isInteger(n);
+  }
   if (f.field_type === "date") return !DATE_RE.test(v.trim());
   return false;
 }

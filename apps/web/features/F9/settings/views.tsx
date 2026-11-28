@@ -449,8 +449,8 @@ export function StagesPanel({
 }
 
 // ---------------------------------------------------------------- 項目のマスタ（会社が足す項目）
-export type FieldType = "1 行" | "複数行" | "数" | "日付" | "1 つ選ぶ" | "複数選ぶ" | "チェック";
-const FIELD_TYPES: readonly FieldType[] = ["1 行", "複数行", "数", "日付", "1 つ選ぶ", "複数選ぶ", "チェック"];
+export type FieldType = "1 行" | "複数行" | "数" | "金額" | "日付" | "1 つ選ぶ" | "複数選ぶ" | "チェック";
+const FIELD_TYPES: readonly FieldType[] = ["1 行", "複数行", "数", "金額", "日付", "1 つ選ぶ", "複数選ぶ", "チェック"];
 
 export interface FieldRow {
   id: string;

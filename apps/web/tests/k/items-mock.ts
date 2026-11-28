@@ -32,7 +32,7 @@ export const KIND_B = "44444444-0000-4000-8000-000000000002";
 export const TICKET_ID = "0193c5a0-0000-7000-8000-00000000c569";
 
 // ---------------------------------------------------------------- 会社の項目のマスタ（K-563 の答え・鍵 7）
-export type FieldType = "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
+export type FieldType = "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check";
 export interface Opt {
   id: string;
   name: string;
@@ -71,7 +71,7 @@ export const MASTER_ALL: FieldApi[] = [
     description: "案件ごとのコードを選びます",
     options: opts(2, ["SK-2026-11 セイコー商事 保守", "SK-2026-12 セイコー商事 追加開発"]),
   }),
-  field(3, "請求額", "number", { description: "税込の金額（円）" }),
+  field(3, "請求額", "money", { description: "税込の金額（円）" }),
   field(4, "先方の担当者名", "short_text", { description: "請求書の宛名に入れます" }),
   field(5, "分類", "select", {
     description: "請求・問い合わせ・手続きなど",
@@ -90,7 +90,7 @@ export const MASTER_3: FieldApi[] = MASTER_ALL.slice(0, 3);
 export const MASTER_REQ7: FieldApi[] = [
   field(11, "先方の担当者名", "short_text", { required: true, description: "請求書の宛名に入れます" }),
   field(12, "社内メモ", "long_text", { required: true, description: "社内だけで共有する補足" }),
-  field(13, "請求額", "number", { required: true, description: "税込の金額（円）" }),
+  field(13, "請求額", "money", { required: true, description: "税込の金額（円）" }),
   field(14, "支払期日", "date", { required: true, description: "請求書に書く支払の期日" }),
   field(15, "分類", "select", {
     required: true,

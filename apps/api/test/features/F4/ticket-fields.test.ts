@@ -32,7 +32,7 @@ import { makeFixture, type Fixture, type Person } from "../fixture.js";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..", "..", "..", "..");
 const KEYS = ["description", "field_type", "id", "name", "options", "position", "required"];
-const TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"];
+const TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]; // 金額（money）は answer=6280a4739b6e で足した
 interface Field {
   id: string;
   name: string;

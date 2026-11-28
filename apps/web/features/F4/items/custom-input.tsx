@@ -35,6 +35,7 @@ export function CustomInput(p: CustomInputProps) {
   switch (f.field_type) {
     case "short_text":
     case "number":
+    case "money":
     case "date":
       return (
         <TextField
@@ -47,7 +48,7 @@ export function CustomInput(p: CustomInputProps) {
           disabled={disabled}
           autoFocus={autoFocus}
           onKeyDown={onKeyDown}
-          {...(f.field_type === "number" ? { inputMode: "numeric" as const } : {})}
+          {...(f.field_type === "number" || f.field_type === "money" ? { inputMode: "numeric" as const } : {})}
           {...(f.field_type === "date" ? { type: "date" } : {})}
           onChange={(e) => onChange(e.target.value)}
         />

@@ -18403,6 +18403,7 @@ components:
           - short_text
           - long_text
           - number
+          - money
           - date
           - select
           - multi_select
@@ -18456,6 +18457,7 @@ components:
             - short_text
             - long_text
             - number
+            - money
             - date
             - check
           options:
@@ -18473,6 +18475,7 @@ components:
           - short_text
           - long_text
           - number
+          - money
           - date
           - select
           - multi_select
@@ -18530,6 +18533,7 @@ components:
               - short_text
               - long_text
               - number
+              - money
               - date
               - check
     TicketFieldOrderInput:
@@ -20054,6 +20058,7 @@ components:
                 - short_text
                 - long_text
                 - number
+                - money
                 - date
                 - select
                 - multi_select

@@ -2,7 +2,8 @@
 //   文字＝前後の空白を落とした文字／数＝数／日付＝YYYY-MM-DD／1 つ選ぶ＝選択肢の id／複数選ぶ＝選択肢の並びの id の並び／チェック＝真偽
 //   必須のチェックは付いていないと必須を満たさない（D-150.51）。口が最後の砦で、ここは口に届く前に止められる物を止める
 
-export type FieldType = "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
+/** 項目の種類。money は金額（円の整数・「95,000 円」と出す・代表の答え answer=6280a4739b6e） */
+export type FieldType = "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check";
 
 export interface FieldOption {
   id: string;
@@ -53,6 +54,7 @@ export function isEmpty(f: TicketField, v: FieldValue | undefined): boolean {
     case "check":
       return v !== true;
     case "number":
+    case "money":
       return typeof v === "number" ? false : isBlankText(v);
     default:
       return isBlankText(v);
@@ -63,6 +65,7 @@ const NEED: Record<FieldType, string> = {
   short_text: "を書いてください",
   long_text: "を書いてください",
   number: "を入れてください",
+  money: "を入れてください",
   date: "を選んでください",
   select: "を選んでください",
   multi_select: "を選んでください",
@@ -73,6 +76,16 @@ const NEED: Record<FieldType, string> = {
 export const needText = (f: TicketField): string => `${f.name}${NEED[f.field_type]}`;
 /** 数の欄に数でない字があるときの言い方 */
 export const notNumberText = (name: string): string => `${name}は数で入れてください`;
+/** 金額の欄に小数があるときの言い方（円は小数を持たない整数・共通の決まり）。数でない字は数の欄と同じ言い方 */
+export const notMoneyText = (name: string): string => `${name}は円の整数で入れてください`;
+
+/** 金額の欄の字が数だが整数でない（空と数でない字は数えない） */
+const fractionalMoney = (v: FieldValue | undefined): boolean => {
+  if (typeof v === "number") return !Number.isInteger(v);
+  if (typeof v !== "string" || v.trim() === "") return false;
+  const n = parseNumber(v);
+  return n !== null && !Number.isInteger(n);
+};
 
 /** 数の欄の字が数でない（空は数でないに数えない） */
 const badNumber = (v: FieldValue | undefined): boolean =>
@@ -80,7 +93,8 @@ const badNumber = (v: FieldValue | undefined): boolean =>
 
 /** 1 つの項目の誤りの文（無ければ null） */
 export function checkField(f: TicketField, v: FieldValue | undefined): string | null {
-  if (f.field_type === "number" && badNumber(v)) return notNumberText(f.name);
+  if ((f.field_type === "number" || f.field_type === "money") && badNumber(v)) return notNumberText(f.name);
+  if (f.field_type === "money" && fractionalMoney(v)) return notMoneyText(f.name);
   if (f.required && isEmpty(f, v)) return needText(f);
   return null;
 }
@@ -108,7 +122,8 @@ export function checkFields(
 export function toValue(f: TicketField, v: FieldValue | undefined): FieldValue {
   if (v === undefined || v === null) return null;
   switch (f.field_type) {
-    case "number": {
+    case "number":
+    case "money": {
       if (typeof v === "number") return v;
       return parseNumber(asText(v));
     }

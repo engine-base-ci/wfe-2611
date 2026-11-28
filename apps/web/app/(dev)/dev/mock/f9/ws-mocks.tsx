@@ -39,7 +39,7 @@ const FIELDS: readonly FieldRow[] = [
     kinds: ["k-task", "k-bill"],
     options: ["SK-2026-11（セイコー商事）", "MN-2026-08（ミナト工業）", "社内"],
   },
-  { id: "f-amount", name: "請求額", type: "数", required: false, desc: "税を含まない額", kinds: ["k-bill"] },
+  { id: "f-amount", name: "請求額", type: "金額", required: false, desc: "税を含まない額", kinds: ["k-bill"] },
   { id: "f-pay", name: "支払期日", type: "日付", required: true, desc: "取引先が支払う日", kinds: ["k-bill"] },
   {
     id: "f-class",

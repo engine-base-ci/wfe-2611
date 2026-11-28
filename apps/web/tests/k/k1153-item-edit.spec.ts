@@ -110,7 +110,8 @@ test("K1153-UI-002 値の見せ方：日付「12/15（火）」（1 桁の日は
   await expect(valBtn(page, "支払期日")).toHaveText("12/15（火）");
   await expect(valBtn(page, "納品日")).toHaveText("12/01（火）");
   await expect(valBtn(page, "PJコード")).toHaveText("SK-2026-11 セイコー商事 保守");
-  await expect(valBtn(page, "請求額")).toHaveText("95,000");
+  // 請求額は金額の種類（桁を区切り後ろに「円」・answer=6280a4739b6e）
+  await expect(valBtn(page, "請求額")).toHaveText("95,000 円");
   await expect(valBtn(page, "差額")).toHaveText("-1,234.5");
   await expect(valBtn(page, "送る書類")).toHaveText("請求書、明細");
   await expect(valBtn(page, "分類")).toHaveText("");
@@ -154,10 +155,10 @@ test("K1153-UI-004 値を直す（文字・数・日付・選ぶ・複数選ぶ�
   await panel(page).getByRole("button", { name: "送る書類を決める", exact: true }).click();
   await expect.poll(() => m.patches.length).toBe(5);
   expect(m.patches[4]).toEqual({ fields: { [docsF.id]: [optId(docsF, "請求書"), optId(docsF, "納品書")] } });
-  await expect(valBtn(page, "請求額")).toHaveText("1,200");
+  await expect(valBtn(page, "請求額")).toHaveText("1,200 円");
   await page.reload();
   await expect(valBtn(page, "先方の担当者名")).toHaveText("山田商事");
-  await expect(valBtn(page, "請求額")).toHaveText("1,200");
+  await expect(valBtn(page, "請求額")).toHaveText("1,200 円");
   await expect(valBtn(page, "支払期日")).toHaveText("12/20（日）");
   await expect(valBtn(page, "PJコード")).toHaveText("SK-2026-12 セイコー商事 追加開発");
   await expect(valBtn(page, "送る書類")).toHaveText("請求書、納品書");
@@ -474,7 +475,7 @@ test("K1153-UI-018 完了したチケットの値（getTicket の completed が�
   await expect(valBtn(page, "請求額")).toBeEnabled();
   await edit(page, "請求額", "7");
   await expect.poll(() => m.patches.length).toBe(1);
-  await expect(valBtn(page, "請求額")).toHaveText("7");
+  await expect(valBtn(page, "請求額")).toHaveText("7 円"); // 請求額は金額の種類（answer=6280a4739b6e）
   await expect(page.getByText(/完了したので/)).toHaveCount(0);
 });
 

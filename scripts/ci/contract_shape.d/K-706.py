@@ -1,5 +1,5 @@
 # K-706 項目を足す口（createTicketField）の契約の形の表に足す分（K-325 の断片）
-_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"]
+_TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]
 REQUIRED_INPUTS = {
     "createTicketField": {"name", "field_type", "kind_ids"},
 }

@@ -68,7 +68,7 @@ export const MOCK_BODY = doc(
   H2("参考"),
 );
 
-export type FieldType = "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
+export type FieldType = "short_text" | "long_text" | "number" | "money" | "date" | "select" | "multi_select" | "check";
 export interface DetailField {
   id: string;
   name: string;
@@ -104,7 +104,7 @@ export const fieldOf = (
 export const COMPANY: DetailField[] = [
   fieldOf(1, "支払期日", "date", "2026-12-15"),
   fieldOf(2, "PJコード", "select", null, ["SK-2026-11", "SK-2026-12"]),
-  fieldOf(3, "請求額", "number", 95000),
+  fieldOf(3, "請求額", "money", 95000),
   fieldOf(4, "分類", "select", null, ["請求", "問い合わせ"]),
 ];
 

@@ -4,7 +4,7 @@
 #   振る舞いの本体は apps/api/src/features/F12/ops/templates/release.ts（値の決まりは同じ字）・operations.ts
 
 _COLORS = ["indigo", "teal", "amber", "coral", "sage", "plum", "lavender", "teal-light"]   # 段 10 の 8 つの字（K-704・K-705）
-_FIELD_TYPES = ["short_text", "long_text", "number", "date", "select", "multi_select", "check"]   # 段 10 の 7 つ（K-706）
+_FIELD_TYPES = ["short_text", "long_text", "number", "money", "date", "select", "multi_select", "check"]   # 段 10 の 7 つ（K-706）
 
 # 体は strict（知らない欄は 422）
 INPUTS = {

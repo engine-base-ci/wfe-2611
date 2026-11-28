@@ -11,17 +11,19 @@ export const FIELD_TYPE_KEYS = [
   "short_text",
   "long_text",
   "number",
+  "money",
   "date",
   "select",
   "multi_select",
   "check",
 ] as const;
 export type FieldTypeKey = (typeof FIELD_TYPE_KEYS)[number];
-export type FieldTypeLabel = "1 行" | "複数行" | "数" | "日付" | "1 つ選ぶ" | "複数選ぶ" | "チェック";
+export type FieldTypeLabel = "1 行" | "複数行" | "数" | "金額" | "日付" | "1 つ選ぶ" | "複数選ぶ" | "チェック";
 const LABELS: Record<FieldTypeKey, FieldTypeLabel> = {
   short_text: "1 行",
   long_text: "複数行",
   number: "数",
+  money: "金額",
   date: "日付",
   select: "1 つ選ぶ",
   multi_select: "複数選ぶ",

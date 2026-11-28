@@ -340,4 +340,5 @@ export const MIGRATIONS = [
   "20261128041900_kn_review_conflicts_plan.sql",
   "20261128070426_portal_home_inviter.sql",
   "20261128160000_ticket_decision_ai.sql",
+  "20261128170000_field_type_money.sql",
 ] as const;
