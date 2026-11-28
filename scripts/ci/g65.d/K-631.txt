@@ -1,0 +1,1 @@
+python3 scripts/ci/k631_web_types_test.py
