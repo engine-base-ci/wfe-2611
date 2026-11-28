@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-CONF-039",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-ws-members"
+   },
+   "when": "もう本人確認が済んだ人に送り直そうとした",
+   "false_when": "まだ本人確認が済んでいない人に送り直す",
+   "message": "この人はもう本人確認が済んでいます",
+   "action": "なし",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人で 1 社のメンバーのタブを開き、本人確認が済んだ人を選ぶ",
+    "steps": [
+     "その人の［メールを送り直す］を押す（直に口を呼ぶ）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.108"
+   ],
+   "support_code": "CONF-039"
+  }
+ ]
+}
