@@ -214,7 +214,8 @@ test("K877-UI-008 ゲストが /portal を開いても入口に弾き返され�
 test("K877-UI-009 幅 320・375・768・1024・1440：参加の画面で横のはみ出し 0・文の中のリンク「ログインして入る」が 1 行に収まる（折れない）", async ({
   page,
 }) => {
-  await mockGuest(page, "requester", SEIKO, { account_exists: true });
+  // アカウントがある人の形は K-423 が「ログインして参加する」のボタンにした（下の文のリンクは出ない）。文の中のリンクは新しく作る形の足に出る
+  await mockGuest(page, "requester", SEIKO);
   for (const w of [320, 375, 768, 1024, 1440]) {
     await openInvite(page, w);
     expect(
