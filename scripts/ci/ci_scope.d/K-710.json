@@ -1,0 +1,19 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F9/members/**",
+        "apps/web/features/F10/invite/members-page.tsx",
+        "apps/web/features/F10/invite/views.tsx"
+      ],
+      "tests": [
+        "apps/web/tests/k/k710-members-groups.spec.ts",
+        "apps/web/test/k710-members-groups-shape.test.ts",
+        "apps/web/tests/k/k420-members-invite.spec.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/f9-ws-match.ts": "比べ方の部品 scripts/ci/fidelity_compare.mjs を読み、モックの頁（/dev/mock/f9/mem-groups）を開く。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-710"
+  }
+}
