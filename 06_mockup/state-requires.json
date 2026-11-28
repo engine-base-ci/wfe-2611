@@ -1,0 +1,12 @@
+{
+ ".aipanel": "app",
+ ".ap-toggle": "app",
+ ".badge": "data",
+ ".bdg": "data",
+ ".sn .n": "data",
+ ".ptree": "staff",
+ ".ai-stopped[data-requires=stopped]": "stopped",
+ ".side": "app",
+ ".subnav": "app",
+ ".tabbar": "app"
+}
