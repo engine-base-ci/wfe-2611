@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-timeline.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_timeline.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
+  "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383"
+ }
+}

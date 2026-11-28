@@ -1,0 +1,244 @@
+{
+ "screen": "goal-allocation",
+ "mock": "06_mockup/v1/v1-goal-allocation.html",
+ "state_labels": {
+  "n": "配る",
+  "m": "配り方",
+  "l": "層を足す",
+  "u": "単位を作る",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:＋層を足す",
+   "kind": "button",
+   "label": "＋層を足す",
+   "target": null,
+   "states": [
+    "配る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:text",
+   "kind": "input",
+   "label": "text",
+   "target": null,
+   "states": [
+    "配る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:配る",
+   "kind": "button",
+   "label": "配る",
+   "target": null,
+   "states": [
+    "配る",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:この配分で確定",
+   "kind": "button",
+   "label": "この配分で確定",
+   "target": null,
+   "states": [
+    "配る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:層を足す（人を招く）→members",
+   "kind": "link",
+   "label": "層を足す（人を招く）",
+   "target": "members",
+   "states": [
+    "配る",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:変える",
+   "kind": "button",
+   "label": "変える",
+   "target": null,
+   "states": [
+    "配り方"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "配り方"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:層の名前",
+   "kind": "input",
+   "label": "層の名前",
+   "target": null,
+   "states": [
+    "層を足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:どこの下に",
+   "kind": "input",
+   "label": "どこの下に",
+   "target": null,
+   "states": [
+    "層を足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:この層の目標を見せる相手",
+   "kind": "input",
+   "label": "この層の目標を見せる相手",
+   "target": null,
+   "states": [
+    "層を足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:足す",
+   "kind": "button",
+   "label": "足す",
+   "target": null,
+   "states": [
+    "層を足す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:名前",
+   "kind": "input",
+   "label": "名前",
+   "target": null,
+   "states": [
+    "単位を作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:記号",
+   "kind": "input",
+   "label": "記号",
+   "target": null,
+   "states": [
+    "単位を作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:小数",
+   "kind": "input",
+   "label": "小数",
+   "target": null,
+   "states": [
+    "単位を作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:作る",
+   "kind": "button",
+   "label": "作る",
+   "target": null,
+   "states": [
+    "単位を作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
