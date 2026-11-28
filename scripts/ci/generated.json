@@ -1,0 +1,353 @@
+{
+ "_doc": "生成物の目録（D-128.123・K-38）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す。outputs は作り手が実際に書くファイルとちょうど同じにする（K-191）：作り手が outputs の外の版に入ったファイルを書いたら赤（F5）、outputs に当たるのにどの作り手も書かないファイルがあれば赤（F6。中身が同じ回は書かない作り手の物は、理由つきで not_always_written に載せる）。ticket-flow.yaml の changes_ignore も同じ並びにする（取り込みでぶつかったら本線の版にして作り直す物）。作り手の欄 dated は、その作り手の outputs のうち「作った日」を刻む物の並び（glob 可）：作り直しの台本 scripts/tickets/regen_all.py が、今日の刻みだけの違いを元に戻すのは dated に当たる道だけ（期限・決めた日を持つ 11_tickets の一覧と要件一覧は入れない）",
+ "generators": [
+  {
+   "name": "画面の部品のトークン",
+   "run": "python3 04_design/gen_tokens.py --web",
+   "outputs": [
+    "apps/web/styles/k-tokens.css"
+   ]
+  },
+  {
+   "name": "Bridge の画面のトークン",
+   "run": "python3 04_design/gen_tokens.py",
+   "outputs": [
+    "apps/bridge/src/renderer/tokens.css"
+   ]
+  },
+  {
+   "name": "機能の分解（flow → 07_functional）",
+   "run": "python3 05_flow/build_functional.py",
+   "outputs": [
+    "07_functional/entities.json",
+    "07_functional/features.json",
+    "07_functional/roles.json",
+    "07_functional/screens.json",
+    "07_functional/traceability-matrix.json",
+    "07_functional/functional-breakdown.md",
+    "07_functional/functional-breakdown.html"
+   ],
+   "dated": [
+    "07_functional/entities.json",
+    "07_functional/features.json",
+    "07_functional/roles.json",
+    "07_functional/screens.json",
+    "07_functional/traceability-matrix.json",
+    "07_functional/functional-breakdown.md",
+    "07_functional/functional-breakdown.html"
+   ]
+  },
+  {
+   "name": "API の契約（07_functional → 08_api）",
+   "run": "python3 05_flow/build_api.py",
+   "outputs": [
+    "08_api/API-SPEC.md",
+    "08_api/api-decisions.json",
+    "08_api/api-field-consumption.json",
+    "08_api/api-spec.html",
+    "08_api/ears-ac-seed.json",
+    "08_api/endpoints.json",
+    "08_api/lint-mapping.json",
+    "08_api/openapi.yaml",
+    "08_api/screen-api-coverage.json",
+    "08_api/types.ts"
+   ],
+   "dated": [
+    "08_api/API-SPEC.md",
+    "08_api/api-decisions.json",
+    "08_api/api-spec.html",
+    "08_api/endpoints.json",
+    "08_api/openapi.yaml",
+    "08_api/screen-api-coverage.json"
+   ]
+  },
+  {
+   "name": "契約から作るコード（型・入口）",
+   "run": "node scripts/ci/contract.mjs gen",
+   "outputs": [
+    "packages/contracts/src/ops.ts",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/schemas.ts",
+    "packages/contracts/src/types.ts",
+    "apps/api/src/routes/*"
+   ]
+  },
+  {
+   "name": "テスト計画と CI の定義",
+   "run": "python3 05_flow/build_testplan.py",
+   "outputs": [
+    "07_qa/test-plan/access-matrix.json",
+    "07_qa/test-plan/ears-test-mapping.json",
+    "07_qa/test-plan/test-plan.html",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    ".github/workflows/v3-gate.yml",
+    ".github/workflows/release-gate.yml",
+    ".github/workflows/staging-e2e.yml"
+   ],
+   "dated": [
+    "07_qa/test-plan/access-matrix.json",
+    "07_qa/test-plan/ears-test-mapping.json",
+    "07_qa/test-plan/test-plan.html",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md"
+   ]
+  },
+  {
+   "name": "契約から作る試験",
+   "run": "node scripts/ci/gen_ears_tests.mjs",
+   "outputs": [
+    "apps/api/test/generated/*"
+   ]
+  },
+  {
+   "name": "エラーの写し（画面と API 用）",
+   "run": "node scripts/ci/errors_used.mjs gen",
+   "outputs": [
+    "packages/errors/src/catalog.ts"
+   ]
+  },
+  {
+   "name": "エラーの試験の行",
+   "run": "python3 scripts/ci/error_catalog.py rows --catalog 07_qa/test-specs/errors.json --spec 07_qa/test-specs",
+   "outputs": [
+    "07_qa/test-specs/errors.md"
+   ]
+  },
+  {
+   "name": "画面の行き先",
+   "run": "node scripts/ci/gen_routes.mjs",
+   "outputs": [
+    "apps/web/lib/routes.ts",
+    "apps/web/lib/nav.ts"
+   ]
+  },
+  {
+   "name": "作った画面の一覧",
+   "run": "python3 scripts/ci/gen_built_routes.py --app apps/web/app --out apps/web/lib/built-routes.ts",
+   "outputs": [
+    "apps/web/lib/built-routes.ts"
+   ]
+  },
+  {
+   "name": "Kaname を作るチケットの一覧",
+   "run": "python3 scripts/tickets/build_index.py",
+   "outputs": [
+    "11_tickets/README.md",
+    "11_tickets/tickets.json",
+    "11_tickets/tickets.csv"
+   ]
+  },
+  {
+   "name": "要件一覧（決定ログから）",
+   "run": "python3 scripts/ci/trace_gate.py --index",
+   "outputs": [
+    "01_hearing/要件一覧.md"
+   ]
+  },
+  {
+   "name": "流れをまたぐ表の線（契約 → 03_architecture/flow-lines.json・D-128.128）",
+   "run": "python3 scripts/ci/flow_db_gate.py --lines",
+   "outputs": [
+    "03_architecture/flow-lines.json"
+   ]
+  },
+  {
+   "name": "目録（API と DB・画面の部品・共通の処理・外とのつなぎと設定 → 03_architecture/catalog・D-128.129）",
+   "run": "python3 scripts/ci/build_catalog.py",
+   "outputs": [
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md"
+   ]
+  },
+  {
+   "name": "使ってもらい方（flow.json → 05_flow/使ってもらい方.md）",
+   "run": "cd 05_flow && python3 build_md.py",
+   "outputs": [
+    "05_flow/使ってもらい方.md"
+   ]
+  },
+  {
+   "name": "表の足し合わせ（<名前>.d/ → errors.json・ears-elsewhere.json・ci_scope.json・K-325）",
+   "run": "python3 scripts/ci/build_registries.py",
+   "outputs": [
+    "07_qa/test-specs/errors.json",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json"
+   ]
+  },
+  {
+   "name": "口の登録の一覧と閉じる道の断片（hooks の register → all.generated.ts・disabled-paths.d/ → disabled-paths.generated.ts・K-326）",
+   "run": "python3 scripts/ci/gen_ts_registries.py",
+   "outputs": [
+    "apps/api/src/hooks/all.generated.ts",
+    "packages/auth/src/disabled-paths.generated.ts"
+   ]
+  },
+  {
+   "name": "migration の一覧（packages/db/migrations/*.sql → migrations.generated.ts の MIGRATIONS・K-327）",
+   "run": "python3 scripts/ci/gen_migrations.py",
+   "outputs": [
+    "packages/db/src/migrations.generated.ts"
+   ]
+  },
+  {
+   "name": "口の文書の断片（08_api/phase1/<名前>.d/ → 08_api/phase1/合わせた/<名前>.md・K-1112）",
+   "run": "python3 scripts/ci/api_doc_d.py",
+   "outputs": [
+    "08_api/phase1/合わせた/*.md"
+   ]
+  }
+ ],
+ "checked_elsewhere": [
+  {
+   "outputs": [
+    "08_api/db-columns.json"
+   ],
+   "by": "G36（本物の DB の列を書き出して比べる。DB が要るので database の段）"
+  },
+  {
+   "outputs": [
+    "apps/web/components/ai/chat.css"
+   ],
+   "by": "chat_one.mjs（06_mockup/export_web_css.py --check）。前の画面の見た目"
+  }
+ ],
+ "history": [
+  {
+   "glob": "packages/db/migrations/*.sql",
+   "reason": "DB の変更の履歴。作った時点の ER 図から作り、あとで作り直さない（作り直すと履歴が変わる）。正しさは G4・G12・G33 が本物の DB で見る"
+  },
+  {
+   "glob": "packages/db/policies/*.sql",
+   "reason": "RLS の方針の履歴（マイグレーションと同じ名前）。正しさは G4・G33 と RLS の試験が見る"
+  }
+ ],
+ "frozen": [
+  {
+   "glob": "09_features/*",
+   "reason": "前の作業の分け方（機能の分解）。作業は 11_tickets に移った（D-128.114）。作り直さない"
+  },
+  {
+   "glob": "08_schedule/*",
+   "reason": "前の Wave の計画。日程は 11_tickets と D-128.118 に移った。作り直さない"
+  },
+  {
+   "glob": "07_tasks/*",
+   "reason": "前の作業カード。作業は 11_tickets に移った（D-128.114）"
+  },
+  {
+   "glob": "06_mockup/*",
+   "reason": "前の画面の見本。しまった（D-128.117）。画面の正はキャンバス"
+  },
+  {
+   "glob": "05_flow/flow.html",
+   "reason": "flow.json の読みやすい写し（前の見本の道具 flow.js が作る）。flow.json そのものは G27・trace_gate が見る"
+  },
+  {
+   "glob": "apps/web/lib/*.legacy.ts",
+   "reason": "前の画面だけが読む、生成物の写し（K-25・2026-11-04 時点）。前の画面を外すとき（KN-37）に消す"
+  },
+  {
+   "glob": "07_qa/test-specs/screens/*",
+   "reason": "前の画面の試験の仕様（05_flow/build_tasks.py が作った）。作り手はしまった（K-39・D-128.114・D-128.117）。新しい画面の仕様は 07_qa/test-specs/k に K-36 の型で書く。前の画面と一緒に外す（KN-37）"
+  },
+  {
+   "glob": "07_qa/test-specs/bridge.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/journeys/plan.json",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/prod-smoke.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/rls-matrix.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/skills.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/spec-work.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/visual-fidelity-audit.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  },
+  {
+   "glob": "07_qa/test-specs/zero-state.md",
+   "reason": "05_flow/build_tasks.py（しまった作り手・K-39）が作った試験の仕様。記録として残す。中身は qa-ladder（G28）・op_gate の記録が読む"
+  }
+ ],
+ "not_generated": [
+  {
+   "path": "apps/api/src/contract/permissions.ts",
+   "reason": "手で書く（先頭の言葉は「契約の口から言葉を取る」の説明）"
+  },
+  {
+   "path": "apps/web/components/k/nav-model.ts",
+   "reason": "手で書く（先頭は「生成物を読む」の説明）"
+  },
+  {
+   "path": "apps/web/components/k/shell.tsx",
+   "reason": "手で書く（同上）"
+  },
+  {
+   "path": "apps/web/lib/api/call.ts",
+   "reason": "手で書く（型は生成物の Ops を読む、の説明）"
+  },
+  {
+   "path": "apps/web/test/k-nav-model.test.ts",
+   "reason": "試験（生成物を読む、の説明）"
+  },
+  {
+   "path": "packages/db/migrations/0018_ops_write.sql",
+   "reason": "手で書いたマイグレーション（history に入る）"
+  },
+  {
+   "path": "apps/bridge/test/renderer.test.ts",
+   "reason": "試験（「正本から生成した tokens.css を読む」の説明）"
+  },
+  {
+   "path": "01_hearing/ヒアリングサマリー.md",
+   "why": "手で書くヒアリングの要約。先頭の「要件一覧.md＝機械生成」は別のファイルのことを言っているだけ"
+  },
+  {
+   "path": "packages/contracts/src/index.ts",
+   "reason": "手で書く（先頭は、隣の生成物を作り手が「生成する（手で直さない）」という説明）。作り手は書かないので outputs から外した（K-191）。変えるチケットが changes: に書く"
+  },
+  {
+   "path": "apps/api/test/features/F5/checks-retire.test.ts",
+   "reason": "手で書く試験（先頭の「契約と生成物と文書のファイル」は、試験が読む物の説明）。作り手は書かない（K-741）"
+  },
+  {
+   "path": "apps/api/test/features/F11/acceptances-retire.test.ts",
+   "reason": "手で書く試験（K-926。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/knowledge-old-retire.test.ts",
+   "reason": "手で書く試験（K-722。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/memory-retire.test.ts",
+   "reason": "手で書く試験（K-712。先頭の言葉は「契約と生成物と文書のファイル」を確かめる説明）"
+  },
+  {
+   "path": "apps/api/test/features/F9/shape-learning-retire.test.ts",
+   "reason": "手で書く試験（K-721。先頭の言葉は口を外したことを契約と生成物で確かめる説明）"
+  }
+ ],
+ "not_always_written": [
+  {
+   "path": "apps/web/lib/built-routes.ts",
+   "reason": "作り手（scripts/ci/gen_built_routes.py）は、中身が同じ回はファイルを書かない。書かなかった回も F6 にしない"
+  }
+ ],
+ "known_stale": []
+}

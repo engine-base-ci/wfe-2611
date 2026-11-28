@@ -1,0 +1,85 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table service_registry_versions enable row level security;
+alter table service_registry_versions force row level security;
+drop policy if exists service_registry_versions_ops_all on service_registry_versions;
+create policy service_registry_versions_ops_all on service_registry_versions for all using (tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops') with check (tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops');
+
+alter table skill_test_runs enable row level security;
+alter table skill_test_runs force row level security;
+drop policy if exists skill_test_runs_ops_all on skill_test_runs;
+create policy skill_test_runs_ops_all on skill_test_runs for all using (tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops') with check (tenant_id = app.ops_tenant_id() AND current_setting('app.role', true) = 'ops');
+
+alter table inquiries enable row level security;
+alter table inquiries force row level security;
+drop policy if exists inquiries_tenant_read on inquiries;
+create policy inquiries_tenant_read on inquiries for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists inquiries_self_only_write_insert on inquiries;
+create policy inquiries_self_only_write_insert on inquiries for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND opened_by_member_id = app.user_id()));
+drop policy if exists inquiries_self_only_write_update on inquiries;
+create policy inquiries_self_only_write_update on inquiries for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND opened_by_member_id = app.user_id())) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND opened_by_member_id = app.user_id()));
+drop policy if exists inquiries_self_only_write_delete on inquiries;
+create policy inquiries_self_only_write_delete on inquiries for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND opened_by_member_id = app.user_id()));
+drop policy if exists inquiries_permission_write_insert on inquiries;
+create policy inquiries_permission_write_insert on inquiries for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'inquiries', NULL, 'edit')));
+drop policy if exists inquiries_permission_write_update on inquiries;
+create policy inquiries_permission_write_update on inquiries for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'inquiries', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'inquiries', NULL, 'edit')));
+drop policy if exists inquiries_permission_write_delete on inquiries;
+create policy inquiries_permission_write_delete on inquiries for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'inquiries', NULL, 'edit')));
+drop policy if exists inquiries_ops_read_with_grant on inquiries;
+create policy inquiries_ops_read_with_grant on inquiries for select using (app.ops_grant_ok(inquiries.tenant_id));
+drop policy if exists inquiries_ops_write on inquiries;
+create policy inquiries_ops_write on inquiries for update using (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id()) with check (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id());
+
+alter table review_requests enable row level security;
+alter table review_requests force row level security;
+drop policy if exists review_requests_tenant_read on review_requests;
+create policy review_requests_tenant_read on review_requests for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists review_requests_permission_write_insert on review_requests;
+create policy review_requests_permission_write_insert on review_requests for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'review_requests', NULL, 'edit')));
+drop policy if exists review_requests_permission_write_update on review_requests;
+create policy review_requests_permission_write_update on review_requests for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'review_requests', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'review_requests', NULL, 'edit')));
+drop policy if exists review_requests_permission_write_delete on review_requests;
+create policy review_requests_permission_write_delete on review_requests for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'review_requests', NULL, 'edit')));
+drop policy if exists review_requests_ops_read_with_grant on review_requests;
+create policy review_requests_ops_read_with_grant on review_requests for select using (app.ops_grant_ok(review_requests.tenant_id));
+drop policy if exists review_requests_ops_write on review_requests;
+create policy review_requests_ops_write on review_requests for update using (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id()) with check (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id());
+
+alter table plan_change_requests enable row level security;
+alter table plan_change_requests force row level security;
+drop policy if exists plan_change_requests_tenant_read on plan_change_requests;
+create policy plan_change_requests_tenant_read on plan_change_requests for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists plan_change_requests_self_only_write_insert on plan_change_requests;
+create policy plan_change_requests_self_only_write_insert on plan_change_requests for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND requested_by = app.user_id()));
+drop policy if exists plan_change_requests_self_only_write_update on plan_change_requests;
+create policy plan_change_requests_self_only_write_update on plan_change_requests for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND requested_by = app.user_id())) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND requested_by = app.user_id()));
+drop policy if exists plan_change_requests_self_only_write_delete on plan_change_requests;
+create policy plan_change_requests_self_only_write_delete on plan_change_requests for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND requested_by = app.user_id()));
+drop policy if exists plan_change_requests_permission_write_insert on plan_change_requests;
+create policy plan_change_requests_permission_write_insert on plan_change_requests for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'plan_change_requests', NULL, 'edit')));
+drop policy if exists plan_change_requests_permission_write_update on plan_change_requests;
+create policy plan_change_requests_permission_write_update on plan_change_requests for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'plan_change_requests', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'plan_change_requests', NULL, 'edit')));
+drop policy if exists plan_change_requests_permission_write_delete on plan_change_requests;
+create policy plan_change_requests_permission_write_delete on plan_change_requests for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'plan_change_requests', NULL, 'edit')));
+drop policy if exists plan_change_requests_ops_read_with_grant on plan_change_requests;
+create policy plan_change_requests_ops_read_with_grant on plan_change_requests for select using (app.ops_grant_ok(plan_change_requests.tenant_id));
+drop policy if exists plan_change_requests_ops_write on plan_change_requests;
+create policy plan_change_requests_ops_write on plan_change_requests for update using (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id()) with check (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id());
+
+alter table payments enable row level security;
+alter table payments force row level security;
+drop policy if exists payments_tenant_read on payments;
+create policy payments_tenant_read on payments for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists payments_permission_write_insert on payments;
+create policy payments_permission_write_insert on payments for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'payments', NULL, 'edit')));
+drop policy if exists payments_permission_write_update on payments;
+create policy payments_permission_write_update on payments for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'payments', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'payments', NULL, 'edit')));
+drop policy if exists payments_permission_write_delete on payments;
+create policy payments_permission_write_delete on payments for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'payments', NULL, 'edit')));
+drop policy if exists payments_ops_read_with_grant on payments;
+create policy payments_ops_read_with_grant on payments for select using (app.ops_grant_ok(payments.tenant_id));
+drop policy if exists payments_ops_write_insert on payments;
+create policy payments_ops_write_insert on payments for insert with check (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id());
+drop policy if exists payments_ops_write_update on payments;
+create policy payments_ops_write_update on payments for update using (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id()) with check (current_setting('app.role', true) = 'ops' AND tenant_id = app.tenant_id());
