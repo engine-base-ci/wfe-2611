@@ -1,0 +1,75 @@
+# 触って確かめる（dev・ローカル）
+
+作った順に 1 本ずつ触って、よければ手順ファイルの末尾に `OK: 日付 名前` を書いてください。
+その 1 行が入ったチケットだけ staging に上げます（dev → stg → prd）。
+
+## 立ち上げ
+
+```bash
+bash scripts/dev/up.sh
+```
+
+- 画面 http://localhost:3124　API http://127.0.0.1:3011
+- 止める `bash scripts/dev/up.sh --stop`／今どうなっているか `bash scripts/dev/up.sh --status`
+- **メールは実際に送ります（Resend・差出人は noreply@engine-base.com）。** 送信ドメインは検証済みなので、どの宛先にも届きます。送れなかったときは `.dev-logs/api.log` に「[mail] 送れなかった → …」と理由が出ます
+- 運営（ENGINE BASE）の宛先は **info@engine-base.com**（問い合わせの届け先・運営アカウントのログイン名）
+- **メールが届かないときは http://localhost:3124/dev/mail を開いてください。** 送ったリンクが並んでいて、そこから押して先へ進めます（ローカルで確かめるためだけの画面）
+- 自分のAI（自分の PC の Bridge が動かす本物の Claude Code）と話せます。先に「自分のPCをつなぐ」で Kaname Bridge を入れてつないでください。まだ作っていないものは、各手順の「今はまだ押せないもの」に理由つきで書いてあります
+
+## 今 触れるもの
+
+| # | チケット | 画面 | URL | 手順 | 状態 |
+|---|---|---|---|---|---|
+| 1 | T-U-01 | アカウントを作る | http://localhost:3124/signup | [T-U-01.md](T-U-01.md) | 未確認 |
+| 2 | T-U-02 | メールを確認する | http://localhost:3124/verify-email | [T-U-02.md](T-U-02.md) | 未確認 |
+| 3 | T-U-03 | 招待を受けて参加する | http://localhost:3124/invite/:token | [T-U-03.md](T-U-03.md) | 未確認 |
+| 4 | T-U-04 | 2段階認証を設定する | http://localhost:3124/mfa-setup | [T-U-04.md](T-U-04.md) | 未確認 |
+| 5 | T-U-05 | ログインする | http://localhost:3124/login | [T-U-05.md](T-U-05.md) | 未確認 |
+| 6 | T-U-06 | パスワードの再設定 | http://localhost:3124/password-reset | [T-U-06.md](T-U-06.md) | 未確認 |
+| 7 | T-U-07 | 自分のAIと話す | http://localhost:3124/onboard/interview | [T-U-07.md](T-U-07.md) | 未確認 |
+| 8 | T-U-08 | たたき台を確かめる | http://localhost:3124/onboard/draft | [T-U-08.md](T-U-08.md) | 未確認 |
+| 9 | T-U-09 | 自分のPCをつなぐ | http://localhost:3124/setup/bridge | [T-U-09.md](T-U-09.md) | 未確認 |
+| 10 | T-U-10 | ログイン情報を預ける | http://localhost:3124/settings/credentials | [T-U-10.md](T-U-10.md) | 未確認 |
+| 11 | T-U-11 | テストで動かす | http://localhost:3124/onboard/testrun | [T-U-11.md](T-U-11.md) | 未確認 |
+| 12 | T-U-12 | 本番に切り替える | http://localhost:3124/onboard/golive | [T-U-12.md](T-U-12.md) | 未確認 |
+| 13 | T-U-17 | 自分のAIと話す | http://localhost:3124/ai/chat | [T-U-17.md](T-U-17.md) | 未確認 |
+| 14 | T-US-08 | 自分のAIと話す | http://localhost:3124/ai/chat | [T-US-08.md](T-US-08.md) | 未確認 |
+
+## 土台（画面ではなく見本で見る）
+
+サイドバー・自分のAIのパネル・部品・タイムラインは、見本の画面 **http://localhost:3124/dev/shell**・`/dev/ui`・`/dev/views` で役割と時点を切り替えて見ます。
+
+| チケット | 中身 | 手順 | 状態 |
+|---|---|---|---|
+| T-US-00 | apps/web の土台（Next.js 15 App Router の雛形 | [T-US-00.md](T-US-00.md) | 未確認 |
+| T-US-01 | シェル（サイドバー・レール・第2ナビ・三画面・下タブ・枠の導出 data-f | [T-US-01.md](T-US-01.md) | 未確認 |
+| T-US-02 | 自分のAIのパネルと会話の部品（会話は AgentChat 1 つ・右パネル | [T-US-02.md](T-US-02.md) | 未確認 |
+| T-US-03 | API クライアントと型（OpenAPI → types.ts・TanSta | [T-US-03.md](T-US-03.md) | 未確認 |
+| T-US-04 | 認証の配管（ログイン・2 段階認証・招待・入り直し・端末の失効表示） | [T-US-04.md](T-US-04.md) | 未確認 |
+| T-US-05 | デザイントークンと部品（Tailwind @theme・shadcn/ui  | [T-US-05.md](T-US-05.md) | 未確認 |
+| T-US-06 | タイムライン（svar-gantt・棒を押すと詳細・1023 以下は切替）と | [T-US-06.md](T-US-06.md) | 未確認 |
+
+## 通し（流れ）
+
+1 枚ずつの確認が済んだら、登録から最後まで続けて通します。今できるのは **J-01 契約・登録**（登録 → メールの確認 → 招待 → 2 段階）です。
+手順は [T-I-09.md](T-I-09.md)（状態：未確認）。
+
+## 書き方
+
+```
+OK: 2026-09-20 高本
+```
+
+違うところがあれば `NG: 何が違うか` を 1 行で。次の回でそこだけ直します。
+
+
+## 確認表（同じ URL のまま更新される）
+
+https://claude.ai/artifact/CKtmY8sDc61YtxX6vMu6AM
+
+結果（未確認／OK／NG）と気づいたことはこのページに保存されます。
+手順が増えても URL は変わらず、書いた内容も消えません。作り直すときは次の 1 本。
+
+```bash
+python3 scripts/ci/build_qa_artifact.py
+```
