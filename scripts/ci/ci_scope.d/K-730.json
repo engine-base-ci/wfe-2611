@@ -1,0 +1,20 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F5/more/",
+        "apps/web/features/F5/room/",
+        "apps/web/app/(dev)/dev/mock/f5/",
+        "scripts/ci/canvas_field_gate.py",
+        "scripts/ci/gen_built_routes.py"
+      ],
+      "tests": [
+        "apps/web/tests/k/k730-stage6-mock.spec.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/f5-more-kit.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（段 6 の画面の葉の試験の道具・K-730）",
+    "apps/web/tests/k/k730-stage6-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f5/mocks.tsx・差し込み口の器と先（apps/web/features/F5/more/slots.tsx・fills/）・帯と承認待ちと右のパネルのファイル・道の一覧 apps/web/lib/built-routes.ts を読み、scripts/ci/canvas_field_gate.py を子プロセスで流す（K-730）"
+  }
+}
