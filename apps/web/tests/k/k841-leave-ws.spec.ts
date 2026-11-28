@@ -97,7 +97,13 @@ for (const [id, who] of Object.entries(STATES)) {
           // ［抜ける］を押すと行まで下に動く。小窓は画面に貼り付くので、下絵（上の端）と同じく頁の上の端で位置を読む
           await page.evaluate(() => window.scrollTo(0, 0));
         },
-        { pairs: ME_PAIRS, base: MOCK_BASE, blur: false },
+        {
+          pairs: ME_PAIRS,
+          base: MOCK_BASE,
+          blur: false,
+          // 最後の管理者の下絵は、後ろの京蟻の行の役を「メンバー」のまま描く（試験は管理者の答えで最後の管理者にする）。後ろの区画・行の字は比べない（小窓は全部比べる）
+          ...(id === "me-leave-last-admin" ? { skip: ["pf-ws:texts", "row:texts"] } : {}),
+        },
       );
       expect(r.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);

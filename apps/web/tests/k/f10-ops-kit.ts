@@ -497,6 +497,8 @@ export const SET_PAIRS: FidelityPair[] = [
   fpair("caution", ".k-dialog-caution", [...BOX, "texts"]),
   fpair("bullets", ".k-f10w-bullets", TEXT),
   fpair("dlg-input", `${".k-dialog"} .k-input`, ["width", "height", "border-top-color", "texts"]),
+  // 権限が無い人の画面（st-no-access）の本文は NoAccess の箱だけ。組に無いと比べる役が 1 つも無い
+  fpair("state", 'section[aria-label="設定"] > .k-state', [...BOX, "texts"]),
 ];
 /** 自分の設定（下絵 .k-f10a-*）：区画ごと・顔・名前の行・小窓 */
 const ME_CARDS = ["pf-self", "pf-view", "pf-ws"];
@@ -516,7 +518,8 @@ export const ME_PAIRS: FidelityPair[] = [
     ].includes(p.name),
   ),
   ...ME_CARDS.map((c) => fpair(c, `section[aria-labelledby="${c}"]`, [...BOX, "texts"])),
-  fpair("face", ".k-f10a-avatar, .k-f10a-photo", BOX),
+  // 顔は「自分」の区画の顔だけ（下絵 me-saved の「ほかの画面での見え方」の見本の顔は本番に出さない・K-839 の作らない物）
+  fpair("face", ".k-f10a-face .k-f10a-avatar, .k-f10a-photo", BOX),
   fpair("fieldrow", ".k-f10a-fieldrow", ["x", "width", "height"]),
   fpair("meta", ".k-f10a-meta", TEXT),
   fpair("row", ".k-set-row", ["height", "texts"]),
