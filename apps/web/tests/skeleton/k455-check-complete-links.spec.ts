@@ -37,6 +37,7 @@ import {
   fillAndCreate,
   jstDay,
   linkCard,
+  linkDialog,
   linkRow,
   linksOf,
   makeTicket,
@@ -194,7 +195,7 @@ test("K455-M2-02 文を直せるのはチェックの前だけ：付いた行の
   await expect(specTextBtn(page, SPEC_A)).toHaveAttribute("aria-disabled", "true");
   await specTextBtn(page, SPEC_A).click({ force: true });
   await expect(specsBlock(page).getByRole("textbox", { name: "確認項目の文", exact: true })).toHaveCount(0);
-  expect(patches.n, "付いた行の文を直す口は呼ばれない").toBe(1);
+  expect(patches.n, "付いた行の文を直す口は呼ばれない").toBe(0);
   expect(await toggleSpec(page, SPEC_A)).toBe(200);
   await specTextBtn(page, SPEC_A).click();
   const input = specsBlock(page).getByRole("textbox", { name: "確認項目の文", exact: true });
@@ -465,7 +466,7 @@ test("K455-M2-10 つながり：関連は両方の詳細に出て、片方で外
   let d = await openLinkDialog(page, "関連", tag, nb);
   expect((await submitLink(page, d)).status(), "つながりを足す口が受ける").toBe(201);
   await expect(
-    page.getByRole("region", { name: "知らせ", exact: true }).getByText(MSG.linked(nb), { exact: true }),
+    page.getByRole("region", { name: /知らせ/ }).getByText(MSG.linked(nb), { exact: true }),
   ).toBeVisible();
   await expect(linkRow(page, numRe(nb))).toContainText("関連");
   expect(await linksOf(a)).toHaveLength(1);
@@ -489,12 +490,20 @@ test("K455-M2-10 つながり：関連は両方の詳細に出て、片方で外
   expect(await linksOf(a)).toEqual([{ from_ticket_id: a, to_ticket_id: b, kind: "derived_from" }]);
   await openTicket(page, b, bTitle);
   await showLinks(page);
-  d = await openLinkDialog(page, "派生元", tag, na);
-  const loop = await submitLink(page, d);
-  expect(loop.status(), "派生元が輪になる").toBe(409);
-  const body = (await loop.json()) as { code?: string; message?: string };
-  expect(body.code).toBe(MSG.cycle);
-  await expect(d.getByRole("alert")).toHaveText(body.message ?? "(口の文が無い)");
+  // 画面の層：もうつながっている相手（A）は候補で押せない形（K-450 の候補の印）なので、画面からは輪を作れない
+  await linkCard(page).getByRole("button", { name: "つながりを足す", exact: true }).click();
+  const ld = linkDialog(page);
+  await ld.getByRole("radio", { name: /^派生元/ }).check();
+  await ld.getByLabel("チケットを探す", { exact: true }).fill(tag);
+  await expect(
+    ld.getByRole("list", { name: "候補", exact: true }).getByRole("button").filter({ hasText: numRe(na) }),
+    "つながっている相手は押せない",
+  ).toHaveAttribute("aria-disabled", "true");
+  await ld.getByRole("button", { name: "やめる", exact: true }).click();
+  // 口の層（最後の砦）：逆向きの派生元を直に足すと 409（輪）
+  const loop = await asPerson(page, me.token, "POST", `/tickets/${b}/links`, { other_ticket_id: a, kind: "derived_from" });
+  expect(loop.status, "派生元が輪になる").toBe(409);
+  expect(loop.code).toBe(MSG.cycle);
   expect(await linksOf(b)).toHaveLength(1);
 });
 
