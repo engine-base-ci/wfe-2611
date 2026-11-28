@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/account/**", "apps/web/app/(outside)/account/**", "apps/web/app/(dev)/dev/mock/f10/render-account.tsx"], "tests": ["apps/web/tests/k/k840-email-change.spec.ts"]}
+ ]
+}
