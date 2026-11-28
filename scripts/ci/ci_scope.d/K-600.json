@@ -1,0 +1,15 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F7/list-slots.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k600-f7-list-slots.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k600-f7-list-slots.spec.ts": "差し込み口の入口 apps/web/features/F7/list-slots.tsx・区画のファイル apps/web/features/F7/（overview/overview-slot.tsx・calendar/calendar-slot.tsx・gantt/gantt-slot.tsx・due/due-mark-slot.tsx・due/number-cards-slot.tsx・due/mine-chips-slot.tsx）・前からのファイル apps/web/features/F4/ticket-list/（list-table.tsx・list-page.tsx・list-views.tsx・use-ticket-list.ts）と apps/web/features/F4/create-ticket/tickets-page.tsx を読む（K-600）"
+ }
+}
