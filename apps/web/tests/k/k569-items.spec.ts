@@ -396,6 +396,9 @@ test("K569-UI-026 キーボード：先方の担当者名から Tab で 分類�
   await page.keyboard.press("Enter");
   await expect(page.getByRole("option")).toHaveCount(3);
   await page.keyboard.press("Escape");
+  // 選びの箱が閉じ終わり、焦点が「分類」へ戻ってから Tab を押す（戻る前の Tab は箱の中から次へ動き、送る書類に乗らない）
+  await expect(page.getByRole("option")).toHaveCount(0);
+  await expect(grid(page).getByRole("combobox", { name: "分類", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
   const docs = grid(page).getByRole("group", { name: "送る書類", exact: true });
   await expect(docs.getByRole("checkbox", { name: "請求書", exact: true })).toBeFocused();
