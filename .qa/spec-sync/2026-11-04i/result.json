@@ -1,0 +1,68 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.131-132",
+ "executed_at": "2026-11-04T11:24:47",
+ "change": "D-128.125 のテストの段を入れ子（単体・中間・統合・流れをまたぐ・回帰）に直す。D-128.131（歩く骸骨は最初に作る中間・統合テストの道すじ）。D-128.132（CI はローカルの dagci・既存のコードは使うチケットで確かめる）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "05_flow/flows.json（walking_skeleton）",
+  "ci.yaml",
+  "spec-dependencies.yaml",
+  "11_tickets/KN-123・KN-124"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.131 は flows.json、D-128.132 は ci.yaml に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "spec-validator --tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator --tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "spec-validator --tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "spec-validator --tier h"
+  }
+ ],
+ "next": [
+  "KN-123：今の未着手のチケットを閉じ、歩く骸骨の道すじからチケットを切る"
+ ]
+}
