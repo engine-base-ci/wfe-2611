@@ -1,0 +1,9 @@
+{
+  "data_links": [
+    { "paths": ["apps/web/tests/k/f7-shell-mock.ts"], "tests": ["apps/web/tests/k/k471-search-panel.spec.ts"] }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/k471-search-panel.spec.ts": "口の差し替えの道具 apps/web/tests/k/f7-shell-mock.ts（K-466 が運ぶ）と list-mock.ts を読む。stage2-match.ts を通してモックの頁 /dev/mock/f7 を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-471",
+    "apps/web/features/F7/search/search-slot.tsx": "import() で同じ区画の search-live.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-471）"
+  }
+}
