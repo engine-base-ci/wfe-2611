@@ -1,0 +1,960 @@
+{
+ "meta": {
+  "version": "v3.1",
+  "created_at": "2026-11-28",
+  "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
+  "source": [
+   "D-053.1",
+   "D-053.2",
+   "D-010"
+  ]
+ },
+ "roles": [
+  {
+   "id": "R1",
+   "name": "自分で全部回している人",
+   "desc": "受託の営業・見積・請求・問い合わせを 1 人で回す。個人のテナント（会社名を空で登録）もここ",
+   "frequency": "毎日・何度も",
+   "screens": [
+    "signup",
+    "verify-email",
+    "mfa-setup",
+    "billing-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "records",
+    "record-detail",
+    "goals",
+    "goal-allocation",
+    "goal-edit",
+    "my-progress",
+    "review",
+    "hypotheses",
+    "duties",
+    "ledger-def",
+    "company-model",
+    "automation-repair",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "security-brief",
+    "disclosure",
+    "export",
+    "account-close",
+    "account",
+    "company-settings",
+    "llm-routes",
+    "app-setup",
+    "import",
+    "services",
+    "inquiry",
+    "notices",
+    "billing",
+    "member-detail",
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "work-types",
+    "knowledge",
+    "requests",
+    "legal",
+    "help"
+   ],
+   "nav": [
+    "tickets",
+    "approvals",
+    "ai-activity",
+    "clone-chat",
+    "knowledge",
+    "members",
+    "member-detail",
+    "layers",
+    "masters",
+    "audit",
+    "company-settings",
+    "billing",
+    "requests",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
+   ],
+   "object_constraints": [
+    {
+     "object": "本人のもの（記憶・目標・ルール・タスク・自分のAI）",
+     "constraint": "権限なしで自由",
+     "access_predicate_expr": "owner_member_id = current_setting('app.user_id', true)::uuid",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "object": "会社の中の見える範囲",
+     "constraint": "見える層だけ",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "source": [
+      "D-026.1",
+      "D-058.5"
+     ]
+    },
+    {
+     "object": "それ以外（会社・層のもの）",
+     "constraint": "権限＝誰に×何に×どの層で×できること",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, <target_kind>, scope_id, <ability>)",
+     "source": [
+      "D-073.2",
+      "D-073.3"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-28",
+   "source": [
+    "D-125.1",
+    "D-125.135"
+   ]
+  },
+  {
+   "id": "R2",
+   "name": "数人の会社の代表",
+   "desc": "自分と数人に仕事を配り、渡し・受け取り・結果を見る。マネージャー（配る・承認する）の権限を持つ",
+   "frequency": "毎日",
+   "screens": [
+    "signup",
+    "verify-email",
+    "mfa-setup",
+    "billing-setup",
+    "login",
+    "password-reset",
+    "onboard-interview",
+    "onboard-draft",
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "onboard-golive",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "records",
+    "record-detail",
+    "goals",
+    "goal-allocation",
+    "goal-edit",
+    "my-progress",
+    "review",
+    "hypotheses",
+    "duties",
+    "ledger-def",
+    "company-model",
+    "automation-repair",
+    "audit",
+    "policies",
+    "members",
+    "ai-staff",
+    "ai-staff-detail",
+    "security-brief",
+    "disclosure",
+    "export",
+    "account-close",
+    "account",
+    "company-settings",
+    "llm-routes",
+    "app-setup",
+    "import",
+    "services",
+    "inquiry",
+    "notices",
+    "billing",
+    "member-detail",
+    "tickets",
+    "masters",
+    "layers",
+    "rules",
+    "work-types",
+    "knowledge",
+    "requests",
+    "legal",
+    "help"
+   ],
+   "nav": [
+    "tickets",
+    "approvals",
+    "ai-activity",
+    "clone-chat",
+    "knowledge",
+    "members",
+    "member-detail",
+    "layers",
+    "masters",
+    "audit",
+    "company-settings",
+    "billing",
+    "requests",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
+   ],
+   "object_constraints": [
+    {
+     "object": "本人のもの（記憶・目標・ルール・タスク・自分のAI）",
+     "constraint": "権限なしで自由",
+     "access_predicate_expr": "owner_member_id = current_setting('app.user_id', true)::uuid",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "object": "会社の中の見える範囲",
+     "constraint": "見える層だけ",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "source": [
+      "D-026.1",
+      "D-058.5"
+     ]
+    },
+    {
+     "object": "それ以外（会社・層のもの）",
+     "constraint": "権限＝誰に×何に×どの層で×できること",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, <target_kind>, scope_id, <ability>)",
+     "source": [
+      "D-073.2",
+      "D-073.3"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-28",
+   "source": [
+    "D-125.16",
+    "D-125.117"
+   ]
+  },
+  {
+   "id": "R3",
+   "name": "配られた仕事をする人",
+   "desc": "上や横から受け取ってこなす。兼務もある。自分の AI に任せる",
+   "frequency": "毎日",
+   "screens": [
+    "signup",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "bridge-setup",
+    "credentials",
+    "today",
+    "approvals",
+    "clone-thread",
+    "tasks",
+    "clone-chat",
+    "ai-activity",
+    "records",
+    "record-detail",
+    "goals",
+    "my-progress",
+    "policies",
+    "account",
+    "app-setup",
+    "inquiry",
+    "notices",
+    "tickets",
+    "rules",
+    "work-types",
+    "knowledge",
+    "legal",
+    "help"
+   ],
+   "nav": [
+    "tickets",
+    "approvals",
+    "ai-activity",
+    "clone-chat",
+    "knowledge",
+    "account",
+    "credentials",
+    "bridge-setup",
+    "inquiry",
+    "notices"
+   ],
+   "object_constraints": [
+    {
+     "object": "本人のもの（記憶・目標・ルール・タスク・自分のAI）",
+     "constraint": "権限なしで自由",
+     "access_predicate_expr": "owner_member_id = current_setting('app.user_id', true)::uuid",
+     "source": [
+      "D-073.1"
+     ]
+    },
+    {
+     "object": "会社の中の見える範囲",
+     "constraint": "見える層だけ",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "source": [
+      "D-026.1",
+      "D-058.5"
+     ]
+    },
+    {
+     "object": "それ以外（会社・層のもの）",
+     "constraint": "権限＝誰に×何に×どの層で×できること",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, <target_kind>, scope_id, <ability>)",
+     "source": [
+      "D-073.2",
+      "D-073.3"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-28",
+   "source": [
+    "D-125.14",
+    "D-125.115"
+   ]
+  },
+  {
+   "id": "R4",
+   "name": "依頼を出すゲスト",
+   "desc": "会社に招待され、依頼を出し、やり取りし、見せてもらったチケットを見る。クライアントの場所だけを使う",
+   "frequency": "依頼のたび",
+   "screens": [
+    "signup",
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "password-reset",
+    "today",
+    "clone-chat",
+    "records",
+    "record-detail",
+    "my-progress",
+    "policies",
+    "account",
+    "app-setup",
+    "notices",
+    "tickets",
+    "legal",
+    "help",
+    "portal"
+   ],
+   "nav": [
+    "portal",
+    "account",
+    "notices"
+   ],
+   "object_constraints": [
+    {
+     "object": "会社の中の見える範囲",
+     "constraint": "共有された範囲を見るだけ（書き込まない）",
+     "access_predicate_expr": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+     "source": [
+      "D-026.1",
+      "D-058.5"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-28",
+   "source": [
+    "D-155.35",
+    "D-155.37",
+    "D-125.43",
+    "D-125.121",
+    "D-125.122",
+    "D-125.124"
+   ]
+  },
+  {
+   "id": "R6",
+   "name": "Kaname 運営",
+   "desc": "自分＋身近な数社を支える。問い合わせ・請求と入金・お知らせ・会社を止める／再開・プランとひな形（操作は版を見るだけ）。契約で事前に許可を得て会社のデータを見られる",
+   "frequency": "毎日",
+   "screens": [
+    "ops-support",
+    "ops-home",
+    "ops-catalog",
+    "ops-services",
+    "ops-skills",
+    "ops-notices",
+    "ops-billing",
+    "ops-llm",
+    "ops-disclosure",
+    "ops-tenant",
+    "ops-review",
+    "ops-audit",
+    "ops-team"
+   ],
+   "nav": [
+    "ops-home",
+    "ops-tenant",
+    "ops-support",
+    "ops-notices",
+    "ops-billing",
+    "ops-skills",
+    "ops-team"
+   ],
+   "object_constraints": [
+    {
+     "object": "運営テナントのマスタ・証跡",
+     "constraint": "運営の権限（support / billing / catalog / admin）",
+     "access_predicate_expr": "current_setting('app.role', true) = 'ops'",
+     "source": [
+      "D-073.7",
+      "D-077.4"
+     ]
+    },
+    {
+     "object": "顧客テナントの行",
+     "constraint": "既定で読めない。理由つき・1 時間の中を見るの許可のときだけ。両側の証跡へ",
+     "access_predicate_expr": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = row.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "source": [
+      "D-074.5",
+      "D-125.128",
+      "D-128.68",
+      "D-077.7"
+     ]
+    }
+   ],
+   "status": "decided",
+   "decided_at": "2026-11-28",
+   "source": [
+    "D-125.23",
+    "D-125.24",
+    "D-125.128"
+   ]
+  }
+ ],
+ "matrix": {
+  "signup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "verify-email": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "invite-accept": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "mfa-setup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "billing-setup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "login": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "password-reset": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "onboard-interview": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "onboard-draft": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "bridge-setup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "credentials": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "onboard-testrun": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "onboard-golive": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "today": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "approvals": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "clone-thread": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "tasks": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "clone-chat": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "ai-activity": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "records": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "record-detail": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "goals": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "goal-allocation": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "goal-edit": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "my-progress": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "review": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "hypotheses": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "duties": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ledger-def": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "company-model": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "automation-repair": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "audit": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "policies": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "members": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ai-staff": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ai-staff-detail": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "security-brief": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "disclosure": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "export": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "account-close": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ops-support": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-home": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-catalog": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "account": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "company-settings": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "llm-routes": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "app-setup": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "import": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "services": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ops-services": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-skills": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "inquiry": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "notices": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "billing": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ops-notices": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-billing": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-llm": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-disclosure": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-tenant": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-review": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "ops-audit": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "member-detail": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "tickets": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "masters": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "layers": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "rules": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "work-types": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "knowledge": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "-",
+   "R6": "-"
+  },
+  "requests": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "-",
+   "R4": "-",
+   "R6": "-"
+  },
+  "ops-team": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "-",
+   "R6": "edit"
+  },
+  "legal": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "help": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "portal": {
+   "R1": "-",
+   "R2": "-",
+   "R3": "-",
+   "R4": "view",
+   "R6": "-"
+  }
+ }
+}
