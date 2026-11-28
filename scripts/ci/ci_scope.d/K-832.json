@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/ws/**"], "tests": ["apps/web/tests/k/k832-delete-ws.spec.ts", "apps/web/tests/k/k831-settings.spec.ts"]}
+ ]
+}
