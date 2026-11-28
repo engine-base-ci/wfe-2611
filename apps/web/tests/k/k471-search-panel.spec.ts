@@ -10,6 +10,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { TICKET_A, mockSearch, mockShell, type Hit, type SearchMock } from "./f7-shell-mock";
+import { stepUntil } from "./kit";
 import { items, mockList, open } from "./list-mock";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
@@ -58,7 +59,7 @@ const overflowX = (p: Page) =>
 
 /** 一覧の表が 3 行出るまで待つ（外枠の ⌘K の聞き手が付くのは移り終わってから。押したキーを失わない） */
 const settle = (p: Page) =>
-  expect(p.getByRole("table", { name: "チケットの一覧" }).locator("tbody tr[data-ticket]")).toHaveCount(3);
+  expect(p.locator('table[aria-label="チケットの一覧"] tbody tr[data-ticket]')).toHaveCount(3);
 
 /** 時計を止める時刻（時間は runFor だけで進める） */
 const T0 = new Date("2026-11-02T08:30:00Z");
@@ -129,6 +130,7 @@ test("K471-UI-002 打つと間をおいて口を 1 回だけ呼ぶ（q は打っ
   expect(m.calls, "打つたびには呼ばない").toEqual([]);
   await page.clock.runFor(200);
   await expect.poll(() => m.calls.length).toBe(1);
+  await stepUntil(page, async () => (await hits(panel(page)).count()) === 4);
   expect(m.calls[0]!.get("q")).toBe(QUERY);
   expect(m.calls[0]!.get("limit")).toBe("5");
   expect(m.calls[0]!.has("kinds")).toBe(false);
@@ -258,6 +260,7 @@ test("K471-UI-008 探している間（時計を止めて runFor だけで進め
   await page.clock.runFor(200);
   await expect(panel(page).getByText("探しています…")).toBeVisible();
   release();
+  await stepUntil(page, async () => (await hits(panel(page)).count()) === 4);
   await expect(hits(panel(page))).toHaveCount(4);
 });
 
