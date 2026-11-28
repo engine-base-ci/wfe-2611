@@ -223,6 +223,16 @@ WEB_PART_UP = """      - uses: actions/upload-artifact@v4
             junit/
           if-no-files-found: error
           retention-days: 1
+      - uses: actions/upload-artifact@v4
+        # 赤の組だけ、立てた口（API）と画面のサーバーの記録を残す（照らしには使わない・赤の訳を後から読むため・PM の決め 2026-11-28）
+        if: ${{ failure() }}
+        with:
+          name: web-logs-${{ matrix.part }}
+          path: |
+            ${{ runner.temp }}/api.log
+            ${{ runner.temp }}/web.log
+          if-no-files-found: warn
+          retention-days: 7
 """
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
                f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
