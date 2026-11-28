@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F7/due/**", "apps/api/src/features/ticket-update/**", "apps/api/src/hooks/ticket-update.ts", "07_qa/test-specs/errors.d/K-483.json"],
+   "tests": ["apps/api/test/features/F7/due-change.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F7/due.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-483）"
+ }
+}
