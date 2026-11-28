@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/bridge/test/review-tools.test.ts": "試験が書いた偽の MCP の台本を node の子プロセス（spawn）で動かす。リポジトリのファイルは読まない・K-737"
+ }
+}

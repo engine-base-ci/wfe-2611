@@ -1,0 +1,255 @@
+{
+ "screen": "hypotheses",
+ "mock": "06_mockup/v1/v1-hypotheses.html",
+ "state_labels": {
+  "n": "検証の表",
+  "tl": "タイムライン",
+  "a": "採ったあと",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:仮説を足す",
+   "kind": "button",
+   "label": "仮説を足す",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:高本AIに候補を出してもらう→clone-chat",
+   "kind": "link",
+   "label": "高本AIに候補を出してもらう",
+   "target": "clone-chat",
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:採る（施策とタスクに落とす）",
+   "kind": "button",
+   "label": "採る（施策とタスクに落とす）",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:採らない",
+   "kind": "button",
+   "label": "採らない",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:施策を直す",
+   "kind": "button",
+   "label": "施策を直す",
+   "target": null,
+   "states": [
+    "検証の表",
+    "タイムライン",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:タイムラインで見る",
+   "kind": "button",
+   "label": "タイムラインで見る",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:目標に反映する→goal-edit",
+   "kind": "link",
+   "label": "目標に反映する",
+   "target": "goal-edit",
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:両方採る",
+   "kind": "button",
+   "label": "両方採る",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:絞るだけ採る",
+   "kind": "button",
+   "label": "絞るだけ採る",
+   "target": null,
+   "states": [
+    "検証の表",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:リスト",
+   "kind": "button",
+   "label": "リスト",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:タイムライン",
+   "kind": "button",
+   "label": "タイムライン",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:← 一覧へ",
+   "kind": "button",
+   "label": "← 一覧へ",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:判定を記録",
+   "kind": "button",
+   "label": "判定を記録",
+   "target": null,
+   "states": [
+    "タイムライン"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:目標の改訂を見る→goal-edit",
+   "kind": "link",
+   "label": "目標の改訂を見る",
+   "target": "goal-edit",
+   "states": [
+    "採ったあと"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:採る",
+   "kind": "button",
+   "label": "採る",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
