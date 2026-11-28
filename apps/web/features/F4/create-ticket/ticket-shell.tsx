@@ -15,7 +15,7 @@
 //   障害・メンテの帯と画面いっぱいの形の差し込み口はここ 1 か所（K-957・D-156.10）：ServiceGate が外枠ごと包み（メンテ中・画面が止まっているなら外枠を描かない）、
 //     ServiceBands が本文の前に帯を 1 つ並べる（帯が無ければ何も描かない）
 import { useQuery, type QueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { Shell, Toaster, type Crumb, type Group } from "@/components/k";
 import { ServiceBands, ServiceGate } from "@/features/F12/help/service-bands";
 import * as F7 from "@/features/F7/shell-slots";
@@ -167,9 +167,20 @@ function readTheme(): Theme {
   return parseTheme(hit?.slice(THEME_COOKIE.length + 1));
 }
 
+// ログインの印（token）は手元にだけ在る。組み立て（サーバー）の描画は「無い」で描き、画面に載ってから手元の値で描き直す。
+//   その場で window を見ると、サーバーの HTML（探す欄が disabled）と最初の描画（使える）が食い違い、
+//   React は食い違った属性を直さないので、探す欄が押せないまま残っていた（K-471・K-592）
+const noSubscribe = () => () => undefined;
+const useSignedIn = (): boolean =>
+  useSyncExternalStore(
+    noSubscribe,
+    () => getToken() !== null,
+    () => false,
+  );
+
 /** 外枠の口を 1 本だけ読む。ログイン前は呼ばない */
 function useShellData(screen: string) {
-  const signedIn = typeof window !== "undefined" && getToken() !== null;
+  const signedIn = useSignedIn();
   const shell = useQuery({ queryKey: SHELL_KEY, queryFn: () => readShell(screen), enabled: signedIn, ...ONCE });
   return { signedIn, shell };
 }

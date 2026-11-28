@@ -47,7 +47,9 @@ const pathAndHash = (page: Page): string => {
 };
 /** 箱の入力に焦点を戻して全選択し、打ち直す（札を押すと焦点は札のボタンにある）。口の答え（字が変わるたびに 1 回）を待って 200 を確かめる */
 async function retype(page: Page, found: ReturnType<Page["getByRole"]>, text: string): Promise<void> {
-  await found.getByRole("textbox").click();
+  // 打つ欄は外枠の帯の探す欄（form role=search の中の type=search＝searchbox）。箱（region「探す」）の中には無い
+  void found;
+  await page.getByRole("search").getByRole("searchbox").click();
   await page.keyboard.press("ControlOrMeta+A");
   const answer = answered(page, "GET", SEARCH_RE);
   await page.keyboard.type(text);
@@ -119,7 +121,8 @@ test("K592-M2-04 自分の会話：会話の名前で探すと「会話」の組
   const mine = hitLink(found, `${s.key} 請求の相談`);
   await expect(mine, "自分の会話だけ（同僚の分が混ざれば 2 件になる）").toHaveCount(1);
   await mine.click();
-  await expect.poll(() => pathAndHash(page), "会話の画面へ").toBe(`/ai/chat?c=${s.conv}`);
+  // 会話の画面は /ai/talk（K-762 の決め：/ai/chat は /ai/talk へ送る）
+  await expect.poll(() => pathAndHash(page), "会話の画面へ").toBe(`/ai/talk?c=${s.conv}`);
 });
 
 test("K592-M2-05 ナレッジは 0 件：札「ナレッジ」を押すと案内が出て「すべて」には出ない。何にも合わない字は案内と説明を出し、打ち足すと探し直す", async ({
