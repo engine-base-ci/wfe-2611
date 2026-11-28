@@ -1,0 +1,27 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/client-requests-draft.ts",
+    "apps/api/src/features/F11/requests/draft.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/client-requests-draft.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/client-requests-draft.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_client_requests_id_draft.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-896.ts": "口の振る舞いの hooks のファイル（client-requests-draft.ts）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-896"
+ }
+}
