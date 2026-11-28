@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>今日 B ── 一枚の紙（Notion 型）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+.app{grid-template-columns:56px minmax(0,1fr) 360px}
+.rail{background:var(--bg);border-right:1px solid var(--line2);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0;position:sticky;top:0;height:100vh}
+.rail a{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--fg3);position:relative}
+.rail a:hover,.rail a.on{background:var(--bg3);color:var(--fg)}
+.rail a .n{position:absolute;top:2px;right:2px;font-size:10px;background:var(--warn);color:#fff;border-radius:999px;min-width:15px;height:15px;display:grid;place-items:center;font-weight:700}
+.rail .mk{width:28px;height:28px;border-radius:7px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;margin-bottom:10px}
+.page{max-width:760px;margin:0 auto;padding:56px 40px 80px}
+.page h1{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.page .sub{color:var(--fg3);font-size:14px;margin:8px 0 28px}
+.page h2{font-size:14px;font-weight:600;color:var(--fg2);margin:34px 0 10px;display:flex;align-items:center;gap:8px}
+.page h2 .n{color:var(--fg3);font-weight:500}
+.page h2 .sp{flex:1}
+.page h2 a{font-size:12.5px;color:var(--fg3);font-weight:500}
+.brief{font-size:15.5px;line-height:1.9;color:var(--fg)}
+.brief b{font-weight:600}
+.brief a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.brief a:hover{text-decoration-color:var(--accent)}
+.ap{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--line2)}
+.ap:last-child{border-bottom:1px solid var(--line2)}
+.ap .t{font-size:14px;font-weight:500}
+.ap .t small{display:block;color:var(--fg3);font-size:12.5px;font-weight:400;margin-top:1px}
+.ap .w{font-size:12.5px;color:var(--fg3);white-space:nowrap}
+.task{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line2)}
+.task:last-child{border-bottom:1px solid var(--line2)}
+.task input{width:16px;height:16px;margin-top:4px;accent-color:var(--accent)}
+.task .t{font-size:15px;font-weight:500}
+.task .nx{font-size:13px;color:var(--fg2);margin-top:2px}
+.task .meta{font-size:12.5px;color:var(--fg3);margin-top:3px}
+.task .r{font-size:12.5px;color:var(--fg3);white-space:nowrap;padding-top:4px}
+.task.first{border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;margin:6px 0 10px;background:var(--bg2)}
+.task.first .lead{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent);margin-bottom:3px}
+.task.first .t{font-size:18px}
+.task.done .t{text-decoration:line-through;color:var(--fg3);font-weight:400}
+.cap{display:flex;gap:16px;font-size:13px;color:var(--fg2);margin:0 0 6px}
+.cap b{color:var(--fg);font-variant-numeric:tabular-nums}
+</style></head><body>
+<div class="app">
+ <nav class="rail">
+  <div class="mk">K</div>
+  <a class="on" href="#" title="今日"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="n">4</span></a>
+  <a href="#" title="高本AIと話す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.2z"/></svg></a>
+  <a href="#" title="タスク"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></a>
+  <a href="#" title="承認待ち"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6L18.5 5z"/></svg><span class="n">3</span></a>
+  <a href="#" title="目標"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></a>
+  <a href="#" title="台帳"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M3 12h18M3 19h18"/></svg></a>
+  <a href="#" title="AI社員の動き" style="margin-top:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4m0 0-5 6m5-6 5 6"/></svg></a>
+ </nav>
+ <main><div class="page">
+  <h1>9月10日 水曜日</h1>
+  <div class="sub">今日やる分 3 件 · 見込み 1h35 / 使える 4h00 · 会議 2h00 · 朝の計画は 7:42 に確定（<a href="#">直す</a>）</div>
+  <div class="brief">夜のうちに 3 体が動きました。<b>まずセイコー様です。</b><a href="#">山田様への追いメール</a>が承認待ちで、先方の検討期限が明後日なので、今日中に押してもらえると間に合います。京蟻の請求書は税込表示になっていなかったので私が差し戻して直させました。今は問題ありません。今週の成約はあと 1 件で目標です。<span class="muted"> ── 高本AI 7:30</span></div>
+  <h2>押してほしいもの<span class="n">3</span><span class="sp"></span><a href="#">承認待ちの画面 →</a></h2>
+  <div>
+   <div class="ap"><span class="t">セイコー 山田様へ 追いメール<small>営業社員が作成 · 高本AIが柔らかい言い回しに直させた</small></span><span class="w late">先方の期限 明後日</span><span><button class="btn p sm">承認して送る</button> <button class="btn ghost sm">中身を見る</button></span></div>
+   <div class="ap"><span class="t">京蟻 請求書 1,826,000円（税込）<small>経理社員が作成 · 差し戻し → 修正 → 確認済み</small></span><span class="w">待ち 14 時間</span><span><button class="btn sm">承認して送る</button> <button class="btn ghost sm">中身を見る</button></span></div>
+   <div class="ap"><span class="t">X 週次の実績投稿<small>営業社員が作成 · 数字は台帳と一致</small></span><span class="w">待ち 1 日</span><span><button class="btn sm">承認して投稿</button> <button class="btn ghost sm">中身を見る</button></span></div>
+  </div>
+  <h2>今日やる分<span class="n">残り 3</span><span class="sp"></span><a href="#">タスクの画面で開く →</a></h2>
+  <div>
+   <div class="task first"><input type="checkbox"><div><div class="lead">まずこれ</div><div class="t">セイコー様へ提案の一次返信を取りに行く</div><div class="nx">山田様に電話（11:00 の商談前）。出なければ追いメールを承認へ</div><div class="meta">あなたの受注 7件 → 残り 3 ・ 30分 ・ <span class="late">今日</span></div></div><span class="r"><button class="btn ghost sm">引き継いでもらう</button></span></div>
+   <div class="task"><input type="checkbox"><div><div class="t">京蟻 契約書案を送る</div><div class="nx">台帳の添付「契約書ひな形」に押印欄だけ足す</div><div class="meta">あなたの受注 7件 → 残り 3 → 2 ・ 45分 ・ 明日</div></div><span class="r"></span></div>
+   <div class="task"><input type="checkbox"><div><div class="t">ScoliVio 会津データ受領の段取り確認</div><div class="nx ai-name">次の一手が空。高本AIが下書きします</div><div class="meta">自主 ・ 20分 ・ 9/12</div></div><span class="r"></span></div>
+   <div class="task"><span class="st run" style="margin-top:6px"><i></i></span><div><div class="t">発注ナビ 新着の確認（今日ぶん）<span class="tag ai" style="margin-left:8px">AI営業社員 · 実行中</span></div><div class="nx">12件を条件で絞って台帳へ</div><div class="meta">新規リード 60件／月 → 41 → 53</div></div><span class="r"><a href="#">動きを見る</a></span></div>
+   <div class="task done"><span class="st ok" style="margin-top:6px"><i></i></span><div><div class="t">週次の売上を台帳から締める</div><div class="meta">今期の売上 12,000,000 ・ 実 11分</div></div><span class="r"></span></div>
+  </div>
+  <h2>夕方<span class="n">18:00</span></h2>
+  <div class="muted" style="font-size:13.5px">高本AIが残りの振り分け案（消す／明日へ／引き継いでもらう）を出します。それまでは何もしなくて大丈夫です。</div>
+ </div></main>
+ <aside class="chat">
+  <div class="h"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/></svg></span>高本AI<span class="ctx">今日を見ている</span></div>
+  <div class="b">
+   <div class="m u">今日いちばん大事なのは？</div>
+   <div class="m a"><div class="who">高本AI</div><p>セイコー様への追いメールの承認です。次に一次返信の電話。契約書案は明日で間に合います。</p><div class="ops"><button>セイコーを承認する</button><button>電話の要点を出して</button></div></div>
+   <div class="m u">田中さんの提案書、今日引き継げる？</div>
+   <div class="m a"><div class="who">高本AI</div><p>13:00〜15:00 が空いています。田中さんは今日 SOICO の商談で手が塞がっているので、引き継ぐなら一次案を私が作って上げます。</p><div class="ops"><button>引き継いで一次案を作らせる</button><button>今日はやらない</button></div></div>
+  </div>
+  <div class="c"><div class="box"><textarea rows="1" placeholder="高本AIに頼む・聞く"></textarea><button class="btn p sm">送る</button></div><div class="k"><span><kbd>Enter</kbd> 送る</span><span><kbd>/</kbd> 配る・数値・覚えて</span></div></div>
+ </aside>
+</div>
+</body></html>

@@ -1,0 +1,130 @@
+/* グループの小窓（段 11・F10）の部品。値は正本のトークン（--k-*）だけを読む。小窓・欄・札・ボタンの形は components/k と
+   invite.css の型のまま、ここは並べ方だけ。前の形（old/段10-v1 の F9/groups）の CSS を写して直した。クラスは k-f10m- */
+
+.k-f10m-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f10m-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--k-c-dialog-stack-gap);
+  align-items: start;
+}
+.k-f10m-field {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-f10m-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-height: var(--k-c-dialog-select-height);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+}
+.k-f10m-pick:focus-within {
+  border-color: var(--k-primary);
+}
+.k-f10m-pick-input {
+  flex: 1 1 calc(var(--k-s-2xl) + var(--k-s-md));
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+}
+.k-f10m-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.k-f10m-swatch {
+  position: relative;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  cursor: pointer;
+}
+.k-f10m-swatch[aria-checked="true"] {
+  outline: calc(var(--k-s-xs) / 2) solid var(--k-primary);
+  outline-offset: calc(var(--k-s-xs) / 2);
+}
+.k-f10m-swatch[aria-checked="true"]::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--k-card);
+  font-size: var(--k-text-body-sm);
+}
+.k-f10m-swatch[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-f10m-swatch[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-f10m-swatch[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-f10m-swatch[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-f10m-swatch[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-f10m-swatch[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+
+/* ---- 並びを替える・層を直す小窓の行 ---- */
+.k-f10m-order {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f10m-order-row {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+}
+.k-f10m-order-row > svg {
+  flex: none;
+  color: var(--k-neutral-strong);
+}
+.k-f10m-order-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-f10m-layer-input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .k-f10m-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
