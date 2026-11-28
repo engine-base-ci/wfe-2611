@@ -1,0 +1,1 @@
+python3 scripts/ci/k923_f11_close_test.py
