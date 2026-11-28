@@ -296,7 +296,9 @@ for (const [id, drive] of Object.entries(STATES)) {
           await openMembers(page, owner.token, w);
           await drive(page, mk);
         },
-        { pairs: INV_PAIRS, base: "/dev/mock/f8", blur: true },
+        // グループの名前の行の高さは比べない：本文は段 11 の K-818 が F10 の MembersPage（名前は開き閉じのボタンの中・行の高さ 1.6）に替えた。
+        //   段 9 の下絵 f8 は前の本文（名前は見出し h2・行の高さ 1.7）のまま。グループのカードの見た目は K-818 の K818-UI-001（下絵 f10 mb-list）が比べる
+        { pairs: INV_PAIRS, base: "/dev/mock/f8", blur: true, skip: ["group-name:line-height"] },
       );
       expect(new Set(rows.map((r) => r.part)), "本文の役で比べた").toContain("h1");
       expect(bad, bad.join("\n")).toEqual([]);
@@ -784,7 +786,9 @@ test("K420-UI-019 閲覧のみの人が /members を直に開く：「この画�
   await page.goto(PATH);
   await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
   expect(mk.reads).toBe(0);
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveCount(0);
 });
 
 test("K420-UI-020 並びを読めない（503）：本文に「メンバーを読み込めませんでした」と「もう一度読む」・押すと読めて並びが出る", async ({

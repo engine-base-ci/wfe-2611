@@ -160,7 +160,7 @@ test("K710-UI-002 /members を開くと並びの口を 1 回だけ読み、見�
   await expect(page.locator(`${SEC} .k-page-sub`)).toHaveText("グループごとに並ぶ。役割はその場で変えられる");
   await expect(page.locator(".k-inv-sub-count")).toHaveText("10");
   await expect(
-    page.getByRole("navigation", { name: "メニュー" }).getByRole("link", { name: "ワークスペースの管理" }),
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
   ).toHaveAttribute("aria-current", "page");
 });
 

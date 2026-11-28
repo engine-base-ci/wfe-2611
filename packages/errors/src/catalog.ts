@@ -8905,7 +8905,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-OPS-025": {
     "id": "E-OPS-025",
     "cls": "conflict",
-    "message": "もう選びました",
+    "message": "この版はもう選んであります。別の版を選んでください",
     "action": "新しい版が届いたら、またここに出ます",
     "undo": false,
     "severity": "low",

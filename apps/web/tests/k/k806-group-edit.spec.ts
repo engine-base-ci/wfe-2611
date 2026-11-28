@@ -6,7 +6,20 @@
 //   網の手前で差し替える（f10-kit.ts）。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { signupViaApi } from "../_lib/api";
-import { F10_PAIRS, ID, MOCK_BASE, WS_NAME, err, mockApi, ok, openAt, overflowX, toast, type Api } from "./f10-kit";
+import {
+  F10_PAIRS,
+  ID,
+  MOCK_BASE,
+  WS_NAME,
+  err,
+  membersBody,
+  mockApi,
+  ok,
+  openAt,
+  overflowX,
+  toast,
+  type Api,
+} from "./f10-kit";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 // ▾ は部品 components/k の Select（Base UI）。素の <select> は無いので、▾ を押して開いた portal の role=option を押す・数える
 async function pick(page: Page, sel: Locator, label: string): Promise<void> {
@@ -114,6 +127,12 @@ async function openList(page: Page, width = 1440): Promise<{ mk: Api; live: Live
     layers: [layerRow(LY.sales, "営業", 1, 1), layerRow(LY.dev, "受託開発", 2, 1), layerRow(LY.acc, "経理", 3, 1)],
   };
   mk.set("scopes", () => ok(listed(live.scopes)));
+  // 並びの口（getWorkspaceMembers）もグループの位置の順で返す（本物の口と同じ。並びを保存したあとの読み直しが新しい順になる・K806-UI-010）
+  const posOf = (id: string) => live.scopes.find((x) => x.id === id)?.position ?? 0;
+  mk.set("members", () => ({
+    status: 200,
+    body: membersBody({ ...mk.w, groups: [...mk.w.groups].sort((a, z) => posOf(a.id) - posOf(z.id)) }),
+  }));
   mk.set("layers", () => ok([...live.layers].sort((a, b) => a.order_no - b.order_no)));
   mk.set("updateScope", (c) => {
     const s = live.scopes.find((x) => x.id === c.id);
@@ -180,6 +199,8 @@ for (const [id, drive] of Object.entries(STATES)) {
             await t.click();
             await expect(t).toHaveAttribute("aria-expanded", "true");
           }
+          // 開いた経理まで頁が流れている。下絵は頁の上のまま読むので、頁の上に戻してから押す（小窓の y を同じ所から読む）
+          await page.evaluate(() => window.scrollTo(0, 0));
           await drive(page);
         },
         { pairs: F10_PAIRS, base: MOCK_BASE, blur: true },

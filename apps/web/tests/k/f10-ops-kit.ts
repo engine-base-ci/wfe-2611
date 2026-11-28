@@ -438,17 +438,8 @@ export async function mockOps(page: Page, o: OpsOpts = {}): Promise<OpApi> {
       : (fns.get(call.op) ?? defaults[call.op] ?? (() => err(501, "NOT_MOCKED", { message: call.op })))(call);
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
   });
-  // ワークスペースの管理の第 2 ナビの「メンバー」の札が読む人数の口（getWorkspaceMembers）。下絵（/dev/mock/f10 の WsSub members={7}）と同じ 7。
-  //   束 D・E・F の口ではないので calls には数えない（「設定の読みは 1 回」などの数を変えない）
-  await page.route(/\/api\/v1\/workspace\/members(\?|$)/, (route: Route, req: Request) =>
-    req.method() === "GET"
-      ? route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(ok(MEMBERS_7).body) })
-      : route.fallback(),
-  );
   return api;
 }
-/** 人数の口の答え（中身は札の数だけを使う。グループと人は空・count が 7） */
-const MEMBERS_7 = { groups: [], invitations: [], count: 7 };
 
 // ---------------------------------------------------------------- 日本時間の字（画面の字と同じ決まり：MM/DD HH:mm）
 export const jst = (isoText: string): string => {

@@ -390,7 +390,7 @@ test("K831-UI-020 権限が無い人：閲覧のみ（依頼する側）は「�
   await openAt(page, viewer.token, PATH);
   await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
   await expect(
-    page.getByRole("navigation", { name: "メニュー" }).getByRole("link", { name: "ワークスペースの管理" }),
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
   ).toHaveCount(0);
   expect(mk.count("settings")).toBe(0);
   const mk2 = await mockOps(page);

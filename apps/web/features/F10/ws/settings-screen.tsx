@@ -6,13 +6,12 @@
 //   K-832：消す手続きの小窓（SETTINGS_DIALOGS の delete）に読み直しと権限なしを渡し、手続き中の帯（読みの deletion）と取り消し（cancelWorkspaceDeletion）をつなぐ
 import { useRef, useState, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Button, ErrorState, Loading, NoAccess, Toaster } from "@/components/k";
+import { Button, ErrorState, Loading, NoAccess } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { useMyRoles } from "@/lib/auth/role";
 import { StepUp } from "@/features/F1/security/step-up";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
-import { useMembers } from "@/features/F10/invite/use-members";
 import { WsHead, WsSub } from "@/features/F10/invite/views";
 import { PlanRow } from "@/features/F12/billing/plan-row";
 import { usePlans } from "@/features/F12/billing/use-plans";
@@ -57,11 +56,9 @@ const failText = (r: CallErr): string => (r.status === 503 ? DOWN : (r.message ?
 
 function Frame({ children }: { children: ReactNode }) {
   return (
-    <Toaster>
-      <TicketShell screen="company-settings" crumbs={CRUMBS}>
-        {children}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen="company-settings" crumbs={CRUMBS}>
+      {children}
+    </TicketShell>
   );
 }
 
@@ -81,8 +78,6 @@ export function SettingsScreen() {
   const q = useSettings(roles !== undefined && !blocked);
   // プランの読み（K-962）を設定の読みと同時に始める（同じ鍵を PlanRow が読む・閲覧のみの役では呼ばない）
   usePlans(roles !== undefined && !blocked);
-  // 第 2 ナビの「メンバー」の札（人＋招待中の数・下絵のとおり。チケットの設定の画面と同じ口・同じ鍵）
-  const members = useMembers(roles !== undefined && !blocked);
   const patch = usePatchSettings();
   const dialogs = useOpenDialog();
   const [denied, setDenied] = useState(false);
@@ -209,7 +204,7 @@ export function SettingsScreen() {
     <Frame>
       <WsHead name={company} initial={initialOf(company)} />
       <div className="k-me-wrap">
-        <WsSub active="settings" {...(members.data ? { members: members.data.count } : {})} />
+        <WsSub active="settings" items={{ members: { href: "/members" } }} />
         <SettingsPage
           s={{
             name: company,

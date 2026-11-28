@@ -9,11 +9,10 @@ import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, type ReactNode } from "react";
-import { Loading, NoAccess, Toaster, type Crumb } from "@/components/k";
+import { Loading, NoAccess, type Crumb } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
-import { useMembers } from "@/features/F10/invite/use-members";
 import { WsHead, WsSub } from "@/features/F10/invite/views";
 import {
   cleanQ,
@@ -41,11 +40,9 @@ const CRUMBS_ONE: Crumb[] = [{ label: "記録" }];
 
 function Frame({ crumbs, children }: { crumbs: Crumb[]; children: ReactNode }) {
   return (
-    <Toaster>
-      <TicketShell screen={SCREEN} crumbs={crumbs}>
-        {children}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen={SCREEN} crumbs={crumbs}>
+      {children}
+    </TicketShell>
   );
 }
 
@@ -72,8 +69,6 @@ export function AuditScreen() {
   const { roles } = useMyRoles();
   const blocked = roles?.includes(NO_AUDIT_ROLE) ?? false;
   const q = useAudit(f, roles !== undefined && !blocked);
-  // 第 2 ナビの「メンバー」の札（下絵のとおり・設定とチケットの設定の画面と同じ口・同じ鍵）
-  const members = useMembers(roles !== undefined && !blocked);
   const navigate = useNavigate();
   const fetchingMore = useRef(false);
 
@@ -130,7 +125,7 @@ export function AuditScreen() {
     <Frame crumbs={CRUMBS_ALL}>
       <AdminHead />
       <div className="k-me-wrap">
-        <WsSub active="log" {...(members.data ? { members: members.data.count } : {})} />
+        <WsSub active="log" items={{ members: { href: "/members" } }} />
         {page}
       </div>
     </Frame>
