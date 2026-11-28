@@ -40,3 +40,8 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も書かない"},
     ],
 }
+
+# 口が返す成功の状態コード（契約を口に合わせる・K-144 の SHAPE_010・統合の枝）
+SUCCESS_STATUS = {
+    "reportClientRequestDraft": 200,   # 作らず状態を変えるだけ・口は 200 を返す
+}

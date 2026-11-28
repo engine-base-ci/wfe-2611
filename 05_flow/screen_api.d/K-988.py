@@ -46,7 +46,7 @@ INPUT_RULES = {
     "updatePlanProposal": {"allOf": [{"anyOf": [{"required": [k]} for k in _EDITABLE]}, _AFTER_NEEDS_DAYS, _KEEP_NO_DAYS]},
 }
 
-_PROPOSAL = {"id": "uuid", "plan_key": "string", "plan_name": "string", "from_version": "integer", "to_version": "integer",
+_PROPOSAL = {"id": "uuid", "plan_key": "string", "plan_name": "string", "from_version": "integer?", "to_version": "integer?",
              "before": "object", "changes": "object", "existing_policy": "string", "notice_days": "integer?", "new_from": "string?",
              "reason": "string", "state": "string", "proposer": "object", "decider": "object?", "return_reason": "string?",
              "created_at": "string", "submitted_at": "string?", "decided_at": "string?", "can_edit": "boolean", "can_decide": "boolean"}

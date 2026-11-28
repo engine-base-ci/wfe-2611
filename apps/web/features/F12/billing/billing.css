@@ -135,7 +135,9 @@
 .k-ub-setting-line > :first-child {
   font-weight: var(--k-fw-h3);
 }
-.k-ub-change {
+/* 区画の中に描いたとき（下絵）も page.css の .k-section p の字の色・大きさに負けないよう、器の中の組で書く */
+.k-ub-change,
+.k-ub-setting .k-ub-change {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;

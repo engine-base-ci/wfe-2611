@@ -167,16 +167,16 @@ function readTheme(): Theme {
   return parseTheme(hit?.slice(THEME_COOKIE.length + 1));
 }
 
-// ログインの印（token）は手元にだけ在る。組み立て（サーバー）の描画は「無い」で描き、画面に載ってから手元の値で描き直す。
-//   その場で window を見ると、サーバーの HTML（探す欄が disabled）と最初の描画（使える）が食い違い、
-//   React は食い違った属性を直さないので、探す欄が押せないまま残っていた（K-471・K-592）
-const noSubscribe = () => () => undefined;
-const useSignedIn = (): boolean =>
-  useSyncExternalStore(
+const noSubscribe = (): (() => void) => () => {};
+/** ログインの印があるか。組み立てた頁（サーバー）では「無い」、ブラウザでは印を読む。
+ *  描画の中で直に読むと、サーバーの頁（鈴・探す欄が押せない形）とブラウザの最初の描画が食い違い、押せない形のまま残る */
+function useSignedIn(): boolean {
+  return useSyncExternalStore(
     noSubscribe,
     () => getToken() !== null,
     () => false,
   );
+}
 
 /** 外枠の口を 1 本だけ読む。ログイン前は呼ばない */
 function useShellData(screen: string) {

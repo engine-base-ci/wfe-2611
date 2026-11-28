@@ -4,3 +4,6 @@ NO_REQUIRED_INPUTS = {
     "updateScope": "直す欄はどれも任意（名前・色・並び・マネージャー）。1 つは要る（INPUT_RULES の anyOf・体が空は 422）",
 }
 UNEXPRESSIBLE_422: dict = {}
+VALUE_RANGES = {
+    "updateScope": {'name': {'pattern': '\\S', 'maxLength': 100}, 'color': {'enum': ['teal', 'plum', 'indigo', 'amber', 'coral', 'sage']}, 'position': {'minimum': 1}, 'manager_member_ids': {'maxItems': 10}},   # screen_api.d/K-804.py の VALUE_RANGES と同じ（統合の枝で写した）
+}

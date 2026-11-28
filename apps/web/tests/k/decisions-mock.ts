@@ -163,6 +163,16 @@ export function detailWithDecisions(o: DecOptions): object {
     kind: { name: "タスク", color: "#22345C" },
     stage: { key: o.stage ?? "doing", name: "作業中" },
     sections,
+    // 詳細の答えの結果の場所（K-571・D-150.41：決定ログは決定が在るときだけ詳細に出る）。並びは決定の一覧の口の答え（区画が読む）
+    results: {
+      decisions: (o.list ?? FOUR).map((x) => ({
+        id: x.id,
+        text: x.text,
+        reason: x.reason,
+        decided_at: x.decided_at,
+        decided_by_name: x.decided_by?.display_name ?? null,
+      })),
+    },
   });
 }
 

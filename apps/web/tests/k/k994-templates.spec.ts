@@ -88,7 +88,10 @@ test.describe("K-994 中身", () => {
     baseURL,
   }) => {
     const m = await open(page, baseURL);
-    const names = ["ひな形を足す", ...TEMPLATES_A.map((r) => `${r.name} の新しい版を作る`)];
+    // ［新しい版］は K-1111 が押せるリンクにした（後の葉の決め）。押せない形に残るのは［ひな形を足す］
+    for (const r of TEMPLATES_A)
+      await expect(page.getByRole("link", { name: `${r.name} の新しい版を作る`, exact: true })).toBeVisible();
+    const names = ["ひな形を足す"];
     for (const n of names) {
       const b = btn(page, n);
       await expect(b).toHaveAttribute("aria-disabled", "true");

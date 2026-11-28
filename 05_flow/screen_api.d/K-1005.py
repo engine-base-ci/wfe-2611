@@ -44,8 +44,8 @@ VALUE_RANGES = {
 
 _PLAN_CHANGE = {"plan_key": "string", "effective_from": "string", "prorated_amount": "integer", "next_invoice_on": "string"}
 # 運営の請求の 1 行（11 欄・D-156.44）。payments はその請求書の入金の並び { id（uuid）, paid_on, amount, payer_name?, reversed }（取り消しの行そのものは並べない）
-_OPS_INVOICE = {"id": "uuid", "workspace": "object", "plan_name": "string", "month": "string", "amount_total": "integer", "state": "string",
-                "paid_total": "integer", "difference": "integer", "due_on": "string", "can_record_payment": "boolean", "payments": "array"}
+_OPS_INVOICE = {"id": "uuid", "workspace": "object", "plan_name": "string?", "month": "string", "amount_total": "integer", "state": "string",
+                "paid_total": "integer", "difference": "integer", "due_on": "string?", "can_record_payment": "boolean", "payments": "array"}
 RESPONSES = {
     "updateBillingContact": ("BillingContact", {"company": "string", "attn": "string", "email": "string"}),
     "changePlan": ("PlanChange", dict(_PLAN_CHANGE)),
@@ -69,4 +69,11 @@ QUERY_RANGES = {
 # 運営の請求の一覧は sort を受けない。請求の数（文書だけに在った summary）は getOpsShell に寄せた（D-156.4）
 LIST_DETAILS = {
     "listOpsInvoices": {"sort": False, "desc": "取得（invoices）— 運営が月ごとの請求書を見る（お支払い待ち・払われた・期限を過ぎた・入金の並びつき）"},
+}
+
+# 口が返す断り（K-144 の SHAPE_010・統合の枝で契約に足した）
+ERRORS_4XX = {
+    "listOpsInvoices": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
 }

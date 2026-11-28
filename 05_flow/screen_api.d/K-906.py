@@ -4,9 +4,12 @@
 _FORBIDDEN = {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"},
               "trigger": "ゲストでない（役割 requester でない・グループに入っていない・止めた・抜けた・グループが消えた）・社内の人（入口）",
               "ears_form": "UNWANTED: IF 呼んだ人がゲストのグループに入った今のゲストでないなら、Kaname は 403 を返し、何も返さず何も書かない"}
+_PORTAL_GONE = {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
+                "trigger": "先方の人の場所（ゲストのグループ）が読めない（関数が null・portal/home.ts の readPortal・K-144 の SHAPE_010 で足した）",
+                "ears_form": "UNWANTED: IF 先方の人の場所が読めないなら、Kaname は 404 を返し、中身を返さない"}
 ERRORS_4XX = {
-    "getPortalHome": [dict(_FORBIDDEN)],
-    "listPortalNotices": [dict(_FORBIDDEN)],
+    "getPortalHome": [dict(_FORBIDDEN), dict(_PORTAL_GONE)],
+    "listPortalNotices": [dict(_FORBIDDEN), dict(_PORTAL_GONE)],
     "getPortalTicket": [
         dict(_FORBIDDEN),
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},

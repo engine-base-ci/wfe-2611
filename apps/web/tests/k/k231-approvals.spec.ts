@@ -101,7 +101,8 @@ test("K231-UI-005 K63-UI-098 表の列：選ぶ・決めること・種別・番
   const ths = card(page).locator("thead th");
   expect((await ths.allInnerTexts()).map((x) => x.trim())).toEqual(HEADERS);
   const all = card(page).getByRole("checkbox", { name: "まとめて選べるものをすべて選ぶ" });
-  await expect(all).toBeDisabled();
+  // K-769（まとめて承認）が見出しの「すべて選ぶ」を押せる形にした（後の葉の決め）
+  await expect(all).toBeEnabled();
 });
 
 test("K231-UI-006 期限の区切りは表の中の行：「期限切れ 1 件」「今日 1 件」「期限なし 1 件」の順。赤（#B91C1C）は期限切れだけ・今日と期限なしは赤でない（キャンバスどおり）", async ({

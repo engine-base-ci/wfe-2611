@@ -17,7 +17,7 @@ export const AUDIT_SCAN_BATCH = 500;
 /** ISO 8601 の日時（時差つき）。暦に無い日時は別に弾く */
 export const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})$/;
 /** 続きの印の中身：<occurred_at の UTC・マイクロ秒の ISO>_<id>。印そのものはこれを base64url（パディングなし）にした字 */
-export const CURSOR_RE = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z)_([0-9a-f-]{36})$/;
+export const CURSOR_RE = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z)_(.{36})$/; // id の形は decodeAuditCursor が isUuid で見る
 /** 印の形（入口 op.ts の KEY_CURSOR_OPS と同じ base64url の 1〜200 字） */
 export const CURSOR_FORM = /^[A-Za-z0-9_-]{1,200}$/;
 

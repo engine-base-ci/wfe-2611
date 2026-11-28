@@ -56,7 +56,7 @@ export async function childOf(
     assignee_member_id: assigneeMemberId,
     parent_ticket_id: parentId,
     due_on: due,
-    body: bodyOf(sections),
+    body: bodyOf(sections), // K-578 の後は口が sections を受けない（422）。ticketOf と同じく本文 1 枚で送る
   });
   if (r.status !== 201) throw new Error(`子チケットを作る口が ${r.status}`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Record<string, unknown> | undefined)?.["id"]) as

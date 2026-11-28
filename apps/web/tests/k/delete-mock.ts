@@ -170,8 +170,11 @@ export async function mockDelete(page: Page, o: DeleteOptions = {}): Promise<Del
       },
     },
   };
+  // getTicket を読んだ数は本当の要求で数える（土台は実行の一覧の答えを作るときにも on.ticket を読む・同じ形を数えない）
+  page.on("request", (r) => {
+    if (r.method() === "GET" && new URL(r.url()).pathname === `/api/v1/tickets/${TICKET}`) d.ticketReads++;
+  });
   api.on.ticket = () => {
-    d.ticketReads++;
     if (d.deleted) return errReply(404, "E-PAGE-001");
     const base = ticketOf(band) as unknown as { ticket: Record<string, unknown> } & Record<string, unknown>;
     return ok(

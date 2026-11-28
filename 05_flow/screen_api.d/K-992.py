@@ -2,7 +2,7 @@
 # 一覧：種別・状態・項目の 3 行（決まった並び・絞り込みも並べ替えも受けない）。1 行は 8 欄（下絵 oq-templates の 5 列）
 # 1 つ：一覧の 8 欄と、今の版の中身（items）・版の記録（versions・新しい順）
 #   took は今の版を知らせた会社が無ければ null・在れば { changed, offered }
-_ROW = {"id": "uuid", "key": "string", "name": "string", "summary": "string", "version": "integer", "using": "integer",
+_ROW = {"id": "uuid", "key": "string", "name": "string?", "summary": "string", "version": "integer", "using": "integer",
         "took": "object?", "last_released_at": "string?"}
 RESPONSES = {
     "listOpsTemplates": ("OpsTemplateRow", dict(_ROW)),

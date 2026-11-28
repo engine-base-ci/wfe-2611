@@ -40,6 +40,7 @@ import {
   overflowX,
 } from "./detail-kit";
 import { controlsOf } from "../_lib/row";
+import { shellData } from "./shell-answer";
 
 const SCOPE = "22222222-0000-4000-8000-000000000001";
 const jst = (days = 0) => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
@@ -108,6 +109,16 @@ async function open(
           },
     ),
   );
+  // K-466：詳細のグループの名前は外枠の口 getShell の groups から読む（/api/v1/scopes は呼ばない）。
+  //   グループを読めないときは、外枠の答えにそのグループが無い形で受ける（承認待ちの数は 0）
+  if (scopesFail)
+    await page.route(/\/api\/v1\/shell(\?|$)/, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: shellData({ groups: [] }), meta: {} }),
+      }),
+    );
   await openTicket(page, width);
   return m;
 }
@@ -281,6 +292,11 @@ test("K226-UI-008 まだ使えない操作（複製・ほかの操作・版と�
   // K-764：パネルのタブ「高本のAI」は押せる形になった（段 6 の右のパネルの AI のタブ）。題の行の「〈名前〉のAI と話す」は K-571 で外した（K226-UI-003）
   // 後ろの葉が本物にする 5 つ（DETAIL_LATER：K-446 複製・K-458 ほかの操作・K-449 版と差分・K-452 子を足す・つながりを足す）は
   //   「在る」だけ見て、押せないかは見ない（押せるようになっても赤にならない・K-431 が 1 回だけ替えた）
+  // K-452：子チケット・つながりのカードは畳んだ形で始まる（［開く］で子を足す・つながりを足すが出る）
+  await main
+    .getByRole("region", { name: "子チケット・つながり" })
+    .getByRole("button", { name: "開く", exact: true })
+    .click();
   for (const n of DETAIL_LATER) await expect(main.getByRole("button", { name: n, exact: true }), n).toHaveCount(1);
   for (const n of DETAIL_INERT) await expectInert(page, main.getByRole("button", { name: n, exact: true }), n, writes);
   const ai = panel(page)
@@ -360,7 +376,8 @@ test("K226-UI-016 関連と優先度：グループは名前と接頭辞「営�
   expect((await fieldsOf(page, "担当"))["優先度"]).toBe("高");
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await open(page, { stage: "doing" }, {}, 1440, undefined, {}, true);
-  expect((await fieldsOf(page, "関連"))["グループ"]).toBe("");
+  // グループが分からないときは行ごと出さない（items-panel の group は任意・K-484）。空の行と同じに扱う
+  expect((await fieldsOf(page, "関連"))["グループ"] ?? "").toBe("");
   expect((await fieldsOf(page, "担当"))["優先度"]).toBe("中");
   await expect(page.locator("header.k-page-head h1")).toHaveText("11 月分の請求書を送る");
 });

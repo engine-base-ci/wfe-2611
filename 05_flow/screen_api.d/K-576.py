@@ -44,3 +44,8 @@ SCREEN_API = {
 PERMS = {
     "restoreTicketItems": ("write", "そのチケットを書ける人", False),
 }
+
+# 口が返す成功の状態コード（契約を口に合わせる・K-144 の SHAPE_010・統合の枝）
+SUCCESS_STATUS = {
+    "restoreTicketItems": 200,   # 作らず状態を変えるだけ・口は 200 を返す
+}

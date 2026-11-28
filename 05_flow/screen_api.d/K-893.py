@@ -37,3 +37,8 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 入力が契約の形に合わないなら、Kaname は 422 と欄ごとの理由を返し、返事を書かない"},
     ],
 }
+
+REQUIRED_INPUTS = {
+    "replyToClientRequest": ['body'],   # reply.ts（返事が無い・空なら 422・欄 body）
+    "updateClientRequest": ['route_id'],   # route.ts（届け先のグループが無い・uuid でなければ 422・欄 route_id）
+}

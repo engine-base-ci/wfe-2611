@@ -19,11 +19,13 @@
     "test_post_inquiries_id_messages_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_id_messages_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）"
-   }
+   "na": {}
   },
   "resolveMyInquiry": {
    "file": "apps/api/test/features/F12/inquiry-reply.test.ts",
@@ -49,11 +51,13 @@
     "test_post_inquiries_id_resolve_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_id_resolve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_id_resolve_too_large": "体は空の {} だけ。送る量の守りは入口の共通"
-   }
+   "na": {}
   }
  }
 }

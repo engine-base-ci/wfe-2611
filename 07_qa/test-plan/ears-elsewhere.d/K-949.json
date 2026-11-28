@@ -19,11 +19,13 @@
     "test_post_inquiries_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_inquiries_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_post_inquiries_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）で、口ごとに変わらない"
-   }
+   "na": {}
   }
  }
 }

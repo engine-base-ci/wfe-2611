@@ -54,7 +54,8 @@ test.afterEach(async () => {
 const MSG = {
   queuedLive: "PC が受け取るのを待っています", // K-62 の帯・任せた直後（D-133.1）
   made: "成果物ができました。承認待ちです", // K-62 の帯（承認する人でない人にだけ出す・D-128.178）
-  checkNone: "検査なし", // D-128.138。確認の区画は K-740 が「確認 検査なし」と使わない理由の「検査なし（理由）」に替えた
+  checkNone: "確認 検査なし", // 帯の確認の区画（K-740・D-153.3。前は D-128.138 の「検査なし（まだ流していません）」）
+  checkNoneCell: "検査なし", // 承認待ちの一覧の確認の列（K740-UI-006）
   waitingMe: "あなたの承認を待っています", // K-63 の帯
   irreversible: "取り消せません", // D-128.177
   pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます", // K-63 の帯
@@ -244,7 +245,7 @@ test("K64-M3-01 正常：任せる → PC が作って終える → 承認待ち
   const line = page.getByRole("row").filter({ hasText: r.title });
   await expect(line).toHaveCount(1);
   await expect(line).toContainText(aiOf(r.me));
-  await expect(line).toContainText(MSG.checkNone);
+  await expect(line).toContainText(MSG.checkNoneCell);
   await expect(line.getByRole("button", { name: "承認する" }), "取り消せない操作は行で決めない").toHaveCount(0);
   await line.getByRole("link", { name: "中身を見る" }).click();
   await expect(page).toHaveURL(new RegExp(`/tickets/${r.t}$`));

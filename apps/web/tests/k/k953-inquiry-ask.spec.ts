@@ -31,8 +31,9 @@ async function openAsk(page: Page, query = "", width = 1440): Promise<void> {
   await expect(page.locator(DLG)).toBeVisible();
 }
 const dlg = (page: Page) => page.locator(DLG);
-const title = (page: Page) => dlg(page).getByLabel("題", { exact: true });
-const body = (page: Page) => dlg(page).getByLabel("内容", { exact: true });
+// 必須の欄の見出しは「題*」「内容*」（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、読み上げの名前で探す
+const title = (page: Page) => dlg(page).getByRole("textbox", { name: "題", exact: true });
+const body = (page: Page) => dlg(page).getByRole("textbox", { name: "内容", exact: true });
 const send = (page: Page) => dlg(page).getByRole("button", { name: "送る", exact: true });
 const pick = (page: Page) => dlg(page).locator('input[type="file"]');
 async function fill(page: Page): Promise<void> {
@@ -138,7 +139,7 @@ test("K953-UI-004 送る：createInquiry 1 回（何について trouble・題�
   expect(b).toMatchObject({ topic: "trouble", title: "PC をつけているのに実行待ちのまま" });
   expect(b["context"]).toMatchObject({ path: ASK });
   expect(mk.count("inquiries")).toBeGreaterThanOrEqual(2);
-  const first = page.locator('section:has(h2:text-is("自分の問い合わせ")) li').first();
+  const first = page.locator('section.k-section:has(> h2:text-is("自分の問い合わせ")) li').first();
   await expect(first).toContainText("返事を待っている");
   await expect(first).toContainText("いま");
   await expect(first.getByRole("link")).toHaveAttribute("href", `/inquiry/${Q_NEW}`);

@@ -1,3 +1,4 @@
+import { isUuid } from "@kaname/contracts";
 // 運営の受信箱（/ops/support・K-976）の、口の答え（K-948 の形）→ 部品の値と、URL の箱・種類・1 件の読み書き。
 //   純粋な関数だけ（@/ を読まない・口を呼ばない）。字は下絵（ops2-sample.ts の INBOX_ROWS・views-inbox.tsx）が正。時刻は日本時間
 export type InqTopic = "usage" | "trouble" | "billing" | "other";
@@ -167,7 +168,6 @@ export interface InboxQuery {
   topic: InqTopic | null;
   id: string | null;
 }
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const oneOf = <T extends string>(list: readonly T[], v: string | null): T | null =>
   v !== null && (list as readonly string[]).includes(v) ? (v as T) : null;
 
@@ -177,7 +177,7 @@ export function inboxQuery(p: { get(name: string): string | null }): InboxQuery 
   return {
     box: oneOf(BOXES, p.get("box")) ?? "unassigned",
     topic: oneOf(TOPICS, p.get("topic")),
-    id: id !== null && UUID.test(id) ? id : null,
+    id: id !== null && isUuid(id) ? id : null,
   };
 }
 /** URL の問い合わせを書く（順は box・topic・id・既定の値は書かない） */

@@ -31,8 +31,13 @@ describe("POST /api/v1/ops/pwned/pending/ack", () => {
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
-  // 当てはまらない（送る量の守り（1MB）は入口の共通（op.ts・K-144））：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_post_ops_pwned_pending_ack_too_large");
+  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-pwned-pending.test.ts）：UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない
+  it.todo("test_post_ops_pwned_pending_ack_not_found");
+  it("test_post_ops_pwned_pending_ack_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_post_ops_pwned_pending_ack_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/ops-pwned-pending.test.ts の「K1110-API-013」（同じ CI の G3 で流れる）
@@ -42,8 +47,11 @@ describe("POST /api/v1/ops/pwned/pending/ack", () => {
   it.todo("test_post_ops_pwned_pending_ack_terms_pending");
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_post_ops_pwned_pending_ack_mfa_pending");
-  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-pwned-pending.test.ts）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_post_ops_pwned_pending_ack_session_unresolved_2");
+  it("test_post_ops_pwned_pending_ack_session_unresolved_2", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_ops_pwned_pending_ack_shape", () => {
     // UBIQUITOUS: POST /api/v1/ops/pwned/pending/ack の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F12/ops-pwned-pending.test.ts の「K1110-API-004」（同じ CI の G3 で流れる）

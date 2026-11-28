@@ -4,7 +4,9 @@ REQUIRED_INPUTS = {
     "openPeek": {"reason", "minutes"},            # 理由と分が無ければ 422（D-128.68）
     "stopWorkspace": {"reason_key", "mode"},      # 理由の種類と止め方が無ければ 422（D-156.23）
 }
-NO_REQUIRED_INPUTS = {}
+NO_REQUIRED_INPUTS = {
+    "resumeWorkspace": '書き添え note は任意（無くても 422 にしない・stop.ts の resume）',
+}
 PATH_PATTERNS = {}
 VALUE_RANGES = {
     "openPeek": {"reason": {"minLength": 1, "maxLength": 200}, "minutes": {"minimum": 1, "maximum": 60}},

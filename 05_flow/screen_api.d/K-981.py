@@ -9,5 +9,6 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-BILL-006", "body": {"error": "conflict", "code": "E-BILL-006"}, "errors": ["E-BILL-006"],
          "trigger": "請求書の PDF を作った後・出す前に、その月の会社の額が変わった（プランが変わった等・K-1013）。欄も details も付けない",
          "ears_form": "UNWANTED: IF 請求書の PDF を作った後に出す額が変わったなら、Kaname は 409 と E-BILL-006 を返し、置いた PDF を消して請求書も記録も鈴も書かない"},
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
     ],
 }
