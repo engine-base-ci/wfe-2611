@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F5/approval-checks.test.ts": "契約の表 05_flow/screen_api.py と queue.ts を readFileSync で読む（K739-API-018）・K-739"
+ }
+}
