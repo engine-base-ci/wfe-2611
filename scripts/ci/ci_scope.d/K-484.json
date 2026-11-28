@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F7/due/"], "tests": ["apps/web/tests/k/k484-due-change.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k484-due-change.spec.ts": "正本 07_qa/test-specs/errors.json を読み（文を番号で引く）、試験の道具 tests/k/due-mock.ts・kit.ts・list-mock.ts・stage2-match.ts とモックの置き場 apps/web/app/(dev)/dev/mock/f7/ を通して部品 apps/web/features/F7/due/（views.tsx・due-popover.tsx・due-mark.tsx・due.css）と見比べる（K-484）"
+ }
+}
