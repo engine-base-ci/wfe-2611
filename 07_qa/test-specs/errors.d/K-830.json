@@ -1,0 +1,135 @@
+{
+ "errors": [
+  {
+   "id": "E-WS-030",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-delete"
+   },
+   "when": "消す小窓で打った名前が今のワークスペースの名前と正確に同じでない（全角半角・前後の空白・大文字小文字・一部だけも違うとみなす）",
+   "false_when": "今の名前と 1 字も違わない名前",
+   "message": "名前が合っていません。ワークスペースの名前をそのまま打ってください",
+   "action": "名前を打ち直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "「消す手続き」を押す",
+     "違う名前を打って押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-031",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "すでに消す手続き中のワークスペースで、もう一度手続きを始めた（別の管理者が同時に始めた 2 本目も）",
+   "false_when": "手続き中でないワークスペース",
+   "message": "すでに消す手続き中です",
+   "action": "画面を開き直して、手続きの帯を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "別のタブでも消す小窓を開く",
+     "両方で手続きを始める"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-032",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "消す手続きを始めて 14 日を過ぎてから取り消した",
+   "false_when": "始めて 14 日の内の取り消し",
+   "message": "取り消せる 14 日を過ぎました",
+   "action": "運営に問い合わせる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "手続きを始めて 14 日を過ぎてから「本人確認して取り消す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  },
+  {
+   "id": "E-WS-033",
+   "class": "conflict",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-deleting"
+   },
+   "when": "消す手続き中でないのに取り消した（古い画面・別の人が先に取り消した）",
+   "false_when": "手続き中のワークスペースの取り消し",
+   "message": "消す手続き中ではありません",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く（本人確認を取り直した直後）",
+    "steps": [
+     "2 つのタブで手続きの帯を開く",
+     "片方で取り消し、もう片方でも取り消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.65",
+    "D-154.5",
+    "D-154.16"
+   ]
+  }
+ ]
+}

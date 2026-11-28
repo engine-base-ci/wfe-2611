@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-notify.ts",
+    "apps/api/src/features/F10/me/notify.ts",
+    "apps/api/src/features/F10/me/notify-events.ts",
+    "packages/db/migrations/20261126003700_me_notify.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-notify.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-notify.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_notification_settings.test.ts",
+    "apps/api/test/generated/patch_me_notification_settings.test.ts",
+    "apps/api/test/generated/post_me_notification_settings_copy.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-837.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で入口の uuid の行を足した）・K-837"
+ }
+}
