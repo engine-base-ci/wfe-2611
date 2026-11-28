@@ -40,6 +40,8 @@ export function usePlans(enabled = true) {
   return useQuery({
     queryKey: PLANS_KEY,
     ...ONCE,
+    // 設定の頁が先に読み（K-831 の同時の読み）、断られた後に PlanRow が付いても読み直さない（1 回だけ・403 の形を保つ）
+    retryOnMount: false,
     enabled,
     queryFn: async (): Promise<PlansAnswer> => {
       let r: CallResult<"listWorkspacePlans">;
