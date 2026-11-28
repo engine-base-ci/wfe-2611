@@ -176,7 +176,8 @@ test("K707-UI-010 何も変えていないと「保存する」は押せない�
   expect(mk.count("updateKind")).toBe(0);
   await nameBox(page, "請求").fill("請求書");
   await expect(save(page)).toBeEnabled();
-  await nameBox(page, "請求書").fill("請求");
+  // 欄の入れ物（form）の名前は保存した名前のまま（打っている間は替わらない）
+  await nameBox(page, "請求").fill("請求");
   await expect(save(page)).toBeDisabled();
 });
 

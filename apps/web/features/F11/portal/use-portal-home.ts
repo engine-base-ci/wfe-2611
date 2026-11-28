@@ -15,6 +15,8 @@ export interface PortalHomeData {
   request_scope_name?: string;
   me: { name: string; initial: string };
   first_visit: boolean;
+  /** 招いた人の表示名（口が返さなければ無い・K-911 のようこそ） */
+  inviter_name?: string;
   requests: { id: string; title: string; from_name: string; created_at: string; badge: string }[];
   tickets: { id: string; title: string; stage: string; from_request?: boolean }[];
 }
@@ -45,12 +47,14 @@ export function toHome(raw: unknown): PortalHomeData {
   const d = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const me = (d["me"] && typeof d["me"] === "object" ? d["me"] : {}) as Record<string, unknown>;
   const scope = str(d["request_scope_name"]);
+  const inviter = str(d["inviter_name"]);
   return {
     group_name: str(d["group_name"]),
     tenant_name: str(d["tenant_name"]),
     ...(scope ? { request_scope_name: scope } : {}),
     me: { name: str(me["name"]), initial: str(me["initial"]) },
     first_visit: d["first_visit"] === true,
+    ...(inviter ? { inviter_name: inviter } : {}),
     requests: arr(d["requests"]).map((r) => ({
       id: str(r["id"]),
       title: str(r["title"]),

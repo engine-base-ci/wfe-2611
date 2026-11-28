@@ -138,6 +138,12 @@ const GUESTS: MemberGroup[] = [
   },
 ];
 
+// 「＋ 新しいゲストのグループを作る」で作った直後の並び（作ったグループが一覧の終わりに入る・本番は作った後に並びを読み直す・PM の決め 2026-11-28）
+const GUESTS_CREATED: MemberGroup[] = [
+  ...GUESTS,
+  { code: "株", name: "株式会社ソラ（ゲスト）", tone: "teal", inbox: "営業", rows: [] },
+];
+
 // 【段 12 の足し】鈴木 健太 さんを一時的に止めた後の並び（状態「一時的に止まっている」・「⋯」は 戻す・外す）
 const GUESTS_SUSPENDED: MemberGroup[] = GUESTS.map((g) => ({
   ...g,
@@ -202,6 +208,7 @@ function Members({
   menuOpenGroup,
   menuOpenRow,
   suspended = false,
+  created = false,
 }: {
   theme: Theme;
   dialog?: ReactNode;
@@ -211,6 +218,8 @@ function Members({
   menuOpenRow?: string;
   /** 【段 12 の足し】鈴木 健太 さんを止めた後の並び */
   suspended?: boolean;
+  /** ゲストのグループを作った直後の並び */
+  created?: boolean;
 }) {
   return (
     <CuFrame
@@ -225,7 +234,7 @@ function Members({
         <WsSub members={count(GROUPS) + count(GUESTS)} />
         {guest ? (
           <MembersBody
-            groups={suspended ? GUESTS_SUSPENDED : GUESTS}
+            groups={suspended ? GUESTS_SUSPENDED : created ? GUESTS_CREATED : GUESTS}
             guest
             {...(menuOpenGroup ? { menuOpenGroup } : {})}
             {...(menuOpenRow ? { menuOpenRow } : {})}
@@ -269,6 +278,7 @@ export function renderMb(id: string, theme: Theme): ReactNode | null {
         <Members
           theme={theme}
           guest
+          created
           dialog={<InviteDialog open values={CREATED} done="ゲストのグループ「株式会社ソラ（ゲスト）」を作りました" />}
         />
       );

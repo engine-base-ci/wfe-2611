@@ -112,6 +112,7 @@ async function mockWorld(page: Page, w: World) {
             tenant_name: w.tenant,
             me: ME,
             first_visit: w.first,
+            inviter_name: "高本 聖斗", // 招いた人（下絵 pt-welcome と同じ・口の答えの inviter_name）
             requests: w.requests,
             tickets: w.tickets,
           }),

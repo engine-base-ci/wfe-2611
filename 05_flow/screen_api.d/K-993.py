@@ -42,6 +42,9 @@ RATES = {
 }
 
 ERRORS_4XX = {
+    "listKindTemplateUpdates": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "DB の関数が行が無いこと（P0002）を知らせた（kind-template-updates の共通の読み替え failed）", "ears_form": "UNWANTED: IF DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
     "applyKindTemplateUpdate": [
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "その会社の使い始めの行に無い id（ほかの会社の行・消した行）。欄・details は付けない",
@@ -50,4 +53,9 @@ ERRORS_4XX = {
          "trigger": "もう選んだ・届いていない版（同時に 2 回選んだ後の 1 つも）。欄も details も付けない",
          "ears_form": "UNWANTED: IF もう選んだか届いていない版を選ぼうとしたなら、Kaname は 409 と E-OPS-025 を返し、何も変えない"},
     ],
+}
+
+# 統合の枝で足した（K-144 の契約の形の試験・直しの担当 XC）
+SUCCESS_STATUS = {
+    "applyKindTemplateUpdate": 200,   # 作らず状態を変えるだけ・口は 200 を返す（K-144 の SHAPE_010）
 }

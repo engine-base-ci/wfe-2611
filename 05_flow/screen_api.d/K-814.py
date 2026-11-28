@@ -52,3 +52,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 止まっていない人を戻そうとしたなら、Kaname は 409 と E-MEM-010 を返し、証跡を増やさない"},
     ]),
 }
+
+# 統合の枝で足した（K-144 の契約の形の試験・直しの担当 XC）
+SUCCESS_STATUS = {
+    "suspendMember": 200,   # 作らず状態を変えるだけ・口は 200 を返す（K-144 の SHAPE_010）
+    "resumeMember": 200,   # 作らず状態を変えるだけ・口は 200 を返す（K-144 の SHAPE_010）
+}

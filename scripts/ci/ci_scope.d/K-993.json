@@ -30,5 +30,8 @@
     "apps/api/test/generated/post_ticket_kinds_template_updates_id_apply.test.ts"
    ]
   }
- ]
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-993.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で入口の uuid の行を足した）・K-993"
+ }
 }

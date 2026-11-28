@@ -1052,7 +1052,7 @@ RESPONSES = {
     "getBilling": ("Billing", {"terms": "string", "payee": "object", "contact": "object", "invoices": "array", "overdue": "object?", "free": "boolean", "can_edit_contact": "boolean"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
     "getClientRequest": ("ClientRequestDetail", {"request": "object", "messages": "array", "routes": "array", "can_act": "boolean", "pc_connected": "boolean", "ticket_draft": "object?", "questions": "array", "reply_draft": "string?", "route_suggestion": "object?"}),   # K-892：案は draft_state が ready のときだけ（無ければ null）
-    "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "requests": "array", "tickets": "array"}),
+    "getPortalHome": ("PortalHome", {"group_name": "string", "tenant_name": "string", "request_scope_name": "string?", "me": "object", "first_visit": "boolean", "inviter_name": "string?", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array", "can_write": "boolean"}),
     "getPortalTicket": ("PortalTicket", {"ticket": "object", "messages": "array"}),
