@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops/team-*", "apps/web/features/F12/ops/use-ops-team.ts", "apps/web/features/F12/ops/views-team.tsx", "apps/web/app/(ops)/ops/team/**"], "tests": ["apps/web/tests/k/k986-team.spec.ts", "apps/web/test/k986-team-shape.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k986-team.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops を開き scripts/ci/fidelity_compare.mjs を読む。答えの見本 ops-team-mock.ts を読む（実ブラウザの試験は web の組が流す）・K-986",
+  "apps/web/test/k986-team-shape.test.ts": "下絵の見本 apps/web/features/F12/ops/ops-sample.ts と答えの見本 apps/web/tests/k/ops-team-mock.ts を読む（画面の外の純粋な関数の試験）・K-986"
+ }
+}
