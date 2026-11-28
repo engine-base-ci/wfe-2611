@@ -21,7 +21,8 @@ test.beforeEach(async ({ context }) => {
 
 /** 文言（K-484・K-481・K-482・K-478 の仕様の表・モック f7-tidy-due・f7-calendar・f7-gantt から。実装から書かない） */
 const MSG = {
-  reasonEmpty: "E-DUE-001", // 理由が空のときの欄の下の字の頭（正本の文は番号つきで出る）
+  // 理由が空のときの欄の下の字＝正本 E-DUE-001 の文（K-484-UI-005 の決め：欄の下には番号でなく正本の文が出る）
+  reasonEmpty: "期限を変える理由を書いてください",
   changedTo: (md: string) => `期限を ${md} に変えました`,
   flame: "期限切れ",
 };
@@ -67,7 +68,8 @@ test("K594-M4-01 期限切れが見える：詳細の期限に炎と「過ぎ」
   const w = await world(page, "切れ");
   await openTicket(page, w.late, `${w.key} 期限切れの一つ目`);
   await expect(page.getByRole("img", { name: MSG.flame }), "炎（期限切れの印）").toHaveCount(1);
-  await expect(page.getByText(/1 日過ぎ/)).toBeVisible();
+  // 「過ぎ」は詳細の頭と右のパネルの期限の 2 か所に出る（K-1153 の後）。頭の 1 つを見る
+  await expect(page.getByText(/1 日過ぎ/).first()).toBeVisible();
   await page.goto("/tickets");
   await expect(card(page, "期限切れ"), "札の数は期限切れの 2 枚").toContainText("2");
   await expect(card(page, "今日まで")).not.toContainText(/[1-9]/);

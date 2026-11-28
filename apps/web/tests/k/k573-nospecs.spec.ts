@@ -7,7 +7,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import {
   TICKET,
@@ -191,10 +191,12 @@ test("K573-UI-005 入力：「確認項目を足す」を押すと、小窓が�
   await pressDelegate(page);
   await reasonBox(page).fill("途中の字");
   await addBtn(page).click();
-  await expect(dlg(page)).toHaveCount(0);
+  // 閉じるのは「AI に任せる」の小窓。合図を受けて K-450 の「確認項目を足す」の小窓が開くのは、つないだ後の正しい動き（段どうしを合わせた後）
+  await expect(page.getByRole("dialog", { name: "AI に任せる" })).toHaveCount(0);
   expect(await specAddSignals(page)).toEqual([{ ticketId: TICKET }]);
   expect(m.delegates).toHaveLength(0);
-  await expect(delegateBtn(page)).toBeVisible();
+  // 「確認項目を足す」の小窓（modal）が開いているので、後ろの画面は読み上げの木から外れる。見えているかで確かめる
+  await expect(page.getByRole("button", { name: "AI に任せる", exact: true, includeHidden: true })).toBeVisible();
 });
 
 // ---------------------------------------------------------------- 失敗
@@ -438,6 +440,13 @@ test("K573-UI-019 入口の置き場：「AI に任せる」は題の行（heade
 });
 
 // 承認のカードの「検査なし」の横に、確認項目を使わない理由を出す（getTicket の no_spec_reason・D-150.45）
+/** 承認待ちの詳細を開き、帯が出るまで待つ。決められる人は承認の帯（K-63 の region「承認と実行」）、決められない人は K-62 の帯（region「AI に任せる」）。
+ *  openDetail は「AI に任せる」の帯だけを待つので、決められる人の承認待ちでは使えない */
+async function openApproval(page: Page): Promise<void> {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  expect((await page.goto(`/tickets/${TICKET}`))?.status()).toBe(200);
+  await expect(bandOf(page).or(page.getByRole("region", { name: "AI に任せる", exact: true }))).toBeVisible();
+}
 test("K573-UI-020 承認のカード：承認待ちの詳細で、確認の要約（検査なし）の横に「確認項目を使わない理由：…」が出る（決められる人の帯・決められない人の帯とも）。理由が無いチケットでは出ない", async ({
   page,
 }) => {
@@ -446,7 +455,7 @@ test("K573-UI-020 承認のカード：承認待ちの詳細で、確認の要�
     noSpecReason: REASON,
     band: { stage: "awaiting_approval", approval: pending() },
   });
-  await openDetail(page);
+  await openApproval(page);
   await expect(bandOf(page)).toContainText(`確認項目を使わない理由：${REASON}`);
   const p2 = await page.context().newPage();
   await mockNoSpecs(p2, {
@@ -454,7 +463,7 @@ test("K573-UI-020 承認のカード：承認待ちの詳細で、確認の要�
     noSpecReason: REASON,
     band: { stage: "awaiting_approval", approval: pending({ can_decide: false }) },
   });
-  await openDetail(p2);
+  await openApproval(p2);
   await expect(p2.getByRole("region", { name: "AI に任せる" })).toContainText(`確認項目を使わない理由：${REASON}`);
   const p3 = await page.context().newPage();
   await mockNoSpecs(p3, {
@@ -462,6 +471,6 @@ test("K573-UI-020 承認のカード：承認待ちの詳細で、確認の要�
     noSpecReason: null,
     band: { stage: "awaiting_approval", approval: pending() },
   });
-  await openDetail(p3);
+  await openApproval(p3);
   await expect(bandOf(p3)).not.toContainText("確認項目を使わない理由");
 });

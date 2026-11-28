@@ -5,8 +5,8 @@
 //   1 人目はグループ（根の下に置かない）を作って権限を付け、チケット・決定・お知らせの行・グループに見せた保存した条件を用意する。口は網の手前で差し替えない（届く頭 x-forwarded-for だけを足す）。
 //   道具は K-460 が運ぶ _lib/f7-flow.ts を読むだけ。固定の待ちは置かない。テストはチケットを切る人が書き、実装する人は変えない（D-128.125）。
 import { randomUUID } from "node:crypto";
-import { expect, test, type Page } from "@playwright/test";
-import { admin } from "../_lib/api";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { API, PW, admin, loginAs, testIp } from "../_lib/api";
 import {
   bell,
   bellCount,
@@ -55,11 +55,27 @@ const grant = async (member: string, group: string, tenant: string, ability: "vi
 const revoke = (member: string, group: string) =>
   admin("delete from permissions where grantee_member_id = $1 and scope_id = $2", [member, group]);
 
+/** 権限の行を変えると、その人の画面のセッションは切れる（app.on_permission_change・G-14）。準備で付けた後は、ログインし直して
+ *  新しいログインの印をその画面に持たせる。ログインの口はその画面と同じ名乗り（User-Agent）で呼ぶ（セッションは端末を覚える・K-20）。返すのは新しい印 */
+async function signInAgain(page: Page, email: string): Promise<string> {
+  const ua = await page.evaluate(() => navigator.userAgent);
+  const res = await fetch(`${API}/api/v1/auth/sign-in`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "user-agent": ua, "x-forwarded-for": testIp() },
+    body: JSON.stringify({ email, password: PW }),
+  });
+  const j = (await res.json().catch(() => ({}))) as { data?: { token?: string | null } };
+  const token = res.status === 201 ? (j.data?.token ?? null) : null;
+  expect(token, `ログインし直せる（${res.status}）`).toBeTruthy();
+  await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), token!);
+  await loginAs(page, token!);
+  return token!;
+}
 /** 登録した人（1 人目）と 2 人目と、根の下に無いグループ。1 人目は編集、2 人目は見るだけの権限を付ける。
  *  グループにチケット 1 枚・決定 1 つ・2 人目宛てのお知らせ 1 つ・グループに見せた保存した条件 1 つを用意する */
 async function world(page: Page, browser: Parameters<typeof mateOf>[0], tag: string): Promise<World> {
-  const me = await newcomer(page, box, tag);
-  const mate = await mateOf(browser, me, "権限を外される人");
+  let me = await newcomer(page, box, tag);
+  let mate = await mateOf(browser, me, "権限を外される人");
   mates.push(mate);
   // 2 人の始めの受け箱は空（鈴の数を「ちょうど 1」と置く前提。招待で入る人・最初のログインが新しい端末のお知らせを書くと、ここで原因が分かる）
   expect(await notesOf(me.memberId), "1 人目の始めの受け箱は空").toHaveLength(0);
@@ -72,6 +88,14 @@ async function world(page: Page, browser: Parameters<typeof mateOf>[0], tag: str
   );
   await grant(me.memberId, g!.id, t!.t, "edit");
   await grant(mate.memberId, g!.id, t!.t, "view");
+  // 付けた権限でセッションが切れたので、2 人ともログインし直す（準備だけ。外す・付け直すの後は各行のとおり）
+  me = { ...me, token: await signInAgain(page, me.email) };
+  const [mu] = await admin<{ email: string }>(
+    `select u.email from members m join kaname_auth."user" u on u.id = m.auth_user_id where m.id = $1`,
+    [mate.memberId],
+  );
+  mate = { ...mate, token: await signInAgain(mate.page, mu!.email) };
+  mates.splice(mates.length - 1, 1, mate);
   const title = `${key} 経理のチケット`;
   const ticket = await ticketFor(page, me, { title, scope: g!.id });
   await admin(
@@ -84,7 +108,7 @@ async function world(page: Page, browser: Parameters<typeof mateOf>[0], tag: str
     name: viewName,
     share: "group",
     scope_id: g!.id,
-    filters: { v: 1, view: "all", params: { done: false } },
+    filters: { v: 1, view: "all", params: { done: "false" } }, // params は字（K-479・readFilters は字でない値を読めない中身にする）
   });
   expect(made.status, "グループに見せた保存した条件を作る（K-475）").toBe(201);
   return { me, mate, group: g!.id, key, ticket, title, viewName };
@@ -94,6 +118,9 @@ const viewNames = async (m: Mate): Promise<string[]> => {
   expect(r.status).toBe(200);
   return ((r.data as unknown as { name: string }[] | null) ?? []).map((v) => v.name);
 };
+/** 探すの結果のうちチケットの行（決定の行もチケットの題名を添えて出すので、決定の字の無い方） */
+const ticketHit = (found: Locator, w: World): Locator =>
+  found.getByRole("link").filter({ hasText: w.title }).filter({ hasNotText: `${w.key} 経理の決めごと` });
 const menuLink = (p: Page, name: string) =>
   p.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name });
 const reopen = async (m: Mate): Promise<void> => {
@@ -112,7 +139,7 @@ test("K598-X2-01 付けた人には出る：見る権限を付けた 2 人目の
   await expect(noticeBox(w.mate.page)).toContainText(/書き込み|担当/);
   await w.mate.page.keyboard.press("Escape");
   const found = await searchFor(w.mate.page, `${w.key} 経理`);
-  await expect(found.getByRole("link").filter({ hasText: w.title }), "チケットが探すで出る").toHaveCount(1);
+  await expect(ticketHit(found, w), "チケットが探すで出る").toHaveCount(1);
   await expect(found.getByRole("link").filter({ hasText: `${w.key} 経理の決めごと` }), "決定も出る").toHaveCount(1);
   expect(await viewNames(w.mate), "保存した条件が口の一覧に出る").toContain(w.viewName);
   await expect(menuLink(w.mate.page, w.viewName), "左のメニューのグループの下に出る").toHaveCount(1);
@@ -159,7 +186,7 @@ test("K598-X2-03 付け直すと戻る：権限を付け直すと、同じお知
   expect(await bellCount(w.mate.page), "鈴の数が 1 に戻る").toBe(1);
   expect(await viewNames(w.mate)).toContain(w.viewName);
   const found = await searchFor(w.mate.page, `${w.key} 経理`);
-  await expect(found.getByRole("link").filter({ hasText: w.title })).toHaveCount(1);
+  await expect(ticketHit(found, w)).toHaveCount(1);
 });
 
 test("K598-X2-04 開いたまま外された：鈴の箱を開いて行を見ている間に権限が外されても、行を押すと見つかりませんに行き、開き直した箱にはその行が無い", async ({
@@ -192,7 +219,7 @@ test("K598-X2-05 本人は影響を受けない：2 人目の権限を外して�
   await page.goto("/tickets");
   expect(await bellCount(page), "1 人目の鈴の数は自分宛ての 1 つ").toBe(1);
   const found = await searchFor(page, `${w.key} 経理`);
-  await expect(found.getByRole("link").filter({ hasText: w.title }), "1 人目はチケットを探せる").toHaveCount(1);
+  await expect(ticketHit(found, w), "1 人目はチケットを探せる").toHaveCount(1);
   const mine = await asPerson(page, w.me.token, "GET", "/saved_views");
   expect(JSON.stringify(mine.data), "保存した条件は 1 人目に出る").toContain(w.viewName);
   const detail = await asPerson(page, w.me.token, "GET", `/tickets/${w.ticket}`);

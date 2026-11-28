@@ -82,6 +82,8 @@ export function useCalendarData(q: CalendarQuery): CalendarData {
     queryKey: ["f7-calendar", "month", q.scopeId, from, to, q.assignee],
     queryFn: () => readMonth(q),
     ...OWN,
+    // 前に見た月へ戻ったときは読み直す（覚えた答えを先に出し、裏で読み直す・K481-UI-003）。全体の既定の 5 秒は使わない
+    staleTime: 0,
   });
   const none = useQuery({
     queryKey: ["f7-calendar", "none", q.scopeId],

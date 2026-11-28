@@ -113,12 +113,19 @@ test("K257-UI-014 詳細の形の 7 枚の題名 h1：20px・700・行の高さ 
   expect(bad).toEqual([]);
 });
 
-/** 小窓の絵：小窓がちょうど 1 つで、幅 1440 は幅 wide・上から 60・真ん中、幅 375 は幅 327・左 24・上から 60 */
-async function expectOneModal(browser: Browser, board: string, role: "dialog" | "alertdialog", wide: number) {
+/** 小窓の絵：小窓がちょうど 1 つで、幅 1440 は幅 wide・上から 60・真ん中、幅 375 は幅 327・左 24・上から 60。
+ *  sheet（差し戻すの小窓・K-229 fix b691643571 の PM の決め 2026-11-28）は 767 以下で下から出る形なので、幅 375 は expectSheet で別に見る */
+async function expectOneModal(
+  browser: Browser,
+  board: string,
+  role: "dialog" | "alertdialog",
+  wide: number,
+  sheet = false,
+) {
   const bad: string[] = [];
   for (const [w, width, x] of [
     [1440, wide, (1440 - wide) / 2],
-    [375, 327, 24],
+    ...(sheet ? [] : ([[375, 327, 24]] as const)),
   ] as const) {
     const page = await open(browser, board, w);
     const sel = `section[role="${role}"]`;
@@ -131,6 +138,29 @@ async function expectOneModal(browser: Browser, board: string, role: "dialog" | 
     if ((await overflow(page)) !== 0) bad.push(`幅 ${w}：横溢れ`);
     await page.close();
   }
+  return bad;
+}
+
+/** 767 以下で下から出る小窓の絵（K-229 fix・PM の決め 2026-11-28）：幅 375 で小窓がちょうど 1 つ・左右 16・幅 343・下の端は置き場の下から 16・横溢れ 0 */
+async function expectSheet(browser: Browser, board: string, role: "dialog" | "alertdialog") {
+  const bad: string[] = [];
+  const page = await open(browser, board, 375);
+  const n = await page.locator('section[role="dialog"], section[role="alertdialog"]').count();
+  if (n !== 1) bad.push(`幅 375：小窓 ${n} 個`);
+  const v = await page
+    .locator(`section[role="${role}"]`)
+    .filter({ visible: true })
+    .first()
+    .evaluate((e) => {
+      const r = e.getBoundingClientRect();
+      const p = (e.closest(".kc-sheet") ?? e.parentElement)!.getBoundingClientRect();
+      return { x: Math.round(r.x), w: Math.round(r.width), gap: Math.round(p.bottom - r.bottom) };
+    });
+  if (Math.abs(v.w - 343) > 2) bad.push(`幅 375：小窓の幅 ${v.w}`);
+  if (Math.abs(v.x - 16) > 2) bad.push(`幅 375：小窓の x ${v.x}`);
+  if (Math.abs(v.gap - 16) > 2) bad.push(`幅 375：小窓の下の間 ${v.gap}`);
+  if ((await overflow(page)) !== 0) bad.push("幅 375：横溢れ");
+  await page.close();
   return bad;
 }
 
@@ -147,7 +177,8 @@ test("K257-UI-015 承認の確かめの小窓の絵 StApproveModal：alertdialog
 test("K257-UI-016 差し戻しの小窓の絵 StReturnModal：dialog が 1 つ・幅 420（375 は 327）・上から 60px・真ん中・頭に × が 1 つ", async ({
   browser,
 }) => {
-  const bad = await expectOneModal(browser, "StReturnModal", "dialog", 420);
+  const bad = await expectOneModal(browser, "StReturnModal", "dialog", 420, true);
+  bad.push(...(await expectSheet(browser, "StReturnModal", "dialog")));
   const page = await open(browser, "StReturnModal", 1440);
   if ((await page.locator('section[role="dialog"] [aria-label="閉じる"]').count()) !== 1) bad.push("× が 1 つでない");
   await page.close();

@@ -286,10 +286,15 @@ export const setupStep = (memberId: string, n: number) =>
 export async function claimBridge(token: string, label = "MacBook Pro（QA）"): Promise<string> {
   const p = await api<{ data: { code: string } }>("/api/v1/bridge/pairing-codes", {}, token);
   if (p.status !== 201) throw new Error(`bridge/pairing-codes ${p.status}`);
-  const c = await api<{ data: { device_token: string } }>("/api/v1/bridge/claim", {
-    code: p.json.data.code,
-    device_label: label,
-  });
+  // 引き取りの口は IP ごと 1 分 5 回（契約の rateLimit・D-089）。PC ごとに別の届く元にする（test-pc.ts と同じ）。
+  //   1 つの IP のままだと、同じ組で PC を続けて作る試験（G48・G59）が上限に当たる。上限そのものは K-57 の単体の試験が持つ
+  const c = await api<{ data: { device_token: string } }>(
+    "/api/v1/bridge/claim",
+    { code: p.json.data.code, device_label: label },
+    undefined,
+    "POST",
+    testIp(),
+  );
   if (c.status !== 201) throw new Error(`bridge/claim ${c.status} ${JSON.stringify(c.json)}`);
   return c.json.data.device_token;
 }

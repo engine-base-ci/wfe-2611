@@ -375,10 +375,13 @@ test("K300-UI-009 キャンバスに在って機能がまだの物は隠さず�
 }) => {
   await guard(page);
   await openState(page, "sec-passkey", 1440);
+  // 端末と記録は K-842 が本物の一覧にした（下絵も見本の 1 台と 1 件・K-318 fix 1a7b1be5cb の PM の決め 2026-11-28）。
+  //   グレーの準備中の行は残らず、2 つの区画が出る（隠さない・D-145.9 の「在る物は出す」は同じ）
+  for (const title of ["入っている端末", "最近の安全の記録"]) {
+    await expect(page.getByRole("heading", { name: title, exact: true }), title).toBeVisible();
+  }
   for (const name of ["入っている端末の一覧", "安全の記録"]) {
-    const row = page.locator(".k-set-row", { hasText: name });
-    await expect(row, name).toBeVisible();
-    await expect(row, name).toHaveAttribute("data-off", "");
+    await expect(page.locator(".k-set-row[data-off]", { hasText: name }), name).toHaveCount(0);
   }
   await openState(page, "login-pk-unsupported", 1440);
   const pk = page.locator('[data-act="passkey"]');
