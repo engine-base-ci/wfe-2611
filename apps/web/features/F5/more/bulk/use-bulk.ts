@@ -116,7 +116,7 @@ export function useBulkPreview() {
       try {
         const r =
           scope === "all"
-            ? await call("previewBulkApproval", { screenId: SCREEN })
+            ? await call("previewBulkApproval", { body: {}, screenId: SCREEN })
             : await call("previewBulkApproval", { body: { approval_ids: [...ids] }, screenId: SCREEN });
         if (!r.ok) {
           if (r.status !== 401) set({ note: { tone: "danger", text: failText(r) } }); // 401 は入り直し
