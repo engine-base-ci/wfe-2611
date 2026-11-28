@@ -574,7 +574,7 @@ test("K684-UI-022 やめる・Esc：どの小窓も口を呼ばずに閉じ、�
   expect(mk.calls.length).toBe(before);
 });
 
-test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小窓・題名に焦点・20 回 Tab しても小窓の外へ出ない・「…」に焦点して Enter → ↓ → Enter で選ぶ", async ({
+test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小窓・題名に焦点・20 回 Tab しても小窓の外へ出ない・「…」に焦点して Enter で開くと 1 つ目に焦点・↓ で 2 つ目・↑ で 1 つ目へ戻り Enter で選ぶ", async ({
   page,
 }) => {
   const mk = await mock(page);
@@ -598,9 +598,13 @@ test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小�
   );
   await more(page).focus();
   await page.keyboard.press("Enter");
-  // メニューが開き終わってから ↓ を押す（開く前の ↓ は「…」に当たって選びが動かない）
-  await expect(page.getByRole("menu")).toBeVisible();
+  // キーボードで開くと 1 つ目の項目に焦点が乗る（メニューボタンの決まり・Base UI）。焦点が乗ってから ↓ ↑ で移る（PM の決め 2026-11-28）
+  const item = (name: string) => page.getByRole("menuitem", { name, exact: true });
+  await expect(item("前の版を見る")).toBeFocused();
   await page.keyboard.press("ArrowDown");
+  await expect(item("リンクをコピー")).toBeFocused();
+  await page.keyboard.press("ArrowUp");
+  await expect(item("前の版を見る")).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(dlgOf(page, "前の版を見る")).toBeVisible();
   expect(mk.count("versions")).toBe(1);
