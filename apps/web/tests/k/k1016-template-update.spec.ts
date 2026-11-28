@@ -114,7 +114,7 @@ test.describe("K-1016 中身と選ぶ", () => {
     m.on.apply = () => ({ status: 409, body: { error: "conflict", code: "E-OPS-025" } });
     m.on.updates = () => ({ status: 200, body: { data: count(m, "POST") > 0 ? [] : UPDATES_A } });
     await btn(page, "変える").click();
-    await expect(page.getByRole("alert")).toContainText("もう選びました");
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText("もう選びました");
     await expect(page.getByText("届いている新しい版はありません", { exact: true })).toBeVisible();
   });
 
