@@ -1,0 +1,23 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-deletion.ts",
+    "apps/api/src/features/F10/workspace/deletion.ts",
+    "packages/db/migrations/20261126003000_workspace_deletion.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/workspace-deletion.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/workspace-deletion.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/post_workspace_deletion.test.ts",
+    "apps/api/test/generated/delete_workspace_deletion.test.ts"
+   ]
+  }
+ ]
+}
