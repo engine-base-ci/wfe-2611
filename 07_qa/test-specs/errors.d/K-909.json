@@ -1,0 +1,124 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-181",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "中身が 700000 バイトを超える",
+   "false_when": "700000 バイトまで（ちょうども通る）",
+   "message": "このファイルは大きすぎます（700KB まで）",
+   "action": "小さくするか、分けて足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "700KB を超えるファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-181"
+  },
+  {
+   "id": "E-GST-182",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "実行できる形式（名前の拡張子 exe・bat・js などが最後か途中にある、か中身の先頭が MZ・ELF・#!・Mach-O）",
+   "false_when": "pdf・png・docx・xlsx・txt など、名前にも中身にも実行できる形式の印が無い",
+   "message": "足せない種類のファイルです",
+   "action": "別の形式にして足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "名前が 報告書.pdf.exe のファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-182"
+  },
+  {
+   "id": "E-GST-183",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "まだ依頼に付いていない自分の下書き（消していない）が 5 つある",
+   "false_when": "下書きが 4 つまで。依頼に付いた物・消した物・ほかのゲストの下書きは数えない",
+   "message": "添付は 5 つまでです",
+   "action": "1 つ外してから足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "添付を 5 つ足し、6 つ目を足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-183"
+  },
+  {
+   "id": "E-GST-184",
+   "class": "validation",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "中身が空（0 バイト）",
+   "false_when": "中身が 1 バイト以上",
+   "message": "空のファイルは足せません",
+   "action": "中身のあるファイルを足す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ゲストでログインし、依頼を書く画面で添付を足す",
+    "steps": [
+     "0 バイトのファイルを足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.12",
+    "D-155.53"
+   ],
+   "support_code": "GST-184"
+  }
+ ]
+}

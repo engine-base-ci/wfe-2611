@@ -1,0 +1,21 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/get.ts",
+    "packages/db/migrations/20261126001000_member_detail.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-get.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/admin-member-get.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_members_id.test.ts"
+   ]
+  }
+ ]
+}
