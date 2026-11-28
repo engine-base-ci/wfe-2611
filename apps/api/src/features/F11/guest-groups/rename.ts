@@ -7,7 +7,7 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { badName, editRefused, NAME_MAX } from "./remove.js";
+import { badName, editRefused, NAME_MAX, nameTaken } from "./remove.js";
 
 /** 名前は入れた字のまま（全角・（）を NFKC で崩さない・K927-API-001）。入口の a.input は表記ゆらぎをそろえた後なので、
  *  入口が確かめた体を読み直す（チケットの題名の createTicket と同じ形）。読めなければそろえた後の値 */
@@ -47,7 +47,7 @@ export function createRenameGuestGroup(appPool: pg.Pool): (a: HookArgs) => Promi
       );
       return { status: 200, body: { data: { id: v.id, name: v.name } } };
     } catch (e) {
-      return editRefused(e, "名前を直す");
+      return nameTaken(e) ?? editRefused(e, "名前を直す");
     }
   };
 }
