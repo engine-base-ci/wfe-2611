@@ -233,6 +233,9 @@ test("K597-X1-05 戻しても止めたものは戻らない：消して戻すと
   expect(await delegatedMark(r.t), "印は下りたまま").toBe(false);
   await openTicket(page, r.t, r.title);
   await expect(page.getByRole("button", { name: "AI に任せる", exact: true }), "もう一度任せられる").toBeVisible();
-  const again = await asPerson(page, r.me.token, "POST", `/tickets/${r.t}/delegate`, {});
+  // 確認項目 0 件のチケットは、任せるたびに使わない理由を送る（前に残した理由は数えない・K-565）
+  const again = await asPerson(page, r.me.token, "POST", `/tickets/${r.t}/delegate`, {
+    no_spec_reason: "定型の作業（試験）",
+  });
   expect(again.status, "任せる口が受ける（段が作業中に戻してあるので）").toBe(201);
 });
