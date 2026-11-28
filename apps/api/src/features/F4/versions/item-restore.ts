@@ -42,7 +42,8 @@ const isPoint = (v: unknown): v is number => typeof v === "number" && Number.isI
 export function checkItemRestore(input: Record<string, unknown>): ItemRestoreChecked {
   const details: Detail[] = [];
   for (const k of ["from", "to"] as const)
-    if (!isPoint(input[k])) details.push({ field: k, message: "点の番号は 1 以上 2147483647 以下の整数で送ってください" });
+    if (!isPoint(input[k]))
+      details.push({ field: k, message: "点の番号は 1 以上 2147483647 以下の整数で送ってください" });
   for (const k of Object.keys(input))
     if (k !== "from" && k !== "to") details.push({ field: k, message: "この欄は受けません" });
   if (details.length > 0) return { ok: false, details };

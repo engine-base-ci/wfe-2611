@@ -146,7 +146,8 @@ class OnlyHandStartedTriggers(unittest.TestCase):
         self.assertEqual(rel["release"], {"types": ["published"]})
         self.assertNotIn("permissions", load("v3-gate.yml"), "（前提）v3-gate は定義の頭に permissions を持たない")
         self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text("v3-gate.yml")))), ["GITHUB_TOKEN"], "v3-gate の秘密は GITHUB_TOKEN だけ")
-        self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text("staging-e2e.yml")))), ["STAGING_API_BASE", "STAGING_BASE_URL", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY"], "staging の秘密は STAGING_ の 4 つだけ")
+        self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text("staging-e2e.yml")))), ["STAGING_API_BASE", "STAGING_BASE_URL", "STAGING_DATABASE_READ_URL", "STAGING_OPS_PASSKEY_ID", "STAGING_OPS_PASSKEY_KEY", "STAGING_OPS_PASSKEY_USER", "STAGING_RESEND_READ_KEY"],
+                         "staging の秘密は STAGING_ の 7 つだけ（K-1102：運営の人の試験だけのパスキー 3 つ・K-1101 の準備）")
         self.assertNotIn("secrets.", text("release-gate.yml"), "release-gate は秘密を使わない")
         for wf in WORKFLOWS:
             self.assertNotRegex(text(wf), r"secrets\s*:\s*inherit|toJSON\(\s*secrets", f"{wf}：秘密をまとめて渡さない")

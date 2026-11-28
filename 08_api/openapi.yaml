@@ -18973,7 +18973,6 @@ components:
       properties:
         name:
           type: string
-          nullable: true
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           maxLength: 100
         call_name:
@@ -37526,13 +37525,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-ME-001／VALIDATION_ERROR（契約に書けない値の決まり：名前が null（空と同じ・E-ME-001）・前後の空白・NFKC を除いて 101 文字以上の名前（E-ME-002・文字の数で数える）・前後の空白・NFKC を除いて 21 文字以上の呼ばれ方（E-ME-003・文字の数で数える））
+          description: E-ME-001／VALIDATION_ERROR（契約に書けない値の決まり：前後の空白・NFKC を除いて 101 文字以上の名前（E-ME-002・文字の数で数える）・前後の空白・NFKC を除いて 21 文字以上の呼ばれ方（E-ME-003・文字の数で数える））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 名前が null（空と同じ・E-ME-001）
           - 前後の空白・NFKC を除いて 101 文字以上の名前（E-ME-002・文字の数で数える）
           - 前後の空白・NFKC を除いて 21 文字以上の呼ばれ方（E-ME-003・文字の数で数える）
         '413':
