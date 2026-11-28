@@ -1,0 +1,224 @@
+/* 段 2 の入口の部品（auth-parts.tsx）。値は正本の --k-c-auth-choice・auth-icon・auth-note-box・auth-ok-box・auth-bad-box・auth-ok-icon・
+   status-strip・status-strip-maint・auth-qr・auth-secret・backup-codes・backup-code と --k-* だけを読む（生の値を書かない・D8） */
+
+.k-auth-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-auth-icon-width);
+  height: var(--k-c-auth-icon-height);
+  border-radius: var(--k-c-auth-icon-radius);
+  background: var(--k-c-auth-icon-bg);
+  color: var(--k-c-auth-icon-fg);
+  font-size: var(--k-c-auth-icon-text);
+  font-weight: var(--k-c-auth-icon-fw);
+}
+.k-auth-icon[data-tone="solid"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-auth-icon[data-tone="danger"] {
+  background: var(--k-st-danger);
+  color: var(--k-on-error);
+}
+
+/* 選ぶカード */
+.k-auth-choice-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-auth-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-auth-choice-gap);
+  width: 100%;
+  padding: var(--k-c-auth-choice-pad);
+  border: var(--k-c-auth-choice-border);
+  border-radius: var(--k-c-auth-choice-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+/* 行き先のカード：入口の枠の字のリンク（.k-auth a：下線・紺）を掛けない */
+a.k-auth-choice,
+.k-auth a.k-auth-choice {
+  box-sizing: border-box;
+  color: var(--k-on-surface);
+  text-decoration: none;
+}
+.k-auth-choice:hover:not(:disabled) {
+  border-color: var(--k-primary-line);
+  background: var(--k-primary-soft);
+}
+.k-auth-choice:disabled {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-auth-choice-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.k-auth-choice-main b {
+  font-size: var(--k-c-auth-choice-title-text);
+  font-weight: var(--k-c-auth-choice-title-fw);
+}
+.k-auth-choice-main span {
+  font-size: var(--k-c-auth-choice-desc-text);
+  line-height: var(--k-c-auth-choice-desc-lh);
+  color: var(--k-c-auth-choice-desc-fg);
+}
+.k-auth-choice-go {
+  flex: none;
+  align-self: center;
+  color: var(--k-neutral);
+}
+
+/* 灰の案内の箱 */
+.k-auth-note-box {
+  margin: 0;
+  padding: var(--k-c-auth-note-box-pad);
+  border-radius: var(--k-c-auth-note-box-radius);
+  background: var(--k-c-auth-note-box-bg);
+  font-size: var(--k-c-auth-note-box-text);
+  line-height: var(--k-c-auth-note-box-lh);
+}
+.k-auth-note-box ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 済んだ・使えない知らせの箱 */
+.k-auth-result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-c-auth-ok-box-gap);
+  padding: var(--k-c-auth-ok-box-pad);
+  border: var(--k-c-auth-ok-box-border);
+  border-radius: var(--k-c-auth-ok-box-radius);
+  background: var(--k-c-auth-ok-box-bg);
+  font-size: var(--k-c-auth-ok-box-text);
+  line-height: var(--k-c-auth-ok-box-lh);
+}
+.k-auth-result[data-tone="bad"] {
+  gap: var(--k-c-auth-bad-box-gap);
+  padding: var(--k-c-auth-bad-box-pad);
+  border-radius: var(--k-c-auth-bad-box-radius);
+  font-size: var(--k-c-auth-bad-box-text);
+  line-height: var(--k-c-auth-bad-box-lh);
+  border: var(--k-c-auth-bad-box-border);
+  background: var(--k-c-auth-bad-box-bg);
+  color: var(--k-c-auth-bad-box-fg);
+}
+.k-auth-result-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-auth-ok-icon-width);
+  height: var(--k-c-auth-ok-icon-height);
+  border-radius: var(--k-c-auth-ok-icon-radius);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h1);
+}
+.k-auth-result[data-tone="bad"] .k-auth-result-icon {
+  background: var(--k-st-danger);
+}
+.k-auth-result-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* いまの様子の帯：画面のいちばん上に横いっぱい */
+.k-status-strips {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+.k-status-strip {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-c-status-strip-gap);
+  padding: var(--k-c-status-strip-pad);
+  border-bottom: var(--k-c-status-strip-border-bottom);
+  background: var(--k-c-status-strip-bg);
+  color: var(--k-c-status-strip-fg);
+  font-size: var(--k-c-status-strip-text);
+  line-height: var(--k-c-status-strip-lh);
+}
+.k-status-strip[data-kind="maintenance"] {
+  border-bottom: var(--k-c-status-strip-maint-border-bottom);
+  background: var(--k-c-status-strip-maint-bg);
+  color: var(--k-c-status-strip-maint-fg);
+}
+.k-status-strip-when {
+  color: var(--k-on-surface-variant);
+}
+
+/* QR と鍵の文字 */
+.k-auth-qr {
+  flex: none;
+  display: block;
+  box-sizing: border-box;
+  width: var(--k-c-auth-qr-width);
+  padding: var(--k-c-auth-qr-pad);
+  border: var(--k-c-auth-qr-border);
+  border-radius: var(--k-c-auth-qr-radius);
+  background: var(--k-c-auth-qr-bg);
+}
+.k-auth-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.k-auth-secret {
+  padding: var(--k-c-auth-secret-pad);
+  border-radius: var(--k-c-auth-secret-radius);
+  background: var(--k-c-auth-secret-bg);
+  font-family: var(--k-font-code);
+  font-size: var(--k-c-auth-secret-text);
+  word-break: break-all;
+}
+
+/* バックアップコード */
+.k-backup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-backup-codes {
+  margin: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-c-backup-codes-gap);
+  padding: var(--k-c-backup-codes-pad);
+  border-radius: var(--k-c-backup-codes-radius);
+  background: var(--k-c-backup-codes-bg);
+}
+.k-backup-code {
+  display: block;
+  padding: var(--k-c-backup-code-pad);
+  border: var(--k-c-backup-code-border);
+  border-radius: var(--k-c-backup-code-radius);
+  background: var(--k-c-backup-code-bg);
+  font-family: var(--k-font-code);
+  font-size: var(--k-c-backup-code-text);
+  font-weight: var(--k-c-backup-code-fw);
+  letter-spacing: var(--k-c-backup-code-ls);
+  text-align: center;
+}
+.k-backup-acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--k-s-sm);
+}
