@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F11/portal/work.tsx", "apps/web/features/F11/portal/work-page.tsx", "apps/web/features/F11/portal/use-portal-ticket.ts", "apps/web/features/F11/portal/use-portal-home.ts", "apps/web/features/F11/portal/portal.css", "apps/web/app/(portal)/portal/tickets/**", "apps/web/app/(dev)/dev/mock/f11/**"], "tests": ["apps/web/tests/k/k913-portal-work.spec.ts"]},
+  {"paths": ["packages/db/migrations/20261127101300_portal_home_visit.sql", "apps/api/src/features/F11/portal/home.ts"], "tests": ["apps/api/test/features/F11/portal-visit.test.ts", "apps/api/test/features/F11/portal-read.test.ts"]}
+ ]
+}

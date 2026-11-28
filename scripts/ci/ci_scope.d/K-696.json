@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F9/knowledge/**", "apps/web/app/(dev)/dev/mock/f9/**", "apps/web/app/(work)/knowledge/**"],
+   "tests": ["apps/web/tests/k/k696-knowledge-review.spec.ts", "apps/web/test/k696-review-shape.test.ts", "apps/web/tests/k/k694-knowledge-approvals.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k696-knowledge-review.spec.ts": "knowledge-mock.ts（正本 07_qa/test-specs/errors.json の文を readFileSync で読む）と f9-match.ts（scripts/ci/fidelity_compare.mjs を import して値を比べる）を使う。ファイルは書かない（写しは test-results/f9-match/ に人が見る用）・K-696"
+ }
+}
