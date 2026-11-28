@@ -3,7 +3,7 @@
 //   見比べは共通の道具 stage2-match.ts の matchMock だけ。口の差し替えと手順は共通の道具 decisions-mock.ts（この葉が持ち、K-398 も読む）。
 //   期待は代表の答え（⑧ ⑯ ⑰ ⑱ ⑳ ㉒・answer=eaa451436670・f5cd1647389f）・決定（D-125.63・D-130.1・D-145.9）とモックから書く。固定の待ちは使わない。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
-import { expect, test, type Page, type Route } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import {
   D0,
@@ -18,13 +18,11 @@ import {
   addDialog,
   dec,
   decisionsApi,
-  detailWithDecisions,
   items,
   logSec,
   openDetail,
   type Decision,
 } from "./decisions-mock";
-import { idOf, item as listItem, mockList, ok, open as openList } from "./list-mock";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
 test.use({ timezoneId: "Asia/Tokyo" });
@@ -68,8 +66,6 @@ const DEC_PAIRS: FidelityPair[] = (
   [
     ["dec-h2", "#sec-decisions", TEXT],
     ["dec-add", ".k-dec-head button", [...FLOW, "font-size", "color", "texts"]],
-    ["dec-intro", ".k-dec-intro", TEXT],
-    ["dec-empty", ".k-dec-empty", TEXT],
     ["dec-item", ".k-dec-item", FLOW],
     ["dec-text", ".k-dec-text", [...TEXT, "text-decoration-line"]],
     ["dec-tag", ".k-dec-tag", [...FLOW, ...TEXT]],
@@ -87,7 +83,6 @@ const DEC_PAIRS: FidelityPair[] = (
 
 const DRIVE: Record<string, { list: Decision[]; go: (page: Page) => Promise<void> }> = {
   "dec-log": { list: [D1, D0, D3, D2], go: async (page) => void (await expect(items(page)).toHaveCount(4)) },
-  "dec-empty": { list: [], go: async (page) => void (await expect(logSec(page)).toContainText(MSG.empty)) },
   "dec-add": {
     list: [D1, D0, D3, D2],
     go: async (page) => {
@@ -110,7 +105,7 @@ for (const [id, c] of Object.entries(DRIVE)) {
           await decisionsApi(page, {
             list: c.list,
             asMock: true,
-            intro: id === "dec-empty" ? null : "支払いは銀行振込",
+            intro: "支払いは銀行振込",
           });
           await openDetail(page, w);
           await c.go(page);
@@ -125,17 +120,13 @@ for (const [id, c] of Object.entries(DRIVE)) {
 
 // ---------------------------------------------------------------- 一覧
 
-test("K397-UI-002 生きている 2・改められた 1・取り消した 1：見出し「決定ログ（2）」・その下に作るときの字・並びは 生きている（新しい順）→ 改められた → 取り消した。決定の一覧の口は 1 回", async ({
+test("K397-UI-002 生きている 2・改められた 1・取り消した 1：見出し「決定ログ（2）」・並びは 生きている（新しい順）→ 改められた → 取り消した。決定の一覧の口は 1 回", async ({
   page,
 }) => {
   const d = await decisionsApi(page);
   await openDetail(page);
   await expect(logSec(page).locator("#sec-decisions")).toHaveText("決定ログ（2）");
-  await expect(logSec(page).locator(".k-dec-intro")).toHaveText("作るときに書いた字：支払いは銀行振込");
   await expect(items(page).locator(".k-dec-text")).toHaveText([D3.text, D2.text, D1.text, D0.text]);
-  const introY = (await logSec(page).locator(".k-dec-intro").boundingBox())!.y;
-  const listY = (await items(page).first().boundingBox())!.y;
-  expect(introY).toBeLessThan(listY);
   expect(d.reads).toBe(1);
 });
 
@@ -183,16 +174,17 @@ test("K397-UI-004 元の書き込み：「元：やり取り 11/01 10:20 →」�
   await expect(g.getByRole("link")).toHaveCount(0);
 });
 
-test("K397-UI-005 0 件：見出し「決定ログ」（数なし）・作るときの字・空の文・「＋ 決定を足す」", async ({ page }) => {
+test("K397-UI-005 0 件：決定ログの場所は出さない（見出し・空の文・「＋ 決定を足す」も無い・D-150.41）", async ({
+  page,
+}) => {
   await decisionsApi(page, { list: [] });
   await openDetail(page);
-  await expect(logSec(page).locator("#sec-decisions")).toHaveText("決定ログ");
-  await expect(logSec(page).locator(".k-dec-intro")).toHaveText("作るときに書いた字：支払いは銀行振込");
-  await expect(logSec(page)).toContainText(MSG.empty);
-  await expect(addBtn(page)).toBeVisible();
+  await expect(page.locator("#sec-decisions")).toHaveCount(0);
+  await expect(page.getByText(MSG.empty)).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "＋ 決定を足す" })).toHaveCount(0);
 });
 
-test("K397-UI-006 手順 S1 の失敗 503 →「もう一度読む」：赤の箱・「＋ 決定を足す」なし・作るときの字は出る。押すと口をもう 1 回呼び、読めれば一覧", async ({
+test("K397-UI-006 手順 S1 の失敗 503 →「もう一度読む」：赤の箱・「＋ 決定を足す」なし。押すと口をもう 1 回呼び、読めれば一覧", async ({
   page,
 }) => {
   const d = await decisionsApi(page);
@@ -200,32 +192,18 @@ test("K397-UI-006 手順 S1 の失敗 503 →「もう一度読む」：赤の�
   await openDetail(page);
   await expect(logSec(page)).toContainText(MSG.failed);
   await expect(addBtn(page)).toHaveCount(0);
-  await expect(logSec(page).locator(".k-dec-intro")).toBeVisible();
   await logSec(page).getByRole("button", { name: "もう一度読む" }).click();
   await expect(items(page)).toHaveCount(4);
   await expect(addBtn(page)).toBeVisible();
   expect(d.reads).toBe(2);
 });
 
-test("K397-UI-007 区画の字が空（null・空の字）：「作るときに書いた字：」の行は出ない", async ({ page }) => {
-  await decisionsApi(page, { intro: null });
-  await openDetail(page);
-  await expect(items(page)).toHaveCount(4);
-  await expect(logSec(page).locator(".k-dec-intro")).toHaveCount(0);
-  await page.unrouteAll({ behavior: "ignoreErrors" });
-  await decisionsApi(page, { intro: "" });
-  await page.reload();
-  await expect(items(page)).toHaveCount(4);
-  await expect(logSec(page).locator(".k-dec-intro")).toHaveCount(0);
-});
-
-test("K397-UI-008 閲覧のみ（meta.can_write false）：一覧と作るときの字は出る・「＋ 決定を足す」「改める」「取り消す」は 0 個", async ({
+test("K397-UI-008 閲覧のみ（meta.can_write false）：一覧は出る・「＋ 決定を足す」「改める」「取り消す」は 0 個", async ({
   page,
 }) => {
   await decisionsApi(page, { canWrite: false });
   await openDetail(page);
   await expect(items(page)).toHaveCount(4);
-  await expect(logSec(page).locator(".k-dec-intro")).toBeVisible();
   await expect(addBtn(page)).toHaveCount(0);
   await expect(logSec(page).getByRole("button", { name: "改める" })).toHaveCount(0);
   await expect(logSec(page).getByRole("button", { name: "取り消す" })).toHaveCount(0);
@@ -282,14 +260,15 @@ test("K397-UI-010 足す（本人・理由あり）：体は書いたとおり�
 test("K397-UI-011 決めた人「鈴木 一郎」とひとこと「先方と合意」：体の decided_by_member_id と decided_note・一覧の小さな字は「MM/DD 鈴木 一郎（先方と合意）」で始まる", async ({
   page,
 }) => {
-  const d = await decisionsApi(page, { list: [] });
+  // 決定が在る詳細から足す（0 件の詳細には場所が無い・D-150.41）
+  const d = await decisionsApi(page, { list: [D3] });
   await openDetail(page);
   await openAdd(page);
   await textOf(page).fill("納品は PDF だけ");
   await pickBy(page, "鈴木 一郎");
   await noteOf(page).fill("先方と合意");
   await sendBtn(page).click();
-  await expect(items(page)).toHaveCount(1);
+  await expect(items(page)).toHaveCount(2);
   expect(d.posts[0]).toMatchObject({ decided_by_member_id: SUZUKI, decided_note: "先方と合意", reason: null });
   await expect(items(page).first().locator(".k-dec-sub")).toHaveText(/^\d\d\/\d\d 鈴木 一郎（先方と合意）/);
 });
@@ -316,13 +295,14 @@ test("K397-UI-012 決めたことが空・空白だけ（全角も）：口は 0
 test("K397-UI-013 決めたことに 3000 字と改行：削らずに送り、一覧に全部の字が出る（上限を置かない・切り捨てない）", async ({
   page,
 }) => {
-  const d = await decisionsApi(page, { list: [] });
+  // 決定が在る詳細から足す（0 件の詳細には場所が無い・D-150.41）
+  const d = await decisionsApi(page, { list: [D3] });
   await openDetail(page);
   await openAdd(page);
   const long = `${"あ".repeat(1500)}\n${"い".repeat(1499)}`;
   await textOf(page).fill(long);
   await sendBtn(page).click();
-  await expect(items(page)).toHaveCount(1);
+  await expect(items(page)).toHaveCount(2);
   expect(d.posts[0]!["text"]).toBe(long);
   expect(
     await items(page)
@@ -335,7 +315,8 @@ test("K397-UI-013 決めたことに 3000 字と改行：削らずに送り、�
 test("K397-UI-014 決めたこと・理由に <img src=x onerror=alert(1)>：送る体は書いたとおり・一覧に字のまま出て img は 0 個", async ({
   page,
 }) => {
-  const d = await decisionsApi(page, { list: [] });
+  // 決定が在る詳細から足す（0 件の詳細には場所が無い・D-150.41）
+  const d = await decisionsApi(page, { list: [D3] });
   await openDetail(page);
   const evil = "<img src=x onerror=alert(1)>";
   await openAdd(page);
@@ -495,41 +476,4 @@ test("K397-UI-021 口の数：開いたとき決定の一覧 1 回・人の一�
   await openAdd(page);
   await expect(byOf(page)).toContainText("高本 聖斗");
   expect(d.memberReads).toBe(1);
-});
-
-test("K397-UI-022 種別に決定ログの区画が無い：決定の一覧は詳細と同時に先読みで 1 回読むが区画は描かず「＋ 決定を足す」は 0 個。一覧の右に開く詳細：決定の一覧の口を呼ばず、区画の字のまま", async ({
-  page,
-}) => {
-  const d = await decisionsApi(page, { intro: "none" });
-  await openDetail(page);
-  await expect(page.locator("#sec-purpose")).toBeVisible();
-  await expect(page.locator("#sec-decisions")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "＋ 決定を足す" })).toHaveCount(0);
-  // 頁の形の詳細は、区画の有無が詳細の答えで決まる前に決定の一覧を先読みする（直列の段を 1 に保つ・まとめ役の決め）。描かないだけ
-  await expect.poll(() => d.reads).toBe(1);
-  // 一覧の右に開く詳細（K-252）
-  await page.unrouteAll({ behavior: "ignoreErrors" });
-  await mockList(page, { list: () => ok([listItem(1)], { next_cursor: null }) });
-  let reads = 0;
-  await page.route(`**/api/v1/tickets/${idOf(1)}/decisions`, (route: Route) => {
-    reads++;
-    return route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ data: [], meta: { can_write: true } }),
-    });
-  });
-  await page.route(`**/api/v1/tickets/${idOf(1)}`, (route: Route) => {
-    const t = detailWithDecisions({}) as { ticket: Record<string, unknown> };
-    return route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ data: { ...t, ticket: { ...t.ticket, id: idOf(1), number: "EG-101" } } }),
-    });
-  });
-  await openList(page, "/tickets?view=all&open=EG-101");
-  const side = page.getByRole("complementary", { name: "チケットの詳細" });
-  await expect(side).toContainText("支払いは銀行振込");
-  await expect(side.getByRole("button", { name: "＋ 決定を足す" })).toHaveCount(0);
-  expect(reads).toBe(0);
 });

@@ -8265,6 +8265,34 @@
    ]
   },
   {
+   "id": "E-SEC-006",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "本文を書き終えたときに、このチケットを書く権限が無い（口が 403。開いている間に権限が外れた）",
+   "false_when": "書く権限がある",
+   "message": "この操作をする権限がありません。権限が変わったかもしれません。画面を読み直してください",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細で本文を直し始める",
+    "steps": [
+     "直している間に書く権限を外し、書き終える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.13"
+   ]
+  },
+  {
    "id": "E-NTF-001",
    "class": "conflict",
    "where": {

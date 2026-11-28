@@ -58,7 +58,8 @@ const STATES: Record<
     },
   },
   "st-logo": {
-    skip: ["mark:texts"],
+    // 下絵は選んだ画像の代わりに字「写」を描く（本番は画像）。その字を含むロゴの印・区画・行の字は比べない（大きさ・位置は比べる）
+    skip: ["mark:texts", "ws-card:texts", "row:texts"],
     settings: settings({ workspace: { id: ID.EG, name: WS_NAME, logo: { kind: "image", url: DOT } } }),
     drive: async (page) => {
       await page.locator(FILE).setInputFiles(png(TWO_MB + 1));
@@ -316,7 +317,8 @@ test("K831-UI-015 取り直しを「やめる」：stepUp 0 回・やり直し 0
   expect(mk.count("stepUp")).toBe(0);
   expect(mk.count("perms")).toBe(1);
   await expect(pick(page, 1)).not.toContainText("マネージャー");
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  // Next.js の行き先の読み上げ（next-route-announcer・空の role=alert）は数えない
+  await expect(page.getByRole("alert").filter({ hasText: /\S/ })).toHaveCount(0);
 });
 
 test("K831-UI-016 変更の失敗（503）：Kaname の調子が悪い旨の赤い箱・値は前のまま・次に選べば送り直せる。権限の 403（STEP_UP_REQUIRED でない）は「この画面を見る権限がありません」の画面に替える", async ({
@@ -341,14 +343,14 @@ test("K831-UI-017 プランと支払い：差し込み口 planRow を渡さな�
   const src = readFileSync(join(ROOT, "apps/web/features/F10/ws/settings-screen.tsx"), "utf8");
   expect(src).toMatch(/planRow\??:\s*ReactNode|planRow=\{/);
   await openAt(page, owner.token, PATH);
-  // 段 13 の K-962 が planRow を渡した後は、2 つのボタンは押せる形（押した後の動きは K-962 の試験が受ける）。渡す前は押せない形で口を呼ばない
-  const plugged = /planRow=\{/.test(src);
+  // 段 13 の K-962 が planRow を渡した後は、区画の中身は K-962 の 1 行（押せる形・押した後の動きは K-962 の試験が受ける）。渡す前は押せない形で口を呼ばない
+  if (/planRow=\{/.test(src)) {
+    await expect(card(page, "プランと支払い")).toContainText("プランを変える");
+    await expect(card(page, "プランと支払い")).toContainText("請求書");
+    return;
+  }
   for (const name of ["プランを変える", "請求書"]) {
     const b = card(page, "プランと支払い").getByRole("button", { name, exact: true });
-    if (plugged) {
-      await expect(b).not.toHaveAttribute("aria-disabled", "true");
-      continue;
-    }
     await expect(b).toHaveAttribute("aria-disabled", "true");
     await b.click({ force: true });
   }

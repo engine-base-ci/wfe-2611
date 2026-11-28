@@ -19,7 +19,7 @@ LIST_DETAILS = {
 # 問い合わせの値域を契約に書く（K-468 の仕組み・口が 422 にするのは契約に書ける形に合わない値だけ）
 #   view：mine か all。done：true か false。q：送られたままの文字で 100 文字まで（query.ts の Q_MAX）。
 #   K-473：日付 4 欄は format: date（暦に実在する日）＋年 0000 を外す pattern・overdue／fire／delegated／approving は true か false・due は none・
-#   parent は none／any／uuid の形（format: uuid を使うと生成器が入口の uuid の確かめに回し none・any を断る）・sort は 4 つの enum（一覧の共通の enum を置き換える）・fields は 5 つの名前を空白なしでコンマでつないだ形。
+#   parent は none か any か uuid（anyOf の中の format: uuid・統合の枝で手書きの正規表現をやめた）・sort は 4 つの enum（一覧の共通の enum を置き換える）・fields は 5 つの名前を空白なしでコンマでつないだ形。
 #   cursor の pattern（base64url の 1〜200 字）は作り手が KEY_CURSOR_OPS から書く
 QUERY_RANGES = {
     "listTickets": {
@@ -35,7 +35,7 @@ QUERY_RANGES = {
         "delegated": {"enum": ["true", "false"]},
         "approving": {"enum": ["true", "false"]},
         "due": {"enum": ["none"]},
-        "parent": {"pattern": "^(?:none|any|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"},
+        "parent": {"anyOf": [{"enum": ["none", "any"]}, {"format": "uuid"}]},   # uuid は手で書かず format: uuid（K-144 の SHAPE_019・口は query.ts で isUuid）
         "sort": {"enum": ["due_on", "start_on", "updated_at", "created_at"]},
         "fields": {"pattern": "^(?:start_on|priority|estimate_minutes|actual_minutes|scope)(?:,(?:start_on|priority|estimate_minutes|actual_minutes|scope))*$"},
     },
