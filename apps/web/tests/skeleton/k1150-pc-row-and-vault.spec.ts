@@ -14,7 +14,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type BrowserContext, type Locator, type Page } from "@playwright/test";
-import { API, PW, admin, hideRealBridge } from "../_lib/api";
+import { API, PW, admin, hideRealBridge, setupStep } from "../_lib/api";
 import { ticketState, workOf, type Job, type PcWork } from "../_lib/f5-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
@@ -124,6 +124,9 @@ test.describe.serial("中間 M1：PC の行と預けたログイン情報を、1
     page = await ctx.newPage();
     await hideRealBridge(page);
     me = await newcomer(page, box, `段4 ${randomUUID().slice(0, 6)}`);
+    // はじめの設定の段の門（RequireSetup・D-089）は、まだの人を今の段（1 PC をつなぐ）へ戻す。預けたログイン情報は段 4 なので、
+    //   PC をつながずに 1〜3 を通したことにする（PC の行は作らない＝「PC の無いときに預ける」のまま）
+    await setupStep(me.memberId, 3);
   });
   test.afterAll(async () => {
     await pc?.close();
