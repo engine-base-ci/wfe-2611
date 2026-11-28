@@ -598,6 +598,8 @@ test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小�
   );
   await more(page).focus();
   await page.keyboard.press("Enter");
+  // メニューが開き終わってから ↓ を押す（開く前の ↓ は「…」に当たって選びが動かない）
+  await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
   await expect(dlgOf(page, "前の版を見る")).toBeVisible();
