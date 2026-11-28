@@ -1,12 +1,14 @@
 "use client";
 // 段・保留・実績を変える口 updateTicket を 1 回呼び、答えを画面の扱いに直す（口と読み直しはここだけ・slot.tsx には口を書かない）。
 //   同じチケットで答えが来るまで 2 本目は送らない（押せない形・同じ押しの 2 回目は捨てる）。
-//   200 → 詳細を 1 回読み直す（ticket.reload＝詳細と同じ問い合わせの器）。
+//   200 → 詳細を 1 回読み直す（ticket.reload＝詳細と同じ問い合わせの器）。やり取り（timeline）も読み直す（段の変更の 1 行）。
 //   422 の欄の断り（保留の理由・再開の条件・actual_minutes）→ 呼んだ側が入力の下に出す（details）。ほかの断りは知らせの器（notice.ts）に口の文。
 //   409・403・404 → 知らせて詳細を読み直し、入力は閉じる。503・網の切れ → 知らせて入力は開いたまま。401 は共通の扱い（入り直し・戻る先にこのチケット）
 import { useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { messageOf } from "@/features/F5/approve-complete/message";
+import { timelineKey } from "@/features/F6/thread/use-timeline";
 import { call, type CallErr } from "@/lib/api/call";
 import { setBusy, setNotice, useProgressState } from "./notice";
 
@@ -82,6 +84,11 @@ export async function updateProgress(ticket: Pick<SlotTicket, "id" | "reload">, 
 export function useProgress(ticket: Pick<SlotTicket, "id" | "reload">) {
   const { busy, notice } = useProgressState(ticket.id);
   const { id, reload } = ticket;
-  const send = useCallback((body: UpdateBody) => updateProgress({ id, reload }, body), [id, reload]);
+  const qc = useQueryClient();
+  // 読み直しは詳細とやり取り（段の変更の 1 行が足される・F6 の timeline は詳細と別の問い合わせ）の両方
+  const reloadAll = useCallback(async () => {
+    await Promise.all([reload(), qc.invalidateQueries({ queryKey: timelineKey(id) })]);
+  }, [reload, qc, id]);
+  const send = useCallback((body: UpdateBody) => updateProgress({ id, reload: reloadAll }, body), [id, reloadAll]);
   return { busy, notice, send };
 }
