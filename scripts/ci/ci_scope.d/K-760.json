@@ -1,0 +1,37 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/talk-mirror.ts",
+    "apps/api/src/features/F5/talk/mirror.ts",
+    "packages/db/migrations/20261125024000_talk_mirror.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/talk-mirror.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/loop.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/loop-mirror.test.ts",
+    "apps/bridge/test/loop-browser-state.test.ts",
+    "apps/bridge/test/loop.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/talk-mirror.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-760.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）"
+ }
+}

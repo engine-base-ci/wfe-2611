@@ -1,0 +1,35 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-007",
+   "class": "permission",
+   "where": {
+    "screen": "*",
+    "state": "workspace_stopped"
+   },
+   "when": "運営が止めた会社（止めた時刻か、止める日が今日以前）の会社の人が、止められた画面・お知らせ・問い合わせで使う口のほかを呼んだ",
+   "false_when": "止める日の前（予定だけ）／再開した後／別の会社の人／許可を持つ運営の人が中を見ている／止められた画面・お知らせ・問い合わせで使う口",
+   "message": "このワークスペースは止められています",
+   "action": "問い合わせる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営が会社を止めた後、その会社の人でログインしている",
+    "steps": [
+     "チケットの一覧を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "high",
+   "source": [
+    "D-156.23",
+    "D-125.126"
+   ],
+   "support_code": "OPS-007"
+  }
+ ]
+}

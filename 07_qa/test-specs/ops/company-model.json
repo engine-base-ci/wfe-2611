@@ -1,0 +1,201 @@
+{
+ "screen": "company-model",
+ "mock": "06_mockup/v1/v1-company-model.html",
+ "state_labels": {
+  "n": "全体",
+  "v": "版の履歴",
+  "t": "テンプレ",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:目標5 層受注 10件40%売上 1,200万69%納期遵守 95%100%第 3 版で改訂· 未配分 0→goals",
+   "kind": "link",
+   "label": "目標5 層受注 10件40%売上 1,200万69%納期遵守 95%100%第 3 版で改訂· 未配分 0",
+   "target": "goals",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:台帳の定義3 台帳4引合3提案2受注3制作1納品2請求6入金案件 7 段階 · 請求 4 · 問い合わせ 4 · レコー→ledger-def",
+   "kind": "link",
+   "label": "台帳の定義3 台帳4引合3提案2受注3制作1納品2請求6入金案件 7 段階 · 請求 4 · 問い合わせ 4 · レコー",
+   "target": "ledger-def",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:担当業務7 業務営業 3発注ナビの新着を台帳に入れるアプローチ文を下書きする経理 2納品済み案件の請求書を作る入金を照合→duties",
+   "kind": "link",
+   "label": "担当業務7 業務営業 3発注ナビの新着を台帳に入れるアプローチ文を下書きする経理 2納品済み案件の請求書を作る入金を照合",
+   "target": "duties",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:AI社員3 体営業社員運営配布 · 止まっている経理社員運営配布 · 稼働中CS社員会社作成 · 稼働中プラン上限 5 →ai-staff",
+   "kind": "link",
+   "label": "AI社員3 体営業社員運営配布 · 止まっている経理社員運営配布 · 稼働中CS社員会社作成 · 稼働中プラン上限 5 ",
+   "target": "ai-staff",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:組織4 人 + 3 体高本代表田中 · 担当者佐藤 · 担当者鈴木 · 閲覧山本 · 招待中営業社員経理社員CS社員層：→members",
+   "kind": "link",
+   "label": "組織4 人 + 3 体高本代表田中 · 担当者佐藤 · 担当者鈴木 · 閲覧山本 · 招待中営業社員経理社員CS社員層：",
+   "target": "members",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:ルール8銀行はブラウザで触らない運営CAPTCHA は突破しない運営外に出るものは承認必須会社初回は値引きしない個人運営→policies",
+   "kind": "link",
+   "label": "ルール8銀行はブラウザで触らない運営CAPTCHA は突破しない運営外に出るものは承認必須会社初回は値引きしない個人運営",
+   "target": "policies",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:記憶とナレッジ14会社4部署3個人3AI社員2確認待ち2直近：京蟻は税込を先に（会社）・請求書は内訳の行を付ける（経理）→clone-memory",
+   "kind": "link",
+   "label": "記憶とナレッジ14会社4部署3個人3AI社員2確認待ち2直近：京蟻は税込を先に（会社）・請求書は内訳の行を付ける（経理）",
+   "target": "clone-memory",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:改訂する→goal-edit",
+   "kind": "link",
+   "label": "改訂する",
+   "target": "goal-edit",
+   "states": [
+    "全体",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:これを元にした",
+   "kind": "button",
+   "label": "これを元にした",
+   "target": null,
+   "states": [
+    "テンプレ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "テンプレ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:中身を見る",
+   "kind": "button",
+   "label": "中身を見る",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
