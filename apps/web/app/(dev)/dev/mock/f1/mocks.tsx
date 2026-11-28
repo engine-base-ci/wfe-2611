@@ -23,6 +23,9 @@ import {
   type SecurityState,
 } from "@/features/F1/security/views";
 import type { Theme } from "@/lib/theme";
+import { DevicesCard, EventsCard } from "@/features/F10/account/login";
+import { SESSIONS_SAMPLE } from "@/features/F10/account/sessions-sample";
+import { EVENTS_EMPTY, toDevices, toEvents } from "@/features/F10/account/sessions-shape";
 
 const msg = (id: string, fallback: string): string => CATALOG[id as keyof typeof CATALOG]?.message ?? fallback;
 
@@ -152,6 +155,17 @@ export const MOCKS: readonly MockEntry[] = [
 ];
 
 /** 外枠の中のログインと安全（モックの外枠は決めた値の Shell。本番は TicketShell） */
+/** 入っている端末・最近の安全の記録は K-842 の本物の一覧の形（見本の行あり・PM の決め 2026-11-28） */
+function SessionCardsSample() {
+  const now = Date.parse("2026-11-28T00:00:00Z");
+  return (
+    <>
+      <DevicesCard devices={toDevices(SESSIONS_SAMPLE, now)} allDisabled />
+      <EventsCard events={toEvents(SESSIONS_SAMPLE, now)} empty={EVENTS_EMPTY} />
+    </>
+  );
+}
+
 function SecurityPage({ theme, state, dialog }: { theme: Theme; state: SecurityState; dialog?: ReactNode }) {
   return (
     <Toaster>
@@ -168,7 +182,7 @@ function SecurityPage({ theme, state, dialog }: { theme: Theme; state: SecurityS
           <MeSub current="login" />
           <section className="k-page k-me-page" aria-labelledby="security-title">
             <SecurityHead />
-            <SecurityBody {...state} />
+            <SecurityBody {...state} sessionCards={<SessionCardsSample />} />
           </section>
         </div>
       </Shell>

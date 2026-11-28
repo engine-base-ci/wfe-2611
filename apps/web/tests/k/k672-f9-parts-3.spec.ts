@@ -175,9 +175,10 @@ test("K672-UI-009 tk-blocked：右のパネルの確認項目は、ナレッジ�
 }) => {
   await guard(page);
   await openState(page, "tk-blocked", 1440);
-  const specs = page.getByRole("region", { name: "確認項目", exact: true });
+  // 下絵 tk-blocked は完了の小窓が開いたまま。小窓の後ろは読み上げから外れる（role で探せない）ので、区画は要素で探す
+  const specs = page.locator('section[aria-label="確認項目"]');
   await expect(specs.getByText("ナレッジ：請求書の送り方", { exact: true }).first()).toBeVisible();
-  const human = specs.getByRole("listitem").filter({ hasText: "先月と同じ書式になっている" });
+  const human = specs.locator("li").filter({ hasText: "先月と同じ書式になっている" });
   await expect(human).toHaveCount(1);
   await expect(human).not.toContainText("ナレッジ：");
   await expect(specs.getByText("あと 2 つ", { exact: true })).toBeVisible();

@@ -6,6 +6,7 @@ import { Button, Select, TextArea, TextField } from "@/components/k";
 import { ParentEntry } from "@/features/F4/parent/views";
 import { NotifyPicker } from "@/features/F4/create-ticket/notify-picker";
 import { BAR_GROUPS } from "./bar-tools";
+import { DecisionLog } from "@/features/F6/decisions/views";
 import "./doc.css";
 import "./extra.css";
 
@@ -597,19 +598,19 @@ export function Results() {
           </li>
         </ul>
       </section>
-      <section className="k-f4d-result" aria-label="決定ログ">
-        <h2>決定ログ</h2>
-        <ul>
-          <li className="k-f4d-log">
-            <span>追加対応は 2 件を明細に分けて載せる</span>
-            <small>11/21 09:05 ・ 高本</small>
-          </li>
-          <li className="k-f4d-log">
-            <span>支払期日は先方の締めに合わせて 12/15 にする</span>
-            <small>11/21 09:08 ・ AI（高本の分身）</small>
-          </li>
-        </ul>
-      </section>
+      {/* 決定ログは K-397 の区画（本文の中の k-section・見出しは生きている決定の数つき）。今の詳細の組み方で描く */}
+      <DecisionLog
+        canWrite
+        items={[
+          {
+            id: "d2",
+            text: "支払期日は先方の締めに合わせて 12/15 にする",
+            by: "11/21 高本のAI（AI が決めた）",
+            status: "live",
+          },
+          { id: "d1", text: "追加対応は 2 件を明細に分けて載せる", by: "11/21 高本", status: "live" },
+        ]}
+      />
       <section className="k-f4d-result" aria-label="申し送り">
         <h2>申し送り</h2>
         <p className="k-f4d-handoff">

@@ -56,6 +56,18 @@ export const FREE = doc(
   TABLE,
 );
 
+/** 下絵の本文（features/F4/doc/views.tsx の FreeDoc）の見出しと段落の並び。下絵との突き合わせ（K571-UI-023・024）が見出し 5 つ・段落 2 つを比べる。
+ *  箇条書き・チェックの箱・表は、本物の編集器では中に段落（p）を持つので入れない（段落の数が下絵と比べられなくなる） */
+export const MOCK_BODY = doc(
+  H2("目的"),
+  P("セイコー商事に 11 月分の請求を間違いなく届ける。"),
+  H2("完了の条件"),
+  H2("実施事項"),
+  H2("前提と制約"),
+  P("支払期日は 12/15。月末の締めを過ぎると翌月分になるので、今週中に送る。"),
+  H2("参考"),
+);
+
 export type FieldType = "short_text" | "long_text" | "number" | "date" | "select" | "multi_select" | "check";
 export interface DetailField {
   id: string;
@@ -199,6 +211,8 @@ export async function mockDetail(page: Page, o: Partial<DetailAnswer> & { status
           text: d.text,
           reason: d.reason,
           decided_by: d.decided_by_name ? { id: ME, display_name: d.decided_by_name } : null,
+          // 決めた人の名前が無い行は AI が決めた行（K-571 の RESULTS の 2 行目）：高本の AI（decided_by_ai・2026-11-28 の形）
+          decided_by_ai: d.decided_by_name ? null : { member_id: ME, display_name: "高本" },
           decided_note: null,
           decided_at: d.decided_at,
           source: null,

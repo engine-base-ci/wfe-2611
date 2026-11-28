@@ -49,12 +49,17 @@ const notFoundKind = (): HookReply => bare("E-PAGE-001", 404);
 function refusal(r: Body, op: string): HookReply {
   const word = String(r["error"]);
   if (word === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
-  if (word === "not_found") return notFoundKind();
   if (word === "invalid") return invalid([{ field: "body", message: "入力内容を確認してください" }]);
   const code = CONFLICTS[word];
   if (code) return bare(code, 409, word === "in_use" ? { ticket_count: Number(r["ticket_count"] ?? 0) } : undefined);
   console.error(`[ticket-kinds] ${op}：知らない答え（${word}）なので止める側に倒した`);
   return unavailable();
+}
+
+/** :id の行を読む口（直す・消す）の断り：行が無い（not_found）は 404 E-PAGE-001、ほかは refusal。
+ *  作る・並べ替えの関数は not_found を返さないので refusal だけ（口ごとに読み替えを分ける・K-144 の SHAPE_010・ふるまいは同じ） */
+function refusalOfRow(r: Body, op: string): HookReply {
+  return String(r["error"]) === "not_found" ? notFoundKind() : refusal(r, op);
 }
 
 /** 答えの形（鍵ちょうど 6） */
@@ -121,6 +126,7 @@ async function run(
   sql: string,
   params: unknown[],
   ok: (data: unknown) => HookReply,
+  refuse: (r: Body, op: string) => HookReply = refusal,
 ): Promise<HookReply> {
   let r: Body;
   try {
@@ -129,7 +135,7 @@ async function run(
     console.error(`[ticket-kinds] ${op}：書けなかった（${(ex as Error)?.name ?? "Error"}）`);
     return unavailable();
   }
-  if (r["error"] !== undefined) return refusal(r, op);
+  if (r["error"] !== undefined) return refuse(r, op);
   return ok(r["data"]);
 }
 
@@ -180,6 +186,7 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
           "select app.ticket_kind_update($1::uuid, $2::jsonb) as r",
           [a.id, JSON.stringify(patch)],
           one(200),
+          refusalOfRow,
         );
       },
     },
@@ -187,10 +194,15 @@ export function createKindHooks(appPool: pg.Pool): Record<string, Hook> {
       // 入口（op.ts の 4.1・行に結ぶ言葉）が :id の行を見つけられないときも、この口の決め（404 E-PAGE-001・欄なし）で返す（統合の枝）
       rowMissing: notFoundKind,
       before: async (a) =>
-        run(appPool, a, "deleteTicketKind", "select app.ticket_kind_delete($1::uuid) as r", [a.id], (data) => ({
-          status: 200,
-          body: { data: { id: ((data ?? {}) as Body)["id"] } },
-        })),
+        run(
+          appPool,
+          a,
+          "deleteTicketKind",
+          "select app.ticket_kind_delete($1::uuid) as r",
+          [a.id],
+          (data) => ({ status: 200, body: { data: { id: ((data ?? {}) as Body)["id"] } } }),
+          refusalOfRow,
+        ),
     },
     reorderTicketKinds: {
       before: async (a) => {

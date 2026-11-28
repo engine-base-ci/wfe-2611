@@ -57,7 +57,15 @@ test.describe("K-986 運営の人の見た目", () => {
     ["K986-UI-001", "op-team", async () => undefined],
     ["K986-UI-002", "op-team-add", async (page) => void (await btn(page, "運営の人を足す").click())],
     ["K986-UI-003", "op-team-edit", async (page) => void (await edit(page, ME.name).click())],
-    ["K986-UI-004", "op-team-remove", async (page) => void (await remove(page, SATO.name).click())],
+    [
+      "K986-UI-004",
+      "op-team-remove",
+      async (page) => {
+        await remove(page, SATO.name).click();
+        // 狭い幅では 2 枚目の組の［外す］まで頁が送られる。下絵は頁の頭で小窓を描くので、頁を頭に戻してから比べる（小窓は画面に固定）
+        await page.evaluate(() => window.scrollTo(0, 0));
+      },
+    ],
   ];
   STATES.forEach(([row, id, act]) => {
     for (const w of MATCH_WIDTHS)

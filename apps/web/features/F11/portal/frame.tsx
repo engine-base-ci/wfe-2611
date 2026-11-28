@@ -28,7 +28,8 @@ export interface PortalFrameProps {
 }
 
 export const YAMADA = { label: "山田 花子 様", initial: "山" };
-export const SUZUKI = { label: "鈴木 健太 様（営業部）", initial: "鈴" };
+// 所属は Kaname が持たない（相手の会社の中の所属）ので帯に出さない（PM の決め 2026-11-28・下絵の誤り）
+export const SUZUKI = { label: "鈴木 健太 様", initial: "鈴" };
 
 export function PortalFrame({ children, user, groupName = SAMPLE_GROUP, noFoot }: PortalFrameProps) {
   const company = usePortalCompany();

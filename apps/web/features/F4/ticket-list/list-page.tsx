@@ -117,7 +117,7 @@ function useBand(): Band | null {
 
 /** 本人の名前と、書けるグループがあるか（外枠と同じ問い合わせを分け合う。口を 2 回呼ばない） */
 function useViewer(enabled: boolean): { name: string; canCreate: boolean } {
-  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled, ...ONCE });
+  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled, ...ONCE, retryOnMount: false }); // /me は 1 画面 1 回：断られた後に付いた部品が読み直さない（K235-UI-006）
   const scopes = useQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes("tickets"), enabled, ...ONCE });
   return {
     name: who.data?.display_name ? String(who.data.display_name) : "",

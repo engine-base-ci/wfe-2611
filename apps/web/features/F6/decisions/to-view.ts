@@ -9,6 +9,8 @@ export interface DecisionRow {
   text: string;
   reason: string | null;
   decided_by: { id: string; display_name: string } | null;
+  /** AI が決めた行の「誰の AI か」（K-571・人が決めた行は null。口が鍵を返さない前の答えでも動くよう任意） */
+  decided_by_ai?: { member_id: string; display_name: string | null } | null;
   decided_note: string | null;
   decided_at: string;
   source: { id: string; at: string; deleted: boolean } | null;
@@ -16,6 +18,9 @@ export interface DecisionRow {
   superseded_by_id: string | null;
   cancelled: { at: string; by: { id: string; display_name: string } | null; reason: string } | null;
 }
+
+/** AI が決めた行の注の字（代表の答え answer=538b4df12feb） */
+export const AI_DECIDED = "AI が決めた";
 
 const ORDER = { live: 0, revised: 1, cancelled: 2 } as const;
 const statusOf = (r: DecisionRow): DecisionView["status"] =>
@@ -33,9 +38,11 @@ export function toViews(rows: readonly DecisionRow[]): DecisionView[] {
 }
 
 function view(r: DecisionRow, status: DecisionView["status"], byId: ReadonlyMap<string, DecisionRow>): DecisionView {
-  const name = r.decided_by?.display_name ?? "";
+  // AI が決めた行は「〈呼び名〉のAI（AI が決めた）」（代表の答え answer=538b4df12feb）。人が決めた行は今のまま
+  const ai = !r.decided_by && r.decided_by_ai ? `${callName(r.decided_by_ai.display_name) || "自分"}のAI` : "";
+  const name = r.decided_by?.display_name ?? ai;
   const head = [day(r.decided_at), name].filter(Boolean).join(" ");
-  const by = r.decided_note && name ? `${head}（${r.decided_note}）` : head;
+  const by = ai ? `${head}（${AI_DECIDED}）` : r.decided_note && name ? `${head}（${r.decided_note}）` : head;
   const next = r.superseded_by_id ? byId.get(r.superseded_by_id) : undefined;
   const prev = r.revises_id ? byId.get(r.revises_id) : undefined;
   // 札「改めた」は注「MM/DD の決定を改めた」と組（K-397）。取り消した・改められたの注が勝つときは札も出さない（札が 2 つにならない・K-398）

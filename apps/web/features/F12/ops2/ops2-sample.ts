@@ -76,6 +76,7 @@ export const BILL_ROWS: readonly BillRow[] = [
     tone: "danger",
     paid: "—",
     canPay: true,
+    stopProposal: true, // 期限を 7 日過ぎた行には全部「止める案」（D-156.65・PM の決め 2026-11-28）
   },
   {
     id: "b3",

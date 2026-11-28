@@ -4,6 +4,7 @@ import { Bot, PanelRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { Callout, Dialog, Button, Select, TextArea } from "@/components/k";
 import { DetailMeta, InertButton } from "@/features/F4/create-ticket/detail-head";
+import { ParentEntry } from "@/features/F4/parent/views";
 import { SpecsItem, type SpecLine } from "./views";
 import { TalkBody } from "./thread-views";
 import { Frame, KIND, ME, STAGE, TICKET } from "@/app/(dev)/dev/mock/f4/frame";
@@ -28,14 +29,14 @@ export function ItemsPanel({
   specs,
   specsOpen,
   tab = "attr",
-  group = false,
+  group = true,
   overrides = {},
   specsSlot,
 }: {
   specs: readonly SpecLine[];
   specsOpen: boolean;
   tab?: "attr" | "talk";
-  /** 関連の先頭に読むだけの「グループ」の行を出す */
+  /** 関連の先頭に読むだけの「グループ」の行を出す（今の詳細はグループが分かれば必ず出す・既定で出す） */
   group?: boolean;
   /** 行の名前 → 値の欄の中身（その場で直している入力など） */
   overrides?: Readonly<Record<string, ReactNode>>;
@@ -67,8 +68,20 @@ export function ItemsPanel({
           <section aria-label="担当" className="k-detail-panel-sec">
             <h2>担当</h2>
             <dl className="k-detail-fields">
-              <Item k="担当者" v={V("担当者", ME.full)} />
-              <Item k="承認する人" v={V("承認する人", ME.full)} />
+              {/* 値は今の詳細の出し方（PM の決め 2026-11-28）：担当者は頭文字の丸と名前・承認する人は承認待ちのときだけ */}
+              <Item
+                k="担当者"
+                v={V(
+                  "担当者",
+                  <span className="k-detail-who">
+                    <span className="k-detail-avatar" aria-hidden="true">
+                      {ME.initial}
+                    </span>
+                    {ME.name}
+                  </span>,
+                )}
+              />
+              <Item k="承認する人" v={V("承認する人", "")} />
               <Item k="優先度" v={V("優先度", "中")} />
             </dl>
           </section>
@@ -76,8 +89,21 @@ export function ItemsPanel({
             <h2>日付と時間</h2>
             <dl className="k-detail-fields">
               <Item k="開始日" v={V("開始日", "11/21（土）")} />
-              <Item k="期限" v={V("期限", "12/01（火）")} />
-              <Item k="予定時間" v={V("予定時間", "2 時間")} />
+              {/* 期限の右の ▾（期限を変える・段 8）・予定時間は決めていなければ空 */}
+              <Item
+                k="期限"
+                v={V(
+                  "期限",
+                  <span>
+                    12/01（火）
+                    <InertButton label="期限を変える" size="sm" className="k-detail-due-btn">
+                      ▾
+                    </InertButton>
+                  </span>,
+                )}
+              />
+              <Item k="予定時間" v={V("予定時間", "")} />
+              <Item k="実績時間" v={V("実績時間", "")} />
               <Item k="支払期日" v={V("支払期日", "12/15（火）")} />
             </dl>
           </section>
@@ -85,8 +111,9 @@ export function ItemsPanel({
             <h2>関連</h2>
             <dl className="k-detail-fields">
               {group ? <Item k="グループ" v="営業（EG）" /> : null}
-              <Item k="節目" v={V("節目", "11 月の締め")} />
-              <Item k="親" v={V("親", "")} />
+              {/* 節目は口が返さない値なので空（嘘の値を書かない）・親は決める入口（K-443） */}
+              <Item k="節目" v={V("節目", "")} />
+              <Item k="親" v={V("親", <ParentEntry parent={null} />)} />
               <Item k="PJコード" v={V("PJコード", "SK-2026-11")} />
               <Item k="請求額" v={V("請求額", "95,000 円")} />
               <Item k="分類" v={V("分類", "請求")} />
@@ -104,6 +131,14 @@ export function ItemsPanel({
                 </button>
               </p>
             )}
+          </section>
+          {/* 区の後の実行の記録（最新）（K-62 の RunLatest と同じ形・まだ任せていない） */}
+          <section aria-label="実行の記録（最新）" className="k-detail-panel-sec k62-runlog">
+            <h2>実行の記録（最新）</h2>
+            <p className="k-desc">まだ AI に任せていません</p>
+            <Button variant="ghost" size="sm" className="k62-run-all">
+              実行の記録をすべて見る
+            </Button>
           </section>
         </div>
       )}

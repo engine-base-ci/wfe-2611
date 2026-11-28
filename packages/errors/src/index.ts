@@ -11,7 +11,7 @@ export const STATUS_OF: Record<string, number> = {
   validation: 422,
   data: 422,
   conflict: 409,
-  dependency: 409,
+  dependency: 503, // 外の調子が悪い（E-PAGE-003 も）は 503。中で別の数になる道を残さない（D-129.42・PM の決め 2026-11-28）
   limit: 429,
   payment: 402,
   external: 502,

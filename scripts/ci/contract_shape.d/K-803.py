@@ -8,3 +8,8 @@ VALUE_RANGES = {
     "createLayer": {'label': {'pattern': '\\S', 'maxLength': 40}, 'order_no': {'minimum': 1}},   # screen_api.d/K-803.py の VALUE_RANGES と同じ（統合の枝で写した）
     "updateLayer": {'label': {'pattern': '\\S', 'maxLength': 40}, 'order_no': {'minimum': 1}},   # screen_api.d/K-803.py の VALUE_RANGES と同じ（統合の枝で写した）
 }
+
+# 統合の枝で足した（K-144 の契約の形の試験・直しの担当 XC）
+NO_REQUIRED_INPUTS = {
+    "updateLayer": 'label・order_no のどちらか 1 つ以上（入力の形の anyOf・INPUT_RULES）。片方だけなら 422 にしない',
+}

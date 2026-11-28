@@ -145,19 +145,20 @@ function contentOf(status: Status, data?: RequestData): ReqContent {
   };
 }
 
+// 下絵の見本の値。案の形（K-892 の ticket_draft・route_suggestion）に欄の無い注（案の元・担当や期限の添え書き）は出さない（データの出どころが無い・PM の決め 2026-11-28。欄を足すかは代表に聞く項目）
 const CONTENT: Record<Status, ReqContent> = {
   new: {
     title: "12 月分の作業報告書もほしい",
     who: "鈴木 健太 様（セイコー株式会社（ゲスト）） ・ 営業に届いた ・ 今日 10:20",
     initial: "鈴",
     from: "鈴木 健太 様 ・ 今日 10:20",
-    basis: "依頼と保守契約の範囲から",
+    basis: "",
     body: "いつもありがとうございます。11 月分と同じ形で、12 月分の作業報告書もいただけますか。年内に社内に回したいです。",
     proposal: {
       title: "セイコー様 12 月分の作業報告書を作って送る",
       kind: "タスク",
-      owner: "高本（分身が実行）",
-      due: "12/26（12 月分の締めのあと）",
+      owner: "高本",
+      due: "12/26",
       cost: "保守契約の範囲内（追加費用なし）",
       route: "EG 営業",
       why: "分身の案：作業報告書は保守契約の仕事なので 営業（経理ではない）",
@@ -170,7 +171,7 @@ const CONTENT: Record<Status, ReqContent> = {
     who: "大橋 誠 様（京蟻システム株式会社（ゲスト）） ・ 受託開発に届いた ・ 昨日",
     initial: "大",
     from: "大橋 様 ・ 昨日 11:40",
-    basis: "依頼とこれまでの開発のやり取りから",
+    basis: "",
     body: "お世話になっております。管理画面の注文の一覧に、検索の絞り込みを足していただけますか。件数が増えて探すのに時間がかかっています。",
     proposal: {
       title: "京蟻システム様 管理画面の注文の一覧に検索の絞り込みを足す",
@@ -190,12 +191,12 @@ const CONTENT: Record<Status, ReqContent> = {
     who: "小林 様（合同会社ミナト（ゲスト）） ・ 経理に届いた ・ 10/30",
     initial: "小",
     from: "小林 様 ・ 10/30 09:15",
-    basis: "依頼とこれまでの請求のやり取りから",
+    basis: "",
     body: "10 月分の請求書の宛名を、新しい部署名で出し直していただけますか。",
     proposal: {
       title: "ミナト様 10 月分の請求書を出し直す",
       kind: "タスク",
-      owner: "高本（分身が実行）",
+      owner: "高本",
       due: "10/31",
       cost: "追加費用なし",
       route: "KR 経理",

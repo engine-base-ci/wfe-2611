@@ -62,7 +62,16 @@ const KITA = BILLS_A[0]!;
 test.describe("K-984 請求の見た目", () => {
   const STATES: [string, string, (page: Page) => Promise<void>][] = [
     ["K984-UI-001", "oq-bills", async () => undefined],
-    ["K984-UI-002", "oq-bills-issue", async (page) => void (await btn(page, "10 月分をまとめて出す").click())],
+    [
+      "K984-UI-002",
+      "oq-bills-issue",
+      async (page) => {
+        await btn(page, "10 月分をまとめて出す").click();
+        await expect(page.getByRole("alertdialog").or(page.getByRole("dialog")).first()).toBeVisible();
+        // 下絵は頁の頭で小窓を描く。押した所まで送られた頁を頭に戻してから比べる（小窓は画面に固定）
+        await page.evaluate(() => window.scrollTo(0, 0));
+      },
+    ],
     [
       "K984-UI-003",
       "oq-pay",
