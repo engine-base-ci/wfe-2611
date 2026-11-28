@@ -282,12 +282,19 @@ test.describe.serial("通し：自分でやるチケットを進めて、話し�
   });
 
   test("K399-T1-005 段のメニューの「完了 確かめて完了にする…」から完了の小窓で終える：札は「完了」・題名の下に「完了しました（…）」・DB は done で completed_by が本人", async () => {
+    // 準備：確かめる物が 0 件なら完了の小窓は出さない（K-572・K-703 の決まり）ので、確認項目を 1 件足してから開き直す
+    await admin(
+      "insert into test_specs (tenant_id, ticket_id, check_kind, title, created_by, updated_by) select tenant_id, id, 'human', $2, $3, $3 from tickets where id = $1",
+      [t, "宛名が経理部 山田様になっている", me.memberId],
+    );
+    await openTicket(page, t, title);
     await stageBtn(page).click();
     await page.getByRole("menuitem").filter({ hasText: "確かめて完了にする" }).click();
     const dlg = page.getByRole("dialog", { name: "完了にする" });
     await expect(dlg).toBeVisible();
-    for (const c of await dlg.getByRole("checkbox").all()) await c.check();
-    await dlg.getByRole("button", { name: "確かめて完了にする" }).click();
+    // 小窓はチェックの無い物を知らせ、「このまま完了にする」で終える（K-455・K-572 の小窓の形。チェックの箱は置かない）
+    await expect(dlg).toContainText("宛名が経理部 山田様になっている");
+    await dlg.getByRole("button", { name: "このまま完了にする", exact: true }).click();
     await expect(dlg).toHaveCount(0);
     await expect(stagePart(page)).toHaveText("完了");
     await expect(page.locator(".k-detail-bands")).toContainText("完了しました（");
