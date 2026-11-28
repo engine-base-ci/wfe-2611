@@ -1,0 +1,52 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/auth/agent.ts",
+    "apps/api/src/auth/agent-ops.ts",
+    "apps/api/src/auth/memory.ts",
+    "apps/api/src/hooks/agent.ts",
+    "apps/api/src/features/F5/delegate/bridge.ts"
+   ],
+   "tests": [
+    "apps/api/test/agent_memory.test.ts",
+    "apps/api/test/memory_text.test.ts",
+    "apps/api/test/agent_hooks.test.ts",
+    "apps/api/test/k145_uuid_guard.test.ts",
+    "apps/api/test/k145_pending_decisions.test.ts",
+    "apps/api/test/features/F9/memory-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/memories.ts",
+    "apps/api/src/features/F9/knowledge/ai/context.ts",
+    "08_api/auth-ext-routes.json",
+    "08_api/phase1/03_分身の部屋.md",
+    "packages/db/src/migrations.generated.ts",
+    "packages/db/migrations/20261125015200_memory_routes_retire.sql",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/memory-retire.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F9/memory-retire.test.ts": "契約と生成物（08_api/*・packages/contracts/src/*・apps/api/src/routes/*・03_architecture/catalog.*）・05_flow/screen_api.py・08_api/auth-ext-routes.json・retired-endpoints.json・08_api/phase1/03_分身の部屋.md・11_tickets/K-69.md・packages/db/migrations/20261125015200_memory_routes_retire.sql を readFileSync で読み、git grep で名前を探し、scripts/ci/zt_gate.py を流す（K712-API-001〜012・K712-DB-004）"
+ }
+}
