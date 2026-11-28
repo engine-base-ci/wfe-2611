@@ -1,0 +1,54 @@
+{
+ "ops": {
+  "updateGuestGroup": {
+   "file": "apps/api/test/features/F11/guest-group-edit.test.ts",
+   "reason": "名前を直す口は、権限・名前の重なり（表記ゆらぎ）・グループの状態（無い・消した・別の会社）で答えが変わる。生成の試験の種ではグループを作れない（K-927）",
+   "covers": {
+    "test_patch_guest_groups_id_ok": "K927-API-001",
+    "test_patch_guest_groups_id_shape": "K927-API-001",
+    "test_patch_guest_groups_id_rejected_401": "K927-API-005",
+    "test_patch_guest_groups_id_rejected_403": "K927-API-005",
+    "test_patch_guest_groups_id_not_found": "K927-API-004",
+    "test_patch_guest_groups_id_conflict": "K927-API-002",
+    "test_patch_guest_groups_id_rejected_422": "K927-API-003",
+    "test_patch_guest_groups_id_rate_limited": "K927-API-021",
+    "test_patch_guest_groups_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_guest_groups_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_guest_groups_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "deleteGuestGroup": {
+   "file": "apps/api/test/features/F11/guest-group-edit.test.ts",
+   "reason": "消す口は、権限・グループの状態と、中のゲスト・招待・見せる相手の有無で起きる事が変わる。生成の試験の種ではゲスト・見せる相手を作れない（K-927）",
+   "covers": {
+    "test_delete_guest_groups_id_ok": "K927-API-006",
+    "test_delete_guest_groups_id_shape": "K927-API-006",
+    "test_delete_guest_groups_id_rejected_401": "K927-API-012",
+    "test_delete_guest_groups_id_rejected_403": "K927-API-012",
+    "test_delete_guest_groups_id_not_found": "K927-API-011",
+    "test_delete_guest_groups_id_rate_limited": "K927-API-021",
+    "test_delete_guest_groups_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_guest_groups_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_guest_groups_id_rejected_422": "体を受けない DELETE（道の値の uuid は k144.d の行 K144-API-1228 が受ける）"
+   }
+  }
+ }
+}
