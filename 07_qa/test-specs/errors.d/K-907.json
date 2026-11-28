@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-160",
+   "class": "not_found",
+   "where": {
+    "screen": "portal",
+    "state": "request_new"
+   },
+   "when": "依頼を出すとき、付けようとした添付が、自分の下書きでない・無い・もう使われている・消した・検査が済んでいない",
+   "false_when": "付けた添付が全部、自分が足した検査済みの下書き（まだどこにも付いていない）",
+   "message": "この添付は付けられませんでした",
+   "action": "添付を足し直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ゲストでログインし、別の人の下書きの添付の id を手に入れておく",
+    "steps": [
+     "その id を付けて依頼を出す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.37"
+   ],
+   "support_code": "GST-160"
+  }
+ ]
+}

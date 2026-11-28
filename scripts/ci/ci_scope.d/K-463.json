@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261123080300_notify_approval_requested.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notify-approval.test.ts"
+   ]
+  }
+ ]
+}
