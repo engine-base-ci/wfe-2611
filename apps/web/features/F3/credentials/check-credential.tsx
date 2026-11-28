@@ -57,7 +57,7 @@ export function useCheckCredential(d: CheckCredentialDeps): CheckCredentialFlow 
     setRechecking(id);
     void (async () => {
       try {
-        const r = await call("checkCredentialLogin", { params: { id }, screenId: SCREEN });
+        const r = await call("checkCredentialLogin", { params: { id }, body: {}, screenId: SCREEN });
         if (r.ok || r.kind === "conflict") await d.onChanged();
         else if (r.kind === "not_found") {
           d.notifyError(messageOf(r));

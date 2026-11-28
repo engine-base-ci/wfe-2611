@@ -14,12 +14,14 @@ import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 const PATH = "/mfa-setup";
 const H = 60 * 60 * 1000;
 const D = 24 * H;
-const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true });
+// 確かめ・取り直しの小窓が開いている間は後ろの区画が読み上げから外れる（aria-hidden）。小窓を開いたまま後ろの行を見る試験（「行は残る」）のため hidden も探す
+const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true, includeHidden: true });
 const devices = (page: Page) => card(page, "入っている端末");
 const events = (page: Page) => card(page, "最近の安全の記録");
 const rowOf = (page: Page, name: string) => devices(page).locator(".k-set-row").filter({ hasText: name });
 const allBtn = (page: Page) => devices(page).getByRole("button", { name: "この端末以外をすべて切る", exact: true });
-const dlg = (page: Page) => page.getByRole("dialog").filter({ hasText: "本人確認して切る" });
+// 切る確かめは取り消せない操作の確かめ（components/k の Confirm＝alertdialog）
+const dlg = (page: Page) => page.getByRole("alertdialog").filter({ hasText: "本人確認して切る" });
 const confirmBtn = (page: Page) => dlg(page).getByRole("button", { name: "本人確認して切る", exact: true });
 
 interface Sess {
@@ -153,8 +155,25 @@ let owner: Awaited<ReturnType<typeof signupViaApi>>;
 test.beforeAll(async () => {
   owner = await signupViaApi(WS_NAME);
 });
+/** 下絵 me-sessions と同じく、パスキーを 2 つ持つ人（パスキーの区画が出る・パスワードも持つ） */
+function withKeys(mk: Awaited<ReturnType<typeof mockOps>>): void {
+  mk.set("security", () =>
+    ok({
+      passkeys: [
+        { id: "pk1", name: "MacBook Pro（Touch ID）", created_at: OCT30, last_used_at: OCT30, synced: false },
+        { id: "pk2", name: "iPhone（Face ID）", created_at: OCT30, last_used_at: OCT30, synced: true },
+      ],
+      has_password: true,
+      two_factor: false,
+      backup_codes_left: null,
+      two_factor_required: false,
+      mfa_pending: false,
+    }),
+  );
+}
 async function start(page: Page, o: { sessions?: Sess[]; events?: Ev[]; passkeyOnly?: boolean } = {}, width = 1440) {
   const mk = await mockOps(page);
+  if (!o.passkeyOnly) withKeys(mk);
   if (o.passkeyOnly)
     mk.set("security", () =>
       ok({
@@ -199,6 +218,8 @@ const STATES: Record<string, ((page: Page) => Promise<void>) | undefined> = {
   "me-session-revoke": async (page) => {
     await rowOf(page, "Windows ・ Edge").getByRole("button", { name: "切る", exact: true }).click();
     await expect(dlg(page)).toBeVisible();
+    // ［切る］を押すと行まで下に動く。小窓は画面に貼り付くので、下絵（上の端）と同じく頁の上の端で位置を読む
+    await page.evaluate(() => window.scrollTo(0, 0));
   },
 };
 for (const [id, drive] of Object.entries(STATES)) {
@@ -212,7 +233,8 @@ for (const [id, drive] of Object.entries(STATES)) {
         w,
         async (page) => {
           await mockOps(page);
-          await mockSessions(page, { events: [EVENTS[0]!, EVENTS[1]!, EVENTS[1]!, EVENTS[0]!] });
+          // 下絵の 4 行と同じく、長い字の行は 3 行目の 1 つだけ（2 つにすると狭い幅で 1 行ぶん高くなる）
+          await mockSessions(page, { events: [EVENTS[0]!, EVENTS[0]!, EVENTS[1]!, EVENTS[0]!] });
           await openAt(page, owner.token, PATH, w);
           await expect(devices(page)).toBeVisible();
           await drive?.(page);
@@ -424,7 +446,7 @@ test("K842-UI-013 切る口が 503・網の切れ：小窓の中に E-PAGE-003 �
 test("K842-UI-014 一覧が 503：「入っている端末」の区画に調子が悪い形と「もう一度読む」・押すと一覧が出る（口 2 回）・パスキーの区画は出ている", async ({
   page,
 }) => {
-  await mockOps(page);
+  withKeys(await mockOps(page));
   const ss = await mockSessions(page);
   ss.queue("list", err(503, "E-PAGE-003"));
   await openAt(page, owner.token, PATH);

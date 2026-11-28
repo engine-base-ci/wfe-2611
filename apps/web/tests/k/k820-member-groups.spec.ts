@@ -156,7 +156,8 @@ test("K820-UI-005 本人確認の取り直し：403 STEP_UP_REQUIRED で取り�
 }) => {
   const mk = await openDetail(page);
   changed(mk, [g(ID.JD, "受託開発", "JD", true)]);
-  mk.queue("groups", err(403, "STEP_UP_REQUIRED"), err(403, "STEP_UP_REQUIRED"));
+  // 取り直しが要るのは 1 回目だけ（やめた後の押し直しは送らない・取り直した後の 1 回は通る。口は 2 回・PM の決め 2026-11-28）
+  mk.queue("groups", err(403, "STEP_UP_REQUIRED"));
   await moveBtn(page).click();
   await moveDlg(page).getByRole("button", { name: "本人確認して移す", exact: true }).click();
   await expect(stepDlg(page)).toContainText("グループを移す前に、本人か確かめます");

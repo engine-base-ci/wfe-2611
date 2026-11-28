@@ -19,7 +19,8 @@ export function f10AdminHooks(d: HookDeps): Record<string, Hook> {
     updateScope: { before: f.updateScope },
     createLayer: { before: f.createLayer },
     updateLayer: { before: f.updateLayer },
-    resendInvitation: { before: f.resendInvitation },
+    // 送り直しは体なしの口（画面は体を付けずに呼ぶ・K-809）。空の体だけ {} として読む（K-896 と同じ）
+    resendInvitation: { before: f.resendInvitation, noBody: true },
     revokeInvitation: { before: f.revokeInvitation },
     getMember: { before: f.getMember },
     updateMemberRole: { before: f.updateMemberRole },

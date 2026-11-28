@@ -52,8 +52,9 @@ const membersReply = () => ({
         code: "EG",
         name: "営業",
         members: [
-          person("p1", "高本 聖斗", "takamoto@engine-base.example", "admin"),
-          person("p3", "鈴木 一郎", "suzuki@engine-base.example"),
+          // 下絵 mb-members と同じ人（自分の高本・木村）
+          { ...person("p1", "高本 聖斗", "takamoto@engine-base.example", "admin"), self: true },
+          person("p3", "木村 翔", "kimura@engine-base.example"),
         ],
       },
       {
@@ -253,12 +254,16 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await expect(page.locator(".k-inv-group")).toHaveCount(2);
   },
   "mb-add": async (page) => {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await openInvite(page);
     await addMail(page, "sano@seiko.example");
     await groupField(page).selectOption(SEIKO);
@@ -271,6 +276,8 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await openInvite(page);
     await groupField(page).selectOption("＋ 新しいゲストのグループを作る");
     await page.getByLabel("名前 必須", { exact: true }).fill(SORA);
@@ -279,6 +286,8 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await openInvite(page);
     await addMail(page, "nakano@sora.example");
     await groupField(page).selectOption("＋ 新しいゲストのグループを作る");
@@ -290,6 +299,8 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await page
       .locator(".k-inv-group")
       .filter({ hasText: KYOGI })
@@ -301,6 +312,8 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await page.locator(SEC).getByRole("button", { name: "＋ ゲストのグループを作る", exact: true }).click();
   },
   "mb-group-new-dup": async (page, mk) => {
@@ -308,6 +321,8 @@ const STATES: Record<string, (page: Page, mk: GMock) => Promise<void>> = {
     await tabs(page)
       .getByRole("link", { name: /^ゲスト \d+$/ })
       .click();
+    // メンバーのタブもグループは 2 つなので、ゲストのタブに替わり終わる（見出しが「ゲスト」）まで待つ
+    await expect(page.locator(SEC).getByRole("heading", { level: 1 })).toHaveText("ゲスト");
     await page.locator(SEC).getByRole("button", { name: "＋ ゲストのグループを作る", exact: true }).click();
     await page.getByLabel("名前 必須", { exact: true }).fill(SEIKO);
     await page.getByLabel(/^依頼が届く社内のグループ/).selectOption("営業");

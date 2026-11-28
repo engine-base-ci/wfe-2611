@@ -717,6 +717,8 @@
   --k-c-section-title-form-first-margin: 20px 0 6px;
   --k-c-dialog-connect-width: 580px;
   --k-c-dialog-connect-button-height: 30px;
+  --k-c-member-remove-button-height: 32px;
+  --k-c-members-group-button-height: 32px;
   --k-c-dialog-sub-fg: var(--k-on-surface-variant);
   --k-c-dialog-sub-text: var(--k-text-body-sm);
   --k-c-dialog-sub-fw: var(--k-fw-body-sm);

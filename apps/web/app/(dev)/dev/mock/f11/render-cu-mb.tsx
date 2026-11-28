@@ -22,6 +22,9 @@ import {
   type MemberGroup,
   type InviteValues,
 } from "@/features/F10/invite/views";
+import { initialOpen, toGroups } from "@/features/F10/members/members-shape";
+import { MembersPage } from "@/features/F10/members/views";
+import type { MembersAnswer, Person } from "@/features/F10/invite/use-members";
 import "@/components/k/me-sub.css";
 
 // 社内のメンバー（グループごと）。ゲストは別のタブ（2026-11-23 代表）
@@ -66,6 +69,44 @@ const GROUPS: MemberGroup[] = [
     ],
   },
 ];
+
+// メンバーのタブの本文は段 11 の新しい本文（features/F10/members の MembersPage・K-818。PM の決め 2026-11-28）。
+//   値は口 getWorkspaceMembers の答えの形から本番と同じ関数（members-shape）で作る（開いているのは自分のグループ）
+const person = (id: string, name: string, email: string, role: string, self = false): Person => ({
+  id,
+  name,
+  email,
+  role,
+  group_role: null,
+  primary: true,
+  other_groups: [],
+  self,
+  suspended: false,
+  pc: "ok",
+  pc_days_away: null,
+});
+const MEMBERS_ANSWER: MembersAnswer = {
+  groups: [
+    {
+      id: "0193c5a0-0000-7000-8000-00000000e001",
+      code: "EG",
+      name: "営業",
+      members: [
+        person("m1", "高本 聖斗", "takamoto@engine-base.example", "admin", true),
+        person("m6", "木村 翔", "kimura@engine-base.example", "member"),
+      ],
+    },
+    {
+      id: "0193c5a0-0000-7000-8000-00000000e002",
+      code: "JD",
+      name: "受託開発",
+      members: [person("m4", "佐藤 花子", "sato@engine-base.example", "manager")],
+    },
+  ],
+  invitations: [],
+  count: 3,
+};
+const MEMBER_GROUPS = toGroups(MEMBERS_ANSWER);
 
 // ゲストのグループ（「〇〇（ゲスト）」）› ゲスト。グループの中のゲストは誰でも依頼を出せ、グループの依頼とチケットはグループ全員に見える（代表 2026-11-23）
 const GUESTS: MemberGroup[] = [
@@ -193,7 +234,12 @@ function Members({
             tabs={<TabBar guest />}
           />
         ) : (
-          <MembersBody groups={GROUPS} tabs={<TabBar guest={false} />} />
+          <MembersPage
+            groups={MEMBER_GROUPS}
+            open={initialOpen(MEMBER_GROUPS, MEMBERS_ANSWER)}
+            band={null}
+            tabs={<TabBar guest={false} />}
+          />
         )}
       </div>
     </CuFrame>

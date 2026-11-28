@@ -139,7 +139,7 @@ export function ConsentTerms({ next }: { next: string | null }) {
   };
 
   const signOut = async () => {
-    await call("signOut", { keepOn401: true, screenId: "login" }).catch(() => null);
+    await call("signOut", { body: {}, keepOn401: true, screenId: "login" }).catch(() => null);
     setToken(null);
     clearDraftCopies(); // ログアウトはどこからでも、この PC の書きかけの写しを消す（lib/auth の signOut と同じ・K-60 H1）
     clearTermsReason();
