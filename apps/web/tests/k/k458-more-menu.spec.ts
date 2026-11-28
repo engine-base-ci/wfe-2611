@@ -71,7 +71,7 @@ test("K458-UI-001 入口：詳細の頭の「…」（名前「ほかの操作�
   expect(order).toEqual([
     ...Array<string>(4).fill("menuitem"),
     "separator",
-    ...Array<string>(4).fill("menuitem"),
+    ...Array<string>(3).fill("menuitem"), // リンクをコピー・版と差分を見る・実行の記録を見る（題と同じ 3 つ・全部で 8）
     "separator",
     "menuitem",
   ]);
@@ -382,7 +382,9 @@ async function driveMenu(page: Page, width: number): Promise<void> {
   await setupMore(page);
   await page.setViewportSize({ width, height: width === 375 ? 812 : 900 });
   expect((await page.goto(`/tickets/${TICKET}`))?.status()).toBe(200);
-  await expect(page.locator(".k-detail-doc")).toBeVisible();
+  // 描き終わりの目印は頭の題（本文の区画は空のとき箱が隠れる・K-571 の後の詳細）
+  await expect(page.locator("header.k-page-head h1")).toBeVisible();
+  await expect(page.locator('#k-main [aria-busy="true"]')).toHaveCount(0);
   await openMenu(page);
 }
 
