@@ -9,7 +9,7 @@ import { EMAIL_RE } from "@kaname/auth/signup";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { forbiddenOf, fromCatalog, kindOf } from "./errors.js";
+import { forbiddenOf, kindOf } from "./errors.js";
 
 export interface BillingContact {
   company: string;
