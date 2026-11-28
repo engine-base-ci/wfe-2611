@@ -141,7 +141,9 @@ export function GanttChart(p: GanttChartProps) {
   const hover = (e: SyntheticEvent) => {
     if (!p.onHoverBar) return;
     const id = barIdOf(e);
-    p.onHoverBar(id === null ? null : (back.get(id) ?? null));
+    // 棒の外（棒の間・目盛り）に指が移っても今の出し方は残す。棒の下の保留の出し方へ指を動かす間に消えない（詰まりの印まで届く・K482-UI-015）
+    if (id === null) return;
+    p.onHoverBar(back.get(id) ?? null);
   };
   return (
     <div className="k-list-body">

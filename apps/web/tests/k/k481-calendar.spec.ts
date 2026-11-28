@@ -133,7 +133,9 @@ async function openCal(page: Page, width = 1440) {
 }
 
 const grid = (p: Page) => p.getByRole("table", { name: /^\d{4}年 \d{1,2}月$/ });
-const dateBtn = (p: Page, label: string) => p.getByRole("button", { name: `${label}を開く`, exact: true });
+// 日の小窓は共通の Dialog（modal・後ろの格子は読み上げから隠れる）。小窓を開いたままセルを見るので隠れた物も探す
+const dateBtn = (p: Page, label: string) =>
+  p.getByRole("button", { name: `${label}を開く`, exact: true, includeHidden: true });
 const cellOf = (p: Page, label: string): Locator => dateBtn(p, label).locator("xpath=ancestor::td");
 const dlg = (p: Page, title: string) => p.getByRole("dialog", { name: title, exact: true });
 const tray = (p: Page) => p.getByRole("complementary", { name: "期限が決まっていないもの", exact: true });
@@ -456,7 +458,7 @@ test("K481-UI-013 押せない物：日の小窓の「この日が期限のチ�
   );
   await expect(
     page.getByRole("combobox", { name: "並べる日付", exact: true }).getByRole("option", { name: "開始日〜期限" }),
-  ).toBeDisabled();
+  ).toHaveJSProperty("disabled", true); // option の disabled は toBeDisabled が見ない（Playwright 1.63）
   await dateBtn(page, "11月2日（月）").click();
   const d = dlg(page, "11/2（月）");
   await expect(d.getByRole("textbox", { name: "この日が期限のチケットを作る", exact: true })).toBeDisabled();
@@ -558,8 +560,11 @@ test("K481-UI-018 キーボード：日の数字に Tab で届き Enter で小�
   await expect(d).toBeVisible();
   await moveBtn(d, "EG-105").focus();
   await page.keyboard.press("Enter");
-  await d.getByLabel("動かす先", { exact: true }).focus();
-  await page.keyboard.press("Tab");
+  // 動かす先は日付の欄（年・月・日の区切りの中を Tab で進む）。順は理由から Shift+Tab で戻って見る
+  await reasonBox(d).focus();
+  await page.keyboard.press("Shift+Tab");
+  await expect(d.getByLabel("動かす先", { exact: true })).toBeFocused();
+  await reasonBox(d).focus();
   await expect(reasonBox(d)).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(d).toHaveCount(0);
@@ -597,11 +602,14 @@ for (const w of MATCH_WIDTHS.filter((x) => x !== 768)) {
       bad.push(...r.bad);
     };
     await run("f7-calendar", CAL_PAIRS, async (p) => {
-      await setup(p);
+      // 見本と同じく、最初の週の日は 2 件まで（3 件目の「ほか N 件」で行の高さが変わる。中身は比べない）
+      await setup(p, { rows: MONTH_ROWS.filter((r) => r.number !== "EG-103") });
       await openCal(p, w);
     });
     await run("f7-calendar-day", DAY_PAIRS, async (p) => {
-      await setup(p);
+      // 見本の最初の行（EG-126 更新の見積を作る・確認中）と同じ状態・題名の長さにする（状態の札の色と行の高さは中身で決まる）
+      const first = { title: "更新の見積を作る", stage: { id: "st-review", name: "確認中", key: "review" } };
+      await setup(p, { rows: MONTH_ROWS.map((r) => (r.number === "EG-101" ? { ...r, ...first } : r)) });
       await openCal(p, w);
       await dateBtn(p, "11月2日（月）").click();
       await moveBtn(dlg(p, "11/2（月）"), "EG-101").click();

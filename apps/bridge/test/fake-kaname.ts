@@ -102,8 +102,10 @@ export async function runOneJob(
     onGone: () => undefined,
     ...deps,
   });
+  // 前の試験の輪が止めた後に送り終えた要求（印が前の PC）は数えない（止めても送りかけの取り戻しが次の試験の記録に混ざる・統合の枝の CI の K760-BR-003）
+  const own = (): Seen[] => kaname.seen.filter((s) => s.sid === null || s.sid === mine);
   const t0 = Date.now();
-  while (!until(kaname.seen) && Date.now() - t0 < 8000) await new Promise((r) => setTimeout(r, 50));
+  while (!until(own()) && Date.now() - t0 < 8000) await new Promise((r) => setTimeout(r, 50));
   stop();
-  return kaname.seen;
+  return own();
 }
