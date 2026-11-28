@@ -1,0 +1,1 @@
+python3 scripts/ci/k641_hosted_tools_test.py
