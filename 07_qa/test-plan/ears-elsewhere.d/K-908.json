@@ -1,0 +1,33 @@
+{
+ "ops": {
+  "postPortalRequestMessage": {
+   "file": "apps/api/test/features/F11/portal-request-message.test.ts",
+   "reason": "返事を書く口は、ゲストの所属・依頼の状態・届け先の人・メールで答えが変わる。生成の試験の種ではゲストも依頼も作れない（K-908）",
+   "covers": {
+    "test_post_portal_requests_id_messages_ok": "K908-API-001",
+    "test_post_portal_requests_id_messages_shape": "K908-API-001",
+    "test_post_portal_requests_id_messages_rejected_401": "K908-API-009",
+    "test_post_portal_requests_id_messages_rejected_403": "K908-API-009",
+    "test_post_portal_requests_id_messages_not_found": "K908-API-005",
+    "test_post_portal_requests_id_messages_rejected_422": "K908-API-002",
+    "test_post_portal_requests_id_messages_rate_limited": "K908-API-010",
+    "test_post_portal_requests_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_portal_requests_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_portal_requests_id_messages_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_portal_requests_id_messages_conflict": "K908-API-003"
+   },
+   "na": {
+    "test_post_portal_requests_id_messages_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-906・K-907 と同じ扱い・K-908）"
+   }
+  }
+ }
+}

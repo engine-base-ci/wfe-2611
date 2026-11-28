@@ -1,0 +1,36 @@
+{
+ "errors": [
+  {
+   "id": "E-VAL-042",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、決めたことが無い・空・空白だけ（全角も）・制御文字だけ（K-390）",
+   "false_when": "決めたことに字がある（字数の上限は無い）",
+   "message": "決めたことを書いてください",
+   "action": "決めたことを書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケットの詳細",
+    "steps": [
+     "決定を足す欄を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40",
+    "D-130.1"
+   ],
+   "support_code": "VAL-042"
+  }
+ ]
+}
