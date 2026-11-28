@@ -1,0 +1,67 @@
+{
+ "screen": "notices",
+ "mock": "06_mockup/v1/v1-notices.html",
+ "state_labels": {
+  "n": "お知らせと通知",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "checkbox:checkbox",
+   "kind": "checkbox",
+   "label": "checkbox",
+   "target": null,
+   "states": [
+    "お知らせと通知",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "お知らせと通知",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:通知の届け先を保存する",
+   "kind": "button",
+   "label": "通知の届け先を保存する",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
