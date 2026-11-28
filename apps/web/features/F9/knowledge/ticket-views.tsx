@@ -153,7 +153,8 @@ export interface CompleteBlockedDialogProps {
   /** 対象の行（「EG-133 11 月分の請求書を送る」）。無ければ出さない */
   target?: string;
   left: readonly SpecRow[];
-  /** 「閉じる」・右上の ×・Esc（渡さない呼び方＝下絵は今の見た目のまま・K-703） */
+  /** 右上の ×（名前「閉じる」）・Esc（渡さない呼び方＝下絵は今の見た目のまま・K-703）。
+   *  足には「閉じる」を重ねない（部品 Dialog の決まり・2026-11-28 PM の決め） */
   onClose?: () => void;
   /** 「確認項目に戻る」（渡さない呼び方＝下絵は今の見た目のまま・K-703） */
   onBack?: () => void;
@@ -170,14 +171,7 @@ export function CompleteBlockedDialog({ target, left, onClose, onBack }: Complet
       }}
       title="まだ完了にできません"
       {...(target ? { target } : {})}
-      actions={
-        <>
-          <Button variant="outlined" {...(onClose ? { onClick: onClose } : {})}>
-            閉じる
-          </Button>
-          <Button {...(onBack ? { onClick: onBack } : {})}>確認項目に戻る</Button>
-        </>
-      }
+      actions={<Button {...(onBack ? { onClick: onBack } : {})}>確認項目に戻る</Button>}
     >
       <div className="k-dialog-stack">
         <Callout
