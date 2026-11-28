@@ -1,0 +1,212 @@
+/* 届いた依頼（段 12・F11）の部品。キャンバス CuRequests。値は正本のトークン（--k-*）だけ。クラスの頭は k-f11q- */
+
+/* ---- 左の列と本文 ---- */
+.k-f11q-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  min-height: 100%;
+}
+.k-f11q-list {
+  flex: 0 0 auto;
+  width: calc(var(--k-s-2xl) * 3 + var(--k-s-lg));
+  max-width: 100%;
+  padding: var(--k-s-md);
+  border-right: var(--k-c-doc-toolbar-border-bottom);
+  box-sizing: border-box;
+}
+.k-f11q-list ul {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f11q-list-title {
+  margin: 0 0 var(--k-s-sm);
+  font-size: var(--k-text-body-md);
+  font-weight: var(--k-fw-h3);
+}
+.k-f11q-list-sub {
+  margin: var(--k-s-md) 0 var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f11q-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm);
+  border-radius: var(--k-r-md);
+  color: var(--k-on-surface);
+  font-size: var(--k-text-body);
+  text-decoration: none;
+}
+.k-f11q-item[aria-current="true"] {
+  background: var(--k-select);
+}
+.k-f11q-item-main {
+  display: grid;
+  gap: var(--k-s-xs);
+  flex: 1 1 0;
+  min-width: 0;
+}
+.k-f11q-detail {
+  display: grid;
+  flex: 1 1 0;
+  gap: var(--k-s-md);
+  min-width: calc(var(--k-s-2xl) * 3);
+  padding: var(--k-s-md) var(--k-s-lg);
+  align-content: start;
+  box-sizing: border-box;
+}
+.k-f11q-head h1 {
+  margin: 0;
+  font-size: var(--k-text-page-title);
+  line-height: var(--k-lh-page-title);
+}
+
+/* ---- 開いた依頼 ---- */
+.k-f11q-msg {
+  display: flex;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-c-detail-card-radius);
+  background: var(--k-card);
+  font-size: var(--k-text-body);
+}
+.k-f11q-msg p {
+  margin: var(--k-s-xs) 0 0;
+}
+.k-f11q-card,
+.k-f11q-reply {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-md);
+  border: var(--k-c-band-info-border);
+  border-radius: var(--k-c-detail-card-radius);
+  background: var(--k-ai-container);
+}
+.k-f11q-reply {
+  border: var(--k-c-detail-card-border);
+  background: var(--k-card);
+}
+.k-f11q-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  font-size: var(--k-text-body);
+  font-weight: var(--k-fw-h3);
+}
+.k-f11q-dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--k-s-xs) var(--k-s-md);
+  margin: 0;
+  font-size: var(--k-text-body);
+}
+.k-f11q-dl dt {
+  color: var(--k-on-surface-variant);
+}
+.k-f11q-dl dd {
+  margin: 0;
+}
+/* 届け先：グループの名前と「変える」を 1 行に、分身の案はその下 */
+.k-f11q-route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-bottom: var(--k-s-xs);
+}
+.k-f11q-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs) var(--k-s-sm);
+}
+.k-f11q-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f11q-ask {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+}
+/* 分身の案を作る（K-899）：ボタンと作っている間の文を 1 行に */
+.k-f11q-make {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f11q-make p {
+  margin: 0;
+}
+.k-f11q-acts {
+  display: grid;
+  gap: var(--k-s-sm);
+}
+.k-f11q-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--k-s-sm);
+}
+
+@media (max-width: 1023px) {
+  /* 列が上下に積まれる幅では、空いた高さを行の間に配らない（一覧と中身の間が空かない） */
+  .k-f11q-wrap {
+    align-content: flex-start;
+  }
+  .k-f11q-list {
+    width: 100%;
+    border-right: 0;
+    border-bottom: var(--k-c-doc-toolbar-border-bottom);
+  }
+}
+@media (max-width: 767px) {
+  .k-f11q-detail {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-f11q-btns {
+    justify-content: stretch;
+  }
+}
+
+/* ---- スマホ（767 以下）：一覧の画面と開いた依頼の画面を分ける。開いた依頼の頭に一覧への戻り ---- */
+.k-f11q-back {
+  display: none;
+}
+@media (max-width: 767px) {
+  .k-f11q-wrap[data-mobile="detail"] > .k-f11q-list,
+  .k-f11q-wrap[data-mobile="list"] > .k-f11q-detail {
+    display: none;
+  }
+  .k-f11q-wrap[data-mobile="list"] > .k-f11q-list {
+    border-bottom: 0;
+  }
+  .k-f11q-wrap[data-mobile="detail"] .k-f11q-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--k-s-xs);
+    justify-self: start;
+    color: var(--k-on-surface-variant);
+    font-size: var(--k-text-body-sm);
+    text-decoration: none;
+  }
+}
