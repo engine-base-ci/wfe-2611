@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F9/knowledge/**", "apps/web/app/(dev)/dev/mock/f9/**", "apps/web/app/(work)/knowledge/**"],
+   "tests": ["apps/web/tests/k/k694-knowledge-approvals.spec.ts", "apps/web/test/k694-approvals-shape.test.ts"]}
+ ]
+}
