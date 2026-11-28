@@ -1,0 +1,492 @@
+{
+  "version": "1.0",
+  "project": "Kaname",
+  "created_at": "2026-09-08",
+  "_doc": "外界に影響を与える経路は有限。ここを必ず通らせ、迂回をCIで検出する。列挙物ではなく導出物。正本: .claude/rules/common/choke-points.md",
+  "_completion": "6関門が埋まり、CI検査が実際に走って緑であることが完了条件。書いただけは不可。",
+  "choke_points": [
+    {
+      "id": "C1",
+      "name": "ネットワーク",
+      "gateway_path": "packages/actions/",
+      "gateway_symbol": "executeAction(actionRef, input, ctx)",
+      "forbidden_direct_apis": [
+        "fetch",
+        "XMLHttpRequest",
+        "axios",
+        "undici",
+        "got",
+        "ky",
+        "node:http",
+        "node:https",
+        "node:net",
+        "node:dgram",
+        "ws",
+        "socket.io-client",
+        "eventsource",
+        "@grpc/grpc-js"
+      ],
+      "cross_cutting_handled_here": [
+        "認可（誰が実行できるか）",
+        "ポリシー判定（auto / approve / off）",
+        "承認箱への差し込みと待機",
+        "サービス台帳の判定（自動操作が許されるサービスか）",
+        "レート制限・人間らしい速度の強制",
+        "宛先の許可判定（テナントに紐づく宛先か）",
+        "証跡（誰が・いつ・何を・どの権限で）",
+        "課金計測",
+        "失敗時の人へのハンドオフ（黙って止まるを作らない）"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C1 && pnpm ci:net-boundary",
+      "exceptions": [
+        {
+          "id": "X-005",
+          "path": "packages/secrets/src/infisical.ts",
+          "reason": "資格情報の預かり先（Infisical）への通信は関門 C8 の中の作業。業務の外部送信（C1）ではない（D-101）",
+          "compensating_control": "宛先は設定の INFISICAL_SITE_URL だけ。送るのは会社ごとの鍵で暗号化した中身だけ。全アクセスは C8 の secret.* 証跡に残る。失敗の理由に中身を入れない",
+          "expires_at": null,
+          "source": [
+            "D-101.1",
+            "D-101.2"
+          ]
+        },
+        {
+          "path": "apps/api/src/auth/bridge-release.ts",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない。K-133 から目録は関門 C4 の signExternal が作った署名 URL で読む（置き場の中身は全部非公開）",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。置き場の目録は関門 C4 の signExternal が作った署名 URL（期限 60 秒）で読み、署名を作れない頭（開発・置き場の外）だけ署名なしで読む。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "expires_at": null
+        },
+        {
+          "id": "X-009",
+          "path": "apps/bridge/src/",
+          "reason": "Bridge は顧客 PC の実行器で、Kaname（設定の API の基点）に仕事を取りに行く・結果を返す・鍵を受け取るのが機能そのもの。local.ts の node:http は 127.0.0.1 だけに bind する Bridge の口（D-089.8）",
+          "compensating_control": "宛先は KANAME_API_BASE か Kaname が返した URL だけ。scripts/ci/net_boundary.mjs（G16b）が fetch の宛先の基点を AST で検査。外のサービスはブラウザが開き、禁止の宛先は bridge-guard が止める",
+          "expires_at": null,
+          "source": [
+            "D-095.2",
+            "D-055.1",
+            "D-107.3"
+          ]
+        },
+        {
+          "id": "X-010",
+          "path": "apps/web/lib/",
+          "reason": "画面が Kaname 自身の API を呼ぶ口。業務の外部送信ではない（D-095.2）。LOCAL は本人の PC の Bridge の口",
+          "compensating_control": "宛先は apiBase() か LOCAL だけ。scripts/ci/net_boundary.mjs（G16b）が検査。upload-net.ts だけは Kaname の口が返した URL（C4 が署名した置き場の上げ先 upload_url・Kaname の上げ終わりの受け口 done_url）へ送る（K-953・2026-11-28・Bridge の X-009 と同じ扱い。G16b の allow はこの 2 つだけ）",
+          "review_when": "置き場の URL を画面に返す口が増えたとき・上げる体を口に通す形に替えたとき（allow を外す）",
+          "expires_at": null,
+          "source": [
+            "D-095.2"
+          ]
+        }
+      ],
+      "source": [
+        "D-013",
+        "D-014",
+        "D-040",
+        "D-040.5",
+        "D-041",
+        "D-041.6",
+        "D-050",
+        "D-101.1",
+        "D-101.2"
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "永続化（書き込み）",
+      "gateway_path": "packages/db/",
+      "gateway_symbol": "repository.<entity>.<op>(input, ctx)",
+      "forbidden_direct_apis": [
+        "@supabase/supabase-js",
+        "@supabase/postgrest-js",
+        "pg",
+        "postgres",
+        "@neondatabase/serverless",
+        "drizzle-orm/sql",
+        "sql`",
+        "db.execute",
+        "db.$client"
+      ],
+      "cross_cutting_handled_here": [
+        "テナント文脈の設定（SET LOCAL app.tenant_id / app.user_id / app.role）",
+        "行レベル制御（RLS）の前提保証",
+        "監査列の自動付与（created_by / updated_by / 時刻）",
+        "論理削除の強制",
+        "スコープ4層の解決",
+        "証跡"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C2",
+      "exceptions": [],
+      "source": [
+        "D-010",
+        "D-038",
+        "D-026",
+        "D-050",
+        "D-074.1",
+        "D-073.1"
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "モデル呼び出し",
+      "gateway_path": "packages/llm/",
+      "gateway_symbol": "llm.invoke(request, ctx)",
+      "forbidden_direct_apis": [
+        "@anthropic-ai/sdk",
+        "@anthropic-ai/claude-agent-sdk",
+        "openai",
+        "@openai/agents",
+        "@google/generative-ai",
+        "@google-cloud/vertexai",
+        "@langchain/core",
+        "@langchain/langgraph",
+        "ollama",
+        "node-llama-cpp"
+      ],
+      "cross_cutting_handled_here": [
+        "経路解決（Bridge / BYOK / 運営マネージド / ローカル）",
+        "能力表の参照とフォールバック",
+        "支払者の決定",
+        "トークン計測・実行時間計測",
+        "プラン上限の適用",
+        "トレース（langfuse）",
+        "プロンプトインジェクション対策（外部由来はデータ扱い）"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C3",
+      "exceptions": [],
+      "source": [
+        "D-004",
+        "D-007",
+        "D-047",
+        "D-050"
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "ファイル / オブジェクト",
+      "gateway_path": "packages/storage/",
+      "gateway_symbol": "objectStore.<op>(ref, ctx)",
+      "forbidden_direct_apis": [
+        "node:fs",
+        "fs",
+        "fs/promises",
+        "graceful-fs",
+        "@aws-sdk/client-s3",
+        "@aws-sdk/s3-request-presigner",
+        "@supabase/storage-js",
+        "minio"
+      ],
+      "cross_cutting_handled_here": [
+        "権限（テナント・スコープ）",
+        "署名URLの発行と有効期限",
+        "保持期間・削除ポリシー",
+        "サイズ・形式の制限",
+        "証跡"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C4",
+      "exceptions": [
+        {
+          "path": "apps/bridge/src/",
+          "reason": "Bridge は顧客 PC の中で動く実行器で、ローカルのファイルを読み書きするのは機能そのもの（作業フォルダ・置き場・記録・配布物の入れ替え）",
+          "compensating_control": "作業フォルダの範囲外は guard.ts（packages/bridge-guard）が止めて証跡へ。それ以外の fs は Bridge 自身の置き場と sha256 を確かめた配布物だけ。資格情報の値は書かない（vault.test・login-check.test）",
+          "expires_at": null
+        },
+        {
+          "path": "apps/api/src/auth/bridge-release.ts",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない。K-133 から目録は関門 C4 の signExternal が作った署名 URL で読む（置き場の中身は全部非公開）",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。置き場の目録は関門 C4 の signExternal が作った署名 URL（期限 60 秒）で読み、署名を作れない頭（開発・置き場の外）だけ署名なしで読む。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "expires_at": null
+        },
+        {
+          "id": "X-012",
+          "path": "apps/web/app/(dev)/dev/mail/page.tsx",
+          "reason": "開発の受信箱。本番には出ない（(dev) の枠は 404）",
+          "compensating_control": "読むのは KANAME_API_LOG の 1 ファイルだけ・書かない",
+          "expires_at": null,
+          "source": [
+            "D-095.2"
+          ]
+        },
+        {
+          "id": "X-016",
+          "path": "apps/web/features/F1/consent-terms/legal-text.ts",
+          "reason": "規約・プライバシーポリシーの文面のページ（K-53）が、画面に同梱したひな形（apps/web/content/legal/*.md）を要求のときに読む。利用者のファイルではない",
+          "compensating_control": "読むのは apps/web/content/legal の <kind>-v<版>.md だけ（kind は terms・privacy の 2 つ・版は数だけ）・書かない・利用者由来のパスを受け取らない",
+          "expires_at": null,
+          "source": [
+            "D-128.137",
+            "D-128.146"
+          ]
+        }
+      ],
+      "source": [
+        "D-029",
+        "D-025",
+        "D-050",
+        "D-076.3",
+        "D-042"
+      ]
+    },
+    {
+      "id": "C5",
+      "name": "プロセス起動",
+      "gateway_path": "packages/runtime/",
+      "gateway_symbol": "runProcess(spec, ctx)",
+      "forbidden_direct_apis": [
+        "node:child_process",
+        "child_process",
+        "spawn",
+        "exec",
+        "execFile",
+        "fork",
+        "execSync",
+        "spawnSync",
+        "node-pty",
+        "execa"
+      ],
+      "cross_cutting_handled_here": [
+        "隔離（サーバー経路は Microsandbox / Bridge は作業フォルダ制限）",
+        "完了信号の検証（exit 0 を成功と見なさない。result を受け取るまで未完了）",
+        "タイムアウト・強制終了",
+        "標準出力/エラーの上限",
+        "環境変数の遮断（ANTHROPIC_API_KEY 等を子プロセスから除去）",
+        "証跡"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C5",
+      "exceptions": [
+        {
+          "id": "X-011",
+          "path": "apps/bridge/src/",
+          "reason": "公式 CLI・専用ブラウザ・配布物の入れ替えを起こすのが Bridge の機能そのもの（D-055・D-119）",
+          "compensating_control": "起こす実体は proc.ts／runner.ts／install-claude.ts／update.ts に閉じ、引数は設定と目録から組む。完了信号の無い終了は成功にしない（G-15）",
+          "expires_at": null,
+          "source": [
+            "D-055.1",
+            "D-119.1"
+          ]
+        }
+      ],
+      "source": [
+        "D-015",
+        "D-044",
+        "D-045",
+        "D-050",
+        "D-092.2",
+        "D-093.1",
+        "D-093.2",
+        "D-093.3",
+        "D-093.4",
+        "D-104.14",
+        "D-107.2"
+      ],
+      "_cli_form": "公式 CLI は未改変のまま stream-json で起動し、完了イベントで成功を判定する（D-093）。承認を弱める引数を渡さない（D-092.2）",
+      "permission_mode_rule": "Claude の許可のモードは公式の選択肢をそのまま渡す。全部許可（bypassPermissions）は本人が選んだ会話だけ・既定にしない（D-104.14）。全部許可でも、サービス台帳で禁止・銀行のドメインは --disallowedTools と PreToolUse のフックで止める（D-107.2・D-107.3）"
+    },
+    {
+      "id": "C6",
+      "name": "通知送出",
+      "gateway_path": "packages/notify/",
+      "gateway_symbol": "notify(event, audience, ctx)",
+      "forbidden_direct_apis": [
+        "resend",
+        "nodemailer",
+        "@sendgrid/mail",
+        "@slack/web-api",
+        "@line/bot-sdk",
+        "web-push",
+        "firebase-admin/messaging"
+      ],
+      "cross_cutting_handled_here": [
+        "宛先解決（人間 / AI社員 / 自分のAI で解決規則が違う）",
+        "購読設定・通知の希望",
+        "重複抑止",
+        "失敗時の再送",
+        "証跡",
+        "署名と返信先（D-096）"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C6",
+      "exceptions": [],
+      "source": [
+        "D-012",
+        "D-043",
+        "D-050",
+        "D-075.2",
+        "D-075.3",
+        "D-077.8",
+        "D-096.1",
+        "D-096.2",
+        "D-096.3",
+        "D-096.4",
+        "D-096.5"
+      ]
+    },
+    {
+      "id": "C7",
+      "name": "決済・課金",
+      "gateway_path": "packages/billing/",
+      "gateway_symbol": "billing.<op>(input, ctx)",
+      "_judgement": {
+        "irreversible_effect": true,
+        "needs_cross_cutting": true,
+        "verdict": "choke point（プロジェクト固有・2問ともYES）"
+      },
+      "forbidden_direct_apis": [
+        "stripe",
+        "@stripe/stripe-js"
+      ],
+      "cross_cutting_handled_here": [
+        "冪等性キーの付与（二重課金の防止）",
+        "Webhook の署名検証",
+        "認可（誰が課金操作できるか）",
+        "プラン上限との整合",
+        "証跡"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C7",
+      "exceptions": [],
+      "source": [
+        "D-002",
+        "D-004",
+        "D-050",
+        "D-075.4",
+        "D-075.5",
+        "D-077.1"
+      ]
+    },
+    {
+      "id": "C8",
+      "name": "秘密の読み出し",
+      "gateway_path": "packages/secrets/",
+      "gateway_symbol": "secrets.resolve(ref, ctx)",
+      "_judgement": {
+        "irreversible_effect": false,
+        "needs_cross_cutting": true,
+        "verdict": "choke point（取り返しはつくが、漏洩が致命的。全アクセスの証跡が必須）"
+      },
+      "forbidden_direct_apis": [
+        "@infisical/sdk",
+        "process.env（業務ロジックからの直接参照）"
+      ],
+      "cross_cutting_handled_here": [
+        "テナントごとの鍵分離と復号",
+        "AIには一切渡さない（参照IDのみを返す）",
+        "ログ・スクリーンショットへの露出防止（マスク）",
+        "失効の即時反映（退会・停止・権限変更）",
+        "全アクセスの証跡"
+      ],
+      "ci_check": "pnpm ci:choke -- --id C8",
+      "exceptions": [
+        {
+          "path": "packages/config/",
+          "reason": "起動時のブート設定（DB接続文字列など）は業務文脈が無いため process.env を読む",
+          "compensating_control": "packages/config/ は起動時に1回だけ読み、以降は型付きオブジェクトとして配る。顧客の資格情報は絶対に扱わない（CIで検査）",
+          "expires_at": null
+        }
+      ],
+      "source": [
+        "D-017",
+        "D-042",
+        "D-050",
+        "D-074.5",
+        "D-125.128",
+        "D-128.68",
+        "D-076.4",
+        "D-092.1",
+        "D-101.1",
+        "D-101.2",
+        "D-102.2",
+        "D-102.5"
+      ]
+    }
+  ],
+  "project_specific_candidates_judged": [
+    {
+      "candidate": "ブラウザ操作（Claude in Chrome／Playwright MCP・D-119）",
+      "irreversible_effect": true,
+      "needs_cross_cutting": true,
+      "verdict": "C1に含める（ネットワーク経由の外部操作であり、認可・承認・証跡・サービス台帳判定が同一）"
+    },
+    {
+      "candidate": "MCP サーバ接続",
+      "irreversible_effect": true,
+      "needs_cross_cutting": true,
+      "verdict": "C1に含める（HTTP/streamable transport）"
+    },
+    {
+      "candidate": "取り込みサービス呼び出し",
+      "irreversible_effect": false,
+      "needs_cross_cutting": false,
+      "verdict": "C1を通る内部HTTP。専用関門にしない"
+    },
+    {
+      "candidate": "キャッシュ書き込み",
+      "irreversible_effect": false,
+      "needs_cross_cutting": false,
+      "verdict": "段階1〜4はキャッシュを持たない。導入時に再判定"
+    },
+    {
+      "candidate": "ジョブ投入（Hatchet）",
+      "irreversible_effect": false,
+      "needs_cross_cutting": true,
+      "verdict": "C2に含める（Postgres上のため永続化の一種。テナント文脈が要る）"
+    },
+    {
+      "candidate": "SSE/WebSocket の送信",
+      "irreversible_effect": false,
+      "needs_cross_cutting": false,
+      "verdict": "自テナントのクライアントへの応答であり外界ではない。C1に含めない"
+    },
+    {
+      "candidate": "ログ出力",
+      "irreversible_effect": false,
+      "needs_cross_cutting": false,
+      "verdict": "関門にしない。ただし秘密のマスクは C8 が担保"
+    },
+    {
+      "candidate": "クリップボード・OS通知（Bridge）",
+      "irreversible_effect": false,
+      "needs_cross_cutting": false,
+      "verdict": "顧客PC内で完結。C6に含めない"
+    }
+  ],
+  "prerequisite_checks": [
+    {
+      "id": "no_dynamic_call",
+      "desc": "eval / new Function / 動的import / 文字列からの関数解決を禁止。禁止しないと関門検査（静的解析）が原理的に破れる",
+      "scope": "apps/** packages/** services/**（テストを除く）",
+      "on_violation": "fail"
+    },
+    {
+      "id": "no_raw_env_in_domain",
+      "desc": "業務ロジックからの process.env 直接参照を禁止（packages/config/ 経由のみ）",
+      "on_violation": "fail"
+    }
+  ],
+  "ci": {
+    "implementation": "scripts/ci/choke-check.ts",
+    "method": "TypeScript コンパイラAPIで import グラフと呼び出し式を辿る。grepでは済ませない",
+    "scope_include": [
+      "apps/**",
+      "packages/**",
+      "services/**"
+    ],
+    "scope_exclude": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "apps/e2e/**"
+    ],
+    "blocking": true
+  },
+  "exception_policy": "例外は 03_architecture/choke-point-exceptions.md に理由・代替統制・期限つきで登録する。登録の無い迂回はCIでfail。期限切れの例外もfail。",
+  "ci_policy": {
+    "_doc": "関門の検査の回し方（D-095）",
+    "source": [
+      "D-095.1",
+      "D-095.2",
+      "D-095.4"
+    ],
+    "command": "node scripts/ci/choke.mjs --all",
+    "status": "未配線（2026-09-25 時点で迂回 55 件：C1 42・C4 9・C5 4）。T-B-07 で片付けてから CI に並べる",
+    "rule": "実体のある検査は作った時点で CI から呼ぶ。入れた検査は 1 回壊して赤を出し、戻して緑を確認する"
+  }
+}
