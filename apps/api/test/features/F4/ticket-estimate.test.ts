@@ -405,7 +405,12 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect(sorted(payload)).toEqual(["fields", "message_id", "number", "ticket_id", "url"]);
     expect(payload.fields).toEqual(["estimate_minutes"]);
     expect(one[0]!["dedupe_key"]).toBe(`ticket.sort_changed:${payload.message_id}`);
-    expect(JSON.stringify(payload)).not.toContain("77");
+    // 値の字が無いかは、乱数の id（ticket_id・message_id・url の中の uuid）を除いた所で見る。uuid がたまたま "77" を含むと落ちていた
+    const noIds = JSON.stringify(payload).replace(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+      "<id>",
+    );
+    expect(noIds).not.toContain("77");
     expect(JSON.stringify(payload)).not.toContain("予定時間を入れるチケット");
     expect(
       (
