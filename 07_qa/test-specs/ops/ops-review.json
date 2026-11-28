@@ -1,0 +1,140 @@
+{
+ "screen": "ops-review",
+ "mock": "06_mockup/v1/v1-ops-review.html",
+ "state_labels": {
+  "n": "公開の審査",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "link:会社の詳細で審査→ops-tenant",
+   "kind": "link",
+   "label": "会社の詳細で審査",
+   "target": "ops-tenant",
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:審査する",
+   "kind": "button",
+   "label": "審査する",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:会社名・人名・住所・電話が無い機械で 0 件。目視でも 0 件",
+   "kind": "checkbox",
+   "label": "会社名・人名・住所・電話が無い機械で 0 件。目視でも 0 件",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:金額・単価が例に置き換わっている「1 人工 25,000 円」が残っている → 例の値に置き換えを依頼",
+   "kind": "checkbox",
+   "label": "金額・単価が例に置き換わっている「1 人工 25,000 円」が残っている → 例の値に置き換えを依頼",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:顧客名・案件名が無い0 件",
+   "kind": "checkbox",
+   "label": "顧客名・案件名が無い0 件",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:運営ルールに反する手順が無い外向きの送信は承認を挟む形になっている",
+   "kind": "checkbox",
+   "label": "運営ルールに反する手順が無い外向きの送信は承認を挟む形になっている",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認して公開する",
+   "kind": "button",
+   "label": "承認して公開する",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:置き換えを依頼して差し戻す",
+   "kind": "button",
+   "label": "置き換えを依頼して差し戻す",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:却下する",
+   "kind": "button",
+   "label": "却下する",
+   "target": null,
+   "states": [
+    "公開の審査"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:承認する",
+   "kind": "button",
+   "label": "承認する",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
