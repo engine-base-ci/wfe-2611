@@ -1,0 +1,380 @@
+[
+ {
+  "id": "cred-list",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-empty",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-personal",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-failed",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-checking",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-no-pc",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-forbidden",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-login",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-key",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-error",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-stepup",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-edit",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-remove",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-code",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-list",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-empty",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-personal",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-failed",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-checking",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-no-pc",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-forbidden",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-login",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-key",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-error",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-stepup",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-edit",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-remove",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-code",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-list",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-empty",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-personal",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-failed",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-checking",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-no-pc",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-forbidden",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-login",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-key",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-add-error",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-stepup",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-edit",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-remove",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ },
+ {
+  "id": "cred-code",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "預けたログイン情報"
+ }
+]

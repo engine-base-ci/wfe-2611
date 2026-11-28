@@ -1,0 +1,15 @@
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { checkResources, checkSqlConcat } from "./sql_guard.mjs";
+const root = mkdtempSync(join(tmpdir(), "kaname-sqlguard-"));
+mkdirSync(join(root, "packages/bad/src"), { recursive: true });
+mkdirSync(join(root, "packages/db/src"), { recursive: true });
+writeFileSync(join(root, "packages/bad/src/a.ts"), 'declare const c: any; declare const t: string;\nexport const f = () => c.query(`select * from ${t}`);\nexport const g = () => c.query("select * from " + t);\nexport const p = () => new Pool({ max: 1 });\n');
+writeFileSync(join(root, "packages/db/src/ok.ts"), 'declare const c: any; declare const q: string;\nexport const f = () => c.query(`select * from ${q}`);\nexport const p = () => new Pool({ max: 1 });\n');
+writeFileSync(join(root, "packages/db/src/pool.ts"), "export const p = () => new Pool({ max: 1 });\n");
+const sql = checkSqlConcat(root);
+const res = checkResources(root);
+const ok = sql.length === 2 && sql.every((x) => x.startsWith("packages/bad/")) && res.length === 2 && res.some((x) => x.startsWith("packages/bad/")) && res.some((x) => x.includes("pool.ts"));
+console.log(ok ? "[sql-guard self-test] OK（連結 2・関門外の接続 1・timeout 無し 1 を検出）" : `[sql-guard self-test] NG ${JSON.stringify({ sql, res })}`);
+process.exit(ok ? 0 : 1);

@@ -1,0 +1,80 @@
+{
+ "ops": {
+  "getNotificationSettings": {
+   "file": "apps/api/test/features/F10/me-notify.test.ts",
+   "reason": "知らせの設定は、会社の指し方・既定と保存した値のかぶせ方で答えが変わる。生成の試験の種では作れない（K-837）",
+   "covers": {
+    "test_get_me_notification_settings_ok": "K837-API-001",
+    "test_get_me_notification_settings_shape": "K837-API-001",
+    "test_get_me_notification_settings_rejected_401": "K837-API-013",
+    "test_get_me_notification_settings_rejected_403": "K837-API-013",
+    "test_get_me_notification_settings_rejected_422": "K837-API-002",
+    "test_get_me_notification_settings_not_found": "K837-API-002",
+    "test_get_me_notification_settings_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_notification_settings_rate_limited": "上限は入口の共通の確かめ（K-144）が全部の口で見る",
+    "test_get_me_notification_settings_terms_pending": "同意し直しの止めは入口の共通の確かめ（K-53）が見る",
+    "test_get_me_notification_settings_mfa_pending": "付けるまで進めないの止めは入口の共通の確かめ（K-321）が見る",
+    "test_get_me_notification_settings_rejected_422_2": "保存の失敗は 503・E-PAGE-003（K837-API-014）で返し、E-ACT-040 の答えは使わない（この口は名前・メール・パスワード・2 段階を書かない）"
+   }
+  },
+  "updateNotificationSettings": {
+   "file": "apps/api/test/features/F10/me-notify.test.ts",
+   "reason": "保存は、出来事・急ぎ・いま止める・止められない出来事・会社の指し方で答えが変わる（K-837）",
+   "covers": {
+    "test_patch_me_notification_settings_ok": "K837-API-003",
+    "test_patch_me_notification_settings_shape": "K837-API-003",
+    "test_patch_me_notification_settings_rejected_401": "K837-API-013",
+    "test_patch_me_notification_settings_rejected_403": "K837-API-013",
+    "test_patch_me_notification_settings_rejected_422": "K837-API-006",
+    "test_patch_me_notification_settings_not_found": "K837-API-009",
+    "test_patch_me_notification_settings_conflict": "K837-API-005",
+    "test_patch_me_notification_settings_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_notification_settings_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_patch_me_notification_settings_rate_limited": "上限は入口の共通の確かめ（K-144）が全部の口で見る",
+    "test_patch_me_notification_settings_terms_pending": "同意し直しの止めは入口の共通の確かめ（K-53）が見る",
+    "test_patch_me_notification_settings_mfa_pending": "付けるまで進めないの止めは入口の共通の確かめ（K-321）が見る",
+    "test_patch_me_notification_settings_rejected_422_2": "保存の失敗は 503・E-PAGE-003（K837-API-014）で返し、E-ACT-040 の答えは使わない（この口は名前・メール・パスワード・2 段階を書かない）"
+   }
+  },
+  "copyNotificationSettings": {
+   "file": "apps/api/test/features/F10/me-notify.test.ts",
+   "reason": "写す口は、写し元・写し先の入っている会社・止めている印を写さないこと・全部か無しかで答えが変わる（K-837）",
+   "covers": {
+    "test_post_me_notification_settings_copy_ok": "K837-API-010",
+    "test_post_me_notification_settings_copy_shape": "K837-API-010",
+    "test_post_me_notification_settings_copy_rejected_401": "K837-API-013",
+    "test_post_me_notification_settings_copy_rejected_403": "K837-API-013",
+    "test_post_me_notification_settings_copy_rejected_422": "K837-API-011",
+    "test_post_me_notification_settings_copy_not_found": "K837-API-011",
+    "test_post_me_notification_settings_copy_conflict": "K837-API-011",
+    "test_post_me_notification_settings_copy_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_notification_settings_copy_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_me_notification_settings_copy_rate_limited": "上限は入口の共通の確かめ（K-144）が全部の口で見る",
+    "test_post_me_notification_settings_copy_terms_pending": "同意し直しの止めは入口の共通の確かめ（K-53）が見る",
+    "test_post_me_notification_settings_copy_mfa_pending": "付けるまで進めないの止めは入口の共通の確かめ（K-321）が見る",
+    "test_post_me_notification_settings_copy_rejected_422_2": "保存の失敗は 503・E-PAGE-003（K837-API-014）で返し、E-ACT-040 の答えは使わない（この口は名前・メール・パスワード・2 段階を書かない）"
+   }
+  }
+ }
+}
