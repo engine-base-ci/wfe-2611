@@ -35,6 +35,9 @@ export function useSessions(enabled = true): UseQueryResult<SessionsAnswer, Sess
     queryFn: readSessions,
     enabled,
     retry: false,
+    // 読めなかった後に、同じ鍵を読む 2 つ目の部品（区画）が後から付いても読み直さない（既定の retryOnMount は真で、
+    //   画面の外枠が先に読んで 503 → 区画が付いた時に黙ってもう 1 回読み、「もう一度読む」を押す前に一覧が出ていた・K842-UI-014）
+    retryOnMount: false,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
