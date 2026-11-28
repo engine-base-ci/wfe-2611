@@ -7,6 +7,7 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { loginAs } from "../_lib/api";
 import { err, never, ok, pair, person, type Reply } from "./credentials-mock";
+import { shellReply } from "./shell-answer";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
 test.use({ timezoneId: "Asia/Tokyo" });
@@ -31,6 +32,8 @@ const ROUTES = [
 const R1 = mk(1, "12 月分の作業報告書もほしい", "new");
 const R2 = mk(2, "管理画面に検索の絞り込みを足したい", "asking", "JD 受託開発");
 const R3 = mk(3, "10 月分の請求書の再発行", "done", "KR 経理");
+/** 下絵の一覧と同じ並び（新しい 2・聞いている 1・さばいた 1）にするための 1 件（突き合わせの行だけで使う） */
+const R4 = mk(4, "ログイン画面の文言を直してほしい", "new", "JD 受託開発");
 const BODY = "いつもありがとうございます。11 月分と同じ形で、12 月分の作業報告書もいただけますか。";
 /** 聞いている依頼のやり取り（K-892 の形：古い順・side は we＝社内／they＝ゲスト・最初の本文は request.body に在る） */
 const ASKED = {
@@ -104,6 +107,8 @@ async function mockWorld(page: Page, w: World) {
     const p = u.pathname;
     const method = req.method();
     const body = (req.postDataJSON() as Record<string, unknown> | null) ?? null;
+    // 外枠の口 getShell（K-466）：外枠とグループの選び肢は同じ答えを読む（形の外れた答えは外枠が読めない扱い）
+    if (p === "/api/v1/shell") return send(route, shellReply());
     const m = /^\/api\/v1\/client_requests(?:\/([^/]+))?(?:\/(reply|accept|decline))?$/.exec(p);
     if (!m) {
       return send(route, ok([]));
@@ -178,7 +183,12 @@ const detail = (page: Page) => page.locator("article.k-f11q-detail");
 const listBox = (page: Page) => page.getByRole("complementary", { name: "届いた依頼", exact: true });
 /** 一覧の R1 の行（「さばいたもの」の R3 も KR 経理に届いているので、行を絞って見る） */
 const r1Row = (page: Page) => listBox(page).getByRole("link", { name: new RegExp(R1.title) });
-const btn = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
+// 本文の中のボタン（外枠の左と下の「チケットを作る」k-nav-create・k-tab-create は K-466 の外枠の答えで出る。それと分ける）
+const btn = (page: Page, name: string) =>
+  page
+    .locator("#k-main")
+    .getByRole("button", { name, exact: true })
+    .and(page.locator(":not(.k-nav-create):not(.k-tab-create)"));
 const dlg = (page: Page, name: string) => page.getByRole("dialog", { name, exact: true });
 const overflowX = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -202,7 +212,7 @@ for (const [mock, w0] of [
         w,
         async (page) => {
           await loginAs(page, u.token);
-          await mockWorld(page, world());
+          await mockWorld(page, world({ items: [R1, R2, R4, R3] })); // 下絵の一覧は 4 件（幅 768 は一覧の下に本文が来るので件数で見出しの位置が変わる）
           await page.goto(w0);
           await expect(page.locator("main").first()).toBeVisible();
         },
@@ -606,11 +616,12 @@ test("K898-UI-031 さばける人でも「チケットを作る」は K-930 が�
 }) => {
   const w = world();
   await openFirst(page, w);
-  await expect(btn(page, "チケットを作る")).toHaveAttribute("aria-disabled", "true");
-  await btn(page, "チケットを作る").click({ force: true });
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  // K-930 が入ったので押せる形：押すと作る小窓が開く（中身と口は K-930 の試験が見る）。開くだけでは書く口を呼ばない
+  await expect(btn(page, "チケットを作る")).not.toHaveAttribute("aria-disabled", "true");
   await expect(btn(page, "断る（理由を返す）")).not.toHaveAttribute("aria-disabled", "true");
   await expect(btn(page, "返事を送って詳しく聞く")).not.toHaveAttribute("aria-disabled", "true");
+  await btn(page, "チケットを作る").click();
+  await expect(page.getByRole("dialog", { name: "チケットを作る", exact: true })).toBeVisible();
   expect(w.calls.filter((c) => c.method !== "GET")).toEqual([]);
 });
 

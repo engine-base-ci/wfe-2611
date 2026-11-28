@@ -80,12 +80,13 @@ async function setup(page: Page, pages: PageAnswer[] = []): Promise<{ mk: KMock;
   const x = await mockMustSimilar(page, mk);
   return { mk, x };
 }
-async function openAt(page: Page, id: string, width = 1440): Promise<void> {
+// 幅 1023 以下の木は本文の上に重なる引き出し（K-682）。本文の操作を押す状態は開かない（useTree=false・下絵も木を出さない）
+async function openAt(page: Page, id: string, width = 1440, useTree = true): Promise<void> {
   await page.setViewportSize({ width, height: width < 768 ? 812 : 900 });
   await loginAs(page, owner.token);
   await page.goto(`/knowledge/${id}`);
   await expect(page.locator(CARD).or(page.locator(EDIT))).toBeVisible();
-  if (width <= 1023)
+  if (width <= 1023 && useTree)
     await page
       .getByRole("button", { name: "木を開く", exact: true })
       .click()
@@ -173,7 +174,7 @@ const STATES: Record<string, { pairs: ReturnType<typeof prop>[]; drive: (page: P
     drive: async (page, w) => {
       const { x } = await setup(page);
       x.script("must", full(MUST_COMPANY));
-      await openAt(page, P_EXPENSE, w);
+      await openAt(page, P_EXPENSE, w, false);
       await toggle(page).click();
       await expect(mustDlg(page)).toBeVisible();
     },

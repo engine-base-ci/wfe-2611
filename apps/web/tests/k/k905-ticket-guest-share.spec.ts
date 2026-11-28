@@ -230,7 +230,7 @@ for (const [id, drive] of Object.entries(STATES)) {
         w,
         async (page) => {
           const s = await mockShares(page, INIT[id] ?? {});
-          await open(page, owner.token, Math.max(w, 1024)); // 右のパネルは幅 1024 から横に並ぶ（それより狭い幅は K-226 の物）
+          await open(page, owner.token, w);
           await drive(page, s);
         },
         { pairs: PAIRS, base: "/dev/mock/f11", blur: true },

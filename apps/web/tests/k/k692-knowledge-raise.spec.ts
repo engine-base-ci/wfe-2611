@@ -74,12 +74,13 @@ async function setup(page: Page, mine = minePage(), team = teamPage({ id: P_QUOT
   const r = await mockRaise(page, mk);
   return { mk, x, r };
 }
-async function openAt(page: Page, id: string, width = 1440): Promise<void> {
+// 幅 1023 以下の木は本文の上に重なる引き出し（K-682）。本文の操作を押す状態は開かない（useTree=false・下絵も木を出さない）
+async function openAt(page: Page, id: string, width = 1440, useTree = true): Promise<void> {
   await page.setViewportSize({ width, height: width < 768 ? 812 : 900 });
   await loginAs(page, owner.token);
   await page.goto(`/knowledge/${id}`);
   await expect(page.locator(CARD).getByRole("heading", { level: 1 })).toBeVisible();
-  if (width <= 1023)
+  if (width <= 1023 && useTree)
     await page
       .getByRole("button", { name: "木を開く", exact: true })
       .click()
@@ -136,7 +137,7 @@ const STATES: Record<string, { pairs: ReturnType<typeof prop>[]; drive: (page: P
     pairs: DLG_PAIRS,
     drive: async (page, w) => {
       await setup(page);
-      await openAt(page, P_MINE, w);
+      await openAt(page, P_MINE, w, false);
       const d = await openRaise(page);
       await choose(page, d, "入れるフォルダ", "見積もり");
       await message(d).fill(MSG);
@@ -287,7 +288,10 @@ test("K692-UI-006 似たページを探す口が失敗：止めずにお知ら�
   const d = await openRaise(page);
   await submit(d).click();
   await expect(page.locator(BAND)).toBeVisible();
-  await expect(page.locator(".k-toast")).toContainText("似たページを探せませんでした。このまま頼みます。");
+  // 知らせの置き場は外枠の 1 か所（K-466）。頼んだ知らせと並んで出るので、文で探す
+  await expect(
+    page.locator(".k-toast").filter({ hasText: "似たページを探せませんでした。このまま頼みます。" }),
+  ).toBeVisible();
   expect(r.count("raise")).toBe(1);
 });
 
