@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["packages/db/migrations/20261128032400_plan_terms.sql"],
+   "tests": ["apps/api/test/features/F12/plan-terms.test.ts", "apps/api/test/features/F12/plans.test.ts",
+             "apps/api/test/features/F12/ops-invoices-issue.test.ts", "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+             "apps/api/test/features/F12/seat-limit.test.ts"]},
+  {"paths": ["05_flow/screen_api.d/K-1017.py"], "tests": ["apps/api/test/features/F12/plan-terms.test.ts"]}
+ ]
+}
