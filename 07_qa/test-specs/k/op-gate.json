@@ -1,0 +1,20 @@
+{
+ "_doc": "新しい画面（apps/web/components/k の上の画面）の実ブラウザの証拠（G48）。報告は CI の web の段で毎回作る。記録（baseline）は持たない",
+ "evidence_views": [
+  "操作",
+  "状態",
+  "主アクション",
+  "到達性",
+  "横溢れ",
+  "空・止まっている",
+  "表記ゆらぎ",
+  "共通シェル",
+  "部品",
+  "役割の出し分け",
+  "見え方"
+ ],
+ "report_max_age_h": 2,
+ "reports": [
+  "apps/web/pw-reports/k.json"
+ ]
+}
