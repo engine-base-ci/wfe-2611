@@ -1,0 +1,130 @@
+{
+  "numTotalTestSuites": 7,
+  "numPassedTestSuites": 7,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 22,
+  "numPassedTests": 22,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1792462443875,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["createAwake"],
+          "fullName": "createAwake CHT-42-001 working が入ったら 1 回だけ頼み、空になったら 1 回だけ解く。同じ状態が続いても呼び直さない",
+          "status": "passed",
+          "title": "CHT-42-001 working が入ったら 1 回だけ頼み、空になったら 1 回だけ解く。同じ状態が続いても呼び直さない",
+          "duration": 0.6868330000000071,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["createAwake"],
+          "fullName": "createAwake CHT-42-001 頼めなくても落ちない。次に空になっても解こうとしない（持っていない）",
+          "status": "passed",
+          "title": "CHT-42-001 頼めなくても落ちない。次に空になっても解こうとしない（持っていない）",
+          "duration": 0.3347080000000062,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1792462456845,
+      "endTime": 1792462456845.6868,
+      "status": "passed",
+      "message": "",
+      "name": "/Users/masato0420/Downloads/受託開発/自社事業/kaname/apps/bridge/test/awake.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["startLoop"],
+          "fullName": "startLoop CHT-42-003 記録が無い会話の仕事は、新しいセッションでやり直して知らせ（notice）を 1 行流し、新しい id の init と結末を返す（D-124.3・E-NF-003）",
+          "status": "passed",
+          "title": "CHT-42-003 記録が無い会話の仕事は、新しいセッションでやり直して知らせ（notice）を 1 行流し、新しい id の init と結末を返す（D-124.3・E-NF-003）",
+          "duration": 1611.095084,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1792462444124,
+      "endTime": 1792462453374.2185,
+      "status": "passed",
+      "message": "",
+      "name": "/Users/masato0420/Downloads/受託開発/自社事業/kaname/apps/bridge/test/loop.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["runClaude（偽の CLI）"],
+          "fullName": "runClaude（偽の CLI） CHT-42-002 道具が動いている最中に止めると、理由に「途中だった道具の結末は分からない」が付く（D-124.2・E-SIG-003）",
+          "status": "passed",
+          "title": "CHT-42-002 道具が動いている最中に止めると、理由に「途中だった道具の結末は分からない」が付く（D-124.2・E-SIG-003）",
+          "duration": 402.00129100000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["runClaude（偽の CLI）"],
+          "fullName": "runClaude（偽の CLI） CHT-42-002 文を書いている最中（道具が動いていない）に止めたときは添えない",
+          "status": "passed",
+          "title": "CHT-42-002 文を書いている最中（道具が動いていない）に止めたときは添えない",
+          "duration": 302.93325000000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["runClaude（偽の CLI）"],
+          "fullName": "runClaude（偽の CLI） CHT-42-003 記録が無い --resume は、--resume 無しで 1 回だけやり直し、知らせを 1 回出し、新しい id で終わる（D-124.3・E-NF-003）",
+          "status": "passed",
+          "title": "CHT-42-003 記録が無い --resume は、--resume 無しで 1 回だけやり直し、知らせを 1 回出し、新しい id で終わる（D-124.3・E-NF-003）",
+          "duration": 128.27666699999986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["runClaude（偽の CLI）"],
+          "fullName": "runClaude（偽の CLI） CHT-42-005 記録があるときはやり直さない・知らせない。同じ id のまま 1 回で終わる",
+          "status": "passed",
+          "title": "CHT-42-005 記録があるときはやり直さない・知らせない。同じ id のまま 1 回で終わる",
+          "duration": 43.784625000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["runClaude（偽の CLI）"],
+          "fullName": "runClaude（偽の CLI） CHT-42-004 本物の形の判定：記録が無い（stderr／API を呼ばず本文なし）は当たり、上限（API は呼んだ）や本文のある失敗は当たらない",
+          "status": "passed",
+          "title": "CHT-42-004 本物の形の判定：記録が無い（stderr／API を呼ばず本文なし）は当たり、上限（API は呼んだ）や本文のある失敗は当たらない",
+          "duration": 0.12950000000000728,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1792462453606,
+      "endTime": 1792462456632.042,
+      "status": "passed",
+      "message": "",
+      "name": "/Users/masato0420/Downloads/受託開発/自社事業/kaname/apps/bridge/test/runner.test.ts"
+    }
+  ]
+}
