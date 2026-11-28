@@ -1,0 +1,32 @@
+{
+ "ops": {
+  "askPortalRequestQuestions": {
+   "file": "apps/api/test/features/F11/portal-questions.test.ts",
+   "reason": "聞く口は、ゲストの所属・担当の PC のつながり・仕事の結果で答えが変わる。生成の試験の種ではゲストも PC も作れない（K-910）",
+   "covers": {
+    "test_post_portal_requests_questions_ok": "K910-API-001",
+    "test_post_portal_requests_questions_shape": "K910-API-001",
+    "test_post_portal_requests_questions_rejected_401": "K910-API-010",
+    "test_post_portal_requests_questions_rejected_403": "K910-API-010",
+    "test_post_portal_requests_questions_rejected_422": "K910-API-009",
+    "test_post_portal_requests_questions_rejected_422_2": "K910-API-009",
+    "test_post_portal_requests_questions_rate_limited": "K910-API-011",
+    "test_post_portal_requests_questions_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_portal_requests_questions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_portal_requests_questions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_portal_requests_questions_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-906・K-907 と同じ扱い・K-910）"
+   }
+  }
+ }
+}
