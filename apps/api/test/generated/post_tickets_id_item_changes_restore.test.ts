@@ -1,0 +1,81 @@
+// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json・ears-elsewhere.json）。手で直さない。POST /api/v1/tickets/:id/item-changes/restore
+// 項目を点の形に戻すは、本物の DB のやり取りの更新の行の並び・各組の関数（期限・優先度・予定時間・会社の項目）の決まり・完了したチケット・書ける人の判定・1 つの取引で答えが変わる。生成の試験の偽のセッションでは作れない（K-576）
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+describe("POST /api/v1/tickets/:id/item-changes/restore", () => {
+  it("test_post_tickets_id_item_changes_restore_ok", () => {
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/item-changes/restore が「区画ごとに書く」として呼ばれたとき THEN Kaname は「区画ごとに版を残す」を行い 2xx を返す（自動側：抜けを指摘する）
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-001");
+  });
+  it("test_post_tickets_id_item_changes_restore_rejected_401", () => {
+    // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-015」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-015");
+  });
+  it("test_post_tickets_id_item_changes_restore_rejected_403", () => {
+    // UNWANTED: IF チケットは見えるが書く権限が無いなら、Kaname は 403 と FORBIDDEN を返し、項目を変えない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-015」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-015");
+  });
+  it("test_post_tickets_id_item_changes_restore_not_found", () => {
+    // UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-013」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-013");
+  });
+  it("test_post_tickets_id_item_changes_restore_conflict", () => {
+    // UNWANTED: IF 完了したチケットの項目を戻そうとしたなら、Kaname は 409 と E-ITM-001 を返し、項目を変えない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-012」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-012");
+  });
+  it("test_post_tickets_id_item_changes_restore_rejected_422", () => {
+    // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、項目を変えない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-014」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-014");
+  });
+  it("test_post_tickets_id_item_changes_restore_not_found_2", () => {
+    // UNWANTED: IF 無い点か消したチケットを戻そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-013」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-013");
+  });
+  it("test_post_tickets_id_item_changes_restore_conflict_2", () => {
+    // UNWANTED: IF 今見ている点が今の最新の点でないなら、Kaname は 409 と E-ITM-002 を返し、項目を変えない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-011」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-011");
+  });
+  it("test_post_tickets_id_item_changes_restore_conflict_3", () => {
+    // UNWANTED: IF 戻す物が無いなら、Kaname は 409 と E-ITM-003 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-010」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-010");
+  });
+  it("test_post_tickets_id_item_changes_restore_session_unresolved", () => {
+    // UNWANTED: IF 戻す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、項目・やり取り・お知らせ・証跡のどれも残さない
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-020」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-020");
+  });
+  it("test_post_tickets_id_item_changes_restore_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
+  // 当てはまらない（回数は入口の共通の数えで、体を受ける口の型の確かめは K144-API の共通の試験が持つ）：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+  it.todo("test_post_tickets_id_item_changes_restore_rate_limited");
+  it("test_post_tickets_id_item_changes_restore_terms_pending", () => {
+    // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
+    // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-005");
+  });
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_post_tickets_id_item_changes_restore_mfa_pending");
+  it("test_post_tickets_id_item_changes_restore_session_unresolved_2", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
+  it("test_post_tickets_id_item_changes_restore_shape", () => {
+    // UBIQUITOUS: POST /api/v1/tickets/:id/item-changes/restore の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // 本物の試験：apps/api/test/features/F4/ticket-item-restore.test.ts の「K576-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-item-restore.test.ts", "utf8")).toContain("K576-API-001");
+  });
+});
