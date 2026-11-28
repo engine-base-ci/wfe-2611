@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["packages/db/migrations/20261125014100_knowledge_complete_guard.sql", "apps/api/src/features/F5/approve-complete/errors.ts"],
+   "tests": ["apps/api/test/features/F9/knowledge-complete-guard.test.ts"]}
+ ]
+}
