@@ -1,0 +1,5 @@
+# ci-gates.yaml — スキル ai-team-delivery の標準の検査（scripts/gates/）の設定（2026-11-11・K-169）。
+# 節が無い検査は赤（使うか決めていない）。使わない検査は `<名前>: {unused: "<理由>"}`。
+# 取り込みの台本 pm_merge.sh が order を呼ぶ
+order:
+  unused: "Kaname の取り込む順は scripts/ci/ticket_order_gate.py が CI の G56 で見る（スキルの order_gate との一本化は監査 #20 で決める人に聞く）"
