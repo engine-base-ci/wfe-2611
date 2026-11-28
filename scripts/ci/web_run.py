@@ -8,13 +8,20 @@ g59：中間の試験（apps/web/tests/skeleton）。範囲の回は選んだも
 gate <段>：専用の段の画面の試験（ci_scope.json の web_select.gates・K-238）。全部の回は設定の一覧、範囲の回は CI_WEB_GATES の選んだ試験だけ。
   選ばれていなければ何も流さない（0 で終わる）。g48・g59 は、CI_WEB_GATES に流す物があれば「両方の段が空＝壊れている」にしない
 
-分けて流す（K-1304・今だけの設定）：置き場の変数 WEB_SHARDS（無ければ 1）の数に G48 を分け、G59・専用の段も別の組にして同時に流す。
+分けて流す（K-1304・取りに行く形）：置き場の変数 WEB_SHARDS（無ければ 1）の数だけ台を立て、どの台も G48 と G59 の
+  「まだ流していない試験のファイル」を 1 本ずつ取りに行って流す（組を前もって決めない・過去の時間が無くても偏らない）。専用の段は 1 組ずつ。
   shards --github-output <道>：static の組で、WEB_SHARDS_VAR から web_shards（数）と web_parts（web の組の matrix の一覧）を出す。
-    1（か空）なら ["all"]＝今と同じ 1 組。2 以上なら ["g48-1"…"g48-N", "g59", "g<専用の段>"…]。数でない・範囲の外は赤
-  web の組は WEB_PART（matrix の 1 つ）と WEB_SHARDS を env で受け、自分の組の段だけを流す（ほかの段は 0 で終わる）。
-    g48-<i> は G48 の試験を --shard=<i>/<N> で流して blob の報告と終わりの番号を web-part/ に残す（記録と照らしは g48-report が 1 回）
-  g48-report：web-report の組で、分けた blob を merge-reports で 1 つの JSON（pw-reports/k.json）と JUnit（junit/web.xml）にまとめ、
-    今と同じ ci_results.py record と op_gate.py を 1 回流す。分けた結果が N つそろわない・どれかが赤なら記録せずに赤
+    1（か空）なら ["all"]＝今と同じ 1 組。2 以上なら ["pull-1"…"pull-N", "g<専用の段>"…]。数でない・範囲の外は赤
+  pull-<i> の組の G48 の段（G59 の段は何もしない）：並び（queue）を作る → 取り台から 1 本ずつ取る → そのファイルだけを blob で流す。
+    並び：G48（全部の回は e2e:k の引数・範囲の回は選んだ試験）と G59（tests/skeleton か選んだ試験）を playwright --list で
+      ファイルに開き、試験の数の多い順（同じならファイル名）に並べる。どの台も同じ版から同じ並びを作る（並びの印 hash で確かめる）
+    取り台：CI の置き場の git の印 refs/tf-claim/<回>-<試み>-<並びの印>/<番号> を「無いときだけ作る」push で取る
+      （サーバーが印の鍵を取って作るので、同じ番号を 2 つの台が取ることは無い・取れなかった台は次の番号へ）
+    流した結果：web-part/blob-<段>/<番号>-<組>.zip と web-part/items/<番号>-<組>.json（段・ファイル・終わりの番号・並びの印）
+  g48-report：web-report の組で、並びを作り直し、どの番号にも結果がちょうど 1 つ（落ちも二重も無い）・並びの印が同じかを見て、
+    G48 の blob を 1 つの JSON（pw-reports/k.json）と JUnit（junit/web.xml）に、G59 の blob を junit/web-skeleton.xml にまとめ、
+    まとめた試験の集合が並びの試験の集合と同じかを確かめ、G48 が全部緑なら今と同じ ci_results.py record と op_gate.py を 1 回流す。
+    最後に、この回の取り台の印を消す
 """
 from __future__ import annotations
 
@@ -23,6 +30,8 @@ import os
 import re
 import subprocess
 import sys
+
+import web_pull  # noqa: E402
 
 WEB = "apps/web/"
 MAX_SHARDS = 40            # 変数の誤り（桁の打ち間違い）で台を食いつぶさない上限
@@ -87,23 +96,15 @@ def shard_count(raw: str) -> int:
 
 
 def parts(n: int, gate_ids: list[str]) -> list[str]:
-    """web の組の matrix の一覧。1 なら今と同じ 1 組（all）。2 以上なら G48 を n 組・G59 を 1 組・専用の段を 1 つずつ"""
+    """web の組の matrix の一覧。1 なら今と同じ 1 組（all）。2 以上なら取りに行く台を n 台（G48 と G59 を流す）・専用の段を 1 つずつ"""
     if n == 1:
         return ["all"]
-    return [f"g48-{i}" for i in range(1, n + 1)] + ["g59"] + [f"g{g}" for g in sorted(gate_ids, key=int)]
+    return [f"pull-{i}" for i in range(1, n + 1)] + [f"g{g}" for g in sorted(gate_ids, key=int)]
 
 
 def part_runs(step: str, part: str) -> bool:
-    """段（g48・g59・g<専用の段>）をこの組（WEB_PART）で流すか。all は全部"""
-    return part == "all" or part == step or (step == "g48" and part.startswith("g48-"))
-
-
-def shard_args(part: str, n: int) -> list[str]:
-    """G48 の分けた 1 組の playwright の引数（blob の報告だけを出す・選んだ試験が少なくて空の組になっても赤にしない）"""
-    i = int(part.split("-", 1)[1])
-    if not 1 <= i <= n:
-        raise ValueError(f"組 {part} が分ける数 {n} の外")
-    return [f"--shard={i}/{n}", "--reporter=list,blob", "--pass-with-no-tests"]
+    """段（g48・g59・g<専用の段>）をこの組（WEB_PART）で流すか。all は全部・pull-<i> は G48 の段が G48 と G59 を取りに行く"""
+    return part == "all" or part == step or (step == "g48" and part.startswith("pull-"))
 
 
 def gate_ids() -> list[str]:
@@ -132,14 +133,6 @@ def env_for(part: str, base: dict) -> dict:
     return {**base, "PW_REPORT": "pw-reports/skeleton.json", "PLAYWRIGHT_HTML_OUTPUT_DIR": "playwright-report-skeleton"}
 
 
-def run_shard(part: str, n: int, cmds: list[list[str]], env: dict) -> int:
-    """G48 の分けた 1 組：試験だけを流し（記録と照らしは g48-report）、blob の報告を web-part/blob に残す（終わりの番号は main が印に書く）"""
-    run = cmds[0] + shard_args(part, n)
-    env = {**env_for("g48", env), "PLAYWRIGHT_BLOB_OUTPUT_DIR": os.path.abspath(os.path.join(PART_DIR, "blob"))}
-    print("$ " + " ".join(run), flush=True)
-    return subprocess.run(run, env=env).returncode
-
-
 NONE = -999   # 段の中の印：この回は流す物が無かった（選ばれなかった）
 
 
@@ -150,52 +143,67 @@ def mark(part: str, code: int) -> None:
         f.write(("none" if code == NONE else str(code)) + "\n")
 
 
-def report_commands(full: bool, specs: list[str], tasks: list[str]) -> list[list[str]]:
-    """g48-report の命令：分けた blob を 1 つにまとめる命令 → 今と同じ記録と照らし（g48 の 2 つ目から）。流す物が無ければ命令 0"""
-    base = commands("g48", full, specs, tasks)
-    if not base:
-        return []
-    merge = ["pnpm", "--filter", "@kaname/web", "exec", "playwright", "merge-reports", "--reporter=json,junit",
-             os.path.abspath(os.path.join(PART_DIR, "blob"))]
-    return [merge, *base[1:]]
+def pull_lists(full: bool) -> tuple[list[str], list[str]]:
+    """取りに行く並びの元：G48 と G59 の選んだ試験（全部の回は使わない）"""
+    return json.loads(os.environ.get("CI_WEB_SPECS") or "[]"), json.loads(os.environ.get("CI_WEB_OTHER") or "[]")
 
 
-def shard_results(n: int) -> tuple[list[str], dict[str, int]]:
-    """web-part/ にそろった blob の報告と、組ごとの終わりの番号"""
-    blob = os.path.join(PART_DIR, "blob")
-    zips = sorted(f for f in (os.listdir(blob) if os.path.isdir(blob) else []) if f.endswith(".zip"))
-    rcs: dict[str, int] = {}
-    for i in range(1, n + 1):
-        f = os.path.join(PART_DIR, f"g48-{i}.rc")
-        if os.path.exists(f):
-            with open(f, encoding="utf-8") as fh:
-                raw = fh.read().strip()
-            rcs[f"g48-{i}"] = int(raw) if re.fullmatch(r"-?[0-9]+", raw) else 1   # 読めない番号は赤の組として数える
-    return zips, rcs
+def run_pull(part: str, full: bool, gates: dict) -> int:
+    g48, g59 = pull_lists(full)
+    if not full and not g48 and not g59:
+        if any(gates.values()):
+            print(f"{part}：この回は G48・G59 に当たる画面の試験が無い（専用の段だけ流す）")
+            return NONE
+        print(f"★ {part}：web の組が動いているのに、流す画面の試験の一覧が両方の段で空（範囲の台本の出力 web_g48・web_g59 が渡っていない）")
+        return 1
+    items, h, _ = web_pull.make_queue(full, g48, g59, dict(os.environ))
+    return web_pull.pull(part, items, h, dict(os.environ))
 
 
-def report(n: int, full: bool, specs: list[str], tasks: list[str], empty_ok: bool) -> int:
-    cmds = report_commands(full, specs, tasks)
-    if not cmds:
-        if empty_ok:
-            print("g48-report：この回は G48 に当たる画面の試験が無い（ほかの段だけ流す）")
+def report(full: bool, tasks: list[str], gates: dict) -> int:
+    g48, g59 = pull_lists(full)
+    if not full and not g48 and not g59:
+        if any(gates.values()):
+            print("g48-report：この回は G48・G59 に当たる画面の試験が無い（ほかの段だけ流す）")
             return 0
         print("★ g48-report：web の組が動いているのに、流す画面の試験の一覧が両方の段で空（範囲の台本の出力 web_g48・web_g59 が渡っていない）")
         return 1
-    zips, rcs = shard_results(n)
-    if len(zips) != n or len(rcs) != n:
-        # 途中で落ちた組がある：今の 1 組が途中で落ちた回と同じく、まとめ（web.xml）も記録も作らない
-        print(f"★ FAIL 分けた G48 の結果が {n} 組のうち blob {len(zips)} つ・終わりの番号 {len(rcs)} つしか無い（落ちた組がある）")
+    env = dict(os.environ)
+    items, h, kinds = web_pull.make_queue(full, g48, g59, env)
+    try:
+        return report_items(full, g48, tasks, items, h, kinds, env)
+    finally:
+        print(f"取り台の印を消した：{web_pull.release(web_pull.namespace(h))} 本")
+
+
+def report_items(full: bool, g48: list[str], tasks: list[str], items: list[dict], h: str, kinds: dict, env: dict) -> int:
+    bad, res = web_pull.check_items(items, h)
+    for b in bad:
+        print(f"★ FAIL {b}")
+    if bad:
+        # 落ちた・二重の番号がある：今の 1 組が途中で落ちた回と同じく、まとめ（web.xml）も記録も作らない
         return 1
-    env = {**env_for("g48", dict(os.environ)), "PLAYWRIGHT_JSON_OUTPUT_NAME": os.path.abspath("apps/web/pw-reports/k.json")}
-    rc = run_all(cmds[:1], env)   # 赤の組があっても JUnit（junit/web.xml）はまとめる（ticket-flow が行ごとに照らす）
-    if rc != 0:
-        return rc
-    red = sorted(k for k, v in rcs.items() if v != 0)
-    if red:
-        print(f"★ FAIL 分けた G48 の組 {'・'.join(red)} の試験が赤（今までの 1 組と同じく、記録と照らしは流さない）")
-        return 1
-    return run_all(cmds[1:], env)
+    rc = 0
+    outs = {"g48": ("apps/web/pw-reports/k.json", env.get("PLAYWRIGHT_JUNIT_OUTPUT_NAME") or os.path.abspath("junit/web.xml")),
+            "g59": ("apps/web/pw-reports/skeleton.json", os.path.abspath("junit/web-skeleton.xml"))}
+    for kind, tests in kinds.items():
+        js, xml = outs[kind]
+        if web_pull.merge(kind, js, xml, env) != 0:
+            print(f"★ FAIL {kind} の blob をまとめられない")
+            return 1
+        for b in web_pull.same_tests(tests, js):
+            print(f"★ FAIL {kind}：{b}")
+            rc = 1
+    reds = {kind: sorted(r["file"] for r in res.values() if r["kind"] == kind and r["rc"] != 0) for kind in kinds}
+    for kind, files in reds.items():
+        if files:
+            print(f"★ FAIL {kind} の試験が赤のファイル {len(files)} 本（例 {files[:5]}）")
+            rc = 1
+    print("集合の照らし：" + "・".join(f"{k} ファイル {len({f for f, _ in v})}・試験 {len(v)}" for k, v in kinds.items()) + f"（並びの印 {h}）")
+    if "g48" in kinds and not reds["g48"]:
+        cmds = commands("g48", full, g48, tasks)[1:]   # 今と同じ記録と照らし
+        rc = max(rc, run_all(cmds, {**env_for("g48", env)}))
+    return rc
 
 
 def other_has_work(gates: dict) -> bool:
@@ -235,8 +243,7 @@ def main() -> int:
         if n < 2:
             print("★ g48-report：分ける数が 1（今の 1 組は web の組が記録と照らしまで流す）")
             return 1
-        return report(n, full, json.loads(os.environ.get("CI_WEB_SPECS") or "[]"),
-                      json.loads(os.environ.get("CI_WEB_TASKS") or "[]"), other_has_work(gates))
+        return report(full, json.loads(os.environ.get("CI_WEB_TASKS") or "[]"), gates)
     step = f"g{sys.argv[2] if len(sys.argv) > 2 else ''}" if part == "gate" else part
     if not part_runs(step, web_part):
         print(f"{step}：この組（{web_part}）では流さない（ほかの組が流す・K-1304）")
@@ -270,6 +277,8 @@ def run_step(part: str, web_part: str, n: int, full: bool, gates: dict) -> int:
                 return 1
             gates = {gid: sel}
         return run_all(gate_commands(gid, full, gates, cfg_tests), dict(os.environ))
+    if web_part.startswith("pull-"):
+        return run_pull(web_part, full, gates)
     specs = json.loads(os.environ.get("CI_WEB_SPECS") or "[]")
     tasks = json.loads(os.environ.get("CI_WEB_TASKS") or "[]")
     cmds = commands(part, full, specs, tasks)
@@ -280,8 +289,6 @@ def run_step(part: str, web_part: str, n: int, full: bool, gates: dict) -> int:
         # web の組が動いているのに両方の段の一覧が空＝範囲の台本の出力が渡っていない（壊れている）。黙って緑にしない
         print(f"★ {part}：web の組が動いているのに、流す画面の試験の一覧が両方の段で空（範囲の台本の出力 web_g48・web_g59 が渡っていない）")
         return 1
-    if web_part.startswith("g48-"):
-        return run_shard(web_part, n, cmds, dict(os.environ))
     return run_all(cmds, env_for(part, dict(os.environ)))
 
 

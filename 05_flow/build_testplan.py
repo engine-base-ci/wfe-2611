@@ -206,6 +206,8 @@ SPEC_OWN_SHARDS_STEP = ('      - name: "spec の重い段（G57・G65）の組�
 SPEC_SPLIT = {57, 65}   # SPEC_SHARDS が 2 以上の回は spec-parts の組で流す段
 SPEC_SPLIT_OWN = "fromJSON(steps.spec_shards.outputs.spec_shards || '1')"   # 出力が空（変数が読めず段が赤の回）は 1＝spec の組で流す
 SPEC_SPLIT_N = f"fromJSON({SO}.spec_shards || '1')"   # spec-parts が見る static の出力（空は 1＝spec-parts は飛ぶ）
+# 画面の組み立てと画面の試験の組の env（web-build と web で同じ・NEXT_PUBLIC_* は組み立てで埋まる・K-1304）
+WEB_BUILD_ENV = "      KANAME_DEV_PAGES: '1'\n      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'\n      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める\n      API_BASE: http://127.0.0.1:3011\n      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011\n      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml   # 絶対の道（Playwright は設定の置き場 apps/web からの道で読む・K-176）\n      # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す\n      QA_MAILBOX_PORT: '3191'\n      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）\n      OPERATOR_ADDRESS: 東京都千代田区試験 1-1\n      LEGAL_COURT: 東京地方裁判所\n      LEGAL_HOSTING_PROVIDER: 試験のホスティング\n      LEGAL_MAIL_PROVIDER: 試験のメール\n      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場\n      LEGAL_STORAGE_PROVIDER: 試験の置き場\n"
 WEB_MATRIX = ("    strategy:\n      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）\n"
               f"      matrix:\n        part: ${{{{ fromJSON({SO}.web_parts || '[\"all\"]') }}}}\n")
 # GitHub の台では、ブラウザの取り込みを回をまたいで使い回す（自分の台は像に残るので上げ下ろししない・K-172）。部品の apt は次の段がそろえる
@@ -436,37 +438,42 @@ jobs:
 {PYS}      - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
+  web-build:
+    runs-on: {RUNS_ON}
+    # 画面の組み立て（next build）は最初にこの組で 1 回だけ（K-1304）。web の組（何台でも）はこの成果物を取って立ち上げるだけで、組み立て直さない。
+    #   static を待たずに並べて走る。組み立てが赤なら web の組は始まらない（記録は junit の組がまとめる）。env は web の組と同じ（NEXT_PUBLIC_* は組み立てで埋まる）
+    if: ${{{{ !cancelled() && inputs.web != 'defer' }}}}
+    env:
+{WEB_BUILD_ENV}    steps:
+{NODE}      - run: echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # web の組と同じ値（サーバ側の (dev) が読む）
+      - run: pnpm --filter @kaname/web build:test && rm -rf apps/web/.next-prod/cache   # 組み立ての cache は next start に要らない（上げ下ろしを軽く）
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: apps/web/.next-prod/
+          include-hidden-files: true   # .next-prod は . で始まる（v4 の既定では上がらない）
+          if-no-files-found: error
+          retention-days: 1
   web:
     name: ${{{{ matrix.part == 'all' && 'web' || format('web ({{0}})', matrix.part) }}}}
     runs-on: {RUNS_ON}
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     # 組は static の web_parts（K-1304）：WEB_SHARDS が 1 か無ければ all の 1 組（今と同じ）。2 以上なら G48 を分けた組・G59・専用の段の組が同時に走り、
     #   組ごとに自分の DB・API・画面を立てる（準備は同じ）。どの段を流すかは web_run.py が WEB_PART で決める（段の名前・if は変えない）
-    needs: [static]
+    needs: [static, web-build]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
-    #   入力が空の回（push・入力を渡さない回）は今までどおり流れる
-    if: ${{{{ !cancelled() && {SO}.web == 'true' && inputs.web != 'defer' }}}}
+    #   入力が空の回（push・入力を渡さない回）は今までどおり流れる。組み立て（web-build）が緑の回だけ
+    if: ${{{{ !cancelled() && {SO}.web == 'true' && inputs.web != 'defer' && needs.web-build.result == 'success' }}}}
+    # 取りに行く台（pull-<i>）は、CI の置き場の取り台の印（refs/tf-claim/…）を作る（K-1304・scripts/ci/web_pull.py）
+    permissions: {{ contents: write }}
 {WEB_MATRIX}    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
     #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
     # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）
     env:
       WEB_PART: ${{{{ matrix.part }}}}
       WEB_SHARDS: ${{{{ {SO}.web_shards || '1' }}}}
-      KANAME_DEV_PAGES: '1'
-      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
-      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
-      API_BASE: http://127.0.0.1:3011
-      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
-      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/web.xml   # 絶対の道（Playwright は設定の置き場 apps/web からの道で読む・K-176）
-      # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す
-      QA_MAILBOX_PORT: '3191'
-      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
-      OPERATOR_ADDRESS: 東京都千代田区試験 1-1
-      LEGAL_COURT: 東京地方裁判所
-      LEGAL_HOSTING_PROVIDER: 試験のホスティング
-      LEGAL_MAIL_PROVIDER: 試験のメール
-      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
-      LEGAL_STORAGE_PROVIDER: 試験の置き場
+{WEB_BUILD_ENV}      # 押す・入れるの待ちの上限（apps/web/playwright.config.ts の actionTimeout）。expect と同じ 15 秒：押せない部品で 60 秒待たない（K-1304）
+      PW_ACTION_TIMEOUT: '15000'
     steps:
 {NODE}{DB_START}{PW_CACHE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
 {TOOLS_STEP}      - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
@@ -486,7 +493,8 @@ jobs:
             pnpm exec tsx apps/api/src/dev.ts > $RUNNER_TEMP/api.log 2>&1 & echo $! > $RUNNER_TEMP/api.pid)
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3011/health && exit 0; sleep 2; done
           cat $RUNNER_TEMP/api.log; exit 1
-      - run: pnpm --filter @kaname/web build:test
+      - uses: actions/download-artifact@v4   # 組み立ては web-build の組で 1 回だけ（K-1304）
+        with: {{ name: web-build, path: apps/web/.next-prod }}
       - name: 画面を立ち上げる
         run: |
           (pnpm --filter @kaname/web start:test > $RUNNER_TEMP/web.log 2>&1 & echo $! > $RUNNER_TEMP/web.pid)
@@ -514,13 +522,14 @@ jobs:
     #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
     needs: [static, web]
     if: ${{{{ !cancelled() && needs.web.result != 'skipped' && fromJSON({SO}.web_shards || '1') > 1 }}}}
+    permissions: {{ contents: write }}   # 取り台の印を消す（K-1304）
     env:
       PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/web.xml
       WEB_SHARDS: ${{{{ {SO}.web_shards }}}}
     steps:
 {NODE}      - uses: actions/download-artifact@v4
         with: {{ pattern: web-part-*, path: ., merge-multiple: true }}
-      - name: "分けて流した G48 を合わせ、記録して照らす（N 組の blob と終わりの番号がそろう・どれかが赤なら記録しない・K-1304）"
+      - name: "取りに行って流した G48・G59 を合わせ、記録して照らす（並びのどの番号にも結果がちょうど 1 つ・試験の集合が並びと同じ・G48 が赤なら記録しない・K-1304）"
         if: ${{{{ !cancelled() }}}}
         env:
           CI_FULL: ${{{{ {SO}.full }}}}
