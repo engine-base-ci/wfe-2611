@@ -47,11 +47,9 @@ export function TicketSettingsPage({ tab, id }: { tab: SettingsTabKey; id?: stri
       </UnsavedProvider>
     );
   return (
-    <>
-      <TicketShell screen="masters" crumbs={CRUMBS}>
-        {body}
-      </TicketShell>
-    </>
+    <TicketShell screen="masters" crumbs={CRUMBS}>
+      {body}
+    </TicketShell>
   );
 }
 

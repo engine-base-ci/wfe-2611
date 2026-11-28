@@ -155,11 +155,9 @@ export function KnowledgePage({ pageId }: { pageId?: string }) {
       : crumbsOf(pageId ? page.data : undefined).map((label) => ({ label }))),
   ];
   return (
-    <>
-      <TicketShell screen="knowledge" crumbs={crumbs}>
-        {allowed === false ? <Forbidden /> : <KnowledgeBody pageId={pageId} ready={allowed === true} />}
-      </TicketShell>
-    </>
+    <TicketShell screen="knowledge" crumbs={crumbs}>
+      {allowed === false ? <Forbidden /> : <KnowledgeBody pageId={pageId} ready={allowed === true} />}
+    </TicketShell>
   );
 }
 

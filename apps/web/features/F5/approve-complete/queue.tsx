@@ -190,8 +190,8 @@ function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
     />
   );
   const shown = rows.filter((r) => !done.has(r.id));
+  // 小さな知らせ（渡された行を受けた・もう決まっていた・K-412）の置き場は外枠（TicketShell）の 1 か所（K-466）。空の画面に替わっても消えない
   return (
-    // 小さな知らせ（渡された行を受けた・もう決まっていた・K-412）の置き場は外枠 TicketShell の 1 か所（K-466）。最後の 1 件で空の画面に替わっても消えない
     <>
       {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {dialog}

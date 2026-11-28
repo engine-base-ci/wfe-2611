@@ -202,24 +202,17 @@ export function MembersPage() {
   const { roles } = useMyRoles();
   if (roles === undefined)
     return (
-      <>
-        <TicketShell
-          screen="members"
-          crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}
-        >
-          <Loading />
-        </TicketShell>
-      </>
+      <TicketShell screen="members" crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}>
+        <Loading />
+      </TicketShell>
     );
   if (!roles.some((r) => CAN_SEE.includes(r)))
     return (
-      <>
-        <TicketShell screen="members" crumbs={[{ label: "メンバー" }]}>
-          <section aria-label="メンバー">
-            <NoAccess acts={[() => router.back(), "/tickets"]} />
-          </section>
-        </TicketShell>
-      </>
+      <TicketShell screen="members" crumbs={[{ label: "メンバー" }]}>
+        <section aria-label="メンバー">
+          <NoAccess acts={[() => router.back(), "/tickets"]} />
+        </section>
+      </TicketShell>
     );
   return <MembersScreen />;
 }
@@ -574,180 +567,176 @@ function MembersScreen() {
           : null;
   const tabs = <Tabs guest={guestTab} members={view?.count ?? 0} guests={gview?.count ?? 0} />;
   return (
-    <>
-      <TicketShell screen="members" crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}>
-        {members.isPending || who.isPending ? (
-          <Loading />
-        ) : (
-          <>
-            <WsHead name={company} initial={company.slice(0, 1)} />
-            <div className="k-me-wrap">
-              <WsSub members={view?.count ?? 0} />
-              {guestTab ? (
-                <GuestsBody
-                  groups={gview?.groups ?? []}
-                  guest
-                  title={GUEST_TITLE}
-                  sub={GUEST_SUB}
-                  tabs={tabs}
-                  inviteDisabled={!view}
-                  onInvite={() => openDialog()}
-                  onCreateGroup={() => openCreate(false)}
-                  onInviteGroup={(g) => openDialog(g)}
-                  onRenameGroup={(g) => {
-                    const a = gview?.raw.find((x) => x.id === g.id);
-                    if (a) editing.startRename(a);
-                  }}
-                  onDeleteGroup={(g) => {
-                    const a = gview?.raw.find((x) => x.id === g.id);
-                    if (a) editing.startDelete(a);
-                  }}
-                  onGuestAct={(act, r) => editing.startGuest(act, r)}
-                  {...(guests.isPending
-                    ? { content: <Loading /> }
-                    : guestState
-                      ? { content: <GuestTabContent state={guestState} onRetry={() => void guests.refetch()} /> }
-                      : {})}
-                />
-              ) : (
-                <MembersBody
-                  groups={groups}
-                  tabs={tabs}
-                  open={opened}
-                  onToggle={toggle}
-                  band={band ? <Band tone="wait" title={band.title} {...(band.sub ? { sub: band.sub } : {})} /> : null}
-                  emptyText={EMPTY_GROUP}
-                  disabledButtons={PENDING}
-                  inviteDisabled={!view}
-                  onInvite={() => openDialog()}
-                  onAddGroup={groupAdd.open /* K-805 */}
-                  addGroupDisabled={!view /* K-805：並びが読めない間は押せない */}
-                  onEditGroup={groupEdit.openEdit /* K-806：鍵は groupKey */}
-                  onReorder={groupEdit.openOrder /* K-806 */}
-                  rowActs={rowActs}
-                  {...(roleNote || rows.notice || groupEdit.pageNotice
-                    ? {
-                        notice: (
-                          <>
-                            {
-                              groupEdit.pageNotice ? (
-                                <Callout tone="danger">{groupEdit.pageNotice}</Callout>
-                              ) : null /* K-806 */
-                            }
-                            {rows.notice ? <Callout tone={rows.notice.tone}>{rows.notice.text}</Callout> : null}
-                            {roleNote ? (
-                              <Callout tone="danger" {...(roleNote.title ? { title: roleNote.title } : {})}>
-                                {roleNote.text}
-                              </Callout>
-                            ) : null}
-                          </>
-                        ),
-                      }
+    <TicketShell screen="members" crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}>
+      {members.isPending || who.isPending ? (
+        <Loading />
+      ) : (
+        <>
+          <WsHead name={company} initial={company.slice(0, 1)} />
+          <div className="k-me-wrap">
+            <WsSub members={view?.count ?? 0} />
+            {guestTab ? (
+              <GuestsBody
+                groups={gview?.groups ?? []}
+                guest
+                title={GUEST_TITLE}
+                sub={GUEST_SUB}
+                tabs={tabs}
+                inviteDisabled={!view}
+                onInvite={() => openDialog()}
+                onCreateGroup={() => openCreate(false)}
+                onInviteGroup={(g) => openDialog(g)}
+                onRenameGroup={(g) => {
+                  const a = gview?.raw.find((x) => x.id === g.id);
+                  if (a) editing.startRename(a);
+                }}
+                onDeleteGroup={(g) => {
+                  const a = gview?.raw.find((x) => x.id === g.id);
+                  if (a) editing.startDelete(a);
+                }}
+                onGuestAct={(act, r) => editing.startGuest(act, r)}
+                {...(guests.isPending
+                  ? { content: <Loading /> }
+                  : guestState
+                    ? { content: <GuestTabContent state={guestState} onRetry={() => void guests.refetch()} /> }
                     : {})}
-                  onInviteGroup={inviteGroup}
-                  onResend={(id) => void rows.resend(id, emailOf(id))}
-                  onRevoke={(id) => rows.askRevoke(id, emailOf(id))}
-                  resentIds={rows.resentIds}
-                  busyId={rows.busyId}
-                  {...(members.isError
-                    ? { failure: { text: LOAD_FAILED, onRetry: () => void members.refetch() } }
-                    : {})}
-                />
-              )}
-            </div>
-          </>
-        )}
-        <InviteDialog
-          open={open && stepUp === null && !create.open}
-          values={form}
-          errors={{
-            ...(emailsError ? { emails: emailsError } : {}),
-            ...(noteErr ? { message: noteErr } : {}),
-            ...(companyErr ? { company: companyErr } : {}),
-          }}
-          {...(done ? { done } : {})}
-          companies={gview?.raw.map((g) => ({ id: g.id, name: g.name })) ?? []}
-          onCompany={pickCompany}
-          {...(notice ? { notice } : {})}
-          {...(link ? { link } : {})}
-          more={more}
-          groups={view?.scopes ?? []}
-          busy={busy}
-          linkBusy={linkBusy}
-          onTyping={typing}
-          onAdd={add}
-          onRemove={remove}
-          onGroup={(group) => pick({ group })}
-          onRole={pickRole}
-          onMessage={(message) => {
-            setNoteErr(null);
-            edit((f) => ({ ...f, message }));
-          }}
-          onMore={setMore}
-          onLink={makeLink}
-          onCopy={copy}
-          onSend={send}
-          onCancel={close}
-        />
-        <GuestGroupDialog
-          open={create.open}
-          fromInvite={create.fromInvite}
-          name={create.name}
-          inbox={create.inbox}
-          inboxes={view?.scopes ?? []}
-          busy={create.busy}
-          {...(create.error ? { error: create.error } : {})}
-          {...(create.inboxError ? { inboxError: create.inboxError } : {})}
-          onName={(name) => editCreate({ name })}
-          onInbox={(inbox) => editCreate({ inbox })}
-          onCreate={() => void submitCreate()}
-          onCancel={cancelCreate}
-        />
-        <GroupDialog
-          {...addDialog}
-          open={addDialog.open && !groupEdit.layers.open /* K-806：層の小窓の間は隠す（書きかけは残る） */}
-          editLayersOption={addDialog.editLayersOption === "hide" ? "hide" : "show" /* K-806 */}
-          onEditLayers={groupEdit.openLayers /* K-806 */}
-        />
-        <GroupDialog {...groupEdit.edit} /* K-806 */ />
-        <ReorderDialog {...groupEdit.order} /* K-806 */ />
-        <LayersDialog {...groupEdit.layers} /* K-806 */ />
-        <Confirm
-          open={rows.ask !== null}
-          title="招待を取り消しますか"
-          description={`${rows.ask?.email ?? ""} に送った招待は使えなくなります。招待のリンクも使えなくなります`}
-          confirmLabel="招待を取り消す"
-          busy={rows.revoking}
-          onOpenChange={(o) => {
-            if (!o) rows.cancelRevoke();
-          }}
-          onConfirm={() => void rows.revoke()}
-        />
-        <StepUp
-          open={role.stepUp.open}
-          reason={role.stepUp.reason}
-          withCode={role.stepUp.withCode}
-          withPasskey={role.stepUp.withPasskey}
-          onDone={role.stepUp.onDone}
-          onCancel={role.stepUp.onCancel}
-        />
-        <StepUp
-          open={stepUp !== null}
-          reason={STEP_UP_REASON}
-          withCode={stepUp?.withCode ?? false}
-          withPasskey={stepUp?.withPasskey ?? false}
-          onDone={() => {
-            setStepUp(null);
-            const req = pending.current;
-            if (req) void run(req, true);
-          }}
-          onCancel={() => {
-            setStepUp(null);
-            pending.current = null;
-          }}
-        />
-        {editing.dialogs}
-      </TicketShell>
-    </>
+              />
+            ) : (
+              <MembersBody
+                groups={groups}
+                tabs={tabs}
+                open={opened}
+                onToggle={toggle}
+                band={band ? <Band tone="wait" title={band.title} {...(band.sub ? { sub: band.sub } : {})} /> : null}
+                emptyText={EMPTY_GROUP}
+                disabledButtons={PENDING}
+                inviteDisabled={!view}
+                onInvite={() => openDialog()}
+                onAddGroup={groupAdd.open /* K-805 */}
+                addGroupDisabled={!view /* K-805：並びが読めない間は押せない */}
+                onEditGroup={groupEdit.openEdit /* K-806：鍵は groupKey */}
+                onReorder={groupEdit.openOrder /* K-806 */}
+                rowActs={rowActs}
+                {...(roleNote || rows.notice || groupEdit.pageNotice
+                  ? {
+                      notice: (
+                        <>
+                          {
+                            groupEdit.pageNotice ? (
+                              <Callout tone="danger">{groupEdit.pageNotice}</Callout>
+                            ) : null /* K-806 */
+                          }
+                          {rows.notice ? <Callout tone={rows.notice.tone}>{rows.notice.text}</Callout> : null}
+                          {roleNote ? (
+                            <Callout tone="danger" {...(roleNote.title ? { title: roleNote.title } : {})}>
+                              {roleNote.text}
+                            </Callout>
+                          ) : null}
+                        </>
+                      ),
+                    }
+                  : {})}
+                onInviteGroup={inviteGroup}
+                onResend={(id) => void rows.resend(id, emailOf(id))}
+                onRevoke={(id) => rows.askRevoke(id, emailOf(id))}
+                resentIds={rows.resentIds}
+                busyId={rows.busyId}
+                {...(members.isError ? { failure: { text: LOAD_FAILED, onRetry: () => void members.refetch() } } : {})}
+              />
+            )}
+          </div>
+        </>
+      )}
+      <InviteDialog
+        open={open && stepUp === null && !create.open}
+        values={form}
+        errors={{
+          ...(emailsError ? { emails: emailsError } : {}),
+          ...(noteErr ? { message: noteErr } : {}),
+          ...(companyErr ? { company: companyErr } : {}),
+        }}
+        {...(done ? { done } : {})}
+        companies={gview?.raw.map((g) => ({ id: g.id, name: g.name })) ?? []}
+        onCompany={pickCompany}
+        {...(notice ? { notice } : {})}
+        {...(link ? { link } : {})}
+        more={more}
+        groups={view?.scopes ?? []}
+        busy={busy}
+        linkBusy={linkBusy}
+        onTyping={typing}
+        onAdd={add}
+        onRemove={remove}
+        onGroup={(group) => pick({ group })}
+        onRole={pickRole}
+        onMessage={(message) => {
+          setNoteErr(null);
+          edit((f) => ({ ...f, message }));
+        }}
+        onMore={setMore}
+        onLink={makeLink}
+        onCopy={copy}
+        onSend={send}
+        onCancel={close}
+      />
+      <GuestGroupDialog
+        open={create.open}
+        fromInvite={create.fromInvite}
+        name={create.name}
+        inbox={create.inbox}
+        inboxes={view?.scopes ?? []}
+        busy={create.busy}
+        {...(create.error ? { error: create.error } : {})}
+        {...(create.inboxError ? { inboxError: create.inboxError } : {})}
+        onName={(name) => editCreate({ name })}
+        onInbox={(inbox) => editCreate({ inbox })}
+        onCreate={() => void submitCreate()}
+        onCancel={cancelCreate}
+      />
+      <GroupDialog
+        {...addDialog}
+        open={addDialog.open && !groupEdit.layers.open /* K-806：層の小窓の間は隠す（書きかけは残る） */}
+        editLayersOption={addDialog.editLayersOption === "hide" ? "hide" : "show" /* K-806 */}
+        onEditLayers={groupEdit.openLayers /* K-806 */}
+      />
+      <GroupDialog {...groupEdit.edit} /* K-806 */ />
+      <ReorderDialog {...groupEdit.order} /* K-806 */ />
+      <LayersDialog {...groupEdit.layers} /* K-806 */ />
+      <Confirm
+        open={rows.ask !== null}
+        title="招待を取り消しますか"
+        description={`${rows.ask?.email ?? ""} に送った招待は使えなくなります。招待のリンクも使えなくなります`}
+        confirmLabel="招待を取り消す"
+        busy={rows.revoking}
+        onOpenChange={(o) => {
+          if (!o) rows.cancelRevoke();
+        }}
+        onConfirm={() => void rows.revoke()}
+      />
+      <StepUp
+        open={role.stepUp.open}
+        reason={role.stepUp.reason}
+        withCode={role.stepUp.withCode}
+        withPasskey={role.stepUp.withPasskey}
+        onDone={role.stepUp.onDone}
+        onCancel={role.stepUp.onCancel}
+      />
+      <StepUp
+        open={stepUp !== null}
+        reason={STEP_UP_REASON}
+        withCode={stepUp?.withCode ?? false}
+        withPasskey={stepUp?.withPasskey ?? false}
+        onDone={() => {
+          setStepUp(null);
+          const req = pending.current;
+          if (req) void run(req, true);
+        }}
+        onCancel={() => {
+          setStepUp(null);
+          pending.current = null;
+        }}
+      />
+      {editing.dialogs}
+    </TicketShell>
   );
 }

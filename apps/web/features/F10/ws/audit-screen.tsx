@@ -40,11 +40,9 @@ const CRUMBS_ONE: Crumb[] = [{ label: "記録" }];
 
 function Frame({ crumbs, children }: { crumbs: Crumb[]; children: ReactNode }) {
   return (
-    <>
-      <TicketShell screen={SCREEN} crumbs={crumbs}>
-        {children}
-      </TicketShell>
-    </>
+    <TicketShell screen={SCREEN} crumbs={crumbs}>
+      {children}
+    </TicketShell>
   );
 }
 

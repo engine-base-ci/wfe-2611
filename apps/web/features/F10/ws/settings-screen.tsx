@@ -56,11 +56,9 @@ const failText = (r: CallErr): string => (r.status === 503 ? DOWN : (r.message ?
 
 function Frame({ children }: { children: ReactNode }) {
   return (
-    <>
-      <TicketShell screen="company-settings" crumbs={CRUMBS}>
-        {children}
-      </TicketShell>
-    </>
+    <TicketShell screen="company-settings" crumbs={CRUMBS}>
+      {children}
+    </TicketShell>
   );
 }
 

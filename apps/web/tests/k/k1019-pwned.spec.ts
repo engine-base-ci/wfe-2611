@@ -150,7 +150,9 @@ test.describe("K-1019 帯と小窓の見た目", () => {
         async (page) => {
           await open(page, baseURL, 4, w);
           await openDialog(page);
-          await expect(dialog(page).getByText("山田 健二", { exact: true }).first()).toBeVisible();
+          await expect(
+            dialog(page).getByText("山田 健二", { exact: true }).filter({ visible: true }).first(),
+          ).toBeVisible();
         },
         { base: "/dev/mock/f12-ops", pairs: DIALOG_PAIRS },
       );
@@ -186,7 +188,7 @@ test.describe("K-1019 帯と小窓の動き", () => {
       "10/30 22:14",
       "（登録はまだ確定していません）",
     ])
-      await expect(dialog(page).getByText(t, { exact: true }).first()).toBeVisible();
+      await expect(dialog(page).getByText(t, { exact: true }).filter({ visible: true }).first()).toBeVisible();
     expect(m.pwned.lists).toBe(1);
   });
 
@@ -214,7 +216,10 @@ test.describe("K-1019 帯と小窓の動き", () => {
   }) => {
     const m = await open(page, baseURL);
     await openDialog(page);
-    const row = dialog(page).getByText("（登録はまだ確定していません）", { exact: true }).first();
+    const row = dialog(page)
+      .getByText("（登録はまだ確定していません）", { exact: true })
+      .filter({ visible: true })
+      .first();
     await expect(row).toBeVisible();
     await dialog(page).getByRole("button", { name: "（登録はまだ確定していません） を確かめた", exact: true }).click();
     await expect(dialog(page).getByText("（登録はまだ確定していません）", { exact: true })).toHaveCount(0);
@@ -262,7 +267,7 @@ test.describe("K-1019 帯と小窓の動き", () => {
     await expect(again).toBeVisible();
     m.pwned.list = ok;
     await again.click();
-    await expect(dialog(page).getByText("山田 健二", { exact: true }).first()).toBeVisible();
+    await expect(dialog(page).getByText("山田 健二", { exact: true }).filter({ visible: true }).first()).toBeVisible();
     expect(m.pwned.lists).toBe(2);
   });
 
@@ -273,7 +278,7 @@ test.describe("K-1019 帯と小窓の動き", () => {
     const m = await open(page, baseURL, 1);
     m.pwned.list = () => ({ status: 200, body: { data: [{ ...PWNED_A[0]!, member: null }] } });
     await openDialog(page);
-    await expect(dialog(page).getByText("—", { exact: true }).first()).toBeVisible();
+    await expect(dialog(page).getByText("—", { exact: true }).filter({ visible: true }).first()).toBeVisible();
     await expect(dialog(page).getByRole("button", { name: "山田工務店 を確かめた", exact: true })).toBeVisible();
   });
 
@@ -305,7 +310,7 @@ test.describe("K-1019 帯と小窓の動き", () => {
       },
     });
     await openDialog(page);
-    await expect(dialog(page).getByText(evil, { exact: true }).first()).toBeVisible();
+    await expect(dialog(page).getByText(evil, { exact: true }).filter({ visible: true }).first()).toBeVisible();
     expect(await page.evaluate(() => (window as unknown as { __k1019?: number }).__k1019)).toBeUndefined();
   });
 });

@@ -62,11 +62,9 @@ export function MemberDetailPage({ id }: { id: string }) {
   else body = <AdminBody id={id} member={member} />;
 
   return (
-    <>
-      <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
-        {body}
-      </TicketShell>
-    </>
+    <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
+      {body}
+    </TicketShell>
   );
 }
 

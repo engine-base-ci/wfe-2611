@@ -15,13 +15,11 @@ const ME_LABEL: Record<MeSubKey, string> = {
 
 export function MeShell({ current, children }: { current: MeSubKey; children: ReactNode }) {
   return (
-    <>
-      <TicketShell screen="account" crumbs={[{ label: "自分の設定", disabled: true }, { label: ME_LABEL[current] }]}>
-        <div className="k-me-wrap">
-          <MeSub current={current} />
-          {children}
-        </div>
-      </TicketShell>
-    </>
+    <TicketShell screen="account" crumbs={[{ label: "自分の設定", disabled: true }, { label: ME_LABEL[current] }]}>
+      <div className="k-me-wrap">
+        <MeSub current={current} />
+        {children}
+      </div>
+    </TicketShell>
   );
 }
