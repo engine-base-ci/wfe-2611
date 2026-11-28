@@ -1,0 +1,203 @@
+{
+ "screen": "account-close",
+ "mock": "06_mockup/v1/v1-account-close.html",
+ "state_labels": {
+  "d": "依存の確認",
+  "p": "休止",
+  "n": "退会",
+  "x": "退会した",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:持ち出す（先に）→export",
+   "kind": "link",
+   "label": "持ち出す（先に）",
+   "target": "export",
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:会社モデル・台帳・証跡を書き出した9/1 の書き出しのあと 31 件のレコードが増えています。もう一度書き出してください",
+   "kind": "checkbox",
+   "label": "会社モデル・台帳・証跡を書き出した9/1 の書き出しのあと 31 件のレコードが増えています。もう一度書き出してください",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:承認待ち 3 件を片づけた破棄されます（外に出ません）。京蟻の請求書は送ってから退会するなら先に承認",
+   "kind": "checkbox",
+   "label": "承認待ち 3 件を片づけた破棄されます（外に出ません）。京蟻の請求書は送ってから退会するなら先に承認",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:動いている自動実行 3 本を止めた退会と同時に止まります。発注ナビの取り込みが途中なら台帳に半端が残ります",
+   "kind": "checkbox",
+   "label": "動いている自動実行 3 本を止めた退会と同時に止まります。発注ナビの取り込みが途中なら台帳に半端が残ります",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:メンバー 3 人に伝えた退会と同時に全員が無効になります。佐藤さんの託されたAI社員も止まります",
+   "kind": "checkbox",
+   "label": "メンバー 3 人に伝えた退会と同時に全員が無効になります。佐藤さんの託されたAI社員も止まります",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:資格情報を他で使う予定が無い即消去・復元不能。freee の連携は freee 側でも解除してください",
+   "kind": "checkbox",
+   "label": "資格情報を他で使う予定が無い即消去・復元不能。freee の連携は freee 側でも解除してください",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:休止にする",
+   "kind": "button",
+   "label": "休止にする",
+   "target": null,
+   "states": [
+    "依存の確認",
+    "退会",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:もう一度書き出す→export",
+   "kind": "link",
+   "label": "もう一度書き出す",
+   "target": "export",
+   "states": [
+    "依存の確認",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:休止する",
+   "kind": "button",
+   "label": "休止する",
+   "target": null,
+   "states": [
+    "休止"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "休止",
+    "退会"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:確認のため会社名を入力",
+   "kind": "input",
+   "label": "確認のため会社名を入力",
+   "target": null,
+   "states": [
+    "退会"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:退会する",
+   "kind": "button",
+   "label": "退会する",
+   "target": null,
+   "states": [
+    "退会",
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
