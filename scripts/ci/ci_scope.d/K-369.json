@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["07_functional/段4-F3/shots-pc/measure.json", "07_qa/test-specs/errors.json", "scripts/ci/design_gate.py", "scripts/ci/gen_built_routes.py"], "tests": ["apps/web/tests/k/k369-pc-row-mock.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）"
+ }
+}
