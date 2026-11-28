@@ -351,8 +351,12 @@ export async function appendAndFinish(page: Page, text: string): Promise<number>
 }
 
 // ---------------------------------------------------------------- 会社の項目を詳細で直す（K-569・K-564）
+/** 値を直すボタン。詳細の項目は右のパネル（K-1153 の ItemsPanel・K-571 の DetailPanel）に移った。作る面の表（group「項目」）にも同じ名前で在る */
 export const editBtn = (page: Page, name: string): Locator =>
-  itemsGrid(page).getByRole("button", { name: `${name}を直す`, exact: true });
+  page
+    .getByRole("complementary", { name: "チケットのパネル", exact: true })
+    .or(itemsGrid(page))
+    .getByRole("button", { name: `${name}を直す`, exact: true });
 /** 値の字を押して入力に替え、字を入れて Enter で決める（文字・数・日付）。口 updateTicket の答えの番号を返す */
 export async function editItem(page: Page, name: string, text: string): Promise<number> {
   await editBtn(page, name).click();
@@ -512,6 +516,9 @@ export const linkDialog = (page: Page): Locator => page.getByRole("dialog", { na
 export async function showLinks(page: Page): Promise<void> {
   await expect(linkCard(page)).toBeVisible();
   await linkCard(page).scrollIntoViewIfNeeded();
+  // カードは閉じた形（件数と「開く」）が既定で、「開く」を押したときに一覧を読む（K-452 の決め）
+  const open = linkCard(page).getByRole("button", { name: "開く", exact: true });
+  if (await open.isVisible()) await open.click();
   await expect(linkCard(page).getByRole("heading", { level: 3, name: /^つながり \d+$/ })).toBeVisible();
 }
 export const linkRow = (page: Page, text: string | RegExp): Locator =>
