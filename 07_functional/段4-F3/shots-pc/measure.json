@@ -1,0 +1,839 @@
+[
+ {
+  "id": "pc-claude-missing",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-installing",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-install-error",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-broken",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-login",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code-error",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-done",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-other-device",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-asleep",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-pick",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-saved",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-fix",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-checking",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-ok",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-still",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-timeout",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-asleep",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-menu",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-stepup",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-removed",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-error",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-phone",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-os-warning",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-mac",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-win",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-bridge-outdated",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstalling",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstall-error",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-outdated-phone",
+  "w": 375,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-missing",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-installing",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-install-error",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-broken",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-login",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code-error",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-done",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-other-device",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-asleep",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-pick",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-saved",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-fix",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-checking",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-ok",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-still",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-timeout",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-asleep",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-menu",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-stepup",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-removed",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-error",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-phone",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-os-warning",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-mac",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-win",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-bridge-outdated",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstalling",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstall-error",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-outdated-phone",
+  "w": 768,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-missing",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-installing",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-install-error",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-broken",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-login",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-code-error",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-done",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-claude-other-device",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-asleep",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-pick",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-saved",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-fix",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-checking",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-ok",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-still",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-timeout",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-browser-asleep",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-menu",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-stepup",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-removed",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-remove-error",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-phone",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-os-warning",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-mac",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-os-warning-win",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": true,
+  "buttonsSeen": true,
+  "h1": "PC と使った量|PC をつなぐ"
+ },
+ {
+  "id": "pc-bridge-outdated",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstalling",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-reinstall-error",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ },
+ {
+  "id": "pc-bridge-outdated-phone",
+  "w": 1440,
+  "over": 0,
+  "tabsOver": 0,
+  "dialog": false,
+  "buttonsSeen": null,
+  "h1": "PC と使った量"
+ }
+]
