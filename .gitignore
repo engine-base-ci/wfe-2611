@@ -1,0 +1,44 @@
+node_modules/
+dist/
+coverage/
+.vitest-reports/
+.turbo/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+06_mockup/v1/_st/
+06_mockup/v1/_st375/
+06_mockup/v1/_m*/
+06_mockup/v1/_ly*/
+apps/web/.next/
+apps/web/next-env.d.ts
+**/playwright-report/
+**/playwright-report-skeleton/
+**/test-results/
+.dev-logs/
+.dev-storage/
+
+# Vercel の組み立て結果（apps/api/build-vercel.mjs が作る・D-097）
+.vercel/
+
+# Bridge の組み立て結果（dmg / zip / app）。配布は GitHub Releases から
+apps/bridge/release/
+# Python と TypeScript のキャッシュ
+__pycache__/
+*.pyc
+*.tsbuildinfo
+.schemathesis/
+
+# ai-team-delivery の状態と出力（版に入れない・D-129.20）
+.ai-team/
+.ai-team-out/
+.ticket-flow/
+.worktrees/
+.ticket-flow-out/
+junit/
+# 見た目の突き合わせの出力（K-216・ログインして撮った画面が入るので版に入れない）
+.qa/visual-fidelity/out/
+07_functional/段2-F1/gallery/
+web-part/
