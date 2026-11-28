@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-TALK-070",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話の 1 つの仕事で、AI が案（道具 draft_propose）を 3 回出した後に、もう 1 回出した",
+   "false_when": "その仕事で出した案が 2 回まで（同じ会話の次の仕事は新しく 3 回）",
+   "message": "この仕事で出せる案は 3 回までです。続きは、人の返事を待ってください",
+   "action": "人の返事を待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る画面の右の会話で言葉を送り、AI の仕事が動いている",
+    "steps": [
+     "AI が道具 draft_propose で案を 3 回出す",
+     "同じ仕事で 4 回目を出す"
+    ],
+    "needs": "つながっている自分の PC"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  }
+ ]
+}
