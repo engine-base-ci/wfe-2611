@@ -1,0 +1,59 @@
+{
+ "ops": {
+  "replyOpsInquiry": {
+   "file": "apps/api/test/features/F12/ops-inbox-reply.test.ts",
+   "reason": "今の担当・状態で答えが変わり、鈴（関門 C6）と運営の記録を書く。種では作れない（K-975）",
+   "covers": {
+    "test_post_ops_inquiries_id_replies_ok": "K975-API-001",
+    "test_post_ops_inquiries_id_replies_shape": "K975-API-001",
+    "test_post_ops_inquiries_id_replies_not_found": "K975-API-010",
+    "test_post_ops_inquiries_id_replies_rejected_401": "K975-API-011",
+    "test_post_ops_inquiries_id_replies_rejected_403": "K975-API-011",
+    "test_post_ops_inquiries_id_replies_rejected_422": "K975-API-012",
+    "test_post_ops_inquiries_id_replies_rejected_422_2": "K975-API-012",
+    "test_post_ops_inquiries_id_replies_rate_limited": "K975-API-014",
+    "test_post_ops_inquiries_id_replies_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_inquiries_id_replies_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_inquiries_id_replies_conflict": "K975-API-006",
+    "test_post_ops_inquiries_id_replies_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  },
+  "addOpsInquiryNote": {
+   "file": "apps/api/test/features/F12/ops-inbox-reply.test.ts",
+   "reason": "社内メモは運営の中だけで顧客の口に出ない。種では作れない（K-975）",
+   "covers": {
+    "test_post_ops_inquiries_id_notes_ok": "K975-API-007",
+    "test_post_ops_inquiries_id_notes_shape": "K975-API-007",
+    "test_post_ops_inquiries_id_notes_not_found": "K975-API-010",
+    "test_post_ops_inquiries_id_notes_rejected_401": "K975-API-011",
+    "test_post_ops_inquiries_id_notes_rejected_403": "K975-API-011",
+    "test_post_ops_inquiries_id_notes_rejected_422": "K975-API-012",
+    "test_post_ops_inquiries_id_notes_rejected_422_2": "K975-API-012",
+    "test_post_ops_inquiries_id_notes_rate_limited": "K975-API-014",
+    "test_post_ops_inquiries_id_notes_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_inquiries_id_notes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_inquiries_id_notes_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  }
+ }
+}
