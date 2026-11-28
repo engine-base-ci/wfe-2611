@@ -1,0 +1,88 @@
+{
+ "errors": [
+  {
+   "id": "E-TALK-080",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "そのチケットを作った人でない人が、作る時の会話を移そうとした",
+   "false_when": "移す人がそのチケットを作った人",
+   "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
+   "action": "作った人に頼む",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "ほかの人が作ったチケットを指して、自分の作る画面の会話を移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-081",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作る画面の会話でない会話（自分の AI との会話）を移そうとした",
+   "false_when": "作る画面の会話（draft）を移した",
+   "message": "この会話は、チケットに移せません",
+   "action": "—",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "自分の AI との会話の id を指して移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-082",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "もうチケットに移した会話を、もう 1 度移そうとした",
+   "false_when": "まだ移していない作る画面の会話を移した",
+   "message": "この会話は、もうチケットに移しています",
+   "action": "チケットの右のパネルで続ける",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作る画面の会話からチケットを作った",
+    "steps": [
+     "移した会話の id を指して、もう 1 度移す口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.17"
+   ]
+  }
+ ]
+}

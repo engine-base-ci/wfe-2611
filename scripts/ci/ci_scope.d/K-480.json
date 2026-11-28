@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F7/overview/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k480-overview.spec.ts"
+   ]
+  }
+ ]
+}
