@@ -1,0 +1,24 @@
+{
+  "_doc": "台の道具が要る試験の一覧（K-195）。載せる物＝試験のファイルで、台の道具の道（/opt・/usr・/Applications）を existsSync で見るもの。そういう試験は必ず process.env の CI を読み、CI で道具が無ければ飛ばさずに throw する。CI をほかの用（やり直しの回数・時間切れ）で読むだけの試験は載せない（数えない）。道具を足すときは、ここ（needed_by・paths・warm）と ticket-flow.yaml の vm.warm（元の像を温める命令）の両方に足し、元の像を作り直す。突き合わせは scripts/ci/k195_runner_chrome_test.py（一覧 ⇔ 試験 ⇔ 像）。",
+  "tools": [
+    {
+      "name": "Google Chrome",
+      "needed_by": [
+        "apps/bridge/test/login-check.test.ts",
+        "apps/bridge/test/login-check-2fa.test.ts",
+        "apps/bridge/test/k354-credential-bridge.test.ts"
+      ],
+      "paths": {
+        "linux": [
+          "/opt/google/chrome/chrome",
+          "/usr/bin/google-chrome",
+          "/usr/bin/google-chrome-stable"
+        ],
+        "darwin": [
+          "/Applications/Google Chrome.app"
+        ]
+      },
+      "warm": "apt-get install -y google-chrome-stable"
+    }
+  ]
+}

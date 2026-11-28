@@ -1,0 +1,235 @@
+{
+  "meta": {
+    "project": "Kaname",
+    "former_name": "jobrain",
+    "created_at": "2026-09-04",
+    "skill_version": "hearing v1.0",
+    "hearing_rounds": 12,
+    "note": "旧jobrainの全面作り直し。STEP1〜3を12往復で実施。旧repo・Atelier・ENGINE BASE HQを参照"
+  },
+  "context": {
+    "industry": "B2B SaaS（AIエージェント・業務自動化・目標管理）",
+    "client_type": "自社事業（スタートアップ・1人）",
+    "project_trigger": "旧jobrainが仕様変更多発で破綻。機能25→32・画面29→37に膨張し、画面QA全PASSでも業務が回らず（通しテストで認可欠陥8件・CI全赤）。拡張性を考慮した再設計が必要と判断"
+  },
+  "decision_log": [
+    {
+      "decision": "堀はスキルではなく閉じたループ（目標→実行→測定→再計画）",
+      "reason": "Skills APIがGA・OpenClawが同方式で普及・誰でもMarkdownで書ける。スキル数で競うと必ず負ける",
+      "alternatives": ["スキルの数と質で差別化", "業界特化で差別化", "価格で差別化"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "中核をHub＝会社モデル（目標・台帳・担当業務・組織・ポリシー・記憶を1つの定義に）とする",
+      "reason": "業界ごとに画面を作ると破綻する。定義が違うだけにすれば画面は1つで済み、開発量が業界数に依存しない",
+      "alternatives": ["業界別に画面を作る", "汎用チャットだけにする", "テンプレを大量に用意する"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "GitHub方式（提案→承認→反映・全変更に履歴・定義を中身と同じ場所に）を採用するが、UIには開発者用語を一切出さない",
+      "reason": "仕組みは15年磨かれたPRモデルが最適だが、非エンジニアに「プルリクエスト」は通じない。メタファーは組織（部下からの相談・報告・承認）",
+      "alternatives": ["独自の承認フローを設計する", "承認を持たず全自動にする"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "ブラウザ操作を標準の万能手段とし、API/MCPは後付けの最適化に降格",
+      "reason": "APIはサービスごとに実装が要るがブラウザは実装ゼロで全てに届く。弱点（遅い・不確か・高い）は記録再生（1秒未満・0円・ほぼ100%）で消える",
+      "alternatives": ["API主・ブラウザは最後の逃げ道（当初案・撤回）", "ブラウザを使わずAPIだけ"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "Bridge（顧客PC常駐）を主経路とし、Kanameの技術的中核に位置づける",
+      "reason": "本人のブラウザ・本人のIP・ログイン済みセッションで動くため、認証もBot検知もCAPTCHAも構造的に起きない。ローカルファイル・社内システムにも届き、LLMは本人サブスクで0円。当初「主から降格」としたのは誤りで撤回",
+      "alternatives": ["サーバー側で完結（CAPTCHA頻発・アカウント凍結リスク）", "Bridgeを任意オプションに"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "担当業務はOJT型（AIがたたき台→人が直す→やらせる→任せる）で作る",
+      "reason": "n8nは人が手順を全部知っている必要があり、Lindyは一発で正解を書けないと直せない。人間の新人教育と同じ順番が正しい。日本の中小企業の最大障壁「設定できる人がいない」を正面から外す",
+      "alternatives": ["フローエディタ（n8n型）", "自然言語から一発生成（Lindy型）", "手順書を人が書く（HQ型）"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "テストモード（外に一切出さない）を入口にする",
+      "reason": "「今どうやっていますか、見せてください」は顧客に負担をかけ、面倒でやめられる。まずAIが作って見せ、人が直す流れにする。Atelierの事故（QAが本番のしきい値を壊した）の再発防止にもなる",
+      "alternatives": ["最初に資料を出してもらう（当初案・撤回）"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "スコープ4層（運営／会社／部署／個人）を全部品に共通で使う",
+      "reason": "担当業務・ルール・テンプレ・覚えた操作・記憶で別々の共有機構を作ると3〜5倍の工数になる。1つの仕組みで済ませる",
+      "alternatives": ["部品ごとに個別の共有設定を作る"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "テンプレは自動共有しない。運営配布＋各社が自分で作る＋明示的な公開のみ",
+      "reason": "「最初の1社が作ったものが自動的にテンプレになる」は他社データが勝手に流れる形で危険。OpenClawの公開スキル12%が悪性だった事実が教訓",
+      "alternatives": ["自動でテンプレ化（当初案・撤回）", "公開マーケットを最初から作る"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "目標とタスクの間に仮説／施策／検証の層を置く",
+      "reason": "目標→タスク直結では「ただの数字」になり、なぜその打ち手をしたかが残らず、効いたかも判定できず、同じ失敗を繰り返す。この記録が溜まることが堀になる",
+      "alternatives": ["目標→タスクを直結（当初案・穴があった）"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "器と質を分ける。仮説・施策・検証を記録する器は実装、良い仮説を立てる質はAI（構築メタスキル群）",
+      "reason": "「なぜ商談が取れていないか」の分析ロジックをコードに埋めると業界ごとに作ることになる。実装は数値を出す・タスクに落とす・見せるまで",
+      "alternatives": ["分析ロジックを実装に持つ"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "構築メタスキル群（非公開・運営の資産）を作る",
+      "reason": "担当業務は誰でも書けるが「AIに会社モデルを作らせる手順」は経験からしか作れない。CS品質が人に依存せず均一になり、顧客が自分でやっても同じ品質になる＝100社を3人で回す必須条件",
+      "alternatives": ["CSが人力でオンボーディングする", "マニュアルを顧客に渡す"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "台帳は「計算しないが結果は持つ」",
+      "reason": "確定申告・給与計算・電子契約はfreee等に任せるが、結果（納税額・人件費・締結日）が無いと利益目標が出せない。AIが外部から取ってきて自動で埋める。当初の「作る/作らない」の切り分けは雑だった",
+      "alternatives": ["会計機能も作る", "外部の結果を持たない（当初案・訂正）"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "CAPTCHAは突破せず到達しない設計にする",
+      "reason": "突破すると顧客の外部サービスのアカウントが凍結され、顧客の業務が止まる。API利用・本人環境でのセッション再利用・人間らしい速度の三重で到達を防ぎ、出たらスマホ通知で3秒で解けるようにする",
+      "alternatives": ["CAPTCHA解決代行サービスを使う（規約違反・凍結の直接原因）"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "スコープは削らず、段階1だけを「一人で回る」に固定する",
+      "reason": "全部を同時に作ると旧jobrainと同じくどれも完成しない。段階1で一人分を完成させれば、何が本当に必要か使って分かり、段階2以降は「同じものを他人が使えるようにする」作業になる",
+      "alternatives": ["Should を後回しにする（当初案・撤回）", "全部を同時に着手する"],
+      "hypothesis_confirmed": true
+    },
+    {
+      "decision": "製品名をjobrainからKanameへ改名",
+      "reason": "扇の要＝これが抜けると全部バラバラになる中核の金具。Hub＝会社モデルの概念と完全一致し、日本市場に意味がそのまま伝わり、営業トークにも使える",
+      "alternatives": ["CrewHub", "OpsHub", "Honbu", "jobrain継続"],
+      "hypothesis_confirmed": true
+    }
+  ],
+  "reference_analysis": {
+    "old_jobrain": {
+      "path": "~/Downloads/受託開発/自社事業/jobrain",
+      "status": "停止中・顧客なし・参照専用",
+      "assets": ".ai-docs/ai-employee/ にv1.0〜v1.3の設計資産。Next.js15+Supabase実装（37画面・約115エンドポイント・CI 10ゲート）",
+      "failure_cause": "AC が「画面が描画される」で合格を出せた。要望のたびに機能・画面が増え（25→32機能、29→37画面）、画面QA全PASSでも業務が回らず、CIが全ゲート赤のまま進んだ",
+      "keep": ["SKILL.md型のスキル", "テンプレ→実体→装着スキル→承認箱→cronの骨格", "プラン別配布の考え方"],
+      "discard": ["git/SQLiteを正本にする", "Claude Code対話セッションを実行基盤にする", "顧客PC常駐なしのcron"]
+    },
+    "atelier": {
+      "path": "~/Atelier",
+      "status": "稼働中の自社サービス（AI社員常駐型プロジェクト管理SaaS）",
+      "learned": [
+        "AI社員のデータモデル（テンプレ→ワークスペース実体→装着スキル→system_prompt合成）",
+        "llm_route（実行経路と支払者を1関数で決め、envの不在に正しい挙動を依存させない）",
+        "Bridge（Electron常駐でclaude -pを本人サブスクで実行・チャットリレー・承認モード）",
+        "運用統制：CLAUDE.md絶対ルール24条（特に17-20）・テストラダーL1〜L5・G-11〜G-15・begin-task.sh・husky pre-commit・v3-gate 17ゲート・qa-coverage.py",
+        "2026-08-25のQA事故：正本834項目があったのに自作スクリプトで16項目だけ実行し「一周した」と報告",
+        "2026-09-02の本番5事故：AIの無言終了・Storageバケット未作成・Bridge終了後90秒の誤表示・モード切替の無視・退会後もセッション有効"
+      ],
+      "warning": "InngestがSSPLライセンス。Atelierが現在使用中で、商用SaaSでは実質使えない。別途確認が必要"
+    },
+    "engine_base_hq": {
+      "path": "~/Downloads/受託開発/自社事業/株式会社ENGINE BASE_HQ",
+      "status": "稼働中の会社運営基盤",
+      "learned": "経理・営業・CS・法務・業務基盤・目標管理を全てClaude＋スキル＋正本データで運用。「人はレシートを投げて指示を出すだけ」。これがKanameの原型で、担当業務カタログの原料になる",
+      "limitation": "1人運用専用。同時編集・権限・テナント分離・リアルタイムが無い。Claude Code対話セッションを人が起動しないと動かない"
+    }
+  },
+  "competitive_analysis": {
+    "direct": [
+      {"name": "Lindy", "positioning": "役割型AI employees。自然言語で設定、承認ゲート、1,000超の連携", "price": "$49.99〜", "gap": "目標を知らない"},
+      {"name": "Sintra", "positioning": "役割別Brains（Soshie/Cassie/Emmie）", "price": "$39", "gap": "目標を知らない"},
+      {"name": "Genspark Claw", "positioning": "クラウドPC付きAI社員。WhatsApp/Slack/Teamsから委任", "price": "$24.99〜249.99", "gap": "組織も目標も持たない"},
+      {"name": "JAPAN AI AGENT", "positioning": "ノーコードでAI社員を作る（国内）", "price": "非公開", "gap": "目標を知らない"},
+      {"name": "Salesforce Agentforce", "positioning": "CRM連動の業務実行", "price": "非公開", "gap": "CRMの外に出られない"}
+    ],
+    "adjacent": [
+      {"name": "n8n / Dify", "gap": "組織も目標も持たない。人がフローを描く"},
+      {"name": "Asana / Notion / OKRツール", "gap": "実行しない"},
+      {"name": "kintone", "gap": "動的台帳は実現しているが、人が定義する必要があり、実行もしない"},
+      {"name": "OpenClaw", "gap": "個人向け・マルチテナント非対応・重大な脆弱性（CVE-2026-25253 CVSS8.8・公開スキルの12%が悪性）"}
+    ],
+    "market": {
+      "japan_ai_employee_price_range": "月3,000〜30,000円/体",
+      "japan_smb_barriers": ["設定・保守の社内人材不足", "従業員の抵抗", "ROI測定の難しさ"],
+      "capacity": "プロ15万の母集団9,229社に対し30社=0.33%。市場サイズは制約にならず、律速は獲得（reach×転換）"
+    }
+  },
+  "hearing_patterns": [
+    {
+      "pattern_name": "既存資産の「残す・変える・捨てる」仕分け",
+      "applicable_to": "作り直し案件・既存システムのリプレース",
+      "description": "「既にあるから使う」ではなく要素ごとに判定する。旧資産を10〜15項目に分解し、それぞれ残す/変える/捨てるを理由付きで決める。これをやらないと「動いているから」で悪い設計を引き継ぐ"
+    },
+    {
+      "pattern_name": "堀の在り処を先に特定する",
+      "applicable_to": "競合の多いSaaS・差別化が不明確な案件",
+      "description": "クライアントが「これが強み」と思っているものが実は誰でも真似できる場合がある。競合が「持っていないもの」を表で洗い出し、構造的に真似しにくい理由を3つ以上言語化できるまで詰める"
+    },
+    {
+      "pattern_name": "ライセンスを実ファイルで確認してから提示する",
+      "applicable_to": "OSSを多用する案件",
+      "description": "GitHub APIのspdx_idだけでは不十分（NOASSERTIONが多い）。LICENSEファイルを実際に読む。SSPL/AGPL/Elastic v2/BSLは商用SaaSで使えない。Open Coreは ee/ を避ければ使える。この確認を怠ると後から作り直しになる"
+    },
+    {
+      "pattern_name": "スコープを削らず順序だけ守る",
+      "applicable_to": "「全部やりたい」クライアント",
+      "description": "「これは作らない」と削ると反発されるが、「全部作る。ただし順番を守る」なら合意できる。かつ最初の段階の合格条件を「実際に業務が回る」に固定すると、机上の完成で終わらない"
+    },
+    {
+      "pattern_name": "誤解を招いた説明を即座に訂正する",
+      "applicable_to": "全案件",
+      "description": "「業界別パッケージを作らない」が「業界ごとの管理ができない」と読まれた。「作る/作らない」より「計算するか/結果を持つか」のような正確な軸で切ると誤解が減る。クライアントが「え？」と言ったら説明が悪い"
+    }
+  ],
+  "unresolved": [
+    {"question": "技術スタックの確定（25領域）", "importance": "high", "resolve_in": "tech-stack"},
+    {"question": "各プランで何ができるか（AI社員の体数・担当業務の数・自律実行量・アクション種別・記憶の深さ）", "importance": "high", "resolve_in": "pricing-design"},
+    {"question": "エンタープライズ枠の要否と内容", "importance": "medium", "resolve_in": "pricing-design"},
+    {"question": "目標の種類（数値/状態/習慣）・重み付け・期中変更の履歴・他人の目標の可視範囲", "importance": "medium", "resolve_in": "requirements-definition"},
+    {"question": "顧客のセキュリティ担当が求める要件（データ所在・学習非利用・委託先管理・監査ログ保持・認証取得）", "importance": "high", "resolve_in": "requirements-definition"},
+    {"question": "ドメイン・商標（kaname.app等）", "importance": "medium", "resolve_in": "別途"},
+    {"question": "ロゴの確定", "importance": "low", "resolve_in": "別途（保留中）"},
+    {"question": "AnthropicのAgent SDKクレジット施行停止のその後", "importance": "high", "resolve_in": "tech-stack"},
+    {"question": "AtelierのInngest（SSPL）問題", "importance": "medium", "resolve_in": "別途"}
+  ],
+  "research": {
+    "sources": [
+      {"url": "https://platform.claude.com/docs/en/managed-agents/overview", "title": "Claude Managed Agents overview", "accessed_at": "2026-09-03"},
+      {"url": "https://platform.claude.com/docs/en/about-claude/pricing", "title": "Anthropic pricing", "accessed_at": "2026-09-03"},
+      {"url": "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan", "title": "Agent SDK with Claude plan", "accessed_at": "2026-09-03"},
+      {"url": "https://code.claude.com/docs/en/remote-control", "title": "Claude Code Remote Control", "accessed_at": "2026-09-03"},
+      {"url": "https://claude.com/blog/computer-use-skills-api-files-api", "title": "Computer use / Browser use / Skills API GA (2026-08-20)", "accessed_at": "2026-09-03"},
+      {"url": "https://en.wikipedia.org/wiki/OpenClaw", "title": "OpenClaw", "accessed_at": "2026-09-03"},
+      {"url": "https://www.sangfor.com/blog/cybersecurity/openclaw-ai-agent-security-risks-2026", "title": "OpenClaw security risks", "accessed_at": "2026-09-03"},
+      {"url": "https://uravation.com/media/ai-shain-guide/", "title": "AI社員とは（国内市場）", "accessed_at": "2026-09-03"},
+      {"url": "https://www.lindy.ai/blog/best-ai-agents", "title": "Lindy: Best AI Agents", "accessed_at": "2026-09-03"},
+      {"url": "https://blog.skyvern.com/how-skyvern-handles-authentication/", "title": "Skyvern の認証方式", "accessed_at": "2026-09-04"},
+      {"url": "https://1password.com/press/2025/oct/browserbase-ai-security-partnership", "title": "1Password × Browserbase", "accessed_at": "2026-09-04"},
+      {"url": "https://www.browserbase.com/blog/stagehand-caching", "title": "Stagehand caching", "accessed_at": "2026-09-04"},
+      {"url": "https://qaskills.sh/blog/self-healing-test-automation-2026-guide", "title": "自己修復オートメーション2026", "accessed_at": "2026-09-04"},
+      {"url": "https://www.digitalapplied.com/blog/mcp-ecosystem-h1-2026-retrospective-adoption-data-points", "title": "MCPエコシステム 2026上半期（9,652サーバー）", "accessed_at": "2026-09-04"},
+      {"url": "https://www.kunalganglani.com/blog/local-llm-cost-breakeven", "title": "ローカルLLM損益分岐", "accessed_at": "2026-09-04"},
+      {"url": "https://pricepertoken.com/fine-tuning", "title": "LLMファインチューニング価格", "accessed_at": "2026-09-04"}
+    ],
+    "findings": [
+      "Anthropicはサブスクの OAuth を第三者製品で使うことを明文で禁止（2026-02-20）。2026-06にAgent SDKクレジット（Pro$20/Max5x$100/Max20x$200）を発表したが施行は停止中",
+      "OpenAI Codex・Google Gemini CLI も「本人の環境で本人の認証によりCLIが動く」形を公式に提供している。第三者が代理認証するのは全社禁止",
+      "Anthropic公式のRemote Control（全プラン）が同じ形を採用＝Bridge方式の妥当性の裏づけ。ただし接続先はAnthropic自身の画面のみ",
+      "Browser Use / Computer Use / Skills API / Files API が 2026-08-20 にGA。Browser Useは座標でなくページ構造で操作する",
+      "ブラウザエージェントのベンチマーク成功率は61〜77.5%だが、本番はDOM変化・モーダル・セッション切れでさらに落ちる",
+      "Stagehand（MIT・24k★）のobserve→actとキャッシュ、Skyvern（AGPL・23k★）の「show once, run forever」が記録再生を製品化済み",
+      "資格情報をLLMに渡さずブラウザに直接注入する方式は業界標準（Skyvern・1Password×Browserbase・Anthropic Managed Agentsのvault）",
+      "MCP公式レジストリに9,652サーバー（2026-05・半年で232%増）。Nango（Elastic v2）は900+ APIを扱うがライセンス上使えない",
+      "ローカルLLMは月50Mトークン以下ではAPIが安い。7B-13Bの自前運用は月$1,500〜5,000が下限。位置づけはコスト削減でなくセキュリティ",
+      "LoRAファインチューニングはTogether $0.48/1M・Fireworks $0.50/1M。アダプタは数MB。LoRAXで1000単位をマルチテナント配信可。ただし事実の記憶には効かず、文体・書式の一貫性に効く",
+      "kintoneは動的台帳＋画面1つで日本3万社に売れている。弱点は「作れる人がいない」こと＝日本のAI導入障壁1位と同じ。ここをAIが埋める",
+      "Inngest は SSPL、Nango は Elastic v2、Skyvern・minio・ToolJet・apitable・zitadel・CloudCLI は AGPL、Directus は 2026 に MSCL-1.0-GPL へ変更。いずれも商用SaaSに組み込めない"
+    ],
+    "research_date": "2026-09-03/2026-09-04"
+  }
+}
