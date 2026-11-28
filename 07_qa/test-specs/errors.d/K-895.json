@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-130",
+   "class": "conflict",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）ので、断れない",
+   "false_when": "依頼が新しい・聞いている",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにしたか断った依頼を開いておく",
+    "steps": [
+     "断る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.9"
+   ]
+  }
+ ]
+}
