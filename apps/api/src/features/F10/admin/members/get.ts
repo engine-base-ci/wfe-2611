@@ -5,7 +5,7 @@
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../../contract/deps.js";
-import { replyOf } from "../gate.js";
+import { readRefused } from "../gate.js";
 import type { AdminOp } from "../op.js";
 import { dataReply } from "../shape.js";
 
@@ -34,6 +34,6 @@ export const run: AdminOp = async ({ d, a }) => {
     console.error(`[members/get] メンバーを読む取引が落ちた（${kindOf(e)}）`);
     return unavailable();
   }
-  if (typeof v.error === "string") return replyOf(v as { error: string; [k: string]: unknown });
+  if (typeof v.error === "string") return readRefused(v as { error: string });
   return dataReply(200, (v as { detail: unknown }).detail, DETAIL_KEYS);
 };

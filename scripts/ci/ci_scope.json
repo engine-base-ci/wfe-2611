@@ -7654,6 +7654,7 @@
   "apps/web/test/k991-plans-shape.test.ts": "下絵の見本 apps/web/features/F12/ops2/ops2-sample.ts と答えの見本 apps/web/tests/k/ops-plans-mock.ts を読む（画面の外の純粋な関数の試験）・K-991",
   "apps/web/features/F12/ops2/ops2-sample.ts": "下絵の見本（IMPACT_ROWS）。部品 views-plans.tsx と k991-plans-shape.test.ts が読む（K-991）",
   "apps/api/test/features/contract/k144.d/K-992.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-992",
+  "apps/api/test/features/contract/k144.d/K-993.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で入口の uuid の行を足した）・K-993",
   "apps/api/test/features/contract/k144.d/K-995.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-995",
   "apps/api/test/features/contract/k144.d/K-1004.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-1004",
   "apps/api/test/features/contract/k144.d/K-1006.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-1006",

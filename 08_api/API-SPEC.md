@@ -285,7 +285,7 @@
 | EP-270 | PATCH | `/api/v1/ticket_kinds/:id` | 更新（ticket_kinds）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 404 422 409 503 413 429 403 403 503 |
 | EP-271 | DELETE | `/api/v1/ticket_kinds/:id` | 削除（ticket_kinds）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 404 422 409 409 503 429 403 403 503 |
 | EP-272 | POST | `/api/v1/ticket_kinds/order` | 作成・実行（ticket_kinds）— チケットの設定を整える（種別・ | A118 | 1 | member | C2 | 401 403 409 422 503 413 429 403 403 503 |
-| EP-273 | GET | `/api/v1/ticket_kinds/template-updates` | 取得（tenant_distributions）— 会社に届いていて、ま | A120 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-273 | GET | `/api/v1/ticket_kinds/template-updates` | 取得（tenant_distributions）— 会社に届いていて、ま | A120 | 1 | member |  | 401 403 422 404 429 403 403 503 |
 | EP-274 | POST | `/api/v1/ticket_kinds/template-updates/:id/apply` | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-275 | DELETE | `/api/v1/ticket_links/:id` | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
 | EP-276 | PATCH | `/api/v1/ticket_messages/:id` | 更新（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 404 503 503 413 429 403 403 503 |
