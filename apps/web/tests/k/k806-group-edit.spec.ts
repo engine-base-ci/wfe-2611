@@ -518,12 +518,17 @@ test("K806-UI-017 幅 320・375・768・1024・1440：3 つの小窓どれを開
       expect(r.x + r.width, `幅 ${w}`).toBeLessThanOrEqual(w);
       expect(r.height).toBeGreaterThanOrEqual(32);
     }
+    // 小窓が開き終わってから測り、閉じ終わってから次を押す（閉じる途中の小窓が次の押す先を覆う）
     await editBtn(page, "営業").click();
+    await expect(dlgEdit(page)).toBeVisible();
     expect(await overflowX(page), `直す 幅 ${w}`).toBeLessThanOrEqual(0);
     await page.keyboard.press("Escape");
+    await expect(dlgEdit(page)).toHaveCount(0);
     await orderBtn(page).click();
+    await expect(dlgOrder(page)).toBeVisible();
     expect(await overflowX(page), `並び 幅 ${w}`).toBeLessThanOrEqual(0);
     await page.keyboard.press("Escape");
+    await expect(dlgOrder(page)).toHaveCount(0);
   }
 });
 
