@@ -1,0 +1,205 @@
+/* 自分の設定のカードと行（setting-parts.tsx・キャンバス MeLogin）。値は正本の pc-*（PC と使った量と同じ寸法）・sec-summary・
+   sec-summary-warn と --k-* だけを読む（生の値を書かない・D8） */
+
+.k-set-card {
+  margin: 0;
+  min-width: 0;
+  padding: var(--k-c-pc-card-pad);
+  border: var(--k-c-pc-card-border);
+  border-radius: var(--k-c-pc-card-radius);
+  background: var(--k-c-pc-card-bg);
+}
+.k-set-card-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-pc-card-head-pad);
+}
+.k-set-card-head h2 {
+  flex: 1;
+  margin: 0;
+  font-size: var(--k-c-pc-card-title-text);
+  line-height: var(--k-c-pc-card-title-lh);
+  font-weight: var(--k-c-pc-card-title-fw);
+}
+.k-set-card-aside {
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
+.k-set-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-set-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-pc-row-gap);
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+}
+.k-set-row[data-off] .k-set-main,
+.k-set-row[data-off] .k-set-icon {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+.k-set-icon {
+  display: inline-flex;
+  color: var(--k-on-surface-variant);
+}
+/* 名前と補足は 240 を元に伸び縮みし、札とボタンは横に並ぶ（幅が足りないときだけ下へ・キャンバス MeLogin の flex: 1 1 240px） */
+.k-set-main {
+  flex: 1 1 var(--k-c-pc-set-label-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* 名前（パスキーの名前は本人が付けるので長い 1 語でも行の中で折る・K-318 の突き合わせの的） */
+.k-set-name {
+  overflow-wrap: anywhere;
+}
+.k-set-detail {
+  /* 説明の中の長い 1 語（確かめ待ちのメールの宛て）も行の中で折る（K840-UI-024） */
+  overflow-wrap: anywhere;
+  font-size: var(--k-c-pc-detail-text);
+  font-weight: var(--k-c-pc-detail-fw);
+  color: var(--k-c-pc-detail-fg);
+}
+.k-set-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  /* 行の幅より広がらない（中の札の長い字は札の側で … にする） */
+  min-width: 0;
+  max-width: 100%;
+}
+.k-set-note {
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
+
+.k-set-pill {
+  padding: var(--k-c-pc-pill-pad);
+  border-radius: var(--k-c-pc-pill-radius);
+  font-size: var(--k-c-pc-pill-text);
+  font-weight: var(--k-c-pc-pill-fw);
+  white-space: nowrap;
+  /* 長い字（切れ目の無いメール）は行の幅で止めて … にする。止めないと狭い幅で頁ごと横に溢れる（K839-UI-018・K840-UI-024） */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-set-pill[data-tone="success"] {
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+}
+.k-set-pill[data-tone="warning"] {
+  background: var(--k-st-warning-container);
+  color: var(--k-st-on-warning-container);
+}
+.k-set-pill[data-tone="neutral"] {
+  background: var(--k-side-bg);
+  color: var(--k-on-surface-variant);
+}
+
+.k-btn.k-set-btn[data-variant] {
+  min-height: var(--k-c-pc-button-height);
+  height: var(--k-c-pc-button-height);
+  padding: var(--k-c-pc-button-pad);
+  font-size: var(--k-c-pc-button-text);
+  font-weight: var(--k-c-pc-button-fw);
+  border-radius: var(--k-c-pc-button-radius);
+  box-sizing: border-box;
+}
+.k-btn.k-set-btn[data-variant="primary"] {
+  border: var(--k-c-pc-button-primary-border);
+}
+
+.k-sec-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-sec-summary-gap);
+  padding: var(--k-c-sec-summary-pad);
+  border: var(--k-c-sec-summary-border);
+  border-radius: var(--k-c-sec-summary-radius);
+  background: var(--k-c-sec-summary-bg);
+}
+.k-sec-summary[data-tone="warn"] {
+  border: var(--k-c-sec-summary-warn-border);
+  background: var(--k-c-sec-summary-warn-bg);
+}
+.k-sec-summary b {
+  font-weight: var(--k-c-auth-choice-title-fw);
+}
+.k-sec-summary-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-pc-step-dot-width);
+  height: var(--k-c-pc-step-dot-height);
+  border-radius: var(--k-r-field);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-h1);
+}
+.k-sec-summary[data-tone="warn"] .k-sec-summary-icon {
+  background: var(--k-st-warning);
+}
+
+.k-set-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-set-steps > li {
+  display: flex;
+  gap: var(--k-c-pc-step-gap);
+  align-items: flex-start;
+  padding: var(--k-c-pc-step-pad);
+  border-top: var(--k-c-pc-step-border-top);
+}
+.k-set-step-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-pc-step-dot-width);
+  height: var(--k-c-pc-step-dot-height);
+  border-radius: var(--k-c-pc-step-dot-radius);
+  font-size: var(--k-c-pc-step-dot-text);
+  font-weight: var(--k-c-pc-step-dot-fw);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-set-step-dot[data-state="done"] {
+  background: var(--k-primary);
+}
+.k-set-step-dot[data-state="todo"] {
+  background: var(--k-side-bg);
+  color: var(--k-on-surface-variant);
+}
+.k-set-step-title {
+  margin: 0;
+  font-size: var(--k-c-pc-step-title-text);
+  line-height: var(--k-c-pc-step-title-lh);
+  font-weight: var(--k-c-pc-step-title-fw);
+}
+.k-set-step-desc {
+  margin: var(--k-c-pc-step-desc-margin);
+  font-size: var(--k-c-pc-step-desc-text);
+  line-height: var(--k-c-pc-step-desc-lh);
+  color: var(--k-c-pc-step-desc-fg);
+}
+.k-set-step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-sec-summary-gap);
+  margin: var(--k-c-pc-step-desc-margin);
+  font-size: var(--k-c-pc-step-desc-text);
+  line-height: var(--k-c-pc-step-desc-lh);
+}
