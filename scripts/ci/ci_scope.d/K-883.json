@@ -1,0 +1,22 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "03_architecture/db-catalog.json",
+    "03_architecture/ER図.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "packages/contracts/src/registry.ts",
+    "packages/db/migrations/**",
+    "scripts/ci/flow_db_gate.py",
+    "scripts/ci/build_catalog.py"
+   ],
+   "tests": [
+    "scripts/ci/k883_clients_freeze_test.py"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "scripts/ci/k883_clients_freeze_test.py": "目録 03_architecture/db-catalog.json・写し catalog.json・catalog.md・ER 図 03_architecture/ER図.md・生成物 packages/contracts/src/registry.ts・migration（packages/db/migrations/）を読み、flow_db_gate.py を子プロセスで流す（K-883）"
+ }
+}
