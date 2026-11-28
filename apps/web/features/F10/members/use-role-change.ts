@@ -46,16 +46,24 @@ export function useRoleChange({ onResult }: { onResult: (r: RoleResult) => void 
   const pending = useRef<RoleTarget | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [step, setStep] = useState<{ withCode: boolean; withPasskey: boolean; reason: string } | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
 
   const askStepUp = async (t: RoleTarget) => {
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = s.ok ? s.data : {};
     pending.current = t;
-    setStep({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false, reason: reasonOf(t) });
+    needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    setStep({ ...needStepUp.current, reason: reasonOf(t) });
   };
 
   const run = async (t: RoleTarget, retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) {
+      pending.current = t;
+      setStep({ ...needStepUp.current, reason: reasonOf(t) });
+      return;
+    }
     sending.current = true;
     setBusy(t.key);
     try {
@@ -64,6 +72,7 @@ export function useRoleChange({ onResult }: { onResult: (r: RoleResult) => void 
         body: bodyOf(t) as unknown as Ops["updateMemberRole"]["body"],
         screenId: SCREEN,
       });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) return onResult({ ok: true, target: t });
       if (r.kind === "step_up" && !retried) return await askStepUp(t);
       onResult({ ok: false, target: t, error: r });

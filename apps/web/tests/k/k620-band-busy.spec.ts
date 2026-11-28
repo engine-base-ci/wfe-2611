@@ -24,6 +24,9 @@ import {
 const bands = (page: Page) => page.locator("article.k-detail-card .k-detail-bands");
 const delegateBand = (page: Page) => page.getByRole("region", { name: "AI に任せる" });
 const approveBand = (page: Page) => page.getByRole("region", { name: "承認と実行" });
+// K-573・K-572：「AI に任せる」「完了にする」は題の行のボタン（帯は状態の知らせだけ）。帯の data-busy の見方は替えない
+const titleBtn = (page: Page, name: string) =>
+  page.locator("article.k-detail-card").getByRole("button", { name, exact: true }).first();
 
 async function openWith(page: Page, b: Band): Promise<{ m: Mock; errors: string[] }> {
   const errors: string[] = [];
@@ -47,7 +50,8 @@ test("K620-UI-001 作業中・任せる前（can.delegate・走っている実�
   page,
 }) => {
   const { errors } = await openWith(page, { stage: "doing", can_delegate: true });
-  await expect(delegateBand(page).getByRole("button", { name: "AI に任せる" })).toBeVisible();
+  await expect(titleBtn(page, "AI に任せる")).toBeVisible();
+  await expect(delegateBand(page)).toBeVisible();
   await expect(bands(page).locator(":scope > *")).toHaveCount(1);
   await notBusy(delegateBand(page));
   await notCounted(page);
@@ -58,8 +62,10 @@ test("K620-UI-002 作業中・完了にできて任せられる（承認と実�
   page,
 }) => {
   const { errors } = await openWith(page, { stage: "doing", can_delegate: true, can_complete: true });
-  await expect(approveBand(page).getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
-  await expect(delegateBand(page).getByRole("button", { name: "AI に任せる" })).toBeVisible();
+  await expect(titleBtn(page, "完了にする")).toBeVisible();
+  await expect(approveBand(page)).toBeVisible();
+  await expect(titleBtn(page, "AI に任せる")).toBeVisible();
+  await expect(delegateBand(page)).toBeVisible();
   await notBusy(approveBand(page));
   await notBusy(delegateBand(page));
   await notCounted(page);
@@ -191,7 +197,7 @@ test("K620-UI-010 切り替わり（任せる前 → 任せました）：「AI 
       body: JSON.stringify({ data: { run_id: RUN_ID } }),
     });
   });
-  await delegateBand(page).getByRole("button", { name: "AI に任せる" }).click();
+  await titleBtn(page, "AI に任せる").click();
   await expect(delegateBand(page).getByText(/に任せました。/)).toBeVisible();
   await expect(delegateBand(page)).toHaveAttribute("data-k620", "same");
   await busy(delegateBand(page));
@@ -251,9 +257,9 @@ test("K620-UI-013 任せる前に押して口が 429：「押しすぎです。�
       body: JSON.stringify({ error: "rate_limited", code: "RATE_LIMITED" }),
     });
   });
-  await delegateBand(page).getByRole("button", { name: "AI に任せる" }).click();
+  await titleBtn(page, "AI に任せる").click();
   await expect(delegateBand(page).getByText(/押しすぎです。/)).toBeVisible();
-  await expect(delegateBand(page).getByRole("button", { name: "AI に任せる" })).toBeVisible();
+  await expect(titleBtn(page, "AI に任せる")).toBeVisible();
   await notBusy(delegateBand(page));
   await notCounted(page);
   expect(errors, errors.join("\n")).toEqual([]);
