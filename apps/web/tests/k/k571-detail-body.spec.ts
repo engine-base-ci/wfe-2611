@@ -19,6 +19,7 @@ import {
   answer,
   bodyRegion,
   doc,
+  MOCK_BODY,
   mockDetail,
   openDetail,
   overflowX,
@@ -563,7 +564,8 @@ for (const [row, id, results] of [
         id,
         w,
         async (page) => {
-          await mockDetail(page, { results });
+          // 本文は下絵の本文と同じ見出しと段落の並び（MOCK_BODY）にして比べる
+          await mockDetail(page, { results, body: { doc: MOCK_BODY, text: "目的", version: 3 } });
           await openDetail(page, w);
           await expect(panel(page)).toBeVisible();
         },
