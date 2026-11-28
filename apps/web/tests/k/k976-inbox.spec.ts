@@ -65,14 +65,24 @@ const mockDetail = (o: Parameters<typeof detailOf>[0] = {}) => {
   return {
     ...d,
     messages: d.messages.map((x, i) =>
-      i === 0 ? { ...x, body: "請求書を送るチケット（KN-212）を承認したのですが、30 分たっても「実行待ち」のままです。PC はつけています。" } : x,
+      i === 0
+        ? {
+            ...x,
+            body: "請求書を送るチケット（KN-212）を承認したのですが、30 分たっても「実行待ち」のままです。PC はつけています。",
+          }
+        : x,
     ),
   };
 };
 
 test.describe("K-976 受信箱の見た目", () => {
   const STATES: [string, string, string, (m: InboxMock) => void][] = [
-    ["K976-UI-001", "oq-inbox", "?box=mine", (m) => void (m.on.one = () => ({ status: 200, body: { data: mockDetail() } }))],
+    [
+      "K976-UI-001",
+      "oq-inbox",
+      "?box=mine",
+      (m) => void (m.on.one = () => ({ status: 200, body: { data: mockDetail() } })),
+    ],
     [
       "K976-UI-002",
       "oq-inbox-thread",
