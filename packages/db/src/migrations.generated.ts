@@ -343,4 +343,5 @@ export const MIGRATIONS = [
   "20261128170000_field_type_money.sql",
   "20261128180000_agent_usage_window.sql",
   "20261128213000_ticket_delete_withdraw_stage.sql",
+  "20261128213100_job_context_approved_artifact.sql",
 ] as const;
