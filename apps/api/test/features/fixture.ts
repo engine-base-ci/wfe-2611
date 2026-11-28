@@ -87,11 +87,49 @@ async function runCloseHooks(): Promise<void> {
   }
 }
 
+/** 場合表の種（packages/db/src/seeds.ts の seedAccessMatrix）が運営の会社に入れた見本の行（key が seed・k9-…・請求書のひな形の seed）を外す。
+ *  同じ DB で後に流れる機能の試験が、運営の会社のプランの一覧・請求書の出し手に見本の行を読んで赤になる（統合の枝の CI・直しの担当 XC）。
+ *  見本の行に結んだ行（見本の会社のプラン・申し込み・案）は、運営の既定のプラン free に付け替えるか消す */
+async function dropMatrixOpsSeeds(admin: pg.Pool): Promise<void> {
+  const OPS = "00000000-0000-4000-8000-000000000001";
+  const c = await admin.connect();
+  try {
+    await c.query("begin");
+    const seedPlans = "select id from plans where tenant_id = $1 and (key = 'seed' or key like 'k9-%')";
+    const free = (await c.query<{ id: string }>("select id from plans where tenant_id = $1 and key = 'free'", [OPS]))
+      .rows[0]?.id;
+    // 見本の行に結んだ行は、運営の既定のプラン free に付け替える（請求書などが結ぶので消さない）。版の行は見本のプランの物だけ消す
+    if (free)
+      for (const [t, col] of [
+        ["tenants", "plan_id"],
+        ["subscriptions", "plan_id"],
+        ["plan_change_requests", "from_plan_id"],
+        ["plan_change_requests", "to_plan_id"],
+        ["ops_plan_proposals", "plan_id"],
+      ] as const)
+        await c.query(`update ${t} set ${col} = $2 where ${col} in (${seedPlans})`, [OPS, free]);
+    await c.query(`delete from plan_versions where plan_id in (${seedPlans})`, [OPS]);
+    await c.query("delete from plans where tenant_id = $1 and (key = 'seed' or key like 'k9-%')", [OPS]);
+    const seedDist = "select id from distributions where tenant_id = $1 and (key = 'seed' or key like 'k9-%')";
+    await c.query(`delete from tenant_distributions where distribution_id in (${seedDist})`, [OPS]);
+    await c.query(`delete from distribution_versions where distribution_id in (${seedDist})`, [OPS]);
+    await c.query("delete from distributions where tenant_id = $1 and (key = 'seed' or key like 'k9-%')", [OPS]);
+    await c.query("delete from ops_invoice_templates where tenant_id = $1 and company = 'seed'", [OPS]);
+    await c.query("commit");
+  } catch (e) {
+    await c.query("rollback");
+    throw e;
+  } finally {
+    c.release();
+  }
+}
+
 export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
   await migrate(DB_URL, DB_PKG);
   // 認証の表（kaname_auth.user）は別の道の migration。土台を使う試験が自分の足し込みで書くので、ほかの試験が先に流れた DB でだけ在る状態にしない（K-644・K-433）
   await migrateAuth(DB_URL);
   const admin = new pg.Pool({ connectionString: DB_URL, max: 3 });
+  await dropMatrixOpsSeeds(admin);
   const pool = createPool({ databaseUrl: APP_URL, max: 6 });
   const repo = await createRepository(pool);
   const release = { dir: "", base: "" };

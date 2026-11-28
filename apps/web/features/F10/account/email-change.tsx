@@ -57,12 +57,16 @@ function useSendOnce(onOk: (r: Extract<ChangeResult, { kind: "ok" }>) => Promise
   const sending = useRef(false);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<StepUpNeeds | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpNeeds | null>(null);
   const send = async (email: string, retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) return setStepUp(needStepUp.current);
     sending.current = true;
     setBusy(true);
     try {
       const r = await requestChange(email);
+      if (r.kind !== "step_up") needStepUp.current = null;
       if (r.kind === "ok") {
         await onOk(r);
         return;
@@ -70,7 +74,10 @@ function useSendOnce(onOk: (r: Extract<ChangeResult, { kind: "ok" }>) => Promise
       if (r.kind === "auth") return; // call が入り直しへ送る
       if (r.kind === "step_up") {
         if (retried) onShown({ notice: downText() });
-        else setStepUp(await readStepUpNeeds());
+        else {
+          needStepUp.current = await readStepUpNeeds();
+          setStepUp(needStepUp.current);
+        }
         return;
       }
       onShown(shownOf(r));

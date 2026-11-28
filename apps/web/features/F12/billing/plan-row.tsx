@@ -42,6 +42,8 @@ export function PlanRow({ workspace }: PlanRowProps) {
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const pendingKey = useRef<PlanKey | null>(null);
 
   if (q.isPending) return <Loading />;
@@ -70,10 +72,17 @@ export function PlanRow({ workspace }: PlanRowProps) {
 
   const send = async (key: PlanKey, retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) {
+      setView(null);
+      pendingKey.current = key;
+      setStepUp(needStepUp.current);
+      return;
+    }
     sending.current = true;
     setBusy(true);
     try {
       const r = await call("changePlan", { body: { plan_key: key } as never, screenId: PLAN_SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) {
         setView(null);
         setStepUp(null);
@@ -86,7 +95,8 @@ export function PlanRow({ workspace }: PlanRowProps) {
         const s = await call("getMySecurity", { screenId: PLAN_SCREEN, keepOn401: true });
         const sec = s.ok ? s.data : {};
         pendingKey.current = key;
-        setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+        needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+        setStepUp(needStepUp.current);
         return;
       }
       if (r.kind === "unauthenticated") return; // call が入り直しへ送る

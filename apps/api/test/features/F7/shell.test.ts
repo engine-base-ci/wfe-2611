@@ -147,7 +147,7 @@ const seedView = async (
   ).id;
 
 describe("K-465 外枠の数と帯を 1 本で返す", () => {
-  it("K465-API-001 答えの形：鍵はちょうど 9 個（saved_views を含む）・型は決めたとおり。星付きや並べ替えの欄は無い", async () => {
+  it("K465-API-001 答えの形：鍵はちょうど 10 個（saved_views・service_status を含む）・型は決めたとおり。星付きや並べ替えの欄は無い", async () => {
     await ready();
     const w = await world();
     await mk(w.co, { assignee: w.me });

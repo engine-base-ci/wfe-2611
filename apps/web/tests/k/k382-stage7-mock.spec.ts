@@ -28,7 +28,8 @@ const TITLE = "セイコー様へ 11 月分の請求書を送る";
 
 /** 画面の葉と、その葉が本物にするモックの状態（11_tickets/K-382.md・K-392〜K-398.md の頭の欄 mock: と同じ・26 個） */
 const LEAVES: Record<string, readonly string[]> = {
-  "K-382": ["prog-overview"],
+  // dec-empty は K-397 が D-150.41 で正の組から外した（0 件の詳細には決定ログの場所が無い）。段 7 の下絵の一覧に残るので持ち主は K-382
+  "K-382": ["prog-overview", "dec-empty"],
   "K-395": [
     "prog-menu",
     "prog-hold-dialog",
@@ -43,7 +44,7 @@ const LEAVES: Record<string, readonly string[]> = {
   "K-393": ["talk-compose", "talk-send", "talk-cannot"],
   "K-394": ["talk-edit", "talk-delete"],
   "K-396": ["talk-compose-stage"],
-  "K-397": ["dec-log", "dec-empty", "dec-add"],
+  "K-397": ["dec-log", "dec-add"],
   "K-398": ["dec-from-message", "dec-revise", "dec-cancel", "dec-conflict"],
 };
 const ALL = Object.values(LEAVES).flat();

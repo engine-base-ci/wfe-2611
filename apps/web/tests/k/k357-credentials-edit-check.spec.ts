@@ -650,8 +650,9 @@ test("K357-UI-015 上書きの取り直し：口が 403 STEP_UP_REQUIRED → 上
   await checkDialog(page).getByRole("button", { name: "確かめる", exact: true }).click();
   await expect(checkDialog(page)).toHaveCount(0);
   await expect(d).toHaveCount(0);
-  expect(m.updates).toHaveLength(3);
-  expect(m.updates[2]!.body).toEqual(m.updates[1]!.body);
+  // やめた後の押し直しは送らず取り直しの小窓から・取り直した後に 1 回だけ送る（K-820 の形に揃える PM の決め 2026-11-28）
+  expect(m.updates).toHaveLength(2);
+  expect(m.updates[1]!.body).toEqual(m.updates[0]!.body);
   expect(m.stepUps).toHaveLength(1);
 });
 

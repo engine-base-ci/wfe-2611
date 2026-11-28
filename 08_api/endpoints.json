@@ -7068,7 +7068,7 @@
      "status": 403,
      "code": "E-CRED-011",
      "body": {
-      "error": "dependency",
+      "error": "conflict",
       "code": "E-CRED-011"
      },
      "errors": [
@@ -16698,7 +16698,7 @@
      "status": 409,
      "code": "E-CRED-011",
      "body": {
-      "error": "dependency",
+      "error": "conflict",
       "code": "E-CRED-011"
      },
      "errors": [

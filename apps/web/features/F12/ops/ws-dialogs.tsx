@@ -131,6 +131,8 @@ export function useWsDialogs({ id, ws, caps, reload, replace }: WsDialogsArgs): 
   const [stepUp, setStepUp] = useState<StepUpAsk | null>(null);
   const [reasonOf, setReasonOf] = useState<Record<string, string>>({});
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
 
   const has = (c: string) => caps.includes(c);
   const inquiries = useInquiries(id, open === "peek" && has("inquiry"));
@@ -173,16 +175,20 @@ export function useWsDialogs({ id, ws, caps, reload, replace }: WsDialogsArgs): 
     retry: boolean,
   ): Promise<void> {
     if (sending.current) return;
+    const guardedKind = kind === "peek" || kind === "stop" || kind === "resume";
+    if (guardedKind && !retry && needStepUp.current) return setStepUp({ kind, ...needStepUp.current });
     sending.current = true;
     setBusy(kind);
     setError(null);
     try {
       const r = await run();
+      if (guardedKind && (r.ok || r.kind !== "step_up")) needStepUp.current = null;
       if (r.ok) return done(r.data);
-      if (r.kind === "step_up" && (kind === "peek" || kind === "stop" || kind === "resume") && !retry) {
+      if (r.kind === "step_up" && guardedKind && !retry) {
         const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
         const sec: { two_factor?: boolean | null; has_password?: boolean | null } = s.ok ? s.data : {};
-        setStepUp({ kind, withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+        needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+        setStepUp({ kind, ...needStepUp.current });
         return;
       }
       if (r.kind === "unauthenticated") return; // call が入り直しへ送る

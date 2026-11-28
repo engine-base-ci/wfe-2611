@@ -3595,7 +3595,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CRED-011": {
     "id": "E-CRED-011",
-    "cls": "dependency",
+    "cls": "conflict",
     "message": "このログイン情報は失効しているか、期限が過ぎています。預け直してください",
     "action": "預け直す",
     "undo": false,

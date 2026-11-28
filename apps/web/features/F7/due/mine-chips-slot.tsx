@@ -149,7 +149,7 @@ function MineSettings({ name }: { name: string }) {
 }
 
 export function MineChipsSlot({ columns, name, extra, onExtra, counts, rows }: MineChipsSlotProps) {
-  const who = useQuery({ queryKey: ["me"], queryFn: me, ...ONCE });
+  const who = useQuery({ queryKey: ["me"], queryFn: me, ...ONCE, retryOnMount: false }); // /me は 1 画面 1 回：断られた後に付いた部品が読み直さない（K235-UI-006）
   const self = who.data?.member_id ? String(who.data.member_id) : "";
   const view = useMineView();
   const today = todayJst();

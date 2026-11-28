@@ -342,16 +342,13 @@ test("K842-UI-007 取り直しで「やめる」は口 1 回のまま・行は�
   expect(ss.count("revoke")).toBe(1);
   expect(mk.count("stepUp")).toBe(0);
 
-  ss.queue(
-    "revoke",
-    err(403, "STEP_UP_REQUIRED"),
-    err(403, "STEP_UP_REQUIRED", { message: "本人確認をもう一度してください" }),
-  );
+  // やめた後の押し直しは送らず取り直しの小窓から・取り直した後に 1 回だけ送る（K-820 の形に揃える PM の決め 2026-11-28）
+  ss.queue("revoke", err(403, "STEP_UP_REQUIRED", { message: "本人確認をもう一度してください" }));
   await rowOf(page, IPHONE.name).getByRole("button", { name: "切る", exact: true }).click();
   await confirmBtn(page).click();
   await passStepUp(page);
   await expect(dlg(page)).toContainText("本人確認をもう一度してください");
-  expect(ss.count("revoke")).toBe(3);
+  expect(ss.count("revoke")).toBe(2);
   await expect(rowOf(page, IPHONE.name)).toHaveCount(1);
 });
 

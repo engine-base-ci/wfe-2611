@@ -172,6 +172,8 @@ function Editor({ t }: { t: TemplateOne }) {
   const [invalid, setInvalid] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<StepUpState>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpState>(null);
   const pending = useRef<(() => Promise<void>) | null>(null);
   const sending = useRef(false);
   const seq = useRef(0);
@@ -202,10 +204,17 @@ function Editor({ t }: { t: TemplateOne }) {
     retried = false,
   ): Promise<void> =>
     guarded(async () => {
+      if (!retried && needStepUp.current) {
+        pending.current = () => send(b, done, onOffline, true);
+        setStepUp(needStepUp.current);
+        return;
+      }
       const w = await releaseTemplate(t.id, b);
+      if (w.ok || w.err.kind !== "step_up") needStepUp.current = null;
       if (!w.ok && w.err.kind === "step_up" && !retried) {
         pending.current = () => send(b, done, onOffline, true);
-        setStepUp(await stepUpShape());
+        needStepUp.current = await stepUpShape();
+        setStepUp(needStepUp.current);
         return;
       }
       if (!w.ok && w.err.status === 401) {

@@ -253,6 +253,8 @@ function MembersScreen() {
   const [busy, setBusy] = useState(false);
   const [linkBusy, setLinkBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const rows = useInviteRows({ reload: () => void qc.invalidateQueries({ queryKey: MEMBERS_KEY }) });
   const sending = useRef(false);
   const people = useMemo(() => peopleOf(view?.answer.groups), [view]); // K-805
@@ -413,7 +415,8 @@ function MembersScreen() {
   const askStepUp = async () => {
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = s.ok ? s.data : {};
-    setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+    needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    setStepUp(needStepUp.current);
   };
 
   const showFailure = (r: CallErr) => {
@@ -424,6 +427,11 @@ function MembersScreen() {
 
   const run = async (req: Req, retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) {
+      pending.current = req;
+      setStepUp(needStepUp.current);
+      return;
+    }
     sending.current = true;
     const setWait = req.kind === "invite" ? setBusy : setLinkBusy;
     setWait(true);
@@ -434,6 +442,7 @@ function MembersScreen() {
         req.kind === "invite"
           ? await call("createInvitations", { body: req.body, idempotencyKey: idem.current, screenId: SCREEN })
           : await call("createInvitationLink", { body: req.body, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) {
         pending.current = null;
         if (req.kind === "link") return setLink((r.data as unknown as { url?: string }).url ?? null);

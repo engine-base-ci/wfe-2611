@@ -95,6 +95,8 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   const [removeBusy, setRemoveBusy] = useState(false);
   // 取り直し
   const [pending, setPending] = useState<Pending | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef(false);
   const sending = useRef(false);
   // 付けるまで進めない
   const [back, setBack] = useState(false);
@@ -183,7 +185,12 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     else void load();
   };
   const runAdd = async (name: string, retried: boolean) => {
+    if (!retried && needStepUp.current) {
+      setAddOpen(false);
+      return setPending({ kind: "add", name });
+    }
     const r = await addPasskey(name);
+    needStepUp.current = !r.ok && r.kind === "step_up" && !retried;
     if (r.ok) {
       setAddOpen(false);
       return afterAdd();
@@ -246,6 +253,10 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     setRemoveId(id);
   };
   const runRemove = async (id: string, name: string, retried: boolean) => {
+    if (!retried && needStepUp.current) {
+      setRemoveId(null);
+      return setPending({ kind: "remove", id, name });
+    }
     let r: CallResult<"deletePasskey">;
     try {
       r = await call("deletePasskey", { params: { id }, screenId: SCREEN, keepOn401: true });
@@ -254,6 +265,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
       setRemoveId(id);
       return setRemoveErr(offline());
     }
+    needStepUp.current = !r.ok && r.kind === "step_up" && !retried;
     if (r.ok) {
       setRemoveId(null);
       return void load();
