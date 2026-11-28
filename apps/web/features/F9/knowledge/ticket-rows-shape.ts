@@ -1,3 +1,4 @@
+import { isUuid } from "@kaname/contracts";
 // チケットのやり取りに出るナレッジの 3 つの行（K-702）の、値を読む唯一の入口。純粋な関数・@/ を読まない・入力を書き換えない。
 //   行は口の葉が ticket_messages（kind change・作者なし）に書く。changes の 1 要素の形の正は口の葉：
 //     守る物 guard_list（K-699）：{ field, from: null, to, note: null, must: [{id,title,place}], opened: [{id,title,place}] }
@@ -31,7 +32,6 @@ export interface BreachRead {
 
 const FIELDS: readonly KnowledgeField[] = ["guard_list", "knowledge_open", "knowledge_breach"];
 const BREACH_KINDS: readonly BreachKind[] = ["ai_unchecked", "human_unchecked", "ai_self_reported"];
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type Rec = Record<string, unknown>;
 const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -82,7 +82,7 @@ export function readBreach(change: unknown): BreachRead | null {
 
 /** ページの道：uuid の形のときだけ /knowledge/<id>（小文字）。それ以外はリンクにしない（null） */
 export function pageHref(id: unknown): string | null {
-  return typeof id === "string" && UUID.test(id) ? `/knowledge/${id.toLowerCase()}` : null;
+  return typeof id === "string" && isUuid(id) ? `/knowledge/${id.toLowerCase()}` : null;
 }
 
 /** 畳んだ 1 行の件数の字（個数は並びの長さ） */

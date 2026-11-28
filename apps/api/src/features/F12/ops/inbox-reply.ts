@@ -14,10 +14,9 @@ import { NotifyGateway, type Transport } from "@kaname/notify";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "./db.js";
 import { OPS_INQUIRY_MESSAGE_KEYS } from "./inbox-shape.js";
+import { isUuid } from "@kaname/contracts";
 
 export const REPLIED_KIND = "inquiry.replied";
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface InboxReplyDeps {
   appPool: pg.Pool;
@@ -66,7 +65,7 @@ function toMessage(src: unknown): Json {
 /** 入口の形の確かめ（:id が uuid・body が文字）。契約の入口が先に断るが、ここでも見る（2 層目） */
 function checkInput(a: HookArgs): Issue[] {
   const issues: Issue[] = [];
-  if (!UUID.test(a.id ?? "")) issues.push({ field: "id", message: "uuid の形" });
+  if (!isUuid(a.id ?? "")) issues.push({ field: "id", message: "uuid の形" });
   const body = ((a.input ?? {}) as Json)["body"];
   if (typeof body !== "string") issues.push({ field: "body", message: "文字" });
   return issues;

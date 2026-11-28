@@ -9,7 +9,7 @@ INPUTS = {
 # 直した 1 行：createScope の答え（ScopeCreated）と同じ 10 の鍵（apps/api/src/features/F10/admin/scopes/input.ts の SCOPE_KEYS）。
 # listScopes の 1 件にも同じ 10 の鍵を足す（元の表の列 layer_id などは残る＝答えの形は足した鍵の分だけ広がる）。並びは上のグループが先・兄弟は position の順
 RESPONSES = {
-    "updateScope": ("ScopeUpdated", {"id": "uuid", "name": "string", "ticket_prefix": "string", "color": "string?", "parent_id": "uuid?",
+    "updateScope": ("ScopeUpdated", {"id": "uuid", "name": "string", "ticket_prefix": "string?", "color": "string?", "parent_id": "uuid?",
                                      "layer": "object?", "position": "integer", "managers": "array", "member_count": "integer",
                                      "created_at": "string"}),
     "listScopes": ("ScopeListItem", {"id": "uuid", "name": "string", "ticket_prefix": "string?", "color": "string?", "parent_id": "uuid?",

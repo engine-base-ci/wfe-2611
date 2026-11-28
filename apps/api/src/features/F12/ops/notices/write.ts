@@ -9,8 +9,8 @@ import type pg from "pg";
 import type { HookArgs, HookReply } from "../../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "../db.js";
 import { toOpsNoticeDetail } from "./shape.js";
+import { isUuid } from "@kaname/contracts";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const WHERE = "notices";
 
 /** 関数が返す断りの言葉 → 口の答え（欄・details を付けない） */
@@ -68,7 +68,7 @@ export function createCreateOpsNotice(appPool: pg.Pool): (a: HookArgs) => Promis
 export function createUpdateOpsNotice(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a) => {
     const id = a.id ?? "";
-    if (!UUID.test(id))
+    if (!isUuid(id))
       return {
         status: 422,
         body: {

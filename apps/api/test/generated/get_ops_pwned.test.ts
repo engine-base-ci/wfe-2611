@@ -21,6 +21,8 @@ describe("GET /api/v1/ops/pwned", () => {
   });
   // 当てはまらない（絞り込みを持たない（会社の数までを全部返す）。cursor・limit の形は入口の共通の確かめ（op.ts・K-144）で、口は読まない）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_ops_pwned_rejected_422");
+  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-pwned.test.ts）：UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない
+  it.todo("test_get_ops_pwned_not_found");
   // 当てはまらない（読む口の上限は入口の共通（op.ts・K-144）。書く口の上限は K995-API-013）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_ops_pwned_rate_limited");
   it("test_get_ops_pwned_terms_pending", () => {

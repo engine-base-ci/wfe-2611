@@ -24,6 +24,8 @@ describe("GET /api/v1/portal", () => {
     // 本物の試験：apps/api/test/features/F11/portal-visit.test.ts の「K913-API-002」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F11/portal-visit.test.ts", "utf8")).toContain("K913-API-002");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F11/portal-read.test.ts）：UNWANTED: IF 先方の人の場所が読めないなら、Kaname は 404 を返し、中身を返さない
+  it.todo("test_get_portal_not_found");
   it("test_get_portal_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F11/portal-read.test.ts の「K906-API-011」（同じ CI の G3 で流れる）

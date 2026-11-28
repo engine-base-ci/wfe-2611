@@ -15,10 +15,13 @@
     "test_post_ops_plan_proposals_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_ops_plan_proposals_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
     "test_post_ops_plan_proposals_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
@@ -39,10 +42,13 @@
     "test_patch_ops_plan_proposals_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_ops_plan_proposals_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_patch_ops_plan_proposals_id_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_patch_ops_plan_proposals_id_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
     "test_patch_ops_plan_proposals_id_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
@@ -61,12 +67,15 @@
     "test_post_ops_plan_proposals_id_submit_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_id_submit_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
     "test_post_ops_plan_proposals_id_submit_rejected_422": "体を受けない（道の id の形は K988-API-008）",
     "test_post_ops_plan_proposals_id_submit_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）",
-    "test_post_ops_plan_proposals_id_submit_too_large": "送る量の守り（1MB）は入口の共通（op.ts・K-144）",
     "test_post_ops_plan_proposals_id_submit_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
    }
   }

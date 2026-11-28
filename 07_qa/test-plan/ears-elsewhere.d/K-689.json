@@ -55,11 +55,13 @@
     "test_put_knowledge_shares_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_put_knowledge_shares_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
-   "na": {
-    "test_put_knowledge_shares_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 4 欄）"
-   }
+   "na": {}
   }
  }
 }
