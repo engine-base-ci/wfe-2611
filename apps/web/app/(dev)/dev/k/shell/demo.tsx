@@ -6,7 +6,9 @@ import type { Theme } from "@/lib/theme";
 
 const ALL = Object.values(NAV.screens).map((s) => s.route);
 
-function Inner({ theme, role, allBuilt, panel }: { theme: Theme; role: RoleId; allBuilt: boolean; panel: boolean }) {
+type Built = "all" | "none" | "real";
+
+function Inner({ theme, role, built, panel }: { theme: Theme; role: RoleId; built: Built; panel: boolean }) {
   const notify = useNotify();
   const [q, setQ] = useState<string | null>(null);
   return (
@@ -29,7 +31,7 @@ function Inner({ theme, role, allBuilt, panel }: { theme: Theme; role: RoleId; a
       onSearch={setQ}
       onNotices={() => notify("知らせを開く（見本）")}
       onSignOut={() => notify("ログアウト（見本）")}
-      {...(allBuilt ? { built: ALL } : {})}
+      {...(built === "all" ? { built: ALL } : built === "none" ? { built: [] } : {})}
       {...(panel
         ? {
             panel: (
@@ -52,7 +54,7 @@ function Inner({ theme, role, allBuilt, panel }: { theme: Theme; role: RoleId; a
   );
 }
 
-export function ShellDemo(p: { theme: Theme; role: RoleId; allBuilt: boolean; panel: boolean }) {
+export function ShellDemo(p: { theme: Theme; role: RoleId; built: Built; panel: boolean }) {
   return (
     <Toaster>
       <Inner {...p} />
