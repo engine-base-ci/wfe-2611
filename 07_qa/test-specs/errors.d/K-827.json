@@ -1,0 +1,64 @@
+{
+ "errors": [
+  {
+   "id": "E-WS-001",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-name-error"
+   },
+   "when": "ワークスペースの名前が空・空白だけ（半角・全角）・欄が無い",
+   "false_when": "前後の空白を削って 1 字以上の名前",
+   "message": "名前を入れてください",
+   "action": "名前を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く",
+    "steps": [
+     "名前の欄を空にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.83"
+   ]
+  },
+  {
+   "id": "E-WS-002",
+   "class": "validation",
+   "where": {
+    "screen": "company-settings",
+    "state": "st-name-error"
+   },
+   "when": "ワークスペースの名前が前後の空白を削って 101 字以上（サロゲート対は 1 字で数える）",
+   "false_when": "100 字までの名前",
+   "message": "名前は 100 文字までです。短くしてください",
+   "action": "名前を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理者で設定の画面を開く",
+    "steps": [
+     "名前の欄に 101 字を入れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.83"
+   ]
+  }
+ ]
+}
