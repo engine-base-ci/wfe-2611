@@ -1,0 +1,29 @@
+{
+ "ops": {
+  "reportClientRequestDraft": {
+   "file": "apps/api/test/features/F11/client-requests-draft-result.test.ts",
+   "reason": "結果を返す口は本物の PC の印・その PC が受け取った動いている案の仕事・依頼の状態（決まった・押し直された）で答えが変わる。生成の試験の偽のセッションでは PC も仕事も作れない（K-897）",
+   "covers": {
+    "test_post_bridge_jobs_id_client_request_draft_ok": "K897-API-001",
+    "test_post_bridge_jobs_id_client_request_draft_shape": "K897-API-001",
+    "test_post_bridge_jobs_id_client_request_draft_rejected_401": "K897-API-007",
+    "test_post_bridge_jobs_id_client_request_draft_rejected_403": "K897-API-007",
+    "test_post_bridge_jobs_id_client_request_draft_not_found": "K897-API-006",
+    "test_post_bridge_jobs_id_client_request_draft_rejected_422": "K897-API-008",
+    "test_post_bridge_jobs_id_client_request_draft_rejected_422_2": "K897-API-002",
+    "test_post_bridge_jobs_id_client_request_draft_rate_limited": "K897-API-014",
+    "test_post_bridge_jobs_id_client_request_draft_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_jobs_id_client_request_draft_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_client_request_draft_upstream_failed": "この口はサーバーの外を呼ばない（仕事を積む／結果を書くのは DB の関数 1 回・関門 C2。AI を動かすのはつないだ PC の上・K-929）。結果が来ない扱いは K-896 の止まった仕事の引き金（K896-API-012）が受ける"
+   }
+  }
+ }
+}
