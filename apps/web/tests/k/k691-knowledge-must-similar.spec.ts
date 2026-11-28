@@ -35,6 +35,8 @@ const overflowX = (p: Page) =>
   p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const first = (s: string) => s.split("。")[0]!;
 const toggle = (p: Page) => p.getByRole("button", { name: "必ず守る", exact: true });
+// 小窓（modal）が開いている間は、後ろのページは読み上げから外れる（Base UI の Dialog）。押し込みの形は部品のクラスで見る
+const toggleBehind = (p: Page) => p.locator("button.k-f9-must");
 const mustDlg = (p: Page) =>
   p
     .locator(DLG)
@@ -196,7 +198,7 @@ const STATES: Record<string, { pairs: ReturnType<typeof prop>[]; drive: (page: P
         }),
       ]);
       x.similar = SIM;
-      await openAt(page, P_NEW, w);
+      await openAt(page, P_NEW, w, false);
       await done(page).click();
       await expect(simDlg(page)).toBeVisible();
     },
@@ -295,7 +297,7 @@ test("K691-UI-005 上限に届いた（口が 409 E-KNW-060 と今付いてい�
   const list = d.getByLabel("いま付いているページ", { exact: true });
   await expect(list.getByText("メールの書き方", { exact: true })).toBeVisible();
   await expect(list.getByText("いま付いているページ（2）", { exact: true })).toBeVisible();
-  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(toggleBehind(page)).toHaveAttribute("aria-pressed", "false");
   expect(x.count("must")).toBe(1);
   expect(mk.count("page", P_EXPENSE)).toBe(1);
 });
@@ -340,7 +342,7 @@ for (const [name, reply, code] of [
     await expect(d.getByRole("alert")).toContainText(first(msg(code)));
     await expect(d.getByText("メールの書き方", { exact: true })).toBeVisible();
     expect(x.count("must")).toBe(2);
-    await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+    await expect(toggleBehind(page)).toHaveAttribute("aria-pressed", "false");
     await d.getByRole("button", { name: "メールの書き方の「必ず守る」を外す", exact: true }).click();
     await expect(page.locator(DLG)).toHaveCount(0);
     await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
@@ -366,7 +368,7 @@ test("K691-UI-008 外したあとの「続けて付ける」が失敗：また 4
   await d.getByRole("button", { name: "外に出す前の確かめの「必ず守る」を外す", exact: true }).click();
   await expect(d.getByRole("alert")).toContainText(first(msg("E-PAGE-003")));
   await expect(d.getByText("外に出す前の確かめ", { exact: true })).toHaveCount(0);
-  await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(toggleBehind(page)).toHaveAttribute("aria-pressed", "false");
 });
 
 test("K691-UI-009 小窓の閉じる・Esc・右上の×：どれも口を呼ばず閉じ、焦点は「必ず守る」に戻り、ページは変わらない", async ({
@@ -510,7 +512,10 @@ for (const [name, reply] of [
     await startWriting(page);
     await done(page).click();
     await expect(page.locator(CARD)).toBeVisible();
-    await expect(page.locator(".k-toast")).toContainText("似たページを探せませんでした。このまま書き終えます。");
+    // 知らせの置き場は外枠の 1 か所（K-466）。書き終えた知らせと並んで出るので文で探す（K692-UI-006 と同じ）
+    await expect(
+      page.locator(".k-toast", { hasText: "似たページを探せませんでした。このまま書き終えます。" }),
+    ).toBeVisible();
     expect(mk.count("publish")).toBe(1);
     await expect(page.locator(DLG)).toHaveCount(0);
   });
@@ -526,7 +531,8 @@ test("K691-UI-018 似たページの「開く」：新しいタブで /knowledge
   ]);
   await popup.waitForURL(new RegExp(`/knowledge/${P_INVOICE}$`));
   await expect(simDlg(page)).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "本文", exact: true })).toContainText("足した字");
+  // 小窓（modal）の後ろの書いている画面は読み上げから外れる。本文の欄は書いている画面の中の role と名前の属性で見る
+  await expect(page.locator(`${EDIT} [role="textbox"][aria-label="本文"]`)).toContainText("足した字");
 });
 
 test("K691-UI-019 似たページの小窓を Esc・右上の×で閉じる：「戻って直す」と同じ（公開の口 0 回・書いている画面のまま）・焦点は「書き終える」に戻る", async ({
@@ -605,7 +611,7 @@ for (const w of WIDTHS) {
   }) => {
     const { x } = await setup(page);
     x.script("must", full(MUST_COMPANY));
-    await openAt(page, P_EXPENSE, w);
+    await openAt(page, P_EXPENSE, w, false);
     await toggle(page).click();
     const d = mustDlg(page);
     await expect(d).toBeVisible();

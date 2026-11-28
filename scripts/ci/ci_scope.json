@@ -3445,6 +3445,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F9/settings/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k709-settings-fields.spec.ts",
+    "apps/web/test/k709-settings-fields-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F9/members/**",
     "apps/web/features/F10/invite/members-page.tsx",
     "apps/web/features/F10/invite/views.tsx"
@@ -7696,6 +7705,7 @@
    "pnpm-lock.yaml",
    "package.json",
    "scripts/ci/web_run.py",
+   "scripts/ci/web_pull.py",
    "scripts/ci/web_select.py"
   ],
   "web_own": [
@@ -7773,6 +7783,7 @@
    ],
    "paths": [
     "scripts/ci/web_run.py",
+    "scripts/ci/web_pull.py",
     "scripts/ci/web_select.py",
     "scripts/ci/fidelity_compare.mjs",
     "scripts/ci/visual_fidelity.mjs",

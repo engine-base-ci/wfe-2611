@@ -91,7 +91,8 @@ export async function matchF9(
   const mock = await browser.newPage({ viewport: vp, colorScheme: "light", reducedMotion: "reduce" });
   await blockBridge(mock);
   expect((await mock.goto(`/dev/mock/f9/${id}`))?.status(), `モック ${id}`).toBe(200);
-  await expect(mock.locator(`[data-mock="${id}"] .k-f9-main`)).toBeVisible();
+  // ナレッジの下絵は木とページの骨組み（.k-f9-main）、チケットの下絵（tk-guard・tk-opened・tk-blocked・K-702／K-703）は外枠の本文（.k-main）を待つ
+  await expect(mock.locator(`[data-mock="${id}"] :is(.k-f9-main, .k-main)`).first()).toBeVisible();
   await mock.evaluate(() => document.fonts.ready);
   await mock.mouse.move(0, 0);
   await settle(mock);

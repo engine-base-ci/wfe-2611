@@ -407,11 +407,16 @@ test("K899-UI-016 案が 2 分たっても来ない：文「案がまだ届い�
   await open(page, w);
   await page.getByRole("button", { name: "案を作る", exact: true }).click();
   await expect(page.getByText("案を作っています…", { exact: true })).toBeVisible();
-  await page.clock.runFor(125_000);
-  await expect(
-    page.getByText("案がまだ届いていません。もう一度「案を作る」を押してください。", { exact: true }),
-  ).toBeVisible();
-  const reads = w.calls.filter((c) => c.method === "GET" && /\/client_requests\/[^/]+$/.test(c.path)).length;
+  const late = page.getByText("案がまだ届いていません。もう一度「案を作る」を押してください。", { exact: true });
+  const readsNow = () => w.calls.filter((c) => c.method === "GET" && /\/client_requests\/[^/]+$/.test(c.path)).length;
+  // 時計を 5 秒ずつ進め、読み直しの答えが返ってから次へ（読み直しは本物の網を待つので、一度に 125 秒進めると次の 5 秒の待ちが積まれない）
+  for (let i = 0; i < 30 && !(await late.isVisible()); i++) {
+    const n = readsNow();
+    await page.clock.runFor(5_000);
+    await expect.poll(async () => readsNow() > n || (await late.isVisible())).toBe(true);
+  }
+  await expect(late).toBeVisible();
+  const reads = readsNow();
   expect(reads, "5 秒おき・最大 24 回の読み直し（2 分）").toBeLessThanOrEqual(26);
   await page.clock.runFor(60_000);
   expect(w.calls.filter((c) => c.method === "GET" && /\/client_requests\/[^/]+$/.test(c.path)).length).toBe(reads);

@@ -35,6 +35,7 @@ import {
   type TicketApi,
   msg,
   openAdd,
+  openCard,
   openLinks,
   overflowX,
   reloadLinks,
@@ -95,7 +96,7 @@ test("K452-UI-003 読めない：つながりの口が 503 のとき、カード
   const { l } = await openLinks(page, { readStatus: 503 });
   await expect(card(page).getByRole("alert")).toContainText(msg("E-PAGE-003"));
   // 本文の形（区画 → 自由な 1 枚）に依らず、カードの上の題の行が読めること（詳細の外枠は壊れない）
-  await expect(page.getByRole("heading", { level: 1, name: "問い合わせ（山田様）に一次返信する" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "11 月分の請求書を送る" })).toBeVisible(); // 詳細の答え（土台 mockApi）の題名
   l.readStatus = 200;
   await card(page).getByRole("button", { name: "もう一度読む", exact: true }).click();
   await expect(heading3(page, "つながり 2")).toBeVisible();
@@ -412,6 +413,7 @@ test("K452-UI-020 入口：子チケットは作る面で作る。「子を足�
   await page.waitForURL(at);
   await openTicket(page);
   await expect(card(page)).toBeVisible();
+  await openCard(page); // 開き直すとカードは閉じた形（K-452）
   const d = await openAdd(page);
   await d.getByRole("tab", { name: "子チケットを作る", exact: true }).click();
   await expect(d).toContainText(

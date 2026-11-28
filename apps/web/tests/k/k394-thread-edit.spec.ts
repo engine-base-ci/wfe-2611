@@ -280,7 +280,12 @@ for (const [label, reply, text] of [
     await page.getByRole("menuitem", { name: "消す…" }).click();
     await dialog(page).getByRole("button", { name: "消す", exact: true }).click();
     await expect(dialog(page).getByRole("alert")).toContainText(text.slice(0, 10));
-    await expect(postOf(page, "高本 聖斗", "11:02")).toBeVisible();
+    // 知らせを出した確かめの小窓（alertdialog・modal）は開いたままなので、後ろのパネルは読み上げの木から外れる（aria-hidden）。見えているかで確かめる
+    await expect(
+      page
+        .getByRole("complementary", { name: "チケットのパネル", includeHidden: true })
+        .getByRole("article", { name: "高本 聖斗 11:02", exact: true, includeHidden: true }),
+    ).toBeVisible();
   });
 }
 

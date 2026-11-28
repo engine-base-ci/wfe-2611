@@ -91,16 +91,26 @@ const STATES: Record<string, (page: Page, w: number) => Promise<void>> = {
     await openField(page, F_PJ, "PJコード", w);
     await delBtn(page).click();
     await expect(delDlg(page, "PJコード")).toBeVisible();
+    // 幅 375・768 は「この項目を消す…」が画面の下で、押すと画面が下へ動く（モックは動かない）。比べる前に上へ戻す
+    await page.evaluate(() => window.scrollTo(0, 0));
   },
 };
+// 小窓の後ろの項目の欄は K-709 の K709-UI-001 と同じ訳で options・acts の縦の位置を比べない（型の固定の文がモックに無い・K-709 の決め fc191f63ed）
+const UI001_SKIP = ["options:y", "acts:y"] as const;
 for (const [id, drive] of Object.entries(STATES)) {
   for (const w of WS_WIDTHS) {
     test(`K720-UI-001 ${id} 幅 ${w}：小窓の位置と大きさと字がモックと同じ（matchWs の bad が 0）`, async ({
       browser,
     }) => {
-      const { bad, rows } = await matchWs(browser, id, w, async (page) => {
-        await drive(page, w);
-      });
+      const { bad, rows } = await matchWs(
+        browser,
+        id,
+        w,
+        async (page) => {
+          await drive(page, w);
+        },
+        { skip: UI001_SKIP },
+      );
       expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);
     });
@@ -470,7 +480,7 @@ for (const [name, reply, code] of [
     const a = delDlg(page, "PJコード");
     await a.getByRole("button", { name: "消す", exact: true }).click();
     await expect(a.getByRole("alert")).toContainText(first(msg(code)));
-    await expect(page.locator(LIST).getByRole("link", { name: /^PJコード/ })).toBeVisible();
+    await expect(page.locator(LIST).getByRole("link", { name: /^PJコード/, includeHidden: true })).toBeVisible();
     await a.getByRole("button", { name: "消す", exact: true }).click();
     await expect(page.getByRole("alertdialog")).toHaveCount(0);
     expect(mk.count("deleteField")).toBe(2);
@@ -550,9 +560,12 @@ test("K720-UI-025 キーボードだけ：「項目を足す」に焦点して E
   await expect(nameOf(d)).toBeFocused();
   for (let i = 0; i < 30; i++) {
     await page.keyboard.press("Tab");
-    expect(await page.evaluate(() => Boolean(document.activeElement?.closest(".k-dialog"))), `Tab ${i + 1} 回目`).toBe(
-      true,
-    );
+    // 小窓の端の見えない番（focus guard）に一瞬焦点が乗り、すぐ小窓の中へ戻る。戻るのを待って確かめる
+    await expect
+      .poll(() => page.evaluate(() => Boolean(document.activeElement?.closest(".k-dialog"))), {
+        message: `Tab ${i + 1} 回目`,
+      })
+      .toBe(true);
   }
   await page.keyboard.press("Escape");
   await expect(addBtn(page)).toBeFocused();

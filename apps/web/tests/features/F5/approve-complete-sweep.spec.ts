@@ -17,7 +17,6 @@ import {
   mockApi,
   openTicket,
   bandOf,
-  dialog,
   ticketOf,
   withBand,
   type Band,
@@ -38,7 +37,8 @@ const catalogText = (code: string): string => {
   const walk = (x: unknown): void => {
     if (found || x === null || typeof x !== "object") return;
     const o = x as Record<string, unknown>;
-    if (o["code"] === code && typeof o["message"] === "string") found = o["message"];
+    // 正本の行は id（errors.json）・code（ほかの形）のどちらかで番号を持つ
+    if ((o["id"] === code || o["code"] === code) && typeof o["message"] === "string") found = o["message"];
     else Object.values(o).forEach(walk);
   };
   walk(JSON.parse(readFileSync(path, "utf8")));
@@ -115,6 +115,8 @@ async function sweepFailed(page: Page, assignee: string): Promise<Sweep> {
   });
   return s;
 }
+/** 確かめの小窓：止めるは取り消せない確かめなので、components/k の Confirm（role=alertdialog・K-218・K-229 の小窓の型） */
+const dialog = (page: Page) => page.getByRole("alertdialog");
 const alertBox = (page: Page) => bandOf(page).getByRole("alert").filter({ hasText: TITLE });
 
 row(R["K1192-UI-001"], async (page) => {

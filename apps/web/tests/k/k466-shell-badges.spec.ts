@@ -48,7 +48,7 @@ async function openScreen(page: Page, s: Screen, o: ShellOpts, w = 1440, over: P
   const m = await mockShell(page, o, over);
   if (s === "list") {
     await open(page, "/tickets", w);
-    await expect(page.getByRole("table", { name: "チケットの一覧" }).locator("tbody tr[data-ticket]")).toHaveCount(3);
+    await expect(page.locator('table[aria-label="チケットの一覧"] tbody tr[data-ticket]')).toHaveCount(3);
   } else if (s === "detail") await openTicket(page, w);
   else await openQueue(page, w);
   await expect(page.locator("#k-main h1").first()).toBeVisible();
@@ -255,12 +255,13 @@ test("K466-UI-007 役と名前と会社：role_id owner で R1 の左のメニ�
   await expect(leftNav(page).locator(".k-ws-name")).toContainText("ENGINE BASE");
   await expect(leftNav(page).locator(".k-ws-mark")).toHaveText("E");
   await bar(page).getByRole("button", { name: "自分のメニュー", exact: true }).click();
-  await expect(page.locator(".k-menu-head")).toHaveText("高本");
+  // 自分のメニューの中身は K-844 の箱（名前は頭の行 .k-f10a-who。自分の答えが読めないときは外枠の名前）
+  await expect(page.locator(".k-f10a-who b")).toHaveText("高本");
   await page.keyboard.press("Escape");
   await openScreen(page, "list", { ...BADGES, name: null, company: null });
   await expect(leftNav(page).locator(".k-ws-mark")).toHaveText("");
   await bar(page).getByRole("button", { name: "自分のメニュー", exact: true }).click();
-  await expect(page.locator(".k-menu-head")).toHaveText("");
+  await expect(page.locator(".k-f10a-who b")).toHaveText("");
   await page.keyboard.press("Escape");
   await openScreen(page, "list", { ...BADGES, roleId: "wizard" });
   await expect(leftNav(page).getByRole("link", { name: /^チケット/ })).toHaveCount(0);

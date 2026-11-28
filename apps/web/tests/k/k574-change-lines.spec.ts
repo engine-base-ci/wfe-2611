@@ -90,8 +90,9 @@ test("K574-UI-002 機械・AI が書いた行（author が空）：名前は「A
   ]);
   const l = lines(page);
   await expect(l.nth(0)).toContainText(/AI\s?が確認項目『PDF の合計が請求額と合う』にチェックを付けました/);
-  await expect(l.nth(0).locator(".k-talk-avatar").first()).toHaveText("AI");
-  await expect(l.nth(1).locator(".k-talk-avatar").first()).toHaveText("高");
+  // 変更の 1 行の顔の字は CSS で描く（data-glyph・字が「佐佐藤」と二重にならない・K392-UI-024。K702-UI-011 と同じ見方）
+  await expect(l.nth(0).locator(".k-talk-avatar").first()).toHaveAttribute("data-glyph", "AI");
+  await expect(l.nth(1).locator(".k-talk-avatar").first()).toHaveAttribute("data-glyph", "高");
 });
 
 test("K574-UI-003 本文の行：直した・版 N に戻した（口の葉 K-432・K-433 が書く changes の形）", async ({ page }) => {
@@ -229,7 +230,14 @@ test("K574-UI-010 下絵との突き合わせ（f4v2-detail-thread × 幅 375・
     await mockThread(app, { items: SAMPLE(), extra: { fields: FIELDS } });
     await openThread(app, w);
     await expect(feed(app).locator(".k-talk-line")).toHaveCount(4);
-    const got = (await feed(app).locator(".k-talk-line").allTextContents()).map(norm);
+    // 本番の顔の字は CSS で描く（data-glyph・K392-UI-024）。下絵は字で置くので、顔の字を頭に足して同じ字の並びで比べる
+    const got = (
+      await feed(app)
+        .locator(".k-talk-line")
+        .evaluateAll((ls) =>
+          ls.map((e) => (e.querySelector(".k-talk-avatar")?.getAttribute("data-glyph") ?? "") + (e.textContent ?? "")),
+        )
+    ).map(norm);
     expect(got, `幅 ${w}`).toEqual(want);
     await app.close();
   }

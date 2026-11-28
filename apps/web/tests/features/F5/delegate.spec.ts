@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Page, Request, Route } from "@playwright/test";
 import { expect, missingRows, row, rowsOf } from "../../_lib/row";
-import { detailRows } from "../../k/detail-kit";
+import { detailRows, isMayAppear } from "../../k/detail-kit";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SPEC = join(HERE, "../../../../../07_qa/test-specs/k/delegate.md");
@@ -165,8 +165,10 @@ row(R["K62-UI-000"], async (page) => {
   await open(page);
   // K-60 が持つ詳細の要素（チケットへ戻る など）は K-60 の表が受け持つ。外枠は外枠の試験（D-128.151）
   // K-226 が詳細の本文と右のパネルに置いた操作要素（まだ使えない物も・D-145.9）は K-226 の一覧（detailRows）が受け持つ
+  // 後ろの葉が詳細に足す操作要素（親チケットを決める・区画の「開く」など・DETAIL_MAY_APPEAR）は、その葉の表が持つ（K226-UI-025 と同じ決まり）
   const both = [...ROWS, ...rowsOf(K60_SPEC), ...detailRows(["目的"])];
-  expect(await missingRows(page, both, "[data-ticket-shell]")).toEqual([]);
+  const missing = await missingRows(page, both, "[data-ticket-shell]");
+  expect(missing.filter((x) => !isMayAppear(/「(.+)」$/.exec(x)?.[1] ?? x))).toEqual([]);
 });
 
 row(R["K62-UI-001"], async (page) => {

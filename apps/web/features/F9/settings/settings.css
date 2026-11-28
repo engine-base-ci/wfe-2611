@@ -230,6 +230,11 @@
   color: var(--k-neutral);
   cursor: grab;
 }
+/* つまみでつかんでいる選ぶ物（K-709・キーボードの並べ替え） */
+.k-f9s-grip[aria-pressed="true"] {
+  background: var(--k-select);
+  color: var(--k-primary);
+}
 .k-f9s-pill {
   padding: 0 var(--k-s-md);
   border-radius: var(--k-r-full);
