@@ -553,7 +553,7 @@ jobs:
     permissions: {{ contents: write }}
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/ci/web_run.py release
+{VENV}      - run: python3 scripts/ci/web_run.py release
   junit:
     runs-on: {RUNS_ON}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
