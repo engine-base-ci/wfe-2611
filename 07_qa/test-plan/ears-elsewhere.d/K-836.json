@@ -1,0 +1,80 @@
+{
+ "ops": {
+  "listMySessions": {
+   "file": "apps/api/test/features/F10/me-sessions.test.ts",
+   "reason": "端末の一覧は、同じログインの全部のワークスペースの行の並べ方・今の端末・PC で答えが変わる。生成の試験の種では作れない（K-836）",
+   "covers": {
+    "test_get_me_sessions_ok": "K836-API-001",
+    "test_get_me_sessions_shape": "K836-API-001",
+    "test_get_me_sessions_rejected_401": "K836-API-011",
+    "test_get_me_sessions_rejected_403": "K836-API-011",
+    "test_get_me_sessions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_me_sessions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_me_sessions_rejected_422_2": "K836-API-010"
+   },
+   "na": {
+    "test_get_me_sessions_rejected_422": "体も問い合わせも受けない GET（QUERIES は空・K-836）",
+    "test_get_me_sessions_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない"
+   }
+  },
+  "revokeMySession": {
+   "file": "apps/api/test/features/F10/me-sessions.test.ts",
+   "reason": "端末を切る口は、画面と PC・今の端末・ほかの人の端末・同時で答えが変わる（K-836）",
+   "covers": {
+    "test_delete_me_sessions_id_ok": "K836-API-003",
+    "test_delete_me_sessions_id_shape": "K836-API-003",
+    "test_delete_me_sessions_id_rejected_401": "K836-API-011",
+    "test_delete_me_sessions_id_rejected_403": "K836-API-014",
+    "test_delete_me_sessions_id_not_found": "K836-API-006",
+    "test_delete_me_sessions_id_rejected_422": "K836-API-006",
+    "test_delete_me_sessions_id_conflict": "K836-API-005",
+    "test_delete_me_sessions_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_me_sessions_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_me_sessions_id_rejected_422_2": "K836-API-010"
+   },
+   "na": {
+    "test_delete_me_sessions_id_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない"
+   }
+  },
+  "revokeOtherSessions": {
+   "file": "apps/api/test/features/F10/me-sessions.test.ts",
+   "reason": "全部切る口は、端末の数え方（全部のワークスペースの行）・PC の仕事・今の端末を残すことで答えが変わる（K-836）",
+   "covers": {
+    "test_post_me_sessions_revoke_others_ok": "K836-API-007",
+    "test_post_me_sessions_revoke_others_shape": "K836-API-007",
+    "test_post_me_sessions_revoke_others_rejected_401": "K836-API-011",
+    "test_post_me_sessions_revoke_others_rejected_403": "K836-API-014",
+    "test_post_me_sessions_revoke_others_rejected_422": "K836-API-012",
+    "test_post_me_sessions_revoke_others_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_sessions_revoke_others_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_me_sessions_revoke_others_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_sessions_revoke_others_rejected_422_3": "K836-API-010"
+   },
+   "na": {
+    "test_post_me_sessions_revoke_others_rejected_422_2": "体は空の形で、知らない欄は入口の契約の strict な形が 422 にする（全部の口で同じ・K-836 は欄を読まない）",
+    "test_post_me_sessions_revoke_others_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない"
+   }
+  }
+ }
+}

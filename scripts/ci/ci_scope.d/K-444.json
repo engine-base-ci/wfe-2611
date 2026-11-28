@@ -1,0 +1,11 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F4/due/", "apps/web/app/(dev)/dev/mock/f4/"],
+      "tests": ["apps/web/tests/k/k444-due.spec.ts"]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/due-create-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-444）"
+  }
+}
