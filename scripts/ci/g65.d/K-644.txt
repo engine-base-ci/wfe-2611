@@ -1,0 +1,1 @@
+python3 scripts/ci/k644_migrate_auth_test.py
