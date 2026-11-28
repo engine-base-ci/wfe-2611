@@ -1,0 +1,80 @@
+{
+ "screen": "review",
+ "mock": "06_mockup/v1/v1-review.html",
+ "state_labels": {
+  "n": "月次",
+  "q": "四半期",
+  "c": "繰り越し",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:仮説を見る→hypotheses",
+   "kind": "link",
+   "label": "仮説を見る",
+   "target": "hypotheses",
+   "states": [
+    "月次",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:目標の改訂を見る→goal-edit",
+   "kind": "link",
+   "label": "目標の改訂を見る",
+   "target": "goal-edit",
+   "states": [
+    "繰り越し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:経路を足す案→hypotheses",
+   "kind": "link",
+   "label": "経路を足す案",
+   "target": "hypotheses",
+   "states": [
+    "繰り越し"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:仮説を見る",
+   "kind": "button",
+   "label": "仮説を見る",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
