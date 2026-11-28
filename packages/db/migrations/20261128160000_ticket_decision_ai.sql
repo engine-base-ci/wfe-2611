@@ -3,6 +3,8 @@
 --   AI が決定を書く道（PC の仕事の終わり・AI の道具）は別の葉で作る。ここは列と読む形だけ。
 --   読む形 app.ticket_decision_json に decided_by_ai { member_id, display_name（その人の名前・画面が「〈呼び名〉のAI」と出す） } | null を足す（ほかの鍵は 20261120130700 のまま）
 alter table ticket_decisions add column if not exists decided_by_ai_of uuid references members(id);
+-- 同じ migration を流し直しても同じ形にするため（この migration が足す検査の制約だけを置き直す。前からの保証は外さない）
+-- squawk-ignore ban-drop-constraint
 alter table ticket_decisions drop constraint if exists ticket_decisions_decider_one_ck;
 alter table ticket_decisions add constraint ticket_decisions_decider_one_ck
   check (decided_by is null or decided_by_ai_of is null) not valid;
