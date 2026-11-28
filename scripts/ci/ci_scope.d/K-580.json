@@ -1,0 +1,14 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F4/links/",
+        "apps/web/features/F4/create-ticket/create-ticket.tsx",
+        "apps/web/features/F4/create-ticket/draft-shape.ts",
+        "apps/web/features/F4/create-ticket/create-errors.ts",
+        "apps/web/app/(dev)/dev/mock/f4v2/"
+      ],
+      "tests": ["apps/web/tests/k/k580-create-links.spec.ts", "apps/web/test/k580-create-links.test.ts"]
+    }
+  ]
+}
