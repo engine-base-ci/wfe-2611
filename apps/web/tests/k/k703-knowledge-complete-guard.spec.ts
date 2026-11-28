@@ -162,7 +162,7 @@ test("K703-UI-006 止める行と人が足した未チェックの行が混ざ�
   ).toHaveCount(1);
   await expect(d.getByText("先月と同じ書式になっている", { exact: true })).toHaveCount(0);
   await expect(d.getByText(cautionNote(2), { exact: true })).toBeVisible();
-  await d.getByRole("button", { name: CLOSE, exact: true }).click();
+  await d.locator(".k-dialog-actions").getByRole("button", { name: CLOSE, exact: true }).click();
 
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await mockGuard(page, [kn(1, P_OUT, "外に出す前の確かめ")]);
@@ -229,7 +229,9 @@ test("K703-UI-010 小窓の「閉じる」・右上の ×・Esc：口を呼ば�
     await openComplete(page);
     reads += 1;
     expect(g.reads).toBe(reads);
-    if (how === "close") await dialog(page).getByRole("button", { name: CLOSE, exact: true }).click();
+    // 右上の × も読み上げの名前が「閉じる」（部品 Dialog）。足のボタンは足の中で探す
+    if (how === "close")
+      await dialog(page).locator(".k-dialog-actions").getByRole("button", { name: CLOSE, exact: true }).click();
     else if (how === "x")
       await dialog(page)
         .getByRole("button", { name: /閉じる|×/ })
@@ -406,7 +408,9 @@ test("K703-UI-019 下絵 tk-blocked との突き合わせ（幅 375・768・1440
       "tk-blocked",
       w,
       async (p) => {
-        await mockGuard(p, MOCK_ROWS());
+        // 下絵 tk-blocked の止める行の文は「外に出す前に、人が中身を見た」（ticket-mocks.tsx の SPECS s4）。準備の行の文を下絵にそろえる
+        const rows = MOCK_ROWS().map((r) => (r.id === sid(4) ? { ...r, title: "外に出す前に、人が中身を見た" } : r));
+        await mockGuard(p, rows);
         await openTicketSettled(p, w);
         await openComplete(p);
       },
