@@ -1,0 +1,163 @@
+/* 自分の設定の第 2 ナビと、その横の本文の箱（K-220・キャンバス MePC の .kn-sub と section）。値は --k-* だけを読む（生の色・文字の大きさ・角丸を書かない）。
+   大きさ・余白はキャンバスの実測：第 2 ナビ 232px（1023 以下 64px・767 以下は本文の上の横 1 列）・項目 高さ 36・本文の箱 余白 22px 28px・段の間 14px・中身の幅 900 まで（余白はその外側） */
+
+/* ---- 第 2 ナビと本文を横に並べる（767 以下は縦） ---- */
+.k-me-wrap {
+  display: flex;
+  /* 第 2 ナビを上の帯（48px）の下から画面の下まで伸ばす（注は一番下・キャンバス MePC） */
+  min-height: calc(100dvh - 48px);
+  min-width: 0;
+}
+
+/* ---- 第 2 ナビ ---- */
+.k-me-sub {
+  flex: none;
+  width: 232px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 10px 14px;
+  background: var(--k-line-soft);
+  border-right: 1px solid var(--k-line);
+  box-sizing: border-box;
+}
+.k-me-sub-h {
+  padding: 12px 10px var(--k-s-xs);
+  font-size: var(--k-text-label-md);
+  color: var(--k-neutral-strong);
+  letter-spacing: 0.02em;
+}
+.k-me-sub-h:first-child {
+  padding-top: var(--k-s-xs);
+}
+.k-me-sub-i {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--k-r-field);
+  color: var(--k-on-surface-variant);
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: background 0.12s;
+}
+.k-me-sub-i:hover {
+  background: color-mix(in srgb, var(--k-card) 55%, transparent);
+  color: var(--k-on-surface);
+  text-decoration: none;
+}
+.k-me-sub-i[aria-current="page"] {
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-h3);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--k-on-surface) 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--k-on-surface) 6%, transparent);
+}
+/* その画面がまだ無い項目：正本の button-disabled の薄さで押せない形（隠さない・D-145.9） */
+.k-me-sub-i[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-me-sub-i[aria-disabled="true"]:hover {
+  background: transparent;
+  color: var(--k-on-surface-variant);
+}
+.k-me-sub-ic {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  color: var(--k-neutral-strong);
+}
+.k-me-sub-i[aria-current="page"] .k-me-sub-ic {
+  color: var(--k-primary);
+}
+.k-me-sub-t {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-me-sub-note {
+  margin-top: auto;
+  padding: 10px;
+  font-size: var(--k-text-label-md);
+  color: var(--k-neutral-strong);
+}
+
+/* ---- 本文の箱（帯にしない見出しの行：h1 と説明を 1 行に） ---- */
+.k-page.k-me-page {
+  flex: 1;
+  min-width: 0;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 28px;
+  /* キャンバスどおり余白は中身の幅 900 の外側（箱 956） */
+  box-sizing: content-box;
+}
+.k-page.k-me-page > * {
+  margin-inline: 0;
+}
+.k-page.k-me-page > .k-page-head + * {
+  margin-top: 0;
+}
+.k-me-page > .k-page-head {
+  /* キャンバス MePC の見出しの行は gap 10（折り返した行の間も 10・K-230） */
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
+}
+.k-me-page > .k-page-head h1 {
+  font-size: var(--k-text-h1);
+  font-weight: var(--k-fw-h1);
+}
+.k-me-page > .k-page-head .k-desc {
+  margin: 0;
+}
+
+@media (max-width: 1023px) {
+  .k-me-sub {
+    width: 64px;
+    padding: 10px var(--k-s-sm);
+  }
+  .k-me-sub-h,
+  .k-me-sub-t,
+  .k-me-sub-note {
+    display: none;
+  }
+  .k-me-sub-i {
+    justify-content: center;
+    padding: 0;
+  }
+}
+/* 767 以下で出す「自分の設定 › いまの項目 ▾」のボタン（ふだんは隠す） */
+.k-me-sub-m {
+  display: none;
+}
+@media (max-width: 767px) {
+  .k-me-wrap {
+    flex-direction: column;
+    min-height: 0;
+  }
+  /* 横に流れる帯をやめ、ボタン 1 つにする（押すと縦の一覧・段 4 の下絵の代表の直し） */
+  .k-me-sub {
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--k-line);
+    padding: var(--k-s-sm);
+  }
+  .k-me-sub > :not(.k-me-sub-m) {
+    display: none;
+  }
+  .k-me-sub-m {
+    display: block;
+  }
+  .k-page.k-me-page {
+    max-width: none;
+  }
+}
