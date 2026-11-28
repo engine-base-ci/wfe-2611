@@ -1,0 +1,18 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/lib/**",
+    "apps/web/app/**",
+    "apps/web/features/**",
+    "apps/bridge/src/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/legacy-credential-routes.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F3/legacy-credential-routes.test.ts": "画面の道具（apps/web/lib・app・features）と Bridge（apps/bridge/src）の .ts・.tsx を字として読み、前の道すじの字が無いことを見る（K358-API-002・K-358）"
+ }
+}
