@@ -1,0 +1,32 @@
+# 手本の面（SaaS の顧客側アカウント／運営側の管理コンソールに標準である面）。coverage_review.py の G19 が
+# flow.json の surface_map と突き合わせる。1 面 = 1 画面（または理由つきの out_of_scope / 段階の決定 ID）。
+# 出典：Stripe Dashboard・Vercel・Slack 管理コンソール・Google Workspace 管理コンソール・Notion の設定（2026-09-15 整理）
+customer:
+  - {id: c.account,     name: 自分のアカウント（名前・メール・パスワード・2 段階認証・端末）}
+  - {id: c.company,     name: 会社の設定（会社名・請求先・データの所在・タイムゾーン）}
+  - {id: c.members,     name: メンバーと権限}
+  - {id: c.billing,     name: プランと請求（上限・利用量・請求書・支払い方法）}
+  - {id: c.notices,     name: お知らせと稼働状況}
+  - {id: c.notify,      name: 通知の届け先}
+  - {id: c.inquiry,     name: 問い合わせ（運営への連絡口）}
+  - {id: c.import,      name: 取り込み（既存データ・ファイルのアップロード）}
+  - {id: c.export,      name: 持ち出し}
+  - {id: c.integrations, name: 外部サービスの連携と可否}
+  - {id: c.credentials, name: 資格情報・鍵}
+  - {id: c.audit,       name: 証跡}
+  - {id: c.security,    name: できること・できないこと（セキュリティの開示）}
+  - {id: c.close,       name: 退会}
+operator:
+  - {id: o.tenants,     name: 顧客（会社）の一覧}
+  - {id: o.tenant,      name: 顧客の 1 社（構成・状態・退会・サポートアクセス）}
+  - {id: o.catalog,     name: 配るもの（配布物とプラン別の出し分け）}
+  - {id: o.plans,       name: プランの定義（価格・上限）}
+  - {id: o.billing,     name: 請求と入金・未収}
+  - {id: o.usage,       name: 利用量と上限}
+  - {id: o.inbox,       name: 受信箱（問い合わせ・詰まり）}
+  - {id: o.notices,     name: お知らせ・稼働状況の発信}
+  - {id: o.review,      name: 審査（公開申請など）}
+  - {id: o.services,    name: 外部サービス台帳の管理（可否）}
+  - {id: o.audit,       name: 運営の証跡・セキュリティの出来事}
+  - {id: o.team,        name: 運営メンバーと権限}
+  - {id: o.retention,   name: 保持と消去（退会後の猶予・消去の証明・法令保管）}

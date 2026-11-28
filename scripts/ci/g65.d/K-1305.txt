@@ -1,0 +1,1 @@
+python3 scripts/ci/k1305_full_py_junit_test.py
