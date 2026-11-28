@@ -1,0 +1,26 @@
+{
+ "ops": {
+  "listCredentials": {
+   "file": "apps/api/test/features/F3/credentials-list.test.ts",
+   "reason": "預けたログイン情報の一覧は、行の守り（個人は持ち主だけ・ワークスペースは同じ会社）と権限（credentials の edit）の組み合わせで答えが変わる。生成の試験の種では持ち主・層・権限を作れない（K-351）",
+   "covers": {
+    "test_get_credentials_ok": "K351-API-001",
+    "test_get_credentials_rejected_401": "K351-API-008",
+    "test_get_credentials_rate_limited": "K351-API-009",
+    "test_get_credentials_shape": "K351-API-001",
+    "test_get_credentials_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_credentials_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_credentials_rejected_403": "本人だけの口で役を見ない（権限の無い人も自分の個人とワークスペースの名前は読める・受けは K351-API-005）",
+    "test_get_credentials_rejected_422": "入力を受けない GET（cursor・limit は入口の共通の形の確かめ・K-144）"
+   }
+  }
+ }
+}
