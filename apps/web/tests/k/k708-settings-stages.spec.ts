@@ -98,7 +98,8 @@ test("K708-UI-002 タブ「状態」を押すと ?tab=stages に移って状態�
   await page.getByRole("tab", { name: "種別", exact: true }).click();
   await page.getByRole("tab", { name: "状態", exact: true }).click();
   await expect(page.locator(LIST)).toBeVisible();
-  expect(mk.count("stages")).toBe(2);
+  // チケットの行 K708-UI-002「種別に行って戻ると読み直す（口 2 回）」は再読み込みの後から数えた数。作り物の口の数は再読み込みの前の 1 回も含む
+  await expect.poll(() => mk.count("stages")).toBe(3);
 });
 
 test("K708-UI-003 一覧：上から 未着手・作業中・先方の返事待ち・保留・完了（仕組みの状態は出さない）・色の札の色・始めと終わりに消せない訳の字・説明文", async ({
