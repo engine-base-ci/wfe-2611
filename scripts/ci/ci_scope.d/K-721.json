@@ -1,5 +1,35 @@
 {
  "reads_ok": {
   "apps/api/test/features/F9/shape-learning-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-69.md を readFileSync で読み、git grep で外した操作 ID を探し、scripts/ci/zt_gate.py を流す（K721-API-002〜010）"
- }
+ },
+ "data_links": [
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/learning_candidates.ts",
+    "apps/api/src/routes/clones.ts",
+    "apps/api/src/routes/workspace.ts",
+    "08_api/phase1/03_分身の部屋.md",
+    "08_api/phase1/07_ワークスペースの管理.md",
+    "08_api/phase1/06_運営の配るもの.md",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/shape-learning-retire.test.ts"
+   ]
+  }
+ ]
 }

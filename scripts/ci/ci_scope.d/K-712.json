@@ -16,6 +16,33 @@
     "apps/api/test/k145_pending_decisions.test.ts",
     "apps/api/test/features/F9/memory-retire.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/memories.ts",
+    "apps/api/src/features/F9/knowledge/ai/context.ts",
+    "08_api/auth-ext-routes.json",
+    "08_api/phase1/03_分身の部屋.md",
+    "packages/db/src/migrations.generated.ts",
+    "packages/db/migrations/20261125015200_memory_routes_retire.sql",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/memory-retire.test.ts"
+   ]
   }
  ],
  "reads_ok": {

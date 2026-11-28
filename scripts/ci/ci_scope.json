@@ -3513,6 +3513,33 @@
   },
   {
    "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/memories.ts",
+    "apps/api/src/features/F9/knowledge/ai/context.ts",
+    "08_api/auth-ext-routes.json",
+    "08_api/phase1/03_分身の部屋.md",
+    "packages/db/src/migrations.generated.ts",
+    "packages/db/migrations/20261125015200_memory_routes_retire.sql",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/memory-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-fields-edit.ts",
     "apps/api/src/hooks/ticket-fields-write.ts",
     "apps/api/src/hooks/ticket-fields-read.ts",
@@ -3556,6 +3583,61 @@
    "tests": [
     "apps/web/tests/k/k720-settings-fields-add.spec.ts",
     "apps/web/test/k720-field-edit-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/learning_candidates.ts",
+    "apps/api/src/routes/clones.ts",
+    "apps/api/src/routes/workspace.ts",
+    "08_api/phase1/03_分身の部屋.md",
+    "08_api/phase1/07_ワークスペースの管理.md",
+    "08_api/phase1/06_運営の配るもの.md",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/shape-learning-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "apps/api/src/routes/knowledge_imports.ts",
+    "apps/api/src/routes/knowledge.ts",
+    "apps/api/src/routes/knowledge_pages.ts",
+    "08_api/phase1/09_ナレッジ.md",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/zt_gate.py",
+    "11_tickets/K-69.md",
+    "01_hearing/決定ログ_進行中.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-old-retire.test.ts"
    ]
   },
   {
@@ -4286,6 +4368,15 @@
    "tests": [
     "apps/api/test/features/F10/admin-base.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "03_architecture/catalog.json",
+    "11_tickets/K-70.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-base.test.ts"
    ]
   },
   {
@@ -5589,6 +5680,34 @@
    ],
    "tests": [
     "scripts/ci/k925_canvas_guest_test.py"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "05_flow/build_functional.py",
+    "apps/api/src/routes/acceptances.ts",
+    "apps/api/src/routes/tickets.ts",
+    "apps/api/src/routes/portal.ts",
+    "08_api/phase1/08_取引先とクライアントの場所.md",
+    "08_api/phase1/01_チケット.md",
+    "scripts/ci/row_rules.mjs",
+    "11_tickets/**",
+    "01_hearing/決定ログ_進行中.md"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/acceptances-retire.test.ts"
    ]
   },
   {
