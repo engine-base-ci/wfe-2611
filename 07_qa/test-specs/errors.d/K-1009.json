@@ -1,0 +1,62 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-017",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-edit"
+   },
+   "when": "運営の人のできることを変える・外すとき、相手が自分",
+   "false_when": "ほかの運営の人を変える・外す",
+   "message": "自分のできることは変えられません",
+   "action": "別の運営の人に変えてもらってください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営の人を持つ運営の人で入り、本人確認を取り直す",
+    "steps": [
+     "一覧の自分の行のできることを変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.34"
+   ]
+  },
+  {
+   "id": "E-OPS-018",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-team",
+    "state": "op-team-edit"
+   },
+   "when": "変えた後・外した後に、生きている運営の人のうち「運営の人」か「値段を決める」を持つ人が 0 になる",
+   "false_when": "同じ印を持つ生きている運営の人がほかにも居る",
+   "message": "最後の 1 人なので外せません",
+   "action": "別の運営の人に渡してから",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "「値段を決める」を持つ運営の人が 1 人だけ",
+    "steps": [
+     "その人から「値段を決める」を外す（か、その人を外す）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.34"
+   ]
+  }
+ ]
+}
