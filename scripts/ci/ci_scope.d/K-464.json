@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261123080400_notify_ai_stopped.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notify-stopped.test.ts"
+   ]
+  }
+ ]
+}

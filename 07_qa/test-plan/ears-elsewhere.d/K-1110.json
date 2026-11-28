@@ -1,0 +1,31 @@
+{
+ "ops": {
+  "ackOpsPwnedPending": {
+   "file": "apps/api/test/features/F12/ops-pwned-pending.test.ts",
+   "reason": "確定前に去った申し込みの印と期限で答えが変わり、申し込みの行と運営の記録を書く。種では作れない（K-1110）",
+   "covers": {
+    "test_post_ops_pwned_pending_ack_ok": "K1110-API-004",
+    "test_post_ops_pwned_pending_ack_shape": "K1110-API-004",
+    "test_post_ops_pwned_pending_ack_rejected_401": "K1110-API-010",
+    "test_post_ops_pwned_pending_ack_rejected_403": "K1110-API-010",
+    "test_post_ops_pwned_pending_ack_rejected_422": "K1110-API-009",
+    "test_post_ops_pwned_pending_ack_rate_limited": "K1110-API-013",
+    "test_post_ops_pwned_pending_ack_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_pwned_pending_ack_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_pwned_pending_ack_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ops_pwned_pending_ack_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
+   }
+  }
+ }
+}
