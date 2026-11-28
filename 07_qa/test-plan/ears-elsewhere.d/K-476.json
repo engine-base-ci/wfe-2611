@@ -1,0 +1,55 @@
+{
+ "ops": {
+  "updateSavedView": {
+   "file": "apps/api/test/features/F7/saved-views-edit.test.ts",
+   "reason": "保存した条件を直せるかは、作った人・グループのマネージャー・見える範囲・見せる相手の変更の組み合わせで答えが変わる。生成の試験の種ではグループの席とマネージャーを作れない（K-476）",
+   "covers": {
+    "test_patch_saved_views_id_ok": "K476-API-001",
+    "test_patch_saved_views_id_shape": "K476-API-001",
+    "test_patch_saved_views_id_rejected_401": "K476-API-022",
+    "test_patch_saved_views_id_rejected_403": "K476-API-008",
+    "test_patch_saved_views_id_not_found": "K476-API-009",
+    "test_patch_saved_views_id_rejected_422": "K476-API-013",
+    "test_patch_saved_views_id_rate_limited": "K476-API-023",
+    "test_patch_saved_views_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_saved_views_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_saved_views_id_conflict": "K476-API-012",
+    "test_patch_saved_views_id_conflict_2": "K476-API-014",
+    "test_patch_saved_views_id_rejected_422_2": "K476-API-011",
+    "test_patch_saved_views_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "deleteSavedView": {
+   "file": "apps/api/test/features/F7/saved-views-edit.test.ts",
+   "reason": "消せるかは、作った人・グループのマネージャー・見える範囲の組み合わせで答えが変わる。生成の試験の種ではグループの席とマネージャーを作れない（K-476）",
+   "covers": {
+    "test_delete_saved_views_id_ok": "K476-API-017",
+    "test_delete_saved_views_id_shape": "K476-API-017",
+    "test_delete_saved_views_id_rejected_401": "K476-API-022",
+    "test_delete_saved_views_id_rejected_403": "K476-API-008",
+    "test_delete_saved_views_id_not_found": "K476-API-009",
+    "test_delete_saved_views_id_rate_limited": "K476-API-023",
+    "test_delete_saved_views_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_saved_views_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_saved_views_id_rejected_422": "体を受けない DELETE。道の値 :id が uuid でない 422 は入口の共通（K144-API-866）"
+   }
+  }
+ }
+}
