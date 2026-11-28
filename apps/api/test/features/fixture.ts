@@ -99,15 +99,19 @@ async function dropMatrixOpsSeeds(admin: pg.Pool): Promise<void> {
     const free = (await c.query<{ id: string }>("select id from plans where tenant_id = $1 and key = 'free'", [OPS]))
       .rows[0]?.id;
     // 見本の行に結んだ行は、運営の既定のプラン free に付け替える（請求書などが結ぶので消さない）。版の行は見本のプランの物だけ消す
-    if (free)
-      for (const [t, col] of [
-        ["tenants", "plan_id"],
-        ["subscriptions", "plan_id"],
-        ["plan_change_requests", "from_plan_id"],
-        ["plan_change_requests", "to_plan_id"],
-        ["ops_plan_proposals", "plan_id"],
-      ] as const)
-        await c.query(`update ${t} set ${col} = $2 where ${col} in (${seedPlans})`, [OPS, free]);
+    //   free が無い DB（tenants を cascade で消して運営の製品を入れ直さない試験 packages/db/test/rls.test.ts の後）では、空にできる列は空にし、
+    //   空にできない案（ops_plan_proposals.plan_id）は見本の行なので消す（付け替え先が無いまま消すと外のキーで落ちる・統合の枝の CI の unit-2）
+    for (const [t, col] of [
+      ["tenants", "plan_id"],
+      ["subscriptions", "plan_id"],
+      ["plan_change_requests", "from_plan_id"],
+      ["plan_change_requests", "to_plan_id"],
+      ["ops_plan_proposals", "plan_id"],
+    ] as const) {
+      if (free) await c.query(`update ${t} set ${col} = $2 where ${col} in (${seedPlans})`, [OPS, free]);
+      else if (t === "ops_plan_proposals") await c.query(`delete from ${t} where ${col} in (${seedPlans})`, [OPS]);
+      else await c.query(`update ${t} set ${col} = null where ${col} in (${seedPlans})`, [OPS]);
+    }
     await c.query(`delete from plan_versions where plan_id in (${seedPlans})`, [OPS]);
     await c.query("delete from plans where tenant_id = $1 and (key = 'seed' or key like 'k9-%')", [OPS]);
     const seedDist = "select id from distributions where tenant_id = $1 and (key = 'seed' or key like 'k9-%')";

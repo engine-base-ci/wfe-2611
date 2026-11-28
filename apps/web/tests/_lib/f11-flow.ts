@@ -7,7 +7,7 @@
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { randomBytes } from "node:crypto";
 import { expect, type Browser, type BrowserContext, type Locator, type Page, type Response } from "@playwright/test";
-import { API, PW, addTestEntry, admin, api, loginAs, sha256, uniqEmail } from "./api";
+import { API, PW, addTestEntry, admin, api, loginAs, sha256, testIp, uniqEmail } from "./api";
 import type { Newcomer } from "./newcomer";
 
 const SEC = 'section[aria-labelledby="members-title"]';
@@ -104,7 +104,14 @@ export async function guestBySql(browser: Browser, me: Newcomer, groupId: string
     "insert into invitations (tenant_id, email, role_id, guest_group_id, token_hash, expires_at, created_by) values ($1, $2, 'requester', $3, $4, now() + interval '7 days', $5)",
     [t!.t, email, groupId, sha256(token), me.memberId],
   );
-  const r = await api<{ data: { token: string } }>(`/api/v1/auth/invitations/${token}/accept`, { name, password: PW });
+  // 受ける口は IP ごとの上限（契約の rateLimit）。ゲストごとに別の届く元にする（prep.ts の teammate と同じ・K-1114）
+  const r = await api<{ data: { token: string } }>(
+    `/api/v1/auth/invitations/${token}/accept`,
+    { name, password: PW },
+    undefined,
+    "POST",
+    testIp(),
+  );
   if (r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
   const [u] = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
   await addTestEntry(u!.id);

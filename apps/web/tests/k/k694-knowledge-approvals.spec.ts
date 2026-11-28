@@ -21,7 +21,8 @@ const T3 = "見積もりの出し方（自分のやり方）";
 const adminTab = (p: Page) => p.getByRole("tab", { name: /^管理/ });
 const pageTab = (p: Page) => p.getByRole("tab", { name: "ページ", exact: true });
 const navItem = (p: Page, label: string) => p.locator(".k-f9-adminnav-i", { hasText: label });
-const reason = (c: Locator) => c.getByLabel("断る理由", { exact: true });
+// 理由の欄の見出しは「断る理由*」（必須の印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、読み上げの名前で探す（K-442 と同じ）
+const reason = (c: Locator) => c.getByRole("textbox", { name: "断る理由", exact: true });
 
 let owner: Awaited<ReturnType<typeof signupViaApi>>;
 test.beforeAll(async () => {
