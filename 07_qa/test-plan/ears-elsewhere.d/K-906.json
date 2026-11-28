@@ -1,0 +1,79 @@
+{
+ "ops": {
+  "getPortalHome": {
+   "file": "apps/api/test/features/F11/portal-read.test.ts",
+   "reason": "ホームは、ゲストのグループ・見せる相手・依頼のやり取り・所属の状態で答えが変わる。生成の試験の種ではゲストもグループも作れない（K-906）",
+   "covers": {
+    "test_get_portal_ok": "K906-API-001",
+    "test_get_portal_rejected_401": "K906-API-010",
+    "test_get_portal_rejected_403": "K906-API-010",
+    "test_get_portal_rate_limited": "K906-API-011",
+    "test_get_portal_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_portal_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_portal_rejected_422": {
+     "file": "apps/api/test/features/F11/portal-visit.test.ts",
+     "mark": "K913-API-002"
+    }
+   },
+   "na": {
+    "test_get_portal_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い・K-906）",
+    "test_get_portal_not_found": "ホームは読めない（関数が null）とき 503（E-PAGE-003）で、404 は返さない（portal/home.ts の createGetPortalHome が onNull に unavailable を渡す）。契約の 404 は同じファイルの readPortal の既定（チケット 1 件の口）を K-144 の SHAPE_010 が拾った物"
+   }
+  },
+  "listPortalNotices": {
+   "file": "apps/api/test/features/F11/portal-read.test.ts",
+   "reason": "お知らせは、運営の表の公開の状態・向け先・置き場・保守の期限で答えが変わる。生成の試験の種では作れない（K-906）",
+   "covers": {
+    "test_get_portal_notices_ok": "K906-API-020",
+    "test_get_portal_notices_rejected_401": "K906-API-010",
+    "test_get_portal_notices_rejected_403": "K906-API-010",
+    "test_get_portal_notices_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_portal_notices_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_portal_notices_rejected_422": "体も問い合わせも道の値も持たない口で、形の誤りの出し方が無い（K-906）",
+    "test_get_portal_notices_rate_limited": "読むだけの全員同じ答えの口で、数え方は入口の共通（K-144）。ホームの上限は K906-API-011 が受ける",
+    "test_get_portal_notices_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い・K-906）",
+    "test_get_portal_notices_not_found": "お知らせは読めない（関数が null）とき空の一覧（200）で、404 は返さない（portal/notices.ts が onNull に空の data を渡す）。契約の 404 は同じファイルの readPortal の既定（チケット 1 件の口）を K-144 の SHAPE_010 が拾った物"
+   }
+  },
+  "getPortalTicket": {
+   "file": "apps/api/test/features/F11/portal-read.test.ts",
+   "reason": "見せてもらったチケットは、見せる相手・所属・チャットの見せる印で答えが変わる。生成の試験の種ではチケットも見せる相手も作れない（K-906）",
+   "covers": {
+    "test_get_portal_tickets_id_ok": "K906-API-013",
+    "test_get_portal_tickets_id_rejected_401": "K906-API-010",
+    "test_get_portal_tickets_id_rejected_403": "K906-API-010",
+    "test_get_portal_tickets_id_not_found": "K906-API-014",
+    "test_get_portal_tickets_id_rate_limited": "K906-API-019",
+    "test_get_portal_tickets_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-906.ts",
+     "mark": "K144-API-1206"
+    },
+    "test_get_portal_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_portal_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_portal_tickets_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い・K-906）"
+   }
+  }
+ }
+}
