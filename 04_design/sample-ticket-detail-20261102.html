@@ -1,0 +1,165 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>チケットの詳細（見本）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- design-md の見本（D-128.17〜.20）。正式なモックは ui-mockup で作る -->
+<style>
+:root{--pri:#22345C;--pri-c:#DCE4F2;--on-pri-c:#101C33;--ter:#6D4AA6;--ter-c:#E9E0F5;--bg:#F7F8FA;--card:#fff;--fg:#131B27;--sub:#4A5563;--line:#DDE2E9;--soft:#EDF0F4;--side:#EEF0F4;
+--ok:#166534;--ok-c:#DCFCE7;--wa:#B45309;--wa-c:#FCEBD5;--ng:#B91C1C;--ng-c:#FDECEC;--info:#1D4ED8;--info-c:#DBEAFE}
+*{box-sizing:border-box}body{margin:0;font:13px/1.6 "Noto Sans JP",system-ui,sans-serif;color:var(--fg);background:var(--bg)}
+.app{display:flex;min-height:100vh}
+/* 左のバー */
+.side{width:220px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;gap:2px;position:sticky;top:0;height:100vh}
+.tenant{display:flex;align-items:center;gap:8px;padding:6px 8px;font-weight:700;border-radius:6px}
+.tenant .logo{width:24px;height:24px;border-radius:6px;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:12px}
+.create{margin:6px 0 4px;background:var(--pri);color:#fff;border:0;border-radius:6px;height:34px;font:inherit;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+.create kbd{font-size:11px;opacity:.7;border:1px solid rgba(255,255,255,.4);border-radius:4px;padding:0 4px}
+.row2{display:flex;gap:4px;margin-bottom:6px}.row2 a{flex:1;white-space:nowrap;padding:0 6px}
+.it{display:flex;align-items:center;gap:8px;height:30px;padding:0 8px;border-radius:6px;color:var(--fg);text-decoration:none}
+.it:hover{background:var(--soft)}.it.on{background:var(--pri);color:#fff}
+.it .n{margin-left:auto;font-size:12px;background:var(--wa-c);color:#7A4A05;border-radius:99px;padding:0 7px}
+.it.on .n{background:rgba(255,255,255,.2);color:#fff}
+.ic{width:16px;height:16px;flex:none;border:1.6px solid currentColor;border-radius:4px;opacity:.8}
+.sec{font-size:12px;color:var(--sub);padding:10px 8px 2px}
+.dot{width:8px;height:8px;border-radius:99px;flex:none}
+.grow{flex:1}
+.pc{font-size:12px;color:var(--ok);display:flex;align-items:center;gap:6px;padding:6px 8px}
+.me{display:flex;align-items:center;gap:8px;padding:6px 8px;border-top:1px solid var(--line);margin-top:4px}
+.av{width:26px;height:26px;border-radius:99px;background:#8C7AB8;color:#fff;display:grid;place-items:center;font-size:12px;flex:none}
+/* 本文 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.head{display:flex;align-items:center;gap:12px;padding:16px 24px 8px}
+.head h1{font-size:20px;margin:0}.head .sub{color:var(--sub);font-size:13px}
+.head .sp{margin-left:auto}
+.btn{height:32px;border-radius:6px;border:1px solid var(--line);background:var(--card);font:inherit;padding:0 12px;color:var(--fg)}
+.btn.p{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:500}
+.tabs{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--line)}
+.tabs a{padding:8px 12px;color:var(--sub);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs a.on{color:var(--pri);border-color:var(--pri);font-weight:500}
+.bar{display:flex;gap:8px;align-items:center;padding:10px 24px;flex-wrap:wrap}
+.chip{flex:none;white-space:nowrap;height:28px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:0 10px;font:inherit;font-size:13px;color:var(--sub)}
+.chip.on{background:var(--pri-c);border-color:var(--pri-c);color:var(--on-pri-c)}
+.bar .sp{margin-left:auto;color:var(--sub);font-size:13px}
+.body{display:flex;flex:1;min-height:0;border-top:1px solid var(--line)}
+.list{flex:1;min-width:0;overflow:auto;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th{font-size:12px;color:var(--sub);font-weight:500;text-align:left;padding:0 10px;height:34px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);white-space:nowrap}
+td{height:36px;padding:0 10px;border-bottom:1px solid var(--soft);white-space:nowrap}
+tr.sel td{background:#F1F4FA}tr:hover td{background:#F7F9FC}
+.key{color:var(--sub);font-size:12px;font-variant-numeric:tabular-nums}
+.ttl{max-width:420px;overflow:hidden;text-overflow:ellipsis}
+.tg{font-size:12px;border-radius:4px;padding:1px 6px}
+.st{font-size:12px;border-radius:99px;padding:2px 8px}
+.s-wait{background:var(--wa-c);color:#7A4A05}.s-run{background:var(--info-c);color:#1E3A8A}.s-ok{background:var(--ok-c);color:#2E5B26}.s-chk{background:var(--ter-c);color:#33235C}.s-do{background:var(--soft);color:var(--sub)}
+.ai{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--fg)}.ai svg{color:var(--sub)}
+.due{font-variant-numeric:tabular-nums}.due.late{color:var(--ng);font-weight:500}
+.grp td{background:var(--bg);height:30px;font-size:12px;color:var(--sub);font-weight:500}
+/* 詳細（右に開く） */
+.det{width:460px;flex:none;border-left:1px solid var(--line);background:var(--card);overflow:auto;padding:16px 20px}
+.det .k{font-size:12px;color:var(--sub)}.det h2{font-size:18px;margin:4px 0 10px}
+.meta{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:13px;margin-bottom:14px}.meta dt{color:var(--sub)}.meta dd{margin:0}
+.blk{border-top:1px solid var(--line);padding:12px 0}.blk h3{font-size:13px;margin:0 0 6px;color:var(--sub);font-weight:500}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0}
+.mark{font-size:11px;border-radius:4px;padding:0 5px;border:1px solid var(--line);color:var(--sub)}
+.act{display:flex;gap:8px;position:sticky;bottom:0;background:var(--card);padding:10px 0;border-top:1px solid var(--line)}
+/* スマホ */
+.tabbar{display:none}
+@media (max-width:1023px){.det{display:none}}
+@media (min-width:1024px) and (max-width:1279px){.side{width:56px;align-items:center}.side .it{width:40px;justify-content:center;padding:0;font-size:0}.side .it .n{display:none}.side .sec,.side .pc{font-size:0}.side .tenant{font-size:0;padding:6px}.side .tenant span:last-child{display:none}.side .create{width:40px;font-size:0}.side .create::before{content:"＋";font-size:16px}.side .create kbd{display:none}.det{width:400px}td.ttl{max-width:220px}.side .row2{flex-direction:column}.side .me{font-size:0;padding:6px}.side .me span:last-child{display:none}}
+@media (min-width:1024px) and (max-width:1599px){.up{display:none}}
+@media (max-width:767px){
+ .side{display:none}.head{padding:12px 16px 6px}.head h1{font-size:18px}.head .btn.p{display:none}
+ .tabs,.bar{padding-left:16px;padding-right:16px;overflow-x:auto;flex-wrap:nowrap}
+ .bar .sp{display:none}
+ table thead{display:none}td{display:none}td.m{display:table-cell}.grp td{display:table-cell}
+ .mrow{display:flex;flex-direction:column;gap:2px;padding:8px 0;white-space:normal}
+ .mrow .l2{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--sub)}
+ .tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--card);border-top:1px solid var(--line)}
+ .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--sub);text-decoration:none;gap:2px}
+ .tabbar a.on{color:var(--pri)}.tabbar .plus{width:40px;height:40px;border-radius:99px;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:22px}
+ .list{padding-bottom:60px}
+}
+@media (min-width:768px){td.m{display:none}}
+
+.crumb{font-size:12px;color:var(--sub);padding:14px 24px 0}.crumb a{color:var(--sub)}
+.dhead{display:flex;align-items:flex-start;gap:12px;padding:6px 24px 12px}
+.dhead h1{font-size:20px;margin:0;line-height:1.4}.dhead .sp{margin-left:auto;display:flex;gap:8px;flex:none}
+.appr{margin:0 24px 12px;border:1px solid #F3D3A7;background:var(--wa-c);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.appr b{color:#7A4A05}.appr .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.dwrap{display:flex;gap:0;border-top:1px solid var(--line);flex:1;min-height:0}
+.dmain{flex:1;min-width:0;padding:16px 24px 40px;background:var(--card);overflow:auto}
+.dside{width:280px;flex:none;border-left:1px solid var(--line);padding:14px 16px;background:var(--card);overflow:auto}
+.dside dl{display:grid;grid-template-columns:84px 1fr;gap:9px 8px;margin:0;font-size:13px;align-items:center}
+.dside dt{color:var(--sub)}.dside dd{margin:0}
+.dside h4{font-size:12px;color:var(--sub);font-weight:500;margin:16px 0 6px;border-top:1px solid var(--line);padding-top:12px}
+.mo{display:none}.ref{font-size:12px;color:var(--sub);padding:2px 0}
+.sec2{border-top:1px solid var(--line);padding:14px 0}.sec2 h3{font-size:13px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.sec2 h3 .v{font-size:11px;color:var(--sub);font-weight:400}
+.sec2 p{margin:0}
+.kids div{display:flex;gap:8px;align-items:center;height:30px;border-bottom:1px solid var(--soft)}
+.tl{display:flex;flex-direction:column}
+.ev{display:flex;gap:10px;padding:8px 0;font-size:13px}
+.ev .av{width:24px;height:24px;font-size:11px}.ev .t{color:var(--sub);font-size:12px;margin-left:6px}
+.ev.sys{color:var(--sub);font-size:12px;padding:4px 0 4px 34px}
+.ev .bub{background:var(--bg);border-radius:8px;padding:8px 10px;margin-top:4px}
+.flt{display:flex;gap:6px;margin-bottom:6px}
+.comp{border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--sub);margin-top:8px}
+@media (max-width:1279px){.dside{width:240px}}
+@media (max-width:1023px){.dwrap{flex-direction:column}.dside{width:auto;border-left:0;border-top:1px solid var(--line);order:-1}.dside dl{grid-template-columns:84px 1fr}.dside h4,.dside .ref{display:none}.dside .more{display:none}.dside .mo{display:block}}
+@media (max-width:767px){.crumb,.dhead{padding-left:16px;padding-right:16px}.dhead h1{font-size:17px}.dhead .sp{display:none}.appr{margin:0 16px 10px}.dmain{padding:12px 16px 80px}.dside dl{grid-template-columns:72px 1fr}}
+</style></head><body><div class="app"><nav class="side">
+ <div class="tenant"><span class="logo">E</span>ENGINE BASE <span style="margin-left:auto;color:var(--sub)">▾</span></div>
+ <button class="create">＋ チケットを作る <kbd>C</kbd></button>
+ <div class="row2"><a class="it" href="#"><span class="ic"></span>探す</a><a class="it" href="#"><span class="ic"></span>知らせ<span class="n">3</span></a></div>
+ <a class="it on" href="#"><span class="ic"></span>チケット</a>
+ <a class="it" href="#"><span class="ic"></span>承認待ち<span class="n">2</span></a>
+ <a class="it" href="#"><span class="ic"></span>AI</a>
+ <a class="it" href="#"><span class="ic"></span>ナレッジ</a>
+ <a class="it" href="#"><span class="ic"></span>取引先</a>
+ <div class="sec">グループ ★</div>
+ <a class="it" href="#"><span class="dot" style="background:#186F69"></span>営業</a>
+ <a class="it" href="#"><span class="dot" style="background:#6D4AA6"></span>受託開発</a>
+ <a class="it" href="#"><span class="dot" style="background:#B45309"></span>経理</a>
+ <div class="grow"></div>
+ <a class="it" href="#"><span class="ic"></span>会社</a>
+ <div class="pc"><span class="dot" style="background:var(--ok)"></span>PC つながっている</div>
+ <div class="me"><span class="av">高</span>高本 <span style="margin-left:auto;color:var(--sub)">▾</span></div>
+</nav><main class="main">
+<div class="crumb"><a href="#">チケット</a> › 営業 › EG-128</div>
+<div class="dhead"><h1>セイコー様へ 11月分の請求書を送る</h1><div class="sp"><button class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg> 自分の AI と話す</button><button class="btn">…</button></div></div>
+<div class="appr"><b>あなたの承認を待っています</b><span style="color:#7A4A05;font-size:12px">確認 ① 2 件確実・② 1 件 AI 判定・③ 1 件 人が見る</span><span class="sp"><button class="btn p">承認して送る</button><button class="btn">自分で直す</button><button class="btn">差し戻す</button><button class="btn">止める</button></span></div>
+<div class="dwrap">
+ <div class="dmain">
+  <div class="sec2" style="border-top:0;padding-top:0"><h3>目的 <span class="v">版 2</span></h3><p>セイコー様に 11 月分の保守費を請求する</p></div>
+  <div class="sec2"><h3>完了の条件 <span class="v">版 1</span></h3><p>金額が見積（EG-097）と一致し、インボイスの記載事項を満たした PDF がセイコー様の経理（山田様）に送られている</p></div>
+  <div class="sec2"><h3>成果物</h3><p>請求書 No.2026-1101.pdf（1,826,000 円・税込）　<a href="#" style="color:var(--pri)">中身を見る</a></p></div>
+  <div class="sec2"><h3>確認の結果 <span class="v">テスト仕様 版 3・1 回目</span></h3>
+   <div class="chk">✓ 金額が見積（EG-097）と一致 <span class="mark">① 確実</span></div>
+   <div class="chk">✓ インボイスの必須記載事項 <span class="mark">① 確実</span></div>
+   <div class="chk">✓ 宛名と敬称（「セイコー株式会社 経理部 山田様」） <span class="mark">② AI 判定・根拠あり</span></div>
+   <div class="chk">□ 送る前に PDF を目で見る <span class="mark">③ 人</span></div></div>
+  <div class="sec2"><h3>決定ログ</h3><p style="font-size:13px">10/28 支払期日は月末締め翌月末で合意（高本・スレッドから確定）</p></div>
+  <div class="sec2"><h3>子・関連</h3><div class="kids"><div><span class="key">EG-097</span>セイコー様 保守契約の見積<span class="st s-ok">完了</span><span style="margin-left:auto;font-size:12px;color:var(--sub)">派生元</span></div></div></div>
+  <div class="sec2"><h3>やり取りと記録</h3>
+   <div class="flt"><button class="chip on">すべて</button><button class="chip">書き込みだけ</button><button class="chip">AI の実行</button></div>
+   <div class="tl">
+    <div class="ev"><span class="av">高</span><div><b>高本</b><span class="t">10/28 14:02</span><div class="bub">山田様から、支払期日は月末締め翌月末でよいと返事あり</div></div></div>
+    <div class="ev sys">10/28 14:05　高本 が決定を記録した</div>
+    <div class="ev sys">11/01 09:00　高本 が AI に任せた（業務の型：請求書を作る v3）</div>
+    <div class="ev sys">11/01 09:12　<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg> 高本のAI が成果物を作った → 確認 ① ② を通過（12 分）</div>
+    <div class="ev sys">11/01 09:13　状態を「承認待ち」にした</div>
+   </div>
+   <div class="comp">書き込む（@ で知らせる）</div>
+  </div>
+ </div>
+ <aside class="dside">
+  <dl><dt>状態</dt><dd><span class="st s-wait">承認待ち</span></dd>
+  <dt>責任者</dt><dd>高本</dd><dt>実行者</dt><dd><span class="ai"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>高本のAI</span></dd>
+  <dt>期限</dt><dd class="due late">11/01（1 日過ぎ）</dd>
+  <dt class="more">種別</dt><dd class="more"><span class="tg" style="background:#CFEAE7;color:#0A3330">タスク</span></dd>
+  <dt class="more">開始日</dt><dd class="more">10/30</dd><dt class="more">予定・実績</dt><dd class="more">30 分 ／ 12 分</dd>
+  <dt class="more">グループ</dt><dd class="more">営業</dd><dt class="more">分類</dt><dd class="more">請求</dd><dt class="more">親</dt><dd class="more">—</dd><dt class="more">業務の型</dt><dd class="more">請求書を作る v3</dd>
+  <dd class="mo" style="grid-column:1/-1"><a href="#" style="color:var(--pri);font-size:12px">ほかの項目（7）を開く</a></dd></dl>
+  <h4>参照の記録</h4>
+  <div class="ref">ナレッジ：請求のルール（版 4）</div><div class="ref">チケット：EG-097 見積</div><div class="ref">ルール（取引先）：セイコー様は経理部 山田様宛</div>
+ </aside>
+</div></main>
+<nav class="tabbar"><a class="on" href="#">▤<span>チケット</span></a><a href="#">✓<span>承認</span></a><a href="#"><span class="plus">＋</span></a><a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg><span>AI</span></a><a href="#">≡<span>メニュー</span></a></nav></div></body></html>
