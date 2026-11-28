@@ -1,0 +1,159 @@
+{
+ "screen": "login",
+ "mock": "06_mockup/v1/v1-login.html",
+ "state_labels": {
+  "n": "通常",
+  "m": "6桁の入力",
+  "e": "失敗"
+ },
+ "ops": [
+  {
+   "key": "input:メールアドレス",
+   "kind": "input",
+   "label": "メールアドレス",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:パスワード",
+   "kind": "input",
+   "label": "パスワード",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:ログイン",
+   "kind": "button",
+   "label": "ログイン",
+   "target": null,
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:パスワードをお忘れの方→password-reset",
+   "kind": "link",
+   "label": "パスワードをお忘れの方",
+   "target": "password-reset",
+   "states": [
+    "通常",
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:アカウントを作る→signup",
+   "kind": "link",
+   "label": "アカウントを作る",
+   "target": "signup",
+   "states": [
+    "通常"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "input:6桁",
+   "kind": "input",
+   "label": "6桁",
+   "target": null,
+   "states": [
+    "6桁の入力"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "checkbox:この端末では30日間きかない",
+   "kind": "checkbox",
+   "label": "この端末では30日間きかない",
+   "target": null,
+   "states": [
+    "6桁の入力"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:今日の画面へ→today",
+   "kind": "link",
+   "label": "今日の画面へ",
+   "target": "today",
+   "states": [
+    "6桁の入力"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:端末を失くした（回復コードで入る）→password-reset",
+   "kind": "link",
+   "label": "端末を失くした（回復コードで入る）",
+   "target": "password-reset",
+   "states": [
+    "6桁の入力"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "error:メールアドレスかパスワードが違います。あと4回で15分間ロックします。",
+   "kind": "error",
+   "label": "メールアドレスかパスワードが違います。あと4回で15分間ロックします。",
+   "target": null,
+   "states": [
+    "失敗"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
