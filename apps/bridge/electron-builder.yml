@@ -1,0 +1,48 @@
+# Bridge の配布（T-B-06・D-015.6）。顧客は ①受け取る ②開く ③初回だけ許可 の 3 つだけ。
+# 置き場は Kaname のサーバー（顧客に外のサービスを見せない・2026-09-22 の決定）。
+appId: com.enginebase.kaname.bridge
+# ネイティブの作り直しはしない（Bridge は素の Node と Electron だけ。pnpm の作業場を歩かせない）
+npmRebuild: false
+nodeGypRebuild: false
+productName: Kaname Bridge
+copyright: ENGINE BASE
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - package.json
+# Bridge 専用のブラウザ（Playwright MCP・D-119）は子のプロセスで動かすので、asar の外に展開して置く
+asarUnpack:
+  - "**/node_modules/@playwright/mcp/**"
+  - "**/node_modules/playwright/**"
+  - "**/node_modules/playwright-core/**"
+# 画面のボタン 1 つで起こすための登録（kaname-bridge://）。入れた時点で OS が覚える
+protocols:
+  - name: Kaname Bridge
+    schemes: [kaname-bridge]
+mac:
+  category: public.app-category.productivity
+  # zip は自分で入れ替える中身（D-109）。dmg は人が受け取るもの。名前に空白を入れない（URL にそのまま載せる）
+  artifactName: "Kaname-Bridge-${version}-${arch}.${ext}"
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+    - target: zip
+      arch: [arm64, x64]
+  # 公証（Apple Developer の証明書）が用意できたら true にする。無い間も .dmg は作れる（OS の警告は出る）
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  notarize: false
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  artifactName: "Kaname-Bridge-Setup-${version}.${ext}"
+  oneClick: true # 人に選ばせない（次へ→次へ を作らない）
+  perMachine: false # 管理者権限を要求しない
+  allowToChangeInstallationDirectory: false
+# 自動更新は Bridge が Kaname に聞いて自分で入れ替える（src/update.ts・D-109）。
+# 配るときは pnpm --filter @kaname/bridge release（版の番号を付け、置き場に目録 kaname-bridge.json を書く）
+publish: null
