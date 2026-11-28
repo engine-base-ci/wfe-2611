@@ -55,6 +55,11 @@ const T = [
   "送る前に文面を目で見る",
 ];
 const lines = (page: Page) => specsOf(page).getByRole("listitem");
+/** 小窓（modal）を開いたままの後ろの行（後ろは読み上げから隠れるので、隠れた物も探す） */
+const linesBehind = (page: Page) =>
+  page
+    .getByRole("group", { name: "確認項目の欄", exact: true, includeHidden: true })
+    .getByRole("listitem", { includeHidden: true });
 const editor = (page: Page) => specsOf(page).getByRole("textbox", { name: "確認項目の文", exact: true });
 const reopen = async (page: Page): Promise<void> => {
   await page.reload();
@@ -161,7 +166,7 @@ test("K450-UI-006 口が 422（欄 title・口の文）：小窓の欄の下に�
   await expect(dialogOf(page).getByRole("textbox", { name: "確かめること", exact: true })).toHaveValue(
     "形の合わない文",
   );
-  await expect(lines(page)).toHaveCount(5);
+  await expect(linesBehind(page)).toHaveCount(5);
 });
 
 test("K450-UI-007 足すが口に断られる（409 E-SPEC-001・403・404・503 の 4 つ）：どれも小窓の上の赤い箱に正本の文が出て、小窓は開いたまま書いた中身が残り行は増えず、もう一度「足す」で通ると小窓が閉じて行が増える", async ({
@@ -181,7 +186,7 @@ test("K450-UI-007 足すが口に断られる（409 E-SPEC-001・403・404・503
     await expect(dialogOf(page).getByRole("textbox", { name: "確かめること", exact: true })).toHaveValue(
       "断られても残る文",
     );
-    await expect(lines(page)).toHaveCount(5);
+    await expect(linesBehind(page)).toHaveCount(5);
   }
   await press(page).click();
   await expect(dialogOf(page)).toHaveCount(0);

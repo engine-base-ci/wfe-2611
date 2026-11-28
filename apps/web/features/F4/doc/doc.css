@@ -725,6 +725,10 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+/* 行の「外す」は字の幅より縮めない（狭い箱では文の方を折る・K450-UI-026） */
+.k-f4d-spec-list li > .k-btn {
+  flex-shrink: 0;
+}
 .k-f4d-spec-acts {
   display: flex;
   flex-wrap: wrap;
