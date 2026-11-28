@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["07_qa/test-specs/bridge.md", "07_qa/test-specs/screens/clone-chat.md", "apps/web/tests/screens/qa-b-login-check.spec.ts", "apps/web/tests/screens/qa-b-two-factor.spec.ts", "apps/web/tests/screens/credential-e2e.ts", "apps/web/tests/screens/qa-b-credential-vault.spec.ts", "apps/web/tests/screens/qa-b-infisical.spec.ts"], "tests": ["apps/web/tests/k/k370-credential-e2e-docs.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k370-credential-e2e-docs.spec.ts": "正本 07_qa/test-specs/bridge.md・screens/clone-chat.md の行と、通しの試験 apps/web/tests/screens/qa-b-login-check.spec.ts・qa-b-two-factor.spec.ts・共通の道具 credential-e2e.ts の中身（止め・固定の待ち・前の道すじが無いか）と、消した 2 本が無いことを読む。どれも data_links で結ぶ（実ブラウザは開かない・web の組の e2e:k が流す）・K-370"
+ }
+}
