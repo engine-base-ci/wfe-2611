@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>続けて裁く</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.7}
+a{color:#22345C}a:hover{color:#1A2848}
+button{font-family:inherit;white-space:nowrap}
+span[style*="border-radius: 9999px"]{white-space:nowrap}
+th{font-size:12px;color:#4A5563;font-weight:500;text-align:left;padding:6px 10px;border-bottom:1px solid #DDE2E9;background:#F7F8FA;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid #EDF0F4;vertical-align:top}
+td:nth-child(2),td:nth-child(3){white-space:nowrap}
+kbd{font-size:11px;border:1px solid #b8c0cc;border-bottom-width:2px;border-radius:4px;padding:0 5px;background:#FFFFFF;color:#4A5563}
+@media (max-width:767px){[data-wide]{flex-direction:column}}
+
+/* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
+[data-shell]{min-height:100vh !important;align-items:stretch}
+[data-shell]>main{display:flex !important;flex-direction:column}
+[data-shell]>main>.kn-bar~*:last-child{flex:1 0 auto}
+.kn-bar~header{flex:none}
+.kn-tgc{position:absolute;opacity:0;pointer-events:none}
+.kn-tg:hover{background:#DDE2E9}
+.kn-nav{transition:flex-basis .15s}
+body:has(#kn-tg-nav:checked) .kn-nav{flex-basis:56px !important;padding:10px 6px !important}
+body:has(#kn-tg-nav:checked) .kn-lbl{display:none !important}
+body:has(#kn-tg-nav:checked) .kn-top{flex-direction:column;padding:4px 0 !important}
+body:has(#kn-tg-nav:checked) .kn-tg{margin-left:0 !important}
+body:has(#kn-tg-nav:checked) .kn-item{justify-content:center;padding:0 !important}
+aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(100vh - 48px);align-self:flex-start}
+.kn-pbody{flex:1 1 auto !important;min-height:0;overflow:auto}
+.kn-thread{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column-reverse}
+@media (max-width:1023px){aside[aria-label="チケットのパネル"]{position:static;height:auto}}
+.kn-side{position:relative}
+.kn-side>.kn-tg+*{padding-right:44px !important}
+.kn-side>.kn-tg{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#4A5563;cursor:pointer;background:#FFFFFF}
+.kn-reopen{display:none;flex:0 0 36px;background:#FFFFFF;border-left:1px solid #DDE2E9;justify-content:center;padding-top:10px;color:#4A5563;cursor:pointer}
+.kn-reopen:hover{color:#22345C;background:#F7F8FA}
+body:has(#kn-tg-side:checked) .kn-side{display:none !important}
+body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+/* kn-sub: secondary left panel, white floating card for the current item */
+.kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
+.kn-sub-h:first-child{padding-top:4px}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#4a5563;text-decoration:none;transition:background .12s}
+.kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
+.kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
+.kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
+.kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
+.kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:9999px;padding:0 7px;font-weight:500}
+.kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:10px;padding:0 4px}}
+@media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
+@media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
+@media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
+/* kn-narrow */
+@media (max-width: 767px) { input, textarea, select { font-size: 16px !important } }
+@media (max-width: 767px) { select { min-width: 0; max-width: 100% } label:has(> select) { min-width: 0 } }
+/* kn-mobile-bar（D-147）：幅 767 以下の上の帯は画面の外枠と同じ（会社の印と名前・探す・お知らせ・自分のアイコン。いまの場所は出さない） */
+.kn-bar-ws,.kn-bar-ws-name,.kn-bar-search-open,.kn-bar-search-close{display:none}
+@media (max-width:767px){.kn-bar{gap:8px !important;padding:0 8px 0 16px !important}.kn-bar>nav[aria-label="いまの場所"]{display:none !important}.kn-bar-ws{display:grid}.kn-bar-ws-name{display:block}.kn-bar>span[style*="margin-left: auto"]{gap:0 !important}.kn-bar>span>label:has(input[type="search"]){display:none !important}.kn-bar-search-open{display:grid}.kn-bar>span>[aria-label^="お知らせ"]{width:44px !important;height:44px !important}.kn-bar-search-open:hover,.kn-bar-search-close:hover{background:#DDE2E9}
+body:has(#kn-tg-search:checked) .kn-bar>:not(span[style*="margin-left: auto"]),body:has(#kn-tg-search:checked) .kn-bar>span>:not(label){display:none !important}body:has(#kn-tg-search:checked) .kn-bar-search-open{display:none !important}body:has(#kn-tg-search:checked) .kn-bar>span[style*="margin-left: auto"]{flex:1;margin-left:0 !important;gap:4px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"]){display:flex !important;flex:1;width:auto !important;max-width:none !important;height:36px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"])>span:last-child{display:none}body:has(#kn-tg-search:checked) .kn-bar-search-close{display:grid}}
+</style>
+</helmet>
+<div data-shell style="min-height: 100vh; display: flex; flex-direction: column">
+ <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
+ <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 10px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+  <a href="Approvals.dc.html" style="height: 30px; display: inline-flex; align-items: center; border: 1px solid #DDE2E9; border-radius: 6px; padding: 0 10px; font-size: 12px; color: #131B27; text-decoration: none">← 一覧に戻る</a>
+  <b style="font-size: 15px">続けて裁く</b>
+  <span style="display: flex; gap: 3px; align-items: center" role="img" aria-label="7 件中 1 件目"><span style="width: 28px; height: 6px; border-radius: 9999px; background: #22345C"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span><span style="width: 28px; height: 6px; border-radius: 9999px; background: #DDE2E9"></span></span>
+  <span style="color: #4A5563">1 / 9</span>
+  <span style="margin-left: auto; font-size: 12px; color: #4A5563; display: flex; gap: 10px; align-items: center"><span><kbd>J</kbd> 次 <kbd>K</kbd> 前</span><span><kbd>A</kbd> 承認</span><span><kbd>R</kbd> 差し戻す</span><span><kbd>E</kbd> 自分で直す</span><span><kbd>S</kbd> 飛ばす</span></span>
+ </header>
+
+ <div style="flex: 1; padding: 20px 24px; display: flex; justify-content: center">
+  <article style="width: 100%; max-width: 1080px; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden">
+   <div style="padding: 14px 24px; border-bottom: 1px solid #EDF0F4">
+    <div style="display: flex; gap: 8px; align-items: center; font-size: 12px; color: #4A5563; flex-wrap: wrap"><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #22345C; color: #22345C">AI の成果物</span><span style="font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span><a href="TicketDetail.dc.html">EG-128</a>・ 営業 ・ 担当者 高本 ・ 成果物は高本のAI が作成<span style="margin-left: auto; color: #B91C1C; font-weight: 500">期限 11/01（1 日過ぎ）</span></div>
+    <h1 style="font-size: 20px; margin: 4px 0 0">セイコー様へ 11月分の請求書を送る</h1>
+   </div>
+   <div data-wide style="display: flex; gap: 20px; padding: 18px 24px; flex: 1">
+    <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+     <section style="border: 1px solid #f3c7c7; border-radius: 8px; overflow: hidden">
+      <div style="padding: 8px 12px; background: #FDECEC; display: flex; gap: 8px; font-size: 12px"><b style="color: #991B1B">承認すると行われること ・ 取り消せません</b></div>
+      <div style="padding: 10px 12px; display: grid; grid-template-columns: 72px 1fr; gap: 6px">
+       <span style="color: #4A5563">操作</span><span>メールを送る（PC のブラウザで Gmail から）</span>
+       <span style="color: #4A5563">宛先</span><span>経理部 山田様 ・ CC 営業 鈴木様</span>
+       <span style="color: #4A5563">添付</span><span>請求書 No.2026-1101.pdf（1,716,000 円）</span>
+      </div>
+     </section>
+     <section style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 10px 12px">
+      <b style="font-size: 12px; color: #4A5563; font-weight: 500">送る文面</b>
+      <p style="margin: 4px 0 0; white-space: pre-line">山田様
+いつもお世話になっております。株式会社ENGINE BASE の高本です。
+11 月分の請求書をお送りいたします。お支払期日は 12/31 です。</p>
+     </section>
+     <section style="border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+      <table style="border-collapse: collapse; width: 100%">
+       <thead><tr><th>確認</th><th>種類</th><th>結果</th></tr></thead>
+       <tbody>
+        <tr><td>金額が見積（EG-097）の月額と一致</td><td>① 機械</td><td><b style="color: #166534">通過・確実</b></td></tr>
+        <tr><td>インボイスの必須記載事項</td><td>① 機械</td><td><b style="color: #166534">通過・確実</b></td></tr>
+        <tr><td>宛名と CC が取引先のルールどおり</td><td>② AI</td><td><b style="color: #166534">通過</b> <span style="font-size: 11px; color: #4A5563">AI 判定</span></td></tr>
+        <tr style="background: #fff8ee"><td><label style="display: inline-flex; gap: 8px; align-items: center"><input type="checkbox">送る前に PDF を目で見た</label></td><td>③ 人</td><td><b style="color: #7A4A05">あなたが見る</b></td></tr>
+       </tbody>
+      </table>
+     </section>
+     <div style="font-size: 12px; color: #4A5563">気になる書き込み：鈴木（11/01）「10/19 の追加対応は無償にした件、反映が要るかもしれません」</div>
+    </div>
+    <div style="flex: 0 1 320px; display: flex; flex-direction: column; gap: 10px">
+     <div role="img" aria-label="請求書 PDF の 1 ページ目" style="height: 400px; border: 1px solid #DDE2E9; border-radius: 4px; background: #FFFFFF; display: flex; flex-direction: column; gap: 8px; padding: 20px; box-sizing: border-box; box-shadow: 0 1px 3px rgba(19,27,39,0.1)"><b style="font-size: 15px">請求書</b><span style="font-size: 10px; color: #4A5563">セイコー株式会社 経理部 山田様</span><span style="height: 5px; background: #EDF0F4"></span><span style="height: 5px; background: #EDF0F4"></span><span style="height: 5px; width: 70%; background: #EDF0F4"></span><span style="height: 5px; background: #EDF0F4"></span><span style="height: 5px; width: 60%; background: #EDF0F4"></span><span style="margin-top: auto; font-size: 13px; text-align: right; font-weight: 700">¥1,716,000</span></div>
+     <a href="TdPreview.dc.html" style="height: 30px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; font-size: 12px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer">PDF を大きく見る</a>
+    </div>
+   </div>
+   <div style="padding: 12px 24px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+    <span style="font-size: 12px; color: #7A4A05">③ を見たら承認できます</span>
+    <span style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+     <button type="button" style="height: 38px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #4A5563">飛ばす</button>
+     <button type="button" style="height: 38px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">止める</button>
+     <button type="button" style="height: 38px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">差し戻す</button>
+     <button type="button" style="height: 38px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">自分で直す</button>
+     <button type="button" style="height: 38px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 20px; font-size: 13px; font-weight: 500">承認して送る → 次へ</button>
+    </span>
+   </div>
+  </article>
+ </div>
+ <div style="padding: 0 24px 20px; display: flex; justify-content: center"><div style="width: 100%; max-width: 1080px; font-size: 12px; color: #4A5563">次：JD-204 京蟻 追加開発の見積を出す（上位の承認）・ EG-119 問い合わせに一次返信（渡された）…</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
