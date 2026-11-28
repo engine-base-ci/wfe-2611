@@ -1,0 +1,8 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F9/settings/**"],
+      "tests": ["apps/web/tests/k/k709-settings-fields.spec.ts", "apps/web/test/k709-settings-fields-shape.test.ts"]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F7/stopped/"], "tests": ["apps/web/tests/k/k486-stopped-band.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k486-stopped-band.spec.ts": "正本 07_qa/test-specs/errors.json を読み（番号から文を引く）、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/stopped/（views.tsx・stop-copy.ts・stopped.css）を共通の道具 stage2-match.ts の matchMock で開いて比べる（K-486）"
+ }
+}
