@@ -1,0 +1,1620 @@
+/* 分身の部屋（段 6・K-755・K-756・K-762・K-764 の下絵の部品）：ようす・やったこと・話す・チケットの右のパネル。
+   値は正本のトークン（--k-*）だけを読む。生の色・生の長さは書かない。正の絵はキャンバス Room・RoomDone・OnRoom・MbAI・AiChat・MbTalk・StAiPanel
+   （古い物＝記憶・業務の型・ルール・覚えたいことは範囲.md 5 章と代表に聞くことの勧めが正）。
+   形：頭（顔・名前・タブ）→ 本文。ようすは 2 列のカード、1023 以下は 1 列。話すは左に会話の一覧・右に会話。
+   スマホ（767 以下・末尾の 1 つの @media）は PC の並びを縮めず形を替える：やったこと＝カード・話す＝会話の一覧と会話が別の画面・
+   チケットの右のパネル＝「高本のAI」タブを開いた全画面。書く欄・下の入口は下のタブの上に貼り付く */
+
+/* スマホだけで出す物は PC の幅では隠す */
+.k-room-sub-short,
+.k-room-chat-bar,
+.k-room-tbar,
+.k-room-tab-mb,
+.k-room-entry,
+.k-room-mband {
+  display: none;
+}
+
+/* ---- 頭 ---- */
+.k-page-head.k-room-head {
+  flex-direction: column;
+  align-items: stretch;
+  row-gap: 0;
+  padding-bottom: 0;
+}
+.k-room-who {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-md);
+  min-width: 0;
+  padding-bottom: var(--k-s-sm);
+}
+.k-room-avatar {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(var(--k-s-md) + var(--k-s-lg));
+  height: calc(var(--k-s-md) + var(--k-s-lg));
+  border: var(--k-c-approvals-kind-border);
+  border-radius: var(--k-r-full);
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-size: var(--k-text-body-md);
+  font-weight: var(--k-fw-h3);
+}
+.k-room-avatar-bot {
+  position: absolute;
+  inset-inline-end: calc(var(--k-s-xs) / -2);
+  inset-block-end: calc(var(--k-s-xs) / -2);
+  display: grid;
+  place-items: center;
+  width: var(--k-s-md);
+  height: var(--k-s-md);
+  border-radius: var(--k-r-full);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-room-sub {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+  overflow-wrap: anywhere;
+}
+.k-room-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-detail-tab-gap);
+}
+.k-room-tabs :is(button, a) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: var(--k-c-detail-tab-pad);
+  border: 0;
+  border-bottom: var(--k-c-detail-tab-border-bottom);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.k-room-tabs :is(button, a)[aria-current="page"] {
+  border-bottom-color: var(--k-primary);
+  color: var(--k-primary);
+  font-weight: var(--k-fw-label-md);
+  cursor: default;
+}
+
+/* ---- 本文 ---- */
+.k-room-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-approvals-body-gap);
+  min-width: 0;
+  padding-bottom: var(--k-s-lg);
+}
+.k-room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-c-list-cards-gap);
+}
+@media (max-width: 1023px) {
+  .k-room-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-room-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  padding: var(--k-s-md);
+  background: var(--k-c-approvals-card-bg);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-c-approvals-card-radius);
+  overflow-wrap: anywhere;
+}
+.k-room-card > h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-note {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-note[data-tone="warn"] {
+  color: var(--k-st-on-warning-container);
+}
+
+/* いま（淡い青の箱） */
+.k-room-now {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-sm) var(--k-s-md);
+  background: var(--k-c-band-info-bg);
+  border: var(--k-c-band-info-border);
+  border-radius: var(--k-r-field);
+  color: var(--k-c-band-info-fg);
+}
+.k-room-now[data-tone="idle"] {
+  background: var(--k-surface);
+  border: var(--k-c-approvals-card-border);
+  color: var(--k-on-surface-variant);
+}
+.k-room-now[data-tone="asleep"] {
+  background: var(--k-c-band-wait-bg);
+  border: var(--k-c-band-wait-border);
+  color: var(--k-c-band-wait-fg);
+}
+.k-room-now-meta {
+  font-size: var(--k-text-label-md);
+  line-height: var(--k-lh-body-sm);
+}
+.k-room-now-title {
+  font-size: var(--k-text-body-md);
+  line-height: var(--k-lh-body-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-bar {
+  display: block;
+  width: 100%;
+  height: var(--k-s-xs);
+  margin-top: var(--k-s-xs);
+  border: 0;
+  border-radius: var(--k-r-full);
+  background: var(--k-primary-line);
+  overflow: hidden;
+  appearance: none;
+}
+.k-room-bar::-webkit-progress-bar {
+  background: var(--k-primary-line);
+}
+.k-room-bar::-webkit-progress-value {
+  background: var(--k-primary);
+}
+.k-room-bar::-moz-progress-bar {
+  background: var(--k-primary);
+}
+
+/* このあと・あなたを待っている */
+.k-room-sublabel {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-next {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-room-next > li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+.k-room-next-no {
+  flex: none;
+  color: var(--k-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.k-room-next-end {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-next-end[data-tone="warn"] {
+  color: var(--k-st-warning);
+}
+.k-room-wait {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding-top: var(--k-s-sm);
+  border-top: var(--k-c-approvals-note-border-top);
+  color: var(--k-on-surface);
+  text-decoration: none;
+}
+.k-room-wait > b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-wait[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+
+/* 育ち具合（数 3 つ） */
+.k-room-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--k-s-sm);
+  margin: 0;
+  text-align: center;
+}
+.k-room-stat dt {
+  font-size: var(--k-text-label-md);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-stat dd {
+  margin: 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-stat dd > b {
+  display: block;
+  font-size: var(--k-text-h1);
+  line-height: var(--k-lh-h1);
+  font-weight: var(--k-fw-h1);
+  color: var(--k-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+.k-room-stat dd > small {
+  display: block;
+  font-size: var(--k-text-label-md);
+}
+.k-room-stat[data-tone="up"] dd > small {
+  color: var(--k-st-success);
+}
+.k-room-stat[data-empty] dd > b {
+  color: var(--k-neutral);
+}
+
+/* PC がまだ・PC が閉じている（案内の大きな箱） */
+.k-room-pc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-md);
+  border-radius: var(--k-c-band-state-radius);
+}
+.k-room-pc[data-tone="wait"] {
+  background: var(--k-c-band-wait-bg);
+  border: var(--k-c-band-wait-border);
+  color: var(--k-c-band-wait-fg);
+}
+.k-room-pc[data-tone="plain"] {
+  background: var(--k-card);
+  border: var(--k-c-approvals-card-border);
+}
+.k-room-pc-text {
+  flex: 1 1 var(--k-c-detail-title-basis-width);
+  min-width: 0;
+}
+.k-room-pc-text > b {
+  display: block;
+  font-size: var(--k-text-body-md);
+  line-height: var(--k-lh-body-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-pc-text > p {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+
+/* 空の見出し（はじめて・何も無い） */
+.k-room-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--k-c-state-empty-gap);
+  padding: var(--k-c-state-empty-pad);
+  background: var(--k-c-state-empty-bg);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-c-state-empty-radius);
+  text-align: center;
+}
+.k-room-empty > h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--k-c-approvals-empty-title-text);
+  font-weight: var(--k-c-approvals-empty-title-fw);
+}
+.k-room-empty > p {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-empty-acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--k-s-sm);
+}
+
+/* ---- やったこと ---- */
+.k-room-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-approvals-tools-pad);
+  border-bottom: var(--k-c-approvals-tools-border-bottom);
+}
+.k-room-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-approvals-chips-gap);
+}
+.k-room-tools-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-left: auto;
+}
+.k-room-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-c-approvals-chip-height);
+  padding: var(--k-c-approvals-chip-pad);
+  border: var(--k-c-approvals-chip-border);
+  border-radius: var(--k-c-approvals-chip-radius);
+  background: var(--k-c-approvals-chip-bg);
+  color: var(--k-c-approvals-chip-fg);
+  font: inherit;
+  font-size: var(--k-c-approvals-chip-text);
+  line-height: var(--k-c-approvals-chip-lh);
+  font-weight: var(--k-c-approvals-chip-fw);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-room-chip[aria-pressed="true"] {
+  background: var(--k-c-approvals-chip-on-bg);
+  color: var(--k-c-approvals-chip-on-fg);
+  border: var(--k-c-approvals-chip-on-border);
+  cursor: default;
+}
+.k-room-chip[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-room-card.k-room-flush {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+.k-room-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-room-day {
+  height: var(--k-c-approvals-group-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--k-s-md);
+  background: var(--k-c-approvals-group-bg);
+  font-size: var(--k-c-approvals-group-text);
+  line-height: var(--k-c-approvals-group-lh);
+  font-weight: var(--k-c-approvals-group-fw);
+}
+.k-room-act {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-approvals-td-border-bottom);
+}
+.k-room-act-time {
+  flex: none;
+  min-width: var(--k-s-xl);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+  color: var(--k-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.k-room-act-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-approvals-avatar-width);
+  height: var(--k-c-approvals-avatar-height);
+  border-radius: var(--k-r-full);
+  background: var(--k-st-progress-container);
+  color: var(--k-st-on-progress-container);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-label-xs);
+}
+.k-room-act-mark[data-kind="made"] {
+  background: var(--k-st-success-soft);
+  color: var(--k-st-success);
+}
+.k-room-act-mark[data-kind="stopped"] {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+.k-room-act-main {
+  flex: 1 1 var(--k-c-detail-title-basis-width);
+  min-width: 0;
+}
+.k-room-act-title {
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-act-ticket {
+  margin-left: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body-sm);
+}
+.k-room-act-detail {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-act-end {
+  margin-left: auto;
+  flex: none;
+}
+.k-room-sum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-md);
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-sum b {
+  color: var(--k-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 話す ---- */
+.k-room-talk {
+  display: grid;
+  grid-template-columns: var(--k-c-list-side-width) minmax(0, 1fr);
+  gap: var(--k-s-md);
+  align-items: start;
+}
+.k-room-convs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+.k-room-convs-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-approvals-chips-gap);
+}
+.k-room-conv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  text-align: left;
+  min-width: 0;
+  cursor: pointer;
+}
+.k-room-conv[aria-current="true"] {
+  border-color: var(--k-primary);
+  background: var(--k-primary-soft);
+}
+.k-room-conv > b {
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+  overflow-wrap: anywhere;
+}
+.k-room-conv > span {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+.k-room-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+.k-room-msg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  max-width: 100%;
+}
+.k-room-msg[data-who="me"] {
+  align-items: flex-end;
+}
+.k-room-bubble {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.k-room-bubble > p {
+  margin: 0;
+}
+.k-room-bubble > ol {
+  margin: var(--k-s-xs) 0 0;
+  padding-left: var(--k-s-lg);
+}
+.k-room-msg[data-who="me"] .k-room-bubble {
+  padding: var(--k-c-chat-bubble-me-pad);
+  background: var(--k-c-chat-bubble-me-bg);
+  color: var(--k-c-chat-bubble-me-fg);
+  border-radius: var(--k-c-chat-bubble-me-radius);
+  font-size: var(--k-c-chat-bubble-me-text);
+  line-height: var(--k-c-chat-bubble-me-lh);
+  font-weight: var(--k-c-chat-bubble-me-fw);
+}
+.k-room-msg[data-who="ai"] .k-room-bubble {
+  padding: var(--k-c-chat-bubble-ai-pad);
+  background: var(--k-c-chat-bubble-ai-bg);
+  color: var(--k-c-chat-bubble-ai-fg);
+  border: var(--k-c-chat-bubble-ai-border);
+  border-radius: var(--k-c-chat-bubble-ai-radius);
+  font-size: var(--k-c-chat-bubble-ai-text);
+  line-height: var(--k-c-chat-bubble-ai-lh);
+  font-weight: var(--k-c-chat-bubble-ai-fw);
+}
+.k-room-msg-time {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-took {
+  margin: 0;
+  font-size: var(--k-c-chat-work-line-text);
+  line-height: var(--k-c-chat-work-line-lh);
+  color: var(--k-c-chat-work-line-fg);
+}
+.k-room-work {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin: 0;
+  background: var(--k-c-chat-work-line-bg);
+  color: var(--k-c-chat-work-line-fg);
+  font-size: var(--k-c-chat-work-line-text);
+  line-height: var(--k-c-chat-work-line-lh);
+  font-weight: var(--k-c-chat-work-line-fw);
+}
+.k-room-work > .k-btn {
+  margin-left: auto;
+}
+.k-room-sys {
+  margin: 0;
+  align-self: center;
+  padding: var(--k-c-chat-chip-pad);
+  border-radius: var(--k-c-chat-chip-radius);
+  background: var(--k-c-chat-chip-bg);
+  color: var(--k-c-chat-chip-fg);
+  font-size: var(--k-c-chat-chip-text);
+  font-weight: var(--k-c-chat-chip-fw);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.k-room-day-sep {
+  align-self: center;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-aside {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+
+/* 書く欄 */
+.k-room-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-chat-composer-pad);
+  background: var(--k-c-chat-composer-bg);
+  border: var(--k-c-chat-composer-border);
+  border-radius: var(--k-c-chat-composer-radius);
+}
+.k-room-composer textarea {
+  width: 100%;
+  min-height: calc(var(--k-s-xl) + var(--k-s-xs));
+  box-sizing: border-box;
+  resize: none;
+  border: 0;
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-c-chat-composer-text);
+  line-height: var(--k-c-chat-composer-lh);
+  font-weight: var(--k-c-chat-composer-fw);
+}
+.k-room-composer textarea:disabled {
+  opacity: var(--k-c-input-disabled-opacity);
+}
+.k-room-composer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-room-composer-row > .k-room-composer-end {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-room-quota {
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+  opacity: var(--k-c-button-disabled-opacity);
+}
+
+/* ---- チケットの右のパネル「高本のAI」タブ ---- */
+.k-room-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  overflow: auto;
+  padding: var(--k-s-sm) var(--k-s-md) var(--k-s-md);
+}
+.k-room-panel-thread {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 会話が長いときは会話の中で送る（下の「見ている」と書く欄に重ねない）。開いたときは新しい言葉（下の端）が見える */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.k-room-panel-thread > * {
+  margin-bottom: auto;
+}
+.k-room-looking {
+  margin: 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+
+/* ================= スマホ（767 以下） ================= */
+@media (max-width: 767px) {
+  /* ---- 頭：ひとことは短い 1 行・タブは 1 段（4 つとも収まる） ---- */
+  .k-page-head.k-room-head {
+    padding-inline: var(--k-s-md);
+  }
+  .k-room-sub-long {
+    display: none;
+  }
+  .k-room-sub-short {
+    display: inline;
+  }
+  .k-room-tabs {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .k-room-tabs :is(button, a) {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: var(--k-c-shell-bar-tool-height);
+    padding: 0 var(--k-s-xs);
+  }
+  /* 会話の画面では頭を畳む（見出しは読み上げ用に残し、会話の頭が代わりに立つ） */
+  .k-room-head[data-mchat] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .k-page > .k-room-head[data-mchat] + .k-room-body {
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+  .k-page:has(> .k-room-head[data-mchat]) {
+    padding-bottom: 0;
+  }
+
+  /* ---- 本文：左右は spacing.md（外枠の既定の 24 から詰める）。本文の高さは画面の残り全部（書く欄・下の入口を下に寄せるため） ---- */
+  /* 外枠を flex にせず、頁の側で残りの高さを取る＝画面の高さ − 上の帯 − 下のタブ（頁の padding も含める・K-755）。
+     子孫の選び方で外枠をたどらないので、本番の外枠（TicketShell）の包み [data-ticket-shell] を挟んでも当たる */
+  .k-page:has(> .k-room-body),
+  .k-detail[data-mtab="ai"],
+  .k-page:has(> .k-room-ct[data-mview="chat"]) {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: calc(var(--k-c-room-page-height) - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
+  }
+  .k-page > .k-room-body {
+    flex: 1 1 auto;
+    margin-inline: var(--k-s-md);
+  }
+  .k-room-stats {
+    align-items: start;
+  }
+  .k-room-pc {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .k-room-pc-text {
+    flex: none;
+  }
+  .k-room-pc > .k-btn {
+    width: 100%;
+    min-height: var(--k-c-button-primary-lg-height);
+  }
+  .k-room-empty-acts {
+    flex-direction: column;
+    align-self: stretch;
+  }
+  .k-room-empty-acts > .k-btn {
+    min-height: var(--k-c-shell-bar-tool-height);
+  }
+  /* あなたを待っている：指で押しやすい 1 行（右に ›） */
+  a.k-room-wait {
+    position: relative;
+    min-height: var(--k-c-shell-bar-tool-height);
+    padding-inline-end: var(--k-s-lg);
+  }
+  a.k-room-wait::after {
+    content: "›";
+    position: absolute;
+    inset-inline-end: var(--k-s-xs);
+    color: var(--k-on-surface-variant);
+    font-size: var(--k-text-body-md);
+  }
+  /* 下の入口：下のタブの上に貼り付く 1 行（キャンバス MbAI の「高本のAI と話す」） */
+  .k-room-entry {
+    margin-top: auto;
+    position: sticky;
+    bottom: var(--k-c-shell-tabs-height);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--k-s-sm);
+    margin-inline: calc(var(--k-s-md) * -1);
+    margin-bottom: calc(var(--k-s-lg) * -1);
+    padding: var(--k-s-sm) var(--k-s-md);
+    background: var(--k-card);
+    border-top: var(--k-c-approvals-note-border-top);
+  }
+  .k-room-entry-text {
+    flex: 1;
+    min-width: 0;
+    padding: var(--k-s-sm) var(--k-s-md);
+    border: var(--k-c-approvals-card-border);
+    border-radius: var(--k-r-full);
+    background: var(--k-surface);
+    color: var(--k-on-surface-variant);
+  }
+  .k-room-entry > .k-btn {
+    min-height: var(--k-c-shell-bar-tool-height);
+  }
+
+  /* ---- やったこと：表にせずカードに ---- */
+  .k-room-card.k-room-flush {
+    gap: var(--k-s-sm);
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+  .k-room-flush > .k-room-tools {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    border-bottom: 0;
+  }
+  .k-room-chips {
+    flex-wrap: nowrap;
+    margin-inline: calc(var(--k-s-md) * -1);
+    padding-inline: var(--k-s-md);
+    overflow-x: auto;
+  }
+  .k-room-tools-end {
+    flex-wrap: nowrap;
+    margin-left: 0;
+  }
+  /* 期間は札の下に、枠の無い選び物として置く（白い箱として浮かせない） */
+  .k-room-tools-end > .k-btn {
+    flex: none;
+    min-height: var(--k-c-shell-bar-tool-height);
+    padding-inline: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--k-on-surface-variant);
+  }
+  .k-room-flush > .k-room-log {
+    display: flex;
+    flex-direction: column;
+    gap: var(--k-s-md);
+  }
+  .k-room-flush .k-room-log .k-room-log {
+    display: flex;
+    flex-direction: column;
+    gap: var(--k-s-sm);
+  }
+  .k-room-day {
+    height: auto;
+    padding: 0 0 var(--k-s-xs);
+    background: transparent;
+    color: var(--k-on-surface-variant);
+  }
+  .k-room-act {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "mark time end"
+      "mark main main";
+    column-gap: var(--k-s-sm);
+    row-gap: 0;
+    padding: var(--k-s-sm) var(--k-s-md);
+    background: var(--k-card);
+    border: var(--k-c-approvals-card-border);
+    border-radius: var(--k-c-approvals-card-radius);
+  }
+  .k-room-act-mark {
+    grid-area: mark;
+  }
+  .k-room-act-time {
+    grid-area: time;
+    min-width: 0;
+  }
+  .k-room-act-main {
+    grid-area: main;
+    flex: none;
+  }
+  .k-room-act-end {
+    grid-area: end;
+    align-self: center;
+    margin-left: 0;
+  }
+  .k-room-act-ticket {
+    display: block;
+    margin-left: 0;
+  }
+  .k-room-act.k-room-more {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+  .k-room-more > .k-btn {
+    width: 100%;
+    min-height: var(--k-c-shell-bar-tool-height);
+  }
+  .k-room-sum {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--k-s-xs) var(--k-s-md);
+    padding: var(--k-s-sm) 0 0;
+  }
+  .k-room-sum > span:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* ---- 話す：会話の一覧と会話は別の画面（mview） ---- */
+  .k-room-talk {
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    align-items: stretch;
+  }
+  .k-room-talk[data-mview="list"] > .k-room-chat,
+  .k-room-talk[data-mview="chat"] > .k-room-convs {
+    display: none;
+  }
+  .k-room-convs {
+    gap: var(--k-s-sm);
+  }
+  .k-room-convs > .k-btn {
+    width: 100%;
+    min-height: var(--k-c-button-primary-lg-height);
+  }
+  .k-room-convs-tools > .k-btn {
+    flex: 1 1 0;
+    min-height: var(--k-c-shell-bar-tool-height);
+  }
+  .k-room-conv {
+    position: relative;
+    min-height: var(--k-c-shell-bar-tool-height);
+    padding-inline-end: calc(var(--k-s-md) + var(--k-s-lg));
+  }
+  .k-room-conv::after {
+    content: "›";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--k-s-md);
+    display: grid;
+    place-items: center;
+    color: var(--k-on-surface-variant);
+    font-size: var(--k-text-body-md);
+  }
+  /* 会話の画面：頭は「‹」と題・書く欄は下のタブの上に貼り付く */
+  .k-room-chat {
+    gap: var(--k-s-sm);
+  }
+  .k-room-chat-bar,
+  .k-room-tbar {
+    display: flex;
+    align-items: center;
+    gap: var(--k-s-sm);
+    min-height: calc(var(--k-s-xl) + var(--k-s-sm));
+    padding: var(--k-s-xs) var(--k-s-md) var(--k-s-xs) var(--k-s-sm);
+    background: var(--k-card);
+    border-bottom: var(--k-c-detail-rule-border);
+  }
+  .k-room-chat-bar {
+    margin-inline: calc(var(--k-s-md) * -1);
+  }
+  .k-room-back {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--k-c-shell-bar-tool-width);
+    height: var(--k-c-shell-bar-tool-height);
+    padding: 0;
+    border: 0;
+    border-radius: var(--k-r-full);
+    background: transparent;
+    color: var(--k-primary);
+    cursor: pointer;
+  }
+  .k-room-chat-title {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  /* 題は「…」で切らずに折り返して全文を出す */
+  /* 作る画面の会話の題は見出し（h2・K767-UI-020）。部屋と詳細の右のパネルは b のまま */
+  .k-room-chat-title > :is(b, h2) {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--k-text-body-md);
+    line-height: var(--k-lh-body-md);
+    font-weight: var(--k-fw-label-md);
+  }
+  .k-room-chat-title > span {
+    font-size: var(--k-text-label-md);
+    color: var(--k-on-surface-variant);
+  }
+  .k-room-msg[data-who="me"] .k-room-bubble {
+    max-width: calc(100% - var(--k-s-xl));
+  }
+  .k-room-composer-row > .k-room-composer-end {
+    margin-left: auto;
+  }
+  .k-room-quota {
+    order: 5;
+    flex-basis: 100%;
+  }
+  .k-room-chat .k-room-composer,
+  .k-room-panel .k-room-composer {
+    position: sticky;
+    bottom: var(--k-c-shell-tabs-height);
+    z-index: 1;
+    margin-top: auto;
+    margin-inline: calc(var(--k-s-md) * -1);
+    border: 0;
+    border-top: var(--k-c-chat-composer-border);
+    border-radius: 0;
+  }
+
+  /* ---- チケットの右のパネル：「高本のAI」タブを開いた全画面（高さは上の頁の側の規則 1 つ・K-755） ---- */
+  .k-detail[data-mtab="ai"] > .k-page,
+  .k-detail[data-mtab="ai"] .k-detail-panel-close {
+    display: none;
+  }
+  .k-detail[data-mtab="ai"] > .k-detail-panel {
+    flex: 1 1 auto;
+    border-top: 0;
+  }
+  .k-room-ptabs {
+    padding: 0 var(--k-s-md);
+  }
+  .k-room-ptabs button {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: var(--k-c-shell-bar-tool-height);
+  }
+  .k-room-tab-pc {
+    display: none;
+  }
+  .k-room-tab-mb {
+    display: inline;
+  }
+  .k-room-mband {
+    display: block;
+    padding: var(--k-s-sm) var(--k-s-md) 0;
+  }
+  /* 写す帯が 1 つも描かれていない（帯の部品が何も返さない）ときは、余白だけの箱を出さない（下絵の帯なしの形と同じ） */
+  .k-room-mband:not(:has(.k-band, section)) {
+    display: none;
+  }
+  .k-room-panel {
+    overflow: visible;
+    padding-bottom: 0;
+  }
+  .k-room-panel > .k-room-composer {
+    margin-bottom: 0;
+  }
+}
+
+/* ================= 会話の作り込み（送る／止めるは同じ場所・書きながらの返事・日付の見出し・欄に入れる案・欄を直した印） ================= */
+.k-room-composer textarea {
+  field-sizing: content;
+  max-height: calc(var(--k-s-xl) * 3);
+}
+.k-room-send {
+  min-width: calc(var(--k-s-xl) + var(--k-s-md));
+}
+.k-room-caret {
+  display: inline-block;
+  width: var(--k-s-xs);
+  height: var(--k-text-body);
+  margin-left: var(--k-s-xs);
+  vertical-align: text-bottom;
+  background: var(--k-primary);
+  animation: k-room-blink 1s steps(2, start) infinite;
+}
+@keyframes k-room-blink {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .k-room-caret {
+    animation: none;
+  }
+}
+.k-room-passed {
+  margin: 0 0 var(--k-s-xs);
+  max-width: 100%;
+  padding: var(--k-c-chat-chip-pad);
+  border-radius: var(--k-c-chat-chip-radius);
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-size: var(--k-c-chat-chip-text);
+  font-weight: var(--k-c-chat-chip-fw);
+  overflow-wrap: anywhere;
+}
+.k-room-conv-group {
+  margin: var(--k-s-sm) 0 0;
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface-variant);
+}
+
+/* 丸・四角の選択（選択と字の 1 行目を同じ高さの中心に） */
+.k-room-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface);
+}
+.k-room-choice > input {
+  flex: none;
+  margin: calc((var(--k-text-body) * var(--k-lh-body) - var(--k-s-md)) / 2) 0 0;
+  width: var(--k-s-md);
+  height: var(--k-s-md);
+  accent-color: var(--k-primary);
+}
+
+/* AI の案のカード */
+.k-room-prop {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  max-width: 100%;
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-room-prop-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-room-prop-head > span {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-room-prop-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-room-prop-list > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-room-prop-list > li[data-result="skipped"] {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+.k-room-prop-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-prop-name > small {
+  padding: var(--k-c-chat-chip-pad);
+  border-radius: var(--k-c-chat-chip-radius);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-room-prop-name > small[data-result="in"] {
+  background: var(--k-st-success-soft);
+  color: var(--k-st-on-success-container);
+}
+.k-room-prop-val {
+  margin: 0;
+  padding-left: var(--k-s-md);
+  border-left: var(--k-c-input-border);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-room-prop-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+}
+.k-room-starters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  margin: var(--k-s-sm) 0 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+.k-room-starters button {
+  width: 100%;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body);
+  text-align: left;
+  cursor: pointer;
+}
+.k-room-starters button:disabled {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: default;
+}
+
+/* ---- 作る画面：左に欄・右に会話 ---- */
+.k-room-ct {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--k-s-md);
+  align-items: start;
+  /* 上の帯（パンくず）から spacing.md 離す（ページの型の帯が無い画面なので、本文の箱の上の余白は 0） */
+  margin-top: var(--k-s-md);
+}
+.k-room-ct-form {
+  min-width: 0;
+}
+/* 会話も「AI と話して作る」も無いときは箱を作らない（欄の並びは包む前と同じ・欄は木の同じ場所のまま） */
+.k-room-ct[data-plain],
+.k-room-ct[data-plain] > .k-room-ct-form {
+  display: contents;
+}
+.k-room-cf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+/* 項目名の行に「AI の案」「直しました」の札が載るので、項目名と欄の間を spacing.sm に（札が欄にくっつかない） */
+.k-room-cf .k-field {
+  gap: var(--k-s-sm);
+}
+.k-room-cf-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm) var(--k-s-md);
+}
+.k-room-cf-head > h1 {
+  margin: 0;
+  font-size: var(--k-text-page-title);
+  line-height: var(--k-lh-page-title);
+  font-weight: var(--k-fw-page-title);
+}
+.k-room-cf-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin-left: auto;
+}
+.k-room-cf-saved {
+  flex: 1 1 100%;
+  display: flex;
+  gap: var(--k-s-md);
+  margin: 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-room-cf-how {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  font-size: var(--k-text-body);
+}
+.k-room-cf-how > span {
+  padding: var(--k-s-xs) var(--k-s-md);
+  border-radius: var(--k-r-full);
+  border: var(--k-c-detail-rule-border);
+  color: var(--k-on-surface-variant);
+}
+.k-room-cf-how > span[aria-current="true"] {
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-cf-how > span[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+.k-room-cf-ask {
+  display: none;
+}
+.k-room-cf-trio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--k-s-md);
+}
+.k-room-cf-trio > :last-child {
+  grid-column: 1 / -1;
+}
+.k-room-cf-parent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+}
+.k-room-cf-parent > small {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-room-cf-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-md);
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-room-cf-tpl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-radius: var(--k-r-field);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-room-cf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-s-md);
+  align-items: start;
+}
+.k-room-cf-grid > textarea,
+.k-room-cf-grid > .k-field:has(textarea) {
+  grid-column: 1 / -1;
+}
+.k-room-cf-multi,
+.k-room-cf-single {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-room-cf-multi > legend {
+  padding: 0;
+  margin-bottom: var(--k-s-sm);
+}
+.k-room-cf-notify,
+.k-room-cf-people {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-checks > ul > li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-checks-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-add {
+  display: flex;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-primary);
+  font: inherit;
+  font-size: var(--k-text-body);
+  text-align: left;
+  cursor: pointer;
+}
+.k-room-cf-add > small {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+}
+.k-room-cf-checks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-checks > h2 {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-label-md);
+}
+.k-room-cf-checks > ul {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-room-cf-checks > ul > li {
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-room-cf-drop {
+  padding: var(--k-s-md);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-r-field);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  text-align: center;
+  opacity: var(--k-c-button-disabled-opacity);
+}
+.k-room-cc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  min-height: calc(var(--k-s-2xl) * 4);
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-rule-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-surface);
+}
+.k-room-cc-bar {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  min-height: 0;
+}
+.k-room-cc-bar .k-room-back {
+  display: none;
+}
+.k-room-cc-thread {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+@media (max-width: 1023px) {
+  .k-room-ct {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .k-room-cf-trio,
+  .k-room-cf-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .k-room-cf-ask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--k-s-sm);
+    min-height: var(--k-c-button-primary-lg-height);
+    border: var(--k-c-detail-rule-border);
+    border-radius: var(--k-r-field);
+    background: var(--k-primary-soft);
+    color: var(--k-primary);
+    font: inherit;
+    font-size: var(--k-text-body-md);
+    font-weight: var(--k-fw-label-md);
+  }
+  .k-room-cf-how {
+    display: none;
+  }
+  /* 会話の画面は頭の帯が上の帯の下に付く（帯どうし） */
+  .k-room-ct[data-mview="chat"] {
+    margin-top: 0;
+  }
+  .k-room-ct[data-mview="form"] > .k-room-cc,
+  .k-room-ct[data-mview="chat"] > .k-room-ct-form {
+    display: none;
+  }
+  .k-room-cc {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  .k-room-cc-bar {
+    padding: var(--k-s-xs) var(--k-s-md) var(--k-s-xs) var(--k-s-sm);
+    background: var(--k-card);
+    border-bottom: var(--k-c-detail-rule-border);
+    min-height: calc(var(--k-s-xl) + var(--k-s-sm));
+    /* 作る画面の会話は端から端まで（会話の器も頁も左右の余白 0・前の -lg のはみ出しで幅 320 が 24px 横に溢れた・K767-UI-015） */
+    margin-inline: 0;
+  }
+  .k-room-cc-bar .k-room-back {
+    display: grid;
+  }
+  .k-room-cc-aside {
+    padding: 0 var(--k-s-xs);
+  }
+  .k-room-cc .k-room-composer {
+    position: sticky;
+    bottom: var(--k-c-shell-tabs-height);
+    z-index: 1;
+    margin-top: auto;
+    margin-inline: 0;
+    border: 0;
+    border-top: var(--k-c-chat-composer-border);
+    border-radius: 0;
+  }
+}
+
+/* やったことの記録が空のとき：点線の箱をカードの枠から spacing.md 内側に（枠と点線が重ならない） */
+.k-room-flush > .k-state[data-state="empty"] {
+  margin: var(--k-s-md);
+}
+@media (max-width: 767px) {
+  .k-room-flush > .k-state[data-state="empty"] {
+    margin: 0;
+  }
+}
+
+/* 確認項目の行：項目の字が「外す」と並んで入らないときは「外す」を次の行へ（短い字を 2 行に折らない） */
+.k-room-cf-checks > ul > li {
+  flex-wrap: wrap;
+}
+.k-room-cf-checks > ul > li > .k-room-choice {
+  flex: 1 1 max-content;
+  min-width: 0;
+}
+.k-room-cf-checks > ul > li > .k-btn {
+  margin-left: auto;
+}
+
+/* 空の会話の見出しと説明：狭い幅で最後の 1 字だけが次の行に落ちないよう、行の長さをそろえて折る */
+.k-room-empty > h2,
+.k-room-empty > p {
+  text-wrap: balance;
+  /* 日本語は文節の切れ目で折る（語の途中で折らない） */
+  word-break: auto-phrase;
+}
+
+/* 作る画面の会話（スマホ）：会話は画面の残りの高さ全部を使い、書く欄を下のタブの上に寄せる（話す画面と同じ） */
+@media (max-width: 767px) {
+  /* 頁の高さと並べ方は話す画面と同じ規則（767 以下の頁の側の規則・K-755） */
+  .k-page:has(> .k-room-ct[data-mview="chat"]) {
+    padding-bottom: 0;
+  }
+  .k-page > .k-room-ct[data-mview="chat"] {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .k-room-ct[data-mview="chat"] > .k-room-cc {
+    flex: 1 1 auto;
+  }
+}
+
+/* 空のときの見出しと説明：狭い幅で最後の 1〜2 字だけが次の行に落ちないよう、行の長さをそろえて折る */
+.k-state[data-state="empty"] :is(h1, h2, h3, p) {
+  text-wrap: balance;
+  /* 日本語は文節の切れ目で折る（語の途中で折らない） */
+  word-break: auto-phrase;
+}
+
+/* 会話の並びの上端の見張り（読み足しの合図・字も印も出さない・K-762） */
+.k-room-top {
+  list-style: none;
+}
