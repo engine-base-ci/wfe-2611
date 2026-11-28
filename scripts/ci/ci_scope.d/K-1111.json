@@ -1,0 +1,20 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/ops2/template-edit-*",
+    "apps/web/features/F12/ops2/template-item-dialog.tsx",
+    "apps/web/features/F12/ops2/use-template-edit.ts",
+    "apps/web/app/(ops)/ops/skills/templates/[id]/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1111-template-edit.spec.ts",
+    "apps/web/test/k1111-template-edit-shape.test.ts",
+    "apps/web/tests/k/k994-templates.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1111-template-edit.spec.ts": "見た目の突き合わせの組の型 FidelityPair を scripts/ci/fidelity_compare.mjs から読む（型だけ・K1111-UI-001・002）。モックと本番を同じ幅で比べる（K-1111）"
+ }
+}
