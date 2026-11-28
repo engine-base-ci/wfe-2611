@@ -1,0 +1,40 @@
+{
+ "_doc": "lockfile で上流が「非推奨」にした部品の記録（D-128.123・K-41 で見つけた 16 件。K-44 で eslint 10・electron-builder 26 に上げて 8 件消えた）。stack_gate.py（G46）の S4 が、記録に無い非推奨を赤・記録の物が消えたら外すよう言う",
+ "entries": {
+  "@smithy/core@3.34.1": {
+   "ticket": "K-43",
+   "message": "Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.",
+   "why": "直接使う部品"
+  },
+  "boolean@3.2.0": {
+   "ticket": "K-44",
+   "message": "Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.",
+   "why": "Bridge の配布物を作る道具（electron-builder 26）の奥。上の道具の最新でもこの版のまま（K-44 で上げて確かめた）。本番の画面と API には入らない"
+  },
+  "glob@10.5.0": {
+   "ticket": "K-44",
+   "message": "Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Sup",
+   "why": "Bridge の配布物を作る道具（electron-builder 26）の奥。上の道具の最新でもこの版のまま（K-44 で上げて確かめた）。本番の画面と API には入らない"
+  },
+  "glob@7.2.3": {
+   "ticket": "K-44",
+   "message": "Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Sup",
+   "why": "Bridge の配布物を作る道具（electron-builder 26）の奥。上の道具の最新でもこの版のまま（K-44 で上げて確かめた）。本番の画面と API には入らない"
+  },
+  "inflight@1.0.6": {
+   "ticket": "K-44",
+   "message": "This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, ",
+   "why": "Bridge の配布物を作る道具（electron-builder 26）の奥。上の道具の最新でもこの版のまま（K-44 で上げて確かめた）。本番の画面と API には入らない"
+  },
+  "lodash.isequal@4.5.0": {
+   "ticket": "K-44",
+   "message": "This package is deprecated. Use require('node:util').isDeepStrictEqual instead.",
+   "why": "Bridge の配布物を作る道具（electron-builder 26）の奥。上の道具の最新でもこの版のまま（K-44 で上げて確かめた）。本番の画面と API には入らない"
+  },
+  "rimraf@2.6.3": {
+   "ticket": "K-44",
+   "message": "Rimraf versions prior to v4 are no longer supported",
+   "why": "Bridge の配布物を作る道具（electron-builder 26 → Windows の配布物 electron-winstaller → temp）の奥。上の道具の最新でもこの版のまま。本番の画面と API には入らない"
+  }
+ }
+}
