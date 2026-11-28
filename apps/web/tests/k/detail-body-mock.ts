@@ -128,7 +128,7 @@ export interface DetailAnswer {
 export const answer = (o: Partial<DetailAnswer> = {}): DetailAnswer => ({
   body: { doc: FREE, text: "目的", version: 3 },
   sections: [],
-  fields: COMPANY,
+  fields: COMPANY.map((f) => ({ ...f })), // 試験ごとに写しを渡す（PATCH を受けて値を替える試験が、同じ働き手の次の試験の値を変えない）
   spec_count: 3,
   spec_unchecked: 1,
   no_spec_reason: null,

@@ -175,8 +175,9 @@ test("K567-UI-004 戻す・やり直す：打つ前は『戻す』『やり直�
   page,
 }) => {
   await open(page, "empty");
-  expect(await isOff(tool(page, "戻す"))).toBe(true);
-  expect(await isOff(tool(page, "やり直す"))).toBe(true);
+  // 編集の部品が出来上がるまで待ってから見る（開いた直後の 1 描画は部品の前の帯）
+  await expect.poll(() => isOff(tool(page, "戻す"))).toBe(true);
+  await expect.poll(() => isOff(tool(page, "やり直す"))).toBe(true);
   await typeFresh(page, "確認");
   await selectAll(page);
   await tool(page, "太字").click();
@@ -377,7 +378,8 @@ test("K567-UI-012 読み込み：番号つき・区切りの線・結合した�
   await page.keyboard.press("End");
   await page.keyboard.type("x");
   await page.keyboard.press("Backspace");
-  await expect.poll(async () => JSON.stringify(await outDoc(page))).toBe(JSON.stringify(before));
+  // 木の中身で比べる（鍵の並び（attrs と content のどちらが先か）は木の違いではない）
+  await expect.poll(async () => await outDoc(page)).toEqual(before);
   for (const type of ["table", "taskList", "blockquote", "codeBlock", "image", "orderedList", "horizontalRule"])
     expect(find(before, (n) => n.type === type).length, type).toBe(1);
   expect(hasMark(before, "link", "資料")).toBe(true);
