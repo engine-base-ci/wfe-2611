@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:406576c86e166c6e
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:7a6be53b210a29b9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -5603,7 +5603,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "invitations",
     "kind": "create",
     "input": "InvitationResendInput",
-    "success": 201,
+    "success": 200,
     "output": "InvitationResent",
     "outputList": false,
     "generic": false,
@@ -8995,7 +8995,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "members",
     "kind": "create",
     "input": "MemberResumeInput",
-    "success": 201,
+    "success": 200,
     "output": "MemberStateChanged",
     "outputList": false,
     "generic": false,
@@ -9110,7 +9110,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "members",
     "kind": "create",
     "input": "MemberSuspendInput",
-    "success": 201,
+    "success": 200,
     "output": "MemberStateChanged",
     "outputList": false,
     "generic": false,
@@ -14478,7 +14478,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "ticket_kinds",
     "kind": "create",
     "input": "TicketKindOrderInput",
-    "success": 201,
+    "success": 200,
     "output": "TicketKindSetting",
     "outputList": false,
     "generic": false,
@@ -14545,6 +14545,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      404,
       429,
       403,
       403,
@@ -14577,7 +14578,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "tenant_distributions",
     "kind": "create",
     "input": "KindTemplateUpdateApplyInput",
-    "success": 201,
+    "success": 200,
     "output": "KindTemplateUpdate",
     "outputList": false,
     "generic": false,
@@ -17987,4 +17988,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "406576c86e166c6e";
+export const OPENAPI_HASH = "7a6be53b210a29b9";

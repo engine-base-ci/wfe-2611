@@ -119,6 +119,8 @@ export function useMemberRemove({
   const [notice, setNotice] = useState<string | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const sending = useRef(false);
   const started = useRef(false);
 
@@ -171,12 +173,18 @@ export function useMemberRemove({
   /** 外す。retried＝本人確認を取り直した後の送り直し（1 回だけ。2 回目の取り直しの求めは赤い箱に出して止める） */
   async function remove(sent: Record<string, unknown>, retried: boolean): Promise<void> {
     if (sending.current) return;
+    if (!retried && needStepUp.current) {
+      setNotice(undefined);
+      setStepUp(needStepUp.current);
+      return;
+    }
     sending.current = true;
     setBusy(true);
     setNotice(undefined);
     try {
       // 体は K-848 の契約（transfer_to_member_id か transfers・担当 0 件は {}）
       const res = await call("removeMember", { params: { id: memberId }, body: sent as never, screenId: SCREEN });
+      if (res.ok || res.kind !== "step_up" || retried) needStepUp.current = null;
       if (res.ok) {
         setStepUp(null);
         const n = (res.data as unknown as { tickets_moved?: number }).tickets_moved ?? tickets.length;
@@ -198,7 +206,8 @@ export function useMemberRemove({
       if (res.kind === "step_up") {
         const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
         const sec = (s.ok ? s.data : {}) as { two_factor?: boolean; has_password?: boolean };
-        setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+        needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+        setStepUp(needStepUp.current);
         return;
       }
       setStepUp(null);

@@ -1032,11 +1032,11 @@
   "tickets": 218,
   "l1_rows": 5094,
   "ears_endpoints": 334,
-  "ears_tests": 3942,
+  "ears_tests": 3943,
   "entities": 156,
   "policies": 443,
   "access_cases": 1649,
-  "errors": 510,
+  "errors": 511,
   "journey_rows": 88,
   "critical_tasks": 88
  },

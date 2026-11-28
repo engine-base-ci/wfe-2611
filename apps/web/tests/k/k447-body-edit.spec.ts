@@ -409,7 +409,7 @@ test("K447-UI-018 別のタブで同じ本文を直す：タブ A が先に書�
   await ctx.close();
 });
 
-test("K447-UI-019 口が 403（書けない人）：本文の上の赤い箱（role=alert）に E-PAGE-002 の文。編集の形は開いたまま・書いた字は残る・口 1 回・読み直さない", async ({
+test("K447-UI-019 口が 403（書けない人）：本文の上の赤い箱（role=alert）に E-SEC-006 の文（書く操作の断り）。編集の形は開いたまま・書いた字は残る・口 1 回・読み直さない", async ({
   page,
 }) => {
   const s = bodyServer();
@@ -419,7 +419,7 @@ test("K447-UI-019 口が 403（書けない人）：本文の上の赤い箱（r
   s.replies.push(fail(403, "FORBIDDEN", "forbidden"));
   const reads = m.seen.filter((x) => x === `GET /api/v1/tickets/${TID}`).length;
   await finishBtn(page).click();
-  await expect(failBox(page, msg("E-PAGE-002"))).toBeVisible();
+  await expect(failBox(page, msg("E-SEC-006"))).toBeVisible();
   await expect(editor(page)).toContainText(ADDED);
   expect(s.calls).toHaveLength(1);
   expect(m.seen.filter((x) => x === `GET /api/v1/tickets/${TID}`)).toHaveLength(reads);
@@ -755,7 +755,7 @@ const STATES: { id: string; pairs: FidelityPair[]; setup: (page: Page, w: number
       await copyMarked(page);
       s.replies.push(fail(403, "FORBIDDEN", "forbidden"));
       await finishBtn(page).click();
-      await expect(failBox(page, msg("E-PAGE-002"))).toBeVisible();
+      await expect(failBox(page, msg("E-SEC-006"))).toBeVisible();
     },
   },
 ];

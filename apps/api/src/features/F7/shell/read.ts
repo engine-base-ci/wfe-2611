@@ -3,6 +3,8 @@
 //   上限（1 分 120 回）・認証・同意し直しの止め・社内の外枠だけ（取引先・運営は 403）は契約の入口（op.ts）が先に確かめる。
 //   取引は 1 つ（withTenant）・文は 4 つ：①本人・会社・承認待ち・PC・帯・はじめにやること ②グループと件数 ③未読の数 ④保存した条件。
 //   グループごと・行ごとに引かない。どれかが失敗したら全体が 503・E-PAGE-003（部分の答えは返さない）。
+//   ログイン後の稼働状況と帯（K-957 の帯と画面いっぱいの形が読む）は getServiceStatusForMember と同じ app.member_service_status() を①に入れる
+//   （画面ごとの口の本数を増やさない・PM の決め 2026-11-28・文の数は 4 のまま）。
 //   承認待ちは app.approval_queue_count()・未読は K-461 の UNREAD_COUNT_SQL（一覧と数がずれない）・保存した条件は K-475 の readSavedViews（一覧と同じ文・同じ 13 個の鍵）をそのまま使う。
 //   本人の行が無い（今の会社のメンバーでない）ときは 403。ログに名前・題名を出さない
 import type pg from "pg";
@@ -21,6 +23,7 @@ select m.id, m.display_name, m.role_id, t.id as tenant_id, nullif(btrim(t.name),
        (select count(*)::int from jsonb_array_elements(app.bridge_devices(m.id)) d) as pc_count,
        exists (select 1 from jsonb_array_elements(app.bridge_devices(m.id)) d where d->>'state' = 'live') as pc_live,
        app.public_service_status() as banner,
+       app.member_service_status() as service_status,
        ${STATE_COLS}
   from members m
   join tenants t on t.id = m.tenant_id
@@ -59,6 +62,7 @@ interface HeadRow extends StateRow {
   pc_count: number;
   pc_live: boolean;
   banner: unknown;
+  service_status: unknown;
 }
 
 interface GroupRow {
@@ -98,6 +102,7 @@ export function createGetShell(appPool: pg.Pool): (a: HookArgs) => Promise<HookR
               pc: { connected: head.pc_live, count: head.pc_count },
               setup_left: setupLeft(head),
               banner: head.banner,
+              service_status: head.service_status,
               saved_views: savedViews,
             },
           },

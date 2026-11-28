@@ -501,8 +501,9 @@ function Page({ theme, ps, stage, band, tab = "talk", count, panel, decisions, d
                   <h2 id="sec-done">完了の条件</h2>
                   <Prose>請求書の PDF を作り、先方の担当（山田様）にメールで送ったこと。</Prose>
                 </section>
-                {decisions ?? <DecisionLog intro="支払いは銀行振込" items={DECISIONS.slice(0, 2)} canWrite />}
               </div>
+              {/* 決定ログは本文の下の結果の場所（K-571 の後の詳細・D-150.41：出来たときだけ）。本番の ResultBlocks と同じく本文の外・カードの中 */}
+              {decisions ?? <DecisionLog items={DECISIONS.slice(0, 2)} canWrite />}
             </article>
             <section className="k-detail-links" aria-label="子チケット・つながり">
               <div className="k-detail-links-head">
@@ -602,7 +603,7 @@ function view(id: string, theme: Theme): ReactNode {
           tab="attr"
           count={1}
           panel={<AttrBody time={<ActualTime human={60} ai={12} canEdit={false} />} />}
-          decisions={<DecisionLog intro="支払いは銀行振込" items={DECISIONS.slice(0, 2)} canWrite={false} />}
+          decisions={<DecisionLog items={DECISIONS.slice(0, 2)} canWrite={false} />}
         />
       );
     case "prog-reopen":
@@ -773,12 +774,7 @@ function view(id: string, theme: Theme): ReactNode {
       );
     case "dec-log":
       return (
-        <Page
-          theme={theme}
-          ps="PS0"
-          stage={menu(ST.doing!)}
-          decisions={<DecisionLog intro="支払いは銀行振込" items={DECISIONS} canWrite />}
-        />
+        <Page theme={theme} ps="PS0" stage={menu(ST.doing!)} decisions={<DecisionLog items={DECISIONS} canWrite />} />
       );
     case "dec-empty":
       return <Page theme={theme} ps="PS0" stage={menu(ST.todo!)} decisions={<DecisionLog items={[]} canWrite />} />;
@@ -812,7 +808,7 @@ function view(id: string, theme: Theme): ReactNode {
           ps="PS0"
           stage={menu(ST.doing!)}
           // 一覧は 4 件全部（2 件だけだと「10/20 の決定を改めた」の元の決定が一覧に無く、口の答えから作れない形になる・K-397）
-          decisions={<DecisionLog intro="支払いは銀行振込" items={DECISIONS} canWrite />}
+          decisions={<DecisionLog items={DECISIONS} canWrite />}
           dialog={<DecisionDialog open people={DECISION_PEOPLE} errors={{ text: "決めたことを書いてください" }} />}
         />
       );

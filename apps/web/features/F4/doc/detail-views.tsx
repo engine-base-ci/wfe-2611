@@ -28,14 +28,14 @@ export function ItemsPanel({
   specs,
   specsOpen,
   tab = "attr",
-  group = false,
+  group = true,
   overrides = {},
   specsSlot,
 }: {
   specs: readonly SpecLine[];
   specsOpen: boolean;
   tab?: "attr" | "talk";
-  /** 関連の先頭に読むだけの「グループ」の行を出す */
+  /** 関連の先頭に読むだけの「グループ」の行を出す（今の詳細はグループが分かれば必ず出す・既定で出す） */
   group?: boolean;
   /** 行の名前 → 値の欄の中身（その場で直している入力など） */
   overrides?: Readonly<Record<string, ReactNode>>;
@@ -78,6 +78,7 @@ export function ItemsPanel({
               <Item k="開始日" v={V("開始日", "11/21（土）")} />
               <Item k="期限" v={V("期限", "12/01（火）")} />
               <Item k="予定時間" v={V("予定時間", "2 時間")} />
+              <Item k="実績時間" v={V("実績時間", "")} />
               <Item k="支払期日" v={V("支払期日", "12/15（火）")} />
             </dl>
           </section>
@@ -104,6 +105,14 @@ export function ItemsPanel({
                 </button>
               </p>
             )}
+          </section>
+          {/* 区の後の実行の記録（最新）（K-62 の RunLatest と同じ形・まだ任せていない） */}
+          <section aria-label="実行の記録（最新）" className="k-detail-panel-sec k62-runlog">
+            <h2>実行の記録（最新）</h2>
+            <p className="k-desc">まだ AI に任せていません</p>
+            <Button variant="ghost" size="sm" className="k62-run-all">
+              実行の記録をすべて見る
+            </Button>
           </section>
         </div>
       )}

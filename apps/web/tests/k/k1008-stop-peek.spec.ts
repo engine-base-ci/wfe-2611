@@ -169,7 +169,7 @@ test("K1008-UI-005 止める日を過ぎた瞬間：開いている間に止め�
   await expect(
     page.getByRole("heading", { name: "このワークスペースは止められています", level: 1, exact: true }),
   ).toBeVisible();
-  expect(mk.count("status")).toBeGreaterThanOrEqual(1);
+  expect(mk.count("shellStatus")).toBeGreaterThanOrEqual(1);
 });
 
 // ---------------------------------------------------------------- 中を見られている間
@@ -216,7 +216,7 @@ test("K1008-UI-007 残りの時間：1 分ごとに減り、期限を過ぎた�
   mk.status = statusTaka();
   await page.clock.runFor(61_000);
   await expect(page.locator(".k-uh-peek-bar")).toHaveCount(0);
-  expect(mk.count("status")).toBe(2);
+  await expect.poll(() => mk.count("shellStatus")).toBe(2);
 });
 
 test("K1008-UI-008 「見るのをやめる」：closePeek を 1 回（DELETE /ops/peeks/<id>）・運営の場所（/ops）へ。失敗（503）は帯の中に赤い箱（E-PAGE-003）で帯は残る", async ({

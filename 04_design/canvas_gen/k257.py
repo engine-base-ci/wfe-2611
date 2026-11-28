@@ -222,9 +222,15 @@ def body(inner, gap=12):
     return '   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: %dpx; font-size: 13px">\n%s   </div>\n' % (gap, inner)
 
 
-def modal_board(name, title, section):
+# 767 以下で下から出る形（シート）。本番の差し戻すの小窓（K-748 の形・左右と下 16px・足のボタンは等分）と同じ置き方
+SHEET = ('<div class="kc-sheet" style="position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; '
+         'box-sizing: border-box">\n  <style>@media (max-width: 767px){.kc-sheet{align-items:flex-end !important;padding:16px !important}'
+         '.kc-sheet>section{width:100%% !important}.kc-sheet-foot>button{flex:1 1 0}}</style>\n  %s\n </div>')
+
+
+def modal_board(name, title, section, overlay=OVERLAY):
     s = load("StModal.dc.html")
-    s = replace_block(s, s.index('<div style="position: absolute; inset: 0;'), OVERLAY % section)
+    s = replace_block(s, s.index('<div style="position: absolute; inset: 0;'), overlay % section)
     save(name, title, s)
 
 
@@ -236,27 +242,37 @@ def modals():
                      + FOOT % (CANCEL + PRIMARY % (GRAY.replace("まだ使えません", "成果物を目で見たに印を付けると送れます"), GRAY_ST, "承認して送る")))
     modal_board("StApproveModal", "承認して送りますの小窓", approve)
     off = ' disabled aria-disabled="true" style="opacity: 0.55"'
+    # 差し戻すの小窓は本番の今の形（K-748 の後・PM の決め 2026-11-28：後の葉の新しい決めが正）：対象の行・理由（必須）・次は誰が直すか の 2 つ。足は やめる／差し戻す
+    small = "font-size: 12px; line-height: 19.2px; color: #4A5563"
     ret = SEC % ("dialog", "差し戻す", 420,
                  head("差し戻す", True)
-                 + body(TARGET
-                        + '    <label style="%s">どこを直すか<select%s></select></label>\n' % (FIELD, off)
-                        + '    <label style="%s"><span>理由 <span style="color: #B91C1C">必須</span></span><textarea aria-label="差し戻す理由" style="min-height: 64px">'
-                          '10/19 の追加対応は無償なので外してください</textarea></label>\n' % FIELD
-                        + '    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0"><legend style="font-size: 12px; color: #4A5563; padding: 0 4px">次は誰が直すか</legend>\n'
-                          '     <label style="display: flex; gap: 6px; font-size: 12px"><input type="radio" name="who" checked%s>AI に直させて、確認からやり直す</label>\n'
-                          '     <label style="display: flex; gap: 6px; font-size: 12px"><input type="radio" name="who"%s>自分で直す</label>\n'
-                          '    </fieldset>\n' % (off, off)
-                        + '    <label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox"%s>この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）</label>\n' % off)
-                 + FOOT % (CANCEL + PRIMARY % ("", "", "差し戻す")))
-    modal_board("StReturnModal", "差し戻すの小窓", ret)
-    todo = "".join("     " + CHECK % (" checked disabled", t) + "\n" for t in TODO[:4]) + "     " + CHECK % ("", TODO[4]) + "\n"
+                 + '   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; line-height: 20.8px">\n'
+                 + '    <div style="%s">EG-133 11 月分の請求書を送る</div>\n' % small
+                 + '    <label style="display: flex; flex-direction: column; gap: 4px"><span style="%s">理由 <span style="color: #B91C1C">必須</span></span>'
+                   '<textarea aria-label="差し戻す理由" style="height: 64px; resize: vertical"></textarea></label>\n' % small
+                 + '    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0; min-height: 80px; box-sizing: border-box">'
+                   '<legend style="%s; padding: 0; margin-bottom: 4px">次は誰が直すか</legend>\n' % small
+                 + '     <label style="display: flex; gap: 6px; font-size: 12px; line-height: 19.2px"><input type="radio" name="who" checked>AI に直させる（作り直しを任せます）</label>\n'
+                   '     <label style="display: flex; gap: 6px; font-size: 12px; line-height: 19.2px"><input type="radio" name="who">自分で直す（チケットは作業中に戻ります）</label>\n'
+                   '    </fieldset>\n'
+                 + '   </div>\n'
+                 + FOOT.replace('<div style=', '<div class="kc-sheet-foot" style=', 1) % (CANCEL + PRIMARY % (' data-primary', "", "差し戻す")))
+    modal_board("StReturnModal", "差し戻すの小窓", ret, SHEET)
+    # 完了にするの小窓は K-572 の形（下絵 v2 の f4v2-complete・PM の決め 2026-11-28）：対象の行・本文の未チェックの注意（橙の箱）と ☐ の行。
+    #   足は 戻って付ける（outlined）／このまま完了にする（緑・正本の st-success）
+    small = "font-size: 12px; line-height: 19.2px; color: #4A5563"
+    green = ('<button type="button" data-primary style="height: 34px; border-radius: 6px; border: 0; background: #166534; color: #FFFFFF; '
+             'padding: 0 16px; font-size: 13px; font-weight: 500">このまま完了にする</button>')
     done = SEC % ("dialog", "完了にする", 420,
                   head("完了にする", True)
-                  + body('    <div style="font-size: 12px; color: #4A5563">EG-127 発注ナビ 新着案件に応募文を出す</div>\n'
-                         '    <div><div style="font-size: 12px; font-weight: 500">完了の条件</div><div style="font-size: 12px; color: #4A5563">応募が発注ナビの「応募済み」に出ていること</div></div>\n'
-                         '    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0"><legend style="font-size: 12px; color: #4A5563; padding: 0 4px">実施事項</legend>\n'
-                         + todo + '    </fieldset>\n    ' + CHECK % ("", "完了の条件を満たしたことを確かめました") + "\n", 10)
-                  + FOOT % (CANCEL + PRIMARY % ("", "", "確かめて完了にする")))
+                  + '   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; line-height: 20.8px">\n'
+                  + '    <div style="%s">EG-133 11 月分の請求書を送る</div>\n' % small
+                  + '    <div role="status" style="background: #FCEBD5; color: #7A4A05; border-radius: 6px; padding: 8px 16px">'
+                    '<div style="font-weight: 700">本文に、チェックのないやることが 2 つ残っています</div>'
+                    '<div>完了にしても止めません。このままでよいかを決めてください。</div></div>\n'
+                  + '    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px"><li>☐ 請求書を作る</li><li>☐ 先方に送る</li></ul>\n'
+                  + '   </div>\n'
+                  + FOOT % (CANCEL.replace(">やめる<", ">戻って付ける<") + green))
     modal_board("StCompleteModal", "完了にするの小窓", done)
 
 

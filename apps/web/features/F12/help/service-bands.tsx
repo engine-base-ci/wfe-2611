@@ -1,7 +1,7 @@
 "use client";
 // ログイン後の画面の上の帯（障害・メンテの予定）と画面いっぱいの形（メンテ中・障害）（K-957・行為 A68・D-125.127・D-128.71）。
 //   差し込み口は外枠 TicketShell の 1 か所（D-156.10）：ServiceGate が外枠ごと包み、ServiceBands が本文の前に帯を 1 つ並べる。
-//   稼働状況は K-956 と同じ問い合わせ（鍵 ["k956","status"]・1 画面 1 回）。お知らせの一覧（鍵 ["k956","notices"]）は、
+//   稼働状況は外枠の口 getShell の service_status（外枠が渡す・口を 1 本増やさない・PM の決め 2026-11-28）。お知らせの一覧（鍵 ["k956","notices"]）は、
 //   帯が 1 つでもあるとき・画面いっぱいの形のときだけ読む（帯の 2 行目・メンテの出した日のため。無ければ口を呼ばない・G-16）。
 //   読めない（503・網の切れ・形が違う）ときは帯も画面いっぱいも出さず、画面はふつうに使える（読めないのに止めない）。
 //   閉じる：障害はこの画面の中だけ（別の画面でまた出る）・メンテの予定は覚える（localStorage・D-156.27）。
@@ -40,7 +40,7 @@ import {
   StoppedView,
   type PeekNotice,
 } from "./status-parts";
-import { SCREEN, useNotices, useServiceStatus } from "./use-help";
+import { SCREEN, useNotices } from "./use-help";
 
 /** メンテの帯を閉じた印（notice_id の並び）を覚える場所 */
 const CLOSED_KEY = "k-band-closed";
@@ -97,11 +97,20 @@ function rememberClosed(id: string): void {
   }
 }
 
-/** 稼働状況の答え（読めた時だけ・形は K-956 の useServiceStatus が確かめる） */
-function useStatus(): { status: BandsStatusIn | null; retry: () => void } {
-  const q = useServiceStatus();
-  const status = q.data && Array.isArray(q.data.bands) ? (q.data as BandsStatusIn) : null;
-  return { status, retry: () => void q.refetch() };
+/** 外枠が渡す稼働状況（getShell の service_status）と読み直し */
+interface StatusProps {
+  status?: unknown;
+  retry?: () => void;
+}
+
+/** 稼働状況の答え（読めた時だけ・形が違えば出さない）。外枠の口 getShell の service_status を使い、口を 1 本増やさない（PM の決め 2026-11-28） */
+function useStatus({ status, retry }: StatusProps): { status: BandsStatusIn | null; retry: () => void } {
+  const ok =
+    typeof status === "object" &&
+    status !== null &&
+    Array.isArray((status as { bands?: unknown }).bands) &&
+    Array.isArray((status as { components?: unknown }).components);
+  return { status: ok ? (status as BandsStatusIn) : null, retry: retry ?? (() => undefined) };
 }
 
 /** お知らせの一覧から 1 件（読めない・無いなら undefined） */
@@ -111,8 +120,8 @@ function useNotice(match: (n: NoticeIn) => boolean): NoticeIn | undefined {
 }
 
 /** 外枠の本文の前に並べる帯（無ければ何も描かない・余白を足さない）。screen は帯の場所の印（K-1008 が止める日の帯で使う） */
-export function ServiceBands({ screen }: { screen: string }) {
-  const { status, retry } = useStatus();
+export function ServiceBands({ screen, ...props }: { screen: string } & StatusProps) {
+  const { status, retry } = useStatus(props);
   const router = useRouter();
   const path = usePathname() ?? "/";
   const [closed, setClosed] = useState<ReadonlySet<string>>(() =>
@@ -187,8 +196,8 @@ function BandRow({ band, others, onClose }: { band: BandIn; others: number; onCl
 
 /** メンテ中・画面が止まっている・ワークスペースを止めた後は外枠ごと画面いっぱいの形にする（読めない・読み中はふつうの画面）。
  *  運営が中を見ている間（運営の側）は外枠の上に帯と枠を重ねる */
-export function ServiceGate({ children }: { children: ReactNode }) {
-  const { status, retry } = useStatus();
+export function ServiceGate({ children, ...props }: { children: ReactNode } & StatusProps) {
+  const { status, retry } = useStatus(props);
   const path = usePathname() ?? "/";
   const peekBand = status ? peekOf(status.bands) : null;
   const opsPeek = peekBand && peekView(peekBand, 0).side === "ops" ? peekBand : null;

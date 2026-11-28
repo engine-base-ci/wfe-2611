@@ -1702,7 +1702,7 @@
     {
      "name": "主ボタン",
      "role": "primary",
-     "canvas": "section[role=\"dialog\"] button[style*=\"#22345C\"]",
+     "canvas": "section[role=\"dialog\"] button[data-primary]",
      "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
      "props": [
       "height",

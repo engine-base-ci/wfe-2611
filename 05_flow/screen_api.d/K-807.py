@@ -42,3 +42,8 @@ ERRORS_4XX = {
 NOT_NULL_ANSWERS = {
     "revokeInvitation.revoked_at": "口が取り消したその行の時刻を返し、null にはしない（invitations.revoked_at は null 可）",
 }
+
+# 統合の枝で足した（K-144 の契約の形の試験・直しの担当 XC）
+SUCCESS_STATUS = {
+    "resendInvitation": 200,   # 作らず状態を変えるだけ・口は 200 を返す（K-144 の SHAPE_010）
+}

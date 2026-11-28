@@ -4,7 +4,7 @@
 //
 // 試験が決める口の形（契約は 05_flow/screen_api.py の RESPONSES と 05_flow/screen_api.d/K-465.py で直す）:
 //   getShell  GET /api/v1/shell（会社の人・120 回／分／人。取引先の人・運営は 403）
-//     200 { data: Shell }・Cache-Control: private, no-store。Shell の鍵はちょうど 9 個（8 個＋任意の saved_views）：
+//     200 { data: Shell }・Cache-Control: private, no-store。Shell の鍵はちょうど 10 個（8 個＋任意の saved_views・service_status）：
 //       member               { id, name, role_id }  … 自分（今の me の口の分）
 //       workspace            { id, name }  … 今の会社（名前は前後の空白を取る）
 //       approvals_waiting    整数  … app.approval_queue_count() の答えそのまま（段 9 が渡しを足して直しても同じ関数を使い続ける）
@@ -16,6 +16,8 @@
 //       banner               { incidents, maintenance }  … app.public_service_status() の答えそのまま
 //       saved_views          SavedView[]  … 保存した検索条件（K-475 の一覧と同じ文・同じ 13 個の鍵・名前の順・500 行まで）。契約では任意の鍵
 //                             （外枠の答えに載せるのは、左のメニューの並びを口を増やさず出すため・K-479）。口は毎回この鍵を付ける
+//       service_status       { components, bands, maintenance_now, … }  … ログイン後の稼働状況と帯（app.member_service_status()・getServiceStatusForMember と同じ）。
+//                             K-957 の帯を口を増やさず出すため（PM の決め 2026-11-28）。契約では任意の鍵・口は毎回付ける
 //   1 つの取引・文は 4 つ（本人と数と帯・グループと件数・未読の数・保存した条件）。どれかが失敗したら全体が 503 E-PAGE-003（部分の答えは返さない）
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -55,6 +57,7 @@ const KEYS = [
   "notifications_unread",
   "pc",
   "saved_views",
+  "service_status",
   "setup_left",
   "workspace",
 ];
@@ -163,6 +166,7 @@ describe("K-465 外枠の数と帯を 1 本で返す", () => {
       expect(Object.keys(g).sort()).toEqual(["id", "name", "open_count", "ticket_prefix", "writable"]);
     expect(Array.isArray(s.saved_views)).toBe(true);
     expect(s.saved_views).toHaveLength(1);
+    expect(Array.isArray((s as unknown as { service_status: { bands: unknown } }).service_status.bands)).toBe(true);
     for (const v of s.saved_views) expect(Object.keys(v).sort()).toEqual(VIEW_KEYS);
     for (const key of Object.keys(s)) expect(key).not.toMatch(/star|pinned|favorite/i);
   });

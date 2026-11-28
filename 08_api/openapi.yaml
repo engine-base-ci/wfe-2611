@@ -21639,6 +21639,9 @@ components:
           items:
             type: object
           nullable: true
+        service_status:
+          type: object
+          nullable: true
       x-operation: getShell
     OpsShell:
       type: object
@@ -34567,7 +34570,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InvitationResendInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -40316,7 +40319,7 @@ paths:
             schema:
               $ref: '#/components/schemas/MemberResumeInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -40521,7 +40524,7 @@ paths:
             schema:
               $ref: '#/components/schemas/MemberSuspendInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -50087,7 +50090,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TicketKindOrderInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -50205,6 +50208,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -50251,7 +50260,7 @@ paths:
             schema:
               $ref: '#/components/schemas/KindTemplateUpdateApplyInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:

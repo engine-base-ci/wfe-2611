@@ -41,15 +41,21 @@ export const badName = (message: string): HookReply => ({
 });
 
 /** DB の関数の断り → 答え。分からない例外は 503（何も残らない・ログは例外の種類だけ） */
+/** 消す口と直す口が分け合う断り（無い 404・権限 403・ほかは 503）。名前の重なり（409）は直す口だけ（rename.ts の renameRefused・K-144 の SHAPE_010） */
 export function editRefused(e: unknown, where: string): HookReply {
   const x = (e ?? {}) as { code?: unknown; hint?: unknown };
   const code = str(x.code);
   const hint = str(x.hint);
   if (code === "42501" && hint === "E-GST-001") return bare(404, "E-GST-001");
-  if (code === "22023" && hint === "E-GST-002") return bare(409, "E-GST-002");
   if (code === "42501") return forbidden();
   console.error(`[guest-groups] ゲストのグループを${where}：例外（${kindOf(e)}）なので止める側に倒した`);
   return bare(503, "E-PAGE-003");
+}
+
+/** 名前の重なり（DB の 22023・E-GST-002）だけを 409 に読む。ほかは null */
+export function nameTaken(e: unknown): HookReply | null {
+  const x = (e ?? {}) as { code?: unknown; hint?: unknown };
+  return str(x.code) === "22023" && str(x.hint) === "E-GST-002" ? bare(409, "E-GST-002") : null;
 }
 
 export function createDeleteGuestGroup(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
