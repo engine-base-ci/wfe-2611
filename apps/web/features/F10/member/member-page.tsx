@@ -108,7 +108,8 @@ function AdminBody({ id, member }: { id: string; member: ReturnType<typeof useMe
     <>
       <WsHead name={company} initial={company.slice(0, 1)} />
       <div className="k-me-wrap">
-        <WsSub active="members" />
+        {/* 1 人の画面からの「メンバー」は一覧へ（既定の #members は一覧の画面の中の道） */}
+        <WsSub active="members" items={{ members: { href: MEMBERS_PATH } }} />
         {main}
       </div>
       {Dialog && member.data ? (

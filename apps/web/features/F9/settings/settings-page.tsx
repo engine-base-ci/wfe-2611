@@ -23,6 +23,8 @@ const PATH = "/workspace/ticket-settings";
 const ADMIN_ROLES = ["R1", "R2"];
 const SUB_ITEMS: WsSubItemOverrides = {
   rules: { label: "チケットの設定", icon: SlidersHorizontal, href: PATH },
+  // 「メンバー」は一覧へ（既定の #members は一覧の画面の中の道）
+  members: { href: "/members" },
 };
 const SUB_ENABLED = ["members", "rules"] as const;
 const CRUMBS = [{ label: "ワークスペースの管理", disabled: true }, { label: "チケットの設定" }];

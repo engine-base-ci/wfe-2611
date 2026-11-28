@@ -29,7 +29,8 @@ const BASE_PLAIN: MemberDetailData = {
   twofaApp: false,
   lastLogin: "11/02 09:12",
   records: [
-    { when: "11/02 09:58", text: "役割が マネージャー → メンバー（高本）" },
+    // 記録のことばは action ごとの決まった字（役割が変わった・K-819 の最近の記録）。前と後の役割は記録の画面（K-825）で見る
+    { when: "11/02 09:58", text: "役割が変わった（高本）" },
     { when: "10/12 14:20", text: "グループが変わった（高本）" },
   ],
 };

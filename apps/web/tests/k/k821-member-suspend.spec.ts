@@ -38,9 +38,17 @@ const SUSP = {
   groups: [{ id: ID.JD, name: "受託開発", code: "JD", primary: true, role: "viewer" }],
   assigned: { tickets: 0, overdue: 0, stuck: 0, handing: 0 },
   clone: { pc: "none", pc_days_away: null, device: null },
+  // 下絵 md-suspended・md-resume の最近の記録は 1 件（止めた）。K-819 の SUSP と同じ
+  recent_events: [{ id: "ev8", action: "member.suspend", at: "2026-11-01T08:40:00Z", by: "高本" }],
 };
 const APP_USER = {
   member: member({ id: ID.tanaka, name: "田中 美咲", email: "tanaka@engine-base.example" }),
+  // 下絵 md-2fa-reset の田中：経理も兼ね、PC が 3 日つながっていない（下絵と同じ人の答えにする）
+  groups: [
+    { id: ID.EG, name: "営業", code: "EG", primary: true, role: "member" },
+    { id: ID.KR, name: "経理", code: "KR", primary: false, role: "member" },
+  ],
+  clone: { pc: "away", pc_days_away: 3, device: null },
   login: { passkeys: 0, has_password: true, two_factor: true, last_login_at: "2026-11-02T00:12:00Z" },
 };
 const stopDlg = (page: Page) =>

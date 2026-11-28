@@ -204,7 +204,7 @@ export function SettingsScreen() {
     <Frame>
       <WsHead name={company} initial={initialOf(company)} />
       <div className="k-me-wrap">
-        <WsSub active="settings" />
+        <WsSub active="settings" items={{ members: { href: "/members" } }} />
         <SettingsPage
           s={{
             name: company,

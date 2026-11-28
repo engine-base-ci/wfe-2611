@@ -269,7 +269,10 @@ test("K820-UI-010 503・権限が無い（403・権限を外された直後）�
     await go.click();
     await expect(moveDlg(page).getByRole("alert")).toBeVisible();
   }
-  await expect(groupsCard(page)).toContainText("営業");
+  // 小窓が開いている間、後ろの区画は読み上げの木から外れる（模態の小窓）。字そのものを見る
+  await expect(page.getByRole("region", { name: "グループと役割", exact: true, includeHidden: true })).toContainText(
+    "営業",
+  );
   changed(mk, [g(ID.JD, "受託開発", "JD", true)]);
   await go.click();
   await expect(toast(page)).toBeVisible();

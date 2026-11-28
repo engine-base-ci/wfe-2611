@@ -125,7 +125,7 @@ export function AuditScreen() {
     <Frame crumbs={CRUMBS_ALL}>
       <AdminHead />
       <div className="k-me-wrap">
-        <WsSub active="log" />
+        <WsSub active="log" items={{ members: { href: "/members" } }} />
         {page}
       </div>
     </Frame>
