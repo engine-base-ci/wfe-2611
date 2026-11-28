@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-TALK-062",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "チケットを作る権限が無い人が、作る画面の会話を始めた・言った",
+   "false_when": "どれか 1 つのグループに tickets の edit がある",
+   "message": "チケットを作る権限が無いので、作る画面の AI と話せません",
+   "action": "チケットを作る権限を持つ人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "どのグループにも tickets の edit が無い人（view だけ）でログインする",
+    "steps": [
+     "チケットを作る画面の会話を始める口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.35"
+   ]
+  }
+ ]
+}

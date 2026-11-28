@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/app/(dev)/dev/mock/f11/mocks.tsx", "11_tickets/K-877.md", "apps/web/features/F1/sign-up/sign-up.css"], "tests": ["apps/web/tests/k/k877-guest-join.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k877-guest-join.spec.ts": "呼び名と書き出し（features/F2/invite/views.tsx の ROLE_LABEL.requester・features/F1/sign-up/sign-up.css の .k-auth-alt a・lib/auth/role.tsx の ROLE_OF.requester）と、モックの持ち主（app/(dev)/dev/mock/f11/mocks.tsx・11_tickets/K-877.md の頭の mock:）を読む（K877-UI-010・011）。読む物の変更でも流れるよう data_links で結ぶ（K-877）"
+ }
+}
