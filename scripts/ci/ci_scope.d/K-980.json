@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops2/notice*-screen.tsx", "apps/web/features/F12/ops2/use-ops-notices.ts", "apps/web/features/F12/ops2/notices-shape.ts", "apps/web/features/F12/ops2/views-notices.tsx", "apps/web/app/(ops)/ops/notices/**", "apps/web/lib/ops-notices-api.ts"], "tests": ["apps/web/tests/k/k980-notices.spec.ts", "apps/web/test/k980-notices-shape.test.ts", "apps/web/tests/k/k942-f12-ops2-parts.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k980-notices.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops2 を開き scripts/ci/fidelity_compare.mjs を読む。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-980"
+ }
+}
