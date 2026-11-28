@@ -1,0 +1,13 @@
+{"ops": {
+ "updateScope": {"file": "apps/api/test/features/F10/admin-scope-update.test.ts",
+  "reason": "直す口は、権限・同じ名前・並びの動かし方・マネージャーの入れ替え（人の状態）・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-804）",
+  "covers": {"test_patch_scopes_id_ok": "K804-API-001", "test_patch_scopes_id_shape": "K804-API-001",
+   "test_patch_scopes_id_rejected_401": "K804-API-009", "test_patch_scopes_id_rejected_403": "K804-API-009",
+   "test_patch_scopes_id_not_found": "K804-API-007", "test_patch_scopes_id_conflict": "K804-API-006",
+   "test_patch_scopes_id_rejected_422": "K804-API-008", "test_patch_scopes_id_rate_limited": "K804-API-009",
+   "test_patch_scopes_id_session_unresolved": "K804-API-011",
+   "test_patch_scopes_id_session_unresolved_2": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"},
+   "test_patch_scopes_id_too_large": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-042"},
+   "test_patch_scopes_id_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"}},
+  "na": {"test_patch_scopes_id_mfa_pending": "2 段階を付けるまで進めない（K-321）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-421 と同じ扱い）"}}
+}}

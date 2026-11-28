@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261128032300_seat_limit.sql",
+    "apps/api/src/features/F10/invite/create.ts",
+    "apps/api/src/features/F10/invite/link.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/seat-limit.test.ts",
+    "apps/api/test/features/F10/invite-create.test.ts",
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F11/guest-groups.test.ts"
+   ]
+  }
+ ]
+}
