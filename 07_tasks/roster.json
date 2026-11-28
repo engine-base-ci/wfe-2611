@@ -1,0 +1,16 @@
+{
+  "_doc": "名簿（仮置き・2026-09-15）。PM が確定する。Claude セッションは並列上限 10 に合わせた仮の枠。担当は auto では確定せず tentative",
+  "members": [
+    {"id": "takamoto", "name": "高本（PM・レビュー）", "skills": ["foundation", "backend", "integration", "polish", "content", "spec", "review"], "hours_per_day": 3, "wip": 3, "days_off": []},
+    {"id": "claude-01", "name": "Claude セッション 01（基盤・DB）", "skills": ["foundation", "backend"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-02", "name": "Claude セッション 02（基盤・DB）", "skills": ["foundation", "backend"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-03", "name": "Claude セッション 03（API）", "skills": ["backend", "integration"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-04", "name": "Claude セッション 04（API）", "skills": ["backend", "integration"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-05", "name": "Claude セッション 05（API・結線）", "skills": ["backend", "integration"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-06", "name": "Claude セッション 06（UI）", "skills": ["ui"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-07", "name": "Claude セッション 07（UI）", "skills": ["ui"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-08", "name": "Claude セッション 08（UI）", "skills": ["ui"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-09", "name": "Claude セッション 09（UI・仕上げ）", "skills": ["ui", "polish", "content"], "hours_per_day": 8, "wip": 2, "days_off": []},
+    {"id": "claude-10", "name": "Claude セッション 10（結線・仕上げ）", "skills": ["integration", "polish", "content", "spec"], "hours_per_day": 8, "wip": 2, "days_off": []}
+  ]
+}
