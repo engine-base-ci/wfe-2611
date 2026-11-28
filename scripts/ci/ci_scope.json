@@ -7705,6 +7705,7 @@
    "pnpm-lock.yaml",
    "package.json",
    "scripts/ci/web_run.py",
+   "scripts/ci/web_pull.py",
    "scripts/ci/web_select.py"
   ],
   "web_own": [
@@ -7782,6 +7783,7 @@
    ],
    "paths": [
     "scripts/ci/web_run.py",
+    "scripts/ci/web_pull.py",
     "scripts/ci/web_select.py",
     "scripts/ci/fidelity_compare.mjs",
     "scripts/ci/visual_fidelity.mjs",

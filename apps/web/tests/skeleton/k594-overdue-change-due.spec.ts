@@ -161,7 +161,9 @@ test("K594-M4-05 ガント：期限を変えたチケットの行が、新しい
   page,
 }) => {
   const w = await world(page, "ガント");
-  const none = await ticketFor(page, w.me, { title: `${w.key} 期限なし`, dueDays: null });
+  // 作る口は期限を必須にする（K-60）。期限が決まっていない 1 枚は、作ってから DB で期限をなくす（期限をなくすのは K-484 の道・期限切れと同じく準備は DB で）
+  const none = await ticketFor(page, w.me, { title: `${w.key} 期限なし` });
+  await admin("update tickets set due_on = null where id = $1", [none]);
   await openTicket(page, w.late2, `${w.key} 期限切れの二つ目`);
   expect((await changeDue(page, "二日待ちます")).res.status()).toBe(200);
   await page.goto(`/tickets?view=gantt&scope=${w.scope}`);

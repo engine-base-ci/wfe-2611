@@ -18,6 +18,7 @@ import { catalogText, editedOf, passedText, type DraftNow } from "./draft-words"
 import { itemsOf, type ProposalInput } from "./proposal-apply";
 import type { ComposerMode, Entry } from "./talk";
 import { openTalkStream } from "./talk-stream";
+import { POLL_MS } from "./use-talk";
 import { jstDay, toEntries, type MessageView as TalkMessage, type WorkView } from "./talk-words";
 
 const SCREEN = "tickets";
@@ -134,15 +135,27 @@ export function useDraftTalk({ noPc = false }: { noPc?: boolean } = {}): DraftTa
   }, []);
 
   // 流れ：開いている会話ごとに 1 本（最初の ready では読み直さない・2 回目からの ready と change は onRefresh・K-762 の talk-stream の形）
+  //   流れが使えない間（503・落ちた）は、部屋の会話（room-talk の useConv）と同じく、作業中だけ POLL_MS ごとに見に行く（G-16・DATABASE_LISTEN_URL が空のとき）
+  const [poll, setPoll] = useState(false);
   useEffect(() => {
     if (!convId) return;
+    setPoll(false);
     return openTalkStream(convId, {
       onRefresh: () => void read(convId),
-      onDown: () => void read(convId),
-      onLive: () => undefined,
+      onDown: () => {
+        setPoll(true);
+        void read(convId);
+      },
+      onLive: () => setPoll(false),
       onSignedOut: () => undefined,
     });
   }, [convId, read]);
+  const working = isWorking(view);
+  useEffect(() => {
+    if (!convId || !poll || !working) return;
+    const t = window.setInterval(() => void read(convId), POLL_MS);
+    return () => window.clearInterval(t);
+  }, [convId, poll, working, read]);
 
   const send = useCallback(
     async (words: string, now: DraftNow) => {

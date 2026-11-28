@@ -99,7 +99,8 @@ test("K593-M3-01 絞る：一覧の「完了以外」を押すと、完了した
     "true",
   );
   await expect(rowOf(page, `${w.key} 本人の完了`)).toHaveCount(0);
-  await page.getByRole("button", { name: "完了以外", exact: true }).click();
+  // 一覧の状態の札は同時に 1 つで、「すべて」で外れる（K478-UI-016）。外すと完了も戻る
+  await page.getByRole("group", { name: "状態" }).getByRole("button", { name: "すべて", exact: true }).click();
   await expect(rowOf(page, `${w.key} 本人の完了`), "もう一度押すと戻る").toHaveCount(1);
 });
 
@@ -200,7 +201,7 @@ test("K593-M3-05 グループに見せた条件：2 人目の左のメニュー�
     .click();
   await page.getByRole("menuitem", { name: "消す", exact: true }).click();
   const gone = answered(page, "DELETE", /^\/api\/v1\/saved_views\/[^/]+$/);
-  await page.getByRole("dialog").getByRole("button", { name: "消す", exact: true }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "消す", exact: true }).click(); // 消す確かめは Confirm（AlertDialog・役は alertdialog）
   expect((await gone).status(), "消す口が受ける").toBe(200);
   await expect(menu(page).getByRole("link", { name })).toHaveCount(0);
   await m.reload();

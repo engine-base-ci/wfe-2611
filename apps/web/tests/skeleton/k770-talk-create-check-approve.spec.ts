@@ -207,7 +207,8 @@ const thread = (page: Page): Locator => chat(page).getByRole("list", { name: "�
 const cards = (page: Page): Locator => chat(page).getByRole("article", { name: "AI の案", exact: true });
 const titleBox = (page: Page): Locator => page.getByRole("textbox", { name: /^題名/ });
 const bodyBox = (page: Page): Locator => page.getByRole("textbox", { name: /^本文/ });
-const checksBlock = (page: Page): Locator => page.getByRole("region", { name: "確認項目", exact: true });
+// 作る画面の確認項目の欄（create の group「確認項目の欄」・中の list「確認項目」）
+const checksBlock = (page: Page): Locator => page.getByRole("group", { name: "確認項目の欄", exact: true });
 const useAll = (card: Locator): Locator => card.getByRole("button", { name: "全部使う", exact: true });
 
 /** 作る画面を開き、作り方の「AI と話して作る」を押して右に会話を開く（K-767-UI-001：会話は押してから開く・道に how=ai） */
@@ -298,7 +299,8 @@ test("K770-M1-01 話して作る：作る画面で言う → PC の AI が案の
   // F4 → F5：段 5 の作る面の「AI と話して作る」の差し込み口に会話が入り、PC の幅では右に出る（段 5 では押せない形だった）
   await expect(chat(page), "作る画面の右に AI との会話が出る").toBeVisible();
   await expect(
-    page.getByRole("group", { name: "作り方", exact: true }).getByText("AI と話して作る", { exact: true }),
+    // 作る面の頭の作り方の並び（create-head の .k-create-how・aria-label「作り方」・役は付けていない）
+    page.locator('[aria-label="作り方"]').getByRole("button", { name: "AI と話して作る", exact: true }).first(),
     "「AI と話して作る」は押せない形ではなくなる",
   ).not.toHaveAttribute("aria-disabled", "true");
   await talkSay(page, ASK);

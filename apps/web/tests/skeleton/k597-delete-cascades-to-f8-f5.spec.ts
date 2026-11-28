@@ -171,7 +171,7 @@ test("K597-X1-02 承認待ちがある物を消す：承認が取り下げられ
   await expect(page.getByRole("region", { name: "承認と実行" })).toContainText(MSG.waitingMe);
   await page.goto("/approvals");
   await expect(page.getByRole("row").filter({ hasText: r.title }), "消す前は承認待ちに 1 行").toHaveCount(1);
-  expect(await approvalsBadge(page), "左の数は 1").toBe(1);
+  await expect.poll(() => approvalsBadge(page), "左の数は 1（外枠の答えが届いてから読む）").toBe(1);
   expect(await bellCount(page), "承認待ちのお知らせで鈴の数は 1").toBe(1);
   expect(await deleteOnScreen(page, r.t, r.title)).toBe(200);
   const rows = await approvalsOf(r.t);
@@ -179,7 +179,7 @@ test("K597-X1-02 承認待ちがある物を消す：承認が取り下げられ
   expect(rows[0]!.status_id, "取り下げ").toBe("withdrawn");
   await page.goto("/approvals");
   await expect(page.getByText(MSG.empty), "承認待ちの画面は空").toBeVisible();
-  expect(await approvalsBadge(page), "左の数は 0").toBe(0);
+  await expect.poll(() => approvalsBadge(page), "左の数は 0（外枠の答えが届いてから読む）").toBe(0);
   expect(await bellCount(page), "消したチケットの承認待ちのお知らせは数えない").toBe(0);
 });
 

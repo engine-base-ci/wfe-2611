@@ -586,7 +586,7 @@ for (const w of WIDTHS) {
     });
     const { mk } = await setup(page, mine);
     mk.tree.groups[0]!.nodes = [{ kind: "folder", id: F_QUOTE, name: long, children: [] }];
-    await openAt(page, P_MINE, w);
+    await openAt(page, P_MINE, w, false);
     const d = await openRaise(page);
     await choose(page, d, "入れるフォルダ", long);
     expect(await overflowX(page)).toBeLessThanOrEqual(0);

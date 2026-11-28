@@ -17,7 +17,13 @@ export default defineConfig({
       ? [["junit", { outputFile: process.env["PLAYWRIGHT_JUNIT_OUTPUT_NAME"] }] as const]
       : []),
   ], // json は op_gate.py と write_results.mjs が読む
-  use: { baseURL: base ?? "http://127.0.0.1:3123", trace: "retain-on-failure" },
+  use: {
+    baseURL: base ?? "http://127.0.0.1:3123",
+    trace: "retain-on-failure",
+    // 押す・入れるの待ち（click・fill など）の上限。既定は 0（上限なし＝試験の 60 秒まで待つ）。CI は PW_ACTION_TIMEOUT に expect と同じ 15 秒を渡す：
+    //   押せない部品を 60 秒待たずに expect と同じ長さで赤にする（緑の試験の意味は変えない・画面の移り（goto・waitForURL）は navigationTimeout 0 のまま・K-1304）
+    actionTimeout: Number(process.env["PW_ACTION_TIMEOUT"] ?? 0),
+  },
   // ローカルでダウンロードできないときは入っている Google Chrome を使う（PW_CHANNEL=chrome）。CI は playwright install chromium
   projects: [
     {

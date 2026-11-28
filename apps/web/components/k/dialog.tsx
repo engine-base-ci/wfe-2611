@@ -12,7 +12,7 @@
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as D } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
-import { useCallback, useRef, type ReactElement, type ReactNode } from "react";
+import { useCallback, useRef, type KeyboardEvent, type ReactElement, type ReactNode } from "react";
 import { Button } from "./button";
 
 const CLOSE_LABEL = "閉じる";
@@ -25,6 +25,30 @@ const FIRST_FIELD = [
   `.k-dialog-body [role=combobox]${USABLE}`,
 ].join(", ");
 const FIRST_ACTION = ".k-dialog-actions button:not(:disabled), .k-dialog-actions a[href]";
+
+// Tab の止まる物（押せない物・見えない物は除く）。Base UI の焦点の見張り（data-base-ui-focus-guard）は小窓の外なので入らない
+const TABBABLE = 'a[href], button, input:not([type=hidden]), select, textarea, [tabindex]:not([tabindex="-1"])';
+/** 小窓の中で Tab を回す：最後から Tab で頭へ、頭から Shift+Tab で最後へ。
+ *  Base UI の見張りに任せると、見張りに焦点が乗ったあと次の Tab で body に落ちることがある（焦点が小窓の外へ出る・K-691／K-692／K-693 の Tab 20 回） */
+function keepTabInside(e: KeyboardEvent<HTMLDivElement>) {
+  if (e.key !== "Tab" || e.defaultPrevented) return;
+  const stops = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+    (el) => el.tabIndex >= 0 && !el.matches(":disabled") && el.getClientRects().length > 0,
+  );
+  const head = stops[0];
+  const tail = stops.at(-1);
+  if (!head || !tail) return;
+  const at = document.activeElement;
+  // 小窓の中から出る選ぶ欄の箱（portal）などで押した Tab は、その部品に任せる
+  if (!e.currentTarget.contains(at)) return;
+  if (!e.shiftKey && at === tail) {
+    e.preventDefault();
+    head.focus();
+  } else if (e.shiftKey && (at === head || at === e.currentTarget)) {
+    e.preventDefault();
+    tail.focus();
+  }
+}
 
 function CloseIcon() {
   return <X aria-hidden="true" size={16} />;
@@ -76,7 +100,13 @@ export function Dialog({
       {trigger ? <D.Trigger render={trigger} /> : null}
       <D.Portal>
         <D.Backdrop className="k-backdrop" />
-        <D.Popup ref={popupRef} className="k-dialog" data-size={size} initialFocus={firstFocus}>
+        <D.Popup
+          ref={popupRef}
+          className="k-dialog"
+          data-size={size}
+          initialFocus={firstFocus}
+          onKeyDown={keepTabInside}
+        >
           <div className="k-dialog-head">
             {subtitle ? (
               <div className="k-dialog-titles">
@@ -158,7 +188,7 @@ export function Confirm({
     >
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="k-backdrop" />
-        <AlertDialog.Popup className="k-dialog" data-size="confirm" initialFocus={cancelRef}>
+        <AlertDialog.Popup className="k-dialog" data-size="confirm" initialFocus={cancelRef} onKeyDown={keepTabInside}>
           <div className="k-dialog-head">
             <AlertDialog.Title className="k-dialog-title">{title}</AlertDialog.Title>
           </div>

@@ -683,7 +683,7 @@
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
   "registry": ["packages/db/src/index.ts", "packages/db/src/migrations.generated.ts", "11_tickets/**", "07_qa/**", "08_api/**", "07_functional/**", "05_flow/**", "01_hearing/**", "scripts/ci/ci_scope.json", ".github/**"],
-  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py"],
+  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_pull.py", "scripts/ci/web_select.py"],
   "web_own": ["apps/web/app/**"],
   "web_tests": ["apps/web/tests/**"],
   "gates": {
@@ -737,6 +737,7 @@
    ],
    "paths": [
     "scripts/ci/web_run.py",
+    "scripts/ci/web_pull.py",
     "scripts/ci/web_select.py",
     "scripts/ci/fidelity_compare.mjs",
     "scripts/ci/visual_fidelity.mjs",

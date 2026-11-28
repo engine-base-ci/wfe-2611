@@ -123,7 +123,12 @@ test("K918-M1-01 招く → 参加：社内の人がゲストのグループを�
       .getByRole("region", { name: MSG.boxRequests, exact: true })
       .or(guest.page.getByRole("heading", { name: MSG.boxRequests, exact: true })),
   ).toBeVisible();
-  await expect(guest.page.getByRole("heading", { name: MSG.boxTickets, exact: true })).toBeVisible();
+  // 箱の頭は見出しでなく区画の名前（依頼の箱と同じく、区画か見出しのどちらか）
+  await expect(
+    guest.page
+      .getByRole("region", { name: MSG.boxTickets, exact: true })
+      .or(guest.page.getByRole("heading", { name: MSG.boxTickets, exact: true })),
+  ).toBeVisible();
   expect(await guest.page.locator(".k-shell").count(), "社内の外枠（左のメニュー）は無い").toBe(0);
   const seen = await textOf(guest.page);
   for (const s of ["取引先", "検収", "確認してほしいもの"]) expect(seen, s).not.toContain(s);
