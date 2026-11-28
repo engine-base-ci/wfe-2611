@@ -197,6 +197,11 @@ def project(d: pathlib.Path) -> None:
         body = "".join(f'  test("K9-UI-{stem}{j} {rel} {j}", async () => {{ expect({j}).toBe({0 if j == red else j}); }});\n' for j in range(1, n + 1))
         f.write_text('import { test, expect } from "@playwright/test";\n' + (f'test.describe("まとまり {rel}", () => {{\n{body}}});\n' if n % 2 == 0 else body),
                      encoding="utf-8")
+    lib = web / "tests/_lib/rows.ts"
+    lib.parent.mkdir(parents=True, exist_ok=True)
+    lib.write_text('import { test, expect } from "@playwright/test";\nexport function rows(n: string): void {\n'
+                   '  test(`K9-UI-lib1 ${n}`, async () => { expect(1).toBe(1); });\n}\n', encoding="utf-8")
+    (web / "tests/k/a4.spec.ts").write_text('import { rows } from "../_lib/rows";\nrows("a4");\n', encoding="utf-8")
     (web / "package.json").write_text(json.dumps({"name": "@kaname/web", "scripts": {"e2e:k": "PW_REPORT=pw-reports/k.json playwright test tests/k tests/features"}}),
                                       encoding="utf-8")
     (web / "playwright.config.ts").write_text(
@@ -222,7 +227,7 @@ class Pull(unittest.TestCase):
     def test_K1304_CI_004_pull_parts_take_files_one_by_one(self) -> None:
         """K1304-CI-004 本物の Playwright と本物の git：3 台を同時に走らせると、並び（G48 は e2e:k の引数・G59 は tests/skeleton を --list で開いた
         6 ファイル・試験の多い順）のどの番号もちょうど 1 台が取って流し、ファイルの外（x/out・名前の頭が同じ a1x）に当たらない。赤のファイルを流した台は 1・
-        ほかは 0。取り台の印は番号の数だけ残り、g48-report が消す"""
+        ほかは 0。取り台の印は番号の数だけ残り、web-release（web_run.py release）が消す。試験を作る関数が別のファイル（_lib）に在っても、並びは試験のファイルで数える"""
         self.assertTrue(PW.exists(), f"Playwright が入っていない（{PW}。CI の組は pnpm install で入る）")
         with tempfile.TemporaryDirectory() as t, mock.patch.object(web_pull, "PW", pw_cmd()):
             d = pathlib.Path(t)
@@ -233,23 +238,23 @@ class Pull(unittest.TestCase):
             items, h, kinds = web_pull.make_queue(True, [], [], env)
             self.assertEqual([(x["kind"], x["file"]) for x in items],
                              [("g48", "k/a3.spec.ts"), ("g48", "features/F1/b1.spec.ts"), ("g48", "k/a2.spec.ts"), ("g59", "skeleton/s1.spec.ts"),
-                              ("g48", "k/a1.spec.ts"), ("g48", "k/a1x.spec.ts")])
+                              ("g48", "k/a1.spec.ts"), ("g48", "k/a1x.spec.ts"), ("g48", "k/a4.spec.ts")])
             code = (f"import os, sys; sys.path.insert(0, {str(ROOT / 'scripts/ci')!r}); import web_pull; web_pull.PW = {pw_cmd()!r}; "
                     f"items, h, _ = web_pull.make_queue(True, [], [], dict(os.environ)); sys.exit(web_pull.pull(sys.argv[1], items, h, dict(os.environ)))")
             procs = [subprocess.Popen([sys.executable, "-c", code, f"pull-{k}"], cwd=d, env={**env, "GITHUB_RUN_ID": "9"}, stdout=subprocess.PIPE,
                                       stderr=subprocess.STDOUT, text=True) for k in (1, 2, 3)]
             outs = [(p.communicate()[0], p.returncode) for p in procs]
             got = sorted(json.loads(f.read_text(encoding="utf-8"))["i"] for f in (d / "web-part/items").glob("*.json"))
-            self.assertEqual(got, list(range(6)), "\n".join(o for o, _ in outs))
+            self.assertEqual(got, list(range(7)), "\n".join(o for o, _ in outs))
             bad, res = web_pull.check_items(items, h)
             self.assertEqual(bad, [])
             self.assertEqual({res[x["i"]]["file"]: res[x["i"]]["rc"] for x in items}["k/a3.spec.ts"], 1)
             red_part = res[0]["part"]
             self.assertEqual({f"pull-{k}": rc for k, (_, rc) in zip((1, 2, 3), outs)}[red_part], 1)
-            self.assertEqual(len(list((d / "web-part").glob("blob-g48/*.zip"))), 5)
+            self.assertEqual(len(list((d / "web-part").glob("blob-g48/*.zip"))), 6)
             self.assertEqual(len(list((d / "web-part").glob("blob-g59/*.zip"))), 1)
             refs = subprocess.run(["git", "ls-remote", "origin", "refs/tf-claim/*"], cwd=d, capture_output=True, text=True).stdout.splitlines()
-            self.assertEqual(len(refs), 6)
+            self.assertEqual(len(refs), 7)
             self.assertTrue(all(f"refs/tf-claim/9-1-{h}/" in r for r in refs))
             # 合わせる：まとめた試験の集合が並びと同じ・赤の G48 があるので記録と照らしは流さず 1・取り台の印を消す
             (d / "junit").mkdir()
@@ -262,9 +267,13 @@ class Pull(unittest.TestCase):
             self.assertIn("試験が赤のファイル 1 本", out.getvalue())
             self.assertNotIn("流れていない試験", out.getvalue())
             xml = (d / "junit/web.xml").read_text(encoding="utf-8")
-            self.assertEqual(len(re.findall("<testcase ", xml)), 9)
+            self.assertEqual(len(re.findall("<testcase ", xml)), 10)
             self.assertEqual(len(re.findall("<testcase ", (d / "junit/web-skeleton.xml").read_text(encoding="utf-8"))), 2)
             self.assertNotIn("out.spec", xml)
+            self.assertEqual(len(subprocess.run(["git", "ls-remote", "origin", "refs/tf-claim/*"], cwd=d, capture_output=True, text=True).stdout.splitlines()), 7,
+                             "g48-report は印を消さない（web-release が並べて消す）")
+            with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "9", "GITHUB_RUN_ATTEMPT": "1"}), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(web_run.release(), 0)
             self.assertEqual(subprocess.run(["git", "ls-remote", "origin", "refs/tf-claim/*"], cwd=d, capture_output=True, text=True).stdout, "")
 
     def test_K1304_CI_005_claim_is_create_only(self) -> None:
@@ -496,9 +505,15 @@ class ManyWorkflow(unittest.TestCase):
         for k, v in b["env"].items():
             self.assertEqual(web["env"].get(k), v, f"組み立てと web の env が同じ（{k}）")
         self.assertEqual(web["env"]["PW_ACTION_TIMEOUT"], "15000")
-        self.assertEqual((web["permissions"], JOBS["web-report"]["permissions"]), ({"contents": "write"}, {"contents": "write"}))
+        self.assertEqual(web["permissions"], {"contents": "write"})
         self.assertEqual([j for j, v in JOBS.items() if "permissions" in v and "contents" in v["permissions"] and v["permissions"]["contents"] == "write"],
-                         ["web", "web-report", "auto-merge"])
+                         ["web", "web-release", "auto-merge"])
+        rel = JOBS["web-release"]
+        self.assertEqual(rel["needs"], ["static", "web"])
+        self.assertEqual([s.get("run") for s in rel["steps"] if "run" in s], ["python3 scripts/ci/web_run.py release"])
+        for result, n, want in (("failure", "4", True), ("success", "4", True), ("skipped", "4", False), ("success", "1", False), ("success", "", False)):
+            self.assertEqual(ev(rel["if"], {**web_ctx("all", n), "needs.web.result": result}), want, (result, n))
+        self.assertNotIn("web-release", JOBS["junit"]["needs"], "印を消すのを待たない")
         cfg = (ROOT / "apps/web/playwright.config.ts").read_text(encoding="utf-8")
         self.assertIn('actionTimeout: Number(process.env["PW_ACTION_TIMEOUT"] ?? 0)', cfg)
         self.assertIn("timeout: 60_000", cfg)

@@ -55,18 +55,18 @@ def list_tests(args: list[str], env: dict) -> list[tuple[str, str]]:
 
 
 def report_tests(rep: dict) -> list[tuple[str, str]]:
-    """JSON の報告（--list でも結果でも同じ形）から (ファイル, 親の suite の題 ＋ spec の題, project) の一覧"""
+    """JSON の報告（--list でも結果でも同じ形）から (試験のファイル, 親の suite の題 ＋ spec の題 ＋ [project]) の一覧"""
     out: list[tuple[str, str]] = []
 
     def walk(s: dict, path: list[str], file: str) -> None:
-        file = s.get("file") or file
+        # ファイルは一番上の suite（試験のファイル）。試験を作る関数が別のファイル（tests/_lib/…）に在ると spec の file はそちらを指すので使わない
         for sp in s.get("specs", []):
             for t in sp.get("tests", []) or [{}]:
-                out.append((sp.get("file") or file, " ".join([*path, sp.get("title", ""), f"[{t.get('projectName', '')}]"]).strip()))
+                out.append((file, " ".join([*path, sp.get("title", ""), f"[{t.get('projectName', '')}]"]).strip()))
         for c in s.get("suites", []):
             walk(c, [*path, s.get("title", "")], file)
     for s in rep.get("suites", []):
-        walk(s, [], "")
+        walk(s, [], s.get("file") or s.get("title", ""))
     return sorted(out)
 
 
@@ -165,6 +165,12 @@ def run_item(it: dict, part: str, h: str, env: dict) -> int:
     return rc
 
 
+def rank(part: str) -> int:
+    """pull-<i> → i-1（数でなければ 0）"""
+    m = re.search(r"(\d+)$", part)
+    return int(m.group(1)) - 1 if m else 0
+
+
 def pull(part: str, items: list[dict], h: str, env: dict) -> int:
     """取り台から 1 本ずつ取って流す。どれかが赤なら 1・取り台に届かなければ 2（取っていない番号はほかの台が流す）"""
     ns = namespace(h)
@@ -177,7 +183,7 @@ def pull(part: str, items: list[dict], h: str, env: dict) -> int:
             todo = [it for it in items if it["i"] not in known]
             if not todo:
                 break
-            it = todo[0]
+            it = todo[rank(part) % len(todo)]   # 台ごとに残りの前のほうの別の 1 本を狙う（全部の台が同じ 1 本を取り合わない・重い物から）
             got = claim(ns, it["i"], part)
         except RuntimeError as e:
             print(f"★ {part}：{e}（この台は止める。取っていない番号はほかの台が流す・取った番号の結果が無ければ g48-report が赤にする）")

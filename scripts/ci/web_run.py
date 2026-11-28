@@ -170,10 +170,14 @@ def report(full: bool, tasks: list[str], gates: dict) -> int:
         return 1
     env = dict(os.environ)
     items, h, kinds = web_pull.make_queue(full, g48, g59, env)
-    try:
-        return report_items(full, g48, tasks, items, h, kinds, env)
-    finally:
-        print(f"取り台の印を消した：{web_pull.release(web_pull.namespace(h))} 本")
+    return report_items(full, g48, tasks, items, h, kinds, env)
+
+
+def release() -> int:
+    """この回の取り台の印を消す（web-release の組・web-report と並べて走る。並びは作らず、この回の印を全部）"""
+    n = web_pull.release(f"{web_pull.CLAIM_NS}/{os.environ.get('GITHUB_RUN_ID', 'local')}-{os.environ.get('GITHUB_RUN_ATTEMPT', '1')}-")
+    print(f"取り台の印を消した：{n} 本")
+    return 0
 
 
 def report_items(full: bool, g48: list[str], tasks: list[str], items: list[dict], h: str, kinds: dict, env: dict) -> int:
@@ -211,7 +215,11 @@ def other_has_work(gates: dict) -> bool:
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(line_buffering=True)   # CI の記録に順に出す（段ごとの時間が読めるように）
     part = sys.argv[1] if len(sys.argv) > 1 else ""
+    if part == "release":
+        return release()
     if part == "shards":
         out = sys.argv[3] if len(sys.argv) > 3 and sys.argv[2] == "--github-output" else ""
         try:

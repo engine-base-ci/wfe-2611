@@ -287,6 +287,7 @@ def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
         with: {{ name: junit-{job}, path: junit/, if-no-files-found: error, retention-days: 7 }}
 """
 NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）\n      - run: pnpm install --frozen-lockfile\n" + VENV
+NODE_NOPY = NODE[:-len(VENV)]   # 組み立てだけの組は Python を使わない（K-1304）
 PYS = "      - uses: actions/checkout@v4\n" + VENV
 UNIT_JOBS = "".join(f"""  unit-{i}:
     runs-on: {RUNS_ON}
@@ -445,7 +446,7 @@ jobs:
     if: ${{{{ !cancelled() && inputs.web != 'defer' }}}}
     env:
 {WEB_BUILD_ENV}    steps:
-{NODE}      - run: echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # web の組と同じ値（サーバ側の (dev) が読む）
+{NODE_NOPY}      - run: echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # web の組と同じ値（サーバ側の (dev) が読む）
       - run: pnpm --filter @kaname/web build:test && rm -rf apps/web/.next-prod/cache   # 組み立ての cache は next start に要らない（上げ下ろしを軽く）
       - uses: actions/upload-artifact@v4
         with:
@@ -522,7 +523,6 @@ jobs:
     #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
     needs: [static, web]
     if: ${{{{ !cancelled() && needs.web.result != 'skipped' && fromJSON({SO}.web_shards || '1') > 1 }}}}
-    permissions: {{ contents: write }}   # 取り台の印を消す（K-1304）
     env:
       PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/web.xml
       WEB_SHARDS: ${{{{ {SO}.web_shards }}}}
@@ -544,6 +544,16 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: {{ name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }}
+  web-release:
+    runs-on: {RUNS_ON}
+    # 取りに行く台（K-1304）が作った取り台の印（refs/tf-claim/<回>-<試み>-…）を消す。web-report と並べて走る（待たせない）。
+    #   web の組が終わってから（どの台ももう取らない）・赤でも消す。WEB_SHARDS が 1 か無い回は印が無いので飛ぶ
+    needs: [static, web]
+    if: ${{{{ always() && needs.web.result != 'skipped' && fromJSON({SO}.web_shards || '1') > 1 }}}}
+    permissions: {{ contents: write }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/ci/web_run.py release
   junit:
     runs-on: {RUNS_ON}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる

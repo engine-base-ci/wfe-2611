@@ -907,9 +907,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
-      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
-        with: { python-version: '3.14' }
-      - run: bash scripts/ci/ci_venv.sh
       - run: echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # web の組と同じ値（サーバ側の (dev) が読む）
       - run: pnpm --filter @kaname/web build:test && rm -rf apps/web/.next-prod/cache   # 組み立ての cache は next start に要らない（上げ下ろしを軽く）
       - uses: actions/upload-artifact@v4
@@ -1069,7 +1066,6 @@ jobs:
     #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
     needs: [static, web]
     if: ${{ !cancelled() && needs.web.result != 'skipped' && fromJSON(needs.static.outputs.web_shards || '1') > 1 }}
-    permissions: { contents: write }   # 取り台の印を消す（K-1304）
     env:
       PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml
       WEB_SHARDS: ${{ needs.static.outputs.web_shards }}
@@ -1101,6 +1097,16 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }
+  web-release:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 取りに行く台（K-1304）が作った取り台の印（refs/tf-claim/<回>-<試み>-…）を消す。web-report と並べて走る（待たせない）。
+    #   web の組が終わってから（どの台ももう取らない）・赤でも消す。WEB_SHARDS が 1 か無い回は印が無いので飛ぶ
+    needs: [static, web]
+    if: ${{ always() && needs.web.result != 'skipped' && fromJSON(needs.static.outputs.web_shards || '1') > 1 }}
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/ci/web_run.py release
   junit:
     runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
