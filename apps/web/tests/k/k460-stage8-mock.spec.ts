@@ -493,8 +493,15 @@ test("K460-UI-006 お知らせの「元に戻す」：f7-delete-undo に、お�
   const region = page.locator('section[aria-label^="お知らせ "]');
   const btn = region.getByRole("button", { name: "元に戻す", exact: true });
   await expect(btn).toBeVisible();
-  const box = (await btn.boundingBox())!;
   const vp = page.viewportSize()!;
+  // 出てくる動き（下から上がる）が終わった後の位置で見る（動きの途中は画面の下に少しはみ出す）
+  await expect
+    .poll(async () => {
+      const b = (await btn.boundingBox())!;
+      return b.y + b.height;
+    })
+    .toBeLessThanOrEqual(vp.height);
+  const box = (await btn.boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(vp.width);
   expect(box.y + box.height).toBeLessThanOrEqual(vp.height);
