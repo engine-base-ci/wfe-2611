@@ -1,0 +1,56 @@
+{
+ "ops": {
+  "decidePlanProposal": {
+   "file": "apps/api/test/features/F12/ops-plans-decide.test.ts",
+   "reason": "案の状態・作った人・決める人の数で答えが変わり、版とお知らせと記録を書く。種では作れない（K-990）",
+   "covers": {
+    "test_post_ops_plan_proposals_id_decide_ok": "K990-API-001",
+    "test_post_ops_plan_proposals_id_decide_shape": "K990-API-001",
+    "test_post_ops_plan_proposals_id_decide_not_found": "K990-API-010",
+    "test_post_ops_plan_proposals_id_decide_rejected_401": "K990-API-011",
+    "test_post_ops_plan_proposals_id_decide_rejected_403": "K990-API-008",
+    "test_post_ops_plan_proposals_id_decide_rejected_422": "K990-API-009",
+    "test_post_ops_plan_proposals_id_decide_rate_limited": "K990-API-014",
+    "test_post_ops_plan_proposals_id_decide_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_id_decide_conflict": "K990-API-005",
+    "test_post_ops_plan_proposals_id_decide_conflict_2": "K990-API-004",
+    "test_post_ops_plan_proposals_id_decide_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ops_plan_proposals_id_decide_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
+   }
+  },
+  "returnPlanProposal": {
+   "file": "apps/api/test/features/F12/ops-plans-decide.test.ts",
+   "reason": "案の状態と作った人で答えが変わる（K-990）",
+   "covers": {
+    "test_post_ops_plan_proposals_id_return_ok": "K990-API-006",
+    "test_post_ops_plan_proposals_id_return_shape": "K990-API-006",
+    "test_post_ops_plan_proposals_id_return_not_found": "K990-API-010",
+    "test_post_ops_plan_proposals_id_return_rejected_401": "K990-API-011",
+    "test_post_ops_plan_proposals_id_return_rejected_403": "K990-API-011",
+    "test_post_ops_plan_proposals_id_return_rejected_422": "K990-API-009",
+    "test_post_ops_plan_proposals_id_return_rate_limited": "K990-API-014",
+    "test_post_ops_plan_proposals_id_return_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_plan_proposals_id_return_conflict": "K990-API-005",
+    "test_post_ops_plan_proposals_id_return_conflict_2": "K990-API-007",
+    "test_post_ops_plan_proposals_id_return_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ops_plan_proposals_id_return_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
+   }
+  }
+ }
+}
