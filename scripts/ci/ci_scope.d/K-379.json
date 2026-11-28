@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379"
+ }
+}
