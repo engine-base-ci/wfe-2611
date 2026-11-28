@@ -14,6 +14,7 @@ async function choose(page: Page, sel: Locator, label: string): Promise<void> {
   await sel.click();
   await page.getByRole("option", { name: label, exact: true }).click();
 }
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const BOX = ["width", "height", "x", "y", "background-color", "border-top-color", "border-top-left-radius"];
 const TEXT = ["font-size", "font-weight", "color", "line-height", "texts"];
@@ -94,6 +95,8 @@ test.describe("K-976 受信箱の見た目", () => {
               body: { data: shellOf({ operator: { member_id: ME, caps: ["inquiry"] }, inbox: INBOX }) },
             });
             set(await mockInbox(page));
+            // 下絵の時刻の字（今日は 09:40・昨日・それより前は日付）は 11/02 の日本の昼の形。今を止めて同じ字にする
+            await page.clock.setFixedTime(new Date("2026-11-02T03:00:00Z"));
             await signInOps(page, local(baseURL), `/ops/support${q}`, w);
             await expect(page.locator(".k-page-head h1")).toHaveText("問い合わせ");
           },
@@ -137,7 +140,7 @@ test.describe("K-976 箱と一覧", () => {
     ]);
     await chip(page, "お金・プラン").click();
     await page.waitForURL((u) => u.search === "?box=mine&topic=billing");
-    expect(m.listQueries.at(-1)!.toString()).toBe("box=mine&topic=billing");
+    await expect.poll(() => m.listQueries.at(-1)?.toString()).toBe("box=mine&topic=billing");
     await page.goBack();
     await page.waitForURL((u) => u.search === "?box=mine");
   });
@@ -212,7 +215,7 @@ test.describe("K-976 担当・返す・メモ", () => {
         },
       },
     });
-    const box = page.getByLabel("返事", { exact: true });
+    const box = page.getByLabel(/^返事\*?$/);
     await box.fill("預け直してください");
     await page.getByRole("button", { name: "返す", exact: true }).click();
     const thread = page.getByRole("region", { name: "承認したのに動かない", exact: true });
@@ -240,7 +243,7 @@ test.describe("K-976 担当・返す・メモ", () => {
         },
       },
     });
-    await page.getByLabel("返事", { exact: true }).fill("前に同じ件があった");
+    await page.getByLabel(/^返事\*?$/).fill("前に同じ件があった");
     await page.getByRole("button", { name: "社内メモにする", exact: true }).click();
     await expect(page.locator(".k-oq-msg[data-kind='memo']").last()).toContainText("前に同じ件があった");
     expect(m.bodies.note).toEqual([{ body: "前に同じ件があった" }]);
@@ -308,10 +311,10 @@ test.describe("K-976 失敗と守り", () => {
   }) => {
     const m = await open(page, baseURL, `?box=mine&id=${ID}`);
     m.on.reply = () => ({ status: 503, body: { error: "unavailable", code: "E-PAGE-003" } });
-    await page.getByLabel("返事", { exact: true }).fill("残る返事");
+    await page.getByLabel(/^返事\*?$/).fill("残る返事");
     await page.getByRole("button", { name: "返す", exact: true }).click();
     await expect(page.locator("[role='alert']").first()).toBeVisible();
-    await expect(page.getByLabel("返事", { exact: true })).toHaveValue("残る返事");
+    await expect(page.getByLabel(/^返事\*?$/)).toHaveValue("残る返事");
     m.on.list = () => ({ status: 503, body: { error: "unavailable", code: "E-PAGE-003" } });
     await page.goto(`${local(baseURL)}/ops/support?box=mine`);
     await expect(page.getByRole("button", { name: "もう一度", exact: true })).toBeVisible();

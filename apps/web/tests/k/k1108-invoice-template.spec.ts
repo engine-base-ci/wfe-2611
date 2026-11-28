@@ -93,7 +93,10 @@ async function open(
   return { m, calls: bills.calls };
 }
 const btn = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-const field = (page: Page, label: string) => page.getByLabel(label, { exact: true });
+// 必須の欄の見出しは「会社名*」（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、読み上げの名前で探す
+const field = (page: Page, label: string) => page.getByRole("textbox", { name: label, exact: true });
+// 本文の中の字（外枠の帯の「Kaname 運営」と会社名の値が同じ字なので、本文に絞る）
+const inMain = (page: Page, text: string) => page.locator("#k-main").getByText(text, { exact: true });
 const dialog = (page: Page, title: string) =>
   page.getByRole("dialog").filter({ has: page.getByRole("heading", { name: title, exact: true }) });
 
@@ -112,7 +115,9 @@ test.describe("K-1108 請求書の型の見た目", () => {
         m.on.put = () => ({ status: 409, body: { error: "conflict", code: "E-BILL-007" } });
         await btn(page, "直す").click();
         await btn(page, "保存する").click();
-        await expect(page.getByRole("alert").first()).toContainText("保存できませんでした");
+        await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText(
+          "保存できませんでした",
+        );
       },
     ],
   ];
@@ -141,7 +146,7 @@ test.describe("K-1108 見る・直す", () => {
     const { m } = await open(page, baseURL);
     await expect(page.locator(".k-page-head h1")).toHaveText("請求書の型");
     for (const v of [TPL.company, TPL.address, TPL.reg_no, TPL.contact, TPL.payee, TPL.note])
-      await expect(page.getByText(v, { exact: true })).toBeVisible();
+      await expect(inMain(page, v)).toBeVisible();
     await expect(page.getByText("11/01 に 佐野 が直した", { exact: true })).toBeVisible();
     expect([count(m, GETS), count(m, PUTS)]).toEqual([1, 0]);
   });
@@ -156,7 +161,7 @@ test.describe("K-1108 見る・直す", () => {
     await expect(field(page, "振込先")).toHaveValue(TPL.payee);
     await field(page, "会社名").fill("書きかけの会社");
     await btn(page, "やめる").click();
-    await expect(page.getByText(TPL.company, { exact: true })).toBeVisible();
+    await expect(inMain(page, TPL.company)).toBeVisible();
     await expect(page.getByText("書きかけの会社", { exact: true })).toHaveCount(0);
     expect(count(m, PUTS)).toBe(0);
   });
@@ -166,6 +171,7 @@ test.describe("K-1108 見る・直す", () => {
     baseURL,
   }) => {
     const { m } = await open(page, baseURL);
+    await expect(inMain(page, TPL.company)).toBeVisible(); // 1 回目の答え（版 3）を読み終えてから、2 回目の答えを差し替える
     m.on.get = () => ({ status: 200, body: { data: { ...TPL, company: "合同会社カナメ運営", version: 4 } } });
     await btn(page, "直す").click();
     await field(page, "会社名").fill("  合同会社カナメ運営 ");
@@ -196,11 +202,12 @@ test.describe("K-1108 見る・直す", () => {
       ++n === 1
         ? { status: 409, body: { error: "conflict", code: "E-BILL-007" } }
         : { status: 200, body: { data: { ...TPL, ...(req.postDataJSON() as object), version: 5 } } };
+    await expect(inMain(page, TPL.company)).toBeVisible(); // 1 回目の答え（版 3）を読み終えてから、2 回目の答えを差し替える
     m.on.get = () => ({ status: 200, body: { data: { ...TPL, version: 4 } } });
     await btn(page, "直す").click();
     await field(page, "住所").fill("大阪府大阪市北区梅田 2-2-2");
     await btn(page, "保存する").click();
-    const alert = page.getByRole("alert").first();
+    const alert = page.locator('[role="alert"]:not(#__next-route-announcer__)').first();
     await expect(alert).toContainText("保存できませんでした");
     await expect(alert).toContainText("書いた値はそのまま残っています");
     await expect(field(page, "住所")).toHaveValue("大阪府大阪市北区梅田 2-2-2");
@@ -218,7 +225,9 @@ test.describe("K-1108 見る・直す", () => {
     await field(page, "振込先").fill("別の銀行 普通 7654321");
     for (let i = 0; i < 2; i++) {
       await btn(page, "保存する").click();
-      await expect(page.getByRole("alert").first()).toContainText("保存できませんでした");
+      await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText(
+        "保存できませんでした",
+      );
       await expect(field(page, "振込先")).toHaveValue("別の銀行 普通 7654321");
     }
     expect(count(m, PUTS)).toBe(2);
@@ -264,7 +273,7 @@ test.describe("K-1108 見る・直す", () => {
     baseURL,
   }) => {
     const { m } = await open(page, baseURL, { caps: ["inquiry"] });
-    await expect(page.getByText("見る権限がありません", { exact: true })).toBeVisible();
+    await expect(page.getByText("見る権限がありません", { exact: false })).toBeVisible(); // 字は NoAccess の「この画面を見る権限がありません。」（K-984・k971 と同じ見方）
     expect(m.calls).toEqual([]);
   });
 
@@ -298,7 +307,7 @@ test.describe("K-1108 見る・直す", () => {
         : { status: 200, body: { data: TPL } };
     await signInOps(page, local(baseURL), "/ops/billing/template", 1440);
     await btn(page, "もう一度").click();
-    await expect(page.getByText(TPL.payee, { exact: true })).toBeVisible();
+    await expect(inMain(page, TPL.payee)).toBeVisible();
     expect(n).toBe(2);
   });
 

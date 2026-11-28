@@ -38,7 +38,7 @@ const delBtn = (p: Page) => p.getByRole("button", { name: "この項目を消す
 const addDlg = (p: Page) => p.locator(DLG).filter({ has: p.getByRole("heading", { name: "項目を足す", exact: true }) });
 const delDlg = (p: Page, name: string) =>
   p.getByRole("alertdialog", { name: `項目「${name}」を消しますか`, exact: true });
-const nameOf = (d: Locator) => d.getByLabel("名前", { exact: true });
+const nameOf = (d: Locator) => d.getByRole("textbox", { name: "名前", exact: true });
 const goBtn = (d: Locator) => d.getByRole("button", { name: "足す", exact: true });
 const optBoxes = (d: Locator) => d.getByRole("textbox", { name: /^選ぶ物 \d+$/ });
 const kindsOf = (p: Page, d: Locator) =>
@@ -358,7 +358,7 @@ test("K720-UI-015 直している途中で足したとき：足したあとの�
   page,
 }) => {
   await open(page, F_AMOUNT, "請求額");
-  await page.locator(FORM("請求額")).getByLabel("名前", { exact: true }).fill("請求の額");
+  await page.locator(FORM("請求額")).getByRole("textbox", { name: "名前", exact: true }).fill("請求の額");
   const d = await openAdd(page);
   await nameOf(d).fill("取引先の区分");
   await goBtn(d).click();
@@ -367,7 +367,9 @@ test("K720-UI-015 直している途中で足したとき：足したあとの�
     .filter({ has: page.getByRole("heading", { name: "保存していない変更があります", exact: true }) });
   await expect(guard).toBeVisible();
   await guard.getByRole("button", { name: "戻る", exact: true }).click();
-  await expect(page.locator(FORM("請求額")).getByLabel("名前", { exact: true })).toHaveValue("請求の額");
+  await expect(page.locator(FORM("請求額")).getByRole("textbox", { name: "名前", exact: true })).toHaveValue(
+    "請求の額",
+  );
   await expect(page.locator(LIST).getByRole("link", { name: /^取引先の区分/ })).toBeVisible();
 });
 

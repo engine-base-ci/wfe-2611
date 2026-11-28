@@ -167,7 +167,7 @@ test("K672-UI-008 tk-blocked：人が足した未チェックの行は完了を�
   await expect(dlg.getByText("完了は止めませんが", { exact: false })).toBeVisible();
   await expect(dlg.getByText("外に出る操作は、チェックとは別に人の承認が要ります", { exact: false })).toBeVisible();
   await expect(dlg.getByRole("button", { name: "確認項目に戻る", exact: true })).toBeVisible();
-  await expect(dlg.getByRole("button", { name: "閉じる", exact: true })).toBeVisible();
+  await expect(dlg.locator(".k-dialog-actions").getByRole("button", { name: "閉じる", exact: true })).toBeVisible();
 });
 
 test("K672-UI-009 tk-blocked：右のパネルの確認項目は、ナレッジから入った行に「ナレッジ：ページの名前」の印が付き、人が足した行（先月と同じ書式）には付かない", async ({

@@ -66,11 +66,11 @@ const rowEntry = (p: Page) => createRow(p).getByRole("button", { name: ENTRY, ex
 const rowChip = (p: Page) => createRow(p).locator(".k-f4-par-chip");
 const makeBtn = (p: Page) => p.getByRole("button", { name: "作る", exact: true });
 const assignee = (p: Page) => p.getByRole("combobox", { name: "担当者" });
-/** 詳細の右のパネルの「親」の行 */
+/** 詳細の右のパネルの「親」の行（K-1153 の形：dt が名前の .k-detail-field） */
 const panelRow = (p: Page) =>
   p
-    .locator('aside[aria-label="チケットのパネル"] .k-f4d-pair')
-    .filter({ has: p.locator(".k-f4d-name", { hasText: /^親$/ }) });
+    .locator('aside[aria-label="チケットのパネル"] .k-detail-field')
+    .filter({ has: p.locator("dt", { hasText: /^親$/ }) });
 
 async function createWith(page: Page, body: Record<string, unknown> = {}, width = 1440, prep?: (l: ListState) => void) {
   await page.clock.setFixedTime(NOW);
@@ -161,7 +161,7 @@ test("K443-UI-003 入力（表記ゆらぎ・長さ）：全角と前後の空�
   const { l } = await createWith(page);
   await openDlg(page);
   await search(page).fill(" ＥＧ-124 ");
-  await expect(pick(page, /EG-124/)).toBeVisible();
+  await expect(pick(page, /^EG-124 /)).toBeVisible();
   expect(l.calls.at(-1)!.get("q")).toBe("ＥＧ-124");
   await search(page).fill("あ".repeat(120));
   expect([...(await search(page).inputValue())].length).toBe(100);

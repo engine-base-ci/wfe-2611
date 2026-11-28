@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
+import { isBuilt } from "../../lib/built-routes";
 import {
   compareFonts,
   compareRows,
@@ -183,8 +184,17 @@ test("K220-UI-005 第 2 ナビのまだ無い画面（プロフィール・お�
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
-  for (const name of ["プロフィール", "お知らせ"]) {
+  // プロフィール（/account・K-839）とお知らせ（/notifications・K-843）は後の葉が作った。作った画面は押せるリンクになる（me-sub.tsx の決まり）
+  for (const [name, href] of [
+    ["プロフィール", "/account"],
+    ["お知らせ", "/notifications"],
+  ] as const) {
     const it = subItem(page, name);
+    if (isBuilt(href)) {
+      await expect(it, name).toHaveAttribute("href", href);
+      await expect(it, name).not.toHaveAttribute("aria-disabled", "true");
+      continue;
+    }
     await expect(it, name).toHaveAttribute("aria-disabled", "true");
     expect(await it.getAttribute("href"), name).toBeNull();
     expect(Number(await it.evaluate((e) => getComputedStyle(e).opacity)), name).toBeCloseTo(0.55, 2);

@@ -24,10 +24,12 @@ export function TemplatesScreen() {
   if (res?.kind !== "ok") return <PlansFallback title={TITLE} kind="failed" retry={() => void list.refetch()} />;
 
   const { nav } = plansHrefs(null);
+  // 部品の行の id は key（K-994）。直す頁と 1 つの口は答えの id で引く（K-1111）ので、key から答えの id に戻す
+  const idOf = (key: string): string => res.data.find((t) => t.key === key)?.id ?? key;
   return (
     <TemplatesPage
       rows={res.data.map(templateRow)}
-      newHref={(r) => templateNewPath(r.id)}
+      newHref={(r) => templateNewPath(idOf(r.id))}
       status={status}
       {...(nav ? { nav } : {})}
     />
