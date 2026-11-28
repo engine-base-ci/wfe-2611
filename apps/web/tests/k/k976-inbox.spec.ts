@@ -95,6 +95,8 @@ test.describe("K-976 受信箱の見た目", () => {
               body: { data: shellOf({ operator: { member_id: ME, caps: ["inquiry"] }, inbox: INBOX }) },
             });
             set(await mockInbox(page));
+            // 下絵の時刻の字（今日は 09:40・昨日・それより前は日付）は 11/02 の日本の昼の形。今を止めて同じ字にする
+            await page.clock.setFixedTime(new Date("2026-11-02T03:00:00Z"));
             await signInOps(page, local(baseURL), `/ops/support${q}`, w);
             await expect(page.locator(".k-page-head h1")).toHaveText("問い合わせ");
           },

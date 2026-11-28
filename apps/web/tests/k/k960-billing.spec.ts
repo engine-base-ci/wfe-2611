@@ -132,10 +132,13 @@ test("K960-UI-005 PDF を押すと downloadInvoicePdf を 1 回（その請求�
   page,
 }) => {
   const mk = await mockBilling(page);
+  // 署名 URL の先（置き場）は試験の外。新しい窓がそこへ移ったことだけを見るため、網の手前で空の PDF を返す
+  await page.context().route(PDF_URL, (r) => r.fulfill({ status: 200, contentType: "application/pdf", body: "" }));
   await openBills(page);
   const pop = page.waitForEvent("popup");
   await page.getByRole("link", { name: "10 月分の請求書（PDF）", exact: true }).click();
   const w = await pop;
+  await w.waitForURL(PDF_URL); // 窓は先に空で開き、答えの後に署名 URL へ移る
   expect(w.url()).toBe(PDF_URL);
   expect(mk.count("pdf")).toBe(1);
   expect(mk.last("pdf")!.id).toBe(INV_OCT);
@@ -151,7 +154,9 @@ test("K960-UI-006 PDF が開けない（503）：alert「請求書を開けま�
   let popups = 0;
   page.on("popup", () => (popups += 1));
   await page.getByRole("link", { name: "10 月分の請求書（PDF）", exact: true }).click();
-  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText("請求書を開けませんでした。もう一度お試しください。");
+  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveText(
+    "請求書を開けませんでした。もう一度お試しください。",
+  );
   expect(popups).toBe(0);
   await expect(page.locator(`${TABLE} tbody tr`)).toHaveCount(3);
 });

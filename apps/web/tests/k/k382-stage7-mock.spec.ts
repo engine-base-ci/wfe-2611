@@ -353,7 +353,7 @@ test("K382-UI-008 本番の詳細（/tickets/<id>・幅 1440・作業中）は�
   await expect(tabs.getByRole("button", { name: "やり取り", exact: true })).toHaveCount(1);
   const actual = page
     .locator(".k-detail-field")
-    .filter({ has: page.locator('dt:text-is("実績")') })
+    .filter({ has: page.locator('dt:text-is("実績時間")') }) // K-571 が行の名前を下絵の「実績時間」にした
     .locator("dd");
   await expect(actual).toHaveText("");
   expect(await page.locator(".k-detail-bands").evaluate((e) => e.childElementCount)).toBe(0);
