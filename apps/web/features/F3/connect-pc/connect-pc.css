@@ -1,0 +1,400 @@
+/* PC と使った量の中身（K-230・キャンバス EdPC・MePC・MePCInstalled）。値は正本 DESIGN-kaname.md の部品（pc-*・dialog-*）の
+   トークン（--k-c-*）だけを読む。生の大きさを書かない（K230-UI-031）。小窓の置き場・影・余白は小窓の型（components/k/k.css）のまま */
+
+/* ---- 3 段（小窓の本文。段の間は小窓の本文の段の間） ---- */
+.k-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-steps > li {
+  display: flex;
+  gap: var(--k-c-pc-step-gap);
+  align-items: flex-start;
+  padding: var(--k-c-pc-step-pad);
+  border-top: var(--k-c-pc-step-border-top);
+}
+.k-step-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-pc-step-dot-width);
+  height: var(--k-c-pc-step-dot-height);
+  border-radius: var(--k-c-pc-step-dot-radius);
+  font-size: var(--k-c-pc-step-dot-text);
+  font-weight: var(--k-c-pc-step-dot-fw);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-step-dot[data-state="done"] {
+  background: var(--k-st-success);
+}
+.k-step-dot[data-state="todo"] {
+  background: var(--k-side-bg);
+  color: var(--k-on-surface-variant);
+}
+.k-step-main {
+  flex: 1;
+  min-width: 0;
+}
+.k-steps .k-step-title {
+  margin: 0;
+  font-size: var(--k-c-pc-step-title-text);
+  line-height: var(--k-c-pc-step-title-lh);
+  font-weight: var(--k-c-pc-step-title-fw);
+}
+.k-step-desc {
+  margin: var(--k-c-pc-step-desc-margin);
+  font-size: var(--k-c-pc-step-desc-text);
+  line-height: var(--k-c-pc-step-desc-lh);
+  color: var(--k-c-pc-step-desc-fg);
+}
+/* 受け取る：説明の中の字のリンク（キャンバスどおり地の文の色・押せる印はカーソルとフォーカスの輪） */
+.k-pc-take {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+.k-pc-take:hover {
+  color: var(--k-on-surface);
+  text-decoration: underline;
+}
+
+/* ---- 接続コード（1 字ずつの箱を inline で並べる：innerText を改行の無い 6 字にする） ---- */
+.k-code {
+  display: inline-block;
+  margin: var(--k-c-pc-code-margin);
+  padding: var(--k-c-pc-code-pad);
+  white-space: nowrap;
+}
+.k-code-cell {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-pc-code-cell-width);
+  height: var(--k-c-pc-code-cell-height);
+  box-sizing: border-box;
+  border: var(--k-c-pc-code-cell-border);
+  border-radius: var(--k-c-pc-code-cell-radius);
+  background: var(--k-c-pc-code-cell-bg);
+  color: var(--k-c-pc-code-cell-fg);
+  font-size: var(--k-c-pc-code-cell-text);
+  font-weight: var(--k-c-pc-code-cell-fw);
+}
+.k-code-cell + .k-code-cell {
+  margin: var(--k-c-pc-code-next-margin);
+}
+.k-code-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-pc-code-foot-gap);
+  flex-wrap: wrap;
+  margin: var(--k-c-pc-code-foot-margin);
+}
+/* 字のリンクの形のボタン（新しいコード）。押せる大きさの決まり（24px）は、文の中の字のリンクの間隔の例外（WCAG 2.5.8）で外す */
+.k-pc-text-btn {
+  margin-left: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-none);
+  background: none;
+  color: var(--k-c-pc-text-button-fg);
+  font: inherit;
+  font-size: var(--k-c-pc-text-button-text);
+  line-height: var(--k-c-pc-text-button-lh);
+  font-weight: var(--k-c-pc-text-button-fw);
+  cursor: pointer;
+}
+.k-pc-text-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.k-pc-text-btn:disabled {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 共用の PC の注意 ---- */
+.k-pc-shared-note {
+  display: flex;
+  gap: var(--k-c-pc-note-gap);
+  align-items: flex-start;
+  padding: var(--k-c-pc-note-pad);
+  border: var(--k-c-pc-note-border);
+  border-radius: var(--k-c-pc-note-radius);
+  background: var(--k-c-pc-note-bg);
+  font-size: var(--k-c-pc-note-text);
+}
+.k-pc-shared-note > b {
+  color: var(--k-c-pc-note-mark-fg);
+}
+.k-pc-dialog-note {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 待っている印（2 段目の下の行の中・足の帯には置かない） ---- */
+.k-pc-wait {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-pc-wait-gap);
+  font-size: var(--k-c-pc-wait-text);
+  color: var(--k-c-pc-wait-fg);
+}
+/* 待っている印の行：2 段目（コードの段）の「10 分で切れる…新しいコード」の下に 1 行（代表の答え answer=8d3ada64dcbd・K-374） */
+.k-pc-wait-line {
+  display: flex;
+  align-items: center;
+  margin: var(--k-c-pc-code-foot-margin);
+}
+.k-wait-dot {
+  width: var(--k-c-pc-wait-dot-width);
+  height: var(--k-c-pc-wait-dot-height);
+  border-radius: var(--k-c-pc-wait-dot-radius);
+  background: var(--k-c-pc-wait-dot-bg);
+}
+
+/* ---- 小さなボタン（キャンバスの画面のボタン：高さ 30・12px・400） ---- */
+.k-btn.k-pc-btn[data-variant] {
+  min-height: var(--k-c-pc-button-height);
+  height: var(--k-c-pc-button-height);
+  padding: var(--k-c-pc-button-pad);
+  font-size: var(--k-c-pc-button-text);
+  font-weight: var(--k-c-pc-button-fw);
+  border-radius: var(--k-c-pc-button-radius);
+  box-sizing: border-box;
+}
+.k-btn.k-pc-btn[data-variant="primary"] {
+  border: var(--k-c-pc-button-primary-border);
+}
+/* 起こす：直し方の箱の中（角丸 field・600・上 6） */
+.k-btn.k-pc-wake[data-variant] {
+  margin: var(--k-c-pc-wake-margin);
+  border-radius: var(--k-c-pc-wake-radius);
+  font-weight: var(--k-c-pc-wake-fw);
+}
+
+/* ---- カード ---- */
+.k-pc-card {
+  margin: 0;
+  padding: var(--k-c-pc-card-pad);
+  border: var(--k-c-pc-card-border);
+  border-radius: var(--k-c-pc-card-radius);
+  background: var(--k-c-pc-card-bg);
+  min-width: 0;
+}
+.k-pc-card-head {
+  display: flex;
+  align-items: center;
+  padding: var(--k-c-pc-card-head-pad);
+}
+.k-pc-card h2 {
+  flex: 1;
+  margin: 0;
+  font-size: var(--k-c-pc-card-title-text);
+  line-height: var(--k-c-pc-card-title-lh);
+  font-weight: var(--k-c-pc-card-title-fw);
+}
+.k-pc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-pc-row {
+  display: flex;
+  gap: var(--k-c-pc-row-gap);
+  align-items: center;
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+}
+.k-pc-row[data-state="asleep"] {
+  align-items: flex-start;
+}
+.k-pc-icon {
+  display: inline-flex;
+  color: var(--k-on-surface-variant);
+}
+.k-pc-main {
+  flex: 1;
+  min-width: 0;
+}
+.k-pc-name {
+  display: block;
+}
+.k-pc-label {
+  color: var(--k-on-surface);
+}
+.k-pc-pill {
+  padding: var(--k-c-pc-pill-pad);
+  border-radius: var(--k-c-pc-pill-radius);
+  font-size: var(--k-c-pc-pill-text);
+  font-weight: var(--k-c-pc-pill-fw);
+  white-space: nowrap;
+}
+.k-pc-pill[data-tone="success"] {
+  background: var(--k-st-success-soft);
+  color: var(--k-st-success);
+}
+.k-pc-pill[data-tone="warning"] {
+  background: var(--k-st-warning-container);
+  color: var(--k-st-on-warning-container);
+}
+.k-pc-pill[data-tone="neutral"] {
+  background: var(--k-side-bg);
+  color: var(--k-on-surface-variant);
+}
+/* 値の無い札（いつも使う）：正本の使えない状態の薄さ */
+.k-pc-pill-off {
+  opacity: var(--k-c-button-disabled-opacity);
+}
+.k-pc-detail {
+  font-size: var(--k-c-pc-detail-text);
+  font-weight: var(--k-c-pc-detail-fw);
+  color: var(--k-c-pc-detail-fg);
+}
+.k-pc-fix {
+  display: block;
+  margin: var(--k-c-pc-fix-margin);
+  padding: var(--k-c-pc-fix-pad);
+  border: var(--k-c-pc-fix-border);
+  border-radius: var(--k-c-pc-fix-radius);
+  background: var(--k-c-pc-fix-bg);
+  font-size: var(--k-c-pc-fix-text);
+  line-height: var(--k-c-pc-fix-lh);
+}
+.k-pc-fix > b {
+  font-weight: var(--k-fw-label-md);
+}
+.k-pc-fix-note {
+  color: var(--k-on-surface-variant);
+}
+.k-pc-fix-msg {
+  display: block;
+  margin: var(--k-c-pc-fix-msg-margin);
+}
+/* 「…」：PC の操作のメニューはまだ前の設定の画面にある。押せない形（正本の使えない状態の薄さ） */
+.k-pc-more {
+  flex: none;
+  height: var(--k-c-pc-more-height);
+  padding: var(--k-c-pc-more-pad);
+  border: var(--k-c-pc-more-border);
+  border-radius: var(--k-c-pc-more-radius);
+  background: var(--k-c-pc-more-bg);
+  color: var(--k-c-pc-more-fg);
+  font: inherit;
+  font-size: var(--k-c-pc-more-text);
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-pc-empty {
+  margin: 0;
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- この PC の Bridge ---- */
+.k-pc-card.k-pc-this {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-pc-card-wide-gap);
+  padding: var(--k-c-pc-card-wide-pad);
+}
+.k-pc-this-text {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-c-pc-step-desc-lh);
+}
+.k-pc-this-acts {
+  display: flex;
+  gap: var(--k-s-sm);
+  flex-wrap: wrap;
+}
+
+/* ---- 使った量 ---- */
+.k-pc-card.k-pc-usage {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--k-c-pc-usage-col-width), 1fr));
+  gap: var(--k-c-pc-usage-gap);
+  padding: var(--k-c-pc-card-wide-pad);
+}
+.k-pc-usage-desc {
+  min-height: calc(var(--k-text-body-sm) * var(--k-lh-body));
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-pc-bar {
+  display: block;
+  height: var(--k-c-pc-bar-height);
+  margin: var(--k-c-pc-bar-margin);
+  border-radius: var(--k-c-pc-bar-radius);
+  background: var(--k-c-pc-bar-bg);
+}
+.k-pc-bar > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: var(--k-c-pc-bar-radius);
+  background: var(--k-c-pc-bar-fill-bg);
+}
+
+/* ---- 超えそうなとき（値を返す口がまだ無い：押せない形・正本の使えない状態の薄さ） ---- */
+.k-pc-set-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-pc-set-row-gap);
+  align-items: center;
+  padding: var(--k-c-pc-set-row-pad);
+  border-top: var(--k-c-pc-set-row-border-top);
+}
+.k-pc-set-label {
+  flex: 1 1 var(--k-c-pc-set-label-width);
+  min-width: 0;
+}
+.k-pc-switch {
+  flex: none;
+  display: flex;
+  box-sizing: border-box;
+  width: var(--k-c-pc-switch-width);
+  min-width: var(--k-c-pc-switch-width);
+  height: var(--k-c-pc-switch-height);
+  min-height: var(--k-c-pc-switch-height);
+  padding: var(--k-c-pc-switch-pad);
+  border: 0;
+  border-radius: var(--k-c-pc-switch-radius);
+  background: var(--k-c-pc-switch-bg);
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-pc-switch > span {
+  width: var(--k-c-pc-switch-knob-width);
+  height: var(--k-c-pc-switch-knob-height);
+  border-radius: var(--k-c-pc-switch-knob-radius);
+  background: var(--k-c-pc-switch-knob-bg);
+}
+.k-pc-pick {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: var(--k-c-pc-pick-height);
+  min-width: var(--k-c-pc-pick-min-width);
+  padding: var(--k-c-pc-pick-pad);
+  border: var(--k-c-pc-pick-border);
+  border-radius: var(--k-c-pc-pick-radius);
+  background: var(--k-c-pc-pick-bg);
+  color: var(--k-on-surface);
+  font: inherit;
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 本文の知らせ ---- */
+.k-pc-note {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
