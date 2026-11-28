@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/bridge/test/k359-claude-setup.test.ts": "一時のフォルダ（mkdtemp）に作り物の claude の台本と記録を書いて読み、子プロセスで動かす（Bridge の入れる・ログインの処理が呼ぶ相手）。リポジトリの中の物は読まない・K-359"
+ }
+}
