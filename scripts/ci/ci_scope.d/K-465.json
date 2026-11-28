@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/shell.ts", "apps/api/src/features/F7/shell/**", "apps/api/src/features/F4/setup-tasks/hooks.ts"],
+   "tests": ["apps/api/test/features/F7/shell.test.ts", "apps/api/test/features/F4/setup-tasks.test.ts"]},
+  {"paths": ["apps/api/test/k237_perf_budget.test.ts"],
+   "tests": ["apps/api/test/features/F7/shell.test.ts"]},
+  {"paths": ["apps/api/test/features/F7/shell.test.ts", "apps/api/test/features/F1/terms.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"],
+   "tests": ["apps/api/test/generated/get_shell.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F7/shell.test.ts": "速さの台帳の試験 apps/api/test/k237_perf_budget.test.ts を読んで、getShell を口の組に差してあるかを見る（K465-API-018）。読む物と使う試験は data_links で結ぶ・K-465"
+ }
+}
