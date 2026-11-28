@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops2/bills-*", "apps/web/features/F12/ops2/use-ops-bills.ts", "apps/web/features/F12/ops2/views-bills.tsx", "apps/web/app/(ops)/ops/billing/**"], "tests": ["apps/web/tests/k/k984-bills.spec.ts", "apps/web/test/k984-bills-shape.test.ts", "apps/web/tests/k/k942-f12-ops2-parts.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k984-bills.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops2 を開き scripts/ci/fidelity_compare.mjs を読む。答えの見本 ops-bills-mock.ts を読む（実ブラウザの試験は web の組が流す）・K-984",
+  "apps/web/test/k984-bills-shape.test.ts": "下絵の見本 apps/web/features/F12/ops2/ops2-sample.ts と答えの見本 apps/web/tests/k/ops-bills-mock.ts を読む（画面の外の純粋な関数の試験）・K-984"
+ }
+}
