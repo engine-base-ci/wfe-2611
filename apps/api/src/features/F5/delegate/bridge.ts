@@ -1,0 +1,257 @@
+// AI に任せる（K-62）の PC が呼ぶ口：取る（takeBridgeJob）・途中の様子（reportJobProgress）・止める合図（getJobControl）・終わる（finishBridgeJob）。
+//   前の道すじ /api/auth-ext/bridge/take・progress・finish（ext.ts）と /bridge/control（agent.ts）の中身をここへ移した。
+//   PC は印（x-bridge-session）で入り、入口（op.ts）が ctx.role = "device"・ctx.sessionId にする（K-57）。仕事の id は道すじで受ける。
+//   書くのは関門 C2 の関数だけ（app.bridge_take_job・app.bridge_progress・app.bridge_control・app.bridge_finish_job・0091。渡す関数の今の形は 0099）。
+//   progress・control・finish はその仕事を受け取った PC からだけ（ほかの PC は 404・D-128.163）。ログにプロンプト・結果・鍵・印を出さない
+import type pg from "pg";
+import { withTenant } from "@kaname/db/context";
+import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
+import { issueToolToken } from "../../../auth/agent-tools.js";
+import { AGENT_CONVENTIONS } from "../../../auth/conventions.js";
+import { parseDigest, takeRemember } from "../../../auth/memory.js";
+import { BRIDGE_PROTOCOL_MIN } from "../../F3/connect-pc/hooks.js";
+import { knowledgeExtras, loadKnowledge, renderKnowledgeSection } from "../../F9/knowledge/ai/context.js";
+import { PROGRESS_KINDS, REPLY_MAX, charLength, progressPayload, type ProgressKind } from "./records.js";
+
+/** 待ち受けは最長 20 秒・中で 1 秒ごとに見る・動いていないときは 5 秒あける（前の道すじと同じ・D-097） */
+const TAKE_WAIT_MAX_SEC = 20;
+const TAKE_TICK_MS = 1_000;
+const TAKE_IDLE_MS = 5_000;
+const FINISH_STATES = new Set(["done", "stopped", "cancelled"]);
+
+const gone = (): HookReply => ({ status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } });
+const notFound = (): HookReply => ({ status: 404, body: { error: "not_found", code: "NOT_FOUND" } });
+const invalid = (field: string, message: string): HookReply => ({
+  status: 422,
+  body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
+});
+
+/** 入口が表記ゆらぎを揃える前の体（返事・結果の文は本人の書いたまま残す）。形は入口が契約の strict な形で確かめ済み */
+export async function rawBody(a: HookArgs): Promise<Record<string, unknown>> {
+  const raw = (await a.c.req.json().catch(() => ({}))) as unknown;
+  return raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+}
+const sessionOf = (a: HookArgs): string | null => a.ctx.sessionId ?? null;
+
+type TakenJob = {
+  job_id: string;
+  prompt: string;
+  agent_session_id: string | null;
+  conversation_id: string | null;
+  permission_mode: string;
+  model: string | null;
+  effort: string | null;
+  tools: string[] | null;
+  allowed_tools: string[] | null;
+  attachments: { id: string; name: string; mime: string; size: number }[];
+  kind: "chat" | "login_check" | "ticket";
+  credential_id: string | null;
+  ticket_id: string | null;
+  phase: "make" | "execute" | "dry_run" | null;
+};
+
+export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
+  const one = async <T>(sql: string, args: unknown[]): Promise<T | undefined> =>
+    (await pool.query<{ v: T }>(sql, args)).rows[0]?.v;
+  /** 仕事を 1 件取る。holdExecute（その回の片付けに失敗した）なら、承認の後の実行は 1 つも取らない（K-189・0099） */
+  const takeOne = async (sid: string, holdExecute: boolean): Promise<TakenJob | null> =>
+    (await pool.query<TakenJob>("select * from app.bridge_take_job($1, $2)", [sid, holdExecute])).rows[0] ?? null;
+  /** 渡す前の片付け（K-164）を 1 回流す。片付けだけの取引なので、失敗したら片付けだけが戻る。失敗しても投げず、通ったかを返す。
+   *   withTenant の中で呼ぶ（外だと app.user_id() が空で何もしない）。ログは場所と例外の種類だけ（仕事の中身・id・人の名前を出さない） */
+  const sweepBeforeTake = async (ctx: HookArgs["ctx"], sid: string): Promise<boolean> => {
+    try {
+      await withTenant(pool, ctx, (cl) => cl.query("select app.ticket_execute_expire($1)", [sid]));
+      return true;
+    } catch (e) {
+      console.error(
+        `[delegate] takeBridgeJob：渡す前の片付けに失敗したので、この回は承認の後の実行を渡さない（${(e as Error)?.name ?? "Error"}）`,
+      );
+      return false;
+    }
+  };
+  /** 渡す前の試し打ちの片付け（K-779）：待ってから 24 時間を過ぎた試し打ちを止める。失敗は記録だけで取る口を止めず、承認の後の実行の扱い（holdExecute）にも響かせない。
+   *   残るのは「承認待ちのまま 24 時間以上待った試し打ち」だけで、本人宛ての送信なので害が小さい（承認が決まった物は承認の行の引き金が止める）。ログは場所と例外の種類だけ */
+  const sweepDryRunBeforeTake = async (ctx: HookArgs["ctx"], sid: string): Promise<void> => {
+    try {
+      await withTenant(pool, ctx, (cl) => cl.query("select app.dry_run_expire($1)", [sid]));
+    } catch (e) {
+      console.error(`[delegate] takeBridgeJob：渡す前の試し打ちの片付けに失敗した（${(e as Error)?.name ?? "Error"}）`);
+    }
+  };
+
+  /** 会話の仕事の会話の種類（K-737：Bridge が作る画面の会話の仕事にだけ draft_propose を見せる）。会話でない仕事は null。
+   *   主キーの読み 1 回（消されていても読む）。会話の表の守り（RLS）は role member だけを通し、PC の印の文脈（device）では行が見えないので、
+   *   その PC が取った仕事かを確かめる関数 app.bridge_job_talk_kind で読む（統合の枝で直した） */
+  const talkKindOf = async (sid: string, job: TakenJob): Promise<string | null> => {
+    if (!job.conversation_id) return null;
+    return (await one<string | null>("select app.bridge_job_talk_kind($1, $2) as v", [sid, job.job_id])) ?? null;
+  };
+
+  /** その PC の会社を運営が止めたか（K-1012・D-156.23）：止めた会社の PC には新しい仕事を渡さず（実行待ちは残る）、動いている仕事は止める合図で止める */
+  const tenantStopped = async (sid: string): Promise<boolean> =>
+    (await one<boolean>("select app.bridge_tenant_stopped($1) as v", [sid])) === true;
+
+  /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3）。
+   *   試し打ち（phase dry_run・K-746）には道具の鍵を出さない：確認項目を変えない仕事なので、spec_check・guard_report を PC の AI に並べない */
+  const withExtras = async (ctx: HookArgs["ctx"], sid: string, job: TakenJob) => {
+    const wantsTools = (job.conversation_id || job.kind === "ticket") && job.phase !== "dry_run";
+    const tool_token = wantsTools ? await issueToolToken(pool, sid, job.job_id) : null;
+    const browser =
+      (await one<string | null>("select app.bridge_job_browser($1, $2) as v", [sid, job.job_id])) ?? "off";
+    const talk_kind = await talkKindOf(sid, job);
+    // 会社のナレッジ（K-697）：取る瞬間のナレッジを、チケットの仕事は prompt・会話の仕事は決まりの後ろに足す。ログインの試しには足さない
+    const canOpen = job.kind === "ticket" || Boolean(job.conversation_id);
+    const loaded = job.kind === "login_check" ? undefined : await loadKnowledge(pool, sid, job.job_id);
+    const knowledge = loaded === undefined ? "" : loaded === null ? null : renderKnowledgeSection(loaded, { canOpen });
+    const extra = knowledgeExtras(job, knowledge, job.conversation_id ? AGENT_CONVENTIONS : null);
+    return { ...job, tool_token, prompt: extra.prompt, conventions: extra.conventions, browser, talk_kind };
+  };
+
+  return {
+    takeBridgeJob: {
+      before: async (a: HookArgs) => {
+        const sid = sessionOf(a);
+        if (!sid) return gone();
+        const wait = Math.max(0, Math.min(TAKE_WAIT_MAX_SEC, Number(a.input["wait_sec"]) || 0));
+        // 仕事の問い合わせも「生きている」の知らせ（D-097）。PC の行が無くなっていれば 401（Bridge は印を捨てる・G-14）
+        const hot = await one<boolean | null>("select app.bridge_poll($1) as v", [sid]);
+        if (hot === null || hot === undefined) return gone();
+        // 古い Bridge には仕事を渡さない。生きている知らせだけ受ける（E-CONN-012）
+        if (!(Number(a.input["protocol"]) >= BRIDGE_PROTOCOL_MIN))
+          return {
+            status: 201,
+            body: { data: { job: null, forbidden_domains: [], next_ms: TAKE_IDLE_MS, outdated: true } },
+          };
+        // 止めた会社の PC（K-1012）：仕事を取らず「仕事が無い」と答える（実行待ちは消さずに残る・再開したらまた渡す）
+        if (await tenantStopped(sid))
+          return {
+            status: 201,
+            body: { data: { job: null, forbidden_domains: [], next_ms: TAKE_IDLE_MS, outdated: false } },
+          };
+        // 「いま何も動かしていない」：その PC が受け取ったまま残った仕事だけ理由つきで止める（D-128.163）
+        if (a.input["idle"] === true) await pool.query("select app.bridge_sweep_orphans($1)", [sid]);
+        // 台帳で禁止・銀行のドメイン（D-107.1）。どの仕事にも渡す。資格情報は渡さない（D-107.7）
+        const forbidden = (await one<unknown[]>("select app.bridge_blocked_domains() as v", [])) ?? [];
+        // 渡す前の片付け（K-164）：その PC の人の待っている承認の後の実行のうち、消された・任せた人が使えない・24 時間を過ぎたものを止める。
+        //   失敗は記録だけで答えに出さない（PC は次の問い合わせでまた取りに来る）。その回は承認の後の実行を 1 つも渡さず、会話・作る段の仕事は渡す（K-189）。
+        //   「失敗した」はこの要求の中だけで持つ（待ちの輪の中の取り直しも同じ向き。次の要求はまた片付けから）
+        const holdExecute = !(await sweepBeforeTake(a.ctx, sid));
+        await sweepDryRunBeforeTake(a.ctx, sid);
+        const until = Date.now() + (hot ? wait * 1000 : 0);
+        for (;;) {
+          const job = await takeOne(sid, holdExecute);
+          if (job)
+            return {
+              status: 201,
+              body: {
+                data: {
+                  job: await withExtras(a.ctx, sid, job),
+                  forbidden_domains: forbidden,
+                  next_ms: 0,
+                  outdated: false,
+                },
+              },
+            };
+          if (Date.now() >= until) break;
+          await new Promise((r) => setTimeout(r, TAKE_TICK_MS));
+        }
+        return {
+          status: 201,
+          body: {
+            data: {
+              job: null,
+              forbidden_domains: forbidden,
+              next_ms: hot && wait > 0 ? 0 : TAKE_IDLE_MS,
+              outdated: false,
+            },
+          },
+        };
+      },
+    },
+    reportJobProgress: {
+      before: async (a: HookArgs) => {
+        const sid = sessionOf(a);
+        if (!sid) return gone();
+        const b = await rawBody(a);
+        const kind = String(a.input["kind"] ?? "");
+        if (!(PROGRESS_KINDS as readonly string[]).includes(kind))
+          return invalid("kind", `kind は ${PROGRESS_KINDS.join("／")} のどれかです`);
+        const payload = progressPayload(kind as ProgressKind, b);
+        const ok = await one<boolean>("select app.bridge_progress($1, $2, $3, $4, $5::jsonb) as v", [
+          sid,
+          a.id,
+          Number(a.input["seq"] ?? 0),
+          kind,
+          JSON.stringify(payload),
+        ]);
+        if (!ok) return notFound();
+        return { status: 201, body: { data: { ok: true } } };
+      },
+    },
+    getJobControl: {
+      before: async (a: HookArgs) => {
+        const sid = sessionOf(a);
+        if (!sid) return gone();
+        const v = await one<{ stop: boolean; reason: string | null } | null>("select app.bridge_control($1, $2) as v", [
+          sid,
+          a.id,
+        ]);
+        if (!v) return notFound();
+        // 止めた会社の PC（K-1012）：動いている仕事は区切りまで進めて止める（progress・finish の口は止めない）
+        if (await tenantStopped(sid))
+          return { status: 200, body: { data: { stop: true, reason: "workspace_stopped", steers: [] } } };
+        return { status: 200, body: { data: { stop: v.stop === true, reason: v.reason ?? null, steers: [] } } };
+      },
+    },
+    finishBridgeJob: {
+      before: async (a: HookArgs) => {
+        const sid = sessionOf(a);
+        if (!sid) return gone();
+        const b = await rawBody(a);
+        const state = String(a.input["state"] ?? "");
+        if (!FINISH_STATES.has(state)) return invalid("state", "結末は done／stopped／cancelled のどれかです");
+        const result = b["result"];
+        const reason = b["reason"];
+        if (result !== undefined && result !== null && typeof result !== "string") return invalid("result", "文字");
+        if (reason !== undefined && reason !== null && typeof reason !== "string") return invalid("reason", "文字");
+        if (typeof result === "string" && charLength(result) > REPLY_MAX)
+          return invalid("result", `結果は ${REPLY_MAX} 字までです`);
+        const agentSession = typeof a.input["agent_session_id"] === "string" ? a.input["agent_session_id"] : null;
+        // 記憶の毎朝のまとめの仕事なら、答え（JSON）を読んで記憶に入れる（D-105.4）
+        const digestId = (await one<string | null>("select app.digest_of_job($1, $2) as v", [sid, a.id])) ?? null;
+        // 「覚えて」の印は返事から消し、個人の記憶に入れる（D-105.1）。会話の仕事だけ。チケットの仕事の結果は本人の書いたまま成果物に残す（K62-API-071）
+        const kind = (await one<string | null>("select app.bridge_job_kind($1, $2) as v", [sid, a.id])) ?? null;
+        if (kind === null) return notFound();
+        const rem =
+          kind !== "ticket" && state === "done" && typeof result === "string" && result && !digestId
+            ? takeRemember(result)
+            : { text: typeof result === "string" ? result : null, items: [] as string[] };
+        const v = await one<{ ok: boolean; outcome: string } | null>(
+          "select app.bridge_finish_job($1, $2, $3, $4, $5, $6) as v",
+          [sid, a.id, state, rem.text, typeof reason === "string" ? reason : null, agentSession], // 止まった理由は切らない（D-130.1・D-130.4・K62-API-077）
+        );
+        if (!v) return notFound();
+        // この仕事で道具から渡した成果物を、書かれた返事に結ぶ（D-121.3）
+        await pool.query("select app.artifact_attach_job($1)", [a.id]);
+        if (rem.items.length) await pool.query("select app.agent_remember($1, $2, $3)", [sid, a.id, rem.items]);
+        if (digestId) {
+          const parsed = state === "done" && typeof result === "string" && result ? parseDigest(result) : null;
+          await pool.query("select app.agent_digest_apply($1, $2, $3, $4::jsonb, $5)", [
+            sid,
+            digestId,
+            !!parsed,
+            parsed ? JSON.stringify(parsed) : null,
+            parsed
+              ? null
+              : state === "done"
+                ? "自分のAI の答えが決まった形（JSON）ではありませんでした。もう一度押してください"
+                : typeof reason === "string" && reason
+                  ? reason
+                  : "止まりました",
+          ]);
+        }
+        return { status: 201, body: { data: { ok: true, outcome: v.outcome } } };
+      },
+    },
+  };
+}
