@@ -299,24 +299,27 @@ test("K571-UI-012 会社の項目の値を直す：値を押して直すと更�
 test("K571-UI-013 確認項目：「N 件 ・ 開く」（件数は答えの spec_count）。開くと K-450 の欄が出て、そのとき確認項目の口が 1 回呼ばれる。件数 0 は「0 件」", async ({
   page,
 }) => {
-  const m = await mockDetail(page);
-  await page.route(new RegExp(`/api/v1/tickets/${TID}/test-specs$`), (route) =>
-    route.fulfill({
+  await mockDetail(page);
+  // この口は後から置いた差し替えが受ける（mockDetail の数えには入らない）ので、ここで数える
+  let specReads = 0;
+  await page.route(new RegExp(`/api/v1/tickets/${TID}/test-specs$`), (route) => {
+    specReads += 1;
+    return route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
         data: [{ id: "s1", title: "請求書が宛先に届いている", checked_at: null, version: 1 }],
         meta: { count: 1, limit: 50, can_edit: true },
       }),
-    }),
-  );
+    });
+  });
   await openDetail(page);
   const sec = panel(page).locator('section[aria-label="確認項目"]');
   await expect(sec).toContainText("3 件");
-  expect(m.seen.filter((s) => s.endsWith("/test-specs"))).toHaveLength(0);
+  expect(specReads).toBe(0);
   await sec.getByRole("button", { name: "開く" }).click();
   await expect(sec).toContainText("請求書が宛先に届いている");
-  expect(m.seen.filter((s) => s.endsWith("/test-specs"))).toHaveLength(1);
+  expect(specReads).toBe(1);
   const p2 = await page.context().newPage();
   await mockDetail(p2, { spec_count: 0, spec_unchecked: 0 });
   await openDetail(p2);
@@ -343,8 +346,17 @@ test("K571-UI-015 子チケット・つながりのカードは前のまま：�
   page,
 }) => {
   await mockDetail(page);
+  await page.route(new RegExp(`/api/v1/tickets/${TID}/links$`), (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ data: [], meta: { children: [] } }),
+    }),
+  );
   await openDetail(page);
   const card = page.getByRole("region", { name: "子チケット・つながり" });
+  // カードは閉じた形（件数と「開く」）が既定で、「開く」で一覧を読む（K-452 の決め）
+  await card.getByRole("button", { name: "開く", exact: true }).click();
   // 在ることだけを見る（押せるか・押せない形かは K-452 が決める。K-452 が入っても赤くならない）
   for (const n of ["子を足す", "つながりを足す"])
     await expect(card.getByRole("button", { name: n, exact: true }), n).toHaveCount(1);
@@ -473,12 +485,15 @@ test("K571-UI-022 読み上げとキーボード：本文は region「本文」�
 }) => {
   await mockDetail(page, { results: RESULTS });
   await openDetail(page);
-  for (const n of ["本文", "成果物", "決定ログ", "申し送り"])
+  // 決定ログの見出しは生きている決定の数つき「決定ログ（N）」（K-397 の区画）
+  for (const n of ["本文", "成果物", /^決定ログ(（\d+）)?$/, "申し送り"])
     await expect(page.getByRole("region", { name: n, exact: true })).toHaveCount(1);
   for (const n of ["担当", "日付と時間", "関連", "確認項目"])
     await expect(panel(page).locator(`section[aria-label="${n}"]`)).toHaveCount(1);
   await expect(page.locator("h1")).toHaveCount(1);
-  await page.getByRole("heading", { level: 1 }).focus();
+  // h1 は焦点を受けない（頁の頭から回る）。外枠の左のメニューは飛ばし、外枠の「本文へ」（k-skip）で本文に入ってから Tab
+  await page.locator("a.k-skip").focus();
+  await page.keyboard.press("Enter");
   await page.keyboard.press("Tab");
   const first = await page.evaluate(() => document.activeElement?.closest("header, article, aside")?.tagName ?? "");
   expect(first).not.toBe("");
@@ -656,14 +671,20 @@ test("K571-UI-028 「確認項目を足す」の合図を詳細の一番上で�
   await expect(panel(page)).toBeHidden();
   await fire(page, TID);
   await expect(dlg(page)).toBeVisible();
-  await expect(panel(page)).toBeVisible();
+  // 小窓（modal）が開いている間は、ほかの所が読み上げから外れる（aria-hidden）。パネルは読み上げから外れた物も含めて探す
+  const shown = { includeHidden: true } as const;
+  const panelUnder = page.getByRole("complementary", { name: "チケットのパネル", ...shown });
+  await expect(panelUnder).toBeVisible();
   await close(page);
   // 「やり取り」のタブ
-  const tabs = panel(page).getByRole("navigation", { name: "パネルのタブ" });
+  const tabs = panelUnder.getByRole("navigation", { name: "パネルのタブ", ...shown });
   await tabs.getByRole("button", { name: "やり取り", exact: true }).click();
   await fire(page, TID);
   await expect(dlg(page)).toBeVisible();
-  await expect(tabs.getByRole("button", { name: "項目", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(tabs.getByRole("button", { name: "項目", exact: true, ...shown })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   await close(page);
   // 幅 768（パネルは本文の下）
   const p2 = await page.context().newPage();

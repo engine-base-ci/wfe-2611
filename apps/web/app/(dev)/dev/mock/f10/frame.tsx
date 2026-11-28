@@ -62,11 +62,14 @@ const WS_SCREEN = { members: "members", log: "audit", settings: "company-setting
 export function WsFrame({
   active,
   tail,
+  members,
   children,
   ...frame
 }: Omit<FrameProps, "screen" | "crumbs" | "children"> & {
   active: keyof typeof WS_LABEL;
   tail?: string;
+  /** 第 2 ナビの人数の札（メンバーの一覧だけが渡す） */
+  members?: number;
   children: ReactNode;
 }) {
   const crumbs: Crumb[] = [{ label: "ワークスペースの管理" }, { label: WS_LABEL[active] }];
@@ -75,7 +78,12 @@ export function WsFrame({
     <Frame {...frame} screen={tail ? "member-detail" : WS_SCREEN[active]} crumbs={crumbs}>
       <WsHead name="ENGINE BASE" initial="E" />
       <div className="k-me-wrap">
-        <WsSub members={7} active={active} enabled={["members", "rules", "log", "settings"]} />
+        {/* 人数の札はメンバーの一覧だけ（K-419 の重ならない数）。1 人の画面・記録・設定は並びを読まないので札を出さない（K-819・K-825・K-831 の本番と同じ） */}
+        <WsSub
+          {...(members !== undefined ? { members } : {})}
+          active={active}
+          enabled={["members", "rules", "log", "settings"]}
+        />
         {children}
       </div>
     </Frame>

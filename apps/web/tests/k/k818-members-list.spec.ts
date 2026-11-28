@@ -91,7 +91,11 @@ for (const [id, drive] of Object.entries(STATES)) {
           // モック（mb-*）は 3 つのグループとも開いた形。初めは営業だけが開く（K-710）ので、比べる前に受託開発・経理を開く
           await openGroup(page, "受託開発");
           await openGroup(page, "経理");
+          // 開いた経理まで頁が流れている。下絵は頁の上のまま読むので、頁の上に戻してから押す（小窓の y を同じ所から読む）
+          await page.evaluate(() => window.scrollTo(0, 0));
           await drive(page, mk);
+          // 押した行まで頁が流れることがある。小窓の y を下絵（頁の上）と同じ所から読むため、頁の上に戻してから読む
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         // 頭の「＋ グループ」（K-805）・「並びを替える」（K-806）はこの葉では押せない形（aria-disabled・不透明度 0.55）、
         //   下絵は押せる形（1）なので、頭のボタンの濃さと色は比べない（K-420 の INV_PAIRS と同じ訳）。数・大きさ・字は比べる。
@@ -130,7 +134,9 @@ test("K818-UI-002 /members を開くと並びの口を 1 回だけ読む（Stric
 }) => {
   const mk = await openList(page);
   expect(mk.count("members")).toBe(1);
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveAttribute("aria-current", "page");
 });
 
 test("K818-UI-003 並びの字：営業に 4 人（自分・経理も兼ねる・分身 動いている・PC 3 日つながっていない）・受託開発は閲覧のみ「分身なし（見るだけ）」・経理に招待中「招待中 ・ あと 6 日」。「知らせる」のボタンはどこにも無い", async ({
@@ -192,7 +198,8 @@ test("K818-UI-006 役割の ▾：押すと 管理者・マネージャー・メ
   await expect(items).toHaveCount(4);
   await expect(items).toContainText(["管理者", "マネージャー", "メンバー", "閲覧のみ"]);
   await expect(items.nth(2)).toContainText("✓");
-  await expect(page.getByText("ゲスト")).toHaveCount(0);
+  // 役割の ▾ の中にゲストが無い（見出しの下のタブ「ゲスト」は段 12 の K-874 が足した別の物なので、▾ の中だけを見る）
+  await expect(page.getByRole("menu").getByText("ゲスト")).toHaveCount(0);
   await page.keyboard.press("Escape");
   const self = roleBtn(page, "営業", "高本 聖斗");
   await expect(self).toHaveAttribute("aria-disabled", "true");
@@ -389,10 +396,17 @@ test("K818-UI-017 「⋯」の行き先：名前・担当しているチケッ�
   page,
 }) => {
   const mk = await openList(page);
+  // 行き先は通った道で見る：1 人の画面は ?do= を読むと小窓を開いて URL から外す（K-820・K-821）ので、今の URL だけでは間に合わないことがある
+  const seen: string[] = [];
+  page.on("framenavigated", (f) => {
+    if (f === page.mainFrame()) seen.push(f.url());
+  });
   const go = async (g: string, who: string, item: RegExp, want: string) => {
     await moreBtn(page, g, who).click();
     await pick(page, item);
-    await expect(page).toHaveURL(new RegExp(`${want.replace("?", "\\?")}$`));
+    const re = new RegExp(`${want.replace("?", "\\?")}$`);
+    await expect.poll(() => seen.some((u) => re.test(u))).toBe(true);
+    seen.length = 0;
     await page.goBack();
     await expect(page.locator(".k-f10m-group")).toHaveCount(3);
   };
@@ -404,7 +418,8 @@ test("K818-UI-017 「⋯」の行き先：名前・担当しているチケッ�
   await go("営業", "鈴木 一郎", /ワークスペースから外す/, `${base}?do=remove`);
   await row(page, "営業", "鈴木 一郎").getByRole("link", { name: "鈴木 一郎" }).click();
   await expect(page).toHaveURL(new RegExp(`${base}$`));
-  expect(mk.calls.filter((c) => !["members", "getMember", "security"].includes(c.op))).toEqual([]);
+  // 読む口は数えない：?do=remove で開く外す小窓は、引き継ぐチケットの下見（読むだけ・K-822 の preview）を読む
+  expect(mk.calls.filter((c) => !["members", "getMember", "security", "preview"].includes(c.op))).toEqual([]);
 });
 
 // ---------------------------------------------------------------- 権限・上の 1 行・幅
@@ -415,7 +430,9 @@ test("K818-UI-018 権限が無い人（閲覧のみ）が直に開く：「こ�
   const mk = await mockApi(page);
   await openAt(page, viewer.token, PATH);
   await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveCount(0);
   await expect(page.locator(".k-f10m-group")).toHaveCount(0);
   expect(mk.count("members")).toBe(0);
 });

@@ -69,7 +69,8 @@ const DRIVES: Record<string, (page: Page) => Promise<HMock | void>> = {
     await expect(page.locator(BAND)).toBeVisible();
   },
   "uh-stopped": async (page) => {
-    await mockHelp(page, { status: withBands(STOPPED) });
+    // 下絵の止めた理由（運営が選ぶ理由の字「規約に反する」・K-943）と同じ字で開く。長い理由の出方は K1008-UI-003 が見る
+    await mockHelp(page, { status: withBands({ ...STOPPED, title: "規約に反する" }) });
     await openAt(page, "/tickets", page.viewportSize()!.width);
     await expect(
       page.getByRole("heading", { name: "このワークスペースは止められています", level: 1, exact: true }),

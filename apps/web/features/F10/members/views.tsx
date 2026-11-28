@@ -55,13 +55,13 @@ interface InviteActs {
   busyId?: string | null | undefined;
 }
 
-/** 上の 1 行：気づいてほしいことを知らせるだけ（催促のボタンは持たない・D-154.1） */
+/** 上の 1 行：気づいてほしいことを知らせるだけ（催促のボタンは持たない・D-154.1）。名前は姓と名（K-818 の上の 1 行・K818-UI-019） */
 function Notice() {
   return (
     <Band
       tone="wait"
-      title="田中さんの PC が 3 日つながっていません"
-      sub="田中さんの分身は止まっています ・ 招待中 1 人（kimura@…）"
+      title="田中 美咲さんの PC が 3 日つながっていません"
+      sub="田中 美咲さんの分身は止まっています ・ 招待中 1 人（kimura@…）"
     />
   );
 }

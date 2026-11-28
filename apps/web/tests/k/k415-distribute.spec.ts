@@ -661,7 +661,9 @@ test("K415-UI-021 時間の流れ：「自分が持つ」がもう決まって�
   queueAfterClaim(api, h);
   await openQueue(page);
   await groupRowOf(page).getByRole("button", { name: "自分が持つ", exact: true }).click();
-  await expect(page.getByRole("alert").filter({ hasText: msg(E.taken) })).toBeVisible();
+  await expect(
+    page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: msg(E.taken) }),
+  ).toBeVisible();
   await expect(groupRowOf(page)).toHaveCount(0);
 });
 

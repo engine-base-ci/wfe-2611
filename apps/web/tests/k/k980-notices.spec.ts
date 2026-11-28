@@ -104,11 +104,11 @@ test.describe("K-980 一覧", () => {
     const m = await open(page, baseURL);
     await chip(page, "障害").click();
     await page.waitForURL((u) => u.search === "?kind=incident");
-    expect(m.listQueries.at(-1)!.toString()).toBe("kind=incident");
+    await expect.poll(() => m.listQueries.at(-1)?.toString()).toBe("kind=incident");
     await expect(chip(page, "障害")).toHaveAttribute("aria-pressed", "true");
     await chip(page, "下書き").click();
     await page.waitForURL((u) => u.search === "?state=draft");
-    expect(m.listQueries.at(-1)!.toString()).toBe("state=draft");
+    await expect.poll(() => m.listQueries.at(-1)?.toString()).toBe("state=draft");
     await page.goBack();
     await page.waitForURL((u) => u.search === "?kind=incident");
   });
