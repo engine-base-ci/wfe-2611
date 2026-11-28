@@ -1,0 +1,27 @@
+{
+ "ops": {
+  "revokeMyDevice": {
+   "file": "apps/api/test/features/F3/remove-pc.test.ts",
+   "reason": "PC はアカウントのもので、持ち主は口と DB の関数の 2 重で確かめる（D-128.166）。生成の試験の種では PC の引き取り（接続コード）・取り直しの時刻・別のワークスペースの自分・他の人の PC・受け取った仕事を作れない（K-362）",
+   "covers": {
+    "test_delete_bridge_devices_id_ok": "K362-API-001",
+    "test_delete_bridge_devices_id_rejected_401": "K362-API-015",
+    "test_delete_bridge_devices_id_rejected_403": "K362-API-002",
+    "test_delete_bridge_devices_id_not_found": "K362-API-005",
+    "test_delete_bridge_devices_id_rejected_422": "K362-API-016",
+    "test_delete_bridge_devices_id_rate_limited": "K362-API-021",
+    "test_delete_bridge_devices_id_upstream_failed": "K362-API-023",
+    "test_delete_bridge_devices_id_terms_pending": "K362-API-022",
+    "test_delete_bridge_devices_id_mfa_pending": {
+     "file": "apps/api/test/features/contract/k144.d/K-362.ts",
+     "mark": "K144-API-072"
+    },
+    "test_delete_bridge_devices_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_bridge_devices_id_shape": "K362-API-001"
+   }
+  }
+ }
+}
