@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { DocTools, PageBody, Prose, Shell, Toaster } from "@/components/k";
 import { DetailTitle, InertButton, StagePill } from "@/features/F4/create-ticket/detail-head";
 import "@/features/F4/create-ticket/ticket-detail.css";
+import "@/features/F4/create-ticket/create-ticket.css";
 import "@/features/F5/more/more.css";
 import { RoomHead, type RoomTab } from "@/features/F5/room/head";
 import { AiPanelTabs, TicketMobileBar } from "@/features/F5/room/ticket-talk";
@@ -174,7 +175,8 @@ export function CreatePage({ theme, ps, children }: { theme: Theme; ps: ProductS
         bridgeConnected={connected(ps)}
         theme={theme}
       >
-        <PageBody labelledBy="create-ticket-title">{children}</PageBody>
+        {/* 本番の作る面と同じ器（K-442 の作る面 v2・頁の左右の余白は面が持つ） */}
+        <div className="k-root k-create-page">{children}</div>
       </Shell>
     </Toaster>
   );

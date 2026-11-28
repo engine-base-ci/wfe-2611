@@ -1002,7 +1002,9 @@
     min-width: 0;
   }
   /* 題は「…」で切らずに折り返して全文を出す */
-  .k-room-chat-title > b {
+  /* 作る画面の会話の題は見出し（h2・K767-UI-020）。部屋と詳細の右のパネルは b のまま */
+  .k-room-chat-title > :is(b, h2) {
+    margin: 0;
     overflow-wrap: anywhere;
     font-size: var(--k-text-body-md);
     line-height: var(--k-lh-body-md);

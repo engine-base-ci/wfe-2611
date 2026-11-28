@@ -283,7 +283,7 @@ export function CreateChat({
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <div className="k-room-chat-title">
-          <b>{`${name}と話して作る`}</b>
+          <h2>{`${name}と話して作る`}</h2>
           <span>案は左の欄に入ります。欄は自分で直せます</span>
         </div>
       </div>
@@ -333,14 +333,66 @@ export function CreateChat({
 }
 
 /** 作る画面の本体：左に欄・右に会話。mview はスマホでどちらの画面を出すか */
+/** 作る面 v2（K-442）の頭：本番の CreateHead と同じ並び（作り方は「AI と話して作る」が今） */
+export function CreateHeadV2() {
+  return (
+    <header className="k-page-head k-create-head">
+      <h1 id="create-ticket-title" title="チケットを作る">
+        チケットを作る
+      </h1>
+      <span className="k-create-how" aria-label="作り方">
+        <button type="button">自分で書く</button>
+        <button type="button" aria-current="true">
+          AI と話して作る
+        </button>
+        <span role="button" tabIndex={0} aria-haspopup="dialog">
+          過去のチケットから複製
+        </span>
+      </span>
+      <span className="k-create-saved" role="status" aria-label="下書きの保存" />
+      <div className="k-f4d-head-acts">
+        <Button variant="outlined">下書きのまま閉じる</Button>
+        <Button>作る</Button>
+      </div>
+    </header>
+  );
+}
+
 export function CreateTalk({
   values,
   name,
   mview = "chat",
   entry = false,
   saved,
+  form,
   ...chat
-}: { values: CreateValues; name: string; mview?: "form" | "chat"; entry?: boolean; saved?: string } & ChatSideProps) {
+}: {
+  values: CreateValues;
+  name: string;
+  mview?: "form" | "chat";
+  entry?: boolean;
+  saved?: string;
+  /** 作る面 v2（K-442）の左の欄。渡すと頭を外に出し、左は本番と同じ並び（［AI と話して作る］の入口＋作る面の欄）にする */
+  form?: ReactNode;
+} & ChatSideProps) {
+  if (form)
+    return (
+      <>
+        <CreateHeadV2 />
+        <div className="k-room-ct" data-mview={mview}>
+          <div className="k-room-ct-form">
+            <button type="button" className="k-room-cf-ask">
+              <Sparkles size={16} aria-hidden="true" />
+              AI と話して作る
+            </button>
+            <section className="k-create-wrap" aria-label="チケットを作る">
+              {form}
+            </section>
+          </div>
+          <CreateChat name={name} {...chat} />
+        </div>
+      </>
+    );
   return (
     <div className="k-room-ct" data-mview={mview}>
       <div className="k-room-ct-form">

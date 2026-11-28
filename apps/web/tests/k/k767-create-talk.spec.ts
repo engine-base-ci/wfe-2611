@@ -41,7 +41,8 @@ test("K767-UI-001 入口：作り方の「AI と話して作る」が押せる�
   await expect(howAi(page)).not.toHaveAttribute("aria-disabled", "true");
   await howAi(page).click();
   await expect(howAi(page)).toHaveAttribute("aria-current", "true");
-  await expect(chatSide(page).locator(".k-room-chat-title b")).toHaveText("高本のAIと話して作る");
+  // 題は見出し h2（PM の決め 2026-11-28・K767-UI-020）
+  await expect(chatSide(page).locator(".k-room-chat-title h2")).toHaveText("高本のAIと話して作る");
   await expect
     .poll(async () => (await chatSide(page).locator(".k-room-empty h2").textContent())?.replace(/⁠/g, ""))
     .toBe("何を作りたいか、話しかけてください");
@@ -384,11 +385,22 @@ async function match(
 ) {
   const bad: string[] = [];
   for (const w of widths) {
-    const r = await matchMock(browser, id, w, (pg) => drive(pg, w), {
-      pairs: CC_PAIRS,
-      base: "/dev/mock/f5",
-      skip: SKIP,
-    });
+    // 試験の準備：openCreate は窓の高さを 900 にする。下絵を開いた窓と同じ高さ（stage2-match の vp・375 は 812）に戻してから比べる（期待は変えない）
+    const vh = w === 375 ? 812 : 900;
+    const r = await matchMock(
+      browser,
+      id,
+      w,
+      async (pg) => {
+        await drive(pg, w);
+        await pg.setViewportSize({ width: w, height: vh });
+      },
+      {
+        pairs: CC_PAIRS,
+        base: "/dev/mock/f5",
+        skip: SKIP,
+      },
+    );
     bad.push(...r.bad);
   }
   expect(bad, bad.join("\n")).toEqual([]);
@@ -503,10 +515,11 @@ test("K767-UI-020 下絵との突き合わせ：create-talk-mobile（375 の会�
     who: "ai",
     at: at(0, "10:40"),
     text: "",
+    // 案の中身は下絵 create-talk-mobile と同じ（本文の先頭・確認項目 3 件。前は 1 件で案の行の高さが下絵と違った）
     proposal: {
       title: "セイコー様へ 12 月分の作業報告書を送る",
-      body: "11 月分と同じ形で…",
-      checks: ["作業時間の合計が稼働記録と同じ"],
+      body: "11 月分と同じ形で 12 月分の作業報告書を作り、PDF で山田様にメールで送る",
+      checks: ["作業時間の合計が稼働記録と同じ", "宛名が山田様になっている", "12/26 までに送っている"],
     },
   });
   await match(

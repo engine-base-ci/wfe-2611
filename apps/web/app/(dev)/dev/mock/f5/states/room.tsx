@@ -15,6 +15,7 @@ import {
   RoomOverview,
   TalkEntry,
 } from "@/features/F5/room/overview";
+import { CreateForm } from "@/features/F4/doc/views";
 import { CreateTalk, EMPTY_VALUES, type CreateValues } from "@/features/F5/room/create-talk";
 import { TalkBody, TalkNotice } from "@/features/F5/room/talk";
 import { AiPanel, RunningBandTalk } from "@/features/F5/room/ticket-talk";
@@ -77,9 +78,19 @@ function ct(
   rest: CtRest = {},
   ps: "PS0" | "PS2" = "PS2",
 ): ReactNode {
+  // 左は K-442 の作る面 v2（本番と同じ並び・PM の決め 2026-11-28）。欄の字は下絵の値（題名・確認項目）、本文は書いてあれば自由な 1 枚・無ければ種別のひな形
+  const form = (
+    <CreateForm
+      head={<></>}
+      titleValue={values.title}
+      body={values.body ? "free" : "template"}
+      specs={values.checks.map((text) => ({ text }))}
+      customSlot={<></>} // 会社の項目は持たない種別（K-767 の会話の状態は会社の項目を使わない）
+    />
+  );
   return (
     <CreatePage theme={theme} ps={ps}>
-      <CreateTalk values={values} name={`${ME}のAI`} entries={entries} composer={composer} {...rest} />
+      <CreateTalk values={values} name={`${ME}のAI`} entries={entries} composer={composer} form={form} {...rest} />
     </CreatePage>
   );
 }
@@ -109,6 +120,7 @@ function view(id: string, theme: Theme): ReactNode {
         CT_ERROR,
         { text: "セイコー様に 12 月分の作業報告書を年内に送りたい。形は 11 月と同じ" },
         {
+          starters: STARTERS, // 会話がまだ無いので、本番と同じく話しかける例も出る
           notice: (
             <TalkNotice tone="danger" title="答えを返せませんでした">
               もう一度送れます。左の欄に書いた物は消えていません

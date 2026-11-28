@@ -251,6 +251,7 @@ const ITEMS_NEW = [
 const PROPOSAL = { mode: "open", items: ITEMS_NEW } as const;
 
 export const CT_PROPOSAL: readonly Entry[] = [
+  DAY, // 本番と同じく今日の会話の上に日の区切り（K-762 の会話の決まり）
   CT_ME,
   {
     kind: "msg",
@@ -264,7 +265,7 @@ export const CT_PROPOSAL: readonly Entry[] = [
   { kind: "proposal", proposal: PROPOSAL },
 ];
 export const CT_SELECT: readonly Entry[] = [
-  ...CT_PROPOSAL.slice(0, 2),
+  ...CT_PROPOSAL.slice(0, 3), // 日の区切り・人の言葉・AI の返事
   {
     kind: "proposal",
     proposal: {
@@ -278,7 +279,7 @@ export const CT_SELECT: readonly Entry[] = [
   },
 ];
 export const CT_APPLIED_ALL: readonly Entry[] = [
-  ...CT_PROPOSAL.slice(0, 2),
+  ...CT_PROPOSAL.slice(0, 3), // 日の区切り・人の言葉・AI の返事
   { kind: "proposal", proposal: { mode: "all", items: ITEMS_NEW.map((i) => ({ ...i, result: "in" as const })) } },
   {
     kind: "msg",
@@ -291,7 +292,7 @@ export const CT_APPLIED_ALL: readonly Entry[] = [
   },
 ];
 export const CT_APPLIED_SOME: readonly Entry[] = [
-  ...CT_PROPOSAL.slice(0, 2),
+  ...CT_PROPOSAL.slice(0, 3), // 日の区切り・人の言葉・AI の返事
   {
     kind: "proposal",
     proposal: {
@@ -336,10 +337,12 @@ export const CT_EDITED: readonly Entry[] = [
   },
 ];
 export const CT_THINKING: readonly Entry[] = [
+  DAY, // 本番と同じく今日の会話の上に日の区切り（K-762 の会話の決まり）
   CT_ME,
   { kind: "work", text: "考えています…（EG-098 11 月分を見ています）" },
 ];
 export const CT_WRITING: readonly Entry[] = [
+  DAY, // 本番と同じく今日の会話の上に日の区切り（K-762 の会話の決まり）
   CT_ME,
   {
     kind: "stream",
