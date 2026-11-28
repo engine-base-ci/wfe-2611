@@ -1,0 +1,232 @@
+// 行に結ぶ言葉の確かめ（K-15・ZT4・D-128.88・D-128.115）。契約の生成（contract.mjs）が読み、ENDPOINTS の perm.row に出す。
+//   入口（apps/api/src/contract/op.ts の 4.1）は、:id の行を行の守り（RLS）の中で読み、
+//     見えなければ 404（無いのと同じ）・見えても下の条件に合わなければ 403。
+//   条件は SQL の式で、:id の表の行の列をそのまま書く（`select (式) from 表 where id = $1` で確かめる）。
+//   app.user_id() が呼んだ人。app.manages_scope(グループ) は、そのグループ（か上のグループ）のマネージャーか管理者（0082）。
+//   ★ここに無い組み合わせは契約の生成で赤になる（行に結ぶ口は全部、どの表のどの列で確かめるかを持つ）。
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+export const ROW_WORDS = ["self", "read", "write", "assignee", "approver", "recipient", "manager"];
+
+/** path の :id が指す表（path の :id の前の段）。段の名前が表の名前と違うものだけ書く */
+export const ID_TABLE = {
+  "/api/v1/bridge/devices": "sessions",
+  "/api/v1/me/sessions": "sessions",
+  "/api/v1/me/workspaces": "tenant_memberships",
+  "/api/v1/exports": "export_jobs",
+  "/api/v1/ticket_draft_conversations": "conversations",
+};
+/** 入口で行を読まない口（理由が必須）。認証の側の表など、public の表に無いもの */
+export const ROW_EXEMPT = {
+  "/api/v1/me/passkeys": "パスキーは認証の側の表（auth スキーマ・D-128.119）。本人の分だけを認証の仕組みが引く。入口は役（member）と本人確認の取り直しまで",
+  "/api/v1/bridge/devices":
+    "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
+};
+/** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
+ *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
+export const ROW_EXEMPT_FIELDS = {
+  withdrawKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  dismissKnowledgeRequest: {
+    id: "ナレッジの頼みの見える・取り下げられる・帯を消せるは、口が DB の関数 app.kn_request_visible（見えなければ 404）・app.kn_request_end（頼んだ人でなければ 403）で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの 43 本の試験が動くので、入口では行を読まない（K-687）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  approveKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  declineKnowledgeRequest: {
+    id: "ナレッジの頼みの承認・断りは、口が DB の関数 app.kn_request_visible（見えなければ 404）と app.kn_request_decide（決める人でなければ 403・決めた後なら 409）で 1 つの取引の中で決める。表 knowledge_requests を packages/db/src/repository.ts の TABLES に足すと前からの試験が動くので、入口では行を読まない（K-688・K-687 と同じ形）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  updateKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  deleteKnowledgeFolder: {
+    id: "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）。道ごとではなく、:id を持つ 2 本の口の欄を名指しして外す（権限の試験 G41 の除外は欄の名指しだけを読む）",
+  },
+  switchWorkspace: {
+    id: "道の :id は行き先のワークスペース（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は抜ける口 leaveWorkspace の物）。入口の行の確かめを行の守りの中で読むと、今いない会社の id はどれも 404 になり切り替えられない。行き先が同じログインの有効な人の会社かの確かめは DB の関数 app.me_switch_workspace（tenant_memberships.auth_user_id・status・members・tenants）と契約の uuid の確かめが持つ（K-851）",
+  },
+  leaveWorkspace: {
+    id: "道の :id は抜ける会社（tenants の id）で、tenant_memberships の行の id ではない（/api/v1/me/workspaces の :id の表の対応は表の名前のためだけ）。入口の行の確かめを行の守りの中で読むと、どの会社の id も行が見つからず 404 になり抜けられない。入っていない・抜けた・無い・別の人の会社を同じ 404 にするのは DB の関数 app.me_leave（app.me_rows・同じログインの行）と契約の uuid の確かめが持つ（K-838・統合の枝の直し）",
+  },
+  revokeMySession: {
+    id: "端末はアカウントのもの（D-128.156・K-836）。同じログインの全部のワークスペースの端末を切るので、行の守り（sessions_tenant_read＝今のワークスペースの行だけ）の中で読むと、別のワークスペースに結んだ自分の端末が 404・同じワークスペースのほかの人の端末が 403 になる（口の決めはどちらも 404）。持ち主の確かめは DB の関数 app.me_session_revoke（account_members と for update）と契約の uuid の確かめが持つ",
+  },
+  markNoticeRead: {
+    id: "運営のお知らせの行は運営だけが読める（行の守り notices_ops_all）ので、入口が行の守りの中で :id を読むと会社の人にはどのお知らせも無い（404・NOT_FOUND）になる。見える（届け先・出したか・管理者だけ）は口が DB の関数 app.member_notice_read（app.notice_for_member → app.notice_for_tenant の 1 か所）で決め、見えなければ 404 E-PAGE-001・何も書かない（K-954）",
+  },
+  deleteTicketLink: {
+    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
+  },
+  updateGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
+  deleteGuestGroup: {
+    id: "ゲストのグループの行は、この会社で members の view を持つ人にしか見えない（読む守り・K-876）ので、入口の行の確かめでは、別の会社・知らない id が 404・NOT_FOUND になり（決めは 404・E-GST-001）、view を持たない人が 403 でなく 404 になる。権限の判定（403）と、無い・消した・別の会社・知らない id（404・E-GST-001）は security definer の DB の関数 app.guest_group_rename・app.guest_group_delete が持つ（権限を先に見るので在るかは漏らさない）。この欄の守りはその関数と契約の uuid の確かめの 1 層になる（K-927）",
+  },
+  restoreTicketItems: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと無い id と同じ 404・NOT_FOUND になり、決めの「消したチケットは 404・E-PAGE-001」（K576-API-013）が成り立たない。この欄の守り（無い・別の会社・見えないは NOT_FOUND・消したは E-PAGE-001・書けない人は 403）は DB の関数 app.ticket_item_restore（ticket_visible・ticket_writable）と契約の uuid の確かめが持つ（PM の決め 2026-11-28）",
+  },
+  restoreTicket: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
+  },
+  readNotification: {
+    id: "知らせは自分宛ての物だけ（D-151.3）。入口の行の確かめは、別の人の行を 404（NOT_FOUND）、行の守りを緩めたときに 403 と答え、口の 404（E-NTF-010・一覧に出ない行も同じ答え）とずれる。持ち主の確かめは口の文（VISIBLE_SQL の member_id = app.user_id()）と行の守り（notifications_self_read・notifications_self_only_write_*）の 2 重で、外れた行はどれも同じ 404・E-NTF-010（K-462）",
+  },
+  getClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_get（K-892） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  updateClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_set_route（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  replyToClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_reply（K-893） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  acceptClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_accept（K-894） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  declineClientRequest: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_decline（K-895） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+  requestClientRequestDraft: {
+    id: "届いた依頼（ゲストのグループの依頼・K-892）の見える・直せるは、届け先のグループと会社全体の edit で決まり、DB の関数 app.client_request_visible・app.client_request_actable が唯一の正本（口は app.client_request_draft_enqueue（K-896） の 1 取引の中で確かめ、見えない・無い・消した・別の会社・前の取引先の形は 404・E-GST-100）。入口の行の確かめを当てると、write の式は前の取引先の形の方針（client_visible）で届け先の人を 403 にし、read の式は見えない依頼を汎用の 404（NOT_FOUND）にして E-GST-100 を奪う（K-892 の「perm.row は付けない・見える判定は関数が持つ」）。この欄の守りはその関数と表の行の守り（client_requests_staff_guest_read・update）と契約の uuid の確かめが持つ（統合の枝の直し X11）",
+  },
+};
+const exemptField = (op, field) => {
+  const why = ROW_EXEMPT_FIELDS[op]?.[field];
+  return typeof why === "string" && why.trim() !== "";
+};
+
+const ME = "app.user_id()";
+const TICKET_PEOPLE = (t) => `(${t}.assignee_member_id = ${ME} or ${t}.created_by = ${ME} or app.manages_scope(${t}.scope_id))`;
+const VIA_TICKET = (col = "ticket_id") => `exists (select 1 from tickets t where t.id = ${col} and ${TICKET_PEOPLE("t")})`;
+
+/** 言葉 → :id の表 → 条件。read は「行が見える」だけ（RLS の select がそのまま守り） */
+export const RULES = {
+  self: {
+    artifact_versions: `owner_member_id = ${ME}`,
+    artifacts: `owner_member_id = ${ME}`,
+    sessions: `member_id = ${ME}`,
+    conversations: `owner_member_id = ${ME}`,
+    credentials: `owner_member_id = ${ME}`,
+    export_jobs: `requested_by = ${ME}`,
+    inquiries: `opened_by_member_id = ${ME}`,
+    tenant_memberships: `member_id = ${ME}`,
+    // 会話の中の発言から作る：自分の会話の発言だけ
+    messages: `exists (select 1 from conversations c where c.id = conversation_id and c.owner_member_id = ${ME})`,
+    notifications: `member_id = ${ME}`,
+    // 保存した見方：作った人とマネージャー（D-128.119）
+    saved_views: `(member_id = ${ME} or app.manages_scope(scope_id))`,
+    ticket_imports: `uploaded_by = ${ME}`,
+    ticket_messages: `author_member_id = ${ME}`,
+    policies: `created_by = ${ME}`,
+    skills: `owner_member_id = ${ME}`,
+    // お知らせを読んだ印は自分の分（お知らせ自体は会社の全員が読める）
+    notices: `true`,
+  },
+  read: {},
+  write: {
+    tickets: `app.ticket_writable(id)`,
+    // 消したページは入口を通し、口が deleted_at is null つきの読みで 404 にする（入口で 403 にすると「消した → 404」が口に届かない・K-675）
+    knowledge_pages: `(deleted_at is not null or app.kpage_writable(id))`,
+    // 残りは 07_functional/entities.json の update の条件をそのまま使う（RLS と同じ式）
+  },
+  assignee: {
+    // 担当者・作成者・マネージャー。戻すは消した本人も（D-128.84）
+    tickets: `(${TICKET_PEOPLE("tickets")} or deleted_by = ${ME})`,
+    // 実行：始めた人・そのグループのマネージャー・その実行の承認のチケットの担当者
+    action_runs: `(created_by = ${ME} or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = ${ME}))`,
+  },
+  approver: {
+    approvals: `approver_member_id = ${ME}`,
+    // ③ 人の確認：そのチケットの承認を割り当てられた人
+    checks: `exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = ${ME} and a.deleted_at is null)`,
+  },
+  recipient: {
+    ticket_handovers: `to_member_id = ${ME}`,
+  },
+  manager: {},
+};
+/** 口ごとに言葉の中の人が違うもの（screen_api.py の範囲の説明） */
+export const OP_RULES = {
+  // 承認する人・今の担当者・マネージャー・チケットの作った人・AI に任せた人（requested_by）。担当者とマネージャーは読むだけ（K-161・D-131）
+  getApproval: `(approver_member_id = ${ME} or requested_by = ${ME} or app.ticket_assignee_is_me(ticket_id) or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
+  // 承認する人＝そのチケットの今の担当者だけ（K-162・D-128.25・D-128.138）。RULES.approver は替えない（ほかの口に効かせない）。
+  //   関数 app.approval_decide も中で同じ判定をする（守りは 2 層）
+  approveApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 差し戻す人も承認する人と同じ（今の担当者だけ・K-163）
+  returnApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 承認する人＝今の担当者だけ（K-732・D-153.26）。DB の関数 app.approval_stop も同じ判定をする
+  stopApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認する人＝今の担当者だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_self_edit と口が持つ（K-742・守りは 2 層）
+  editApproval: `app.ticket_assignee_is_me(ticket_id)`,
+  // 入口は承認した本人だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_withdraw と口が持つ（K-733・守りは 2 層）
+  withdrawApproval: `approver_member_id = ${ME}`,
+  // 預けたログイン情報の上書き・消す：入口は「行が見える」だけ（個人は持ち主・ワークスペースは会社の全員・RLS の select）。
+  //   ワークスペースの物を別の管理者が直す・消すので持ち主で絞らない。edit の判定（403・E-CRED-007）と、消した物・失効しただけの物の 404 は
+  //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
+  updateCredential: `true`,
+  deleteCredential: `true`,
+  // 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（K-401・D-148.17）。
+  //   状態は見ない（決まった渡しに答えた人には 403 でなく 409・E-HND-005 を口が返す）。RULES.recipient は替えない（ほかの口に効かせない）。
+  //   関数 app.handover_answer_gate も中で同じ判定をする（守りは 2 層）
+  answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 段9:K-406 取り消す・催促するの行はこの下
+  // 渡した人だけ（申し出は申し出た人・配るは配った人・K-406）。状態は見ない（決まった渡しは口が 409 にする）。関数 app.handover_withdraw・app.handover_remind も中で同じ判定をする（守りは 2 層）
+  withdrawTicketHandover: `from_member_id = ${ME}`,
+  remindTicketHandover: `from_member_id = ${ME}`,
+
+  // 段9:K-410 人を決めるの行はこの下
+  //   人を決める（グループ宛ての渡しの答える人が、グループの人を担当者に決める）。式は answerTicketHandover と同じ。関数 app.handover_claim も中で同じ判定をする（守りは 2 層）
+  claimTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
+  //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
+  takeoverActionRun: `true`,
+  // 動いている AI の実行を止める：入口は「その実行が見える」だけ。担当者かの判定（403・E-RUN-001）と、消した・無い（404）は
+  //   DB の関数 app.run_stop と口（features/F5/stop/run-stop.ts）が持つ（K-731・K-485 の takeoverActionRun と同じ作り）
+  stopActionRun: `true`,
+  // 試し打ち：入口は見えるだけ。担当者かの判定（403）・状態（409）・消した・無い（404）は
+  //   DB の関数 app.ticket_dry_run と口（features/F5/more/dry-run.ts）が持つ（K-746・K-731 の stopActionRun と同じ作り）
+  dryRunTicket: `true`,
+  // まとめて承認：入口は見えるだけ。承認する人か・今の状態・書けるかの判定は DB の関数 app.approval_decide が 1 件ずつ持つ。
+  //   まとめて承認は 1 件ずつの守りと同じ（K-768・D-153.11）。確かめの読み（app.approval_bulk_scan）も自分が承認する物だけを数える
+  previewBulkApproval: `true`,
+  bulkApprove: `true`,
+  // チケットを消す・消す前の下見：入口は「そのチケットが見える」だけ（行が見える＝tickets の行の守り・消した物は見えない）。
+  //   作った人か、そのグループで tickets の edit を持つ人か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）。
+  //   入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文（E-DEL-001）も入口の汎用の 403 に奪われる。
+  //   deleteTicket の行は K-488 の口が入るまで 501 が先に返る
+  previewTicketDelete: `true`,
+  deleteTicket: `true`,
+};
+
+let ENT = null;
+function updatePredicate(root, table) {
+  if (!ENT) {
+    const p = join(root, "07_functional/entities.json");
+    const d = existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : [];
+    ENT = new Map((Array.isArray(d) ? d : d.entities ?? []).map((x) => [x.name, x]));
+  }
+  const pol = (ENT.get(table)?.access_control_policies ?? []).find((x) => String(x.operation).split(",").map((o) => o.trim()).includes("update") && (x.role ?? "member") === "member");
+  return pol?.predicate ?? null;
+}
+
+/** 口 1 本の行の確かめ。null＝行を読まない（:id が無い・言葉が行に結ばない）。{error} は契約の生成で赤 */
+export function rowOf(root, e, word) {
+  if (!ROW_WORDS.includes(word)) return null;
+  const m = /^(.*?)\/:id(\/|$)/.exec(e.path);
+  if (!m) return null; // 一覧・作る：行の守り（RLS）が絞る。作る先の確かめは RLS の insert
+  if (exemptField(e.operationId, "id")) return null; // 欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS）
+  const base = m[1];
+  if (ROW_EXEMPT[base]) return null;
+  const table = ID_TABLE[base] ?? base.split("/").pop();
+  if (word === "read") return { table, sql: "true" };
+  const sql = OP_RULES[e.operationId] ?? RULES[word]?.[table] ?? (word === "write" ? updatePredicate(root, table) : null);
+  if (!sql) return { error: `${e.method} ${e.path}（${e.operationId}）：言葉 ${word} を表 ${table} のどの列で確かめるかが無い（scripts/ci/row_rules.mjs）` };
+  return { table, sql };
+}
+
+export const rulesSource = (root) => readFileSync(join(root, "scripts/ci/row_rules.mjs"), "utf8");

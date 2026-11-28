@@ -1,0 +1,142 @@
+{
+  "version": "v3.4",
+  "project": "Kaname",
+  "created_at": "2026-09-08",
+  "decision_record_skill_handoff": "decision-record スキルへ各ADRの起票を委譲する",
+  "foundation_phase_required_adrs": [
+    {
+      "id": "ADR-001",
+      "title": "認証をBetter Authにし、RLSをcurrent_setting()で書く",
+      "category": "authentication",
+      "task_id": "T-F-04",
+      "rationale": "auth.uid()を使うとDB層までSupabaseに固定され、後で移行できなくなる",
+      "alternatives_considered": [
+        "Supabase Auth（速いが移行不能）",
+        "Clerk（Supabase公式のthird-party auth対応だが有償・外部依存が増える）",
+        "Cognito（AWS移行時に残るがDXが低い）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-002",
+      "title": "動的台帳をJSONBハイブリッドで作り、実DDLを採らない",
+      "category": "data-model",
+      "task_id": "T-F-06",
+      "rationale": "実DDLはRLSの動的生成が必要で、1つ漏れたらテナント越え。65社×5型=325テーブルでカタログ肥大",
+      "alternatives_considered": [
+        "実DDL（Teable/NocoDB/Baserow方式・高速だがRLS動的生成が危険）",
+        "EAV（JSONBより1.3倍遅い）",
+        "Salesforce型flexカラム（ピボット索引の実装が重い）"
+      ],
+      "slice": "S1"
+    },
+    {
+      "id": "ADR-003",
+      "title": "関門（choke points）8本で横断的関心事を守る",
+      "category": "architecture",
+      "task_id": "T-F-11",
+      "rationale": "拡張点の列挙で守ると、列挙漏れで横断的関心事が漏れる。外界と接する面は有限なので、そこを塞げば列挙漏れが事故にならない",
+      "alternatives_considered": [
+        "拡張点の列挙で守る（3回聞かれて3回とも抜けが出た）",
+        "レビューで守る（人の注意力に依存）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-004",
+      "title": "縦切り（垂直スライス）で開発し、レイヤー横切りを採らない",
+      "category": "process",
+      "task_id": "T-F-01",
+      "rationale": "横切りは全体の60〜70%完了まで誰も触れない。旧jobrainはWave5まで画面が無く、画面QA全PASSでも業務が回らなかった",
+      "alternatives_considered": [
+        "レイヤー横切り（並列度は高いが実装者1人では意味が無い）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-005",
+      "title": "staging をdev用Supabaseプロジェクトで作り、実データで確認する",
+      "category": "environment",
+      "task_id": "T-F-08",
+      "rationale": "段階1の合格条件が「高本さん自身の受託業務が実際に回る」ため、seedでは判定できない",
+      "alternatives_considered": [
+        "本番プロジェクト内の別スキーマ（分離が弱い）",
+        "ローカルDockerのみ（本番でだけ壊れるを防げない）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-006",
+      "title": "Bridge を主経路とし、サーバー経路も同等のMustとして持つ",
+      "category": "execution",
+      "task_id": "T-F-12",
+      "rationale": "Bridgeは本人のブラウザ・IP・ログイン済みセッションで動くため認証もBot検知もCAPTCHAも構造的に起きない。ただしBridgeを入れない顧客・BYOK・運営マネージド・常時稼働の4場面でサーバー経路が必須",
+      "alternatives_considered": [
+        "サーバー経路のみ（CAPTCHA頻発・アカウント凍結リスク）",
+        "Bridgeのみ（PCが落ちていると動かない）"
+      ],
+      "slice": "S4"
+    },
+    {
+      "id": "ADR-007",
+      "title": "中核をTypeScript単一にし、Pythonは取り込みサービス1つに隔離する",
+      "category": "language",
+      "task_id": "T-F-02",
+      "rationale": "Bridge(Electron)とフロント(Next.js)がTS固定。中核をTSに寄せると型が端から端まで通り、スキーマ変更で壊れる場所が全部コンパイルエラーで出る",
+      "alternatives_considered": [
+        "TS+Python（Atelier方式・型がまたがりdriftする）",
+        "Python単一（Bridgeとフロントで不可能）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-008",
+      "title": "命名規約とテーブル設計原則を固定する",
+      "category": "naming",
+      "task_id": "T-F-04",
+      "rationale": "後から変えるのが地獄な項目（tenant_id / scope / 監査列 / enum不使用 / UUID v7 / 中間テーブルを足せる形）を最初から入れる",
+      "alternatives_considered": [
+        "都度判断（1人でも半年後に揺れる）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-009",
+      "title": "Bridgeのコード署名を取得し、自動更新を持つ",
+      "category": "distribution",
+      "task_id": "T-F-12",
+      "rationale": "未署名だとGatekeeper/SmartScreenがブロックし情シスが止める。自動更新が無いと古いBridgeがサーバーAPIと不整合で壊れる",
+      "cost": "年額 約6〜9万円（Apple $99 + Windows EV $299〜499）",
+      "note": "Windows EVは法人実在確認に数日〜2週間。段階2のうちに申請開始",
+      "alternatives_considered": [
+        "未署名配布（情シスが止める）",
+        "Mac のみ署名（Windows顧客を切ることになる）"
+      ],
+      "slice": "段階3（申請は段階2）"
+    },
+    {
+      "id": "ADR-010",
+      "title": "移行は前提ではなく選択肢。ただし移行可能な状態を維持する",
+      "category": "portability",
+      "task_id": "T-F-05",
+      "rationale": "ISMAP要求・セキュリティ監査・コスト逆転の3トリガーが起きなければ移行しない。維持コストはCIゲートと台帳のみで、依存の可視化＝監査への回答材料にもなる",
+      "alternatives_considered": [
+        "最初からAWS（構築が数日〜2週間・顧客0社で月8万）",
+        "移行を考えない（ISMAP商談で詰む）"
+      ],
+      "slice": "S0"
+    },
+    {
+      "id": "ADR-011",
+      "title": "staging は本番と同じ構成をもう 1 組（Supabase 別プロジェクト＋Railway 別環境＋Vercel Preview）",
+      "category": "environment",
+      "task_id": "T-F-16",
+      "rationale": "L1〜L3 を staging で流す規約（test-ladder）。本番と同じ migration／deploy で作れることが条件。GAP-246 を user 選択（2026-09-15）で解消",
+      "alternatives_considered": [
+        "Supabase Branching＋Railway PR 環境（安いが本番と同じ手順で作れない部分が出る）",
+        "あとで決める"
+      ],
+      "slice": "S0"
+    }
+  ]
+}

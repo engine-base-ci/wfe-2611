@@ -1,0 +1,357 @@
+/* カレンダー（段 8・F7・切る段の下絵）。値は正本のトークン（--k-*）だけを読む。生の色・大きさ・余白・影を書かない。
+   @media の区切りの幅だけは CSS の決まりで生の値。箱・札・道具・表の頭は features/F4/ticket-list（k-list-*）と同じトークンを借りる */
+
+/* ---- 月の箱 ---- */
+.k-f7-calendar-card {
+  min-width: 0;
+  border: var(--k-c-list-panel-border);
+  border-radius: var(--k-c-list-panel-radius);
+  background: var(--k-c-list-panel-bg);
+  overflow: hidden;
+}
+.k-f7-calendar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-filter-gap);
+  padding: var(--k-c-list-filter-pad);
+  border-bottom: var(--k-c-list-filter-border-bottom);
+}
+.k-f7-calendar-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-f7-calendar-seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: var(--k-c-list-search-seg-border);
+  border-radius: var(--k-c-list-search-seg-radius);
+}
+.k-f7-calendar-seg > button {
+  height: var(--k-c-list-search-seg-item-height);
+  padding: var(--k-c-list-search-seg-item-pad);
+  border: 0;
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-c-list-search-seg-item-text);
+  cursor: pointer;
+}
+.k-f7-calendar-seg > button[aria-pressed="true"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f7-calendar-pickers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-md);
+  margin-left: auto;
+}
+.k-f7-calendar-pickers > label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-list-search-field-gap);
+  color: var(--k-c-list-search-field-fg);
+  font-size: var(--k-c-list-search-field-text);
+}
+.k-f7-calendar-select {
+  box-sizing: border-box;
+  height: var(--k-c-list-search-input-height);
+  padding: var(--k-c-list-search-input-pad);
+  border: var(--k-c-list-search-input-border);
+  border-radius: var(--k-c-list-search-input-radius);
+  background: var(--k-c-list-search-input-bg);
+  color: var(--k-c-list-search-input-fg);
+  font: inherit;
+  font-size: var(--k-c-list-search-input-text);
+}
+
+/* ---- 格子（表） ---- */
+.k-f7-calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.k-f7-calendar-table th {
+  height: var(--k-c-list-th-height);
+  padding: 0 var(--k-s-sm);
+  border-bottom: var(--k-c-list-th-border-bottom);
+  background: var(--k-c-list-th-bg);
+  color: var(--k-c-list-th-fg);
+  font-size: var(--k-c-list-th-text);
+  font-weight: var(--k-c-list-th-fw);
+  text-align: left;
+}
+.k-f7-calendar-table th[data-dow="0"] {
+  color: var(--k-error);
+}
+.k-f7-calendar-table th[data-dow="6"] {
+  color: var(--k-st-progress);
+}
+.k-f7-calendar-cell {
+  box-sizing: border-box;
+  height: var(--k-c-calendar-day-height);
+  min-width: 0;
+  padding: var(--k-s-xs);
+  border-right: var(--k-c-list-td-border-bottom);
+  border-bottom: var(--k-c-list-td-border-bottom);
+  vertical-align: top;
+  overflow: hidden;
+}
+.k-f7-calendar-cell[data-out] {
+  background: var(--k-table-head);
+}
+/* 今日の印は日付の丸（濃い地に白い字）だけ。セルを四角で囲まない（狭い幅で隣の線と重なって崩れる） */
+.k-f7-calendar-date {
+  min-width: var(--k-c-list-target-height);
+  min-height: var(--k-c-list-target-height);
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  border-radius: var(--k-r-full);
+  background: none;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+/* 選んだ日（小窓を開いている日）と指している日：日付の丸の外に細い輪。セルの四角は使わない */
+.k-f7-calendar-date:focus-visible,
+.k-f7-calendar-cell[data-selected] .k-f7-calendar-date {
+  outline: calc(var(--k-s-xs) / 2) solid var(--k-primary);
+  outline-offset: calc(var(--k-s-xs) / 2);
+}
+.k-f7-calendar-date:hover {
+  background: var(--k-select);
+}
+.k-f7-calendar-cell[data-dow="0"] .k-f7-calendar-date {
+  color: var(--k-error);
+}
+.k-f7-calendar-cell[data-dow="6"] .k-f7-calendar-date {
+  color: var(--k-st-progress);
+}
+.k-f7-calendar-cell[data-out] .k-f7-calendar-date {
+  color: var(--k-neutral);
+}
+.k-f7-calendar-cell[data-today] .k-f7-calendar-date {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f7-calendar-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-calendar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  margin-top: var(--k-s-xs);
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  background: var(--k-page);
+  color: var(--k-on-surface);
+  font-size: var(--k-text-label-md);
+  text-decoration: none;
+}
+.k-f7-calendar-item:hover {
+  background: var(--k-select);
+}
+.k-f7-calendar-item[data-late] {
+  background: var(--k-st-danger-container);
+  color: var(--k-st-on-danger-container);
+}
+.k-f7-calendar-item-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.k-f7-calendar-dot {
+  flex: none;
+  width: var(--k-c-f7-dot-width);
+  height: var(--k-c-f7-dot-height);
+  border-radius: var(--k-r-full);
+  background: var(--k-f7-tone);
+}
+.k-f7-calendar-more {
+  margin-top: var(--k-s-xs);
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: none;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-label-md);
+  cursor: pointer;
+}
+.k-f7-calendar-more [data-form="short"] {
+  display: none;
+}
+
+/* ---- 期限が決まっていない（右の列・ガントの小窓） ---- */
+.k-f7-calendar-tray-hint {
+  margin: 0;
+  padding: var(--k-s-sm) var(--k-s-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-calendar-tray-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-calendar-tray-item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--k-c-list-box-row-pad);
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+  cursor: grab;
+}
+.k-f7-calendar-tray-item:last-child {
+  border-bottom: 0;
+}
+.k-f7-calendar-tray-item > span:first-child {
+  font-size: var(--k-text-body-sm);
+}
+.k-f7-calendar-tray-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  box-sizing: border-box;
+  width: var(--k-c-calendar-tray-width);
+  max-width: 100%;
+  padding: var(--k-c-list-columns-pad);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  background: var(--k-c-list-columns-bg);
+  box-shadow: var(--k-c-list-columns-shadow);
+}
+.k-f7-calendar-tray-panel-title {
+  margin: 0;
+  font-size: var(--k-text-body);
+  font-weight: var(--k-fw-h3);
+}
+.k-f7-calendar-tray-row {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0;
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+}
+.k-f7-calendar-tray-row-main {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-f7-calendar-grip {
+  display: grid;
+  place-items: center;
+  color: var(--k-neutral);
+  cursor: grab;
+}
+.k-f7-calendar-tray-panel .k-f7-calendar-tray-hint {
+  padding: var(--k-s-sm) 0 0;
+}
+
+/* ---- 日の小窓 ---- */
+.k-f7-calendar-day-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-calendar-day-list > li {
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+}
+.k-f7-calendar-day-row {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) 0;
+}
+.k-f7-calendar-day-main {
+  flex: 1;
+  min-width: 0;
+  color: var(--k-on-surface);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.k-f7-calendar-day-main:hover {
+  color: var(--k-primary);
+  text-decoration: underline;
+}
+.k-f7-calendar-stage {
+  padding: var(--k-c-list-tag-pad);
+  border-radius: var(--k-c-list-tag-radius);
+  background: var(--k-f7-tone-soft);
+  color: var(--k-f7-tone-ink);
+  font-size: var(--k-c-list-tag-text);
+  white-space: nowrap;
+}
+.k-f7-calendar-move {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin-bottom: var(--k-s-sm);
+  padding: var(--k-s-md);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-surface);
+}
+.k-f7-calendar-move-acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--k-s-sm);
+}
+.k-f7-calendar-day-new {
+  display: flex;
+  gap: var(--k-s-sm);
+}
+.k-f7-calendar-day-new > .k-input {
+  flex: 1;
+  min-width: 0;
+}
+.k-f7-calendar-day-hint {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- スマホ（絵無し・案）：件名を出さず点だけ。日を押すと小窓で見る ---- */
+@media (max-width: 767px) {
+  .k-f7-calendar-cell {
+    height: var(--k-c-calendar-day-compact-height);
+    padding: var(--k-s-xs) 0;
+    text-align: center;
+  }
+  .k-f7-calendar-date {
+    padding: 0 var(--k-s-xs);
+  }
+  .k-f7-calendar-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--k-s-xs);
+  }
+  .k-f7-calendar-item {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+  .k-f7-calendar-item[data-late] {
+    background: none;
+  }
+  .k-f7-calendar-item-text {
+    display: none;
+  }
+  .k-f7-calendar-more [data-form="long"] {
+    display: none;
+  }
+  .k-f7-calendar-more [data-form="short"] {
+    display: inline;
+  }
+  .k-f7-calendar-pickers {
+    margin-left: 0;
+  }
+}
