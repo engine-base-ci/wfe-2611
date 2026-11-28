@@ -1,0 +1,16 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F5/room/create-talk-aside.tsx",
+    "apps/web/features/F5/room/use-draft-talk.ts",
+    "apps/web/features/F5/room/draft-words.ts",
+    "apps/web/features/F5/room/create-talk.tsx",
+    "apps/web/features/F4/create-ticket/create-head.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k767-create-talk.spec.ts"
+   ]
+  }
+ ]
+}
