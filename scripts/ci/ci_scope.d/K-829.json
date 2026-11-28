@@ -1,0 +1,22 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-permissions.ts",
+    "apps/api/src/features/F10/workspace/permissions.ts",
+    "packages/db/migrations/20261126002900_workspace_permissions.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/workspace-permissions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/workspace-permissions.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/patch_workspace_permissions.test.ts"
+   ]
+  }
+ ]
+}
