@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k349-connect-pc-split.spec.ts": "apps/web/features/F3/connect-pc の区画のファイル（.ts・.tsx）を字で読む（出す名前・並べる所のつなぎ・行の差す所）。apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-349"
+ }
+}
