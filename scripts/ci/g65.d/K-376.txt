@@ -1,0 +1,1 @@
+python3 scripts/ci/k376_gate_lists_test.py
