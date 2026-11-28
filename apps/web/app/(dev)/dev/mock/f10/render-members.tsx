@@ -30,6 +30,8 @@ const GROUPS: readonly GroupData[] = [
         role: "マネージャー",
         state: "分身 動いている",
         stateTone: "ok",
+        // 受託開発も兼ねる（下の受託開発の行は「兼ねている」・主のグループの行に兼ねる先を書く K-818 の決め。田中と同じ形）
+        note: "受託開発も兼ねる",
       },
       {
         id: "taka",
@@ -176,7 +178,7 @@ export function renderMembers(id: string, theme: Theme): ReactNode | null {
           theme={theme}
           notice={
             <Callout tone="danger" title="役割を変えられません">
-              高本 聖斗は、いまの管理者の最後の 1 人です。先にほかの人を管理者にしてから、変えてください
+              佐藤 花子は、いまの管理者の最後の 1 人です。先にほかの人を管理者にしてから、変えてください
             </Callout>
           }
         />

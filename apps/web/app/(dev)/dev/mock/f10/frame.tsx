@@ -75,7 +75,12 @@ export function WsFrame({
     <Frame {...frame} screen={tail ? "member-detail" : WS_SCREEN[active]} crumbs={crumbs}>
       <WsHead name="ENGINE BASE" initial="E" />
       <div className="k-me-wrap">
-        <WsSub members={7} active={active} enabled={["members", "rules", "log", "settings"]} />
+        {/* 人数の札はメンバーの一覧だけ（下絵の 5 人＋招待中 1 人＝重ならない数・K-419）。1 人の画面・記録・設定は並びを読まないので札を出さない（K-819・K-825・K-831 の本番と同じ） */}
+        <WsSub
+          {...(active === "members" && !tail ? { members: 6 } : {})}
+          active={active}
+          enabled={["members", "rules", "log", "settings"]}
+        />
         {children}
       </div>
     </Frame>
