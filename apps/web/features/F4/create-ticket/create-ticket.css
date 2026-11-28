@@ -1,0 +1,275 @@
+/* チケットを作る画面の器（K-224 → K-442 で下絵 v2 の並びに）。帯（見出し・作り方・保存の状態・右に「下書きのまま閉じる」「作る」）の下に、
+   下絵 v2 の form.k-f4d-page（並びと見た目は features/F4/doc の doc.css・extra.css の k-f4d-*）。値は --k-* のトークンだけを読む
+   （ここに生の色・大きさ・影を書かない）。ここに残るのは帯・親の欄・ファイルを置く枠・知らせる人と、詳細と共有する小さな決まり */
+
+/* ---- 器（帯と作る面をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
+.k-create-page {
+  min-width: 0;
+}
+
+/* ---- 帯：見出し・作り方・下書きの保存の状態 ---- */
+.k-create-head {
+  position: relative;
+  gap: var(--k-c-create-head-gap);
+}
+.k-create-head h1 {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-create-how {
+  flex: none;
+  display: inline-flex;
+  max-width: 100%;
+  border: var(--k-c-create-how-border);
+  border-radius: var(--k-c-create-how-radius);
+  overflow: hidden;
+}
+/* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
+.k-create-how > span,
+.k-create-how > button {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: var(--k-c-create-how-height);
+  height: var(--k-c-create-how-height);
+  padding: var(--k-c-create-how-pad);
+  font-size: var(--k-c-create-how-text);
+  white-space: nowrap;
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
+.k-create-how > span[aria-current="true"],
+.k-create-how > button[aria-current="true"] {
+  flex: none;
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+/* 押せる作り方（K-767）：ボタンの既定の枠と書体を外し、span と同じに描く（色は上の 2 つの決まりのまま） */
+.k-create-how > button {
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+.k-create-how > span[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+/* まだ残していない（字が無い）ときも 1 行の高さを取っておく（字が出たときに本文が下にずれない） */
+.k-create-saved {
+  min-height: calc(var(--k-text-body-sm) * var(--k-lh-body));
+  line-height: var(--k-lh-body);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+  white-space: nowrap;
+}
+/* 幅 767 以下：この帯は折り返す形にし、見出しの行の右の端を空ける（キャンバスの帯と同じ折り返し）。
+   前は見出しの右に外枠の鈴を重ねていた。鈴は上の帯へ移ったので、ここに鈴の決まりは無い（D-147） */
+@media (max-width: 767px) {
+  header.k-page-head.k-create-head {
+    flex-wrap: wrap;
+  }
+  .k-create-head h1 {
+    max-width: calc(100% - var(--k-s-xl));
+  }
+}
+
+/* ---- 読み込み中・読めなかったときの本文の場所 ---- */
+.k-create-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--k-c-create-body-gap);
+  padding: var(--k-c-create-body-pad);
+  min-width: 0;
+}
+
+.k-create-spec-act,
+.k-create-doc-add {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-primary);
+  text-align: left;
+}
+.k-create-spec-act[aria-disabled="true"],
+.k-create-doc-add[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 幅 767 以下：道具の帯と文書の左右を 16px（キャンバスの決まり）。帯は作る画面の本文の箱の中だけ（詳細の画面の帯に効かせない） */
+@media (max-width: 767px) {
+  section[aria-label="本文"] > .k-doc-tools,
+  .k-create-doc {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+}
+
+/* 振り分け：2 列の格子（767 以下は 1 列）。1 行は 項目名 96px と欄 */
+.k-create-assign {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-c-create-assign-gap);
+}
+@media (max-width: 767px) {
+  .k-create-assign {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-create-assign-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-create-assign-row-pad);
+  border-bottom: var(--k-c-create-assign-row-border-bottom);
+  min-width: 0;
+}
+.k-create-assign-row > .k-field {
+  display: grid;
+  grid-template-columns: var(--k-c-create-assign-label-width) minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--k-s-sm);
+  row-gap: var(--k-s-xs);
+}
+.k-create-assign-row > .k-field > :not(.k-label) {
+  grid-column: 2;
+}
+.k-create-assign-row > .k-field > .k-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 親のチケット：打って候補から選ぶ（候補の箱は影を置かず線だけ） */
+.k-create-parent {
+  position: relative;
+  min-width: 0;
+}
+.k-create-options {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--k-s-xs));
+  margin: 0;
+  padding: var(--k-c-create-options-pad);
+  list-style: none;
+  max-height: var(--k-c-create-options-max-height);
+  overflow-y: auto;
+  background: var(--k-c-create-options-bg);
+  border: var(--k-c-create-options-border);
+  border-radius: var(--k-c-create-options-radius);
+}
+.k-create-options > li {
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-radius: var(--k-r-md);
+  font-size: var(--k-text-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.k-create-options > li[aria-selected="true"],
+.k-create-options > li:hover {
+  background: var(--k-select);
+}
+.k-create-options > li[aria-disabled="true"] {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-create-options > li[role="status"] {
+  cursor: default;
+  color: var(--k-on-surface-variant);
+}
+
+/* ファイルを置く枠（まだ使えない・D-145.7）：点線の箱をグレーで */
+.k-create-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-create-drop-pad);
+  background: var(--k-c-create-drop-bg);
+  border: var(--k-c-create-drop-border);
+  border-radius: var(--k-c-create-drop-radius);
+  color: var(--k-on-surface-variant);
+  text-align: center;
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 枠ごと薄くしているので、中のボタンを二重に薄くしない */
+.k-create-drop .k-btn:disabled {
+  opacity: 1;
+}
+
+/* 作ったことを知らせる人：絞り込む欄・選んだ人の札・候補のチェック */
+.k-create-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-create-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-create-chip-gap);
+  padding: var(--k-c-create-chip-pad);
+  border: var(--k-c-create-chip-border);
+  border-radius: var(--k-c-create-chip-radius);
+  font-size: var(--k-text-body-sm);
+  white-space: nowrap;
+}
+.k-create-chip > button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-create-target-width);
+  height: var(--k-c-create-target-height);
+  border: 0;
+  border-radius: var(--k-r-full);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-create-chip > button:hover {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+}
+.k-create-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs) var(--k-s-md);
+}
+.k-create-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-height: var(--k-c-create-target-height);
+  font-size: var(--k-text-body);
+  cursor: pointer;
+}
+
+/* 選ぶ部品（Base UI Select）が値を持たせるための見えない入力（1px・読み上げにも出ない・押せない）は大きさを 0 にする。
+   押せる物の大きさを測るとき（24px 以上）に、押せない 1px の箱を数えない */
+.k-create-page .k-field > input[aria-hidden="true"][tabindex="-1"] {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 作る面の器（会話の枠の中・K-777）。並びは中の form（k-f4d-page）が持つ */
+.k-create-wrap {
+  display: block;
+}
+/* AI の案を当てた項目名（後ろに印 FieldMark が付く・K-777）。字は項目名の決まりのまま */
+.k-create-marked {
+  font: inherit;
+}
