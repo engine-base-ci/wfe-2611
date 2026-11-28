@@ -133,12 +133,12 @@ test("K960-UI-005 PDF を押すと downloadInvoicePdf を 1 回（その請求�
 }) => {
   const mk = await mockBilling(page);
   // 署名 URL の先（置き場）は試験の外。新しい窓がそこへ移ったことだけを見るため、網の手前で空の PDF を返す
-  await page.context().route(PDF_URL, (r) => r.fulfill({ status: 200, contentType: "application/pdf", body: "" }));
+  await page.context().route(PDF_URL, (r) => r.fulfill({ status: 200, contentType: "text/plain", body: "pdf" }));
   await openBills(page);
   const pop = page.waitForEvent("popup");
   await page.getByRole("link", { name: "10 月分の請求書（PDF）", exact: true }).click();
   const w = await pop;
-  await w.waitForURL(PDF_URL); // 窓は先に空で開き、答えの後に署名 URL へ移る
+  await w.waitForURL(PDF_URL, { waitUntil: "commit" }); // 窓は空で開いてから署名 URL へ移る（置き場の中身は見ない）
   expect(w.url()).toBe(PDF_URL);
   expect(mk.count("pdf")).toBe(1);
   expect(mk.last("pdf")!.id).toBe(INV_OCT);

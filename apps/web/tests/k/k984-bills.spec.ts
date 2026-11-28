@@ -190,7 +190,10 @@ test.describe("K-984 まとめて出す", () => {
       .click();
     await dialog(page, "本人か確かめます").getByRole("button", { name: "パスキーで確かめる", exact: true }).click();
     await expect(dialog(page, "10 月分の請求書をまとめて出す")).toHaveCount(0);
-    expect([count(m, "GET /api/v1/me/security"), count(m, "POST /api/v1/auth/step-up"), n]).toEqual([1, 1, 2]);
+    // やり直しの口は取り直しの答えの後に出る（小窓が閉じた時点ではまだのことがある）
+    await expect
+      .poll(() => [count(m, "GET /api/v1/me/security"), count(m, "POST /api/v1/auth/step-up"), n])
+      .toEqual([1, 1, 2]);
   });
 
   test("K984-UI-010 出せない：409 E-BILL-003 は小窓の中に「この月の請求書はもう全部出しています」・E-BILL-006 は「下書きの後に中身が変わりました。もう一度確かめて出してください」で下書きを読み直す・503 は「もう一度」の赤い箱。小窓は閉じない", async ({
@@ -299,7 +302,8 @@ test.describe("K-984 入金を記録", () => {
     await d.getByRole("button", { name: "11/05 の ¥10,000 の入金を取り消す", exact: true }).click();
     await expect(d.getByRole("button", { name: "取り消し済み", exact: true })).toHaveAttribute("aria-disabled", "true");
     expect(m.bodies.pay).toEqual([{ amount: 10_000, paid_on: "2026-11-09", reverses_payment_id: pay.id }]);
-    await expect(page.getByRole("row").filter({ hasText: mina.workspace.name })).not.toContainText("¥10,000");
+    // 小窓が開いている間は後ろが読み上げから外れる（role で探せない）。表の行は要素で探す
+    await expect(page.locator("tbody tr").filter({ hasText: mina.workspace.name })).not.toContainText("¥10,000");
   });
 
   test("K984-UI-018 取り消せない：409 E-BILL-004 は小窓の中に「この入金はもう取り消しています」・409 E-BILL-005 は「取り消す額が入金の額と違います」。小窓は閉じない", async ({

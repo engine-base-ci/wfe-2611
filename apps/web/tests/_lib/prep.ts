@@ -58,7 +58,7 @@ export interface TicketSections {
 
 /** 区画ごとの文字を、本文 1 枚の文書の木（段落）に組む（段落は行ごと。text は口が doc から作るのでここでは作らない）。
  *  引数の形（区画の鍵 → 本文）は呼ぶ側の試験を替えないために残す。K-437 の口は body を受け、K-578 の後は sections を受けない */
-const bodyOf = (sections: TicketSections) => ({
+export const bodyOf = (sections: TicketSections) => ({
   doc: {
     type: "doc",
     content: [sections.purpose, sections.done, sections.todo]
