@@ -1,0 +1,36 @@
+{
+ "ops": {
+  "requestClientRequestDraft": {
+   "file": "apps/api/test/features/F11/client-requests-draft.test.ts",
+   "reason": "案の仕事を積む口は、押した人の PC が生きているか（75 秒の知らせ）・依頼の状態と案の状態（pending の 10 分）・見える／直せるで答えが変わる。生成の試験の種では PC のセッション・依頼・ゲストのグループを作れない（K-896）",
+   "covers": {
+    "test_post_client_requests_id_draft_ok": "K896-API-001",
+    "test_post_client_requests_id_draft_shape": "K896-API-001",
+    "test_post_client_requests_id_draft_rejected_401": "K896-API-007",
+    "test_post_client_requests_id_draft_rejected_403": "K896-API-007",
+    "test_post_client_requests_id_draft_not_found": "K896-API-007",
+    "test_post_client_requests_id_draft_conflict": "K896-API-006",
+    "test_post_client_requests_id_draft_conflict_2": "K896-API-004",
+    "test_post_client_requests_id_draft_conflict_3": "K896-API-005",
+    "test_post_client_requests_id_draft_rejected_422": "K896-API-015",
+    "test_post_client_requests_id_draft_rate_limited": "K896-API-017",
+    "test_post_client_requests_id_draft_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_client_requests_id_draft_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_client_requests_id_draft_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_client_requests_id_draft_upstream_failed": "この口はサーバーの外を呼ばない（仕事を積む／結果を書くのは DB の関数 1 回・関門 C2。AI を動かすのはつないだ PC の上・K-929）。結果が来ない扱いは K-896 の止まった仕事の引き金（K896-API-012）が受ける",
+    "test_post_client_requests_id_draft_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  }
+ }
+}
