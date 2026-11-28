@@ -1,0 +1,8 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F5/more/fills/queue-bulk.tsx", "apps/web/features/F5/more/bulk/"],
+      "tests": ["apps/web/tests/k/k769-bulk.spec.ts"]
+    }
+  ]
+}
