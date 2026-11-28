@@ -1,0 +1,195 @@
+// 編集の部品（Tiptap）に組む節と印（K-567）。K-561（K-584 が広げた形）の節・節の attr・印だけを組み、知らない節・印は作れない。
+//   節の中身は K-584 の validateDoc の置ける親と同じに絞る（引用・表のセル・チェックの項目は段落だけ・並びの項目は段落と並びだけ）。
+//   これで帯・キーボード・貼り付けのどの入口からも validateDoc が断る木を作れない（置けない場所では can() が偽になり、貼った物は置ける形に合わせられる）。
+//   「/」「#」「@」・注意の枠・文字の大きさ・書体・メンション・絵文字などは組まない（D-150.48）。表・色・寄せ・画像は読み込みと書き出しのために組む（道具は K-587・K-568）。
+//   表の中の Tab・Shift+Tab は次・前のセルの字の終わりへ移る（最後のセルの Tab は行を 1 つ足す・K-568）
+import { Extension, Node, mergeAttributes, type AnyExtension, type Editor } from "@tiptap/core";
+import { StarterKit } from "@tiptap/starter-kit";
+import { Highlight } from "@tiptap/extension-highlight";
+import { Subscript } from "@tiptap/extension-subscript";
+import { Superscript } from "@tiptap/extension-superscript";
+import { TableCell, TableHeader, TableKit } from "@tiptap/extension-table";
+import { TaskItem } from "@tiptap/extension-task-item";
+import { TaskList } from "@tiptap/extension-task-list";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { Color, TextStyle } from "@tiptap/extension-text-style";
+import { AllSelection, Plugin, Selection, TextSelection } from "@tiptap/pm/state";
+import type { EditorView } from "@tiptap/pm/view";
+import { DOC_ALIGNS } from "@kaname/contracts";
+import { isAllowedHref } from "./link-policy";
+
+const PARAS = "paragraph+";
+
+/** 薄い字（ひな形・ghost）の attr。真のときだけ data-ghost="true" と薄い見た目の class を描く */
+const Ghost = Extension.create({
+  name: "kGhost",
+  addGlobalAttributes() {
+    const ghost = (cls: string) => ({
+      default: null,
+      parseHTML: (el: HTMLElement) => (el.getAttribute("data-ghost") === "true" ? true : null),
+      renderHTML: (attrs: Record<string, unknown>) =>
+        attrs["ghost"] === true ? { "data-ghost": "true", class: cls } : {},
+    });
+    return [
+      { types: ["paragraph"], attributes: { ghost: ghost("k-f4d-ghost") } },
+      { types: ["heading"], attributes: { ghost: ghost("k-f4d-ghost-h") } },
+    ];
+  },
+});
+
+/** 引用：中は段落だけ（K-584） */
+const Blockquote = Node.create({
+  name: "blockquote",
+  group: "block",
+  content: PARAS,
+  defining: true,
+  parseHTML: () => [{ tag: "blockquote" }],
+  renderHTML: ({ HTMLAttributes }) => ["blockquote", mergeAttributes(HTMLAttributes), 0],
+});
+
+/** 並びの項目：中は段落と並びだけ（K-584。項目の中に段落が 2 つ・入れ子の並びで始まる木も開ける） */
+const ListItem = Node.create({
+  name: "listItem",
+  content: "(paragraph | bulletList | orderedList | taskList)+",
+  defining: true,
+  parseHTML: () => [{ tag: "li", priority: 40 }],
+  renderHTML: ({ HTMLAttributes }) => ["li", mergeAttributes(HTMLAttributes), 0],
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => this.editor.commands.splitListItem(this.name),
+      Tab: () => this.editor.commands.sinkListItem(this.name),
+      "Shift-Tab": () => this.editor.commands.liftListItem(this.name),
+    };
+  },
+});
+
+/** 画像の置き場（attrs は caption と attachment_id だけ・編集はしない。添付の段で中身が入る） */
+const ImageNode = Node.create({
+  name: "image",
+  group: "block",
+  atom: true,
+  selectable: true,
+  draggable: false,
+  addAttributes() {
+    return {
+      caption: {
+        default: "",
+        parseHTML: (el: HTMLElement) => el.getAttribute("data-caption") ?? "",
+        renderHTML: (attrs: Record<string, unknown>) => ({ "data-caption": String(attrs["caption"] ?? "") }),
+      },
+      attachment_id: {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute("data-attachment-id"),
+        renderHTML: (attrs: Record<string, unknown>) =>
+          attrs["attachment_id"] ? { "data-attachment-id": String(attrs["attachment_id"]) } : {},
+      },
+    };
+  },
+  parseHTML: () => [{ tag: "figure[data-k-image]" }],
+  renderHTML: ({ node, HTMLAttributes }) => [
+    "figure",
+    // 読み上げは「画像」＋名前（読む形 DocView の置き場と同じ role="img"・K-587）
+    mergeAttributes(HTMLAttributes, {
+      "data-k-image": "",
+      class: "k-f4d-figure",
+      role: "img",
+      "aria-label": String(node.attrs["caption"] ?? ""),
+    }),
+    ["figcaption", {}, String(node.attrs["caption"] ?? "")],
+  ],
+});
+
+/** 押した直後のキーは、ブラウザの選びの知らせ（selectionchange）より先に届くことがあり、そのときの編集欄の選びは押す前の所のまま
+ *  （続けて ⌘A・Backspace・Tab を押すと、押した所でなく前の所に効く）。画面の選びが編集欄の中の 1 点（字を選んでいない）で、
+ *  編集欄の選び（字の選び・全部の選び）と違うなら、キーを見る前にそこへ合わせる（部品が知らせを受けてからする読み直しを先にするだけ） */
+function syncCaretFromDom(view: EditorView): void {
+  const dom = (view.root as Document).getSelection?.();
+  if (view.composing || !dom || !dom.isCollapsed || !dom.anchorNode || !view.dom.contains(dom.anchorNode)) return;
+  const { selection } = view.state;
+  // 表のセルをまとめて選んでいるとき（CellSelection）・画像を選んでいるときは、画面の選びを読まない
+  if (!(selection instanceof TextSelection) && !(selection instanceof AllSelection)) return;
+  let pos: number;
+  try {
+    pos = view.posAtDOM(dom.anchorNode, dom.anchorOffset);
+  } catch {
+    return;
+  }
+  if (selection.empty && selection.from === pos) return;
+  const next = Selection.near(view.state.doc.resolve(pos));
+  if (!next.eq(selection)) view.dispatch(view.state.tr.setSelection(next));
+}
+const CaretSync = Extension.create({
+  name: "kCaretSync",
+  // どのキーの決まりより先に見る
+  priority: 1000,
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleKeyDown: (view) => {
+            syncCaretFromDom(view);
+            return false;
+          },
+        },
+      }),
+    ];
+  },
+});
+
+/** 表の中でとなりのセルへ移り、カーソルをそのセルの字の終わりに置く（部品の既定はセルの字を丸ごと選ぶので、続けて打つと字が消える）。
+ *  最後のセルから先へは行を 1 つ足して移る。表の外では何もしない（偽を返して、ほかの Tab の動きに渡す） */
+function moveCell(editor: Editor, forward: boolean): boolean {
+  const moved = forward ? editor.commands.goToNextCell() : editor.commands.goToPreviousCell();
+  if (!moved) {
+    if (!forward || !editor.can().addRowAfter()) return false;
+    editor.chain().addRowAfter().goToNextCell().run();
+  }
+  return editor.commands.setTextSelection(editor.state.selection.to);
+}
+const TableTab = Extension.create({
+  name: "kTableTab",
+  // 部品の表の Tab より先に見る
+  priority: 200,
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => moveCell(this.editor, true),
+      "Shift-Tab": () => moveCell(this.editor, false),
+    };
+  },
+});
+
+/** 組む拡張の全部（毎回新しく作る） */
+export function buildExtensions(): AnyExtension[] {
+  return [
+    StarterKit.configure({
+      heading: { levels: [2, 3, 4] },
+      blockquote: false,
+      listItem: false,
+      trailingNode: false,
+      link: {
+        openOnClick: false,
+        autolink: false,
+        linkOnPaste: false,
+        isAllowedUri: (url) => isAllowedHref(url),
+        HTMLAttributes: { rel: "noopener noreferrer nofollow", target: "_blank" },
+      },
+    }),
+    Blockquote,
+    ListItem,
+    Ghost,
+    TaskList,
+    TaskItem.extend({ content: PARAS }).configure({ nested: false }),
+    TableKit.configure({ table: { resizable: false }, tableCell: false, tableHeader: false }),
+    TableCell.extend({ content: PARAS }),
+    TableHeader.extend({ content: PARAS }),
+    TableTab,
+    CaretSync,
+    TextAlign.configure({ types: ["heading", "paragraph"], alignments: [...DOC_ALIGNS] }),
+    TextStyle,
+    Color,
+    Highlight.configure({ multicolor: true }),
+    Superscript,
+    Subscript,
+    ImageNode,
+  ];
+}
