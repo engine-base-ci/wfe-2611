@@ -1,0 +1,46 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F12/ops/pwned.ts",
+    "apps/api/src/hooks/ops-pwned.ts",
+    "packages/db/migrations/20261128013500_ops_pwned.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-995.py",
+    "scripts/ci/contract_shape.d/K-995.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-pwned.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_pwned.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-pwned.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_workspaces_id_pwned_ack.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-995.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-995"
+ }
+}

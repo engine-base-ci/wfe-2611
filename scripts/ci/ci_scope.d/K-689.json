@@ -1,0 +1,38 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-shares.ts",
+    "apps/api/src/features/F9/knowledge/shares-get.ts",
+    "apps/api/src/features/F9/knowledge/shares-set.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-shares.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-shares.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-689.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_knowledge_shares.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F9/knowledge-shares.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/put_knowledge_shares.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-689.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-689"
+ }
+}
