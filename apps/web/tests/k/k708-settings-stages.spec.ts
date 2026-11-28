@@ -162,7 +162,7 @@ test("K708-UI-006 名前を直して保存：書く口 1 回・体は名前だ�
   expect(mk.last("updateStage")?.body).toEqual({ name: "待ち" });
   await expect(page.locator(`${LIST} .k-f9s-stage-edit`)).toHaveCount(0);
   expect(await names(page)).toContain("待ち");
-  expect(mk.count("stages")).toBe(2);
+  await expect.poll(() => mk.count("stages")).toBe(2);
 });
 
 test("K708-UI-007 色を替えて保存：体は color_key だけ（鍵の字）・札の色が替わる。何も変えていないと「保存する」は押せない形で口を呼ばない", async ({
@@ -285,7 +285,7 @@ test("K708-UI-013 「状態を足す」の小窓（名前・色）で足す：�
   expect(mk.last("createStage")?.body).toEqual({ name: "確認待ち", color_key: "coral" });
   await expect(page.locator(".k-toast")).toContainText("状態「確認待ち」を足しました");
   expect(await names(page)).toEqual(["未着手", "作業中", "先方の返事待ち", "保留", "確認待ち", "完了"]);
-  expect(mk.count("stages")).toBe(2);
+  await expect.poll(() => mk.count("stages")).toBe(2);
 });
 
 test("K708-UI-014 足す小窓の失敗：空の名前は口を呼ばない・409 E-STG-001・E-STG-002（8 つまで）は小窓の中の赤字で閉じず中身は残る・やめる・Esc は口を呼ばず焦点が「状態を足す」に戻る", async ({
@@ -328,7 +328,7 @@ test("K708-UI-015 「消す」の確かめの小窓（状態の名前・元に�
   expect(mk.last("deleteStage")?.id).toBe(S_HOLD);
   await expect(page.locator(".k-toast")).toContainText("状態「保留」を消しました");
   expect(await names(page)).toEqual(["未着手", "作業中", "先方の返事待ち", "完了"]);
-  expect(mk.count("stages")).toBe(2);
+  await expect.poll(() => mk.count("stages")).toBe(2);
 });
 
 test("K708-UI-016 口が 409：E-STG-005 は帯に正本の文と枚数「（4 枚）」・E-STG-003（仕組みの状態）は帯に正本の文。どちらも一覧に残り、小窓は閉じる", async ({
@@ -369,7 +369,8 @@ test("K708-UI-017 キーボードで並べ替え：つまみで Enter（つか�
     stage_ids: [S_TODO, S_HOLD, S_CHECK, S_DOING, S_WAIT, S_RUN, S_APPR, S_DONE],
   });
   expect(await names(page)).toEqual(["未着手", "保留", "作業中", "先方の返事待ち", "完了"]);
-  expect(mk.count("stages")).toBe(2);
+  // 書いた後の読み直しは書く口の答えの後に走る（口に届くのを待つ）
+  await expect.poll(() => mk.count("stages")).toBe(2);
 });
 
 test("K708-UI-018 つまみを掴んで落とす（マウス）：保留を作業中の上へ落とすと書く口 1 回・並びが替わる。始めと終わりのつまみは押せない形で、始めの上・終わりの下へは落とせず口を呼ばない", async ({
@@ -490,7 +491,7 @@ test("K708-UI-021 読み込み中は「読み込んでいます…」・状態�
   await expect(page.locator('[data-state="error"]')).toBeVisible();
   await page.getByRole("button", { name: "もう一度読む", exact: true }).click();
   await expect(page.locator(LIST)).toBeVisible();
-  expect(mk.count("stages")).toBe(2);
+  await expect.poll(() => mk.count("stages")).toBe(2);
 });
 
 test("K708-UI-022 状態の名前に HTML が入っていても文字として出て動かない（img も作られない）", async ({ page }) => {
@@ -521,6 +522,8 @@ test("K708-UI-024 キーボードだけ：つまみ・直す・消すに Tab で
 }) => {
   await open(page);
   await page.getByRole("button", { name: "状態を足す", exact: true }).click();
+  // 小窓が開き終わってから Tab を押す（開く前の Tab は小窓の外の焦点を動かすだけ）
+  await expect(page.locator(DLG)).toBeVisible();
   for (let i = 0; i < 20; i++) await page.keyboard.press("Tab");
   expect(await page.evaluate(() => Boolean(document.activeElement?.closest(".k-dialog")))).toBe(true);
   await page.keyboard.press("Escape");
