@@ -1,0 +1,29 @@
+{
+ "ops": {
+  "createCredential": {
+   "file": "apps/api/test/features/F3/credentials-create.test.ts",
+   "reason": "預ける口は本物の秘密の関門（会社ごとの鍵・金庫に入れる・失効）と行の守り・権限・本人確認の取り直しの時刻で答えが変わる。生成の試験の偽のセッションでは時刻も金庫の失敗も作れない（K-352）",
+   "covers": {
+    "test_post_credentials_ok": "K352-API-001",
+    "test_post_credentials_rejected_401": "K352-API-023",
+    "test_post_credentials_rejected_403": "K352-API-004",
+    "test_post_credentials_rejected_403_2": "K352-API-005",
+    "test_post_credentials_conflict": "K352-API-007",
+    "test_post_credentials_rejected_422": "K352-API-006",
+    "test_post_credentials_upstream_failed": "K352-API-017",
+    "test_post_credentials_session_unresolved": "K352-API-018",
+    "test_post_credentials_rate_limited": "K352-API-024",
+    "test_post_credentials_terms_pending": "K352-API-025",
+    "test_post_credentials_shape": "K352-API-001",
+    "test_post_credentials_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_credentials_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  }
+ }
+}

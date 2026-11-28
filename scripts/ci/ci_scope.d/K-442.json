@@ -1,0 +1,20 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F4/create-ticket/",
+    "apps/web/features/F4/parent/create-slot.tsx",
+    "apps/web/features/F4/due/create-slot.tsx",
+    "apps/web/features/F4/links/create-slot.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k442-create-body.spec.ts",
+    "apps/web/test/k442-create-body.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/test/k442-create-body.test.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UN-004）",
+  "apps/web/tests/k/k442-create-body.spec.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K442-UI-008・017）"
+ }
+}
