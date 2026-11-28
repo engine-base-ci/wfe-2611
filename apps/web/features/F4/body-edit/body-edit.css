@@ -1,0 +1,21 @@
+/* 本文を直す（K-447）の見た目。帯・枠・入口の見た目は下絵の doc.css・extra.css（k-f4d-editband・k-f4d-notice・k-f4d-enter・k-f4d-editor）をそのまま使う。
+   ここに置くのは、差し込みの入れ物を並びに数えない規則と、編集の間に題の行のボタンを引っ込める規則だけ。生の色・大きさを書かない */
+
+/* 差し込みの入れ物は箱を作らない（下絵と同じ並び・間） */
+.k-f4d-bodyedit {
+  display: contents;
+}
+
+/* 編集の間は、題の行の右（複製・版と差分・AI に任せる・完了にする・ほかの操作）を全部引っ込める */
+.k-detail-card[data-body-editing="true"] .k-page-acts {
+  display: none;
+}
+
+/* 幅が狭いとき：上の帯のボタンは印の下に回る（はみ出さない） */
+.k-f4d-bodyedit .k-f4d-editband {
+  min-width: 0;
+}
+.k-f4d-bodyedit .k-f4d-editband > [role="status"] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
