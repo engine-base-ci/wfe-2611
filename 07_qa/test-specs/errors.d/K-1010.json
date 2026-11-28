@@ -1,0 +1,61 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-023",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "運営がひな形の新しい版を出す（下書きも）とき、中身が今の版と同じ（並びも含めて・同時に 2 回出した後の 1 つも）",
+   "false_when": "中身のどれかを変える・足す・消す",
+   "message": "今の版と同じです",
+   "action": "中身を変えてから出す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "配るものを持つ運営の人で 運営 › 配るもの › ひな形 を開く",
+    "steps": [
+     "ひな形の［新しい版］を開き、何も変えずに出す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20"
+   ]
+  },
+  {
+   "id": "E-OPS-024",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "運営がひな形の新しい版を出す（下書きも）とき、部と合わない中身（部の欄でない欄・項目に種類が無い・同じ key が 2 つ・本文のひな形が壊れている）か、数の上限（種別 10・状態は仕組みの段を除いて 8）を超える。detail.key がどの 1 つか",
+   "false_when": "部の欄だけで、key が重ならず、数の上限の内",
+   "message": "ひな形の中身が合いません",
+   "action": "赤字の 1 つを直してから出す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "配るものを持つ運営の人で 運営 › 配るもの › ひな形 を開く",
+    "steps": [
+     "種別のひな形に 11 個目の種別を足して出す（直に API）"
+    ],
+    "needs": "本人確認の取り直し（15 分の内）"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.20",
+    "D-125.68"
+   ]
+  }
+ ]
+}
