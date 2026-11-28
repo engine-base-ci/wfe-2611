@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""build_waves.py — S13 sprint-planning の成果物を機械生成する（Wave 編成・L3 の qa_scope・Phase × Sprint）。
+入力: 07_tasks/tickets.json（waves・二軸）／07_tasks/tickets_plan.json（日付・担当）／08_schedule/milestones.json／07_qa/test-specs/journeys/plan.json／02_tech_stack/selected-stack.json（staging）
+出力: 08_schedule/wave-schedule.json（信頼源）・sprint.md・sprint.html。検査: scripts/ci/sp_gate.py"""
+import json, datetime, html, collections
+TODAY = datetime.date.today().isoformat(); OUT = "08_schedule"
+J = lambda p: json.load(open(p, encoding="utf-8"))
+T = J("07_tasks/tickets.json"); TASKS = {t["id"]: t for t in T["tasks"]}; PLAN = {x["id"]: x for x in J("07_tasks/tickets_plan.json")["tickets"] if x.get("kind") == "story"}
+MS = J(f"{OUT}/milestones.json"); JR = J("07_qa/test-specs/journeys/plan.json")["rows"]; ST = J("02_tech_stack/selected-stack.json")
+staging = ST["stack"].get("environments", {}).get("staging") or ST.get("environments", {}).get("staging")
+PHASE = {"F": ("1_foundation", "Foundation"), "D": ("2_data", "Data Layer"), "A": ("3_api", "API Layer"), "B": ("3_bridge", "Bridge（顧客 PC の実行器・D-015）"), "U-shared": ("4_ui_foundation", "UI Foundation"), "U-screen": ("5_ui_parallel", "UI Parallel"), "I": ("6_integration", "Integration & Polish"), "S": ("7_content", "スキル制作（運営の資産・開発と並行）"), "V2": ("8_spec_v2", "段階 2 の仕様づくり（実装と並行・D-081）")}
+SP = {"F": "F", "D": "D", "A": "A", "B": "B", "U-shared": "U0-", "U-screen": "U", "I": "I", "S": "S", "V2": "V2-"}
+# 流れ（L2）: runnable_after が揃う最初の Wave に付ける
+flows = collections.OrderedDict()
+for r in JR: flows.setdefault(r["journey"], {"name": r["name"], "after": set()})["after"] |= set(r["runnable_after"])
+done = set(); claimed = set(); waves = []; cnt = collections.Counter(); ms_sorted = sorted(MS["milestones"], key=lambda m: m["due"])
+for w in T["waves"]:
+    g = w["group"]; cnt[g] += 1; done |= set(w["tasks"]); ph, ph_name = PHASE[g]
+    if w.get("stage", "v1") == "v2": ph, ph_name = f"9_v2_{ph.split('_', 1)[1]}", f"段階 2 {ph_name}"   # 段階 2 の実装（D-082〜D-085）は段階 1 の後
+    l2 = [j for j, f in flows.items() if j not in claimed and f["after"] and f["after"] <= done]; claimed |= set(l2)
+    starts = [PLAN[t]["start"] for t in w["tasks"] if t in PLAN and PLAN[t].get("start")]; fins = [PLAN[t]["finish"] for t in w["tasks"] if t in PLAN and PLAN[t].get("finish")]
+    start, fin = (min(starts) if starts else None), (max(fins) if fins else None); ms = next((m for m in ms_sorted if fin and m["due"] >= fin), ms_sorted[-1])
+    ass = collections.Counter(PLAN[t]["assignee"] for t in w["tasks"] if t in PLAN and PLAN[t].get("assignee"))
+    waves.append({"id": f"W{w['wave']}", "sprint": f"{SP[g]}{cnt[g]}" if g != "U-shared" else "U0", "phase": ph, "phase_name": ph_name, "group": g, "stage": w.get("stage", "v1"), "tasks": w["tasks"], "parallel": w["parallel"],
+                  "estimate_hours_human": w["estimate_hours_human"], "estimate_hours_ai_compute": w["estimate_hours_ai_compute"], "human_review_h": round(sum(TASKS[t]["human_review_h"] for t in w["tasks"]), 1), "wall_clock_h_ai": w["wall_clock_h_ai"], "parallel_capacity": T["summary"]["parallel_capacity"],
+                  "start": start, "finish": fin, "milestone": ms["id"], "milestone_due": ms["due"], "assignees": dict(ass), "critical_tasks": [t for t in w["tasks"] if TASKS[t]["critical"]],
+                  "goal": f"{ph_name}：{', '.join(TASKS[t]['title'][:18] for t in w['tasks'][:3])}{' …' if len(w['tasks']) > 3 else ''}",
+                  "qa_scope": {"l1_tasks": list(w["tasks"]), "l1_rows": sum(len(TASKS[t]["qa_rows"]["l1"]) for t in w["tasks"]), "l2_flows": l2, "regression_from": [x["id"] for x in waves], "gate": "bash scripts/ci/completion_gate.sh --wave " + f"W{w['wave']}"},
+                  "done_when": ["Wave 内の全タスクが qa-ladder gate --task PASS（L1）", "揃った流れ（l2_flows）が staging で全行 PASS（L2）", "前 Wave の回帰（regression_from の差分）PASS", "completion_gate.sh STATUS 完了 → 次の Wave を始める"],
+                  "runnable": bool(staging) or g in ("S", "V2"), "preconditions": [] if staging or g in ("S", "V2") else ["staging が selected-stack.json の environments.staging に無い（GAP-246）。本番と同じ migration／deploy で作れる構成を user と決めてから L1 を流す"]})
+unclaimed = [j for j in flows if j not in claimed]
+CAP = T["summary"]["parallel_capacity"]; velocity = {"definition": "gate PASS（L1＋解禁 L2）までを 1 タスクの完了と数える。テスト消化を工数に含める", "per_wave_wall_clock_h_ai": [w["wall_clock_h_ai"] for w in waves], "capacity_per_day_ai_h": CAP * 6, "calendar_days_ai": T["summary"]["calendar_days_ai"], "calendar_days_human": T["summary"]["calendar_days_human"]}
+sched = {"version": "v3", "project": "Kaname", "created_at": TODAY, "skill": "sprint-planning", "_doc": "05_flow/build_waves.py が tickets.json の Wave・tickets_plan.json の日付・milestones・journeys から機械生成。手で直さない", "source": T["source"], "decomposition_mode": T["decomposition_mode"],
+         "principles": ["Phase 順序を守る（Foundation → Data → API → UI 共通 → UI 並列 → 結線）。Phase をまたいで並列にしない", "Phase 内は並列上限まで並列（CAP " + str(CAP) + "）", "Phase 3 の最後（A の最終 Wave）で契約凍結：OpenAPI・TS 型・画面 ↔ API 100%（既に 08_api で凍結済み）", "スキル制作（S）と段階 2 の仕様づくり（V2）は開発と並行。Wave の締めには含めるが Phase 順序には縛られない", "Wave の締め＝completion_gate.sh STATUS 完了。全 PR の auto-merge は締めではない"],
+         "staging": {"defined": bool(staging), "value": staging, "gap": None if staging else "GAP-246：environments.staging 未確定。W0 の最初に置く（user 確認）"},
+         "milestones": MS["milestones"], "start": MS["start"], "holidays": MS["holidays"], "velocity": velocity, "totals": {"waves": len(waves), "tasks": sum(len(w["tasks"]) for w in waves), "estimate_hours_human": T["summary"]["total_estimate_hours_human"], "estimate_hours_ai_compute": T["summary"]["total_estimate_hours_ai_compute"], "human_review_total_h": T["summary"]["human_review_total_h"], "total_wall_clock_h_ai_parallel": T["summary"]["total_wall_clock_h_ai_parallel"], "parallel_capacity": CAP, "l2_flows_total": len(flows), "l2_flows_unassigned": unclaimed},
+         "events": {"planning": "各 Wave の開始日に dispatch.sh で並列起動（人は blocking の解除と致命級のレビュー）", "daily": "AI の動きは PR と qa-ladder の結果で見る（デイリー会議はしない）", "review": "Wave の締め（finish）に completion_gate と高本レビュー", "retro": "Wave 締めで qa_delta と layer_audit の warn を棚卸し"},
+         "done_definition": ["3-tier AC 全 pass（tickets acceptance_criteria_inline）", "v3-gate.yml 36 本緑（e2e は has-ui）", "qa-ladder gate --task PASS（L1 全行 PASS か理由つき BLOCKED）", "揃った流れ（L2）PASS", "audit MD に impl line"],
+         "risks": [{"risk": "staging 未確定のまま W0 に入る", "mitigation": "W0 の最初の日に確定。無いと L1 は実走できない（BLOCKED を fake green にしない）"}, {"risk": "致命級（人のレビュー）が " + str(len([t for t in TASKS.values() if TASKS[t]['critical']] if False else [t for t in TASKS.values() if t['critical']])) + " タスクで高本さんに集中", "mitigation": "レビューは Wave 内で並列に流し、blocking の順に見る（tickets_plan critical_path）"}, {"risk": "UI 並列（U-screen 58）で API 契約がずれる", "mitigation": "契約凍結済み・G11 openapi-diff・型生成 T-F-15"}, {"risk": "名簿・節目が仮置き", "mitigation": "PM 確定後に build_tickets --prev と本スクリプトを再実行"}],
+         "waves": waves}
+json.dump(sched, open(f"{OUT}/wave-schedule.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+def tbl(h, rows): return "| " + " | ".join(h) + " |\n|" + "---|" * len(h) + "\n" + "".join("| " + " | ".join(str(c).replace("|", "／") for c in r) + " |\n" for r in rows)
+md = [f"# Kaname Wave 編成・スプリント計画（v3・{TODAY}・機械生成）", "", f"> 05_flow/build_waves.py が生成。信頼源は wave-schedule.json。根拠の決定：{' '.join(T['source'])}。開始 {MS['start']}・Wave {len(waves)}・タスク {sched['totals']['tasks']}・Human {sched['totals']['estimate_hours_human']} h／AI wall-clock {sched['totals']['total_wall_clock_h_ai_parallel']} h（並列 {CAP}）", "",
+      "## 原則", ""] + [f"- {p}" for p in sched["principles"]] + ["", "## staging", "", ("確定：" + json.dumps(staging, ensure_ascii=False)) if staging else f"未確定（{sched['staging']['gap']}）", "",
+      "## 節目", "", tbl(["ID", "名前", "期限"], [[m["id"], m["name"], m["due"]] for m in MS["milestones"]]),
+      "## Wave（Phase × Sprint・二軸）", "", tbl(["Wave", "Sprint", "Phase", "タスク", "並列", "Human h", "AI 計算 h", "レビュー h", "wall-clock h", "開始", "終了", "節目", "L1 行", "L2 の流れ", "回帰"], [[w["id"], w["sprint"], w["phase_name"], len(w["tasks"]), w["parallel"], w["estimate_hours_human"], w["estimate_hours_ai_compute"], w["human_review_h"], w["wall_clock_h_ai"], w["start"] or "—", w["finish"] or "—", w["milestone"], w["qa_scope"]["l1_rows"], " ".join(w["qa_scope"]["l2_flows"]) or "—", len(w["qa_scope"]["regression_from"])] for w in waves]),
+      "## 各 Wave の中身", ""]
+for w in waves: md += [f"### {w['id']}（{w['sprint']}・{w['phase_name']}）{w['start'] or ''}〜{w['finish'] or ''}", "", f"- 目標：{w['goal']}", f"- タスク：{' '.join(w['tasks'])}", f"- 担当：{', '.join(f'{k} {v}' for k, v in w['assignees'].items()) or '—'}", f"- 致命級（人のレビュー）：{' '.join(w['critical_tasks']) or '—'}", f"- L3 の範囲：L1 {w['qa_scope']['l1_rows']} 行／L2 {' '.join(w['qa_scope']['l2_flows']) or '—'}／回帰 {' '.join(w['qa_scope']['regression_from']) or '—'}", f"- 締め：{w['qa_scope']['gate']}"] + ([f"- 前提：{p}" for p in w["preconditions"]]) + [""]
+md += ["## 完了の定義", ""] + [f"- {x}" for x in sched["done_definition"]] + ["", "## リスク", "", tbl(["リスク", "手当て"], [[r["risk"], r["mitigation"]] for r in sched["risks"]]), "## 進め方（人と AI）", "", tbl(["場面", "やり方"], list(sched["events"].items())), f"## 流れ（L2）の割り当て", "", f"流れ {len(flows)} のうち Wave に付いた {len(flows) - len(unclaimed)}。未割り当て：{' '.join(unclaimed) or 'なし'}", ""]
+open(f"{OUT}/sprint.md", "w", encoding="utf-8").write("\n".join(md))
+def hrows(h, rows): return "<table><thead><tr>" + "".join(f"<th>{html.escape(str(x))}</th>" for x in h) + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{html.escape(str(c))}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table>"
+bar = lambda w: f'<div class="bars"><span class="h" style="width:{min(320, w["estimate_hours_human"]/3):.0f}px" title="Human {w["estimate_hours_human"]}h"></span><span class="a" style="width:{min(320, w["wall_clock_h_ai"]*10):.0f}px" title="AI wall-clock {w["wall_clock_h_ai"]}h"></span></div>'
+page = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kaname Wave 編成</title><style>body{{font:14px/1.6 -apple-system,'Hiragino Sans',sans-serif;margin:32px;color:#1f2328;background:#fafaf8}}table{{border-collapse:collapse;margin:8px 0 20px;width:100%}}th,td{{border:1px solid #d9d6cf;padding:6px 10px;text-align:left;vertical-align:top;font-size:13px}}th{{background:#f0ede6}}h1{{font-size:22px}}h2{{font-size:17px;margin-top:28px;border-bottom:1px solid #d9d6cf;padding-bottom:4px}}.bars span{{display:block;height:6px;margin:2px 0;border-radius:3px}}.bars .h{{background:#b9b3a6}}.bars .a{{background:#2f6f8f}}.warn{{background:#fff4e0;border:1px solid #e8c37a;padding:8px 12px;border-radius:6px}}details{{margin:6px 0}}@media print{{body{{margin:12mm}}}}</style></head><body>
+<h1>Kaname Wave 編成・スプリント計画（v3・{TODAY}）</h1><p>開始 {MS['start']}／Wave {len(waves)}／タスク {sched['totals']['tasks']}／Human {sched['totals']['estimate_hours_human']} h／AI wall-clock {sched['totals']['total_wall_clock_h_ai_parallel']} h（並列 {CAP}）。灰の棒＝Human、青の棒＝AI 並列。</p>
+{'' if staging else '<p class="warn">staging 未確定（GAP-246）。W0 の最初に決める。決まるまで L1 は実走できない。</p>'}
+<h2>節目</h2>{hrows(["ID","名前","期限"], [[m["id"],m["name"],m["due"]] for m in MS["milestones"]])}
+<h2>Wave</h2>{hrows(["Wave","Sprint","Phase","タスク","並列","Human h","AI wall-clock h","開始","終了","節目","L1 行","L2","二軸"], [[w["id"],w["sprint"],w["phase_name"],len(w["tasks"]),w["parallel"],w["estimate_hours_human"],w["wall_clock_h_ai"],w["start"] or "—",w["finish"] or "—",w["milestone"],w["qa_scope"]["l1_rows"]," ".join(w["qa_scope"]["l2_flows"]) or "—",bar(w)] for w in waves]).replace("&lt;","<").replace("&gt;",">").replace("&quot;",'"')}
+<h2>各 Wave</h2>{''.join(f"<details><summary>{w['id']} {w['sprint']} {w['phase_name']}（{len(w['tasks'])} タスク・{w['start'] or ''}〜{w['finish'] or ''}）</summary><p>目標：{html.escape(w['goal'])}</p><p>タスク：{' '.join(w['tasks'])}</p><p>担当：{', '.join(f'{k} {v}' for k,v in w['assignees'].items())}</p><p>L3：L1 {w['qa_scope']['l1_rows']} 行／L2 {' '.join(w['qa_scope']['l2_flows']) or '—'}／回帰 {' '.join(w['qa_scope']['regression_from']) or '—'}／締め {w['qa_scope']['gate']}</p>{''.join('<p class=warn>' + html.escape(p) + '</p>' for p in w['preconditions'])}</details>" for w in waves)}
+<h2>完了の定義</h2><ul>{''.join(f'<li>{html.escape(x)}</li>' for x in sched['done_definition'])}</ul>
+<h2>リスク</h2>{hrows(["リスク","手当て"], [[r["risk"],r["mitigation"]] for r in sched["risks"]])}
+</body></html>"""
+open(f"{OUT}/sprint.html", "w", encoding="utf-8").write(page)
+print(f"waves {len(waves)} / tasks {sched['totals']['tasks']} / flows {len(flows)} assigned {len(flows)-len(unclaimed)} / staging {'OK' if staging else 'UNDEFINED'} / {waves[0]['start']} → {max(w['finish'] for w in waves if w['finish'])}")
