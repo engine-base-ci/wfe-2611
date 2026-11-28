@@ -67,12 +67,21 @@ function useWriter() {
   const [offline, setOffline] = useState<string | null>(null);
   const pending = useRef<(() => Promise<void>) | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<Shape | null>(null);
 
   const step = async (job: () => Promise<Res>, done: (r: Res) => Promise<void> | void, retried: boolean) => {
+    if (!retried && needStepUp.current) {
+      pending.current = () => send(job, done, true);
+      setStepUp(needStepUp.current);
+      return;
+    }
     const r = await job();
+    if (r.ok || r.kind !== "step_up") needStepUp.current = null;
     if (!r.ok && r.kind === "step_up" && !retried) {
       pending.current = () => send(job, done, true);
-      setStepUp(await stepUpShape());
+      needStepUp.current = await stepUpShape();
+      setStepUp(needStepUp.current);
       return;
     }
     if (!r.ok && r.status === 401) {

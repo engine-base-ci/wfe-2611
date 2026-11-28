@@ -59,6 +59,8 @@ export function usePasswordFlow(d: PasswordDeps): PasswordFlow {
   const [stepUp, setStepUp] = useState(false);
   const then = useRef<(() => void) | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef(false);
 
   const begin = (m: Mode, n: string | null, next: (() => void) | null) => {
     then.current = next;
@@ -75,6 +77,10 @@ export function usePasswordFlow(d: PasswordDeps): PasswordFlow {
   };
 
   const run = async (m: Mode, v: PasswordValues, retried: boolean): Promise<void> => {
+    if (!retried && needStepUp.current) {
+      setShown(false);
+      return setStepUp(true);
+    }
     const r =
       m === "change"
         ? await call("changePassword", {
@@ -83,6 +89,7 @@ export function usePasswordFlow(d: PasswordDeps): PasswordFlow {
             keepOn401: true,
           })
         : await call("setMyPassword", { body: { new_password: v.next }, screenId: SCREEN, keepOn401: true });
+    needStepUp.current = !r.ok && r.kind === "step_up" && !retried;
     if (r.ok) {
       const after = then.current;
       close();

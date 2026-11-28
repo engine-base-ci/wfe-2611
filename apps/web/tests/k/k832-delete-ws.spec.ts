@@ -295,7 +295,8 @@ test("K832-UI-016 取り消しの本人確認：403 STEP_UP_REQUIRED で取り�
   page,
 }) => {
   const mk = await mockOps(page, { settings: deleting() });
-  mk.queue("cancelDeletion", err(403, "STEP_UP_REQUIRED"), err(403, "STEP_UP_REQUIRED"));
+  // やめた後の押し直しは送らず取り直しの小窓から・取り直した後に 1 回だけ送る（口 2 回・K-820 の形に揃える PM の決め 2026-11-28）
+  mk.queue("cancelDeletion", err(403, "STEP_UP_REQUIRED"));
   await openAt(page, owner.token, PATH);
   await cancel(page).click();
   await expect(stepDlg(page)).toContainText("消す手続きを取り消す前に、本人か確かめます");
@@ -306,7 +307,7 @@ test("K832-UI-016 取り消しの本人確認：403 STEP_UP_REQUIRED で取り�
   await passStepUp(page);
   await expect(band(page)).toHaveCount(0);
   expect(mk.count("stepUp")).toBe(1);
-  expect(mk.count("cancelDeletion")).toBe(3);
+  expect(mk.count("cancelDeletion")).toBe(2);
 });
 
 test("K832-UI-017 14 日を過ぎた（409 E-WS-032）：帯の下に口の文を赤い箱で出し、設定を読み直す。帯の「取り消す」はそのまま", async ({

@@ -146,20 +146,25 @@ export function useGuestAct(onResult: (r: GuestActResult) => void) {
   const target = useRef<{ act: GuestAct; id: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<StepUpAsk | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpAsk | null>(null);
 
   const askStepUp = async (): Promise<void> => {
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = (s.ok ? s.data : {}) as { two_factor?: boolean; has_password?: boolean };
-    setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+    needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    setStepUp(needStepUp.current);
   };
 
   const run = async (retried: boolean): Promise<void> => {
     const t = target.current;
     if (!t || sending.current) return;
+    if (!retried && needStepUp.current) return setStepUp(needStepUp.current);
     sending.current = true;
     setBusy(true);
     try {
       const r = await call(ACT_OP[t.act], { params: { id: t.id }, body: {} as never, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok || r.status === 404 || RELOAD_CODES.includes(r.code))
         await qc.invalidateQueries({ queryKey: GUEST_GROUPS_KEY });
       if (r.ok) return onResult({ ok: true });

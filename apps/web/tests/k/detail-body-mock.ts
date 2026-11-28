@@ -211,6 +211,8 @@ export async function mockDetail(page: Page, o: Partial<DetailAnswer> & { status
           text: d.text,
           reason: d.reason,
           decided_by: d.decided_by_name ? { id: ME, display_name: d.decided_by_name } : null,
+          // 決めた人の名前が無い行は AI が決めた行（K-571 の RESULTS の 2 行目）：高本の AI（decided_by_ai・2026-11-28 の形）
+          decided_by_ai: d.decided_by_name ? null : { member_id: ME, display_name: "高本" },
           decided_note: null,
           decided_at: d.decided_at,
           source: null,

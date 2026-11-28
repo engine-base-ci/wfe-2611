@@ -56,21 +56,27 @@ export function DeleteFlow({ onClose, settings, reload = noReload, onDenied }: S
   const [notice, setNotice] = useState<string | undefined>();
   const [stepUp, setStepUp] = useState<StepUpKind | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpKind | null>(null);
 
   const send = async (retried: boolean): Promise<void> => {
     if (sending.current || typed !== name) return;
+    if (!retried && needStepUp.current) return setStepUp(needStepUp.current);
     sending.current = true;
     setBusy(true);
     setError(undefined);
     setNotice(undefined);
     try {
       const r = await startDeletion(typed);
+      if (r.kind !== "step_up") needStepUp.current = null;
       if (r.kind === "ok" || (r.kind === "conflict" && r.code === ALREADY_DELETING)) {
         setStepUp(null);
         onClose();
         await reload();
-      } else if (r.kind === "step_up" && !retried) setStepUp(await stepUpKind());
-      else if (r.kind === "forbidden") {
+      } else if (r.kind === "step_up" && !retried) {
+        needStepUp.current = await stepUpKind();
+        setStepUp(needStepUp.current);
+      } else if (r.kind === "forbidden") {
         onClose();
         onDenied?.();
       } else if (r.kind === "conflict" || r.kind === "invalid") setError(r.text);
@@ -122,17 +128,23 @@ export function useCancelDeletion({ reload, onDenied }: { reload: () => Promise<
   const [notice, setNotice] = useState<string | undefined>();
   const [kind, setKind] = useState<StepUpKind | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpKind | null>(null);
 
   const send = async (retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) return setKind(needStepUp.current);
     sending.current = true;
     setBusy(true);
     setNotice(undefined);
     try {
       const r = await cancelDeletion();
+      if (r.kind !== "step_up") needStepUp.current = null;
       if (r.kind === "ok") await reload();
-      else if (r.kind === "step_up" && !retried) setKind(await stepUpKind());
-      else if (r.kind === "forbidden") onDenied();
+      else if (r.kind === "step_up" && !retried) {
+        needStepUp.current = await stepUpKind();
+        setKind(needStepUp.current);
+      } else if (r.kind === "forbidden") onDenied();
       else if (r.kind === "conflict") {
         if (r.code === PAST_DEADLINE) setNotice(r.text);
         await reload(); // 14 日を過ぎた・すでに取り消された：今の手続きの形を読み直す

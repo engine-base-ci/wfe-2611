@@ -40,6 +40,8 @@ export function LeaveWorkspace({ me, workspace, onClose, reload }: ProfileDialog
   const [error, setError] = useState<string | undefined>();
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   if (!workspace) return null;
   // 読み直した後は新しい行で形を決める（開いている間に変わった・409）
   const w = me.workspaces.find((x) => x.tenant_id === workspace.tenant_id) ?? workspace;
@@ -52,12 +54,14 @@ export function LeaveWorkspace({ me, workspace, onClose, reload }: ProfileDialog
 
   const run = async (retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) return setStepUp(needStepUp.current);
     sending.current = true;
     setBusy(true);
     setError(undefined);
     setLeaveNote(null);
     try {
       const r = await leaveWorkspace(w.tenant_id);
+      if (r.kind !== "step_up") needStepUp.current = null;
       if (r.kind === "ok") {
         if (w.current) {
           await signOut(); // 口がセッションを切っている（失敗しても手元の印を消して移る）
@@ -70,7 +74,8 @@ export function LeaveWorkspace({ me, workspace, onClose, reload }: ProfileDialog
         return;
       }
       if (r.kind === "step_up" && !retried) {
-        setStepUp(await stepUpNeeds());
+        needStepUp.current = await stepUpNeeds();
+        setStepUp(needStepUp.current);
         return;
       }
       if (r.kind === "assigned" || r.kind === "last_admin") return await reload(); // 形が替わる・抜けない

@@ -26,7 +26,7 @@ ERRORS_4XX = {
         {"status": 403, "code": "E-CRED-010", "body": {"error": "gate", "code": "E-CRED-010"}, "errors": ["E-CRED-010"],
          "trigger": "仕事がまだ取られていない・終わった・止まった（running・asking でない）",
          "ears_form": "UNWANTED: IF 仕事が動いていないなら、Kaname は 403 と E-CRED-010 を返し、預かり先から読まず使った記録も残さない"},
-        {"status": 403, "code": "E-CRED-011", "body": {"error": "dependency", "code": "E-CRED-011"}, "errors": ["E-CRED-011"],
+        {"status": 403, "code": "E-CRED-011", "body": {"error": "conflict", "code": "E-CRED-011"}, "errors": ["E-CRED-011"],
          "trigger": "失効した・期限が過ぎた・預かり先が断った・預かった中身が読めない（預け直す）",
          "ears_form": "UNWANTED: IF 失効したか期限が過ぎたか預かり先の物が読めないなら、Kaname は 403 と E-CRED-011 を返し、封を返さず使った記録も残さない"},
         {"status": 403, "code": "E-CRED-016", "body": {"error": "gate", "code": "E-CRED-016"}, "errors": ["E-CRED-016"],

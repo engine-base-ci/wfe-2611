@@ -100,6 +100,8 @@ function BillsBody({ q, now }: { q: BillsQuery; now: Date }) {
   const [pay, setPay] = useState<Pay>(null);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean; reason: string } | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const pending = useRef<(() => Promise<void>) | null>(null);
   const sending = useRef(false);
 
@@ -130,10 +132,17 @@ function BillsBody({ q, now }: { q: BillsQuery; now: Date }) {
     retried = false,
   ): Promise<void> =>
     guarded(async () => {
+      if (!retried && needStepUp.current) {
+        pending.current = () => send(job, done, reason, onOffline, true);
+        setStepUp({ ...needStepUp.current, reason });
+        return;
+      }
       const w = await job();
+      if (w.ok || w.err.kind !== "step_up") needStepUp.current = null;
       if (!w.ok && w.err.kind === "step_up" && !retried) {
         pending.current = () => send(job, done, reason, onOffline, true);
-        setStepUp({ ...(await stepUpShape()), reason });
+        needStepUp.current = await stepUpShape();
+        setStepUp({ ...needStepUp.current, reason });
         return;
       }
       if (!w.ok && w.err.status === 401) {

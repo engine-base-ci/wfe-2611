@@ -48,6 +48,8 @@ export function SessionsArea({ twoFactor, hasPassword }: SessionsAreaProps) {
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<Target | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef(false);
 
   const sessions = q.data?.sessions ?? [];
   const others = sessions.filter((s) => !s.current).length;
@@ -61,7 +63,12 @@ export function SessionsArea({ twoFactor, hasPassword }: SessionsAreaProps) {
   };
 
   const run = async (t: Target, retried: boolean) => {
+    if (!retried && needStepUp.current) {
+      setTarget(null);
+      return setPending(t);
+    }
     const r = t === "all" ? await revokeOthers(others) : await revokeOne(t.id);
+    needStepUp.current = r.kind === "step_up" && !retried;
     if (r.kind === "ok") {
       setTarget(null);
       notify(revokedText(t, r.revoked));

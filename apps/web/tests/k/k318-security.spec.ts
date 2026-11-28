@@ -8,6 +8,7 @@
 //   パスキーは CDP の仮の認証器。WebAuthn は IP の宛先を RP にできないので、パスキーを使う行は localhost の道で開く。
 //   本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
+import { SESSIONS_SAMPLE } from "../../features/F10/account/sessions-sample";
 import { generateKeyPairSync } from "node:crypto";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -151,7 +152,7 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     else if (p === "/api/v1/bridge/devices") r = ok([]);
     else if (p.startsWith("/api/v1/me/sessions")) {
       m.sessionsCalls += 1;
-      r = ok({ sessions: [], events: [] }); // K-842：端末の区画は口につながる（答えの形は K-836）
+      r = ok(SESSIONS_SAMPLE); // K-842：端末の区画は口につながる（答えの形は K-836）。下絵 sec-* と同じ見本の 1 台と 1 件（PM の決め 2026-11-28）
     } else if (method === "GET" && p === "/api/v1/me/security") {
       m.reads += 1;
       if (m.holdRead) return never();
