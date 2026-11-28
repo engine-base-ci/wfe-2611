@@ -1,0 +1,24 @@
+{
+ "ops": {
+  "getPlanProposalImpact": {
+   "file": "apps/api/test/features/F12/ops-plans-impact.test.ts",
+   "reason": "いまの顧客と案の値段・方針で数が変わる。種では作れない（K-989）",
+   "covers": {
+    "test_get_ops_plan_proposals_id_impact_ok": "K989-API-001",
+    "test_get_ops_plan_proposals_id_impact_shape": "K989-API-001",
+    "test_get_ops_plan_proposals_id_impact_not_found": "K989-API-007",
+    "test_get_ops_plan_proposals_id_impact_rejected_401": "K989-API-008",
+    "test_get_ops_plan_proposals_id_impact_rejected_403": "K989-API-008",
+    "test_get_ops_plan_proposals_id_impact_rejected_422": "K989-API-007",
+    "test_get_ops_plan_proposals_id_impact_rate_limited": "K989-API-010",
+    "test_get_ops_plan_proposals_id_impact_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_ops_plan_proposals_id_impact_terms_pending": "運営の人は顧客の規約の同意を持たない（K-944）"
+   }
+  }
+ }
+}
