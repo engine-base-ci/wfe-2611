@@ -247,7 +247,8 @@ test("K822-UI-008 本人確認の取り直し：403 STEP_UP_REQUIRED で小窓�
 }) => {
   const mk = await openAs(page);
   removed(mk);
-  mk.queue("remove", err(403, "STEP_UP_REQUIRED"), err(403, "STEP_UP_REQUIRED"));
+  // やめた後の押し直しは送らず取り直しの小窓から・取り直した後に 1 回だけ送る（口 2 回・K-820 の形に揃える PM の決め 2026-11-28）
+  mk.queue("remove", err(403, "STEP_UP_REQUIRED"));
   await open(page);
   await goBtn(page).click();
   await expect(stepDlg(page)).toContainText("鈴木 一郎 をワークスペースから外す前に、本人か確かめます");
@@ -259,9 +260,9 @@ test("K822-UI-008 本人確認の取り直し：403 STEP_UP_REQUIRED で小窓�
   await passStepUp(page);
   await expect(page).toHaveURL(/\/members$/);
   expect(mk.count("stepUp")).toBe(1);
-  expect(mk.count("remove")).toBe(3);
+  expect(mk.count("remove")).toBe(2);
   expect(mk.count("preview")).toBe(1);
-  expect(mk.of("remove")[0]!.body).toEqual(mk.of("remove")[2]!.body);
+  expect(mk.of("remove")[0]!.body).toEqual(mk.of("remove")[1]!.body);
 });
 
 test("K822-UI-009 外せた：/members に移り、知らせ「鈴木 一郎 さんを外しました。担当のチケット 4 件は 佐藤 花子 さんに移りました。30 日のあいだは、同じメールで招き直すと戻せます」・並びを読み直す。外した人は営業の行から消える", async ({

@@ -160,7 +160,8 @@ test("K821-UI-004 本人確認の取り直し：403 STEP_UP_REQUIRED で小窓�
 }) => {
   const mk = await openAs(page, PATH);
   mk.set("suspend", stateBody(true));
-  mk.queue("suspend", err(403, "STEP_UP_REQUIRED"), err(403, "STEP_UP_REQUIRED"));
+  // やめた後の押し直しは送らず取り直しの小窓から・取り直した後に 1 回だけ送る（口 2 回・K-820 の形に揃える PM の決め 2026-11-28）
+  mk.queue("suspend", err(403, "STEP_UP_REQUIRED"));
   await stopBtn(page).click();
   await go(stopDlg(page), "本人確認して止める").click();
   await expect(stepDlg(page)).toContainText("鈴木 一郎 を一時的に止める前に、本人か確かめます");
@@ -172,7 +173,7 @@ test("K821-UI-004 本人確認の取り直し：403 STEP_UP_REQUIRED で小窓�
   await passStepUp(page);
   await expect(toast(page)).toBeVisible();
   expect(mk.count("stepUp")).toBe(1);
-  expect(mk.count("suspend")).toBe(3);
+  expect(mk.count("suspend")).toBe(2);
 });
 
 test("K821-UI-005 最後の管理者を止める（409 E-MEM-004）：確かめを閉じ、上の赤い箱「止められません」「佐藤 花子は、いまの管理者の最後の 1 人です。先にほかの人を管理者にしてから、止めてください」・帯は出ない", async ({

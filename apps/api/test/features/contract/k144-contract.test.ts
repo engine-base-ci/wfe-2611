@@ -24,11 +24,14 @@ import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
 import { late, readK144Leaves } from "./k144-leaves.js"; // K-378：葉が足す分は置き場 k144.d の葉ごとのファイルから読む
+import { ALL_CAPS, OPS_TENANT } from "../F12/ops-ws.harness.js"; // 統合の直し：運営の口の uuid の行を運営の人で叩く
 
 let f: Fixture;
 let T: { tenantId: string; rootScope: string };
 let writer: Person;
 let mate: Person;
+/** 運営の人（運営の口 auth: ops は入口が運営の人でないと uuid の確かめより先に 403 を返すので、運営の口の uuid の行はこの人で叩く・統合の直し 2026-11-28） */
+let opsPerson: Person;
 let task: { id: string };
 /** PC の印（device の口を叩く。K-62 の口は PC の印で入る・D-128.163） */
 let pcToken = "";
@@ -158,6 +161,19 @@ beforeAll(async () => {
   T = await f.company("K144 の会社", "KS");
   writer = await f.person(T.tenantId, T.rootScope, { name: "書く人", ticketAbility: "edit" });
   mate = await f.person(T.tenantId, T.rootScope, { name: "担当の人", ticketAbility: "edit" });
+  // 統合の直し（PM の決め 2026-11-28）：運営の人（できることは全部）。作り方は ops-ws.harness.ts の ops と同じ
+  const opsScope = (
+    await f.admin.query<{ id: string }>(
+      "insert into scopes (tenant_id, name, ticket_prefix) values ($1, $2, '') returning id",
+      [OPS_TENANT, `K144 運営 ${randomUUID().slice(0, 8)}`],
+    )
+  ).rows[0]!.id;
+  opsPerson = await f.person(OPS_TENANT, opsScope, { name: "K144 運営", role: "ops" });
+  await f.admin.query("insert into ops_members (tenant_id, member_id, caps) values ($1, $2, $3)", [
+    OPS_TENANT,
+    opsPerson.id,
+    [...ALL_CAPS],
+  ]);
   const kinds = (await json(await f.req("GET", "/ticket_kinds", { headers: writer.auth }))).data as {
     id: string;
     name: string;
@@ -177,6 +193,7 @@ beforeAll(async () => {
   pcToken = claimed.device_token;
 }, 60_000);
 afterAll(async () => {
+  if (opsPerson) await f.admin.query("delete from ops_members where member_id = $1", [opsPerson.id]); // 統合の直し
   await f?.close();
 });
 
@@ -542,7 +559,8 @@ const hit = (op: string, where: "path" | "query", name: string, value: string) =
   if (where === "query") path += `?${name}=${encodeURIComponent(value)}`;
   const body = d.method === "GET" || d.method === "DELETE" ? undefined : (BODIES[op] ?? LEAVES.BODIES[op] ?? {});
   // PC の口（auth device）は PC の印で入る。画面のセッションだと役が合わず 403（入口の uuid の確かめより前・op.ts の順）
-  const who = d.auth === "device" ? { "x-bridge-session": pcToken } : writer.auth;
+  //   運営の口（auth ops）は運営の人で入る。会員の人だと入口が uuid の確かめより前に 403（op.ts の順・統合の直し 2026-11-28）
+  const who = d.auth === "device" ? { "x-bridge-session": pcToken } : d.auth === "ops" ? opsPerson.auth : writer.auth;
   return f.req(d.method, path, {
     headers: { ...who, ...(OTHER_HEADERS[op] ?? {}) },
     ...(body === undefined ? {} : { body }),
