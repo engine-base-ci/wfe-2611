@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {
+   "paths": ["apps/web/features/F12/help/**", "apps/web/app/(work)/inquiry/page.tsx"],
+   "tests": ["apps/web/tests/k/k953-inquiry-ask.spec.ts", "apps/web/test/k953-ask-shape.test.ts"]
+  }
+ ]
+}

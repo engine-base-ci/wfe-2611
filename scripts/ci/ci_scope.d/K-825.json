@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/ws/**", "apps/web/app/(work)/audit/**"], "tests": ["apps/web/tests/k/k825-audit.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k825-audit.spec.ts": "道の一覧 apps/web/lib/built-routes.ts（第 2 ナビの記録が /audit へ押せるか・K825-UI-002）を読む（K-825）"
+ }
+}
