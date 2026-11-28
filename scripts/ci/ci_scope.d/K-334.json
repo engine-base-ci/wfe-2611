@@ -1,0 +1,22 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F2/invitations/**",
+    "apps/api/src/hooks/invitations.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-resend-request.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F2/invitation-resend-request.test.ts",
+    "apps/api/test/features/F2/invite.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_invitations_token_resend_request.test.ts"
+   ]
+  }
+ ]
+}

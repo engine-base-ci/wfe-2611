@@ -1,0 +1,1 @@
+python3 scripts/ci/k640_runs_on_test.py
