@@ -1,0 +1,5 @@
+{
+  "data_links": [
+    {"paths": ["apps/web/features/F12/ops2/templates-*", "apps/web/features/F12/ops2/operations-screen.tsx", "apps/web/features/F12/ops2/use-ops-templates.ts", "apps/web/features/F12/ops2/views-skills.tsx", "apps/web/app/(ops)/ops/skills/templates/**", "apps/web/app/(ops)/ops/skills/operations/**"], "tests": ["apps/web/tests/k/k994-templates.spec.ts", "apps/web/test/k994-templates-shape.test.ts"]}
+  ]
+}
