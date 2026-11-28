@@ -1,0 +1,66 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-010",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-publish"
+   },
+   "when": "使えなくなるメンテのお知らせに、メンテの始まりか終わりの時間が無いまま出した",
+   "false_when": "メンテの時間を書いたメンテ・リリース・障害を出した",
+   "message": "メンテの時間を書いてから出してください",
+   "action": "書き直して時間を入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営のお知らせの下書きを 1 つ作っておく",
+    "steps": [
+     "種類をメンテにして、メンテの時間を書かずに下書きにする",
+     "出す確かめで「出す」を押す"
+    ],
+    "needs": "お知らせ（notice）を持つ運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.127"
+   ],
+   "support_code": "OPS-010"
+  },
+  {
+   "id": "E-OPS-011",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-publish"
+   },
+   "when": "もう出した・予定にしたお知らせをもう一度出した（二度押し・同時に 2 回）",
+   "false_when": "下書きのお知らせを初めて出した",
+   "message": "このお知らせはもう出しています",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営のお知らせの下書きを 1 つ作っておく",
+    "steps": [
+     "下書きを出す",
+     "同じお知らせをもう一度出す"
+    ],
+    "needs": "お知らせ（notice）を持つ運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33"
+   ],
+   "support_code": "OPS-011"
+  }
+ ]
+}
