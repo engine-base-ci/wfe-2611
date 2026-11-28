@@ -1,0 +1,84 @@
+{
+ "ops": {
+  "createLayer": {
+   "file": "apps/api/test/features/F10/admin-layer.test.ts",
+   "reason": "層を足す口は、権限・8 段の上限・同じ名前・並びの押し出し・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-803）",
+   "covers": {
+    "test_post_layers_ok": "K803-API-001",
+    "test_post_layers_shape": "K803-API-001",
+    "test_post_layers_rejected_401": "K803-API-006",
+    "test_post_layers_rejected_403": "K803-API-006",
+    "test_post_layers_conflict": "K803-API-004",
+    "test_post_layers_rejected_422": "K803-API-003",
+    "test_post_layers_rate_limited": "K803-API-006",
+    "test_post_layers_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_layers_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_layers_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_layers_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-802 と同じ扱い）"
+   }
+  },
+  "updateLayer": {
+   "file": "apps/api/test/features/F10/admin-layer.test.ts",
+   "reason": "直す口は、権限・同じ名前・並びの動かし方・同時の組み合わせで答えが変わる（K-803）",
+   "covers": {
+    "test_patch_layers_id_ok": "K803-API-009",
+    "test_patch_layers_id_shape": "K803-API-009",
+    "test_patch_layers_id_rejected_401": "K803-API-013",
+    "test_patch_layers_id_rejected_403": "K803-API-013",
+    "test_patch_layers_id_not_found": "K803-API-012",
+    "test_patch_layers_id_conflict": "K803-API-011",
+    "test_patch_layers_id_rejected_422": "K803-API-012",
+    "test_patch_layers_id_rate_limited": "K803-API-013",
+    "test_patch_layers_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_layers_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_layers_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_patch_layers_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-802 と同じ扱い）"
+   }
+  },
+  "listLayers": {
+   "file": "apps/api/test/features/F10/admin-layer.test.ts",
+   "reason": "層の一覧は会社の人なら誰でも読め、会社ごとに層の数・並びが変わる。生成の試験の種では会社ごとの並びを確かめられない（K-803）",
+   "covers": {
+    "test_get_layers_ok": "K803-API-017",
+    "test_get_layers_shape": "K803-API-017",
+    "test_get_layers_rejected_401": "K803-API-018",
+    "test_get_layers_rate_limited": "K803-API-018",
+    "test_get_layers_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_layers_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_layers_rejected_403": "会社の人なら誰でも読める（役を見ない）",
+    "test_get_layers_rejected_422": "入力を受けない GET",
+    "test_get_layers_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-802 と同じ扱い）"
+   }
+  }
+ }
+}
