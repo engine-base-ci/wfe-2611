@@ -68,11 +68,12 @@ describe("K-391 決定を改める", () => {
       cancelled: null,
     });
     expect(d.previous).toMatchObject({ id: old, text: "支払いは月末", superseded_by_id: d.decision.id });
-    // 改めた行（previous）も新しい行も、K-390 の決定と同じ 12 の鍵
+    // 改めた行（previous）も新しい行も、K-390 の決定と同じ 13 の鍵
     const KEYS = [
       "cancelled",
       "decided_at",
       "decided_by",
+      "decided_by_ai",
       "decided_note",
       "id",
       "promoted_to",

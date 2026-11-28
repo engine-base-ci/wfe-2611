@@ -143,6 +143,8 @@ test("K571-UI-005 結果の場所：成果物・決定ログ・申し送りが�
   await expect(log).toContainText("追加対応は 2 件を明細に分けて載せる");
   await expect(log).toContainText("高本");
   await expect(log).toContainText("AI");
+  // AI が決めた行は「〈呼び名〉のAI（AI が決めた）」（代表の答え answer=538b4df12feb・決定の口の decided_by_ai）
+  await expect(log).toContainText("高本のAI（AI が決めた）");
   await expect(page.getByRole("region", { name: "申し送り" })).toContainText("宛先の経理担当が変わっていないか");
 });
 
@@ -577,6 +579,9 @@ for (const [row, id, results] of [
   });
 }
 
+/** 選ぶ欄の会社の項目に 1 つ目の選択肢を入れる（下絵 f4v2-detail-more の値） */
+const picked = (f: (typeof COMPANY)[number]) => (f.field_type === "select" ? { ...f, value: f.options[0]!.id } : f);
+
 const MORE_PAIRS: FidelityPair[] = [
   {
     name: "more",
@@ -630,7 +635,8 @@ for (const [row, id, pairs, body] of [
         id,
         w,
         async (page) => {
-          await mockDetail(page, body ? { body } : {});
+          // 会社の項目の選ぶ値は下絵と同じ（PJコード「SK-2026-11」・分類「請求」）。既定の作り物は空のまま（K571-UI-011 が空の行を見る）
+          await mockDetail(page, body ? { body } : { fields: COMPANY.map(picked) });
           await openDetail(page, w);
           await expect(panel(page)).toBeVisible();
           if (body) await expect(bodyRegion(page)).toBeVisible();

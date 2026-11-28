@@ -68,7 +68,7 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-CRED-013", "body": {"error": "conflict", "code": "E-CRED-013"}, "errors": ["E-CRED-013"],
          "trigger": "API キー・値（ログインでない物）",
          "ears_form": "UNWANTED: IF ログインでない物なら、Kaname は 409 と E-CRED-013 を返し、確かめの仕事を積まない"},
-        {"status": 409, "code": "E-CRED-011", "body": {"error": "dependency", "code": "E-CRED-011"}, "errors": ["E-CRED-011"],
+        {"status": 409, "code": "E-CRED-011", "body": {"error": "conflict", "code": "E-CRED-011"}, "errors": ["E-CRED-011"],
          "trigger": "失効した・期限が過ぎた",
          "ears_form": "UNWANTED: IF 失効したか期限が過ぎたなら、Kaname は 409 と E-CRED-011 を返し、確かめの仕事を積まない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
