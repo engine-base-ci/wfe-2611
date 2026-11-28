@@ -1,0 +1,16 @@
+{
+ "ops": {
+  "issueOpsInvoices": {
+   "covers": {
+    "test_post_ops_invoices_issue_conflict_2": {
+     "file": "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
+     "mark": "K1013-DB-001"
+    },
+    "test_post_ops_invoices_issue_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  }
+ }
+}
