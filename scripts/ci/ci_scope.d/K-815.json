@@ -1,0 +1,21 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/remove-preview.ts",
+    "packages/db/migrations/20261126001500_member_remove_preview.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-remove-preview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/admin-member-remove-preview.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_members_id_remove_preview.test.ts"
+   ]
+  }
+ ]
+}
