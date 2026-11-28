@@ -4491,23 +4491,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "screen": "tickets"
     }
   },
-  "E-SEC-006": {
-    "id": "E-SEC-006",
-    "cls": "permission",
-    "message": "この操作をする権限がありません。権限が変わったかもしれません。画面を読み直してください",
-    "action": "画面を読み直す",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-SEC-006",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
   "E-SEC-020": {
     "id": "E-SEC-020",
     "cls": "conflict",
@@ -4780,6 +4763,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "links"
+    }
+  },
+  "E-SEC-006": {
+    "id": "E-SEC-006",
+    "cls": "permission",
+    "message": "この操作をする権限がありません。権限が変わったかもしれません。画面を読み直してください",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   },
   "E-NTF-001": {
