@@ -1,0 +1,34 @@
+{
+ "ops": {
+  "editApproval": {
+   "file": "apps/api/test/features/F5/approval-edit.test.ts",
+   "reason": "自分で直すは、承認の状態・承認する人・成果物の版で答えが変わる。生成の試験の種では決まっていない承認と担当者と今の版の組を作れない（K-742）",
+   "covers": {
+    "test_post_approvals_id_edit_ok": "K742-API-001",
+    "test_post_approvals_id_edit_shape": "K742-API-001",
+    "test_post_approvals_id_edit_rejected_401": "K742-API-010",
+    "test_post_approvals_id_edit_rejected_403": "K742-API-006",
+    "test_post_approvals_id_edit_not_found": "K742-API-006",
+    "test_post_approvals_id_edit_conflict": "K742-API-003",
+    "test_post_approvals_id_edit_conflict_2": "K742-API-005",
+    "test_post_approvals_id_edit_conflict_3": "K742-API-007",
+    "test_post_approvals_id_edit_rejected_422": "K742-API-009",
+    "test_post_approvals_id_edit_rate_limited": "K742-API-010",
+    "test_post_approvals_id_edit_session_unresolved": "K742-API-011",
+    "test_post_approvals_id_edit_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_approvals_id_edit_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_approvals_id_edit_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  }
+ }
+}
