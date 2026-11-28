@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F2/invitations/**", "apps/api/src/hooks/invitations.ts"], "tests": ["apps/api/test/features/F2/invitation-accept-signed.test.ts"]},
+  {"paths": ["apps/api/test/features/F2/invitation-accept-signed.test.ts"], "tests": ["apps/api/test/generated/post_auth_invitations_token_accept.test.ts"]}
+ ]
+}
