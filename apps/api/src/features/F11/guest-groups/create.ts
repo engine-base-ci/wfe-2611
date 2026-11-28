@@ -1,6 +1,6 @@
 // ゲストのグループを作る口（K-876）：createGuestGroup（POST /api/v1/guest-groups・D-155.40・D-155.51）。
 //   入口（op.ts）が先に確かめる：ログイン・社内の人（ゲストは 403）・上限・冪等・体の形（name・request_scope_id。知らない欄は 422）。順：
-//   ① 名前の前後の空白を取る。空白だけは 422・VALIDATION_ERROR（欄 name）。届け先が無い・文字でないも 422（欄 request_scope_id）
+//   ① 名前は入れた字のまま（NFKC で崩さない・K-927 の直す口と同じ）で、前後の空白を取る。空白だけは 422・VALIDATION_ERROR（欄 name）。届け先が無い・文字でないも 422（欄 request_scope_id）
 //   ② 1 つの取引（app.guest_group_create）で、グループの行と証跡 guest_group.created を書く。権限（members の invite か edit）は関数が確かめる。
 //      権限が無い → 403・FORBIDDEN／届け先の社内のグループが無い・消した・別の会社 → 404・E-GST-003／同じ名前（表記ゆらぎを含む）→ 409・E-GST-002。
 //      404・409 は欄・details を付けない（在る名前・在るグループを漏らさない）。ほかは 503・E-PAGE-003（何も残らない・ログは例外の種類だけ）
@@ -9,6 +9,7 @@ import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
+import { typedName } from "./rename.js";
 
 // DB の断りの読み方（一覧の口 list.ts も使う）
 
@@ -50,7 +51,8 @@ function refused(e: unknown): HookReply {
 
 export function createCreateGuestGroup(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs) => {
-    const raw = a.input["name"];
+    // 名前は入れた字のまま（全角・（）を NFKC で崩さない）。直す口 renameGuestGroup と同じ読み方（K927-API-001）
+    const raw = await typedName(a);
     const name = typeof raw === "string" ? raw.trim() : "";
     if (name === "") return badField("name", "ゲストのグループの名前を入れてください");
     if (Array.from(name).length > NAME_MAX) return badField("name", `${NAME_MAX} 文字まで`);

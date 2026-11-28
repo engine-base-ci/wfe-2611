@@ -81,6 +81,12 @@ export async function guestByLink(browser: Browser, link: string, email: string,
   const [u] = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
   await addTestEntry(u!.id); // 入り方を 1 つ持つ人にする（付けるまで進めない・K-321）
   await page.goto("/portal");
+  // 初めて入ったゲストには「ようこそ」が先に出る（K-873 の Welcome・first_visit）。「やり取りを始める」で先方の場所へ
+  const start = page.getByRole("button", { name: "やり取りを始める", exact: true });
+  const home = page.getByRole("heading", { level: 1, name: /とのやり取り$/ }); // 読み中の見出しは「やり取り」だけ（会社の名前は答えから）
+  await expect(start.or(home)).toBeVisible();
+  if (await start.isVisible()) await start.click();
+  await expect(home).toBeVisible();
   const token = await page.evaluate(() => window.localStorage.getItem("kaname.token"));
   expect(token, "ログインの印を持つ").toBeTruthy();
   const [m] = await admin<{ id: string }>(
@@ -153,7 +159,8 @@ export const dueField = (due: string): string => {
  *  担当は Base UI の Select（combobox を押して option を選ぶ・<select> ではない）。期限の欄は「M/D」の形だけを受ける（K-930）ので、
  *  due（YYYY-MM-DD・今日より後の日）を「M/D」に直して入れる。画面は次のその日付の YYYY-MM-DD にして送るので、DB の due_on は due と同じ日 */
 export async function acceptOnScreen(page: Page, due: string): Promise<number> {
-  await page.getByRole("button", { name: "チケットを作る", exact: true }).click();
+  // 外枠の左のメニューにも「＋チケットを作る」が在る。依頼の本文（#k-main）の中のボタンを押す
+  await page.locator("#k-main").getByRole("button", { name: "チケットを作る", exact: true }).click();
   const d = page.getByRole("dialog", { name: "チケットを作る", exact: true });
   await d.getByRole("combobox", { name: "担当", exact: true }).click();
   await page.getByRole("option").first().click();
