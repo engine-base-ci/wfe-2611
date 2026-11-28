@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-ME-030",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "me-sessions"
+   },
+   "when": "入っている端末の一覧で、今使っている端末そのものを切ろうとした",
+   "false_when": "今の端末でない、自分のログインの生きている端末を切る",
+   "message": "この端末は切れません。ログアウトを使ってください",
+   "action": "ログアウトする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ログインと安全の画面で入っている端末の一覧を開く",
+    "steps": [
+     "口を直に呼び、今の端末の id を切る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.18"
+   ]
+  }
+ ]
+}
