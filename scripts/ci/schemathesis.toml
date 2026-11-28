@@ -1,0 +1,112 @@
+# K-427：NUL（U+0000）は契約の形（string）では書けないが、入口（op.ts）が必ず 422 で断る字。fuzz が「形どおりの入力」として作ると
+#   positive_data_acceptance が 422 を赤と数えるので、作らない。NUL を断ることは apps/api/test/k427_nul_input.test.ts が全部の置き場所で見る
+[generation]
+allow-x00 = false
+
+# 契約 fuzz（G36・scripts/ci/fuzz.sh）の設定。schemathesis 4.33 の既定に 413 だけを足す（K-62・テスター回 10 の #5）。
+#   入口（apps/api/src/contract/op.ts）は 1 回に送る内容が 1MB を超えたら 413・PAYLOAD_TOO_LARGE で断る（D-130.1・K-144）。
+#   欄の上限（例：finishBridgeJob の result 200000 字）を超える体は、字によっては 1MB も超えるので、口より先に入口が 413 で断る。
+#   契約の responses にも 413 がある。断ったのに「受け付けた」（ST201）と数えないよう、断った状態コードの並びに 413 を入れる
+[checks.negative_data_rejection]
+expected-statuses = ["400", "401", "403", "404", "405", "406", "409", "413", "415", "422", "428", "429", "5xx"]
+
+# K-424（決める人の決め answer=f0f290e785a9）：口が断る番号は役割で分ける。422＝形の誤り（契約に書ける物だけ）／404＝指した物が無い・見えない／
+#   409＝今の状態ではできない。そこで「形どおりの入力を断っていないか」（ST202）は、404・409 を受け付けとして数え、422（と 400・413 など形で断る番号）だけを赤にする。
+#   schemathesis 4.33 の既定と同じ並びだが、版で既定が変わっても決まりが変わらないよう、全体の並びをここ 1 か所で決める。
+#   下の口ごとの 422 の例外は、決まりに沿っていない口の印（直しの葉の候補・K-424 の申し送り）。決まりに沿うよう口を直したら外す
+[checks.positive_data_acceptance]
+expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "429", "5xx"]
+
+# K-250：はじめにやることの口の「飛ばす」は、体の key が任意の項目（credentials・表記ゆらぎを含む）のときだけ受け、
+#   ほかの字（passkey・pc・知らない字・空）は 422（欄 key）で断る。契約の形は key を string としか書けない（どの字が任意の項目かは口が決める）ので、
+#   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "dismissSetupTasks"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-161：一覧の「続きの印」（cursor）は、口が前の答えで渡した鍵の文字列（base64url）だけを受ける。形（pattern）は合っていても、
+#   復号できない・3 つに分かれない印は 422（欄 cursor）で断る（D-131.9・K63-API-040）。形だけでは書けない決まりなので、
+#   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "listApprovalQueue"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-312：パスワードを変える・決める口は、新しいパスワードが漏れたもの（E-VAL-011・外の照合）・128 を部品と同じ UTF-16 の長さで超える（E-VAL-026）・
+#   今のパスワードが違う（欄 current_password）を 422 で断る。どれも契約の形（string）では書けない（x-unexpressible-422）ので、
+#   この 2 つの口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）。決める口のもうある人の 409 は既定の並びに在る
+[[operations]]
+include-operation-id = "changePassword"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "setMyPassword"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-476：保存した検索条件を直す口の条件（filters）の欄の名前（英数字と _ の 40 字まで）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "updateSavedView"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-475：保存した検索条件を作る口の条件（filters）の欄の名前（英数字と _ の 40 字まで）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "createSavedView"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-750：決めた履歴の一覧の「続きの印」（cursor）も、口が前の答えで渡した鍵の文字列（決めた時刻の字|id の base64url）だけを受ける。
+#   形（pattern）は合っていても、復号できない・2 つに分かれない・時刻や uuid でない印は 422（欄 cursor・K750-API-010）。
+#   K-161 の listApprovalQueue と同じく形だけでは書けない決まりなので、この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "listApprovalHistory"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-757：会話の一覧と会話の行の「続きの印」（cursor）も、口が前の答えで渡した鍵の文字列（base64url）だけを受ける。形（pattern）は合っていても、
+#   復号できない・時刻と id の 2 つに分かれない印は 422（欄 cursor）で断る（K757-API-004・K757-API-014）。形だけでは書けない決まりなので、
+#   この 2 つの口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない・K-161 の listApprovalQueue と同じ）
+[[operations]]
+include-operation-id = "listConversations"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "listConversationMessages"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-1116：PC の確かめに答える口は、PC がコードを頼んだ（確かめを始めた）後だけ受け、頼まれていなければ 404 E-CRED-014（K-355 の決め・契約にもある）。
+#   設定を作った（POST /credentials）だけでは頼まれていないので、schemathesis が自分で引いた線で作った直後に叩くと必ず 404 になり、
+#   「作った物が引けない」（ST302・ensure_resource_availability）と数える。この口に限って外す（答えの 404 は credential-login-check.test.ts の K355-API-013 が見る）。
+#   schemathesis 4.33 の stateful は、答えの確かめをその口の設定で組む（engine/run/stateful/_executor.py の checks_config_for(operation=…)）
+[[operations]]
+include-operation-id = "answerCredentialLoginCheck"
+checks.ensure_resource_availability.enabled = false
+
+# K-754：やったことの一覧（listCloneActivity）の「続きの印」（cursor）も、口が前の答えで渡した鍵の文字列（base64url）だけを受ける。形（pattern）は合っていても、
+#   復号できない・時刻と id の 2 つに分かれない印は 422（欄 cursor）で断る（K754-API-012）。形だけでは書けない決まりなので、
+#   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない・K-161 の listApprovalQueue・K-757 と同じ）
+[[operations]]
+include-operation-id = "listCloneActivity"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-679：下書きを保存する口の本文（doc）は、エディタの文書の形（一番外の type が doc・知っている節と印だけ・入れ子の決まり）を口の確かめ（validateDoc）が見て、
+#   外れたら 422（欄 doc）で断る。入れ子の木の決まりは契約の形（object）では書き切れないので、この口に限って「形どおりの入力」を 422 で断るのを
+#   受け付けとして数えない（ST202 にしない・K-161 と同じ形・PM の決め 2026-11-23）。確かめ方はゆるめない（断ることは knowledge-draft.test.ts が見る）
+[[operations]]
+include-operation-id = "saveKnowledgeDraft"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-424（G36 の回 45185794809 の ST202 2 件）：チケットを作る口の区画（sections）・会社の項目（fields）と、直す口の会社の項目（fields）の欄の名前の決まり
+#   （区画は英小文字で始まる 41 字まで・項目は uuid）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422・05_flow/screen_api.d/K-424.py）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない・K-475 と同じ）
+[[operations]]
+include-operation-id = "createTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "updateTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-823：記録を探す口の続きの印も鍵の文字列（base64url）。形（pattern）は合っていても、ほどけない・中身が 時刻（マイクロ秒）_uuid でない印は
+#   422・E-AUD-002（欄 cursor）で断る。形だけでは書けない決まりなので、K-161 の listApprovalQueue と同じく 422 を受け付けとして数えない
+[[operations]]
+include-operation-id = "listAuditEvents"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
