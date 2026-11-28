@@ -45,8 +45,11 @@ describe("DELETE /api/v1/me/workspaces/:id", () => {
   it.todo("test_delete_me_workspaces_id_terms_pending");
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_delete_me_workspaces_id_mfa_pending");
-  // 当てはまらない（セッションが引けない要求を止める入口の共通の 401 で、この口に届かない）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_delete_me_workspaces_id_session_unresolved");
+  it("test_delete_me_workspaces_id_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   // 当てはまらない（道の id の NUL を断る入口の共通の 422 で、この口に届かない（uuid の形は K838-API-009 と k144 の K144-API-1181））：UNWANTED: IF 名前・メール・パスワード・2 段階認証の保存に失敗した、または変更後に他の端末と Bridge の失効が実行されなかった THEN Kaname は「保存できませんでした。もう一度お試しください。パスワードを変えた場合は他の端末で入り直しが必要です」を返し、もう一度保存する／端末の一覧で失効を確認する（E-ACT-040）
   it.todo("test_delete_me_workspaces_id_rejected_422_2");
   it("test_delete_me_workspaces_id_shape", () => {

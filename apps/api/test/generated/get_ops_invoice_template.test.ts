@@ -21,6 +21,8 @@ describe("GET /api/v1/ops/invoice-template", () => {
   });
   // 当てはまらない（入力を受けない GET）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_ops_invoice_template_rejected_422");
+  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-invoice-template.test.ts）：UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない
+  it.todo("test_get_ops_invoice_template_not_found");
   it("test_get_ops_invoice_template_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/ops-invoice-template.test.ts の「K1107-API-014」（同じ CI の G3 で流れる）

@@ -36,5 +36,6 @@ ERRORS_4XX = {
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "招待の行と証跡を書く DB が落ちた",
          "ears_form": "UNWANTED: IF 招待を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、招待も証跡も残さない"},
+        {"status": 409, "code": "E-PLAN-003", "body": {"error": "conflict", "code": "E-PLAN-003"}, "errors": ["E-PLAN-003"], "trigger": "いまのプランの人数の上限（社内の人と招待中の社内の招待の和）に達している（K-1103 の席の上限）", "ears_form": "UNWANTED: IF いまのプランの人数の上限に達しているなら、Kaname は 409 と E-PLAN-003 を返し、招待のリンクを作らない"},
     ],
 }

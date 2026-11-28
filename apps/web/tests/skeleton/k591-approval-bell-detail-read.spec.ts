@@ -26,7 +26,7 @@ import {
 } from "../_lib/f7-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { asPerson, pairedPc, teammate, ticketOf } from "../_lib/prep";
+import { asPerson, pairedPc, pressDelegate, teammate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -97,7 +97,7 @@ async function takeSoon(r: Ready, what: string): Promise<Job> {
 /** 画面で任せる → PC が作る段を取る → 中身のある結果で終える（承認待ちになる）。開いたままの詳細が承認待ちの帯に替わる */
 async function delegateToApproval(page: Page, r: Ready, text: string = AI.made): Promise<void> {
   await openTicket(page, r.t, r.title);
-  await page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+  await pressDelegate(page);
   await expect(aiBand(page)).toContainText("に任せました");
   const job = await takeSoon(r, "任せた仕事は任せた人の PC に渡る");
   expect(await r.w.finish(job.job_id, { state: "done", result: text, agent_session_id: r.session })).toEqual({
@@ -235,7 +235,8 @@ test("K591-M1-04 ほかの人のお知らせは見えない：同じ会社の 2 
       .filter({ hasText: /書き込み|設定|承認/ }),
     "行は 1 つ",
   ).toHaveCount(1);
-  await expect(page.getByText(secretTitle), "別の人のお知らせの題名が画面のどこにも出ない").toHaveCount(0);
+  // 題名のチケットは 1 人目が作った物で、一覧（/tickets）の行には出る。お知らせの箱に出ないことを見る
+  await expect(noticeBox(page).getByText(secretTitle), "別の人のお知らせの題名が箱に出ない").toHaveCount(0);
   // 口を直に読んでも、答えに別の人の行が無い（2 層目：口と行の守り・D-151.3）
   const res = await asPerson(page, r.me.token, "GET", "/notifications");
   expect(res.status).toBe(200);
@@ -271,7 +272,10 @@ test("K591-M1-06 鈴の口で見る：承認待ちのお知らせは GET /notifi
   const r = await ready(page, "口で見る");
   const { number } = await ticketFacts(r.t);
   // 任せるのは口で（画面で任せる道は M1-01 が通る）。PC が作る段を中身のある結果で終えると承認待ちになる
-  const delegated = await asPerson(page, r.me.token, "POST", `/tickets/${r.t}/delegate`, {});
+  // 確認項目が 0 件のチケットは使わない理由を付けて任せる（K-573：理由が無いと口は 409）
+  const delegated = await asPerson(page, r.me.token, "POST", `/tickets/${r.t}/delegate`, {
+    no_spec_reason: "定型の作業（試験）",
+  });
   expect(delegated.status, "任せる口が受ける").toBe(201);
   const job = await takeSoon(r, "任せた仕事は任せた人の PC に渡る");
   expect(await r.w.finish(job.job_id, { state: "done", result: AI.made, agent_session_id: r.session })).toEqual({

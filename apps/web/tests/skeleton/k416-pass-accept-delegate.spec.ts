@@ -32,7 +32,7 @@ import {
 } from "../_lib/f8-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { pairedPc, ticketOf } from "../_lib/prep";
+import { pairedPc, pressDelegate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -83,7 +83,6 @@ async function ready(page: Page, browser: Parameters<typeof mateOf>[0], tag: str
   const t = await ticketOf(page, me, title, SECTIONS);
   return { me, mate, t, title };
 }
-const delegateBtn = (page: Page) => page.getByRole("button", { name: "AI に任せる", exact: true });
 async function takeSoon(w: PcWork, what: string): Promise<Job> {
   let job: Job | null = null;
   await expect.poll(async () => (job ??= await w.take()), what).not.toBeNull();
@@ -159,7 +158,7 @@ test("K416-M1-02 F8 → F5：受けた新しい担当者が AI に任せられ�
   pcs.push(pc);
   const w = workOf(pc);
   await openTicket(r.mate.page, r.t, r.title);
-  await delegateBtn(r.mate.page).click();
+  await pressDelegate(r.mate.page);
   const job = await takeSoon(w, "任せた仕事は新しい担当者の PC に渡る（D-125.156）");
   expect(job).toMatchObject({ kind: "ticket", ticket_id: r.t, phase: "make" });
   const [owner] = await admin<{ member_id: string }>("select member_id from bridge_jobs where id = $1", [job.job_id]);
@@ -227,7 +226,7 @@ test("K416-M1-05 渡し中に渡す人が AI に任せた → 渡された人が
   await openTicket(page, r.t, r.title);
   expect(await passOnScreen(page, r.mate.name, { reason: REASON })).toBe(201);
   await openTicket(page, r.t, r.title);
-  await delegateBtn(page).click(); // 渡し中も渡した人は全部できる（D-148.5）
+  await pressDelegate(page); // 渡し中も渡した人は全部できる（D-148.5）
   await takeSoon(workOf(pc), "渡し中でも渡す人の AI が動く");
   await openQueue(r.mate.page);
   expect(await acceptInQueue(r.mate.page, r.title), "受けられない").toBe(409);

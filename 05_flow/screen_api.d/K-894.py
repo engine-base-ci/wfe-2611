@@ -30,3 +30,12 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 受ける取引の途中が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、チケットも書き込みも見せる相手も依頼の変更も残さない"},
     ],
 }
+
+# 答えの欄で DB は null を許すが口は null を返さない物（K-144 の SHAPE_013・統合の枝）
+NOT_NULL_ANSWERS = {
+    "acceptClientRequest.ticket_id": "口が受けて作ったチケットの id を返し、無ければ 503 にする（null にはしない・client_requests.ticket_id は null 可）",
+}
+
+REQUIRED_INPUTS = {
+    "acceptClientRequest": ['assignee_member_id', 'due_on', 'scope_id'],   # accept.ts の parseAccept（担当・期限・グループが無ければ 422・欄つき）
+}

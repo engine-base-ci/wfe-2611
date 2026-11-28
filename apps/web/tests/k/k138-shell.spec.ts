@@ -387,7 +387,7 @@ test("K138-SH-009 グループ：見出し「グループ」と★（グレー�
   }
   // 札の幅がそろい、名前の左の端が 2 行でそろう（札がはみ出して名前がずれない）
   const lefts = await groups
-    .locator(".k-nav-label")
+    .locator(".k-nav-label:not(.k-nav-count)") // 件数（K-466）も .k-nav-label を持つので、名前だけを比べる
     .evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
   expect(new Set(lefts).size).toBe(1);
   await expect(groups.locator(".k-nav-count")).toHaveText(["18", "9"]);

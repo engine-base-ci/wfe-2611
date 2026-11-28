@@ -55,7 +55,11 @@ const DRIVES: Record<string, (page: Page) => Promise<void>> = {
     await expect(page.locator(BAND)).toBeVisible();
   },
   "uh-band-maint": async (page) => {
-    await mockWith(page, withBands(maintBand()));
+    // 下絵 uh-band-maint の影響の字（短い 1 文）で開く。長い影響の字の出方は uh-maint（画面いっぱいの形）が見る
+    const ns = noticesWithUpdate();
+    for (const n of ns)
+      if (n.maintenance) n.maintenance.impact = "この間は使えません。承認したものは終わってから動きます";
+    await mockHelp(page, { status: withBands(maintBand()), notices: ns });
     await openAt(page, "/tickets", page.viewportSize()!.width);
     await expect(page.locator(BAND)).toBeVisible();
   },

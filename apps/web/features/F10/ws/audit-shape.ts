@@ -1,6 +1,7 @@
 // 記録の画面（K-825）：口 listAuditEvents（K-823・K-850）の答え → 部品 LogPage の値、URL の値 → 口へ渡す鍵。純粋な関数だけ（@/ を読まない）。
 //   確かめに通らない URL の値・知らない鍵は口に送らない（絞りなしで読む・D-154.2：自分の分の入口の鍵は持たない）
 import type { LogEntry, LogTab } from "./log";
+import { isUuid } from "@kaname/contracts";
 
 /** 口の答えの 1 行（K-823 の「画面が使う答えの形」） */
 export interface AuditEntryAnswer {
@@ -34,7 +35,6 @@ export interface AuditFilters {
 
 export const Q_MAX = 100;
 const KINDS: readonly LogTab[] = ["perm", "out", "device", "ai", "deleted", "ops"];
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** 起こした人が無い行の名前（仮） */
 export const NO_ACTOR = "Kaname";
 /** 知らない操作の字（内部の名前を出さない） */
@@ -81,7 +81,7 @@ export function cleanQ(raw: string | null | undefined): string | null {
 
 const kindOf = (raw: string | null): LogTab | null =>
   raw !== null && (KINDS as readonly string[]).includes(raw) ? (raw as LogTab) : null;
-const uuidOf = (raw: string | null): string | null => (raw !== null && UUID.test(raw) ? raw : null);
+const uuidOf = (raw: string | null): string | null => (raw !== null && isUuid(raw) ? raw : null);
 
 /** URL の値 → 絞り（確かめに通る値だけ） */
 export function filtersFromUrl(get: (key: string) => string | null): AuditFilters {

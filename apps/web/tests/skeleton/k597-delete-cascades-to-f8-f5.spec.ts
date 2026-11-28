@@ -24,7 +24,7 @@ import {
 } from "../_lib/f7-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { asPerson, pairedPc, ticketOf } from "../_lib/prep";
+import { asPerson, pairedPc, pressDelegate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -79,7 +79,7 @@ async function takeSoon(r: Ready, what: string): Promise<Job> {
 }
 const delegate = async (page: Page, r: Ready): Promise<void> => {
   await openTicket(page, r.t, r.title);
-  await page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+  await pressDelegate(page);
   await expect(page.getByRole("region", { name: "AI に任せる" })).toContainText("に任せました");
 };
 

@@ -21,6 +21,8 @@ describe("GET /api/v1/ops/shell", () => {
   });
   // 当てはまらない（問い合わせも体も受けない口。知らない問い合わせの 422 は入口の共通（K-144））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_ops_shell_rejected_422");
+  // 本物の試験はまだ無い（apps/api/test/features/F12/ops-workspaces.test.ts）：UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない
+  it.todo("test_get_ops_shell_not_found");
   it("test_get_ops_shell_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F12/ops-workspaces.test.ts の「K963-API-020」（同じ CI の G3 で流れる）

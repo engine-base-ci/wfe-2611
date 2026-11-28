@@ -7,7 +7,7 @@ INPUTS = {
 # 送り直した：id・宛て・新しい期限（今から 7 日）・メールを送れたか（sent／failed。failed の回は 1 日 1 回に数えない）。トークンは答えに出さない
 # 取り消した：id・取り消した時刻
 RESPONSES = {
-    "resendInvitation": ("InvitationResent", {"id": "uuid", "email": "string", "expires_at": "string", "mail": "string"}),
+    "resendInvitation": ("InvitationResent", {"id": "uuid", "email": "string?", "expires_at": "string", "mail": "string"}),
     "revokeInvitation": ("InvitationRevoked", {"id": "uuid", "revoked_at": "string"}),
 }
 
@@ -36,4 +36,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 招待がもう使われたかもう取り消してあるなら、Kaname は 409 と E-INV-017／018 を返し、何も書かない"},
         _E503,
     ],
+}
+
+# 答えの欄で DB は null を許すが口は null を返さない物（K-144 の SHAPE_013・統合の枝）
+NOT_NULL_ANSWERS = {
+    "revokeInvitation.revoked_at": "口が取り消したその行の時刻を返し、null にはしない（invitations.revoked_at は null 可）",
 }

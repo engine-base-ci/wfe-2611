@@ -14,7 +14,7 @@ import { AI, delegatedMark, workOf } from "../_lib/f5-flow";
 import { answered, assigneeOf, handoversOf, openQueue, passOnScreen, queueRow } from "../_lib/f8-flow";
 import { Mailbox, type Mail } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { asPerson, pairedPc, ticketOf, type TicketSections } from "../_lib/prep";
+import { asPerson, bodyOf, pairedPc, pressDelegate, ticketOf, type TicketSections } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 // 足すグループ・引き継ぎ先の ▾ は部品 components/k の Select（Base UI・素の <select> は無い）。招くの小窓のグループ・役割は素の <select>
 async function pick(page: Page, sel: Locator, label: string): Promise<void> {
@@ -43,6 +43,8 @@ const MSG = {
   waitingMe: "あなたの承認を待っています",
   removed: "を外しました",
 } as const;
+// 招く小窓のメールの欄の名前は必須の印つき（「メール 必須」／印 *）。印の有無を許す
+const MAIL_LABEL = /^メール( 必須|\*)?$/;
 const SECTIONS: TicketSections = { purpose: "先方の見積を出す", done: "先方が受け取った", todo: "- 見積を作る" };
 const G = { sales: "営業部", tokyo: "東京チーム", acct: "経理部" } as const;
 
@@ -107,7 +109,7 @@ async function ticketIn(page: Page, p: Person, scopeId: string, title: string): 
     title,
     assignee_member_id: p.memberId,
     due_on: due,
-    sections: SECTIONS,
+    body: bodyOf(SECTIONS),
   });
   if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
   return String(r.data?.["id"] ?? (r.data?.["ticket"] as Record<string, unknown> | undefined)?.["id"]);
@@ -191,7 +193,7 @@ test("K845-M1-01 招く → 参加：管理者がメンバーの画面の「＋ 
   await page.getByRole("button", { name: "＋ 招く", exact: true }).click();
   const dlg = page.locator(".k-dialog");
   for (const e of emails) {
-    await dlg.getByLabel("メール", { exact: true }).fill(e);
+    await dlg.getByLabel(MAIL_LABEL).fill(e);
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
   }
   await dlg.getByLabel("グループ", { exact: true }).selectOption({ label: G.sales });
@@ -346,7 +348,7 @@ test("K845-M1-05 外す前：佐藤さんの営業部のチケットが承認待
   pcs.push(pc);
   const pw = workOf(pc);
   await s.b.page.goto(`/tickets/${s.t1}`);
-  await s.b.page.getByRole("button", { name: "AI に任せる", exact: true }).click();
+  await pressDelegate(s.b.page);
   let job: Awaited<ReturnType<typeof pw.take>> = null;
   await expect.poll(async () => (job ??= await pw.take()), "任せた仕事が佐藤さんの PC に渡る").not.toBeNull();
   expect(
@@ -440,7 +442,7 @@ test("K845-M1-08 30 日の内に招き直す：同じメールで営業部に招
   await openMembers(page, []);
   await page.getByRole("button", { name: "＋ 招く", exact: true }).click();
   const dlg = page.locator(".k-dialog");
-  await dlg.getByLabel("メール", { exact: true }).fill(s.b.email);
+  await dlg.getByLabel(MAIL_LABEL).fill(s.b.email);
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await dlg.getByLabel("グループ", { exact: true }).selectOption({ label: G.sales });
   await dlg.getByLabel("役割", { exact: true }).selectOption({ label: "メンバー" });

@@ -122,7 +122,7 @@ export function useSay() {
 
 export function useStop() {
   return useMutation({
-    mutationFn: async (id: string) => call("stopConversation", { screenId: SCREEN, params: { id } }),
+    mutationFn: async (id: string) => call("stopConversation", { body: {}, screenId: SCREEN, params: { id } }),
   });
 }
 

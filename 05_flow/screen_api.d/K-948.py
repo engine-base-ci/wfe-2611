@@ -40,14 +40,14 @@ VALUE_RANGES = {
 }
 
 # 利用者の問い合わせの 1 件（一覧の 1 行・作った・済みにした の答え）。state は waiting・replied・done
-_MY = {"id": "uuid", "title": "string", "topic": "string", "state": "string", "created_at": "string", "last_reply_at": "string?", "has_unread_reply": "boolean"}
+_MY = {"id": "uuid", "title": "string?", "topic": "string", "state": "string", "created_at": "string", "last_reply_at": "string?", "has_unread_reply": "boolean"}
 # やり取りの 1 件（利用者に見せる分・社内メモは含めない）。from は me・ops。attachments は { id, name, size } の並び
-_MY_MESSAGE = {"id": "uuid", "from": "string", "author_name": "string", "body": "string", "attachments": "array", "created_at": "string"}
+_MY_MESSAGE = {"id": "uuid", "from": "string", "author_name": "string?", "body": "string?", "attachments": "array?", "created_at": "string"}
 # 受信箱の 1 行。state は open・waiting・later・done。workspace は { id, name }・asker は { name }・owner は { member_id, name } か null
-_OPS_ROW = {"id": "uuid", "title": "string", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
+_OPS_ROW = {"id": "uuid", "title": "string?", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
             "owner": "object?", "later_until": "string?", "created_at": "string", "last_message_at": "string?"}
 # 運営のやり取りの 1 件。kind は customer・reply・note（社内メモ）
-_OPS_MESSAGE = {"id": "uuid", "kind": "string", "author_name": "string", "body": "string", "attachments": "array", "created_at": "string"}
+_OPS_MESSAGE = {"id": "uuid", "kind": "string?", "author_name": "string?", "body": "string?", "attachments": "array?", "created_at": "string"}
 
 RESPONSES = {
     "listMyInquiries": ("MyInquiry", dict(_MY)),
@@ -76,4 +76,16 @@ LIST_DETAILS = {
 
 QUERY_RANGES = {
     "listOpsInquiries": {"box": {"enum": ["unassigned", "mine", "waiting", "later", "done"]}, "topic": {"enum": list(_TOPICS)}},
+}
+
+# 口が返す成功の状態コード（契約を口に合わせる・K-144 の SHAPE_010・統合の枝）
+SUCCESS_STATUS = {
+    "resolveMyInquiry": 200,   # 作らず状態を変えるだけ・口は 200 を返す
+}
+
+# 口が返す断り（K-144 の SHAPE_010・統合の枝で契約に足した）
+ERRORS_4XX = {
+    "listOpsInquiries": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
+    ],
 }

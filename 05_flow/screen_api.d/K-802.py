@@ -9,7 +9,7 @@ INPUTS = {
 # 足した 1 行：id・name・ticket_prefix（大文字）・color・parent_id・layer（{id, label} か null）・position・managers（[{id, name}]）・
 # member_count（マネージャーを含む重ならない人数）・created_at（鍵はちょうど 10・apps/api/src/features/F10/admin/scopes/input.ts の SCOPE_KEYS）
 RESPONSES = {
-    "createScope": ("ScopeCreated", {"id": "uuid", "name": "string", "ticket_prefix": "string", "color": "string?", "parent_id": "uuid",
+    "createScope": ("ScopeCreated", {"id": "uuid", "name": "string", "ticket_prefix": "string?", "color": "string?", "parent_id": "uuid?",
                                      "layer": "object?", "position": "integer", "managers": "array", "member_count": "integer",
                                      "created_at": "string"}),
 }

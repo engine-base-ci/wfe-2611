@@ -148,10 +148,20 @@ export function RemoveDialog({
       {...(onCancel ? { onOpenChange: (o: boolean) => (o || busy ? undefined : onCancel()) } : {})}
       actions={
         <>
-          <Button variant="outlined" onClick={onCancel} disabled={live ? Boolean(busy) : undefined}>
+          <Button
+            variant="outlined"
+            className="k-f10d-act"
+            onClick={onCancel}
+            disabled={live ? Boolean(busy) : undefined}
+          >
             やめる
           </Button>
-          <Button variant="danger" onClick={onSubmit} disabled={live ? Boolean(busy) : undefined}>
+          <Button
+            variant="danger"
+            className="k-f10d-act"
+            onClick={onSubmit}
+            disabled={live ? Boolean(busy) : undefined}
+          >
             本人確認して外す
           </Button>
         </>

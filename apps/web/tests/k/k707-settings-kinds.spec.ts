@@ -18,7 +18,8 @@ const overflowX = (p: Page) =>
   p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const item = (page: Page, name: string) => page.locator(LIST).getByRole("link", { name: new RegExp(`^${name}`) });
 const save = (page: Page) => page.getByRole("button", { name: "保存する", exact: true });
-const nameBox = (page: Page, kind: string) => page.locator(FORM(kind)).getByLabel("名前", { exact: true });
+const nameBox = (page: Page, kind: string) =>
+  page.locator(FORM(kind)).getByRole("textbox", { name: "名前", exact: true });
 const template = (page: Page) => page.getByRole("textbox", { name: "本文のひな形", exact: true });
 
 let owner: Awaited<ReturnType<typeof signupViaApi>>;
@@ -284,9 +285,9 @@ test("K707-UI-017 「種別を足す」で小窓（名前・色）が開き、�
   await page.getByRole("button", { name: "種別を足す", exact: true }).click();
   const dlg = page.locator(DLG);
   await expect(dlg.getByRole("heading", { name: "種別を足す" })).toBeVisible();
-  await expect(dlg.getByLabel("名前", { exact: true })).toBeFocused();
+  await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toBeFocused();
   await expect(dlg.getByRole("radio")).toHaveCount(8);
-  await dlg.getByLabel("名前", { exact: true }).fill("見積もり");
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("見積もり");
   await dlg.getByRole("radio", { name: "若草", exact: true }).check();
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg).toHaveCount(0);
@@ -307,12 +308,12 @@ test("K707-UI-018 足す小窓の失敗：409 E-KND-001・E-KND-002 は名前の
   await expect(dlg.locator(".k-err")).toHaveText("名前を入れてください");
   expect(mk.count("createKind")).toBe(0);
   mk.script("createKind", err(409, "E-KND-001"), err(409, "E-KND-002"));
-  await dlg.getByLabel("名前", { exact: true }).fill("請求");
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("請求");
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText(msg("E-KND-001"));
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText(msg("E-KND-002"));
-  await expect(dlg.getByLabel("名前", { exact: true })).toHaveValue("請求");
+  await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("請求");
   await dlg.getByRole("button", { name: "やめる", exact: true }).click();
   await expect(dlg).toHaveCount(0);
   await expect(add).toBeFocused();
@@ -377,12 +378,12 @@ test("K707-UI-025 足す・消すの口が失敗：足すが 403・503・網の�
   const add = page.getByRole("button", { name: "種別を足す", exact: true });
   await add.click();
   const dlg = page.locator(DLG);
-  await dlg.getByLabel("名前", { exact: true }).fill("見積");
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("見積");
   mk.script("createKind", err(503, "E-PAGE-003"), "network", err(403, "E-PAGE-002"));
   for (const code of ["E-PAGE-003", "E-PAGE-007", "E-PAGE-002"]) {
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
     await expect(dlg.getByRole("alert").filter({ hasText: msg(code).split("。")[0]! })).toBeVisible();
-    await expect(dlg.getByLabel("名前", { exact: true })).toHaveValue("見積");
+    await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("見積");
   }
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg).toHaveCount(0);

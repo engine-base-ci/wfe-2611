@@ -277,7 +277,8 @@ test("K962-UI-011 変えられなかった（503 E-PAGE-003）：確かめの小
   await expect(planDlg(page).getByRole("alert")).toBeVisible();
   await expect(upDlg(page)).toHaveCount(0);
   expect(mk.count("plans")).toBe(1);
-  await expect(card(page).locator(".k-ub-setting-line")).toContainText("チーム ・ 10 人まで");
+  // 「プランを変える」の小窓が開いている間は後ろが読み上げから外れる（role で探せない）。1 行は要素で探す
+  await expect(page.locator(".k-ub-setting-line")).toContainText("チーム ・ 10 人まで");
 });
 
 test("K962-UI-012 二度押し：答えを止めている間に「上げる」を 2 回押しても changePlan は 1 回", async ({ page }) => {

@@ -44,7 +44,8 @@ const rowOf = (page: Page, name: string): Locator =>
     .filter({ has: page.locator("dt", { hasText: new RegExp(`^${name}$`) }) });
 const valBtn = (page: Page, name: string): Locator =>
   panel(page).getByRole("button", { name: `${name}を直す`, exact: true });
-const box = (page: Page, name: string): Locator => panel(page).getByLabel(name, { exact: true });
+// 必須の項目の見出しは「支払期日*」（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
+const box = (page: Page, name: string): Locator => panel(page).getByLabel(new RegExp(`^${name}\\*?$`));
 const check = (page: Page, label: string): Locator => panel(page).getByRole("checkbox", { name: label, exact: true });
 /** 区の中の行の名前の並び */
 const namesIn = async (page: Page, s: string): Promise<string[]> =>

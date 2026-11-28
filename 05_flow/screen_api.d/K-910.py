@@ -22,3 +22,8 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 本文の値が決まりの外なら、Kaname は 422 と欄ごとの理由を返し、仕事を積まない"},
     ],
 }
+
+# 口が返す成功の状態コード（契約を口に合わせる・K-144 の SHAPE_010・統合の枝）
+SUCCESS_STATUS = {
+    "askPortalRequestQuestions": 200,   # 作らず状態を変えるだけ・口は 200 を返す
+}
