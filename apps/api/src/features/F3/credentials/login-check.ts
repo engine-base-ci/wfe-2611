@@ -56,7 +56,7 @@ const tidy = (s: string): string => s.normalize("NFKC").trim();
 /** 関数の誤りの答え（誤りでない結果は呼ぶ側が 201 にする） */
 const ERROR_REPLIES: Readonly<Record<string, () => HookReply>> = {
   not_found: notFound,
-  revoked: () => fail("E-CRED-011"),
+  revoked: () => ({ ...fail("E-CRED-011"), status: 409 }), // 失効・期限切れは今の状態ではできない 409（K-355 の決め）。正本の分類 dependency の数（503）は使わない
   not_login: () => fail("E-CRED-013"),
   busy: () => fail("E-CRED-012"),
   not_asked: () => fail("E-CRED-014"),

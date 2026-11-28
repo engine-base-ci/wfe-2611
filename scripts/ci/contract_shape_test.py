@@ -392,7 +392,7 @@ def statuses_in(block: str, cat: dict[str, int], defs: dict[str, str] | None = N
             continue
         assert code[1] in cat, f"エラーの正本に {code[1]} が無い"
         # 状態を 2 つ目の引数で直に渡す呼び出し（fromCatalog("E-PAGE-003", 503)・bare("E-…", 404)）はその数（統合の直し 2026-11-28：
-        #   正本の分類 dependency の数 409 と、口が返す 503 が違う）。渡さない呼び出しは正本の分類の数
+        #   状態を直に書いた所はその数を正とする）。渡さない呼び出しは正本の分類の数
         s.add(int(code[2].split(",")[1]) if code[2] else cat[code[1]])
     for name, extra in SHARED_HELPERS.items():
         if re.search(rf"\b{name}\(", block):
