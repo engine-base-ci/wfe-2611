@@ -1,0 +1,54 @@
+{
+ "ops": {
+  "listGuestGroups": {
+   "file": "apps/api/test/features/F11/guest-groups.test.ts",
+   "reason": "ゲストのグループの一覧は、会社の分け方（別の会社・消したグループ・消した届け先）と所属の状態（抜けた・止めた）と招待の状態で答えが変わる。生成の試験の種ではグループ・ゲスト・招待を作れない（K-876）",
+   "covers": {
+    "test_get_guest_groups_ok": "K876-API-024",
+    "test_get_guest_groups_rejected_401": "K876-API-026",
+    "test_get_guest_groups_rejected_403": "K876-API-026",
+    "test_get_guest_groups_shape": "K876-API-024",
+    "test_get_guest_groups_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_guest_groups_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_guest_groups_rejected_422": "入力を受けない GET（cursor・limit を持たない・全部を返す）",
+    "test_get_guest_groups_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない"
+   }
+  },
+  "createGuestGroup": {
+   "file": "apps/api/test/features/F11/guest-groups.test.ts",
+   "reason": "グループを作る口は、届け先の社内のグループ（無い・消した・別の会社）と名前の重なり（表記ゆらぎ）と権限（招く権限だけの人も作れる）で答えが変わる。生成の試験の種では作れない（K-876）",
+   "covers": {
+    "test_post_guest_groups_ok": "K876-API-007",
+    "test_post_guest_groups_shape": "K876-API-007",
+    "test_post_guest_groups_rejected_401": "K876-API-011",
+    "test_post_guest_groups_rejected_403": "K876-API-011",
+    "test_post_guest_groups_rejected_422": "K876-API-010",
+    "test_post_guest_groups_conflict": "K876-API-008",
+    "test_post_guest_groups_not_found": "K876-API-009",
+    "test_post_guest_groups_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_guest_groups_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_guest_groups_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_guest_groups_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない"
+   }
+  }
+ }
+}
