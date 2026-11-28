@@ -23,7 +23,15 @@ const flat = (code: string, status: number, detail?: Record<string, unknown>): H
   return { status, body };
 };
 
-/** DB の関数の断りの言葉 → 答え。知らない言葉は止める側（503） */
+/** 選べるプランを読む関数（app.workspace_plans）の断りは「権限が無い」だけ。知らない言葉は止める側（503）。
+ *  変える口の断り（行が無い・今のプラン・上限を超える）は replyOf。口ごとに読み替えを分ける（K-144 の SHAPE_010・ふるまいは同じ） */
+function listRefused(r: Answer, where: string): HookReply {
+  const word = String(r.error);
+  if (word === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
+  return down(where, word);
+}
+
+/** プランを変える関数（app.plan_change）の断りの言葉 → 答え。知らない言葉は止める側（503） */
 function replyOf(r: Answer, where: string): HookReply {
   const word = String(r.error);
   if (word === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
@@ -60,7 +68,7 @@ export function createListWorkspacePlans(appPool: pg.Pool): (a: HookArgs) => Pro
     const where = "選べるプランを読む";
     const r = await callFn(appPool, a, "select app.workspace_plans() as v", [], where, "選べるプランを読めなかった");
     if (isReply(r)) return r;
-    if (r.error !== undefined || r.data === undefined) return replyOf(r, where);
+    if (r.error !== undefined || r.data === undefined) return listRefused(r, where);
     return { status: 200, body: { data: r.data, meta: r.meta } };
   };
 }
