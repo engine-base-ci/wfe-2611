@@ -1,0 +1,10 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F9/knowledge/**", "apps/web/features/F4/specs/**", "apps/web/features/F5/approve-complete/**", "apps/web/app/(dev)/dev/mock/f9/**"],
+   "tests": ["apps/web/tests/k/k703-knowledge-complete-guard.spec.ts", "apps/web/test/k703-spec-guard-shape.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k703-knowledge-complete-guard.spec.ts": "部品のファイル（features/F5/approve-complete・features/F4/specs・features/F9/knowledge）を readFileSync で読む（K703-MK-001・002）",
+  "apps/web/tests/k/knowledge-guard-mock.ts": "段 5 の道具 complete-mock.ts（文言の正本 07_qa/test-specs/errors.json を読む）を import する（K-703）"
+ }
+}
