@@ -483,9 +483,6 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
-    "getOpsShell": [
-        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [], "trigger": "運営の DB の関数が、読む・書く行が無いこと（P0002）を知らせた（共通の読み替え ops/db.ts の opsErrorReply）", "ears_form": "UNWANTED: IF 運営の DB の関数が行が無いと知らせたなら、Kaname は 404 を返し、何も変えない"},
-    ],
     # パスワードで入る（K-301・D-042・D-128.141）。違う（401・残り回数）・会社の人が無い（403）・空と形（422）・5 回でロック（429）・写す所の失敗（500）
     "signInWithPassword": [
         {"status": 401, "code": "E-AUTH-001", "body": {"error": "auth", "code": "E-AUTH-001", "remaining": 4}, "errors": ["E-AUTH-001"],
