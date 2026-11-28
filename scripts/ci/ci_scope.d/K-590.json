@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F7/delete/"], "tests": ["apps/web/tests/k/k590-delete-restore.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k590-delete-restore.spec.ts": "正本 07_qa/test-specs/errors.json を文字で読み、モックの置き場 apps/web/app/(dev)/dev/mock/f7/ と部品 apps/web/features/F7/delete/ を突き合わせの道具 stage2-match.ts で比べ、道具 delete-mock.ts・list-mock.ts・kit.ts・F5 の approve-complete.harness.ts を読む（K-590）",
+  "apps/web/tests/k/delete-mock.ts": "前からの土台 tests/features/F5/approve-complete.harness.ts と list-mock.ts、scripts/ci/fidelity_compare.mjs の型を読む（K-590）"
+ }
+}
