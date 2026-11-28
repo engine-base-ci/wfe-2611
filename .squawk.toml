@@ -1,0 +1,16 @@
+# migration の lint（Squawk・G58・K-107）。変えた・足した migration だけに当てる（scripts/ci/ci_scope.py run-squawk）。
+# 外す規則は、今ある 86 本に 1 回当てた結果（593 件・11 種）から決めた（K-107 の決定 7）：
+#   migrate.ts は 1 本ずつ begin〜commit の中で当てるので、トランザクションの中で使えない書き方を求める規則と、
+#   今の migration がそろって書いていない書き方の決まりは外す。消す（drop）の規則は残す（要るときは squawk-ignore の行と理由を書く）
+pg_version = "16.0"
+assume_in_transaction = true
+excluded_rules = [
+  "require-concurrent-index-creation", # 282 件。concurrently はトランザクションの中で使えない（migrate.ts）
+  "require-lock-timeout",              # 85 件。今の migration はどれも書いていない（全部の表が小さい段階）
+  "require-statement-timeout",         # 85 件。同上
+  "prefer-bigint-over-int",            # 68 件。数の列は int で決めている
+  "prefer-bigint-over-smallint",       # 3 件。同上
+  "adding-foreign-key-constraint",     # 29 件。外のキーは表を作るときに付ける
+  "constraint-missing-not-valid",      # 14 件。同上（not valid にしない）
+  "prefer-robust-stmts",               # 5 件。トランザクションの中で当てるので if not exists は要らない
+]
