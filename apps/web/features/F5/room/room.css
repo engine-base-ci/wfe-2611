@@ -1251,6 +1251,11 @@
 .k-room-ct-form {
   min-width: 0;
 }
+/* 会話も「AI と話して作る」も無いときは箱を作らない（欄の並びは包む前と同じ・欄は木の同じ場所のまま） */
+.k-room-ct[data-plain],
+.k-room-ct[data-plain] > .k-room-ct-form {
+  display: contents;
+}
 .k-room-cf {
   display: flex;
   flex-direction: column;

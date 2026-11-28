@@ -184,14 +184,18 @@ export function CreateTalkFrame({
 }): ReactNode {
   const how = useHowAi();
   const mobile = useMobile();
-  if (!how && !mobile) return children;
+  // 欄（children）は幅や作り方が替わっても木の同じ場所に置く（767 を跨ぐたびに欄が付け直され、開いた小窓・書いた中身が消えないように）。
+  //   会話も「AI と話して作る」も無いときは、包む箱を display: contents にして今までの並びのまま（data-plain）
+  const plain = !how && !mobile;
   return (
-    <div className="k-room-ct" data-mview={how ? "chat" : "form"}>
+    <div className="k-room-ct" data-mview={how ? "chat" : "form"} data-plain={plain || undefined}>
       <div className="k-room-ct-form">
-        <button type="button" className="k-room-cf-ask" onClick={() => setHowAi(true)}>
-          <Sparkles size={16} aria-hidden="true" />
-          AI と話して作る
-        </button>
+        {plain ? null : (
+          <button type="button" className="k-room-cf-ask" onClick={() => setHowAi(true)}>
+            <Sparkles size={16} aria-hidden="true" />
+            AI と話して作る
+          </button>
+        )}
         {children}
       </div>
       {how ? <CreateTalkAside talk={talk} draft={draft} {...(onApply ? { onApply } : {})} /> : null}
