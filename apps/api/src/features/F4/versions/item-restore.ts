@@ -8,6 +8,7 @@ import { KanameError } from "@kaname/errors";
 import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { unavailable } from "../body/errors.js";
+import { VERSION_MAX } from "../body/input.js";
 import type { Detail } from "./input.js";
 
 const NOT_FOUND: HookReply = { status: 404, body: { error: "not_found", code: "E-PAGE-001" } };
@@ -34,13 +35,14 @@ const REPLIES: Readonly<Record<string, () => HookReply>> = {
 
 export type ItemRestoreChecked = { ok: true; from: number; to: number } | { ok: false; details: Detail[] };
 
-const isPoint = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
+/** 点の番号は DB の int（契約の VALUE_RANGES の maximum と同じ）。超える数は 422（DB の 22003 で 503 にしない） */
+const isPoint = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= VERSION_MAX;
 
 /** 入力の形（契約が先に断る物の重ねで、最後の砦）。from・to は 1 以上の整数・ほかの欄は受けない */
 export function checkItemRestore(input: Record<string, unknown>): ItemRestoreChecked {
   const details: Detail[] = [];
   for (const k of ["from", "to"] as const)
-    if (!isPoint(input[k])) details.push({ field: k, message: "点の番号は 1 以上の整数で送ってください" });
+    if (!isPoint(input[k])) details.push({ field: k, message: "点の番号は 1 以上 2147483647 以下の整数で送ってください" });
   for (const k of Object.keys(input))
     if (k !== "from" && k !== "to") details.push({ field: k, message: "この欄は受けません" });
   if (details.length > 0) return { ok: false, details };

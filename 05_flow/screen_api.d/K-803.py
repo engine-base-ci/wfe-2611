@@ -42,15 +42,15 @@ REQUIRED_INPUTS = {
     "createLayer": ["label"],
 }
 
-# 名前は空白だけでない 40 文字まで・並びは 1 以上の整数
+# 名前は空白だけでない 40 文字まで・並びは 1 以上の整数（上は入口の整数が受ける 2^53-1 まで。大きい数は層の数＋1 に寄せる cleanOrder）
 VALUE_RANGES = {
     "createLayer": {
         "label": {"pattern": "\\S", "maxLength": 40},
-        "order_no": {"minimum": 1},
+        "order_no": {"minimum": 1, "maximum": 9007199254740991},
     },
     "updateLayer": {
         "label": {"pattern": "\\S", "maxLength": 40},
-        "order_no": {"minimum": 1},
+        "order_no": {"minimum": 1, "maximum": 9007199254740991},
     },
 }
 

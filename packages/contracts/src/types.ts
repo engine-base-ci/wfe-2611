@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:404e7e350453ee78
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:41c47148edc0e449
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -445,7 +445,7 @@ export type GuestGroupInput = { name: string; request_scope_id: string };
 export type PortalTicketMessageInput = { body: string };
 export type ClientRequestRouteInput = { route_id: string };
 export type ClientRequestReplyInput = { body: string };
-export type ClientRequestAcceptInput = { title?: string | null; body?: string | null; assignee_member_id: string; due_on: string; scope_id: string; kind_id?: string | null; guest_group_ids?: string[] | null };
+export type ClientRequestAcceptInput = { title?: string; body?: string | null; assignee_member_id: string; due_on: string; scope_id: string; kind_id?: string | null; guest_group_ids?: string[] | null };
 export type ClientRequestDeclineInput = { reason: string };
 export type ClientRequestDraftInput = Record<string, never>;
 export type ClientRequestDraftResultInput = { draft?: Record<string, unknown> | null; failed?: string | null };
@@ -454,7 +454,7 @@ export type PortalRequestMessageInput = { body: string };
 export type PortalAttachmentInput = { name: string; content_type: string; data: string };
 export type PortalQuestionsInput = { body: string };
 export type GuestGroupRenameInput = { name: string };
-export type OpsSetupInput = { token: string; name?: string | null };
+export type OpsSetupInput = { token: string; name?: string };
 export type InquiryCreateInput = { topic: string; title: string; body: string; attachment_ids?: string[]; context?: Record<string, unknown> };
 export type InquiryMessageInput = { body: string; attachment_ids?: string[] };
 export type InquiryResolveInput = Record<string, never>;

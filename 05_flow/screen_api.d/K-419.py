@@ -27,9 +27,10 @@ VALUE_RANGES = {
 }
 
 # 役割で分ける（K-876）：requester はゲストのグループが要り依頼の届け先を持てない／ほかの役は社内のグループが要りゲストのグループを持てない
+#   要る方のグループは null でない uuid（create.ts の nonEmpty が null を 422 にする・契約 fuzz ST202）
 INPUT_RULES = {"createInvitations": {"oneOf": [
-    {"properties": {"role_key": {"enum": ["requester"]}}, "required": ["guest_group_id"], "not": {"required": ["scope_id"]}},
-    {"properties": {"role_key": {"enum": ["member", "manager", "viewer", "admin"]}}, "required": ["scope_id"], "not": {"required": ["guest_group_id"]}},
+    {"properties": {"role_key": {"enum": ["requester"]}, "guest_group_id": {"type": "string", "format": "uuid"}}, "required": ["guest_group_id"], "not": {"required": ["scope_id"]}},
+    {"properties": {"role_key": {"enum": ["member", "manager", "viewer", "admin"]}, "scope_id": {"type": "string", "format": "uuid"}}, "required": ["scope_id"], "not": {"required": ["guest_group_id"]}},
 ]}}
 
 UNEXPRESSIBLE_422: dict = {}   # 宛ての形（E-INV-009）と人数（E-INV-012）は VALUE_RANGES の pattern・maxItems で契約に書いた（K-419・PM の決め 2026-11-21 02:25）

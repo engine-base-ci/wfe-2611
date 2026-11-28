@@ -5,5 +5,5 @@ NO_REQUIRED_INPUTS = {
 }
 UNEXPRESSIBLE_422: dict = {}
 VALUE_RANGES = {
-    "updateScope": {'name': {'pattern': '\\S', 'maxLength': 100}, 'color': {'enum': ['teal', 'plum', 'indigo', 'amber', 'coral', 'sage']}, 'position': {'minimum': 1}, 'manager_member_ids': {'maxItems': 10}},   # screen_api.d/K-804.py の VALUE_RANGES と同じ（統合の枝で写した）
+    "updateScope": {'name': {'pattern': '\\S', 'maxLength': 100}, 'color': {'enum': ['teal', 'plum', 'indigo', 'amber', 'coral', 'sage']}, 'position': {'minimum': 1, 'maximum': 9007199254740991}, 'manager_member_ids': {'maxItems': 10}},   # screen_api.d/K-804.py の VALUE_RANGES と同じ（統合の枝で写した）
 }

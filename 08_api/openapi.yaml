@@ -13436,6 +13436,9 @@ components:
           role_key:
             enum:
             - requester
+          guest_group_id:
+            type: string
+            format: uuid
         required:
         - guest_group_id
         not:
@@ -13448,6 +13451,9 @@ components:
             - manager
             - viewer
             - admin
+          scope_id:
+            type: string
+            format: uuid
         required:
         - scope_id
         not:
@@ -15154,9 +15160,11 @@ components:
         from:
           type: integer
           minimum: 1
+          maximum: 2147483647
         to:
           type: integer
           minimum: 1
+          maximum: 2147483647
       additionalProperties: false
       x-operation: restoreTicketItems
       required:
@@ -18781,6 +18789,7 @@ components:
         order_no:
           type: integer
           minimum: 1
+          maximum: 9007199254740991
       additionalProperties: false
       x-operation: createLayer
       required:
@@ -18796,6 +18805,7 @@ components:
         order_no:
           type: integer
           minimum: 1
+          maximum: 9007199254740991
       additionalProperties: false
       x-operation: updateLayer
       anyOf:
@@ -18822,6 +18832,7 @@ components:
         position:
           type: integer
           minimum: 1
+          maximum: 9007199254740991
         manager_member_ids:
           type: array
           items:
@@ -18956,9 +18967,11 @@ components:
           type: string
           nullable: true
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
+          maxLength: 100
         call_name:
           type: string
           nullable: true
+          maxLength: 20
         language:
           type: string
           nullable: true
@@ -19220,9 +19233,9 @@ components:
       properties:
         title:
           type: string
-          nullable: true
           minLength: 1
           maxLength: 200
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
         body:
           type: string
           nullable: true
@@ -19231,6 +19244,7 @@ components:
           format: uuid
         due_on:
           type: string
+          format: date
         scope_id:
           type: string
           format: uuid
@@ -19375,7 +19389,6 @@ components:
           pattern: ^[A-Za-z0-9_-]{43}$
         name:
           type: string
-          nullable: true
           pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           minLength: 1
           maxLength: 40
