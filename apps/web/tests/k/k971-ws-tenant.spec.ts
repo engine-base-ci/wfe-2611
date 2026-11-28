@@ -111,7 +111,11 @@ test.describe("K-971 開く・タブ", () => {
     await tab(page, "メンバー").click();
     await page.waitForURL((u) => u.search === "?tab=members");
     await expect(
-      page.getByRole("table", { name: "メンバー" }).or(page.locator(".k-f12-rt-card").first()),
+      page
+        .getByRole("table", { name: "メンバー" })
+        .or(page.locator(".k-f12-rt-card"))
+        .filter({ visible: true })
+        .first(), // 表と組の両方が DOM に在る（幅で片方を隠す・K-964）
     ).toBeVisible();
     await page.goBack();
     await page.waitForURL((u) => u.search === "");
@@ -173,8 +177,9 @@ test.describe("K-971 タブの中身", () => {
     await open(page, baseURL, "?tab=billing");
     await expect(page.getByText("¥15,000", { exact: true })).toBeVisible();
     await expect(page.getByLabel("人数 8 / 10", { exact: true })).toBeVisible();
-    await expect(page.getByText("お支払い待ち", { exact: true })).toHaveCount(1);
-    await expect(page.getByText("払われた", { exact: true })).toHaveCount(3);
+    // 表と組（狭い幅の形）の両方が DOM に在る（K-964）。見えている方だけ数える
+    await expect(page.getByText("お支払い待ち", { exact: true }).filter({ visible: true })).toHaveCount(1);
+    await expect(page.getByText("払われた", { exact: true }).filter({ visible: true })).toHaveCount(3);
     await expect(page.getByRole("button", { name: "代わりにプランを変える", exact: true })).toBeVisible();
   });
 
@@ -185,8 +190,9 @@ test.describe("K-971 タブの中身", () => {
     await open(page, baseURL, "?tab=inquiries");
     const link = page.getByRole("link", { name: "承認したのに動かない", exact: true });
     await expect(link).toHaveAttribute("href", `/ops/support?id=${WS_INQUIRIES[0]!.id}`);
-    await expect(page.getByText("済み", { exact: true })).toHaveCount(2);
-    await expect(page.getByText("進行中", { exact: true })).toHaveCount(1);
+    // 表と組（狭い幅の形）の両方が DOM に在る（K-964）。見えている方だけ数える
+    await expect(page.getByText("済み", { exact: true }).filter({ visible: true })).toHaveCount(2);
+    await expect(page.getByText("進行中", { exact: true }).filter({ visible: true })).toHaveCount(1);
   });
 
   test("K971-UI-014 記録：4 行・「高本 が 中を見た」・理由の字・新しい順。直す・消すボタンは無い", async ({

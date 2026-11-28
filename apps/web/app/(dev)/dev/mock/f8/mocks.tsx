@@ -593,7 +593,7 @@ function Queue({
               {beforeAi(rows).map((r) => (
                 <QueueCardMobile key={r.id} card={toCard(r)} />
               ))}
-              <QueueCardMobile card={AI_CARD} />
+              <QueueCardMobile card={AI_CARD} extra={<span className="k-more-mcard-open">確認 通過 3</span>} />
               {afterAi(rows).map((r) => (
                 <QueueCardMobile key={r.id} card={toCard(r)} />
               ))}
@@ -625,7 +625,8 @@ const afterAi = (rows: readonly HandoverQueueRow[]) => rows.filter((r) => !(r.du
 const AI_CARD: QueueCardView = {
   id: "ai1",
   number: "EG-128",
-  meta: "佐藤のAI が作成 ・ 確認 通過 3",
+  // 確認の結果は番号の札の右の meta に置かず、題名・中身の 1 行の後の別の行（K-730 の決め・queue-card.tsx の QueueCheckCellSlot）
+  meta: "佐藤のAI が作成",
   title: "セイコー様へ 11月分の請求書を送る",
   sub: "1,716,000 円 ・ 送り先 山田様（CC 鈴木様）",
   acts: ["差し戻す", "承認する"],

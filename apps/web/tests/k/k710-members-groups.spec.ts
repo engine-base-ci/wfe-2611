@@ -362,8 +362,8 @@ test("K710-UI-014 口が 503 のときは K-420 のまま「メンバーを読�
 test("K710-UI-015 左のバーの「ワークスペースの管理」の第 2 ナビ：「チケットの設定」が押せるリンク（道 /workspace/ticket-settings・「決まり」の字は無い）・メンバーが今の場所の印・「記録」「設定」は押せない形のまま・押すとチケットの設定の画面に移り、そこでは「チケットの設定」が今の場所の印", async ({
   page,
 }) => {
-  await mockMembers(page);
   await mockSettings(page);
+  await mockMembers(page);
   await openMembers(page);
   const sub = page.locator('aside[aria-label="ワークスペースの管理の中"]');
   await expect(sub.getByText("決まり", { exact: true })).toHaveCount(0);

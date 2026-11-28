@@ -13,8 +13,8 @@ import { GONE, N_INCIDENT, N_MAINT, Q_STUCK, err, mockHelp, noticesTaka } from "
 
 const HOME = "/notices";
 const WEB = join(dirname(fileURLToPath(import.meta.url)), "../..");
-const NOTICES = 'section:has(h2:text-is("お知らせ")) ul.k-uh-list';
-const MINE = 'section:has(h2:text-is("自分の問い合わせ")) ul.k-uh-list';
+const NOTICES = 'section.k-section:has(> h2:text-is("お知らせ")) ul.k-uh-list';
+const MINE = 'section.k-section:has(> h2:text-is("自分の問い合わせ")) ul.k-uh-list';
 
 let owner: Awaited<ReturnType<typeof signupViaApi>>;
 test.beforeAll(async () => {

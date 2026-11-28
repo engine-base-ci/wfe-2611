@@ -387,7 +387,9 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.k-detail-fields dd[data-over] {
+/* 過ぎた期限：項目の並び（K-484 の items-panel）は印を dd の中の span に持つので、それを持つ dd も赤にする */
+.k-detail-fields dd[data-over],
+.k-detail-fields dd:has(> [data-over]) {
   color: var(--k-st-danger);
   font-weight: var(--k-fw-label-md);
 }

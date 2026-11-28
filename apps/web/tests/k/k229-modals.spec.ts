@@ -48,22 +48,27 @@ const runningAfter = () => ({
   body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "running", pc: "live" } }) },
 });
 
-/** 小窓の形（頭の線・題・足の線・ボタン）を見る */
-async function expectModalShape(d: Locator, title: string) {
+/** 小窓の形（頭の線・題・足の線・ボタン）を見る。cancel は outlined の戻るボタンの名前・primary は主ボタンの探し方と地の色（既定 やめる・紺）。
+ *  完了の小窓は K-572 の下絵 v2 で「戻って付ける」と緑の「このまま完了にする」（k-f4d-done・正本の st-success）になった */
+async function expectModalShape(
+  d: Locator,
+  title: string,
+  o: { cancel?: string; primary?: string; primaryBg?: string | null } = {},
+) {
   const t = d.locator(".k-dialog-title");
   await expect(t).toHaveText(title);
   expect(await cssOf(t, "font-size")).toBe("15px");
   expect(await cssOf(t, "font-weight")).toBe("700");
   expect(await cssOf(d.locator(".k-dialog-head"), "border-bottom-color")).toBe(LINE);
   expect(await cssOf(d.locator(".k-dialog-actions"), "border-top-color")).toBe(LINE);
-  const cancel = d.locator(".k-dialog-actions").getByRole("button", { name: "やめる" });
+  const cancel = d.locator(".k-dialog-actions").getByRole("button", { name: o.cancel ?? "やめる" });
   expect(await cssOf(cancel, "background-color")).toBe(WHITE);
   expect(await cssOf(cancel, "border-top-color")).toBe(LINE);
   expect(await cssOf(cancel, "color")).toBe(INK);
   await expect(cancel).toHaveAttribute("data-variant", "outlined");
-  const primary = d.locator('.k-dialog-actions .k-btn[data-variant="primary"]');
+  const primary = d.locator(o.primary ?? '.k-dialog-actions .k-btn[data-variant="primary"]');
   await expect(primary).toHaveCount(1);
-  expect(await cssOf(primary, "background-color")).toBe(NAVY);
+  if (o.primaryBg !== null) expect(await cssOf(primary, "background-color")).toBe(o.primaryBg ?? NAVY);
   expect(Math.round((await box(primary)).height)).toBe(34);
 }
 
@@ -187,7 +192,9 @@ test("K229-UI-009 決まっていた（409）：小窓が閉じ、知らせ（ro
   m.on.ticket = runningAfter;
   await approveVia(page, sendBtn(page));
   await expect(approveDialog(page)).toHaveCount(0);
-  await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toHaveCount(1);
+  await expect(
+    page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: MSG.decided }),
+  ).toHaveCount(1);
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
 });
 
@@ -307,7 +314,12 @@ test("K229-UI-015 完了の小窓の型（K-572 で替えた）：題「完了�
   await openTicketSettled(page);
   await openComplete(page);
   const d = dialog(page);
-  await expectModalShape(d, "完了にする");
+  // 主ボタンの色は K-572 の試験（k572-complete-notice）が見る（緑・正本の st-success）
+  await expectModalShape(d, "完了にする", {
+    cancel: "戻って付ける",
+    primary: ".k-dialog-actions .k-f4d-done",
+    primaryBg: null,
+  });
   await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["戻って付ける", "このまま完了にする"]);
   const b = await box(d);
   expect(Math.round(b.width)).toBe(420);

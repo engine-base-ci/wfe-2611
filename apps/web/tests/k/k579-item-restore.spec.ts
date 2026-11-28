@@ -350,20 +350,22 @@ test("K579-UI-015 失敗 S2 戻した後の項目の変更の読み直しが失�
 test("K579-UI-016 画面：戻した後（戻せなかった項目の並びが出ている）も、幅 375・768・1440 のはみ出しが 0。並びと戻す・コピーが画面の中", async ({
   page,
 }) => {
-  await mockItemRestore(page);
   for (const w of WIDTHS) {
-    await openVersions(page, ITEMS, w);
-    await ready(page);
-    await restoreBtn(page, "項目の変更", 2).click();
-    await expect(skippedList(page)).toBeVisible();
-    expect(await overflowX(page), `幅 ${w}`).toBe(0);
-    for (const b of [skippedList(page), copyBtn(page)]) {
+    // 幅ごとに新しい頁と答え（戻すと版の一覧に新しい点が足され、同じ答えで開き直すと「版 3 に戻す」になる）
+    const p = w === WIDTHS[0] ? page : await page.context().newPage();
+    await mockItemRestore(p);
+    await openVersions(p, ITEMS, w);
+    await ready(p);
+    await restoreBtn(p, "項目の変更", 2).click();
+    await expect(skippedList(p)).toBeVisible();
+    expect(await overflowX(p), `幅 ${w}`).toBe(0);
+    for (const b of [skippedList(p), copyBtn(p)]) {
       const box = await b.boundingBox();
       expect(box, `幅 ${w}：画面の外`).not.toBeNull();
       expect(box!.x).toBeGreaterThanOrEqual(0);
       expect(box!.x + box!.width).toBeLessThanOrEqual(w);
     }
-    if (w !== 375) await expect(sideOf(page).locator("ol")).toBeVisible();
+    if (w !== 375) await expect(sideOf(p).locator("ol")).toBeVisible();
   }
 });
 

@@ -22,6 +22,7 @@ import {
   sources,
   strip,
 } from "./f12-mock-kit";
+// 必須の欄の見出しは「会社名*」の形（印 * は読み上げない）。getByLabel の exact は印を含む字で比べて当たらないので、印のある・無いの両方に当てる
 
 const DIR = "f12-ops2" as const;
 const MOCK = mockDir(DIR);
@@ -259,8 +260,9 @@ test("K942-UI-009 1 件（oq-inbox-thread）：担当・状態・後で の選�
 }) => {
   await guard(page);
   await openState(page, DIR, "oq-inbox-thread", 1440);
-  for (const l of ["担当", "状態", "後で"]) await expect(page.getByLabel(l, { exact: true })).toBeEnabled();
-  for (const b of ["済みにする", "社内メモにする", "返して返事待ちにする", "返す"]) {
+  // K-976 が下絵をそろえた（担当は字と［外す］・状態の選び肢なし・返すボタンは 1 つ・11_tickets/K-976.md）
+  await expect(page.getByLabel(/^後で\*?$/)).toBeEnabled();
+  for (const b of ["外す", "済みにする", "社内メモにする", "返す"]) {
     const btn = page.getByRole("button", { name: b, exact: true });
     await expect(btn).toBeVisible();
     await expect(btn).not.toHaveAttribute("aria-disabled", "true");
@@ -274,7 +276,8 @@ test("K942-UI-010 ほかの人が担当（oq-inbox-taken）：「佐野 さん�
   await guard(page);
   await openState(page, DIR, "oq-inbox-taken", 1440);
   await expect(page.getByText("佐野 さんが担当になりました", { exact: true })).toBeVisible();
-  await expect(page.getByLabel("担当", { exact: true })).toBeDisabled();
+  // K-976：ほかの人の担当では［後で］の欄は使えず、［返す］［済みにする］は押せない形（［社内メモにする］は押せる）
+  await expect(page.getByLabel(/^後で\*?$/)).toBeDisabled();
   await expect(page.getByRole("button", { name: "返す", exact: true })).toHaveAttribute("aria-disabled", "true");
 });
 

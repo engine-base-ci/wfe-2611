@@ -284,7 +284,9 @@ test("K412-UI-011 スマホのカード（幅 375）：表は見えず、行の�
   await expect(pass.getByRole("button", { name: "断る" })).toBeVisible();
   await expect(pass.getByRole("button", { name: "受ける" })).toBeVisible();
   const ai = card(page, "セイコー様へ 11月分の請求書を送る");
-  await expect(ai.locator(".k-hnd-mcard-from")).toHaveText("佐藤のAI が作成 ・ 確認 通過 3");
+  // 確認の結果は meta に置かず、題名・中身の 1 行の後の別の行（K-730 の決め）
+  await expect(ai.locator(".k-hnd-mcard-from")).toHaveText("佐藤のAI が作成");
+  await expect(ai.locator(".k-more-mcard-open")).toHaveText("確認 通過 3");
   await expect(ai.getByRole("button", { name: "差し戻す" })).toBeVisible();
   await expect(ai.getByRole("button", { name: "承認する" })).toBeVisible();
   await expect(card(page, "11 月分の請求書を送る").getByRole("link", { name: "中身を見る" })).toBeVisible();

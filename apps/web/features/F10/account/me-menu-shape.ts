@@ -1,5 +1,6 @@
 // 自分のメニューとワークスペースの切り替え（K-844）：口 getMe・listMyInvitations の答え → 部品 MeMenuPanel・OrgPanel の値。
 //   純粋な関数だけ（@/ を読まない・試験からも使える）
+import { initialOf } from "../ws/settings-shape";
 import type { MeAnswer, MeRole, MeWorkspace } from "./me-shape";
 
 /** 役割の字（依頼する側は仮・D-154.23） */
@@ -64,7 +65,7 @@ export function aiHintOf(a: MeAnswer | null, fallbackName: string): string {
 export function orgRows(a: MeAnswer): MenuOrgRow[] {
   return a.workspaces.map((w) => ({
     id: w.tenant_id,
-    mark: firstChar(w.name),
+    mark: initialOf(w.name),
     name: w.name,
     role: w.own ? OWN_LABEL : (ROLE_LABEL[w.role] ?? ""),
     now: w.current,
@@ -73,7 +74,7 @@ export function orgRows(a: MeAnswer): MenuOrgRow[] {
 
 /** 読めないときの 1 行（今いる会社だけ・外枠の名前） */
 export function fallbackOrgRow(workspaceName: string): MenuOrgRow {
-  return { id: "", mark: firstChar(workspaceName), name: workspaceName, role: "", now: true };
+  return { id: "", mark: initialOf(workspaceName), name: workspaceName, role: "", now: true };
 }
 
 /** PC の行（仮・端末の名前は外枠が持たないので出さない） */
