@@ -207,7 +207,8 @@ const thread = (page: Page): Locator => chat(page).getByRole("list", { name: "�
 const cards = (page: Page): Locator => chat(page).getByRole("article", { name: "AI の案", exact: true });
 const titleBox = (page: Page): Locator => page.getByRole("textbox", { name: /^題名/ });
 const bodyBox = (page: Page): Locator => page.getByRole("textbox", { name: /^本文/ });
-const checksBlock = (page: Page): Locator => page.getByRole("region", { name: "確認項目", exact: true });
+// 作る画面の確認項目の欄（create の group「確認項目の欄」・中の list「確認項目」）
+const checksBlock = (page: Page): Locator => page.getByRole("group", { name: "確認項目の欄", exact: true });
 const useAll = (card: Locator): Locator => card.getByRole("button", { name: "全部使う", exact: true });
 
 /** 作る画面を開き、作り方の「AI と話して作る」を押して右に会話を開く（K-767-UI-001：会話は押してから開く・道に how=ai） */

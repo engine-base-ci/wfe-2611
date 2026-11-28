@@ -292,7 +292,8 @@ export async function submitCreate(page: Page, title: string): Promise<string> {
   const made = answered(page, "POST", CREATE_TICKET_RE);
   await makeBtn(page).click();
   expect((await made).status(), "作る口が受ける").toBe(201);
-  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]{36}$/);
+  // AI と話して作ったときは詳細の AI のタブへ（?ai=1・K-767）。どちらも詳細の道
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]{36}(\?ai=1)?$/);
   await expect(page.getByRole("heading", { level: 1, name: title, exact: true })).toBeVisible();
   return idOfPage(page);
 }
