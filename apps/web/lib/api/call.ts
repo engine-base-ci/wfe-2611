@@ -1,0 +1,179 @@
+// 新しい画面の API の呼び手（K-27・D-043.3・D-128.113）。口の名前（operationId）で呼び、型は契約から生成した Ops（手で書かない）。
+//   画面は契約の口だけを叩く（G39）。道すじ・メソッドは ENDPOINTS から引く（文字列で道すじを書かない）
+//   答えの扱いはどの画面でも同じ：401 は入り直し（入力途中は残す）・403 は権限が無い・404 は無い・422 は項目ごとの理由・429 は待つ秒数・501 はまだ作っていない口
+import { ENDPOINTS, type Ops, type OpName } from "@kaname/contracts";
+import { apiBase, getToken, notifyUnauthorized } from "./client";
+import { noticeMfaRequired } from "@/lib/mfa-gate";
+import { noticeTermsRequired } from "@/lib/terms-gate";
+
+export type CallArgs<K extends OpName> = ([Ops[K]["params"]] extends [never]
+  ? { params?: undefined }
+  : { params: Ops[K]["params"] }) &
+  ([Ops[K]["query"]] extends [never] ? { query?: undefined } : { query?: Ops[K]["query"] }) &
+  ([Ops[K]["body"]] extends [never] ? { body?: undefined } : { body?: Ops[K]["body"] }) & {
+    /** 書き込みの冪等キー（同じ操作の押し直しは最初の結果が返る）。無ければ毎回作る */
+    idempotencyKey?: string;
+    /** どの画面から呼んだか（記録とエラーの知らせに出る） */
+    screenId?: string;
+    signal?: AbortSignal;
+    /** 口が頭で受ける値（例：登録の申し込みの印 x-signup-token・K-51）。契約の parameters の in: header */
+    headers?: Record<string, string>;
+    /** 401 でも入り直しへ送らない（ログインしていない画面が「今ログインしているか」を確かめるとき・K-51） */
+    keepOn401?: boolean;
+    /** ファイルを送る口（multipart・ロゴ K-831・顔の写真 K-839）。あれば体はこの FormData（body は使わない）で、
+     *  content-type は付けない（境の印は fetch が作る）。冪等キー・画面の印・答えの扱いは JSON の呼び方と同じ */
+    form?: FormData;
+  };
+export interface CallOk<K extends OpName> {
+  ok: true;
+  status: number;
+  data: Ops[K]["data"];
+  meta: { cursor?: string; limit?: number; total?: number } & Record<string, unknown>;
+}
+export type CallErrorKind =
+  | "unauthenticated"
+  | "forbidden"
+  | "step_up"
+  | "not_found"
+  | "invalid"
+  | "conflict"
+  | "rate_limited"
+  | "not_built"
+  | "too_large"
+  | "failed";
+export interface CallErr {
+  ok: false;
+  status: number;
+  kind: CallErrorKind;
+  code: string;
+  message: string | null;
+  /** 422 の項目ごとの理由（field → message） */
+  fields: Record<string, string>;
+  /** 429 のとき、何秒待てばよいか */
+  retryAfterSec: number | null;
+  /** 答えの体そのもの（口が足した値を読む：409・E-CONF-013 の今の run_id など・K-62） */
+  body: Record<string, unknown>;
+}
+export type CallResult<K extends OpName> = CallOk<K> | CallErr;
+
+const BY_OP = new Map(ENDPOINTS.map((e) => [e.operationId, e]));
+const newKey = (): string =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+
+function kindOf(status: number, code: string): CallErrorKind {
+  if (status === 401) return "unauthenticated";
+  if (status === 403) return code === "STEP_UP_REQUIRED" ? "step_up" : "forbidden";
+  if (status === 404) return "not_found";
+  if (status === 409) return "conflict";
+  if (status === 413) return "too_large"; // 送る内容が 1MB を超えた（D-130.1）。答えの message（「送る内容が大きすぎます」）を出す
+  if (status === 422) return "invalid";
+  if (status === 429) return "rate_limited";
+  if (status === 501) return "not_built";
+  return "failed";
+}
+
+/** 道すじを作る（:id などを値で埋める。値は URL の形に直す） */
+export function pathOf(path: string, params: Record<string, string> | undefined): string {
+  return path.replace(/:([a-z_]+)/gi, (_, n: string) => {
+    const v = params?.[n];
+    if (v === undefined || v === "") throw new Error(`道すじの値が無い: ${n}`);
+    return encodeURIComponent(v);
+  });
+}
+
+export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as CallArgs<K>): Promise<CallResult<K>> {
+  const e = BY_OP.get(op);
+  if (!e) throw new Error(`契約に無い口: ${String(op)}`);
+  const q = Object.entries((args.query ?? {}) as Record<string, string | number | undefined>)
+    .filter(([, v]) => v !== undefined && v !== "")
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+    .join("&");
+  const write = e.method !== "GET";
+  const headers: Record<string, string> = { accept: "application/json", ...(args.headers ?? {}) };
+  const token = getToken();
+  // 呼ぶ側が頭に印を渡したときはそれを使う（運営のパスキーを付けるだけのセッションを閉じる・K-1003）
+  if (token && headers["authorization"] === undefined) headers["authorization"] = `Bearer ${token}`;
+  if (args.screenId) headers["x-screen-id"] = args.screenId;
+  // 体は渡したときだけ送る（体なしの口＝送り直す等は体を付けない・K-809。口の側は空の体を {} として読む・K-896）
+  const body = args.form ?? (args.body === undefined ? undefined : JSON.stringify(args.body));
+  if (write) {
+    if (!args.form && body !== undefined) headers["content-type"] = "application/json";
+    headers["idempotency-key"] = args.idempotencyKey ?? newKey();
+  }
+  const sentAt = Date.now(); // 同意し直し（K-53）：同意できた時刻より前に出した要求の 403 は見ない
+  const res = await fetch(
+    `${apiBase()}${pathOf(e.path, args.params as Record<string, string> | undefined)}${q ? `?${q}` : ""}`,
+    {
+      method: e.method,
+      headers,
+      ...(write && body !== undefined ? { body } : {}),
+      ...(args.signal ? { signal: args.signal } : {}),
+    },
+  );
+  if (res.status === 401 && !args.keepOn401) notifyUnauthorized();
+  const json = (res.status === 204 ? {} : await res.json().catch(() => ({}))) as Record<string, unknown>;
+  if (res.ok) {
+    return {
+      ok: true,
+      status: res.status,
+      data: json["data"] as Ops[K]["data"],
+      meta: (json["meta"] ?? {}) as CallOk<K>["meta"],
+    };
+  }
+  const code = String(json["code"] ?? json["error"] ?? res.status);
+  // 同意し直しが要る（K-53）：どの画面からでも同意し直しの画面へ移す
+  noticeTermsRequired(res.status, json["code"], json["message"], sentAt);
+  // 付けるまで進めない（K-319）：どの画面からでもログインと安全の画面へ移す
+  noticeMfaRequired(res.status, json["code"], json["message"]);
+  const details = Array.isArray(json["details"]) ? (json["details"] as { field?: string; message?: string }[]) : [];
+  // 正本のエラー（KanameError）は項目を detail.field で返す。文言は正本の message（K-51）
+  const one = json["detail"] as { field?: unknown } | undefined;
+  if (one && typeof one.field === "string" && typeof json["message"] === "string")
+    details.push({ field: one.field, message: json["message"] });
+  return {
+    ok: false,
+    status: res.status,
+    kind: kindOf(res.status, code),
+    code,
+    message: typeof json["message"] === "string" ? json["message"] : null,
+    fields: Object.fromEntries(details.filter((d) => d.field).map((d) => [d.field!, d.message ?? ""])),
+    retryAfterSec: typeof json["retry_after_sec"] === "number" ? json["retry_after_sec"] : null,
+    body: json,
+  };
+}
+
+/** ファイルを受け取る口（K-57 の配布物）。ログインの鍵を付けて呼ぶ。
+ *  置き場が外なら答えは JSON の短い期限の署名 URL（{ url, expires_at }・D-128.153）、手元のフォルダならファイルそのもの。
+ *  失敗なら正本の ID を返す */
+export type FileReply =
+  | { ok: true; kind: "link"; url: string; expiresAt: string | null }
+  | { ok: true; kind: "blob"; blob: Blob }
+  | { ok: false; status: number; code: string };
+export async function fetchFile<K extends OpName>(op: K, params: Record<string, string>): Promise<FileReply> {
+  const e = BY_OP.get(op);
+  if (!e) throw new Error(`契約に無い口: ${String(op)}`);
+  const token = getToken();
+  try {
+    const r = await fetch(`${apiBase()}${pathOf(e.path, params)}`, {
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    });
+    if (r.ok && (r.headers.get("content-type") ?? "").includes("application/json")) {
+      const j = (await r.json().catch(() => ({}))) as { data?: { url?: unknown; expires_at?: unknown } };
+      const url = typeof j.data?.url === "string" ? j.data.url : "";
+      // 署名 URL は http(s) だけを開く（ほかの形は開かない）
+      if (!/^https?:\/\//.test(url)) return { ok: false, status: r.status, code: "E-PAGE-007" };
+      return {
+        ok: true,
+        kind: "link",
+        url,
+        expiresAt: typeof j.data?.expires_at === "string" ? j.data.expires_at : null,
+      };
+    }
+    if (r.ok) return { ok: true, kind: "blob", blob: await r.blob() };
+    if (r.status === 401) notifyUnauthorized();
+    const j = (await r.json().catch(() => ({}))) as { code?: unknown };
+    return { ok: false, status: r.status, code: typeof j.code === "string" ? j.code : String(r.status) };
+  } catch {
+    return { ok: false, status: 0, code: "E-PAGE-007" };
+  }
+}

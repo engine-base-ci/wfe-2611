@@ -1,0 +1,60 @@
+{
+ "errors": [
+  {
+   "id": "E-AUD-001",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録の絞りの形が違う（知らない札・日時でない期間・100 を超える件数）",
+   "false_when": "形の合った絞り",
+   "message": "条件が正しくありません。選び直してください",
+   "action": "条件を選び直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、知らない札（kind=bogus）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  },
+  {
+   "id": "E-AUD-002",
+   "class": "validation",
+   "where": {
+    "screen": "audit",
+    "state": "a"
+   },
+   "when": "記録の続きの印をほどけない（中身が 時刻（マイクロ秒）_uuid でない・暦に無い日付）",
+   "false_when": "口が返した続きの印",
+   "message": "続きの印が正しくありません。はじめから読み直してください",
+   "action": "はじめから読み直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "audit の画面",
+    "steps": [
+     "記録を読む口を、形の違う続きの印（cursor=abc）で直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.11"
+   ]
+  }
+ ]
+}
