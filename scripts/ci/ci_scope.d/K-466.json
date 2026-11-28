@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["scripts/ci/perf_budget.json"], "tests": ["apps/web/tests/k/k466-shell-badges.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k466-shell-badges.spec.ts": "外枠の読み方 apps/web/features/F4/create-ticket/ticket-shell.tsx・ベルの数 apps/web/components/k/shell.tsx・お知らせの置き場の包み apps/web/features/F1/security/security-screen.tsx・速さの台帳 scripts/ci/perf_budget.json を読む（K-466）"
+ }
+}
