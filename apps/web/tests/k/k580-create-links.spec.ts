@@ -33,6 +33,7 @@ const DOING = { id: "st-doing", key: "doing", name: "作業中" };
 const TODO = { id: "st-todo", key: "todo", name: "未着手" };
 const SC_EG = { id: SCOPE, name: "営業" };
 const SC_KR = { id: "sc-kr", name: "経理" };
+const SC_JD = { id: "sc-jd", name: "受託開発" };
 const row = (n: number, number: string, title: string, stage = TODO, scope = SC_EG): CatalogRow => ({
   id: `6c000000-0000-4000-8000-${String(n).padStart(12, "0")}`,
   number,
@@ -45,7 +46,8 @@ const row = (n: number, number: string, title: string, stage = TODO, scope = SC_
 const A = row(5, "EG-097", "セイコー様 保守契約の見積", DONE);
 const B = row(3, "EG-110", "山田様からの問い合わせを受ける", DONE);
 const C = row(6, "KR-031", "入金の照合（11月分）", TODO, SC_KR);
-const D = row(4, "JD-150", "京蟻 保守運用（年間）", DOING);
+// JD-150 のグループは下絵と同じ受託開発（下絵 f4v2-create-link-add を候補 2 件に描き直して突き合わせに入った・2026-11-28 answer=13cf83d4f60d）
+const D = row(4, "JD-150", "京蟻 保守運用（年間）", DOING, SC_JD);
 const LONG = row(9, "EG-199", `とても長い題名の相手 ${"あ".repeat(80)}`, DOING);
 const CATALOG = [A, B, C, D, LONG];
 
