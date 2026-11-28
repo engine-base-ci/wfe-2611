@@ -1,0 +1,77 @@
+{
+ "screen": "ops-home",
+ "mock": "06_mockup/v1/v1-ops-home.html",
+ "state_labels": {
+  "n": "会社の一覧",
+  "s": "詰まっている",
+  "p": "プラン",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:会社を招く",
+   "kind": "button",
+   "label": "会社を招く",
+   "target": null,
+   "states": [
+    "会社の一覧"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:構成",
+   "kind": "button",
+   "label": "構成",
+   "target": null,
+   "states": [
+    "会社の一覧"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:詰まりを開く→ops-support",
+   "kind": "link",
+   "label": "詰まりを開く",
+   "target": "ops-support",
+   "states": [
+    "会社の一覧"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:送る→ops-support",
+   "kind": "link",
+   "label": "送る",
+   "target": "ops-support",
+   "states": [
+    "詰まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:詰まりを開く",
+   "kind": "button",
+   "label": "詰まりを開く",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
