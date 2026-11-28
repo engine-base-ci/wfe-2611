@@ -90,6 +90,9 @@ components:
           type: integer
         session_max_days:
           type: integer
+        stop_notice:
+          type: string
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -8329,9 +8332,9 @@ components:
           format: uuid
           nullable: true
         guest_visible: &id789
-          type: string
+          type: boolean
         from_request: &id790
-          type: string
+          type: boolean
         id:
           type: string
           format: uuid
@@ -8878,38 +8881,46 @@ components:
         page_id: &id847
           type: string
           format: uuid
+          nullable: true
         folder_id: &id848
           type: string
           format: uuid
+          nullable: true
         from_scope_id: &id849
           type: string
           format: uuid
         from_is_personal: &id850
-          type: string
+          type: boolean
         to_scope_id: &id851
           type: string
           format: uuid
         to_folder_id: &id852
           type: string
           format: uuid
+          nullable: true
         requested_by: &id853
           type: string
           format: uuid
         message: &id854
           type: string
+          nullable: true
         state: &id855
           type: string
         decided_by: &id856
           type: string
           format: uuid
+          nullable: true
         decided_at: &id857
           type: string
           format: date-time
+          nullable: true
         decline_reason: &id858
           type: string
+          nullable: true
         dismissed_at: &id859
           type: string
           format: date-time
+          nullable: true
         id:
           type: string
           format: uuid
@@ -8922,6 +8933,18 @@ components:
         updated_at:
           type: string
           format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
       required:
       - id
       x-table: knowledge_requests
@@ -52882,12 +52905,6 @@ paths:
         schema:
           type: string
           format: uuid
-      - name: scope_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -52906,7 +52923,17 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[a-z_][a-z0-9_]{0,62}$
+          enum:
+          - created_at
+          - created_by
+          - deleted_at
+          - guest_group_id
+          - id
+          - shared_by
+          - tenant_id
+          - ticket_id
+          - updated_at
+          - updated_by
       responses:
         '200':
           description: 成功
