@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/ops2/template-update-*",
+    "apps/web/features/F12/ops2/use-template-updates.ts",
+    "apps/web/app/(work)/settings/template-updates/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1016-template-update.spec.ts",
+    "apps/web/test/k1016-template-update-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F7/notice/notice-text.ts"
+   ],
+   "tests": [
+    "apps/web/test/k1016-notice-text.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1016-template-update.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops2 を開き scripts/ci/fidelity_compare.mjs の型を読む。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-1016"
+ }
+}
