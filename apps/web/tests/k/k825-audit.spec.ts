@@ -44,7 +44,10 @@ for (const [id, st] of Object.entries(STATES)) {
           });
           if (st.fail) mk.set("audit", () => err(503, "E-PAGE-003"));
           await openAt(page, owner.token, st.path, w);
-          await expect(page.locator(`${SEC}, [data-state="error"], .k-state`).first()).toBeVisible();
+          // 読み込み中の箱（.k-state[data-state="loading"]）で比べ始めない（答えが来て本文か誤りの箱が出てから読む）
+          await expect(
+            page.locator(`${SEC}, [data-state="error"], .k-state:not([data-state="loading"])`).first(),
+          ).toBeVisible();
         },
         { pairs: LOG_PAIRS, base: MOCK_BASE, blur: true },
       );
@@ -153,6 +156,7 @@ test("K825-UI-009 ことばと札を組み合わせる：q と kind を同時に
   const mk = await mockOps(page);
   mk.set("audit", () => ({ status: 200, body: auditBody(ENTRIES, { next_cursor: "2026-10-12T05:20:00.000001Z_x" }) }));
   await openAt(page, owner.token, "/audit?kind=perm&q=鈴木");
+  await expect.poll(() => mk.count("audit")).toBe(1); // 開いた直後は口をまだ呼んでいない（描いてから読む）
   expect(mk.last("audit")!.query).toMatchObject({ kind: "perm", q: "鈴木" });
   await expect(page.getByText("2 件以上見つかりました", { exact: true })).toBeVisible();
 });
@@ -253,6 +257,7 @@ test("K825-UI-016 メンバーの 1 人の画面から来る：/audit?member=<id
 }) => {
   const mk = await mockOps(page, { entries: ENTRIES });
   await openAt(page, owner.token, `/audit?member=${ID.suzuki}&ticket=${ID.EG}`);
+  await expect.poll(() => mk.count("audit")).toBe(1); // 開いた直後は口をまだ呼んでいない（描いてから読む）
   expect(mk.last("audit")!.query).toMatchObject({ member_id: ID.suzuki, ticket_id: ID.EG });
   await expect(page.getByText("1 人に絞っています", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "1 人に絞っているのを外す", exact: true }).click();
@@ -265,6 +270,7 @@ test("K825-UI-017 URL の値の確かめ：member・ticket が uuid でない・
 }) => {
   const mk = await mockOps(page);
   await openAt(page, owner.token, "/audit?member=abc&ticket=xyz&kind=zzz&mine=1&q=");
+  await expect.poll(() => mk.count("audit")).toBe(1); // 開いた直後は口をまだ呼んでいない（描いてから読む）
   expect(mk.last("audit")!.query).toEqual({});
   await expect(rows(page)).toHaveCount(MORE.length);
 });

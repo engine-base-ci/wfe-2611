@@ -159,7 +159,9 @@ test("K710-UI-002 /members を開くと並びの口を 1 回だけ読み、見�
   expect(mk.reads).toBe(1);
   await expect(page.locator(`${SEC} .k-page-sub`)).toHaveText("グループごとに並ぶ。役割はその場で変えられる");
   await expect(page.locator(".k-inv-sub-count")).toHaveText("10");
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveAttribute("aria-current", "page");
 });
 
 test("K710-UI-003 グループの行：営業・受託開発・経理の順に 3 行・札 EG・JD・KR の色（teal・plum・amber）・人数（営業は「4 人 ＋ 招待中 1」・受託開発「3 人」・経理「2 人」）・マネージャーの行", async ({
