@@ -159,7 +159,7 @@ export async function ticketFor(
     ...(o.dueDays === null ? {} : { due_on: jst(o.dueDays ?? 3) }),
     body: bodyOf(o.sections ?? { purpose: "毎日見る試験の準備", done: "確かめた", todo: "- 確かめる" }),
   });
-  if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
+  if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}（${r.code ?? "code なし"}）`);
   const id = (r.data?.["id"] ?? (r.data?.["ticket"] as Record<string, unknown> | undefined)?.["id"]) as
     string | undefined;
   if (!id) throw new Error("作ったチケットの id が答えに無い");
