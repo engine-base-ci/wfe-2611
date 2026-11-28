@@ -51,11 +51,13 @@ const STATES: Record<string, (page: Page, mk: Api) => Promise<void>> = {
       mk.w.invitations[0]!.left_days = 7;
       return {
         status: 200,
-        body: { data: { groups: mk.w.groups, invitations: mk.w.invitations, alerts: [], count: 7 } },
+        // 人数は重ならない人＋招待中（5 人＋1 人・membersBody と同じ数え方。下絵の第 2 ナビの札も 6）
+        body: { data: { groups: mk.w.groups, invitations: mk.w.invitations, alerts: [], count: 6 } },
       };
     });
     await resendBtn(page).click();
-    await expect(page.getByRole("status").filter({ hasText: "送り直しました" })).toBeVisible();
+    // 行の「送り直しました」を見る（上の知らせの帯も role=status で同じ字を持つ）
+    await expect(invited(page).getByRole("status")).toContainText("送り直しました");
   },
   "mb-invite-revoke": async (page) => {
     await revokeBtn(page).click();
@@ -80,6 +82,8 @@ for (const [id, drive] of Object.entries(STATES)) {
         async (page) => {
           const mk = await openList(page, w);
           await drive(page, mk);
+          // 開いた経理の行まで頁が流れている。下絵は頁の上のまま読むので、頁の上に戻してから読む（小窓の y を同じ所から読む）
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         { pairs: F10_PAIRS, base: MOCK_BASE, blur: true },
       );

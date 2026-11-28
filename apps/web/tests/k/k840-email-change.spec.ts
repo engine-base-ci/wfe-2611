@@ -13,7 +13,8 @@ const PATH = "/account";
 const CONFIRM = "/account/email-confirm?token=tok-1";
 const NEW = "new-takamoto@engine-base.example";
 const OLD = "takamoto@engine-base.example";
-const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true });
+// 小窓が開いている間は後ろの区画が読み上げから外れる（aria-hidden）。後ろの行を見る試験（「確かめ待ちにならない」）のため hidden も探す
+const card = (page: Page, name: string) => page.getByRole("region", { name, exact: true, includeHidden: true });
 const mailRow = (page: Page) => card(page, "自分").locator(".k-set-row").filter({ hasText: "メール" });
 const dlg = (page: Page) => page.getByRole("dialog", { name: "メールを変える", exact: true });
 const next = (page: Page) => dlg(page).getByLabel("新しいメール", { exact: true });

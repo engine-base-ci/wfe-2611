@@ -55,6 +55,12 @@ const calls = (w: World, method: string, re: RegExp) => w.calls.filter((c) => c.
 const send = (route: Route, r: Reply) =>
   route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
 
+// once の網・サーバーの失敗（5xx）は 1 回だけ当てる（使ったら消す。押し直しの 2 回目は普通の答え）。4xx（見られない・期限切れ）は続ける
+function takeOnce<K extends keyof World["once"]>(w: World, k: K): World["once"][K] {
+  const v = w.once[k];
+  if (v && !Array.isArray(v) && (v as { status: number }).status >= 500) delete w.once[k];
+  return v;
+}
 async function mockWorld(page: Page, w: World) {
   await page.route(/127\.0\.0\.1:38617/, (r) => r.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route, req) => {
@@ -89,7 +95,10 @@ async function mockWorld(page: Page, w: World) {
       );
     if (p === "/api/v1/portal/notices") return send(route, ok([]));
     if (p === "/api/v1/portal/requests/questions")
-      return send(route, w.once.questions ?? ok({ available: w.available, questions: w.available ? w.questions : [] }));
+      return send(
+        route,
+        takeOnce(w, "questions") ?? ok({ available: w.available, questions: w.available ? w.questions : [] }),
+      );
     if (p === "/api/v1/portal/attachments")
       return send(
         route,
@@ -97,11 +106,11 @@ async function mockWorld(page: Page, w: World) {
       );
     if (method === "POST" && p === "/api/v1/portal/requests") {
       if (w.hold.has("create")) return never();
-      return send(route, w.once.create ?? ok({ id: RID }, 201));
+      return send(route, takeOnce(w, "create") ?? ok({ id: RID }, 201));
     }
     if (method === "POST" && p.endsWith("/messages")) {
       if (w.hold.has("message")) return never();
-      const r = w.once.message ?? ok({ id: "m9" }, 201);
+      const r = takeOnce(w, "message") ?? ok({ id: "m9" }, 201);
       if (r.status === 201)
         w.messages = [
           ...w.messages,
@@ -112,7 +121,7 @@ async function mockWorld(page: Page, w: World) {
     if (method === "GET" && p === `/api/v1/portal/requests/${RID}`)
       return send(
         route,
-        w.once.get ??
+        takeOnce(w, "get") ??
           ok({
             request: {
               id: RID,

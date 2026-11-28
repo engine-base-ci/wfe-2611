@@ -36,7 +36,7 @@ const editBtn = (page: Page, name: string) => page.getByRole("button", { name: `
 const delBtn = (page: Page, name: string) => page.getByRole("button", { name: `${name}を消す`, exact: true });
 const grip = (page: Page, name: string) => page.getByRole("button", { name: `${name}を並べ替える`, exact: true });
 const edit = (page: Page, name: string) => row(page, name).locator(".k-f9s-stage-edit");
-const nameBox = (page: Page, name: string) => edit(page, name).getByLabel("名前", { exact: true });
+const nameBox = (page: Page, name: string) => edit(page, name).getByRole("textbox", { name: "名前", exact: true });
 const save = (page: Page, name: string) => edit(page, name).getByRole("button", { name: "保存する", exact: true });
 const names = (page: Page) => page.locator(`${LIST} .k-f9s-pill`).allTextContents();
 
@@ -276,8 +276,8 @@ test("K708-UI-013 「状態を足す」の小窓（名前・色）で足す：�
   await page.getByRole("button", { name: "状態を足す", exact: true }).click();
   const dlg = page.locator(DLG);
   await expect(dlg.getByRole("heading", { name: "状態を足す" })).toBeVisible();
-  await expect(dlg.getByLabel("名前", { exact: true })).toBeFocused();
-  await dlg.getByLabel("名前", { exact: true }).fill("確認待ち");
+  await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toBeFocused();
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("確認待ち");
   await dlg.getByRole("radio", { name: "珊瑚", exact: true }).check();
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg).toHaveCount(0);
@@ -298,12 +298,12 @@ test("K708-UI-014 足す小窓の失敗：空の名前は口を呼ばない・40
   await expect(dlg.locator(".k-err")).toHaveText("名前を入れてください");
   expect(mk.count("createStage")).toBe(0);
   mk.script("createStage", err(409, "E-STG-001"), err(409, "E-STG-002"));
-  await dlg.getByLabel("名前", { exact: true }).fill("保留");
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("保留");
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText(msg("E-STG-001"));
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText(msg("E-STG-002"));
-  await expect(dlg.getByLabel("名前", { exact: true })).toHaveValue("保留");
+  await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("保留");
   await dlg.getByRole("button", { name: "やめる", exact: true }).click();
   await expect(add).toBeFocused();
   await add.click();
@@ -435,12 +435,12 @@ test("K708-UI-025 足す・消す・並べ替えの口が失敗：並べ替え�
   expect(mk.count("reorderStages")).toBe(3);
   await page.getByRole("button", { name: "状態を足す", exact: true }).click();
   const dlg = page.locator(DLG);
-  await dlg.getByLabel("名前", { exact: true }).fill("確認待ち");
+  await dlg.getByRole("textbox", { name: "名前", exact: true }).fill("確認待ち");
   mk.script("createStage", err(503, "E-PAGE-003"), "network", err(403, "E-PAGE-002"));
   for (const code of ["E-PAGE-003", "E-PAGE-007", "E-PAGE-002"]) {
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
     await expect(dlg.getByRole("alert").filter({ hasText: msg(code).split("。")[0]! })).toBeVisible();
-    await expect(dlg.getByLabel("名前", { exact: true })).toHaveValue("確認待ち");
+    await expect(dlg.getByRole("textbox", { name: "名前", exact: true })).toHaveValue("確認待ち");
   }
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg).toHaveCount(0);
