@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F5/more/fills/talk.tsx", "apps/web/features/F5/room/ticket-talk-panel.tsx", "apps/web/features/F5/room/use-ticket-talk.ts", "apps/web/features/F5/room/ticket-talk.tsx"], "tests": ["apps/web/tests/k/k764-ticket-talk.spec.ts", "apps/web/tests/k/k226-ticket-detail.spec.ts"]}
+ ]
+}
