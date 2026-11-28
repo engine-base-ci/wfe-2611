@@ -1,0 +1,34 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-170",
+   "class": "conflict",
+   "where": {
+    "screen": "portal",
+    "state": "request_detail"
+   },
+   "when": "依頼のやり取りに書くとき、その依頼がもうチケットになった・断られた",
+   "false_when": "依頼がまだ決まっていない（新しい・会社が聞いている）",
+   "message": "この依頼にはもう書けません",
+   "action": "依頼のやり取りを読み直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ゲストでログインし、自分のグループの依頼を会社にチケットにしてもらう（または断ってもらう）",
+    "steps": [
+     "その依頼のやり取りに返事を書いて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.10"
+   ],
+   "support_code": "GST-170"
+  }
+ ]
+}

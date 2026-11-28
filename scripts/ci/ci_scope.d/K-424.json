@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/fuzz/k424_fuzz_limits.test.ts": "K424-FZ-005 が同じ置き場の的 apps/api/test/fuzz/server.ts の字を、K424-FZ-009 が apps/api/src の .ts/.tsx の字を読み、FZ-007・008 は自分で作った一時の置き場と今いるフォルダの一覧だけを見る。どれも @kaname/api の中で、変われば packages の組でこの試験が流れる・K-424"
+ }
+}
