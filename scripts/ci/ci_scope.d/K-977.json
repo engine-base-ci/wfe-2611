@@ -35,6 +35,7 @@
   }
  ],
  "reads_ok": {
-  "apps/api/test/features/F12/ops-notice.harness.ts": "試験が名前で渡した口の登録（apps/api/src/hooks/<名前>.ts）を動的 import して材料を組む。読む hooks の変更でも流れるよう、その葉の試験と data_links で結ぶ（K-977・K-1014・K-978・K-979）"
+  "apps/api/test/features/F12/ops-notice.harness.ts": "試験が名前で渡した口の登録（apps/api/src/hooks/<名前>.ts）を動的 import して材料を組む。読む hooks の変更でも流れるよう、その葉の試験と data_links で結ぶ（K-977・K-1014・K-978・K-979）",
+  "apps/api/test/features/contract/k144.d/K-977.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-977"
  }
 }
