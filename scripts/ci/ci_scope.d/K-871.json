@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["scripts/ci/gen_built_routes.py"], "tests": ["apps/web/tests/k/k871-f11-company-mock.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k871-f11-company-mock.spec.ts": "段 12 の下絵の置き場 apps/web/app/(dev)/dev/mock/f11/（mocks.tsx の状態と持ち主・render-cu-rq.tsx と render-cp.tsx の空の形）と部品 apps/web/features/F11/ の字と CSS を読み、道の一覧 apps/web/lib/built-routes.ts の isBuilt を呼ぶ（K871-MK-001〜006）。道の一覧の作り手の変更でも流れるよう data_links で結ぶ（K-871）"
+ }
+}

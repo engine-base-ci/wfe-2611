@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops/ws-tenant-*", "apps/web/features/F12/ops/use-ops-workspace.ts", "apps/web/features/F12/ops/tenant-frame.tsx", "apps/web/features/F12/ops/tenant-tabs.tsx", "apps/web/app/(ops)/ops/tenants/**"], "tests": ["apps/web/tests/k/k971-ws-tenant.spec.ts", "apps/web/test/k971-ws-tenant-shape.test.ts", "apps/web/tests/k/k941-f12-ops-parts.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k971-ws-tenant.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops を開き scripts/ci/fidelity_compare.mjs を読む。答えの見本 ops-ws-answers.ts を読む（実ブラウザの試験は web の組が流す）・K-971",
+  "apps/web/test/k971-ws-tenant-shape.test.ts": "下絵の見本 apps/web/features/F12/ops/ops-sample.ts と答えの見本 apps/web/tests/k/ops-ws-answers.ts を読む（画面の外の純粋な関数の試験）・K-971"
+ }
+}

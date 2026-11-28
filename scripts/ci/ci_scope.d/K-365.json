@@ -1,0 +1,35 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/device-*.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/bridge-take-guard.test.ts",
+    "apps/api/test/features/F5/delegate-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_devices_id_browser_check.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-365.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts（K-364 が運ぶ）を動的 import する。ファイルは読まない（K-378）"
+ }
+}
