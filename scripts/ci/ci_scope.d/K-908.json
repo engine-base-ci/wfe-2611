@@ -1,0 +1,27 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/portal-request-message.ts",
+    "apps/api/src/features/F11/portal/request-message.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/portal-request-message.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/portal-request-message.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_portal_requests_id_messages.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-908.ts": "口の振る舞いの hooks のファイル（apps/api/src/hooks/portal-request-message.ts）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-908"
+ }
+}
