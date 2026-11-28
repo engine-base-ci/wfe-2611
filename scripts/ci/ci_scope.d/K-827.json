@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-settings.ts",
+    "apps/api/src/features/F10/workspace/**",
+    "packages/db/migrations/20261126002700_workspace_settings.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/workspace-settings.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/workspace-settings.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_workspace.test.ts",
+    "apps/api/test/generated/patch_workspace.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/workspace-settings.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-settings.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-827"
+ }
+}
