@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "packages/db/test/legacy_credential_functions.test.ts": "この葉の migration のファイル packages/db/migrations/ を読み、消した関数の名前を使う所が apps・packages・scripts に残っていないかをファイルを歩いて探す（migration の道で db の組に当たる）・K-371"
+ }
+}
