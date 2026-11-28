@@ -1,0 +1,62 @@
+{
+ "ops": {
+  "updateClientRequest": {
+   "file": "apps/api/test/features/F11/client-requests-route-reply.test.ts",
+   "reason": "届け先を変える口は、依頼・ゲストのグループ・届け先と見る人の権限で答えが変わる。生成の試験の種では依頼もゲストのグループも作れない（K-893）",
+   "covers": {
+    "test_patch_client_requests_id_ok": "K893-API-001",
+    "test_patch_client_requests_id_shape": "K893-API-001",
+    "test_patch_client_requests_id_rejected_401": "K893-API-007",
+    "test_patch_client_requests_id_rejected_403": "K893-API-007",
+    "test_patch_client_requests_id_rejected_422": "K893-API-003",
+    "test_patch_client_requests_id_not_found": "K893-API-006",
+    "test_patch_client_requests_id_rate_limited": "K893-API-022",
+    "test_patch_client_requests_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_client_requests_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_client_requests_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_client_requests_id_not_found_2": "K893-API-004",
+    "test_patch_client_requests_id_conflict": "K893-API-005"
+   },
+   "na": {
+    "test_patch_client_requests_id_upstream_failed": "外を呼ばない（届け先を変えるときはメールも受け箱も送らない・K893-API-001）"
+   }
+  },
+  "replyToClientRequest": {
+   "file": "apps/api/test/features/F11/client-requests-route-reply.test.ts",
+   "reason": "返事の口は、依頼の状態・届け先と見る人の権限・出し手の宛先で答えが変わる。生成の試験の種では依頼もゲストも作れない（K-893）",
+   "covers": {
+    "test_post_client_requests_id_reply_ok": "K893-API-010",
+    "test_post_client_requests_id_reply_shape": "K893-API-010",
+    "test_post_client_requests_id_reply_rejected_401": "K893-API-013",
+    "test_post_client_requests_id_reply_rejected_403": "K893-API-013",
+    "test_post_client_requests_id_reply_rejected_422": "K893-API-011",
+    "test_post_client_requests_id_reply_not_found": "K893-API-013",
+    "test_post_client_requests_id_reply_rate_limited": "K893-API-022",
+    "test_post_client_requests_id_reply_upstream_failed": "K893-API-016",
+    "test_post_client_requests_id_reply_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_client_requests_id_reply_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_client_requests_id_reply_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_client_requests_id_reply_conflict": "K893-API-012"
+   },
+   "na": {}
+  }
+ }
+}

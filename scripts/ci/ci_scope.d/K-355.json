@@ -1,0 +1,29 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**",
+    "apps/api/test/features/F3/credential-device.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-login-check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-login-check.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-355.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_credentials_id_login_check.test.ts",
+    "apps/api/test/generated/post_credentials_id_login_check_answer.test.ts",
+    "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-355.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）"
+ }
+}
