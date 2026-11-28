@@ -1,0 +1,60 @@
+{
+ "ops": {
+  "listOpsNotices": {
+   "file": "apps/api/test/features/F12/ops-notices-read.test.ts",
+   "reason": "お知らせの行・障害の状態・予定の時刻で答えが変わる。種では作れない（K-977）",
+   "covers": {
+    "test_get_ops_notices_ok": "K977-API-001",
+    "test_get_ops_notices_shape": "K977-API-001",
+    "test_get_ops_notices_rejected_401": "K977-API-007",
+    "test_get_ops_notices_rejected_403": "K977-API-007",
+    "test_get_ops_notices_rejected_422": "K977-API-008",
+    "test_get_ops_notices_rate_limited": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_ops_notices_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_ops_notices_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_ops_notices_rejected_422_2": "対象の会社が 0 件の断り（E-ACT-038）は出す口 publishOpsNotice（K-978）の物。読む口は出さないので起きない"
+   }
+  },
+  "getOpsNotice": {
+   "file": "apps/api/test/features/F12/ops-notices-read.test.ts",
+   "reason": "お知らせの行・続報・届く数で答えが変わる。種では作れない（K-977）",
+   "covers": {
+    "test_get_ops_notices_id_ok": "K977-API-011",
+    "test_get_ops_notices_id_shape": "K977-API-011",
+    "test_get_ops_notices_id_not_found": "K977-API-015",
+    "test_get_ops_notices_id_rejected_401": "K977-API-007",
+    "test_get_ops_notices_id_rejected_403": "K977-API-007",
+    "test_get_ops_notices_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_ops_notices_id_rate_limited": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_ops_notices_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_ops_notices_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_ops_notices_id_rejected_422_2": "対象の会社が 0 件の断り（E-ACT-038）は出す口 publishOpsNotice（K-978）の物。読む口は出さないので起きない"
+   }
+  }
+ }
+}
