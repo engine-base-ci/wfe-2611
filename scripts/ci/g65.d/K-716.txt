@@ -1,0 +1,1 @@
+python3 scripts/ci/k716_staging_spec_test.py
