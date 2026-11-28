@@ -1,0 +1,64 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-001",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-peek"
+   },
+   "when": "同じ運営の人が同じワークスペースに、まだ効いている中を見るの許可（閉じていない・期限の前）を持っているのに、もう一度開く",
+   "false_when": "自分の効いている許可が無い（ほかの運営の人の許可は数えない）",
+   "message": "このワークスペースはもう開いています",
+   "action": "開いている帯から閉じる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ops-tenant の画面で中を見るを開いた",
+    "steps": [
+     "閉じずにもう一度［見るだけで開く］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.68",
+    "D-125.128"
+   ]
+  },
+  {
+   "id": "E-OPS-002",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-peek-open"
+   },
+   "when": "中を見るの許可がもう閉じた・期限（1 時間まで）が切れた・取り消したのに閉じる（同時の 2 回目も）",
+   "false_when": "開いている（閉じていない・期限の前）自分の許可を閉じる",
+   "message": "もう閉じています",
+   "action": "なし",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "ops-tenant の画面で中を見るを開いた",
+    "steps": [
+     "［見るのをやめる］を 2 回押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.68",
+    "D-125.128"
+   ]
+  }
+ ]
+}
