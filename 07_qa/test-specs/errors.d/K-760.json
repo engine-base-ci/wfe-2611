@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-TALK-030",
+   "class": "conflict",
+   "where": {
+    "screen": "bridge-setup"
+   },
+   "when": "PC が会話の写しを送った仕事に会話が無い（記憶のまとめ・チケットの仕事）",
+   "false_when": "会話に結ばれた仕事に写した",
+   "message": "この仕事は会話の仕事ではないので、文を写せません",
+   "action": "写さない（PC は送り直さない）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC をつなぎ、会話の無い仕事（記憶のまとめ）を受け取る",
+    "steps": [
+     "その仕事の道すじに会話の写しを送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-112",
+    "D-115"
+   ]
+  }
+ ]
+}
