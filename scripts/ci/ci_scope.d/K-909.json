@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/portal-attachment.ts",
+    "apps/api/src/features/F11/portal/attachment.ts",
+    "apps/api/src/features/F11/portal/attachment-check.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/portal-attachment.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/portal-attachment.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_portal_attachments.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-909.ts": "口の振る舞いの hooks のファイル（apps/api/src/hooks/portal-attachment.ts）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-909"
+ }
+}
