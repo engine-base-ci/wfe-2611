@@ -68,6 +68,8 @@ export function TeamScreen() {
   const [editAlert, setEditAlert] = useState<TeamLockText | null>(null);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const pending = useRef<(() => Promise<void>) | null>(null);
   const sending = useRef(false);
 
@@ -86,10 +88,17 @@ export function TeamScreen() {
   /** 書く口を呼ぶ。取り直しが要れば 1 回だけ取り直してから同じ体でやり直す */
   const send = (job: () => Promise<Write>, done: (w: Write) => Promise<void> | void, retried = false) => {
     const run = async () => {
+      if (!retried && needStepUp.current) {
+        pending.current = () => send(job, done, true);
+        setStepUp(needStepUp.current);
+        return;
+      }
       const w = await job();
+      if (w.ok || w.err.kind !== "step_up") needStepUp.current = null;
       if (!w.ok && w.err.kind === "step_up" && !retried) {
         pending.current = () => send(job, done, true);
-        setStepUp(await stepUpShape());
+        needStepUp.current = await stepUpShape();
+        setStepUp(needStepUp.current);
         return;
       }
       if (!w.ok && w.err.status === 401) {

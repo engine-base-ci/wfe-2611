@@ -155,11 +155,13 @@ export function SettingsScreen() {
   };
 
   // ---- 誰ができるか：選んだ鍵だけ送る。403 STEP_UP_REQUIRED は取り直しのあと同じ体で 1 回だけ送り直す
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ two_factor?: boolean; has_password?: boolean } | null>(null);
   const askStepUp = async (body: PermBody) => {
     const key = Object.keys(body)[0] as PermKey | undefined;
     const row = data.permissions.find((p) => p.key === key);
-    const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
-    const sec = s.ok ? s.data : {};
+    const sec = needStepUp.current ?? (await readSec());
+    needStepUp.current = sec;
     pending.current = body;
     setStepUp({
       reason: `${row?.name ?? ""}を変える前に、本人か確かめます`,
@@ -167,13 +169,19 @@ export function SettingsScreen() {
       withPasskey: sec.has_password === false,
     });
   };
+  const readSec = async (): Promise<{ two_factor?: boolean; has_password?: boolean }> => {
+    const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
+    return s.ok ? s.data : {};
+  };
   const sendPerm = async (body: PermBody, retried: boolean) => {
     if (sendingPerm.current) return;
+    if (!retried && needStepUp.current) return void (await askStepUp(body));
     sendingPerm.current = true;
     setPermBusy(true);
     setPermNotice(undefined);
     try {
       const r = await call("updateWorkspacePermissions", { body: body as never, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) {
         const got = (r.data as unknown as { permissions?: { key: PermKey; value: PermValue }[] }).permissions;
         const changed = got ?? (Object.entries(body) as [PermKey, PermValue][]).map(([k, v]) => ({ key: k, value: v }));

@@ -58,6 +58,8 @@ export function useEditCredential(d: EditCredentialDeps): EditCredentialFlow {
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const pending = useRef<UpdateCredentialBody | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
 
   const close = () => {
     setShown(false);
@@ -76,11 +78,18 @@ export function useEditCredential(d: EditCredentialDeps): EditCredentialFlow {
     setShown(false); // 入れた値は持ったまま、取り直しの小窓へ
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = s.ok ? s.data : {};
-    setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+    needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    setStepUp(needStepUp.current);
   };
 
   const run = async (id: string, body: UpdateCredentialBody, retried: boolean): Promise<void> => {
+    if (!retried && needStepUp.current) {
+      pending.current = body;
+      setShown(false);
+      return setStepUp(needStepUp.current);
+    }
     const r = await call("updateCredential", { params: { id }, body, screenId: SCREEN, keepOn401: true });
+    if (r.ok || r.kind !== "step_up") needStepUp.current = null;
     if (r.ok) {
       close();
       await d.onChanged();

@@ -39,13 +39,20 @@ export function RemovePc({ device, reload, onBanner }: RemovePcProps) {
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<{ withCode: boolean; withPasskey: boolean } | null>(null);
   const sending = useRef(false);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<{ withCode: boolean; withPasskey: boolean } | null>(null);
 
-  const remove = async (): Promise<void> => {
+  const remove = async (retried = false): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) {
+      setAsking(false);
+      return setStepUp(needStepUp.current);
+    }
     sending.current = true;
     setBusy(true);
     try {
       const r = await call("revokeMyDevice", { params: { id: device.id }, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) {
         setAsking(false);
         setStepUp(null);
@@ -57,7 +64,8 @@ export function RemovePc({ device, reload, onBanner }: RemovePcProps) {
         setAsking(false);
         const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
         const sec = s.ok ? s.data : {};
-        setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+        needStepUp.current = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+        setStepUp(needStepUp.current);
         return;
       }
       setAsking(false);
@@ -103,7 +111,7 @@ export function RemovePc({ device, reload, onBanner }: RemovePcProps) {
         withCode={stepUp?.withCode ?? false}
         withPasskey={stepUp?.withPasskey ?? false}
         screenId={SCREEN}
-        onDone={() => void remove()}
+        onDone={() => void remove(true)}
         onCancel={() => setStepUp(null)}
       />
     </>

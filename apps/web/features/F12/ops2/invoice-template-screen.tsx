@@ -103,6 +103,8 @@ function TemplateBody({ answer }: { answer: InvoiceTemplateAnswer }) {
   const [errors, setErrors] = useState<InvoiceTemplateErrors>({});
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<Shape | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<Shape | null>(null);
   const sending = useRef(false);
   const pending = useRef<InvoiceTemplateBody | null>(null);
 
@@ -123,12 +125,18 @@ function TemplateBody({ answer }: { answer: InvoiceTemplateAnswer }) {
   };
 
   const put = async (body: InvoiceTemplateBody, retried: boolean): Promise<void> => {
+    if (!retried && needStepUp.current) {
+      pending.current = body;
+      setStepUp(needStepUp.current);
+      return;
+    }
     let r: TemplateWrite;
     try {
       r = await saveInvoiceTemplate(body);
     } catch {
       return fail(false); // 網が切れた
     }
+    if (r.ok || r.kind !== "step_up") needStepUp.current = null;
     if (r.ok) {
       const saved = isInvoiceTemplate(r.data) ? r.data : null;
       const read = await reread();
@@ -139,7 +147,8 @@ function TemplateBody({ answer }: { answer: InvoiceTemplateAnswer }) {
     }
     if (r.kind === "step_up" && !retried) {
       pending.current = body;
-      setStepUp(await stepUpShape());
+      needStepUp.current = await stepUpShape();
+      setStepUp(needStepUp.current);
       return;
     }
     if (r.status === 401) {
