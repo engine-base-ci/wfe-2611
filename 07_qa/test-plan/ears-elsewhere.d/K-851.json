@@ -1,0 +1,58 @@
+{
+ "ops": {
+  "switchWorkspace": {
+   "file": "apps/api/test/features/F10/me-switch.test.ts",
+   "reason": "切り替えは、同じログインの人・会社と人の状態・今の端末の行で答えが変わる。生成の試験の種では作れない（K-851）",
+   "covers": {
+    "test_post_me_workspaces_id_switch_ok": "K851-API-001",
+    "test_post_me_workspaces_id_switch_shape": "K851-API-001",
+    "test_post_me_workspaces_id_switch_rejected_401": "K851-API-015",
+    "test_post_me_workspaces_id_switch_not_found": "K851-API-003",
+    "test_post_me_workspaces_id_switch_rejected_422": "K851-API-008",
+    "test_post_me_workspaces_id_switch_rejected_422_2": "K851-API-005",
+    "test_post_me_workspaces_id_switch_rejected_422_3": "K851-API-007",
+    "test_post_me_workspaces_id_switch_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_workspaces_id_switch_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_me_workspaces_id_switch_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_me_workspaces_id_switch_rejected_403": "本人だけの口（契約の self）で、役や権限の束を見ない。入れない会社は 403 でなく同じ 404（K851-API-003）",
+    "test_post_me_workspaces_id_switch_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（K-836 と同じ扱い）",
+    "test_post_me_workspaces_id_switch_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-802 と同じ扱い）"
+   }
+  },
+  "listMyInvitations": {
+   "file": "apps/api/test/features/F10/me-switch.test.ts",
+   "reason": "届いた招待は、ログインのメールの確かめ・招待の状態・入っている会社で答えが変わる（K-851）",
+   "covers": {
+    "test_get_me_invitations_ok": "K851-API-009",
+    "test_get_me_invitations_shape": "K851-API-009",
+    "test_get_me_invitations_rejected_401": "K851-API-015",
+    "test_get_me_invitations_rejected_403": "K851-API-015",
+    "test_get_me_invitations_rejected_422_2": "K851-API-016",
+    "test_get_me_invitations_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_me_invitations_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_invitations_rejected_422": "体も問い合わせも受けない GET（QUERIES は空・K-851）",
+    "test_get_me_invitations_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（K-836 と同じ扱い）",
+    "test_get_me_invitations_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-802 と同じ扱い）"
+   }
+  }
+ }
+}
