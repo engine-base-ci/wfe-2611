@@ -1,0 +1,1167 @@
+{
+ "screen": "clone-memory",
+ "mock": "06_mockup/v1/v1-clone-memory.html",
+ "state_labels": {
+  "n": "範囲ごと",
+  "up": "確認待ち（上がってきた記憶・食い違い）",
+  "t": "教える",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:教える",
+   "kind": "button",
+   "label": "教える",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:外に出るものは必ず承認を挟むルール運営ルール（変えられない）見るだけ",
+   "kind": "button",
+   "label": "外に出るものは必ず承認を挟むルール運営ルール（変えられない）見るだけ",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:CAPTCHA は突破しない・銀行はブラウザで触らないルール運営ルール（変えられない）見るだけ",
+   "kind": "button",
+   "label": "CAPTCHA は突破しない・銀行はブラウザで触らないルール運営ルール（変えられない）見るだけ",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:初回は紹介でも値引きしない判断の癖会話から使った 4 回9/10",
+   "kind": "button",
+   "label": "初回は紹介でも値引きしない判断の癖会話から使った 4 回9/10",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:メールは短く。結論を先にやり方過去メール 38 通から使った 31 回9/4",
+   "kind": "button",
+   "label": "メールは短く。結論を先にやり方過去メール 38 通から使った 31 回9/4",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:山田様（セイコー）はメールを好む相手ごとやりとりから使った 5 回9/8",
+   "kind": "button",
+   "label": "山田様（セイコー）はメールを好む相手ごとやりとりから使った 5 回9/8",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:発注ナビ 新着案件の取り込み（覚えた操作・6 手順）覚えた操作高本が画面を見せて覚えさせた使った 18 回9/2",
+   "kind": "button",
+   "label": "発注ナビ 新着案件の取り込み（覚えた操作・6 手順）覚えた操作高本が画面を見せて覚えさせた使った 18 回9/2",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:請求書の下書きの型（京蟻）やり方差し戻しの結果使った 1 回9/10",
+   "kind": "button",
+   "label": "請求書の下書きの型（京蟻）やり方差し戻しの結果使った 1 回9/10",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:土曜は打ち合わせを入れない個人 · 高本9/6 の会話「土曜は無理」からそのとおり",
+   "kind": "button",
+   "label": "土曜は打ち合わせを入れない個人 · 高本9/6 の会話「土曜は無理」からそのとおり",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:一覧へ",
+   "kind": "button",
+   "label": "一覧へ",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:運営 に直してもらう→clone-chat",
+   "kind": "link",
+   "label": "運営 に直してもらう",
+   "target": "clone-chat",
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:使われた場面を見る→ai-activity",
+   "kind": "link",
+   "label": "使われた場面を見る",
+   "target": "ai-activity",
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:直す",
+   "kind": "button",
+   "label": "直す",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:範囲を変える",
+   "kind": "button",
+   "label": "範囲を変える",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:消す",
+   "kind": "button",
+   "label": "消す",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:そのとおり（覚える）",
+   "kind": "button",
+   "label": "そのとおり（覚える）",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:範囲を変えて覚える",
+   "kind": "button",
+   "label": "範囲を変えて覚える",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:違う",
+   "kind": "button",
+   "label": "違う",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:着手金は契約時に 3 割、残金は納品時ルールはじめの設定使った 14 回9/4",
+   "kind": "button",
+   "label": "着手金は契約時に 3 割、残金は納品時ルールはじめの設定使った 14 回9/4",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:京蟻は税込を先に書く・月末締め翌月末払い相手ごと差し戻しから使った 3 回9/10",
+   "kind": "button",
+   "label": "京蟻は税込を先に書く・月末締め翌月末払い相手ごと差し戻しから使った 3 回9/10",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:見積は必ず 2 案（機能を削った安い方を添える）やり方高本が教えた使った 6 回9/5",
+   "kind": "button",
+   "label": "見積は必ず 2 案（機能を削った安い方を添える）やり方高本が教えた使った 6 回9/5",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:受託は工数の 1.3 倍で見積る判断の癖高本が教えた使った 9 回9/3",
+   "kind": "button",
+   "label": "受託は工数の 1.3 倍で見積る判断の癖高本が教えた使った 9 回9/3",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:発注ナビは 100万円以上・Web/アプリだけ拾う判断の癖仮説「発注ナビは絞る」から使った 22 回9/8",
+   "kind": "button",
+   "label": "発注ナビは 100万円以上・Web/アプリだけ拾う判断の癖仮説「発注ナビは絞る」から使った 22 回9/8",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:アプローチ文は 3 段落・実績は 1 つだけやり方過去のアプローチ文 12 通から使った 9 回9/6",
+   "kind": "button",
+   "label": "アプローチ文は 3 段落・実績は 1 つだけやり方過去のアプローチ文 12 通から使った 9 回9/6",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:請求書は税込表示・内訳の行を付けるルール差し戻しから使った 2 回9/10",
+   "kind": "button",
+   "label": "請求書は税込表示・内訳の行を付けるルール差し戻しから使った 2 回9/10",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:納品物は必ずステージングで 1 日置いてから出すやり方佐藤が教えた使った 5 回9/2",
+   "kind": "button",
+   "label": "納品物は必ずステージングで 1 日置いてから出すやり方佐藤が教えた使った 5 回9/2",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:レビュー指摘は 1 件ずつ Issue に切るやり方佐藤が教えた使った 3 回9/5",
+   "kind": "button",
+   "label": "レビュー指摘は 1 件ずつ Issue に切るやり方佐藤が教えた使った 3 回9/5",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:金曜の午後は打ち合わせを入れない判断の癖会話から使った 2 回9/9",
+   "kind": "button",
+   "label": "金曜の午後は打ち合わせを入れない判断の癖会話から使った 2 回9/9",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:進捗は週明けにまとめて見るやり方鈴木が教えた使った 1 回9/8",
+   "kind": "button",
+   "label": "進捗は週明けにまとめて見るやり方鈴木が教えた使った 1 回9/8",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R4"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:一次返信の型（問い合わせ）やり方会社作成使った 12 回9/6",
+   "kind": "button",
+   "label": "一次返信の型（問い合わせ）やり方会社作成使った 12 回9/6",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:SOICO は先方の工数表を基準に見積る部署 · 営業9/9 の会話からそのとおり",
+   "kind": "button",
+   "label": "SOICO は先方の工数表を基準に見積る部署 · 営業9/9 の会話からそのとおり",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:納品前チェックは Lighthouse を先に回す個人 · 佐藤9/10 の会話からそのとおり",
+   "kind": "button",
+   "label": "納品前チェックは Lighthouse を先に回す個人 · 佐藤9/10 の会話からそのとおり",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:着手金は契約時に 3 割、残金は納品時ルールはじめの設定見るだけ9/4",
+   "kind": "button",
+   "label": "着手金は契約時に 3 割、残金は納品時ルールはじめの設定見るだけ9/4",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:京蟻は税込を先に書く・月末締め翌月末払い相手ごと差し戻しから見るだけ9/10",
+   "kind": "button",
+   "label": "京蟻は税込を先に書く・月末締め翌月末払い相手ごと差し戻しから見るだけ9/10",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:見積は必ず 2 案（機能を削った安い方を添える）やり方高本が教えた見るだけ9/5",
+   "kind": "button",
+   "label": "見積は必ず 2 案（機能を削った安い方を添える）やり方高本が教えた見るだけ9/5",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:一次返信の型（問い合わせ）やり方会社作成見るだけ9/6",
+   "kind": "button",
+   "label": "一次返信の型（問い合わせ）やり方会社作成見るだけ9/6",
+   "target": null,
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:代表・権限のある人 に直してもらう→clone-chat",
+   "kind": "link",
+   "label": "代表・権限のある人 に直してもらう",
+   "target": "clone-chat",
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:担当業務の管理者 に直してもらう→clone-chat",
+   "kind": "link",
+   "label": "担当業務の管理者 に直してもらう",
+   "target": "clone-chat",
+   "states": [
+    "範囲ごと",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R3"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:OK（会社全体に効く）",
+   "kind": "button",
+   "label": "OK（会社全体に効く）",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:差し戻す",
+   "kind": "button",
+   "label": "差し戻す",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:月末締めにする",
+   "kind": "button",
+   "label": "月末締めにする",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:20 日締めにする",
+   "kind": "button",
+   "label": "20 日締めにする",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:書き直す",
+   "kind": "button",
+   "label": "書き直す",
+   "target": null,
+   "states": [
+    "確認待ち（上がってきた記憶・食い違い）"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "textarea:覚えてほしいことを、そのまま書く。例：見積は必ず 2 案出す。安い方は機能を削って理由を書く。",
+   "kind": "textarea",
+   "label": "覚えてほしいことを、そのまま書く。例：見積は必ず 2 案出す。安い方は機能を削って理由を書く。",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:初回は値引きしない",
+   "kind": "button",
+   "label": "初回は値引きしない",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:メールは 3 行以内で結論を先に",
+   "kind": "button",
+   "label": "メールは 3 行以内で結論を先に",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:山田様は午前中にメール",
+   "kind": "button",
+   "label": "山田様は午前中にメール",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:納品は 1 日置いてから",
+   "kind": "button",
+   "label": "納品は 1 日置いてから",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:自分だけ本人が自由に直せる",
+   "kind": "radio",
+   "label": "自分だけ本人が自由に直せる",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:AI社員 営業社員担当業務の管理者（あなた）",
+   "kind": "radio",
+   "label": "AI社員 営業社員担当業務の管理者（あなた）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:判断の癖",
+   "kind": "radio",
+   "label": "判断の癖",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:ルール",
+   "kind": "radio",
+   "label": "ルール",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:やり方",
+   "kind": "radio",
+   "label": "やり方",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:相手ごと",
+   "kind": "radio",
+   "label": "相手ごと",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:覚えさせる",
+   "kind": "button",
+   "label": "覚えさせる",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:事業 受託開発受託開発の全員に効く · 編集：受託開発の長（高本）",
+   "kind": "radio",
+   "label": "事業 受託開発受託開発の全員に効く · 編集：受託開発の長（高本）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:部署 営業営業の全員に効く · 編集：営業の長（高本）",
+   "kind": "radio",
+   "label": "部署 営業営業の全員に効く · 編集：営業の長（高本）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:部署 制作制作の全員に効く · 編集：制作の長（佐藤）",
+   "kind": "radio",
+   "label": "部署 制作制作の全員に効く · 編集：制作の長（佐藤）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2",
+    "R3"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:部署 CSCSの全員に効く · 編集：CSの長（高本）",
+   "kind": "radio",
+   "label": "部署 CSCSの全員に効く · 編集：CSの長（高本）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:部署 経理経理の全員に効く · 編集：経理の長（高本）",
+   "kind": "radio",
+   "label": "部署 経理経理の全員に効く · 編集：経理の長（高本）",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:会社の全員全員とすべてのAI社員に効く · 編集：代表・権限のある人",
+   "kind": "radio",
+   "label": "会社の全員全員とすべてのAI社員に効く · 編集：代表・権限のある人",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:AI社員 経理社員そのAI社員だけ · 編集：担当業務の管理者",
+   "kind": "radio",
+   "label": "AI社員 経理社員そのAI社員だけ · 編集：担当業務の管理者",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R2"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:会社の全員全員とすべてのAI社員に効く · 編集：代表・権限のある人権限なし",
+   "kind": "radio",
+   "label": "会社の全員全員とすべてのAI社員に効く · 編集：代表・権限のある人権限なし",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:AI社員 経理社員そのAI社員だけ · 編集：担当業務の管理者権限なし",
+   "kind": "radio",
+   "label": "AI社員 経理社員そのAI社員だけ · 編集：担当業務の管理者権限なし",
+   "target": null,
+   "states": [
+    "教える"
+   ],
+   "roles": [
+    "R3",
+    "R4"
+   ],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
