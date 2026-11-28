@@ -1,0 +1,238 @@
+{
+ "screen": "ai-staff-detail",
+ "mock": "06_mockup/v1/v1-ai-staff-detail.html",
+ "state_labels": {
+  "n": "中身",
+  "m": "使える手段",
+  "k": "使えるスキル",
+  "x": "消す",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:AI社員に戻る→ai-staff",
+   "kind": "link",
+   "label": "AI社員に戻る",
+   "target": "ai-staff",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:担当業務を編集→duties",
+   "kind": "link",
+   "label": "担当業務を編集",
+   "target": "duties",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:すべて見る →→audit",
+   "kind": "link",
+   "label": "すべて見る →",
+   "target": "audit",
+   "states": [
+    "中身",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:外す",
+   "kind": "button",
+   "label": "外す",
+   "target": null,
+   "states": [
+    "使えるスキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:版を上げる（運営へ）",
+   "kind": "button",
+   "label": "版を上げる（運営へ）",
+   "target": null,
+   "states": [
+    "使えるスキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:戻す",
+   "kind": "button",
+   "label": "戻す",
+   "target": null,
+   "states": [
+    "使えるスキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会社の範囲で絞る→policies",
+   "kind": "link",
+   "label": "会社の範囲で絞る",
+   "target": "policies",
+   "states": [
+    "使えるスキル"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:止める",
+   "kind": "button",
+   "label": "止める",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:営業社員に足す",
+   "kind": "button",
+   "label": "営業社員に足す",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:残す",
+   "kind": "button",
+   "label": "残す",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:配り直す→goal-allocation",
+   "kind": "link",
+   "label": "配り直す",
+   "target": "goal-allocation",
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:先に承認する→approvals",
+   "kind": "link",
+   "label": "先に承認する",
+   "target": "approvals",
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:消す（引き継ぎ 1／4 決定）",
+   "kind": "button",
+   "label": "消す（引き継ぎ 1／4 決定）",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本AIの案を全部採る",
+   "kind": "button",
+   "label": "高本AIの案を全部採る",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "消す"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:担当業務を編集",
+   "kind": "button",
+   "label": "担当業務を編集",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  }
+ ]
+}
