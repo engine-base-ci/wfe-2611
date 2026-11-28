@@ -1,0 +1,32 @@
+{
+ "ops": {
+  "restoreTicket": {
+   "file": "apps/api/test/features/F7/ticket-restore.test.ts",
+   "reason": "戻すは、消した本人・マネージャー・30 日の境目・親の有無・一緒に消えた子・孫で答えが変わる。消した行は行の守りで読めないので、生成の試験の種では作れない（K-489）",
+   "covers": {
+    "test_post_tickets_id_restore_ok": "K489-API-001",
+    "test_post_tickets_id_restore_shape": "K489-API-001",
+    "test_post_tickets_id_restore_rejected_401": "K489-API-015",
+    "test_post_tickets_id_restore_rejected_403": "K489-API-004",
+    "test_post_tickets_id_restore_not_found": "K489-API-005",
+    "test_post_tickets_id_restore_conflict": "K489-API-006",
+    "test_post_tickets_id_restore_rejected_422": "K489-API-016",
+    "test_post_tickets_id_restore_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_restore_rate_limited": "K489-API-015",
+    "test_post_tickets_id_restore_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_restore_session_unresolved": "K489-API-017",
+    "test_post_tickets_id_restore_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  }
+ }
+}
