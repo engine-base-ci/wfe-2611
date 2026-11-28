@@ -215,6 +215,8 @@ for (const [mock, w0] of [
           await mockWorld(page, world({ items: [R1, R2, R4, R3] })); // 下絵の一覧は 4 件（幅 768 は一覧の下に本文が来るので件数で見出しの位置が変わる）
           await page.goto(w0);
           await expect(page.locator("main").first()).toBeVisible();
+          // 詳細の頁は見出し（h1）が描き終わるまで待つ（main だけでは、依頼の答えの前の空の本文と比べてしまう）
+          if (w0 !== "/requests") await expect(detail(page).getByRole("heading", { level: 1 })).toBeVisible();
         },
         { base: "/dev/mock/f11", pairs: [pair("h1", "h1", ["x", "y", "font-size", "color", "texts"])] },
       );
