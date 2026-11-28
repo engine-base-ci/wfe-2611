@@ -263,7 +263,8 @@ test("K839-UI-010 見え方の保存の失敗（503）：選びは前のまま�
   const mk = await mockOps(page);
   mk.queue("updateMe", err(503, "E-PAGE-003"));
   await openAt(page, owner.token, PATH);
-  await card(page, "見え方").getByLabel("暗い", { exact: true }).check();
+  // 失敗の答えが速いと、押した直後に選びが前（明るい）へ戻る。check() は「押した後に付いている」まで確かめて落ちるので、押すだけにする（戻ったことは下で見る）
+  await card(page, "見え方").getByLabel("暗い", { exact: true }).click();
   await expect(card(page, "見え方").getByText("Kaname の調子が悪くなっています", { exact: false })).toBeVisible();
   await expect(card(page, "見え方").getByLabel("明るい", { exact: true })).toBeChecked();
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
