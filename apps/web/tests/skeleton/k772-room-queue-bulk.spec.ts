@@ -115,8 +115,9 @@ async function waiting(
 }
 
 // ---------------------------------------------------------------- 画面
+// 部屋のタブは道のリンク（/ai・/ai/talk・K-753）
 const tab = (page: Page, name: string): Locator =>
-  page.getByRole("navigation", { name: "部屋のタブ", exact: true }).getByRole("button", { name, exact: true });
+  page.getByRole("navigation", { name: "部屋のタブ", exact: true }).getByRole("link", { name, exact: true });
 const sayBox = (page: Page): Locator => page.getByRole("textbox", { name: /AI に話す$/ });
 const sendBtn = (page: Page): Locator => page.getByRole("button", { name: "送る", exact: true });
 const stopBtn = (page: Page): Locator => page.getByRole("button", { name: "止める", exact: true });
@@ -184,8 +185,12 @@ test("K772-M3-02 PC がまだ：部屋の「ようす」と「話す」に PC �
   const clone = await asPerson(page, me.token, "GET", "/clones/me");
   expect(clone.data).toMatchObject({ pc: { state: "none", label: null } });
   await page.goto("/ai");
-  await expect(page.getByText(loose(MSG.pcNone)).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "PC をつなぐ（3 分）", exact: true })).toBeVisible();
+  // 同じ字は幅の狭いときの短い札（隠れている）にもある。見えている物を見る
+  await expect(page.getByText(loose(MSG.pcNone)).filter({ visible: true }).first()).toBeVisible();
+  // 本番では行き先（/setup/bridge）があるので、ボタンの形のリンク（overview.tsx の Act・下絵では行き先の無いボタン）
+  const connect = page.getByRole("link", { name: "PC をつなぐ（3 分）", exact: true });
+  await expect(connect).toBeVisible();
+  await expect(connect).toHaveAttribute("href", "/setup/bridge");
   await tab(page, "話す").click();
   await expect(page).toHaveURL(/\/ai\/talk$/);
   await expect(sayBox(page)).toBeDisabled();
@@ -253,9 +258,14 @@ test("K772-M3-04 話すを止める：作業中の［止める］で止まり（
   );
   expect(j!.stop_requested_at, "止める印が立つ").not.toBeNull();
   expect(
-    await r.w.finish(job.job_id, { state: "stopped", reason: "stopped_by_user", agent_session_id: r.session }),
+    // 止まった理由は PC が人の字で返す（Bridge の止める・API の試験 agent_chat と同じ「あなたが止めました」）
+    await r.w.finish(job.job_id, { state: "stopped", reason: MSG.stoppedBy, agent_session_id: r.session }),
   ).toMatchObject({ status: 201 });
-  await expect(page.getByText(MSG.stoppedBy), "PC が止まったで閉じた後に、止まった理由が出る").toBeVisible();
+  // 理由の字は会話の行と書く欄の上の帯の 2 か所に出る（K-772 の切り方のとおり、的を帯 status に絞る）
+  await expect(
+    page.getByRole("status").filter({ hasText: `止まった理由：${MSG.stoppedBy}` }),
+    "PC が止まったで閉じた後に、止まった理由が出る",
+  ).toBeVisible();
   // 止めた後にまた話せる：新しい仕事が PC に届く
   await talk(page, "さっきの続きを短くまとめて");
   const next = await takeSoon(r, "止めた後の言葉も PC の仕事になる");
