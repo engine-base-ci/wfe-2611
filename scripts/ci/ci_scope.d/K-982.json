@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-invoice-payments.ts",
+    "apps/api/src/features/F12/ops/invoice-payments.ts",
+    "packages/db/migrations/20261128012200_ops_payment.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts",
+    "apps/api/test/features/F12/billing-read.test.ts",
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-invoice-payments.test.ts",
+    "apps/api/test/generated/post_ops_invoices_id_payments.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-982.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-982"
+ }
+}
