@@ -1,0 +1,143 @@
+{
+ "meta": {
+  "project": "Kaname 第1フェーズ",
+  "created_at": "2026-11-01",
+  "skill_version": "2.0"
+ },
+ "context": {
+  "project_type": "SaaS",
+  "scale": "大規模(30機能以上)",
+  "priority": "品質優先"
+ },
+ "decision_log": [
+  {
+   "decision": "第1フェーズの軸を目標から逆算 → チケットを作り込んで実行する に変える",
+   "reason": "毎日使う画面が0枚で受託業務が回らない。チケットの実行が回れば目標は生成する側として後から乗る",
+   "alternatives": [
+    "既存の v1 58画面のまま",
+    "v1.0〜v1.4 の5段"
+   ],
+   "why_not_chosen": "58画面は旧 jobrain の終着点を超える。5段案は目標中心のままだった"
+  },
+  {
+   "decision": "確認項目を①機械②AI③人に分け、①は製品の判定の型＋会社ごとの設定値",
+   "reason": "AI の判定は確率的。確実なものと混ぜると通過が信用できない",
+   "alternatives": [
+    "全部 AI 判定",
+    "AI が判定コードを書く"
+   ],
+   "why_not_chosen": "確かさが落ちる／安全に動かす仕組みと確認が要る"
+  },
+  {
+   "decision": "AI社員を廃し自分の AI＋役割にする",
+   "reason": "段階1は AI が人の Bridge でしか動かず、AI社員も実体は誰かの Claude Code。概念を減らす",
+   "alternatives": [
+    "自分の AI と AI社員の両方"
+   ],
+   "why_not_chosen": "同じものを2つの言葉で呼ぶことになる"
+  },
+  {
+   "decision": "はじめの設定の段を持たず、使う瞬間の案内にする",
+   "reason": "最初の成功までの時間を縮める。会社ごとのテスト→本番はチケットごとの確認・承認・試し打ちと重なる",
+   "alternatives": [
+    "今の6段のウィザード"
+   ],
+   "why_not_chosen": "目標中心で、つないで話すだけの分かりにくい流れになっていた"
+  },
+  {
+   "decision": "内側の節目を置く",
+   "reason": "第1フェーズが31画面・新しい表十数個に広がり、MVP が終わらない形に近づいた",
+   "alternatives": [
+    "全部そろって第1フェーズ"
+   ],
+   "why_not_chosen": "10月の停滞と同じことが起きる"
+  }
+ ],
+ "unresolved": [
+  {
+   "topic": "発注ナビの規約（自動操作の可否）",
+   "impact": "題材の1つが自動化できず、節目1が通らない",
+   "priority": "高"
+  },
+  {
+   "topic": "5つの題材で要る判定の型",
+   "impact": "①が足りず②に寄って確かさが落ちる",
+   "priority": "高"
+  },
+  {
+   "topic": "5つの題材の成果物のデータの形",
+   "impact": "検査をデータに流せない",
+   "priority": "高"
+  },
+  {
+   "topic": "電気通信事業法の届出の要否",
+   "impact": "クライアントの場所を公開できない",
+   "priority": "中"
+  },
+  {
+   "topic": "個人情報保護法の改正（2026年の越境移転）",
+   "impact": "規約の書き直し",
+   "priority": "中"
+  },
+  {
+   "topic": "電子帳簿保存法の要件",
+   "impact": "当面は正本にしないで回避（D-125.163）",
+   "priority": "低"
+  },
+  {
+   "topic": "プラン別の上限（ファイル容量など）",
+   "impact": "料金設計で決める",
+   "priority": "低"
+  }
+ ],
+ "research": {
+  "sources": [
+   {
+    "url": "https://dev.classmethod.jp/articles/backlog-ticket-operation-rules/",
+    "title": "Backlog チケット運用ルール",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://suitup.jp/blog/5580/",
+    "title": "Backlog 運用のポイント",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://linear.app/docs/agents-in-linear",
+    "title": "Linear — AI Agents",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://support.atlassian.com/ja/jira-software-cloud/docs/collaborate-on-work-items-with-ai-agents",
+    "title": "Jira — AI エージェント",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://www.okta.com/blog/threat-intelligence/tycoon_2fa_phishing_actors_scatter/",
+    "title": "Okta — Tycoon 2FA",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://yubico.com/blog/new-nist-guidance-on-passkeys-key-takeaways-for-enterprises",
+    "title": "Yubico — NIST passkeys",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://vercel.com/docs/environment-variables/sensitive-environment-variables",
+    "title": "Vercel — Sensitive environment variables",
+    "accessed_at": "2026-11-01"
+   },
+   {
+    "url": "https://www.parallelhq.com/blog/saas-onboarding-patterns-activation",
+    "title": "SaaS onboarding patterns",
+    "accessed_at": "2026-11-01"
+   }
+  ],
+  "findings": [
+   "Linear・Jira とも AI 任せに製品としての承認の関門は持たない。チケットごとのテスト仕様で検査して承認に出す製品は見当たらない",
+   "主な攻撃はログイン後のセッション窃取で2段階認証だけでは防げない。パスキー・短いセッション・取り直しが効く",
+   "オンボーディングの仕事は最初の成功までの時間を縮めること。設定は後から・使う瞬間に案内"
+  ],
+  "research_date": "2026-11-01"
+ }
+}
