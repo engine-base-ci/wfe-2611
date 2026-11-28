@@ -1,0 +1,62 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-012",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice"
+   },
+   "when": "運営が続報を足すお知らせが、出した障害でない（リリース・メンテ・下書きの障害・予定の時刻の前の障害）",
+   "false_when": "出した障害（DB で出した・予定の時刻を過ぎた）で、まだ直ったにしていない",
+   "message": "続報は、出した障害のお知らせにだけ足せます",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（お知らせを持つ）で運営のお知らせを開く",
+    "steps": [
+     "下書きの障害のお知らせに［足して出す］を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.127"
+   ]
+  },
+  {
+   "id": "E-OPS-013",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice"
+   },
+   "when": "運営が続報を足す障害が、もう直ったにしてある（今の状態が resolved）",
+   "false_when": "調べている・原因が分かった・様子を見ている の障害",
+   "message": "この障害はもう直ったにしています",
+   "action": "新しい障害のお知らせを書く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "運営の人（お知らせを持つ）で運営のお知らせを開く",
+    "steps": [
+     "直ったにした障害に［足して出す］を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.127"
+   ]
+  }
+ ]
+}
