@@ -1,0 +1,12 @@
+{"ops": {
+ "uploadWorkspaceLogo": {"file": "apps/api/test/features/F10/workspace-logo.test.ts",
+  "reason": "ロゴは、画像の中身・大きさ・置き場の成否・前の実体の片付けで答えが変わる。生成の試験の種では作れない（K-828）",
+  "covers": {"test_post_workspace_logo_ok": "K828-API-001", "test_post_workspace_logo_shape": "K828-API-001",
+             "test_post_workspace_logo_rejected_401": "K828-API-011", "test_post_workspace_logo_rejected_403": "K828-API-011",
+             "test_post_workspace_logo_rejected_422": "K828-API-013", "test_post_workspace_logo_rejected_422_2": "K828-API-004",
+             "test_post_workspace_logo_rejected_422_3": "K828-API-006",
+             "test_post_workspace_logo_too_large": "K828-API-003", "test_post_workspace_logo_too_large_2": "K828-API-015",
+             "test_post_workspace_logo_upstream_failed": "K828-API-008", "test_post_workspace_logo_session_unresolved": "K828-API-009",
+             "test_post_workspace_logo_terms_pending": {"file": "apps/api/test/features/F1/terms.test.ts", "mark": "K53-API-005"},
+             "test_post_workspace_logo_session_unresolved_2": {"file": "apps/api/test/features/contract/k144-contract.test.ts", "mark": "K144-API-032"}},
+  "na": {"test_post_workspace_logo_rate_limited": "上限は入口 op.ts の共通の数え（全部の口で同じ 1 か所）。この口の試験は上限を外して流す（limits）。口ごとの違いは無い"}}}}
