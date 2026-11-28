@@ -1,0 +1,1156 @@
+{
+ "_doc": "生成の試験（apps/api/test/generated）の土台は偽のセッションなので、本物のログインの部品が要る口の振る舞いは別のファイルで確かめる。ここに書いた口の生成の試験は、covers（試験の名前 → 本物の試験の題）に書いた行は、その本物の試験があることを確かめ、無い場合は it.todo のまま残す（scripts/ci/gen_ears_tests.mjs）。理由が空の行は使わない。covers の値は本物の試験の題（file の中）か、{file, mark}（同じ口の本物の試験が別のファイルにあるとき・K-144）。外に何も呼ばない口など、その型が当てはまらないものは na（試験の名前 → 理由）に書く。na の行は理由つきの it.todo になり、理由の無い it.todo は「まだ無い」の印（K-62）",
+ "ops": {
+  "stepUp": {
+   "file": "apps/api/test/step_up.test.ts",
+   "reason": "本人確認の取り直しは、ログインの部品（Better Auth）の本物のセッションでパスワードを確かめる。偽のセッションでは確かめられない（K-19）",
+   "covers": {
+    "test_post_auth_step_up_ok": "正しいパスワードで時刻が付き",
+    "test_post_auth_step_up_rejected_401": "パスワードが空なら 422・ログインしていなければ 401",
+    "test_post_auth_step_up_rejected_422_2": "パスワードが空なら 422",
+    "test_post_auth_step_up_terms_pending": "K53-API-005（stepUp の分）",
+    "test_post_auth_step_up_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_step_up_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "createSignup": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_post_auth_sign_up_ok": "K51-API-001 無し × 登録の画面から送る",
+    "test_post_auth_sign_up_ok_2": "K51-API-027 規約の版",
+    "test_post_auth_sign_up_rejected_422_2": "K51-API-011 メールが空・形が違う",
+    "test_post_auth_sign_up_rate_limited": "K51-API-023 1 分に 11 回",
+    "test_post_auth_sign_up_server_error": "K51-API-021",
+    "test_post_auth_sign_up_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_up_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "getSignupStatus": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_get_auth_sign_up_status_ok": "K51-API-005 待つ画面の再読み込み",
+    "test_get_auth_sign_up_status_rejected_422": "K51-API-008 印が無い・知らない印",
+    "test_get_auth_sign_up_status_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "resendSignupEmail": {
+   "file": "apps/api/test/features/F1/sign-up.test.ts",
+   "reason": "登録は、申し込みの印・漏れたパスワードの照合（関門 C1）・確認のメール（関門 C6）を本物の DB と差し込んだ送出先で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-51）",
+   "covers": {
+    "test_post_auth_sign_up_resend_ok": "K51-API-009 送り直す（期限内・印で）",
+    "test_post_auth_sign_up_resend_rejected_422_2": "K51-API-030 送り直しをメールで頼む",
+    "test_post_auth_sign_up_resend_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_up_resend_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "verifySignup": {
+   "file": "apps/api/test/features/F1/verify-email.test.ts",
+   "reason": "確認のリンクで確定するのは、本物のログインの部品（Better Auth の本人とセッション）・本物の DB の申し込みの行・差し込んだ送出先（関門 C6 の完了のメール）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-52）",
+   "covers": {
+    "test_post_auth_sign_up_verify_ok": "K52-API-001 保留中（期限内）× 確認のメールのリンク × ログインしていない",
+    "test_post_auth_sign_up_verify_conflict": "K52-API-010 確定済み × 同じリンクをもう一度 × ログインしていない",
+    "test_post_auth_sign_up_verify_gone": "K52-API-005 保留中（期限切れ・30 分を過ぎた）",
+    "test_post_auth_sign_up_verify_rejected_422": "K52-API-015 手がかりが無い・空",
+    "test_post_auth_sign_up_verify_rate_limited": "K52-API-027 1 分に 11 回（同じ IP）",
+    "test_post_auth_sign_up_verify_shape": "K52-API-031 関門",
+    "test_post_auth_sign_up_verify_server_error": "K52-API-022",
+    "test_post_auth_sign_up_verify_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_up_verify_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "consentToTerms": {
+   "file": "apps/api/test/features/F1/terms.test.ts",
+   "reason": "規約の同意は、本物のログインの部品（Better Auth のセッションができたときの hook で立つ同意し直しの印）・本物の DB の今の版の関数（app.current_terms）と同意の行で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-53）",
+   "covers": {
+    "test_post_auth_terms_consent_ok": "K53-API-004",
+    "test_post_auth_terms_consent_rejected_401": "K53-API-017",
+    "test_post_auth_terms_consent_conflict": "K53-API-013",
+    "test_post_auth_terms_consent_rejected_422": "K53-API-018",
+    "test_post_auth_terms_consent_rate_limited": "K53-API-027",
+    "test_post_auth_terms_consent_rejected_403": "K53-API-034",
+    "test_post_auth_terms_consent_shape": "K53-API-030",
+    "test_post_auth_terms_consent_server_error": "K53-API-024",
+    "test_post_auth_terms_consent_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_terms_consent_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "getCurrentTerms": {
+   "file": "apps/api/test/features/F1/terms.test.ts",
+   "reason": "規約の同意は、本物のログインの部品（Better Auth のセッションができたときの hook で立つ同意し直しの印）・本物の DB の今の版の関数（app.current_terms）と同意の行で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-53）",
+   "covers": {
+    "test_get_auth_terms_current_ok": "K53-API-016",
+    "test_get_auth_terms_current_rejected_422": "K53-API-022",
+    "test_get_auth_terms_current_rate_limited": "K53-API-028",
+    "test_get_auth_terms_current_server_error": "K53-API-033",
+    "test_get_auth_terms_current_shape": "K53-API-016",
+    "test_get_auth_terms_current_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "getServiceStatus": {
+   "file": "apps/api/test/features/F1/service-status.test.ts",
+   "reason": "いまの様子は、運営のテナントの障害とお知らせの行と、行の守りの外で読む DB の関数で確かめる。生成の試験の土台には障害とお知らせが無い（K-307）",
+   "covers": {
+    "test_get_auth_service_status_ok": "K307-API-001",
+    "test_get_auth_service_status_ok_2": "K307-API-001",
+    "test_get_auth_service_status_rejected_422": "K307-API-013",
+    "test_get_auth_service_status_rate_limited": "K307-API-014",
+    "test_get_auth_service_status_server_error": "K307-API-015",
+    "test_get_auth_service_status_shape": "K307-API-002",
+    "test_get_auth_service_status_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "getInvitation": {
+   "file": "apps/api/test/features/F2/invitation-preview.test.ts",
+   "reason": "招待の下見は、本物のトークン（DB にはハッシュだけ）の招待の行と、本物のログインの部品のセッション（ログイン中の様子）と、認証の表（宛てのアカウントの有無）で確かめる。生成の試験の土台（偽のセッション・uuid の id）では確かめられない。道の値はトークンで 422 にする形が無く、受け付けない値（でたらめ・空白入り・長すぎ）は 404 で断る（K-331）",
+   "covers": {
+    "test_get_auth_invitations_token_ok": "K331-API-001",
+    "test_get_auth_invitations_token_rejected_422": "K331-API-006",
+    "test_get_auth_invitations_token_not_found": "K331-API-006",
+    "test_get_auth_invitations_token_session_unresolved": "K331-API-016",
+    "test_get_auth_invitations_token_rate_limited": "K331-API-013",
+    "test_get_auth_invitations_token_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_auth_invitations_token_shape": "K331-API-001"
+   }
+  },
+  "createPairingCode": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_pairing_codes_ok": "K57-API-001",
+    "test_post_bridge_pairing_codes_rejected_401": "K57-API-045",
+    "test_post_bridge_pairing_codes_rejected_403": "K57-API-002",
+    "test_post_bridge_pairing_codes_rejected_422": "K57-API-034",
+    "test_post_bridge_pairing_codes_rejected_422_2": "K57-API-031",
+    "test_post_bridge_pairing_codes_rate_limited": "K57-API-039",
+    "test_post_bridge_pairing_codes_terms_pending": "K57-API-050",
+    "test_post_bridge_pairing_codes_shape": "K57-API-001",
+    "test_post_bridge_pairing_codes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_pairing_codes_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "claimPairingCode": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_claim_ok": "K57-API-003",
+    "test_post_bridge_claim_rejected_422": "K57-API-036",
+    "test_post_bridge_claim_rejected_422_2": "K57-API-028",
+    "test_post_bridge_claim_rate_limited": "K57-API-038",
+    "test_post_bridge_claim_upstream_failed": "K57-API-033",
+    "test_post_bridge_claim_shape": "K57-API-003",
+    "test_post_bridge_claim_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_claim_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_claim_not_found": {
+     "file": "apps/api/test/features/contract/k639-pm-fuzz.test.ts",
+     "mark": "K639-API-005"
+    }
+   }
+  },
+  "sendHeartbeat": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_post_bridge_heartbeat_ok": "K57-API-009",
+    "test_post_bridge_heartbeat_rejected_401": "K57-API-014",
+    "test_post_bridge_heartbeat_rejected_403": "K57-API-040",
+    "test_post_bridge_heartbeat_rejected_422": "K57-API-037",
+    "test_post_bridge_heartbeat_rejected_422_2": "K57-API-032",
+    "test_post_bridge_heartbeat_shape": "K57-API-009",
+    "test_post_bridge_heartbeat_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_heartbeat_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "listMyDevices": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_devices_ok": "K57-API-042",
+    "test_get_bridge_devices_rejected_401": "K57-API-045",
+    "test_get_bridge_devices_rejected_403": "K57-API-040",
+    "test_get_bridge_devices_terms_pending": "K57-API-050",
+    "test_get_bridge_devices_shape": "K57-API-042",
+    "test_get_bridge_devices_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "getLatestBridgeRelease": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_releases_latest_ok": "K57-API-021",
+    "test_get_bridge_releases_latest_rejected_401": "K57-API-045",
+    "test_get_bridge_releases_latest_rejected_422": "K57-API-023",
+    "test_get_bridge_releases_latest_upstream_failed": "K57-API-024",
+    "test_get_bridge_releases_latest_terms_pending": "K57-API-050",
+    "test_get_bridge_releases_latest_shape": "K57-API-021",
+    "test_get_bridge_releases_latest_unavailable": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-004"
+    },
+    "test_get_bridge_releases_latest_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "downloadBridgeRelease": {
+   "file": "apps/api/test/features/F3/connect-pc.test.ts",
+   "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
+   "covers": {
+    "test_get_bridge_releases_name_file_ok": "K57-API-021",
+    "test_get_bridge_releases_name_file_rejected_401": "K57-API-027",
+    "test_get_bridge_releases_name_file_rejected_422": "K57-API-023",
+    "test_get_bridge_releases_name_file_upstream_failed": "K57-API-024",
+    "test_get_bridge_releases_name_file_terms_pending": "K57-API-050",
+    "test_get_bridge_releases_name_file_shape": "K57-API-021",
+    "test_get_bridge_releases_name_file_rejected_403": "K57-API-055",
+    "test_get_bridge_releases_name_file_rate_limited": "K57-API-056",
+    "test_get_bridge_releases_name_file_not_found": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-002"
+    },
+    "test_get_bridge_releases_name_file_not_found_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-001"
+    },
+    "test_get_bridge_releases_name_file_unavailable": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-004"
+    },
+    "test_get_bridge_releases_name_file_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "createTicket": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_post_tickets_ok": "K60-API-001",
+    "test_post_tickets_ok_3": "K60-API-001",
+    "test_post_tickets_rejected_401": "K60-API-042",
+    "test_post_tickets_rejected_403": "K60-API-005",
+    "test_post_tickets_rejected_422": "K60-API-008",
+    "test_post_tickets_rejected_422_2": "K60-API-025",
+    "test_post_tickets_rate_limited": "K60-API-031",
+    "test_post_tickets_terms_pending": "K60-API-043",
+    "test_post_tickets_shape": "K60-API-001",
+    "test_post_tickets_not_found": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-019"
+    },
+    "test_post_tickets_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "listTicketKinds": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_ticket_kinds_ok": "K60-API-034",
+    "test_get_ticket_kinds_rejected_401": "K60-API-042",
+    "test_get_ticket_kinds_rejected_403": "K60-API-042",
+    "test_get_ticket_kinds_terms_pending": "K60-API-043",
+    "test_get_ticket_kinds_shape": "K60-API-034",
+    "test_get_ticket_kinds_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "listScopes": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_scopes_ok": "K60-API-033",
+    "test_get_scopes_rejected_401": "K60-API-042",
+    "test_get_scopes_rejected_403": "K60-API-042",
+    "test_get_scopes_terms_pending": "K60-API-043",
+    "test_get_scopes_shape": "K60-API-033",
+    "test_get_scopes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "listTickets": {
+   "file": "apps/api/test/features/F4/ticket-list.test.ts",
+   "reason": "K-92 の一覧の口は本物の振る舞い（hooks）と、見える範囲・自分に関わるもの・keyset の次の分を、試験ごとに作った会社とチケットで確かめる。生成の試験の土台（表の種の入力・hooks なし）では確かめられない（K-92）",
+   "covers": {
+    "test_get_tickets_ok": "K92-API-002",
+    "test_get_tickets_ok_2": "K92-API-003",
+    "test_get_tickets_ok_3": "K92-API-015",
+    "test_get_tickets_rejected_401": "K92-API-020",
+    "test_get_tickets_rejected_403": "K92-API-020",
+    "test_get_tickets_rejected_422": "K92-API-023",
+    "test_get_tickets_conflict": {
+     "file": "apps/api/test/features/F7/list-filters.test.ts",
+     "mark": "K472-API-016"
+    },
+    "test_get_tickets_rate_limited": "K92-API-029",
+    "test_get_tickets_terms_pending": "K92-API-020",
+    "test_get_tickets_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_tickets_shape": "K92-API-009"
+   }
+  },
+  "getTicket": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_tickets_id_ok": "K60-API-001",
+    "test_get_tickets_id_rejected_401": "K60-API-042",
+    "test_get_tickets_id_rejected_403": "K60-API-042",
+    "test_get_tickets_id_not_found": "K60-API-037",
+    "test_get_tickets_id_terms_pending": "K60-API-043",
+    "test_get_tickets_id_shape": "K60-API-001",
+    "test_get_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "listMyTicketDrafts": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_get_me_ticket_drafts_ok": "K60-API-038",
+    "test_get_me_ticket_drafts_rejected_401": "K60-API-041",
+    "test_get_me_ticket_drafts_rejected_403": "K60-API-039",
+    "test_get_me_ticket_drafts_terms_pending": "K60-API-043",
+    "test_get_me_ticket_drafts_shape": "K60-API-038",
+    "test_get_me_ticket_drafts_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "saveMyTicketDraft": {
+   "file": "apps/api/test/features/F4/create-ticket.test.ts",
+   "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
+   "covers": {
+    "test_post_me_ticket_drafts_ok": "K60-API-038",
+    "test_post_me_ticket_drafts_rejected_403": "K60-API-041",
+    "test_post_me_ticket_drafts_rejected_422": "K60-API-040",
+    "test_post_me_ticket_drafts_terms_pending": "K60-API-043",
+    "test_post_me_ticket_drafts_shape": "K60-API-038",
+    "test_post_me_ticket_drafts_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_ticket_drafts_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "delegateTicket": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_tickets_id_delegate_ok": "K62-API-001",
+    "test_post_tickets_id_delegate_rejected_401": "K62-API-025",
+    "test_post_tickets_id_delegate_rejected_403": "K62-API-024",
+    "test_post_tickets_id_delegate_not_found": "K62-API-026",
+    "test_post_tickets_id_delegate_conflict": "K62-API-020",
+    "test_post_tickets_id_delegate_conflict_2": {
+     "file": "apps/api/test/features/F5/delegate-body.test.ts",
+     "mark": "K565-API-011"
+    },
+    "test_post_tickets_id_delegate_rejected_422": "K62-API-030",
+    "test_post_tickets_id_delegate_rate_limited": "K62-API-034",
+    "test_post_tickets_id_delegate_shape": "K62-API-001",
+    "test_post_tickets_id_delegate_terms_pending": "K62-API-060",
+    "test_post_tickets_id_delegate_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_delegate_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_delegate_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "getActionRun": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_action_runs_id_ok": "K62-API-027",
+    "test_get_action_runs_id_rejected_401": "K62-API-025",
+    "test_get_action_runs_id_not_found": "K62-API-026",
+    "test_get_action_runs_id_rejected_422": "K62-API-030",
+    "test_get_action_runs_id_rate_limited": "K62-API-034",
+    "test_get_action_runs_id_shape": "K62-API-027",
+    "test_get_action_runs_id_rejected_403": "K62-API-028",
+    "test_get_action_runs_id_terms_pending": "K62-API-060",
+    "test_get_action_runs_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_action_runs_id_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "listTicketRuns": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_tickets_id_runs_ok": "K62-API-027",
+    "test_get_tickets_id_runs_rejected_401": "K62-API-025",
+    "test_get_tickets_id_runs_not_found": "K62-API-026",
+    "test_get_tickets_id_runs_rate_limited": "K62-API-034",
+    "test_get_tickets_id_runs_shape": "K62-API-027",
+    "test_get_tickets_id_runs_rejected_403": "K62-API-028",
+    "test_get_tickets_id_runs_rejected_422": "K62-API-030",
+    "test_get_tickets_id_runs_terms_pending": "K62-API-060",
+    "test_get_tickets_id_runs_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_runs_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "takeBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_take_ok": "K62-API-029",
+    "test_post_bridge_jobs_take_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_take_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_take_shape": "K62-API-029",
+    "test_post_bridge_jobs_take_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_take_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_take_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_take_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_take_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_take_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "reportJobProgress": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_progress_ok": "K62-API-008",
+    "test_post_bridge_jobs_id_progress_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_progress_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_progress_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_progress_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_progress_shape": "K62-API-008",
+    "test_post_bridge_jobs_id_progress_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_id_progress_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_id_progress_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_progress_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_progress_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "getJobControl": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_bridge_jobs_id_control_ok": "K62-API-015",
+    "test_get_bridge_jobs_id_control_rejected_401": "K62-API-039",
+    "test_get_bridge_jobs_id_control_not_found": "K62-API-050",
+    "test_get_bridge_jobs_id_control_rate_limited": "K62-API-053",
+    "test_get_bridge_jobs_id_control_shape": "K62-API-015",
+    "test_get_bridge_jobs_id_control_rejected_403": "K62-API-062",
+    "test_get_bridge_jobs_id_control_rejected_422": "K62-API-032",
+    "test_get_bridge_jobs_id_control_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_bridge_jobs_id_control_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "callKanameTool": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_tools_name_ok": "K62-API-009",
+    "test_post_bridge_jobs_id_tools_name_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_tools_name_rejected_403": "K62-API-036",
+    "test_post_bridge_jobs_id_tools_name_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_tools_name_shape": "K62-API-009",
+    "test_post_bridge_jobs_id_tools_name_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_id_tools_name_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_tools_name_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_tools_name_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_tools_name_not_found": "道具の口は道具の鍵と PC の印の両方で守る。仕事が無い・他の人や他の PC の仕事の id は、鍵が合わないので 404 ではなく 403 で返し、仕事があるかを漏らさない（K62-API-036・K62-API-050）",
+    "test_post_bridge_jobs_id_tools_name_upstream_failed": "道具 ticket_read は DB の 1 枚を読むだけで、サーバーの外を呼ばない（D-097）"
+   }
+  },
+  "finishBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_finish_ok": "K62-API-010",
+    "test_post_bridge_jobs_id_finish_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_id_finish_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_finish_rejected_422": "K62-API-035",
+    "test_post_bridge_jobs_id_finish_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_finish_shape": "K62-API-010",
+    "test_post_bridge_jobs_id_finish_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_id_finish_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_finish_upstream_failed": "K62-API-011",
+    "test_post_bridge_jobs_id_finish_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_finish_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "listApprovalQueue": {
+   "file": "apps/api/test/features/F5/approve-complete-queue.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_get_approvals_queue_ok": "K63-API-001",
+    "test_get_approvals_queue_rejected_403": "K63-API-064",
+    "test_get_approvals_queue_rejected_422": "K63-API-040",
+    "test_get_approvals_queue_rate_limited": "K63-API-046",
+    "test_get_approvals_queue_shape": "K63-API-001",
+    "test_get_approvals_queue_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_approvals_queue_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    }
+   }
+  },
+  "getApproval": {
+   "file": "apps/api/test/features/F5/approve-complete-queue.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_get_approvals_id_ok": "K63-API-050",
+    "test_get_approvals_id_rate_limited": "K63-API-046",
+    "test_get_approvals_id_shape": "K63-API-050",
+    "test_get_approvals_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_approvals_id_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_get_approvals_id_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_get_approvals_id_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_get_approvals_id_rejected_422": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
+    }
+   }
+  },
+  "approveApproval": {
+   "file": "apps/api/test/features/F5/approve-complete-approve.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_post_approvals_id_approve_ok": "K63-API-002",
+    "test_post_approvals_id_approve_conflict": "K63-API-016",
+    "test_post_approvals_id_approve_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_approvals_id_approve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_approvals_id_approve_shape": {
+     "file": "apps/api/test/features/F5/approve-complete-return.test.ts",
+     "mark": "K63-API-049"
+    },
+    "test_post_approvals_id_approve_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_approvals_id_approve_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_post_approvals_id_approve_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_approvals_id_approve_rejected_422": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-039"
+    },
+    "test_post_approvals_id_approve_rejected_422_2": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
+    },
+    "test_post_approvals_id_approve_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
+    }
+   }
+  },
+  "returnApproval": {
+   "file": "apps/api/test/features/F5/approve-complete-return.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_post_approvals_id_return_ok": "K63-API-006",
+    "test_post_approvals_id_return_conflict": "K63-API-020",
+    "test_post_approvals_id_return_rejected_422": "K63-API-007",
+    "test_post_approvals_id_return_shape": "K63-API-049",
+    "test_post_approvals_id_return_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_approvals_id_return_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_approvals_id_return_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_approvals_id_return_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_post_approvals_id_return_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_approvals_id_return_rejected_422_2": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
+    },
+    "test_post_approvals_id_return_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
+    }
+   }
+  },
+  "completeTicket": {
+   "file": "apps/api/test/features/F5/approve-complete-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_post_tickets_id_complete_ok": "K63-API-027",
+    "test_post_tickets_id_complete_rejected_403": "K63-API-034",
+    "test_post_tickets_id_complete_conflict": "K63-API-032",
+    "test_post_tickets_id_complete_rejected_422": "K63-API-030",
+    "test_post_tickets_id_complete_rejected_422_2": "K63-API-029",
+    "test_post_tickets_id_complete_shape": "K63-API-027",
+    "test_post_tickets_id_complete_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_complete_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_complete_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_tickets_id_complete_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_tickets_id_complete_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
+    },
+    "test_post_tickets_id_complete_conflict_2": {
+     "file": "apps/api/test/features/F9/knowledge-complete-guard.test.ts",
+     "mark": "K701-API-001"
+    },
+    "test_post_tickets_id_complete_unavailable": "K63-API-043",
+    "test_post_tickets_id_complete_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   }
+  },
+  "listSetupTasks": {
+   "file": "apps/api/test/features/F4/setup-tasks.test.ts",
+   "reason": "はじめにやることの済みの判定は PC の知らせ・預け物・別の会社の同じログインを本物の DB で確かめ、生成の試験の土台（偽のセッション・hooks なし）では作れない（K-250）",
+   "covers": {
+    "test_get_me_setup_tasks_ok": "K250-API-001",
+    "test_get_me_setup_tasks_rejected_422": "K250-API-011",
+    "test_get_me_setup_tasks_rejected_401": "K250-API-009",
+    "test_get_me_setup_tasks_rejected_403": "K250-API-008",
+    "test_get_me_setup_tasks_rate_limited": "K250-API-013",
+    "test_get_me_setup_tasks_terms_pending": "K250-API-009",
+    "test_get_me_setup_tasks_shape": "K250-API-007",
+    "test_get_me_setup_tasks_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_setup_tasks_rejected_422_2": "名前・メール・パスワードの保存の型で、読むだけのこの口は体を受けない"
+   }
+  },
+  "dismissSetupTasks": {
+   "file": "apps/api/test/features/F4/setup-tasks.test.ts",
+   "reason": "はじめにやることの済みの判定は PC の知らせ・預け物・別の会社の同じログインを本物の DB で確かめ、生成の試験の土台（偽のセッション・hooks なし）では作れない（K-250）",
+   "covers": {
+    "test_post_me_setup_tasks_dismiss_ok": "K250-API-006",
+    "test_post_me_setup_tasks_dismiss_rejected_401": "K250-API-009",
+    "test_post_me_setup_tasks_dismiss_rejected_403": "K250-API-008",
+    "test_post_me_setup_tasks_dismiss_rejected_422": "K250-API-006",
+    "test_post_me_setup_tasks_dismiss_rejected_422_2": "K250-API-011",
+    "test_post_me_setup_tasks_dismiss_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_setup_tasks_dismiss_rate_limited": "K250-API-013",
+    "test_post_me_setup_tasks_dismiss_terms_pending": "K250-API-009",
+    "test_post_me_setup_tasks_dismiss_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_setup_tasks_dismiss_shape": "K250-API-006"
+   },
+   "na": {
+    "test_post_me_setup_tasks_dismiss_rejected_422_3": "名前・メール・パスワードの保存の型で、この口は key（飛ばす項目）だけを受ける"
+   }
+  },
+  "requestPasswordReset": {
+   "file": "apps/api/test/features/F1/password-forgot.test.ts",
+   "reason": "再設定を頼む口は、本物の DB の本人と verification・差し込んだ送出先（関門 C6）・答えの後の送りで確かめる（K-313）",
+   "covers": {
+    "test_post_auth_password_forgot_ok": "K313-API-001 登録済みの人が頼む",
+    "test_post_auth_password_forgot_rejected_422": "K313-API-006 メールが空・形が違う・欄が無い",
+    "test_post_auth_password_forgot_rate_limited": "K313-API-011 同じ IP から 1 分に 11 回",
+    "test_post_auth_password_forgot_shape": "K313-API-012 記録（関門 C2）",
+    "test_post_auth_password_forgot_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_password_forgot_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "signInWithPassword": {
+   "file": "apps/api/test/features/F1/sign-in.test.ts",
+   "reason": "パスワードで入るのは、本物のログインの部品（Better Auth の本人・2 段階・セッション）と DB のロック（app.login_attempts）・差し込んだ送出先（関門 C6 の新しい端末の知らせ）で確かめる。生成の試験の偽のセッションでは確かめられない（K-301）",
+   "covers": {
+    "test_post_auth_sign_in_ok": "K301-API-001",
+    "test_post_auth_sign_in_rejected_422": "K301-API-015",
+    "test_post_auth_sign_in_rejected_422_2": "K301-API-013",
+    "test_post_auth_sign_in_rejected_401": "K301-API-003",
+    "test_post_auth_sign_in_rejected_403": "K301-API-014",
+    "test_post_auth_sign_in_rejected_403_2": {
+     "file": "apps/api/test/features/F1/login-gate.test.ts",
+     "mark": "K303-API-001"
+    },
+    "test_post_auth_sign_in_unavailable": {
+     "file": "apps/api/test/features/F1/login-gate.test.ts",
+     "mark": "K303-API-010"
+    },
+    "test_post_auth_sign_in_rejected_422_3": "K301-API-009",
+    "test_post_auth_sign_in_rejected_422_4": "K301-API-010",
+    "test_post_auth_sign_in_rate_limited": "K301-API-004",
+    "test_post_auth_sign_in_rate_limited_2": "K301-API-020",
+    "test_post_auth_sign_in_server_error": "K301-API-019",
+    "test_post_auth_sign_in_shape": "K301-API-024",
+    "test_post_auth_sign_in_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_in_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "verifySignInCode": {
+   "file": "apps/api/test/features/F1/sign-in-code.test.ts",
+   "reason": "確認のコードで入るのは、本物のログインの部品（Better Auth の 2 段階の待ちの印・TOTP・バックアップコード・6 けたの止め）と、パスワードの段（K-301）の口で受け取った待ちの印で確かめる。生成の試験の偽のセッションでは確かめられない（K-302）",
+   "covers": {
+    "test_post_auth_two_factor_verify_ok": "K302-API-001",
+    "test_post_auth_two_factor_verify_rejected_422": "K302-API-015",
+    "test_post_auth_two_factor_verify_rejected_422_2": "K302-API-012",
+    "test_post_auth_two_factor_verify_rejected_401": "K302-API-006",
+    "test_post_auth_two_factor_verify_rejected_401_2": "K302-API-003",
+    "test_post_auth_two_factor_verify_rejected_403": "K302-API-016",
+    "test_post_auth_two_factor_verify_rejected_422_3": "K302-API-012",
+    "test_post_auth_two_factor_verify_rate_limited": "K302-API-007",
+    "test_post_auth_two_factor_verify_server_error": "K302-API-017",
+    "test_post_auth_two_factor_verify_rate_limited_2": "K302-API-018",
+    "test_post_auth_two_factor_verify_shape": "K302-API-021",
+    "test_post_auth_two_factor_verify_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_two_factor_verify_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_two_factor_verify_rejected_403_2": {
+     "file": "apps/api/test/features/F1/sign-in-code-gate.test.ts",
+     "mark": "K305-API-022"
+    },
+    "test_post_auth_two_factor_verify_unavailable": {
+     "file": "apps/api/test/features/F1/sign-in-code-gate.test.ts",
+     "mark": "K305-API-023"
+    }
+   }
+  },
+  "signOut": {
+   "file": "apps/api/test/features/F1/sign-out.test.ts",
+   "reason": "ログアウトは、本物のログインの部品（Better Auth のセッション）と sessions の行（app.close_session）・PC のつなぎで確かめる。生成の試験の偽のセッションでは、その画面だけ閉じて別のブラウザと PC が残ることを確かめられない（K-306）",
+   "covers": {
+    "test_post_auth_sign_out_ok": "K306-API-001",
+    "test_post_auth_sign_out_rejected_401": "K306-API-004",
+    "test_post_auth_sign_out_rejected_403": "K306-API-012",
+    "test_post_auth_sign_out_rejected_422": "K306-API-008",
+    "test_post_auth_sign_out_rejected_422_2": "K306-API-008",
+    "test_post_auth_sign_out_rate_limited": "K306-API-009",
+    "test_post_auth_sign_out_shape": "K306-API-001",
+    "test_post_auth_sign_out_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_out_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "resetPassword": {
+   "file": "apps/api/test/features/F1/password-reset.test.ts",
+   "reason": "新しいパスワードを決める口は、本物の DB の verification・account・セッションの失効とロックで確かめる（K-314）",
+   "covers": {
+    "test_post_auth_password_reset_ok": "K314-API-001 期限内のリンクで決める",
+    "test_post_auth_password_reset_gone": "K314-API-003 期限切れ",
+    "test_post_auth_password_reset_rejected_422": "K314-API-009 新しいパスワード 11 文字は 422",
+    "test_post_auth_password_reset_server_error": "K314-API-017 端末を切る所で失敗",
+    "test_post_auth_password_reset_rate_limited": "K314-API-019 同じ IP から 1 分に 11 回",
+    "test_post_auth_password_reset_shape": "K314-API-020 DB の中",
+    "test_post_auth_password_reset_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_password_reset_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_password_reset_conflict": {
+     "file": "apps/api/test/features/F1/pm-fuzz-auth.test.ts",
+     "mark": "K638-API-009"
+    }
+   }
+  },
+  "getMySecurity": {
+   "file": "apps/api/test/features/F1/my-security.test.ts",
+   "reason": "安全の設定を読む口は、本物のログインの部品（Better Auth のセッション・パスキーの表・2 段階とバックアップコード）と sessions の印（mfa_pending）で確かめる。生成の試験の偽のセッションでは部品のセッションが無く、入り方の数も印も作れない（K-308）",
+   "covers": {
+    "test_get_me_security_ok": "K308-API-001",
+    "test_get_me_security_ok_2": "K308-API-002",
+    "test_get_me_security_rejected_401": "K308-API-008",
+    "test_get_me_security_rate_limited": "K308-API-009",
+    "test_get_me_security_shape": "K308-API-004",
+    "test_get_me_security_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_me_security_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_security_rejected_403": "本人だけの口で役を見ない（権限を何も持たない人も自分の分は読める・受けは K308-API-006）",
+    "test_get_me_security_rejected_422": "入力を受けない GET（一覧の問い合わせは形だけ確かめて無視する）"
+   }
+  },
+  "requestAdminRecovery": {
+   "file": "apps/api/test/features/F1/admin-recovery.test.ts",
+   "reason": "管理者に頼むは、本物のログインの部品の待ちの印・本物の DB の頼みの関数・差し込んだメールの送出先で確かめる。生成の試験の偽のセッションでは確かめられない（K-305）",
+   "covers": {
+    "test_post_auth_recovery_admin_request_ok": "K305-API-001",
+    "test_post_auth_recovery_admin_request_rejected_422": "K305-API-013",
+    "test_post_auth_recovery_admin_request_rejected_422_2": "K305-API-011",
+    "test_post_auth_recovery_admin_request_rejected_401": "K305-API-012",
+    "test_post_auth_recovery_admin_request_rate_limited": "K305-API-014",
+    "test_post_auth_recovery_admin_request_server_error": "K305-API-017",
+    "test_post_auth_recovery_admin_request_shape": "K305-API-018",
+    "test_post_auth_recovery_admin_request_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_recovery_admin_request_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "startTwoFactor": {
+   "file": "apps/api/test/features/F1/two-factor-enable.test.ts",
+   "reason": "2 段階を付ける口は、本物のログインの部品（Better Auth のセッション・2 段階の表・バックアップコード）と、認証アプリの 6 けた（鍵から作る）で確かめる。生成の試験の偽のセッションでは部品のセッションも鍵も無い（K-311）",
+   "covers": {
+    "test_post_me_two_factor_enable_ok": "K311-API-001",
+    "test_post_me_two_factor_enable_rejected_401": "K311-API-019",
+    "test_post_me_two_factor_enable_rejected_403": "K311-API-010",
+    "test_post_me_two_factor_enable_rejected_422": "K311-API-009",
+    "test_post_me_two_factor_enable_shape": "K311-API-001",
+    "test_post_me_two_factor_enable_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_two_factor_enable_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_two_factor_enable_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_two_factor_enable_rejected_422_2": "入力の欄は password 1 つで、2 つ目の 422 の型が無い",
+    "test_post_me_two_factor_enable_rate_limited": "回数は入口の共通の数え。同じ型の確かめは confirmTwoFactor の K311-API-020 が持つ"
+   }
+  },
+  "confirmTwoFactor": {
+   "file": "apps/api/test/features/F1/two-factor-enable.test.ts",
+   "reason": "2 段階を付ける口は、本物のログインの部品（Better Auth のセッション・2 段階の表・バックアップコード）と、認証アプリの 6 けた（鍵から作る）で確かめる。生成の試験の偽のセッションでは部品のセッションも鍵も無い（K-311）",
+   "covers": {
+    "test_post_me_two_factor_confirm_ok": "K311-API-002",
+    "test_post_me_two_factor_confirm_rejected_401": "K311-API-019",
+    "test_post_me_two_factor_confirm_rejected_422": "K311-API-007",
+    "test_post_me_two_factor_confirm_rejected_422_2": "K311-API-008",
+    "test_post_me_two_factor_confirm_rate_limited": "K311-API-020",
+    "test_post_me_two_factor_confirm_shape": "K311-API-002",
+    "test_post_me_two_factor_confirm_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_two_factor_confirm_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_two_factor_confirm_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_two_factor_confirm_rejected_403": "取り直しの要らない本人の口で、役を見ない"
+   }
+  },
+  "renamePasskey": {
+   "file": "apps/api/test/features/F1/passkeys.test.ts",
+   "reason": "パスキーの名前を変える・外す口は、本物のログインの部品（Better Auth のセッション・kaname_auth.passkey の表・2 段階とパスワードの行）で確かめる。生成の試験の偽のセッションでは部品のセッションも認証の表も無い（K-309）",
+   "covers": {
+    "test_patch_me_passkeys_id_ok": "K309-API-008",
+    "test_patch_me_passkeys_id_rejected_401": "K309-API-023",
+    "test_patch_me_passkeys_id_not_found": "K309-API-012",
+    "test_patch_me_passkeys_id_rejected_422": "K309-API-009",
+    "test_patch_me_passkeys_id_rate_limited": "K309-API-024",
+    "test_patch_me_passkeys_id_shape": "K309-API-008",
+    "test_patch_me_passkeys_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_me_passkeys_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_passkeys_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_patch_me_passkeys_id_rejected_403": "本人だけの口で役を見ない。取り直しも要らない。他人の行は 404（K309-API-012）"
+   }
+  },
+  "deletePasskey": {
+   "file": "apps/api/test/features/F1/passkeys.test.ts",
+   "reason": "パスキーの名前を変える・外す口は、本物のログインの部品（Better Auth のセッション・kaname_auth.passkey の表・2 段階とパスワードの行）で確かめる。生成の試験の偽のセッションでは部品のセッションも認証の表も無い（K-309）",
+   "covers": {
+    "test_delete_me_passkeys_id_ok": "K309-API-014",
+    "test_delete_me_passkeys_id_rejected_401": "K309-API-023",
+    "test_delete_me_passkeys_id_rejected_403": "K309-API-018",
+    "test_delete_me_passkeys_id_not_found": "K309-API-012",
+    "test_delete_me_passkeys_id_shape": "K309-API-014",
+    "test_delete_me_passkeys_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_me_passkeys_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_me_passkeys_id_conflict": "K309-API-016"
+   },
+   "na": {
+    "test_delete_me_passkeys_id_rejected_422": "体を受けない。id の形は入口の共通の確かめ（K-144）",
+    "test_delete_me_passkeys_id_rate_limited": "回数は入口の共通の数えで、同じ口の型の確かめは renamePasskey の K309-API-024 が持つ"
+   }
+  },
+  "changePassword": {
+   "file": "apps/api/test/features/F1/change-password.test.ts",
+   "reason": "パスワードを変える・決める口は、本物のログインの部品（Better Auth のセッション・kaname_auth.account のパスワードの行）と、全部のワークスペースのセッションで確かめる。生成の試験の偽のセッションでは部品のセッションもパスワードの行も無い（K-312）",
+   "covers": {
+    "test_patch_me_password_ok": "K312-API-001",
+    "test_patch_me_password_rejected_401": "K312-API-012",
+    "test_patch_me_password_rejected_403": "K312-API-008",
+    "test_patch_me_password_rejected_422": "K312-API-005",
+    "test_patch_me_password_rate_limited": "K312-API-013",
+    "test_patch_me_password_shape": "K312-API-001",
+    "test_patch_me_password_session_unresolved": "K312-API-011",
+    "test_patch_me_password_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_password_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_me_password_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   }
+  },
+  "setMyPassword": {
+   "file": "apps/api/test/features/F1/change-password.test.ts",
+   "reason": "パスワードを変える・決める口は、本物のログインの部品（Better Auth のセッション・kaname_auth.account のパスワードの行）と、全部のワークスペースのセッションで確かめる。生成の試験の偽のセッションでは部品のセッションもパスワードの行も無い（K-312）",
+   "covers": {
+    "test_post_me_password_ok": "K312-API-015",
+    "test_post_me_password_rejected_401": "K312-API-019",
+    "test_post_me_password_rejected_403": "K312-API-018",
+    "test_post_me_password_rejected_422": "K312-API-017",
+    "test_post_me_password_conflict": "K312-API-016",
+    "test_post_me_password_shape": "K312-API-015",
+    "test_post_me_password_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_password_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_password_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_password_rate_limited": "回数は入口の共通の数え。同じ型の確かめは changePassword の K312-API-013 が持つ"
+   }
+  }
+ }
+}
