@@ -1,0 +1,35 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-120",
+   "class": "conflict",
+   "where": {
+    "screen": "requests",
+    "state": "accept"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）のに、チケットを作ろうとした（同時に 2 人が受けたときの後の方も）",
+   "false_when": "依頼が新しい・聞いている（まだ決まっていない）",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにした依頼か、断った依頼を開いておく",
+    "steps": [
+     "「チケットを作る」で作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-155.42"
+   ],
+   "support_code": "GST-120"
+  }
+ ]
+}
