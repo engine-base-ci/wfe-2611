@@ -60,6 +60,8 @@ for (const w of MATCH_WIDTHS) {
           extra: { can: { delegate: false, complete: false, progress: true } },
         });
         await openThread(page, w);
+        // 土台の openTicket は高さ 1000 で開く。下絵（matchMock の頁）と同じ高さに戻す（右のパネルの高さは画面の高さで決まり、書く欄はパネルの下に付く）
+        await page.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
         await box(page).fill("検収が終わるまで止めます");
         await choose(page, /保留/);
         await reason(page).fill("検収の完了を待つ");

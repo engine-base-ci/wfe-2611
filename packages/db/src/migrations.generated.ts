@@ -341,4 +341,5 @@ export const MIGRATIONS = [
   "20261128070426_portal_home_inviter.sql",
   "20261128160000_ticket_decision_ai.sql",
   "20261128170000_field_type_money.sql",
+  "20261128180000_agent_usage_window.sql",
 ] as const;

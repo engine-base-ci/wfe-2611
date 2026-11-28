@@ -2,11 +2,11 @@
 #   振る舞いの本体は apps/api/src/features/F11/requests/accept.ts（DB の関数 app.client_request_accept）。触る表と権限の文は本体 05_flow/screen_api.py（前からある行を直した）
 #   期限・担当・グループは社内が決める（必須）。題・本文は無ければ依頼から入る。依頼を出したゲストのグループはいつも見せる相手に入る（guest_group_ids は足す分）
 INPUTS = {
-    "acceptClientRequest": ("ClientRequestAcceptInput", {"title": "string?", "body": "string?", "assignee_member_id": "uuid", "due_on": "string",
+    "acceptClientRequest": ("ClientRequestAcceptInput", {"title": "string", "body": "string?", "assignee_member_id": "uuid", "due_on": "string",
                                                          "scope_id": "uuid", "kind_id": "uuid?", "guest_group_ids": "uuid[]?"}),
 }
 VALUE_RANGES = {
-    "acceptClientRequest": {"title": {"minLength": 1, "maxLength": 200}, "guest_group_ids": {"minItems": 1, "maxItems": 20}},
+    "acceptClientRequest": {"title": {"minLength": 1, "maxLength": 200, "pattern": "\\S"}, "due_on": {"format": "date"}, "guest_group_ids": {"minItems": 1, "maxItems": 20}},   # 題は送るなら空白だけでない（null・空白だけは accept.ts が 422）・期限は日付（isDate）
 }
 RESPONSES = {
     "acceptClientRequest": ("ClientRequestAccepted", {"ticket_id": "uuid", "number": "string"}),

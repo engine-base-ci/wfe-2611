@@ -6,7 +6,17 @@
 import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
 import { loginAs, signupViaApi } from "../_lib/api";
 import { F9_WIDTHS, matchF9 } from "./f9-match";
-import { G_DEV, P_QUOTE, err, mockKnowledge, msg, pageExpense, pageInvoice, type KMock } from "./knowledge-mock";
+import {
+  G_DEV,
+  P_INVOICE,
+  P_QUOTE,
+  err,
+  mockKnowledge,
+  msg,
+  pageExpense,
+  pageInvoice,
+  type KMock,
+} from "./knowledge-mock";
 import {
   G_KEIRI,
   G_LAW,
@@ -48,12 +58,13 @@ async function setup(page: Page, answer = quotePage()): Promise<Setup> {
   const s = await mockShare(page, mk);
   return { mk, s };
 }
-async function openAt(page: Page, id: string, width = 1440): Promise<void> {
+// 幅 1023 以下の木は本文の上に重なる引き出し（K-682）。本文の操作を押す状態は開かない（useTree=false・下絵も木を出さない・K-691／K-692 と同じ）
+async function openAt(page: Page, id: string, width = 1440, useTree = true): Promise<void> {
   await page.setViewportSize({ width, height: width < 768 ? 812 : 900 });
   await loginAs(page, owner.token);
   await page.goto(`/knowledge/${id}`);
   await expect(page.locator(CARD).getByRole("heading", { level: 1 })).toBeVisible();
-  if (width <= 1023)
+  if (width <= 1023 && useTree)
     await page
       .getByRole("button", { name: "木を開く", exact: true })
       .click()
@@ -97,8 +108,9 @@ const STATES: Record<string, { pairs: ReturnType<typeof prop>[]; drive: (page: P
   "kn-share": {
     pairs: DLG_PAIRS,
     drive: async (page, w) => {
-      await setup(page);
-      await openAt(page, P_QUOTE, w);
+      const { s } = await setup(page);
+      s.groups = s.groups.slice(0, 3); // 下絵 kn-share は 3 グループ（受託開発・経理・法務）。人事（マネージャーがいない）は K693-UI-003 が見る
+      await openAt(page, P_QUOTE, w, false);
       const d = await openShare(page);
       await box(d, "受託開発").check();
     },
@@ -117,7 +129,22 @@ const STATES: Record<string, { pairs: ReturnType<typeof prop>[]; drive: (page: P
       const { mk } = await setup(page, sharedViewPage());
       mk.pages.set(
         P_COPY,
-        pageInvoice({ id: P_COPY, acts: ["must-off", "edit"], copied_from: copiedFrom({ must: true }) }),
+        // 下絵 kn-copy と同じ写し：自分の棚の「請求書の送り方（自分用）」・元は会社 › 経理 の「必ず守る」のページ・写し自身は「必ず守る」でない
+        pageInvoice({
+          id: P_COPY,
+          title: "請求書の送り方（自分用）",
+          desc: "請求書を送る前の確かめに、自分の担当の取引先の分を足したもの。",
+          must: false,
+          place: { shelf: "me", shelf_name: "自分", group_id: null, folder_id: null, folders: [] },
+          acts: ["must-on", "edit"], // 口の must-on＝付けられる（下絵の部品の読みでは押し込んでいない「must-off」）
+          copied_from: copiedFrom({
+            page_id: P_INVOICE,
+            title: "請求書の送り方",
+            shelf_name: "会社",
+            folders: ["経理"],
+            must: true,
+          }),
+        }),
       );
       await openAt(page, P_COPY, w);
       await expect(page.locator(BAND)).toBeVisible();
@@ -506,7 +533,7 @@ for (const w of WIDTHS) {
       checked: false,
       state: null,
     }));
-    await openAt(page, P_QUOTE, w);
+    await openAt(page, P_QUOTE, w, false);
     await shareBtn(page).click();
     const d = shareDlg(page);
     await expect(d.locator("li")).toHaveCount(12);

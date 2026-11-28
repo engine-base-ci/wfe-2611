@@ -8,7 +8,7 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { blank, inquiriesDown, replyOf } from "./errors.js";
+import { blank, inquiriesDown, overMax, replyOf, TEXT_MAX, tooLong } from "./errors.js";
 import { toMessage, type MessageRow } from "./read.js";
 import { toMyInquiry, type InquiryRow } from "./shape.js";
 import { uniqueIds } from "./create.js";
@@ -34,6 +34,7 @@ export function createPostInquiryMessage(appPool: pg.Pool): (a: HookArgs) => Pro
   return async (a) => {
     const body = text(a.input["body"]);
     if (!body) return blank("body");
+    if (overMax(a.input["body"], TEXT_MAX)) return tooLong("body", TEXT_MAX);
     const ids = uniqueIds(a.input["attachment_ids"]);
     const where = "問い合わせに書く";
     let r: Answer<PostedRow> | undefined;

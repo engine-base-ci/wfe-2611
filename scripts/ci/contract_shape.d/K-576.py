@@ -2,5 +2,5 @@
 #   口は apps/api/src/features/F4/versions/item-restore.ts の checkItemRestore。screen_api.d/K-576.py の REQUIRED_INPUTS・VALUE_RANGES と同じ 1 つ
 
 REQUIRED_INPUTS = {"restoreTicketItems": {"from", "to"}}
-VALUE_RANGES = {"restoreTicketItems": {"from": {"minimum": 1}, "to": {"minimum": 1}}}
+VALUE_RANGES = {"restoreTicketItems": {"from": {"minimum": 1, "maximum": 2147483647}, "to": {"minimum": 1, "maximum": 2147483647}}}
 UNEXPRESSIBLE_422: dict = {}   # 登録先の決まりが住所を求めるので置く

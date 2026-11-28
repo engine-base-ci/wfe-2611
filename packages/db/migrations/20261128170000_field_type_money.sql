@@ -3,7 +3,10 @@
 --   見せ方は桁を区切り後ろに「円」（やり取りの 1 行・AI に渡す本文）。ほかの種類は今のまま。
 --   変えるもの：custom_fields の種類の check／値をそろえる custom_field_normalize／見せ方 custom_field_show／AI に渡す本文 ticket_brief_items／
 --   項目を足す ticket_field_create・直す ticket_field_update の種類の一覧（関数の中身は前の migration のまま・種類の一覧と金額の枝だけ足す）
+-- 種類の一覧に money を 1 つ足す（広げるだけ・今の行はどれも新しい制約を満たす）。制約を付け直すために一度外す
+-- squawk-ignore ban-drop-constraint
 alter table custom_fields drop constraint if exists custom_fields_field_type_check;
+-- squawk-ignore ban-drop-constraint
 alter table custom_fields drop constraint if exists custom_fields_field_type_ck;
 alter table custom_fields add constraint custom_fields_field_type_ck
   check (field_type in ('short_text', 'long_text', 'number', 'money', 'date', 'select', 'multi_select', 'check')) not valid;

@@ -6,7 +6,8 @@ NO_REQUIRED_INPUTS = {
 # apps/api/src/features/F10/me/profile.ts の inputMe（05_flow/screen_api.d/K-833.py と同じ）
 VALUE_RANGES = {
     "updateMe": {
-        "name": {"pattern": "\\S"},
+        "name": {"pattern": "\\S", "maxLength": 100},   # 長すぎる名前・呼ばれ方は契約の maxLength で先に断る（口は前後の空白と NFKC の後で数える。NFKC で伸びて超える分は UNEXPRESSIBLE_422 のまま）
+        "call_name": {"maxLength": 20},
         "language": {"enum": ["ja"]},
         "theme": {"enum": ["system", "light", "dark"]},
         "week_start": {"enum": [0, 1]},

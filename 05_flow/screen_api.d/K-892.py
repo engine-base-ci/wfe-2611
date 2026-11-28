@@ -33,3 +33,6 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 依頼が見えないなら、Kaname は 404 と E-GST-100 を返し、依頼を返さない"},
     ],
 }
+
+# 空の state（?state=）は口が 422（read.ts の stateOf・K892 の試験）。契約に allowEmptyValue を付けない（統合の枝・契約 fuzz の ST202・直しの担当 XC）
+NO_EMPTY_QUERIES = {"listClientRequests": ["state"]}

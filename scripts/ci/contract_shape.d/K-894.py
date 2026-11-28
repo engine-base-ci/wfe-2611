@@ -8,7 +8,7 @@ REQUIRED_INPUTS = {
 NO_REQUIRED_INPUTS = {}
 PATH_PATTERNS = {}
 VALUE_RANGES = {
-    "acceptClientRequest": {'title': {'minLength': 1, 'maxLength': 200}, 'guest_group_ids': {'minItems': 1, 'maxItems': 20}},   # screen_api.d/K-894.py の VALUE_RANGES と同じ（統合の枝で写した）
+    "acceptClientRequest": {'title': {'minLength': 1, 'maxLength': 200, 'pattern': '\\S'}, 'due_on': {'format': 'date'}, 'guest_group_ids': {'minItems': 1, 'maxItems': 20}},   # screen_api.d/K-894.py の VALUE_RANGES と同じ（統合の枝で写した）
 }
 UNEXPRESSIBLE_422 = {}
 AGENT_ANSWERS = {}

@@ -21,6 +21,7 @@ import {
   type NoticeSeed,
   type ShellMock,
 } from "./f7-shell-mock";
+import { stepUntil } from "./kit";
 import { items, mockList, open } from "./list-mock";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
@@ -90,7 +91,7 @@ async function setup(
   const s = await mockShell(page, { unread, approvals: 2 });
   const n = await mockNotices(page, seeds, o.notice ?? {});
   await open(page, "/tickets", o.width ?? 1440);
-  await expect(page.getByRole("table", { name: "チケットの一覧" }).locator("tbody tr[data-ticket]")).toHaveCount(3);
+  await expect(page.locator('table[aria-label="チケットの一覧"] tbody tr[data-ticket]')).toHaveCount(3);
   return { n, s };
 }
 const bell = (p: Page) => p.locator("header.k-bar .k-bell");
@@ -373,12 +374,15 @@ test("K467-UI-011 読み込みの間（時計を止めて runFor だけで進め
   const { n } = await setup(page, SEEDS, { pause: true });
   const release = n.hold();
   await bell(page).click();
+  // 箱の部品は鈴を押したときに読む（next/dynamic）。止めた時計の上では 1 フレームずつ進めて出す（2.9 秒の数え始めは箱が付いた時）
+  await stepUntil(page, async () => (await panel(page).count()) === 1);
   await expect(panel(page)).toBeVisible();
   await page.clock.runFor(2_900);
   await expect(panel(page).getByText("読み込んでいます…")).toHaveCount(0);
   await page.clock.runFor(200);
   await expect(panel(page).getByText("読み込んでいます…")).toBeVisible();
   release();
+  await stepUntil(page, async () => (await rowsOf(panel(page)).count()) === 6);
   await expect(rowsOf(panel(page))).toHaveCount(6);
 });
 
@@ -540,6 +544,8 @@ for (const [id, w] of [
       w,
       async (page) => {
         await setup(page, SEEDS, { width: w });
+        // open は頁の高さを 900 にする。モックと同じ高さ（matchMock の 375 は 812）に戻してから比べる（全面の高さは画面の高さで決まる）
+        if (w === 375) await page.setViewportSize({ width: 375, height: 812 });
         await bell(page).click();
         await expect(rowsOf(w === 375 ? sheet(page) : panel(page)).first()).toBeVisible();
       },
@@ -619,7 +625,8 @@ test("K467-UI-019 種類の表（K-461 の PARAM_KEYS に合わせた文）：�
   expect(page.url()).toBe(url);
   await expect(panel(page)).toBeVisible();
   // 項目が変わったお知らせ（ticket.sort_changed）は「項目を変えました」（どの項目かは出さない・既定の「書き込みました」ではない）
-  await expect(rows.nth(4).locator(".k-f7-notice-text")).toHaveText("佐藤さんが EG-128 の項目を変えました");
+  // 未読の行は読み上げに「未読、」を先に付ける（K-460 の部品・目には出ない）
+  await expect(rows.nth(4).locator(".k-f7-notice-text")).toHaveText(/^(未読、)?佐藤さんが EG-128 の項目を変えました$/);
   await expect(rows.nth(4).locator(".k-f7-notice-text")).not.toContainText("書き込みました");
   // 渡しの返事の期限は日付（MM/DD）にして文に入れる
   await expect(rows.nth(2).locator(".k-f7-notice-text")).toContainText("返事の期限 11/03");
@@ -635,8 +642,16 @@ test("K467-UI-020 幅 375：既読の口が失敗して出る赤いお知らせ�
   await rowsOf(sheet(page)).first().click();
   const toast = page.locator("li.k-toast-error");
   await expect(toast).toBeVisible();
-  const t = (await toast.boundingBox())!;
   const tabs = (await page.getByRole("navigation", { name: "下のタブ" }).boundingBox())!;
-  expect(t.y + t.height, "赤いお知らせが下のタブに重なる").toBeLessThanOrEqual(tabs.y + 1);
+  // 出てくる動き（下から上がる）が終わった後の位置で見る
+  await expect
+    .poll(
+      async () => {
+        const t = (await toast.boundingBox())!;
+        return t.y + t.height;
+      },
+      { message: "赤いお知らせが下のタブに重なる" },
+    )
+    .toBeLessThanOrEqual(tabs.y + 1);
   expect(await overflowX(page)).toBe(0);
 });

@@ -15,6 +15,7 @@ import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { opsErrorReply, opsTx } from "./db.js";
 import { OPS_INQUIRY_MESSAGE_KEYS } from "./inbox-shape.js";
 import { isUuid } from "@kaname/contracts";
+import { overMax, TEXT_MAX } from "../inquiries/errors.js";
 
 export const REPLIED_KIND = "inquiry.replied";
 
@@ -62,12 +63,13 @@ function toMessage(src: unknown): Json {
   return { ...m, attachments: Array.isArray(m["attachments"]) ? m["attachments"] : [] };
 }
 
-/** 入口の形の確かめ（:id が uuid・body が文字）。契約の入口が先に断るが、ここでも見る（2 層目） */
+/** 入口の形の確かめ（:id が uuid・body が 4000 字までの文字・契約の VALUE_RANGES）。契約の入口が先に断るが、ここでも見る（2 層目） */
 function checkInput(a: HookArgs): Issue[] {
   const issues: Issue[] = [];
   if (!isUuid(a.id ?? "")) issues.push({ field: "id", message: "uuid の形" });
   const body = ((a.input ?? {}) as Json)["body"];
   if (typeof body !== "string") issues.push({ field: "body", message: "文字" });
+  else if (overMax(body, TEXT_MAX)) issues.push({ field: "body", message: `${TEXT_MAX} 字までで送ってください` });
   return issues;
 }
 

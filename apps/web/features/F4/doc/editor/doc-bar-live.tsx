@@ -76,7 +76,10 @@ function ToolButton({
     const el = e.currentTarget;
     const byKey = e.detail === 0;
     onAct();
-    if (byKey) el.focus();
+    if (!byKey) return;
+    el.focus();
+    // 命令の focus()（Tiptap）は次の描画の前に編集欄へ焦点を移す（requestAnimationFrame）。その後で道具に戻す（← → で続けて動けるように）
+    requestAnimationFrame(() => el.focus());
   };
   return (
     <button

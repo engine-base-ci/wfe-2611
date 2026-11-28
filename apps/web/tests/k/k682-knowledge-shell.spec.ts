@@ -230,7 +230,9 @@ test("K682-UI-008 ページの字：題名・1 行の説明・場所（会社 �
   await mockKnowledge(page);
   await openInvoice(page);
   const card = page.locator(CARD);
-  await expect(card.getByText("請求書を取引先に送る前に確かめることと、送り方の順番。", { exact: true })).toBeVisible();
+  // 1 行の説明の前には札「1 行の説明」が付く（正の部品 page-views.tsx・K-670）。段落の字は札を含むので、説明の段落で確かめる
+  await expect(card.locator(".k-f9-desc")).toBeVisible();
+  await expect(card.locator(".k-f9-desc")).toContainText("請求書を取引先に送る前に確かめることと、送り方の順番。");
   await expect(card.locator(".k-f9-place")).toContainText("会社");
   await expect(card.locator(".k-f9-place")).toContainText("経理");
   await expect(card.getByLabel("本文", { exact: true })).toContainText(
@@ -279,7 +281,7 @@ const BANDS: [string, Partial<PageAnswer>, string][] = [
   [
     "写し",
     { copied_from: { page_id: P_EXPENSE, title: "請求書の送り方", shelf_name: "会社", must: true, gone: false } },
-    "会社の写しです",
+    "会社 の「請求書の送り方」の写しです", // 帯の題は元の場所と題名（K-693 の copyFromText・K693-UI-014 と同じ形）
   ],
   [
     "共有された",

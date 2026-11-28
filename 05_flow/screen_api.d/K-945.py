@@ -8,7 +8,7 @@ SCREEN_API = {
 }
 
 INPUTS = {
-    "startOpsSetup": ("OpsSetupInput", {"token": "string", "name": "string?"}),   # name は K-985 が足した（入るときに本人が付ける・任意・D-156.66）
+    "startOpsSetup": ("OpsSetupInput", {"token": "string", "name": "string"}),   # name は K-985 が足した（入るときに本人が付ける・任意・D-156.66）。送らないのが「付けない」で、null は口が 422 にする（setup.ts の nameOf）ので null を許さない形
 }
 
 # apps/api/src/features/F12/ops-setup/setup.ts（印が無い・ほかの欄は 422・strict）

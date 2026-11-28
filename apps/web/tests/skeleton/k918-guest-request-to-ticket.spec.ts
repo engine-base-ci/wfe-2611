@@ -235,7 +235,10 @@ test("K918-M1-04 ゲストに見える形：ゲストの場所の「見せても
   await expect(guest.page.getByRole("heading", { level: 1, name: t.title, exact: true })).toBeVisible();
   await expect(guest.page.getByText(MSG.head, { exact: true })).toBeVisible(); // チャットの頭の札
   await expect(guest.page.getByText(MSG.fromHere, { exact: true })).toBeVisible();
-  await expect(guest.page.getByText(ASK, { exact: true })).toBeVisible(); // 依頼のやり取りの最初の書き込みの全部（2 行目が SECRET_IN_MAIL）
+  // 依頼のやり取りの最初の書き込みの全部（2 行目が SECRET_IN_MAIL）。同じ字は本文の区画にも出るので、やり取りの区画の中で見る
+  await expect(
+    guest.page.getByRole("region", { name: "このチケットのやり取り" }).getByText(ASK, { exact: true }),
+  ).toBeVisible();
   await expect(guest.page.getByText("詳細", { exact: true }).first()).toBeVisible();
   await expect(guest.page.getByText(DETAIL, { exact: true })).toBeVisible(); // 詳細の区画の字
   const seen = await textOf(guest.page);

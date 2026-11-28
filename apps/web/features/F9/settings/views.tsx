@@ -1,12 +1,29 @@
 "use client";
 // チケットの設定（管理者・ワークスペースの管理の中）：種別／状態／項目。段 10 の作り直し（2026-11-21）。
 //   前の「チケットの形（区画を足す）」は無い（本文が自由な 1 枚になったので要らない）。
-//   見た目だけ（値は props・口は呼ばない）
+//   見た目は props の値だけ（口は呼ばない）。項目の欄は live を渡すと値と動きを持つ（K-709・渡さない呼び方＝モックは見た目だけ）
 import { Check, GripVertical, Plus } from "lucide-react";
-import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { Badge, Button, Loading, NoticeBox, Select, Tabs, TextField } from "@/components/k";
 import type { Block, Doc } from "@kaname/contracts";
 import { DocEditor } from "@/features/F4/doc/editor";
+import {
+  FIELD_TYPE_OPTIONS,
+  addOption,
+  isChoiceType,
+  moveOption,
+  removeOption,
+  typeKey,
+  type FieldOption,
+} from "./fields-shape";
 import "./settings.css";
 
 const noop = (): void => undefined;
@@ -450,7 +467,6 @@ export function StagesPanel({
 
 // ---------------------------------------------------------------- 項目のマスタ（会社が足す項目）
 export type FieldType = "1 行" | "複数行" | "数" | "金額" | "日付" | "1 つ選ぶ" | "複数選ぶ" | "チェック";
-const FIELD_TYPES: readonly FieldType[] = ["1 行", "複数行", "数", "金額", "日付", "1 つ選ぶ", "複数選ぶ", "チェック"];
 
 export interface FieldRow {
   id: string;
@@ -463,23 +479,335 @@ export interface FieldRow {
   options?: readonly string[];
 }
 
+/** 項目の欄で直している値（K-709 の FieldDraft と同じ形） */
+export interface FieldLiveDraft {
+  name: string;
+  /** 型の鍵（short_text など） */
+  type: string;
+  options: readonly FieldOption[];
+  required: boolean;
+  description: string;
+  kindIds: readonly string[];
+}
+
+/** 項目の右の欄の値と動き（渡さない呼び方（モック）は読むだけの見た目） */
+export interface FieldsLive {
+  draft: FieldLiveDraft;
+  /** 値が入っている項目（型を変えられない） */
+  typeLocked: boolean;
+  /** 欄の下の赤字 */
+  errors: {
+    name?: string | undefined;
+    type?: string | undefined;
+    options?: string | undefined;
+    kinds?: string | undefined;
+  };
+  /** 欄の上の赤い箱（口の断りのうち欄に結べない物） */
+  notice?: string | undefined;
+  /** 保存できる（変えた所がある・答えを待っていない） */
+  canSave: boolean;
+  /** 「項目を足す」「この項目を消す…」に動きが無い（押せない形） */
+  addInert: boolean;
+  deleteInert: boolean;
+  onName: (v: string) => void;
+  onType: (key: string) => void;
+  onOptions: (next: readonly FieldOption[]) => void;
+  onRequired: (v: boolean) => void;
+  onDescription: (v: string) => void;
+  onKinds: (ids: readonly string[]) => void;
+  onSave: () => void;
+  onAdd: () => void;
+  onDelete: () => void;
+}
+
+const TYPE_LOCKED = "値が入っている項目は、型を変えられません";
+const REQUIRED_LABEL = "必須にする（入れないとチケットを作れません）";
+const DESC_HINT = "入力の下に小さく出ます。AI もこの説明を読みます。";
+
+/** 押せない形（aria-disabled）の印と、押したときの動き（押せないときは何もしない） */
+const press = (inert: boolean, go: (() => void) | undefined) => ({
+  ...(inert ? { "aria-disabled": true as const } : {}),
+  onClick: go ? () => (inert ? undefined : go()) : undefined,
+});
+
+/** 選ぶ物の欄（つまみはキーボードで並べ替え：Enter でつかむ → ↑↓ → Enter で落とす・Esc で戻す） */
+function OptionsEditor({
+  options,
+  error,
+  onChange,
+}: {
+  options: readonly FieldOption[];
+  error?: string | undefined;
+  onChange: (next: readonly FieldOption[]) => void;
+}) {
+  const [grab, setGrab] = useState<{ at: number; before: readonly FieldOption[] } | null>(null);
+  const grips = useRef<(HTMLButtonElement | null)[]>([]);
+  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const focusLast = useRef(false);
+  useEffect(() => {
+    if (grab) grips.current[grab.at]?.focus();
+  }, [grab]);
+  useEffect(() => {
+    if (!focusLast.current) return;
+    focusLast.current = false;
+    inputs.current[options.length - 1]?.focus();
+  }, [options.length]);
+
+  const onKey = (i: number) => (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setGrab(grab ? null : { at: i, before: options });
+      return;
+    }
+    if (!grab) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onChange(grab.before);
+      setGrab(null);
+      return;
+    }
+    const to = e.key === "ArrowUp" ? grab.at - 1 : e.key === "ArrowDown" ? grab.at + 1 : null;
+    if (to === null) return;
+    e.preventDefault();
+    if (to < 0 || to >= options.length) return;
+    onChange(moveOption(options, grab.at, to));
+    setGrab({ ...grab, at: to });
+  };
+
+  return (
+    <fieldset className="k-f9s-options">
+      <legend className="k-label">選ぶ物</legend>
+      <ul>
+        {options.map((o, i) => (
+          <li key={i}>
+            <button
+              type="button"
+              className="k-f9s-grip"
+              aria-label={`${o.name}を並べ替える`}
+              aria-pressed={grab?.at === i ? "true" : "false"}
+              ref={(el) => {
+                grips.current[i] = el;
+              }}
+              onKeyDown={onKey(i)}
+            >
+              <GripVertical size={16} aria-hidden="true" />
+            </button>
+            <input
+              className="k-input"
+              value={o.name}
+              aria-label={`選ぶ物：${o.name}`}
+              aria-invalid={error ? true : undefined}
+              ref={(el) => {
+                inputs.current[i] = el;
+              }}
+              onChange={(e) => onChange(options.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={`${o.name}を外す`}
+              onClick={() => onChange(removeOption(options, i))}
+            >
+              外す
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <Button
+        variant="outlined"
+        size="sm"
+        icon={<Plus size={14} />}
+        onClick={() => {
+          focusLast.current = true;
+          onChange(addOption(options));
+        }}
+      >
+        選ぶ物を足す
+      </Button>
+      {error ? <span className="k-err">{error}</span> : null}
+    </fieldset>
+  );
+}
+
+/** 型の欄（部品 Select：値が入っている項目は押せない形と訳・口の断りは欄の下に） */
+function TypeField({
+  value,
+  locked,
+  error,
+  onChange,
+}: {
+  value: string;
+  locked?: boolean;
+  error?: string | undefined;
+  onChange?: (key: string) => void;
+}) {
+  return (
+    <Select
+      label="型"
+      name="field_type"
+      options={FIELD_TYPE_OPTIONS.map((t) => ({ value: t.value, label: t.label }))}
+      value={value}
+      disabled={locked}
+      description={locked ? TYPE_LOCKED : undefined}
+      error={error}
+      onValueChange={(v) => {
+        if (v) onChange?.(v);
+      }}
+    />
+  );
+}
+
+function FieldsLiveForm({ f, live, kinds }: { f: FieldRow; live: FieldsLive; kinds: readonly KindRow[] }) {
+  const d = live.draft;
+  const toggleKind = (id: string, on: boolean) =>
+    live.onKinds(on ? [...d.kindIds.filter((k) => k !== id), id] : d.kindIds.filter((k) => k !== id));
+  return (
+    <form
+      className="k-f9s-form"
+      aria-label={`項目「${f.name}」を直す`}
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (live.canSave) live.onSave();
+      }}
+    >
+      {live.notice ? <NoticeBox>{live.notice}</NoticeBox> : null}
+      <TextField
+        label="名前"
+        name="field_name"
+        value={d.name}
+        required
+        error={live.errors.name}
+        onChange={(e) => live.onName(e.target.value)}
+      />
+      <TypeField value={d.type} locked={live.typeLocked} error={live.errors.type} onChange={live.onType} />
+      {isChoiceType(d.type) ? (
+        <OptionsEditor options={d.options} error={live.errors.options} onChange={live.onOptions} />
+      ) : null}
+      <label className="k-f9s-check">
+        <input type="checkbox" checked={d.required} onChange={(e) => live.onRequired(e.target.checked)} />
+        {REQUIRED_LABEL}
+      </label>
+      <TextField
+        label="説明"
+        name="field_desc"
+        value={d.description}
+        description={DESC_HINT}
+        onChange={(e) => live.onDescription(e.target.value)}
+      />
+      <fieldset className="k-f9s-options">
+        <legend className="k-label">どの種別で出すか</legend>
+        <div className="k-f9s-kinds">
+          {kinds.map((k) => (
+            <label key={k.id} className="k-f9s-check">
+              <input
+                type="checkbox"
+                checked={d.kindIds.includes(k.id)}
+                onChange={(e) => toggleKind(k.id, e.target.checked)}
+              />
+              <span className="k-f9s-dot" data-tone={k.tone} aria-hidden="true" />
+              {k.name}
+            </label>
+          ))}
+        </div>
+        {live.errors.kinds ? <span className="k-err">{live.errors.kinds}</span> : null}
+      </fieldset>
+      <div className="k-f9s-acts">
+        <Button variant="outlined" {...press(live.deleteInert, live.onDelete)}>
+          この項目を消す…
+        </Button>
+        <Button {...press(!live.canSave, live.onSave)}>保存する</Button>
+      </div>
+    </form>
+  );
+}
+
+function FieldsMockForm({ f, kinds }: { f: FieldRow; kinds: readonly KindRow[] }) {
+  return (
+    <form className="k-f9s-form" aria-label={`項目「${f.name}」を直す`}>
+      <TextField label="名前" name="field_name" value={f.name} readOnly required />
+      <TypeField value={typeKey(f.type)} onChange={noop} />
+      {f.options ? (
+        <fieldset className="k-f9s-options">
+          <legend className="k-label">選ぶ物</legend>
+          <ul>
+            {f.options.map((o) => (
+              <li key={o}>
+                <button type="button" className="k-f9s-grip" aria-label={`${o}を並べ替える`}>
+                  <GripVertical size={16} aria-hidden="true" />
+                </button>
+                <input className="k-input" defaultValue={o} aria-label={`選ぶ物：${o}`} readOnly />
+                <Button variant="ghost" size="sm" aria-label={`${o}を外す`}>
+                  外す
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <Button variant="outlined" size="sm" icon={<Plus size={14} />}>
+            選ぶ物を足す
+          </Button>
+        </fieldset>
+      ) : null}
+      <label className="k-f9s-check">
+        <input type="checkbox" defaultChecked={f.required} />
+        {REQUIRED_LABEL}
+      </label>
+      <TextField label="説明" name="field_desc" value={f.desc} readOnly description={DESC_HINT} />
+      <fieldset className="k-f9s-options">
+        <legend className="k-label">どの種別で出すか</legend>
+        <div className="k-f9s-kinds">
+          {kinds.map((k) => (
+            <label key={k.id} className="k-f9s-check">
+              <input type="checkbox" defaultChecked={f.kinds.includes(k.id)} />
+              <span className="k-f9s-dot" data-tone={k.tone} aria-hidden="true" />
+              {k.name}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div className="k-f9s-acts">
+        <Button variant="outlined">この項目を消す…</Button>
+        <Button>保存する</Button>
+      </div>
+    </form>
+  );
+}
+
 export function FieldsPanel({
   fields,
   current,
   kinds,
+  hrefOf,
+  onSelect,
+  live,
 }: {
   fields: readonly FieldRow[];
   current: string;
   kinds: readonly KindRow[];
+  /** 一覧の行き先（渡さなければ #id） */
+  hrefOf?: (id: string) => string;
+  /** 一覧を押したとき（行き先へは移らず、呼ぶ側が移る） */
+  onSelect?: (id: string) => void;
+  live?: FieldsLive;
 }) {
   const f = fields.find((x) => x.id === current) ?? fields[0]!;
+  const pick = (id: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!onSelect || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    onSelect(id);
+  };
   return (
     <div className="k-f9s-md">
       <div className="k-f9s-side">
         <ul className="k-f9s-list" aria-label="会社が足した項目">
           {fields.map((x) => (
             <li key={x.id}>
-              <a href={`#${x.id}`} className="k-f9s-item" aria-current={x.id === f.id ? "true" : undefined}>
+              <a
+                href={hrefOf ? hrefOf(x.id) : `#${x.id}`}
+                className="k-f9s-item"
+                aria-current={x.id === f.id ? "true" : undefined}
+                onClick={pick(x.id)}
+              >
                 <span className="k-f9s-item-t">{x.name}</span>
                 {x.required ? <Badge tone="danger">必須</Badge> : null}
                 <small>{x.type}</small>
@@ -487,68 +815,16 @@ export function FieldsPanel({
             </li>
           ))}
         </ul>
-        <Button variant="outlined" size="sm" icon={<Plus size={14} />}>
+        <Button
+          variant="outlined"
+          size="sm"
+          icon={<Plus size={14} />}
+          {...(live ? press(live.addInert, live.onAdd) : {})}
+        >
           項目を足す
         </Button>
       </div>
-      <form className="k-f9s-form" aria-label={`項目「${f.name}」を直す`}>
-        <TextField label="名前" name="field_name" value={f.name} readOnly required />
-        <Select
-          label="型"
-          name="field_type"
-          options={FIELD_TYPES.map((t) => ({ value: t, label: t }))}
-          value={f.type}
-          onValueChange={noop}
-        />
-        {f.options ? (
-          <fieldset className="k-f9s-options">
-            <legend className="k-label">選ぶ物</legend>
-            <ul>
-              {f.options.map((o) => (
-                <li key={o}>
-                  <button type="button" className="k-f9s-grip" aria-label={`${o}を並べ替える`}>
-                    <GripVertical size={16} aria-hidden="true" />
-                  </button>
-                  <input className="k-input" defaultValue={o} aria-label={`選ぶ物：${o}`} readOnly />
-                  <Button variant="ghost" size="sm" aria-label={`${o}を外す`}>
-                    外す
-                  </Button>
-                </li>
-              ))}
-            </ul>
-            <Button variant="outlined" size="sm" icon={<Plus size={14} />}>
-              選ぶ物を足す
-            </Button>
-          </fieldset>
-        ) : null}
-        <label className="k-f9s-check">
-          <input type="checkbox" defaultChecked={f.required} />
-          必須にする（入れないとチケットを作れません）
-        </label>
-        <TextField
-          label="説明"
-          name="field_desc"
-          value={f.desc}
-          readOnly
-          description="入力の下に小さく出ます。AI もこの説明を読みます。"
-        />
-        <fieldset className="k-f9s-options">
-          <legend className="k-label">どの種別で出すか</legend>
-          <div className="k-f9s-kinds">
-            {kinds.map((k) => (
-              <label key={k.id} className="k-f9s-check">
-                <input type="checkbox" defaultChecked={f.kinds.includes(k.id)} />
-                <span className="k-f9s-dot" data-tone={k.tone} aria-hidden="true" />
-                {k.name}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <div className="k-f9s-acts">
-          <Button variant="outlined">この項目を消す…</Button>
-          <Button>保存する</Button>
-        </div>
-      </form>
+      {live ? <FieldsLiveForm f={f} live={live} kinds={kinds} /> : <FieldsMockForm f={f} kinds={kinds} />}
     </div>
   );
 }

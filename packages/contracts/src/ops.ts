@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:404e7e350453ee78
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:9365517df3b5a174
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -19,7 +19,7 @@ export interface Ops {
   getArtifactVersion: { params: { id: string }; query: never; body: never; data: T.ArtifactVersions };
   restoreArtifactVersion: { params: { id: string }; query: never; body: T.ArtifactVersionsInput; data: T.ArtifactVersions };
   updateArtifact: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
-  listAuditEvents: { params: never; query: { "q"?: string | number; "kind"?: string | number; "member_id"?: string | number; "ticket_id"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.AuditEvents[] };
+  listAuditEvents: { params: never; query: { "q"?: string | number; "kind"?: string | number; "member_id"?: string | number; "ticket_id"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.AuditEvents };
   getInvitation: { params: { token: string }; query: never; body: never; data: T.InvitationPreview };
   acceptInvitation: { params: { token: string }; query: never; body: T.InvitationAcceptInput; data: T.InvitationAccepted };
   requestInvitationResend: { params: { token: string }; query: never; body: T.InvitationResendInput; data: T.InvitationResendResult };
@@ -94,7 +94,7 @@ export interface Ops {
   deleteCredential: { params: { id: string }; query: never; body: never; data: T.CredentialDeleted };
   checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialLoginCheckInput; data: T.CredentialLoginCheck };
   answerCredentialLoginCheck: { params: { id: string }; query: never; body: T.CredentialLoginAnswerInput; data: T.CredentialLoginAnswer };
-  listGuestGroups: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.GuestGroups[] };
+  listGuestGroups: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.GuestGroups };
   createGuestGroup: { params: never; query: never; body: T.GuestGroupInput; data: T.GuestGroupCreated };
   updateGuestGroup: { params: { id: string }; query: never; body: T.GuestGroupRenameInput; data: T.GuestGroupRenamed };
   deleteGuestGroup: { params: { id: string }; query: never; body: never; data: T.GuestGroupDeleted };

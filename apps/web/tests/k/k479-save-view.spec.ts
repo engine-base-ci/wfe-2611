@@ -8,7 +8,7 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { countWrites, overflowX, WIDTHS } from "./kit";
 import { gate, idOf, open, rowsOf } from "./list-mock";
-import { ME, SALES, STAGE_DOING, SUZUKI, mockMine, queryOf, type Reply } from "./f7-list-mock";
+import { KIND_QA, ME, SALES, STAGE_DOING, SUZUKI, mockMine, queryOf, type Reply } from "./f7-list-mock";
 import { ACCT, GROUP_SALES, shellData } from "./shell-answer";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
@@ -539,7 +539,8 @@ test("K479-UI-022 保存した条件が外枠の答えに無い（鍵が無い�
     await expect(rowsOf(p)).toHaveCount(3);
     await expect(p.locator('nav[aria-label="メニュー"] [data-group="営業"]')).toHaveCount(1);
     await expect(nav(p)).toHaveCount(0);
-    await expect(p.getByRole("alert")).toHaveCount(0);
+    // Next の読み上げの部品（#__next-route-announcer__）も role=alert なので外す（k217・k417・k1003 と同じ）
+    await expect(p.locator('[role="alert"]:not(#__next-route-announcer__)')).toHaveCount(0);
     await saveBtn(p).click();
     await expect(dlg(p)).toBeVisible();
     expect(saved.listReads).toBe(0);
@@ -719,15 +720,26 @@ for (const w of MATCH_WIDTHS.filter((x) => x !== 768)) {
       const r = await matchMock(browser, id, w, drive, { pairs, base: "/dev/mock/f7", skip });
       bad.push(...r.bad);
     };
+    // 見本と同じ状態にする（中身の字は比べないが、札の数・欄の誤り・見える人は状態で決まる）：
+    //   保存の小窓は条件が 5 つ（担当者・期限・状態・種別・列）。保存できないは「同じ名前」（名前の欄が赤）で見える人は「全員」
     const openDialog = async (p: Page, notice: boolean) => {
       const { saved } = await setup(p);
-      await openGroup(p, w);
+      if (notice) await openGroup(p, w);
+      else {
+        await open(
+          p,
+          `${GROUP_PATH}&assignee_id=${SUZUKI}&done=false&due_from=2026-11-02&due_to=2026-11-08&kind_id=${KIND_QA}`,
+          w,
+        );
+        await expect(rowsOf(p)).toHaveCount(3);
+      }
       await saveBtn(p).click();
       await nameBox(p).fill("鈴木さん 今週の提案");
       if (notice) {
-        saved.next = () => fail(500, "INTERNAL");
+        await dlg(p).getByRole("button", { name: "営業グループの全員", exact: true }).click();
+        saved.next = () => fail(409, "E-VWS-005");
         await dlg(p).getByRole("button", { name: "保存する", exact: true }).click();
-        await expect(dlg(p).getByRole("alert")).toBeVisible();
+        await expect(nameBox(p)).toHaveAttribute("aria-invalid", "true");
       }
     };
     await run("f7-save-dialog", DIALOG_PAIRS, (p) => openDialog(p, false), ["chip:texts", "chips:texts"]);

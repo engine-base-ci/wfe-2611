@@ -22,7 +22,7 @@ VALUE_RANGES = {
     "updateScope": {
         "name": {"pattern": "\\S", "maxLength": 100},
         "color": {"enum": ["teal", "plum", "indigo", "amber", "coral", "sage"]},
-        "position": {"minimum": 1},
+        "position": {"minimum": 1, "maximum": 9007199254740991},   # 上は入口の整数が受ける 2^53-1 まで（DB の関数が int の上限に寄せる・group_update.sql）
         "manager_member_ids": {"maxItems": 10},
     },
 }

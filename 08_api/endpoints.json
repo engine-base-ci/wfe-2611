@@ -3390,7 +3390,7 @@
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: AuditEvents[], meta: {} }"
+    "body": "{ data: AuditEvents, meta: {} }"
    },
    "id": "EP-017",
    "feature_id": "F-023"
@@ -17208,7 +17208,7 @@
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Members[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
    "id": "EP-092",
    "feature_id": "F-010"

@@ -27,7 +27,8 @@ VALUE_RANGES = {
 }
 # ページかフォルダのどちらか 1 つ（体の中の欄をまたぐ決まりなので契約に書ける）
 INPUT_RULES = {
-    "setKnowledgeShares": {"oneOf": [{"required": ["page_id"]}, {"required": ["folder_id"]}]},
+    "setKnowledgeShares": {"oneOf": [{"properties": {"page_id": {"type": "string", "format": "uuid"}}, "required": ["page_id"]},
+                                    {"properties": {"folder_id": {"type": "string", "format": "uuid"}}, "required": ["folder_id"]}]},   # null でない方がちょうど 1 つ（shares-set.ts・null は無いと同じ・契約 fuzz ST202）
 }
 UNEXPRESSIBLE_422: dict = {}
 

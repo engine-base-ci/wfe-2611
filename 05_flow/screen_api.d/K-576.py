@@ -3,7 +3,7 @@
 # 404・409 の体は error と code（409 は message）だけで field・details・detail を付けない（控え帳 2026-11-20 20:50・2026-11-21 01:15）
 INPUTS = {"restoreTicketItems": ("ItemRestoreInput", {"from": "integer", "to": "integer"})}
 REQUIRED_INPUTS = {"restoreTicketItems": ["from", "to"]}
-VALUE_RANGES = {"restoreTicketItems": {"from": {"minimum": 1}, "to": {"minimum": 1}}}
+VALUE_RANGES = {"restoreTicketItems": {"from": {"minimum": 1, "maximum": 2147483647}, "to": {"minimum": 1, "maximum": 2147483647}}}   # 点の番号は DB の int（超える数は口の入口で 422・DB の 22003 で 503 にしない）
 RESPONSES = {"restoreTicketItems": ("ItemRestored", {"changed": "boolean", "restored": "array", "skipped": "array"})}
 UNEXPRESSIBLE_422: dict = {}
 

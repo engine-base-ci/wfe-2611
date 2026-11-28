@@ -110,3 +110,28 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "listAuditEvents"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# 統合の枝（2026-11-28・直しの担当 XC・G36 の回 46133218050 の ST202）：契約に書けない値の決まり（x-unexpressible-422）を持つ口は、
+#   K-312・K-679 と同じく、この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない。確かめ方はゆるめない（断ることは各葉の試験が見る）
+#   ・K-704 種別を作る・直す：本文のひな形の木の節ごとの子の決まり・中身の無い節（validateDoc・K-679 の saveKnowledgeDraft と同じ形）
+[[operations]]
+include-operation-id = "createTicketKind"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "updateTicketKind"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+#   ・K-717 会社の項目を直す：選ぶ型でない項目を選ぶ型に変えるのに選ぶ物を送らない（今の型で決まる）
+[[operations]]
+include-operation-id = "updateTicketField"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+#   ・K-834 顔の画像・K-828 会社のロゴ：体は multipart の欄 file（か reset=true）で、契約の JSON の形に書けない
+[[operations]]
+include-operation-id = "uploadAvatar"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "uploadWorkspaceLogo"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
