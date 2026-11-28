@@ -15426,9 +15426,17 @@ components:
       - group_ids
       x-required-by: hooks
       oneOf:
-      - required:
+      - properties:
+          page_id:
+            type: string
+            format: uuid
+        required:
         - page_id
-      - required:
+      - properties:
+          folder_id:
+            type: string
+            format: uuid
+        required:
         - folder_id
     TicketKindCreateInput:
       type: object
@@ -30507,7 +30515,6 @@ paths:
       parameters:
       - name: state
         in: query
-        allowEmptyValue: true
         schema:
           type: string
           enum:

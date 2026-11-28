@@ -30,6 +30,23 @@ export const blank = (field: string): HookReply => ({
   },
 });
 
+/** 題・内容の字数の上限（契約の VALUE_RANGES の maxLength・05_flow/screen_api.d/K-948.py）。入口の zod は上限を置かないので口が断る */
+export const TITLE_MAX = 100;
+export const TEXT_MAX = 4000;
+
+/** 送られた字が上限を超えるか（契約の maxLength と同じく、前後の空白を落とす前の字の数で数える） */
+export const overMax = (v: unknown, max: number): boolean => typeof v === "string" && Array.from(v).length > max;
+
+/** 欄ごとの 422（字が上限を超える） */
+export const tooLong = (field: string, max: number): HookReply => ({
+  status: 422,
+  body: {
+    error: "validation_failed",
+    code: "VALIDATION_ERROR",
+    details: [{ field, message: `${max} 字までで送ってください` }],
+  },
+});
+
 /** DB の関数の答え { error: <言葉> } → 答え。知らない言葉は止める側（503・言葉は記録にだけ残す） */
 export function replyOf(r: { error?: unknown }, where: string): HookReply {
   const word = String(r.error);

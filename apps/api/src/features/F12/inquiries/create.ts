@@ -1,12 +1,12 @@
 // 問い合わせる口（K-949）：createInquiry（POST /api/v1/inquiries）。
 //   入力を整える（題と内容の前後の空白・画面の情報の 4 つの鍵・添付の重なり）→ 関門 C2 の app.inquiry_create を withTenant の 1 取引で 1 回 →
 //   断りの言葉 → 番号（errors.ts）。答えは 201 { data: MyInquiry }。運営へのメール・鈴は出さない（D-125.130：運営は受信箱の数で知る）。
-//   字数の上限は契約のまま（D-130.1）。ログに題・内容・画面の情報・ファイルの名前を出さない（例外の種類だけ）
+//   字数の上限は契約の値（題 100・内容 4000・D-130.1）を口が断る（入口の zod は上限を置かない）。ログに題・内容・画面の情報・ファイルの名前を出さない（例外の種類だけ）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { blank, replyOf } from "./errors.js";
+import { blank, overMax, replyOf, TEXT_MAX, TITLE_MAX, tooLong } from "./errors.js";
 import { toMyInquiry, type InquiryRow } from "./shape.js";
 
 /** 画面の情報（D-128.71）で残す鍵と、字の上限。知らない鍵・型の違う値・長すぎる値は落とす（422 にしない） */
@@ -38,6 +38,8 @@ export function createCreateInquiry(appPool: pg.Pool): (a: HookArgs) => Promise<
     const body = text(a.input["body"]);
     if (!title) return blank("title");
     if (!body) return blank("body");
+    if (overMax(a.input["title"], TITLE_MAX)) return tooLong("title", TITLE_MAX);
+    if (overMax(a.input["body"], TEXT_MAX)) return tooLong("body", TEXT_MAX);
     const topic = typeof a.input["topic"] === "string" ? a.input["topic"] : null;
     const ids = uniqueIds(a.input["attachment_ids"]);
     const context = cleanContext(a.input["context"]);

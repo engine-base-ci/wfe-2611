@@ -235,10 +235,12 @@ def _qrange(op, q):
     if set(words) - _QR_WORDS: raise SystemExit(f"QUERY_RANGES の {op}.{q} に使えない言葉 {sorted(set(words) - _QR_WORDS)}（{sorted(_QR_WORDS)} だけ）")
     if q.endswith(("_id", "_ids")): raise SystemExit(f"QUERY_RANGES の {op}.{q}：_id・_ids で終わる欄は書けない（uuid の形を壊さない）")
     return copy.deepcopy(words)
+# 空の値を口が 422 にする問い合わせ（NO_EMPTY_QUERIES・operationId → 名前の並び）。その名前だけ allowEmptyValue を付けない（契約 fuzz の ST202）
+_NOEMPTY = getattr(_sa, "NO_EMPTY_QUERIES", {})
 def qparams(names, table, op=None):
     has = _DBC.get(table)
     names = list(dict.fromkeys(names))   # 同じ名前を二度出さない（画面の問い合わせに sort が入っていると、一覧の共通の分と重なっていた）
-    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": {**qtype(q, table, op), **_qrange(op, q)}} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
+    return [{"name": q, "in": "query", **({} if q in _NOEMPTY.get(op, ()) else {"allowEmptyValue": True}), "schema": {**qtype(q, table, op), **_qrange(op, q)}} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
 # 口ごとの入力の形（K-144 ⑰・㉑）：必須の欄（REQUIRED_INPUTS）と値域（VALUE_RANGES）を、その口の入力の形に書く。
 #   同じ形を必須か値域の違う口と分け合っているなら、その口に自分の形 <operationId の頭を大文字>Input を作る（欄は同じ・知らない項目は許さない）。
 #   写しは copy.deepcopy（同じ辞書を 2 か所に置くと YAML の別名が出て、contract.mjs が欄を読めない。表の入力の欄は答えの形と辞書を分け合っている）
@@ -282,7 +284,7 @@ for _name in dict.fromkeys(n for _, n in _body_ops):
             if _k not in sc["properties"]: raise SystemExit(f"{_op} の INPUT_RULES の欄 {_k} が入力の形 {_own} に無い")
         sc.update(copy.deepcopy(_rules))
         for _k, _words in _RANGES.get(_op, {}).items(): sc["properties"][_k] = {**copy.deepcopy(sc["properties"][_k]), **copy.deepcopy(_words)}
-for _op, _names in _QR.items():   # 表の口・名前がその口の問い合わせに無ければ止める
+for _op, _names in list(_QR.items()) + list(_NOEMPTY.items()):   # 表の口・名前がその口の問い合わせに無ければ止める（QUERY_RANGES・NO_EMPTY_QUERIES）
     _e = next((x for x in endpoints if x.get("operation_id") == _op), None)
     if _e is None: raise SystemExit(f"QUERY_RANGES の口 {_op} が無い")
     _have = set(_sa.QUERIES.get(_op, [])) | ({"cursor", "limit"} | ({"sort"} if getattr(_sa, "LIST_DETAILS", {}).get(_op, {}).get("sort", True) else set()) if _e["returns_list"] else set())
