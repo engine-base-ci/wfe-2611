@@ -55,12 +55,17 @@ async function mock(page: Page, over: Parameters<typeof mockKnowledge>[1] = {}):
   );
   return mk;
 }
-async function openAt(page: Page, id: string, width = 1440): Promise<void> {
+// 幅 1023 以下の木は引き出し（K-682）。引き出しは本文の上に重なるので、木を使う状態（kn-add の「＋」）だけ開く。
+//   下絵は「見積もり」のフォルダを開いた木（K-682 の木は開いているページの親だけを初めから開く・K682-UI-001 と同じく開いてから比べる）
+async function openAt(page: Page, id: string, width = 1440, useTree = false): Promise<void> {
   await page.setViewportSize({ width, height: width < 768 ? 812 : 900 });
   await loginAs(page, owner.token);
   await page.goto(`/knowledge/${id}`);
   await expect(page.locator(CARD).getByRole("heading", { level: 1 })).toBeVisible();
-  if (width <= 1023) await page.getByRole("button", { name: "木を開く", exact: true }).click();
+  if (width <= 1023 && useTree) await page.getByRole("button", { name: "木を開く", exact: true }).click();
+}
+async function likeMock(page: Page, width: number): Promise<void> {
+  if (width >= 1024) await page.locator(TREE).getByRole("button", { name: "見積もり", exact: true }).click();
 }
 const more = (p: Page) => p.getByRole("button", { name: "このページのほかの操作", exact: true });
 async function pickMore(page: Page, name: string): Promise<void> {
@@ -89,17 +94,20 @@ const STATES: Record<string, (page: Page, w: number) => Promise<void>> = {
   "kn-more": async (page, w) => {
     await mock(page);
     await openAt(page, P_INVOICE, w);
+    await likeMock(page, w);
     await more(page).click();
     await expect(page.getByRole("menuitem", { name: "前の版を見る", exact: true })).toBeVisible();
   },
   "kn-add": async (page, w) => {
     await mock(page);
-    await openAt(page, P_INVOICE, w);
+    await openAt(page, P_INVOICE, w, true);
+    await likeMock(page, w);
     await openAdd(page);
   },
   "kn-move": async (page, w) => {
     await mock(page);
     await openAt(page, P_INVOICE, w);
+    await likeMock(page, w);
     await pickMore(page, "別のフォルダへ動かす");
     const dlg = dlgOf(page, "別のフォルダへ動かす");
     await choose(page, dlg, "動かす先", "お客さま対応");
@@ -107,12 +115,14 @@ const STATES: Record<string, (page: Page, w: number) => Promise<void>> = {
   "kn-delete": async (page, w) => {
     await mock(page);
     await openAt(page, P_EXPENSE, w);
+    await likeMock(page, w);
     await pickMore(page, "消す…");
     await expect(page.getByRole("alertdialog", { name: "このページを消しますか", exact: true })).toBeVisible();
   },
   "kn-versions": async (page, w) => {
     await mock(page);
     await openAt(page, P_INVOICE, w);
+    await likeMock(page, w);
     await pickMore(page, "前の版を見る");
     const dlg = dlgOf(page, "前の版を見る");
     await choose(page, dlg, "版", "版 3 ・ 11/02 ・ 佐藤 花子");
@@ -149,7 +159,7 @@ test("K684-UI-002 「＋」を押すと小窓「ページかフォルダを足�
   const dlg = await openAdd(page);
   await expect(dlg.getByRole("combobox", { name: "足す物", exact: true })).toContainText("ページ");
   await expect(dlg.getByRole("combobox", { name: "入れる場所", exact: true })).toContainText("経理");
-  await expect(dlg.getByLabel("題名", { exact: true })).toBeFocused();
+  await expect(dlg.getByRole("textbox", { name: "題名", exact: true })).toBeFocused();
   expect(mk.calls.length).toBe(before);
   await expect(plus(page, "営業")).toHaveCount(0);
 });
@@ -160,7 +170,7 @@ test("K684-UI-003 ページを足す：題名を入れて「書き始める」�
   const mk = await mock(page);
   await openAt(page, P_INVOICE);
   const dlg = await openAdd(page);
-  await dlg.getByLabel("題名", { exact: true }).fill("お詫びのメールの決まり");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("お詫びのメールの決まり");
   await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/knowledge/${P_NEW}$`));
   const c = mk.calls.find((x) => x.op === "createPage")!;
@@ -178,7 +188,7 @@ test("K684-UI-004 棚ごとの体：グループの棚（マネージャー）�
   mk.tree.can_write.group_ids = [G_SALES];
   await openAt(page, P_INVOICE);
   let dlg = await openAdd(page, "営業");
-  await dlg.getByLabel("題名", { exact: true }).fill("営業のメモ");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("営業のメモ");
   await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/knowledge/${P_NEW}$`));
   expect(mk.calls.find((x) => x.op === "createPage")!.body).toMatchObject({
@@ -188,7 +198,7 @@ test("K684-UI-004 棚ごとの体：グループの棚（マネージャー）�
   });
   await page.goto(`/knowledge/${P_INVOICE}`);
   dlg = await openAdd(page, "自分");
-  await dlg.getByLabel("題名", { exact: true }).fill("自分のメモ");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("自分のメモ");
   await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
   const second = mk.calls.filter((x) => x.op === "createPage")[1]!;
   expect(second.body).toMatchObject({ shelf: "me", title: "自分のメモ" });
@@ -202,15 +212,15 @@ test("K684-UI-005 名前が空白だけで足す：口を呼ばず欄の下に�
   await openAt(page, P_INVOICE);
   const dlg = await openAdd(page);
   const before = mk.calls.length;
-  await dlg.getByLabel("題名", { exact: true }).fill("   ");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("   ");
   await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText("題名を入れてください");
-  await expect(dlg.getByLabel("題名", { exact: true })).toHaveAttribute("aria-invalid", "true");
+  await expect(dlg.getByRole("textbox", { name: "題名", exact: true })).toHaveAttribute("aria-invalid", "true");
   await choose(page, dlg, "足す物", "フォルダ");
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(dlg.locator(".k-err")).toHaveText("フォルダの名前を入れてください");
   expect(mk.calls.length).toBe(before);
-  await dlg.getByLabel("フォルダの名前", { exact: true }).fill("法務");
+  await dlg.getByRole("textbox", { name: "フォルダの名前", exact: true }).fill("法務");
   await expect(dlg.locator(".k-err")).toHaveCount(0);
 });
 
@@ -221,7 +231,7 @@ test("K684-UI-006 フォルダを足す：種類を「フォルダ」にして�
   await openAt(page, P_INVOICE);
   const dlg = await openAdd(page);
   await choose(page, dlg, "足す物", "フォルダ");
-  await dlg.getByLabel("フォルダの名前", { exact: true }).fill("法務");
+  await dlg.getByRole("textbox", { name: "フォルダの名前", exact: true }).fill("法務");
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(page.locator(DLG)).toHaveCount(0);
   const c = mk.calls.find((x) => x.op === "createFolder")!;
@@ -244,11 +254,11 @@ for (const [code, status] of [
     await openAt(page, P_INVOICE);
     const dlg = await openAdd(page);
     await choose(page, dlg, "足す物", "フォルダ");
-    await dlg.getByLabel("フォルダの名前", { exact: true }).fill("経理");
+    await dlg.getByRole("textbox", { name: "フォルダの名前", exact: true }).fill("経理");
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
     await expect(dlg.locator(".k-err")).toHaveText(msg(code));
-    await expect(dlg.getByLabel("フォルダの名前", { exact: true })).toHaveValue("経理");
-    await dlg.getByLabel("フォルダの名前", { exact: true }).fill("経理 2");
+    await expect(dlg.getByRole("textbox", { name: "フォルダの名前", exact: true })).toHaveValue("経理");
+    await dlg.getByRole("textbox", { name: "フォルダの名前", exact: true }).fill("経理 2");
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
     await expect(page.locator(DLG)).toHaveCount(0);
     expect(mk.count("createFolder")).toBe(2);
@@ -267,10 +277,10 @@ for (const [name, reply, text] of [
     mk.script("createPage", reply);
     await openAt(page, P_INVOICE);
     const dlg = await openAdd(page);
-    await dlg.getByLabel("題名", { exact: true }).fill("失敗のあとで足す");
+    await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("失敗のあとで足す");
     await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
     await expect(dlg.getByRole("alert")).toContainText(msg(text));
-    await expect(dlg.getByLabel("題名", { exact: true })).toHaveValue("失敗のあとで足す");
+    await expect(dlg.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("失敗のあとで足す");
     await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/knowledge/${P_NEW}$`));
     expect(mk.count("createPage")).toBe(2);
@@ -282,7 +292,7 @@ test("K684-UI-009 二度押し：足す口の答えを止めた間に「書き�
   const mk = await mock(page);
   await openAt(page, P_INVOICE);
   const dlg = await openAdd(page);
-  await dlg.getByLabel("題名", { exact: true }).fill("二度押し");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("二度押し");
   const release = mk.hold("createPage");
   const go = dlg.getByRole("button", { name: "書き始める", exact: true });
   await go.click();
@@ -526,7 +536,7 @@ test("K684-UI-021 まだ 1 枚も無い木の「最初のページを書く」�
     .locator(DLG)
     .filter({ has: page.getByRole("heading", { name: "ページかフォルダを足す", exact: true }) });
   await expect(dlg).toContainText("自分の棚");
-  await dlg.getByLabel("題名", { exact: true }).fill("最初のページ");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("最初のページ");
   await dlg.getByRole("button", { name: "書き始める", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/knowledge/${P_NEW}$`));
   expect(mk.calls.find((x) => x.op === "createPage")!.body).toMatchObject({ shelf: "me", title: "最初のページ" });
@@ -539,12 +549,12 @@ test("K684-UI-022 やめる・Esc：どの小窓も口を呼ばずに閉じ、�
   await openAt(page, P_INVOICE);
   const before = mk.calls.length;
   const dlg = await openAdd(page);
-  await dlg.getByLabel("題名", { exact: true }).fill("途中の字");
+  await dlg.getByRole("textbox", { name: "題名", exact: true }).fill("途中の字");
   await page.keyboard.press("Escape");
   await expect(page.locator(DLG)).toHaveCount(0);
   await expect(plus(page, "会社")).toBeFocused();
   const again = await openAdd(page);
-  await expect(again.getByLabel("題名", { exact: true })).toHaveValue("");
+  await expect(again.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("");
   await again.getByRole("button", { name: "やめる", exact: true }).click();
   await pickMore(page, "別のフォルダへ動かす");
   await dlgOf(page, "別のフォルダへ動かす").getByRole("button", { name: "やめる", exact: true }).click();
@@ -560,7 +570,7 @@ test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小�
   await plus(page, "会社").focus();
   await page.keyboard.press("Enter");
   const dlg = page.locator(DLG);
-  await expect(dlg.getByLabel("題名", { exact: true })).toBeFocused();
+  await expect(dlg.getByRole("textbox", { name: "題名", exact: true })).toBeFocused();
   for (let i = 0; i < 20; i++) await page.keyboard.press("Tab");
   expect(await page.evaluate(() => Boolean(document.activeElement?.closest(".k-dialog")))).toBe(true);
   await page.keyboard.press("Escape");
@@ -611,7 +621,7 @@ test("K684-UI-025 題名・フォルダ名・版の作者名に HTML が入っ�
   await openAt(page, P_INVOICE);
   const dlg = await openAdd(page);
   await choose(page, dlg, "足す物", "フォルダ");
-  await dlg.getByLabel("フォルダの名前", { exact: true }).fill(evil);
+  await dlg.getByRole("textbox", { name: "フォルダの名前", exact: true }).fill(evil);
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
   await expect(page.locator(TREE).getByText(evil, { exact: true })).toBeVisible();
   expect(mk.calls.find((x) => x.op === "createFolder")!.body["name"]).toBe(evil);

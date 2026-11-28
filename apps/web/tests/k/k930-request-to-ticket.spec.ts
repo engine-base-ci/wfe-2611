@@ -8,6 +8,7 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { loginAs } from "../_lib/api";
 import { TICKET, detailOf } from "../features/F5/approve-complete.harness";
 import { err, never, ok, pair, person, type Reply } from "./credentials-mock";
+import { shellReply } from "./shell-answer";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 import { meta, ok as okT, panel, post, talkTab, type MessageView, type Who } from "./thread-mock";
 
@@ -44,6 +45,14 @@ const SCOPES = [
   { id: "g-kr", name: "経理", ticket_prefix: "KR" },
   { id: "g-jd", name: "受託開発", ticket_prefix: "JD" },
 ];
+// 外枠の口 getShell（K-466）：グループの選び肢は外枠と同じ答え（groups）から出る（/api/v1/scopes は呼ばない）。書けるのは営業と受託開発
+const SHELL_GROUPS = SCOPES.map((g) => ({
+  id: g.id,
+  name: g.name,
+  ticket_prefix: g.ticket_prefix,
+  writable: g.id !== "g-kr",
+  open_count: 0,
+}));
 const R1 = mk(1, "12 月分の作業報告書もほしい", "new");
 const R2 = mk(2, "管理画面に検索の絞り込みを足したい", "asking", "JD 受託開発");
 const R3 = mk(3, "10 月分の請求書の再発行", "done", "KR 経理");
@@ -88,6 +97,11 @@ async function mockWorld(page: Page, w: World) {
     if (p === "/api/v1/members" && method === "GET") {
       w.calls.push({ method, path: p, body: null });
       return send(route, w.once.members ?? okMeta(MEMBERS, { limit: 200 }));
+    }
+    if (p === "/api/v1/shell" && method === "GET") {
+      w.calls.push({ method, path: p, body: null });
+      const r = shellReply({ groups: SHELL_GROUPS });
+      return route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
     }
     if (p === "/api/v1/scopes" && method === "GET") {
       w.calls.push({ method, path: p, body: null });
@@ -180,7 +194,12 @@ async function open(page: Page, w: World, width = 1440, path = "/requests") {
   expect(res?.status()).toBe(200);
 }
 const detail = (page: Page) => page.locator("article.k-f11q-detail");
-const btn = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
+// 本文の中のボタン（外枠の左と下の「チケットを作る」k-nav-create・k-tab-create は K-466 の外枠の答えで出る。それと分ける）
+const btn = (page: Page, name: string) =>
+  page
+    .locator("#k-main")
+    .getByRole("button", { name, exact: true })
+    .and(page.locator(":not(.k-nav-create):not(.k-tab-create)"));
 const dlg = (page: Page, name: string) => page.getByRole("dialog", { name, exact: true });
 const overflowX = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -351,7 +370,8 @@ test("K930-UI-007 担当とグループの選び肢は前からの口（listMemb
   await expect(page.getByRole("option", { name: "受託開発", exact: true })).toBeVisible();
   await expect(page.getByRole("option", { name: "経理", exact: true })).toHaveCount(0); // 書けないグループは選べない
   expect(countOf(w, "GET", /\/api\/v1\/members$/)).toBe(1);
-  expect(countOf(w, "GET", /\/api\/v1\/scopes$/)).toBe(1);
+  expect(countOf(w, "GET", /\/api\/v1\/shell$/)).toBe(1); // グループは外枠の答え（K-466）。外枠が読んだ答えを使い回す
+  expect(countOf(w, "GET", /\/api\/v1\/scopes$/)).toBe(0);
 });
 
 test("K930-UI-008 担当の選び肢が読めない（503）：小窓は開き、担当の欄に「読めませんでした」と「もう一度」・作るは口を呼ばない", async ({

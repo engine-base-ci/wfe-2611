@@ -289,7 +289,10 @@ test("K871-UI-011 招くの小窓（mb-add・mb-add-pick・mb-add-group-new・mb
   await openState(page, "mb-add", 1440);
   await expect(page.getByText("招く", { exact: true }).first()).toBeVisible();
   await openState(page, "mb-add-pick", 1440);
-  await expect(page.getByText("＋ 新しいゲストのグループを作る", { exact: true })).toBeVisible();
+  // 選ぶ欄は隠れた素の select の option も持つので、開いた箱（listbox）の中で探す
+  await expect(
+    page.getByRole("listbox").getByRole("option", { name: "＋ 新しいゲストのグループを作る", exact: true }),
+  ).toBeVisible();
   await openState(page, "mb-add-group-new", 1440);
   await expect(page.getByText("ゲストのグループを作る", { exact: true }).first()).toBeVisible();
   await openState(page, "mb-add-created", 1440);
