@@ -124,7 +124,7 @@ test("K957-UI-002 障害の帯：本文の上に「障害 ・ 分身の実行が
   const bandTop = await page.locator(BAND).boundingBox();
   const head = await page.locator("[data-ticket-shell] .k-page-head, [data-ticket-shell] h1").first().boundingBox();
   expect(bandTop!.y).toBeLessThan(head!.y);
-  expect([mk.count("status"), mk.count("notices")]).toEqual([1, 1]);
+  await expect.poll(() => [mk.count("shellStatus"), mk.count("notices")]).toEqual([1, 1]);
 });
 
 test("K957-UI-003 帯が無いとき：帯の場所を出さず、お知らせの口を呼ばない（稼働状況は 1 回）", async ({ page }) => {
@@ -132,7 +132,7 @@ test("K957-UI-003 帯が無いとき：帯の場所を出さず、お知らせ�
   await openAt(page);
   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
   await expect(page.locator(".k-uh-bands")).toHaveCount(0);
-  expect([mk.count("status"), mk.count("notices")]).toEqual([1, 0]);
+  await expect.poll(() => [mk.count("shellStatus"), mk.count("notices")]).toEqual([1, 0]);
 });
 
 test("K957-UI-004 障害の帯を閉じる：その画面では消え、別の画面に移るとまた出る（直るまで出る・D-156.27）", async ({
@@ -233,7 +233,7 @@ test("K957-UI-009 障害の画面（画面が down）：「Kaname の調子が�
   mk.status = statusTaka();
   await page.getByRole("button", { name: "もう一度", exact: true }).click();
   await expect(page.locator("[data-ticket-shell]")).toBeVisible();
-  expect(mk.count("status")).toBe(2);
+  await expect.poll(() => mk.count("shellStatus")).toBe(2);
 });
 
 test("K957-UI-010 稼働状況が読めない（503・網の切れ）：帯も画面いっぱいも出さず、画面はふつうに使える（読めないのに止めない）", async ({

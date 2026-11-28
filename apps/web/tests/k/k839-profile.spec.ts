@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { signupViaApi, viewerViaApi } from "../_lib/api";
 import { MOCK_BASE, WS_NAME, openAt, overflowX } from "./f10-kit";
-import { DOT, ME_PAIRS, err, me, mockOps, type Me } from "./f10-ops-kit";
+import { DOT, ME_PAIRS, err, me, mockOps, ok, type Me } from "./f10-ops-kit";
 import { ROOT } from "./kit";
 import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 
@@ -53,9 +53,11 @@ const STATES: Record<string, { me?: Me; skip?: string[]; drive?: Drive }> = {
   "me-saved": {
     me: VICTORIA,
     skip: ["meta:texts"],
-    drive: async (page) => {
-      // 保存の時刻は下絵と同じ 11:20（日本時間）に止める。時計の進みは止めない（カード・欄の字にも時刻が入る）
-      await page.clock.setFixedTime(new Date("2026-11-02T02:20:00Z"));
+    drive: async (page, mk) => {
+      // 保存の時刻（口の saved_at）は下絵と同じ 11:20（日本時間）で返す（カード・欄の字にも時刻が入る）
+      const member = { ...mk.state.me.member, name: LONG };
+      mk.state.me = { ...mk.state.me, member };
+      mk.queue("updateMe", ok({ member, saved_at: "2026-11-02T02:20:00.000Z" }));
       await nameBox(page).fill(LONG);
       await nameBox(page).press("Enter");
       await expect(page.getByText("保存しました", { exact: false })).toBeVisible();
@@ -75,6 +77,8 @@ const STATES: Record<string, { me?: Me; skip?: string[]; drive?: Drive }> = {
   },
   "me-avatar": {
     me: PHOTO,
+    // 下絵は写真の代わりに字「写」を描く（本番は画像）。その字を含む「自分」の区画の字は比べない（大きさ・位置は比べる）
+    skip: ["pf-self:texts"],
     drive: async (page) => {
       await page.locator(FILE).setInputFiles(img(FIVE_MB + 1));
       await expect(page.getByText("写真は 5 MB までです。小さい写真を選んでください", { exact: true })).toBeVisible();

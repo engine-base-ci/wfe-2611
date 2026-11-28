@@ -49,6 +49,8 @@ for (const [id, st] of Object.entries(STATES)) {
           if (st.typed !== undefined) {
             await openDlg(page);
             await nameField(page).fill(st.typed);
+            // ［消す手続き］を押すと区画まで下に動く。小窓は画面に貼り付くので、下絵（上の端）と同じく頁の上の端で位置を読む
+            await page.evaluate(() => window.scrollTo(0, 0));
           }
         },
         { pairs: SET_PAIRS, base: MOCK_BASE, blur: false },
@@ -190,6 +192,10 @@ test("K832-UI-009 すでに手続き中（409 E-WS-031・ほかの管理者が�
   const mk = await mockOps(page);
   mk.queue("deletion", err(409, "E-WS-031"));
   await openAt(page, owner.token, PATH);
+  // 最初の読み（手続き前）が出てから、ほかの管理者が始めた後の答えに替える（先に替えると最初の読みが手続き中になり［消す手続き］が出ない）
+  await expect(
+    card(page, "ワークスペースを消す").getByRole("button", { name: "消す手続き", exact: true }),
+  ).toBeVisible();
   mk.state.settings = deleting();
   await openDlg(page);
   await nameField(page).fill(WS_NAME);
@@ -319,6 +325,8 @@ test("K832-UI-018 すでに取り消されていた（409 E-WS-033・ほかの�
 }) => {
   const mk = await mockOps(page, { settings: deleting() });
   await openAt(page, owner.token, PATH);
+  // 最初の読み（手続き中）が帯に出てから、ほかの管理者が取り消した後の答えに替える（先に替えると最初の読みが取り消し後の答えになる）
+  await expect(cancel(page)).toBeVisible();
   mk.queue("cancelDeletion", err(409, "E-WS-033"));
   mk.state.settings = settings();
   await cancel(page).click();

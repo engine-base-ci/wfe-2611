@@ -86,6 +86,7 @@ export function canEditBody(detail: Detail): boolean {
   return !legacy;
 }
 
+const FORBIDDEN_CODE = "E-SEC-006";
 const messageOf = (code: string): string => CATALOG[code]?.message ?? CATALOG[PAGE_ERROR.loadFailed]!.message;
 
 export interface BodyEdit {
@@ -209,7 +210,9 @@ export function useBodyEdit(ticket: SlotTicket): BodyEdit {
       update((p) => ({ ...p, busy: false, lost: true, fail: null }));
       return;
     }
-    const text = r.status === 413 ? (r.message ?? TOO_LARGE) : messageOf(errorCodeOf(r));
+    // 書く権限が無い（403）は書く操作の断りの字（E-SEC-006・項目と確認項目を直すときと同じ字・下絵 f4v2-detail-edit-failed）
+    const code = r.status === 403 ? FORBIDDEN_CODE : errorCodeOf(r);
+    const text = r.status === 413 ? (r.message ?? TOO_LARGE) : messageOf(code);
     update((p) => ({ ...p, busy: false, fail: text, lost: false }));
   }, [close, id, latest, update]);
 

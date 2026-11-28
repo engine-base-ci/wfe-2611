@@ -198,7 +198,18 @@ export const threadTaka = (): InquiryDetailA => ({
 
 // ---------------------------------------------------------------- 差し替え
 export type HOp =
-  "notices" | "read" | "status" | "inquiries" | "inquiry" | "create" | "upload" | "put" | "done" | "post" | "resolve";
+  | "notices"
+  | "read"
+  | "status"
+  | "shellStatus"
+  | "inquiries"
+  | "inquiry"
+  | "create"
+  | "upload"
+  | "put"
+  | "done"
+  | "post"
+  | "resolve";
 export interface Reply {
   status: number;
   body: unknown;
@@ -272,6 +283,27 @@ export async function mockHelp(
   await page.route(/\/__k956_done\//, (route, req) =>
     answer("done", route, req, undefined, () => ok({ id: uid(0x8000 + Number(req.url().split("/").pop())), size: 0 })),
   );
+  // 外枠の帯は外枠の口 getShell の service_status を読む（PM の決め 2026-11-28）。本物の外枠の答えに、いまの稼働状況（mk.status）を入れて返す。
+  //   読んだ数は shellStatus で数える（/notices の頁が自分で読む稼働状況の口 status とは別）。status に積んだ答え（503・網の切れ）はここでも使い、
+  //   読めない形（service_status: null）にする
+  await page.route(/\/api\/v1\/shell(\?|$)/, async (route: Route, req: Request) => {
+    if (req.method() !== "GET") return route.fallback();
+    let res: Awaited<ReturnType<Route["fetch"]>>;
+    try {
+      res = await route.fetch();
+    } catch {
+      return; // 試験が先に終わった（頁を閉じた）
+    }
+    const json = (await res.json().catch(() => null)) as { data?: Record<string, unknown> } | null;
+    if (!res.ok() || !json?.data) return route.fulfill({ response: res });
+    mk.calls.push({ op: "shellStatus", id: undefined, url: req.url(), body: {}, size: 0, contentType: undefined });
+    const gate = gates.get("status");
+    if (gate) await gate;
+    const next = scripted.get("status")?.shift();
+    const r = next === "network" ? null : (next ?? ok(mk.status));
+    json.data["service_status"] = r && r.status === 200 ? (r.body as { data: unknown }).data : null;
+    return route.fulfill({ response: res, json });
+  });
   await page.route(API, async (route: Route, req: Request) => {
     const seg = new URL(req.url()).pathname.replace("/api/v1", "").split("/").filter(Boolean);
     const m = req.method();
