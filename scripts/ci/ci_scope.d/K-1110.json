@@ -1,0 +1,34 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261128033000_ops_pwned_pending.sql",
+    "apps/api/src/features/F12/ops/pwned.ts",
+    "apps/api/src/hooks/ops-pwned.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned-pending.test.ts",
+    "apps/api/test/features/F12/ops-pwned.test.ts",
+    "apps/api/test/features/F12/ops-workspaces.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-1110.py",
+    "scripts/ci/contract_shape.d/K-1110.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-pwned-pending.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-pwned-pending.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_pwned_pending_ack.test.ts"
+   ]
+  }
+ ]
+}

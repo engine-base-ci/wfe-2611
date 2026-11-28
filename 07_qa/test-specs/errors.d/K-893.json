@@ -1,0 +1,64 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-110",
+   "class": "conflict",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "依頼がもう決まっている（チケットにした・断った）ので、届け先を変える・返事を送るができない",
+   "false_when": "依頼が新しい・聞いている",
+   "message": "この依頼はもう決まっています",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "チケットにしたか断った依頼を開いておく",
+    "steps": [
+     "届け先を変えるか返事を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.43",
+    "D-155.10"
+   ]
+  },
+  {
+   "id": "E-GST-111",
+   "class": "not_found",
+   "where": {
+    "screen": "requests"
+   },
+   "when": "選んだ届け先のグループが、無い・消した・別の会社・あなたが届け先にできない",
+   "false_when": "この会社の消していないグループで、client_requests を edit できる",
+   "message": "この届け先のグループは選べません",
+   "action": "選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "届いた依頼を開いておく",
+    "steps": [
+     "選べない届け先を選んで変える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.43",
+    "D-155.10"
+   ]
+  }
+ ]
+}
