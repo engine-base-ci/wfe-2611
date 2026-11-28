@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {
+   "paths": ["packages/db/migrations/20261125030300_draft_adopt_merge.sql"],
+   "tests": ["apps/api/test/features/F5/draft-adopt-merge.test.ts", "apps/api/test/features/F5/draft-adopt.test.ts"]
+  }
+ ]
+}

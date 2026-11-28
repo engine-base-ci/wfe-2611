@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>親チケットを決める</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button,input,select,textarea{font-family:inherit}
+input[type=text],select,textarea{border:1px solid #b8c0cc;border-radius:6px;background:#FFFFFF;padding:6px 10px;font-size:13px;color:#131B27;box-sizing:border-box}
+th,button{white-space:nowrap}
+span[style*="border-radius: 9999px"],b[style*="border-radius: 9999px"],span[style*="border-radius: 4px; padding: 0 6px"]{white-space:nowrap}
+@media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] button,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
+@media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header{flex-wrap:wrap}aside{max-width:none !important}[style*="repeat(2, minmax(0, 1fr)); gap: 0 24px"]{grid-template-columns:1fr !important}section[aria-label="本文"]>div{padding-left:16px !important;padding-right:16px !important}}
+
+/* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
+[data-shell]{min-height:100vh !important;align-items:stretch}
+[data-shell]>main{display:flex !important;flex-direction:column}
+[data-shell]>main>.kn-bar~*:last-child{flex:1 0 auto}
+.kn-bar~header{flex:none}
+.kn-tgc{position:absolute;opacity:0;pointer-events:none}
+.kn-tg:hover{background:#DDE2E9}
+.kn-nav{transition:flex-basis .15s}
+body:has(#kn-tg-nav:checked) .kn-nav{flex-basis:56px !important;padding:10px 6px !important}
+body:has(#kn-tg-nav:checked) .kn-lbl{display:none !important}
+body:has(#kn-tg-nav:checked) .kn-top{flex-direction:column;padding:4px 0 !important}
+body:has(#kn-tg-nav:checked) .kn-tg{margin-left:0 !important}
+body:has(#kn-tg-nav:checked) .kn-item{justify-content:center;padding:0 !important}
+aside[aria-label="チケットのパネル"]{position:sticky;top:0;height:calc(100vh - 48px);align-self:flex-start}
+.kn-pbody{flex:1 1 auto !important;min-height:0;overflow:auto}
+.kn-thread{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column-reverse}
+@media (max-width:1023px){aside[aria-label="チケットのパネル"]{position:static;height:auto}}
+.kn-side{position:relative}
+.kn-side>.kn-tg+*{padding-right:44px !important}
+.kn-side>.kn-tg{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#4A5563;cursor:pointer;background:#FFFFFF}
+.kn-reopen{display:none;flex:0 0 36px;background:#FFFFFF;border-left:1px solid #DDE2E9;justify-content:center;padding-top:10px;color:#4A5563;cursor:pointer}
+.kn-reopen:hover{color:#22345C;background:#F7F8FA}
+body:has(#kn-tg-side:checked) .kn-side{display:none !important}
+body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
+/* kn-sub: secondary left panel, white floating card for the current item */
+.kn-sub{width:232px;flex:none;background:#EDF0F4;border-right:1px solid #DDE2E9;padding:10px 10px 14px;display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.kn-sub-h{font-size:11px;color:#6B7585;padding:12px 10px 4px;letter-spacing:.02em}
+.kn-sub-h:first-child{padding-top:4px}
+.kn-sub-i{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:#4a5563;text-decoration:none;transition:background .12s}
+.kn-sub-i:hover{background:rgba(255,255,255,.55);color:#131B27}
+.kn-sub-i[aria-current="page"]{background:#FFFFFF;color:#131B27;font-weight:600;box-shadow:0 1px 2px rgba(19,27,39,.08),0 0 0 1px rgba(19,27,39,.06)}
+.kn-sub-ic{display:grid;place-items:center;width:20px;color:#6B7585}
+.kn-sub-i[aria-current="page"] .kn-sub-ic{color:#22345C}
+.kn-sub-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn-sub-n{font-size:12px;color:#6B7585;font-weight:400}
+.kn-sub-badge{font-size:11px;background:#B45309;color:#FFFFFF;border-radius:9999px;padding:0 7px;font-weight:500}
+.kn-sub-note{margin-top:auto;font-size:11px;color:#6B7585;padding:10px}
+@media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:10px;padding:0 4px}}
+@media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
+@media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
+@media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
+/* kn-narrow */
+@media (max-width: 767px) { input, textarea, select { font-size: 16px !important } }
+@media (max-width: 767px) { select { min-width: 0; max-width: 100% } label:has(> select) { min-width: 0 } }
+/* kn-mobile-bar（D-147）：幅 767 以下の上の帯は画面の外枠と同じ（会社の印と名前・探す・お知らせ・自分のアイコン。いまの場所は出さない） */
+.kn-bar-ws,.kn-bar-ws-name,.kn-bar-search-open,.kn-bar-search-close{display:none}
+@media (max-width:767px){.kn-bar{gap:8px !important;padding:0 8px 0 16px !important}.kn-bar>nav[aria-label="いまの場所"]{display:none !important}.kn-bar-ws{display:grid}.kn-bar-ws-name{display:block}.kn-bar>span[style*="margin-left: auto"]{gap:0 !important}.kn-bar>span>label:has(input[type="search"]){display:none !important}.kn-bar-search-open{display:grid}.kn-bar>span>[aria-label^="お知らせ"]{width:44px !important;height:44px !important}.kn-bar-search-open:hover,.kn-bar-search-close:hover{background:#DDE2E9}
+body:has(#kn-tg-search:checked) .kn-bar>:not(span[style*="margin-left: auto"]),body:has(#kn-tg-search:checked) .kn-bar>span>:not(label){display:none !important}body:has(#kn-tg-search:checked) .kn-bar-search-open{display:none !important}body:has(#kn-tg-search:checked) .kn-bar>span[style*="margin-left: auto"]{flex:1;margin-left:0 !important;gap:4px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"]){display:flex !important;flex:1;width:auto !important;max-width:none !important;height:36px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"])>span:last-child{display:none}body:has(#kn-tg-search:checked) .kn-bar-search-close{display:grid}}
+</style>
+</helmet>
+<div data-shell style="display: flex; flex-wrap: wrap; min-height: 100vh"><input type="checkbox" id="kn-tg-search" class="kn-tgc" aria-label="探す欄を開く">
+ <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
+ <nav aria-label="メニュー" class="kn-nav" style="flex: 0 0 216px; background: #EEF0F4; border-right: 1px solid #DDE2E9; display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; box-sizing: border-box">
+  <div class="kn-top" style="display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 8px"><span style="width: 24px; height: 24px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px; font-weight: 700">E</span><b class="kn-lbl" style="font-weight: 700">ENGINE BASE ▾</b><label for="kn-tg-nav" class="kn-tg" title="メニューを閉じる・開く" style="margin-left: auto; width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; color: #4A5563; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg></label></div>
+  <a href="Create.dc.html" title="チケットを作る" class="kn-create" style="margin: 6px 0; background: #22345C; color: #FFFFFF; border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-weight: 500">＋<span class="kn-lbl">チケットを作る</span></a>
+  <a href="Main.dc.html" title="チケット" aria-current="page" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; background: #22345C; color: #FFFFFF; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg><span class="kn-lbl">チケット</span></a>
+  <a href="Approvals.dc.html" title="承認待ち" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span class="kn-lbl">承認待ち</span><b class="kn-lbl" style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 9999px; padding: 0 7px">2</b></a>
+  <a href="Room.dc.html" title="高本のAI" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg><span class="kn-lbl">高本のAI</span></a>
+  <a href="KnHome.dc.html" title="ナレッジ" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5a2.5 2.5 0 0 0 0 5H20"></path></svg><span class="kn-lbl">ナレッジ</span></a>
+  <a href="CuRequests.dc.html" title="届いた依頼" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg><span class="kn-lbl">届いた依頼</span></a>
+  <div class="kn-lbl" style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px; display: flex">グループ<span style="margin-left: auto">★</span></div>
+  <a href="Overview.dc.html" title="営業" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #186F69; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">EG</span><span class="kn-lbl">営業</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">18</span></a>
+  <a href="Overview.dc.html" title="受託開発" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #6D4AA6; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">JD</span><span class="kn-lbl">受託開発</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">42</span></a>
+  <a href="Overview.dc.html" title="経理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: 6px; color: #131B27; text-decoration: none"><span style="width: 18px; height: 18px; flex: none; border-radius: 4px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">KR</span><span class="kn-lbl">経理</span><span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">9</span></a>
+  <div style="flex: 1"></div>
+  <a href="WsPeople.dc.html" title="ワークスペースの管理" class="kn-item" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 6px; text-decoration: none; color: #131B27"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"></path></svg><span class="kn-lbl">ワークスペースの管理</span></a>
+  <div title="PC つながっている" style="font-size: 12px; color: #166534; display: flex; align-items: center; gap: 6px; padding: 6px 10px"><span style="width: 8px; height: 8px; flex: none; border-radius: 9999px; background: #166534"></span><span class="kn-lbl">PC つながっている</span></div>
+ </nav>
+
+ <main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column">
+  <div class="kn-bar" style="height: 48px; flex: none; background: #FFFFFF; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center; gap: 10px; padding: 0 16px 0 24px; box-sizing: border-box"><span class="kn-bar-ws" aria-hidden="true" style="width: 24px; height: 24px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; place-items: center; font-size: 12px; font-weight: 700">E</span><span class="kn-bar-ws-name" style="flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 600; color: #131B27">ENGINE BASE</span><nav aria-label="いまの場所" style="display: flex; align-items: center; gap: 8px; font-size: 12px; min-width: 0; white-space: nowrap; overflow: hidden"><a href="Main.dc.html" style="display: inline-flex; align-items: center; gap: 6px; color: #4A5563; text-decoration: none">チケット</a><span style="color: #B8C0CC">›</span><b style="font-weight: 500; color: #131B27">作る</b></nav><span style="margin-left: auto; display: flex; align-items: center; gap: 8px"><label for="kn-tg-search" class="kn-bar-search-open" aria-label="探す" title="探す" style="width: 44px; height: 44px; flex: none; border-radius: 6px; place-items: center; color: #4A5563; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></label><label style="display: flex; align-items: center; gap: 6px; height: 32px; width: 280px; max-width: 34vw; border: 1px solid #DDE2E9; border-radius: 9999px; padding: 0 12px; background: #F7F8FA; color: #4A5563; box-sizing: border-box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span style="position: absolute; left: -9999px">探す</span><input type="search" placeholder="チケット・ナレッジ・決定を探す" style="border: 0; background: transparent; flex: 1; font-size: 12px; min-width: 0; font-family: inherit"><span style="border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 4px; font-size: 10px">⌘K</span></label><label for="kn-tg-search" class="kn-bar-search-close" aria-label="探すを閉じる" title="探すを閉じる" style="width: 44px; height: 44px; flex: none; border-radius: 6px; place-items: center; color: #4A5563; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></label><a href="StOverlay.dc.html" aria-label="お知らせ（3 件）" style="position: relative; width: 36px; height: 36px; border: 0; border-radius: 9999px; background: transparent; color: #131B27; display: grid; place-items: center; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><b style="position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; border-radius: 9999px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</b></a><a href="TopMe.dc.html" aria-label="自分のメニュー" style="display: flex; align-items: center; gap: 4px; height: 36px; border: 0; background: transparent; color: #4A5563; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer"><span style="width: 28px; height: 28px; border-radius: 9999px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>▾</a></span></div>
+  <header style="background: #FFFFFF; border-bottom: 1px solid #DDE2E9; padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+   <h1 style="font-size: 18px; margin: 0">チケットを作る</h1>
+   <span style="display: inline-flex; border: 1px solid #DDE2E9; border-radius: 6px; overflow: hidden"><a href="Create.dc.html" style="height: 28px; border: 0; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer">自分で書く</a><a href="StCreateAi.dc.html" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer">AI と話して作る</a><a href="TdDuplicate.dc.html" style="height: 28px; border: 0; background: #FFFFFF; color: #4A5563; padding: 0 12px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer">過去のチケットから複製</a></span>
+   <span style="font-size: 12px; color: #4A5563">下書きを自動で保存しました（10:42）</span>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 24px 96px; align-items: flex-start; flex: 1">
+   <form style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end">
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">グループ<select style="width: 160px"><option>営業（EG）</option></select></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">種別 <b style="color: #B91C1C">*</b><select style="width: 160px"><option>タスク</option><option>QA</option><option>課題</option><option>会議</option></select></label>
+      <span style="position: relative; display: inline-block"><a href="EdParent.dc.html" style="font-size: 12px; margin-bottom: 8px; background: #DCE4F2; border-radius: 4px; padding: 0 4px">親チケットを決める</a><div role="dialog" style="position: absolute; z-index: 20; background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; box-shadow: 0 10px 30px rgba(19,27,39,.18); padding: 10px; box-sizing: border-box; text-align: left; font-size: 13px; color: #131B27; white-space: normal; font-weight: 400; top: 24px; left: 0; width: 420px"><input value="保守" style="width: 100%; box-sizing: border-box; height: 32px; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13px; margin-bottom: 6px"><div style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 6px; background: #F1F3F6; font-weight: 600"><span style="font-size: 12px; color: #22345C; width: 56px">EG-124</span><span style="flex: 1">【親】セイコー様 保守契約の更新</span><span style="font-size: 11px; color: #4A5563">営業</span><span style="font-size: 11px; background: #EEF0F4; color: #4A5563; border-radius: 9999px; padding: 1px 8px; white-space: nowrap">作業中</span></div><div style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 6px; "><span style="font-size: 12px; color: #22345C; width: 56px">EG-097</span><span style="flex: 1">セイコー様 保守契約の見積</span><span style="font-size: 11px; color: #4A5563">営業</span><span style="font-size: 11px; background: #EEF0F4; color: #4A5563; border-radius: 9999px; padding: 1px 8px; white-space: nowrap">完了</span></div><div style="display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 6px; "><span style="font-size: 12px; color: #22345C; width: 56px">JD-150</span><span style="flex: 1">京蟻 保守運用（年間）</span><span style="font-size: 11px; color: #4A5563">受託開発</span><span style="font-size: 11px; background: #EEF0F4; color: #4A5563; border-radius: 9999px; padding: 1px 8px; white-space: nowrap">作業中</span></div><div style="border-top: 1px solid #EDF0F4; margin-top: 6px; padding: 8px 6px 2px; font-size: 12px; display: flex; flex-direction: column; gap: 4px"><span style="color: #4A5563">親にすると、親の期限（11/15）より後にはできない。親の進みにこの子が数えられる</span><span><label style="display: flex; gap: 8px; align-items: flex-start; padding: 0"><span style="width: 16px; height: 16px; margin-top: 2px; flex: none; border-radius: 4px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; font-size: 11px; display: grid; place-items: center">✓</span><span>親の担当・節目を写す</span></label></span></div></div></span>
+      <span style="font-size: 12px; color: #4A5563; margin: 0 0 8px auto">番号は作ったときに付く（EG-133 の予定）</span>
+     </div>
+     <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">題名 <b style="color: #B91C1C">*</b><input type="text" value="セイコー様へ 12月分の請求書を送る" style="font-size: 15px; font-weight: 500; height: 40px"></label>
+    </section>
+
+    <section aria-label="本文" style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+     <div style="display: flex; align-items: center; gap: 2px; padding: 6px 12px; border-bottom: 1px solid #EDF0F4; background: #FAFBFC; flex-wrap: wrap">
+      <sc-for list="{{tools}}" as="t" hint-placeholder-count="14"><button type="button" aria-label="{{t.name}}" title="{{t.name}}" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">{{t.label}}</button></sc-for>
+      <span style="margin-left: auto; font-size: 12px; color: #4A5563">種別「タスク」のひな形 ・ 「/」で部品</span>
+     </div>
+     <div style="padding: 8px 28px 24px; max-width: 900px">
+      <h2 style="font-size: 16px; margin: 20px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">目的 <b style="color: #B91C1C; font-size: 12px">必須</b></h2>
+      <p style="margin: 0">セイコー様に <b>12 月分の保守費</b>を請求し、<b>12/31 までに入金</b>してもらう。</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">完了の条件 <b style="color: #B91C1C; font-size: 12px">必須</b> <span style="font-size: 11px; color: #4A5563; font-weight: 400">ここからテスト仕様の案ができる</span></h2>
+      <ul style="margin: 0; padding-left: 20px"><li>金額が見積 <span style="display: inline-flex; gap: 4px; align-items: center; border: 1px solid #DDE2E9; border-radius: 9999px; padding: 0 8px; font-size: 12px"><span style="width: 6px; height: 6px; border-radius: 9999px; background: #166534"></span>EG-097 保守契約の見積</span> の月額と一致している</li><li>インボイスの必須記載事項を満たしている</li><li>PDF が経理部 <span style="background: #DCE4F2; border-radius: 4px; padding: 0 4px">@山田様</span> に送られている（CC 鈴木様）</li></ul>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">前提と制約</h2>
+      <p style="margin: 0; color: #8A94A3">例：支払期日・送り方・使ってはいけないもの</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">請求の内訳 <span style="font-size: 11px; color: #4A5563; font-weight: 400">種別の区画</span></h2>
+      <table style="border-collapse: collapse; width: 100%; max-width: 640px"><thead><tr><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">項目</th><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">数量</th><th style="font-size: 12px; color: #4A5563; font-weight: 500; text-align: left; padding: 6px 10px; border: 1px solid #DDE2E9; background: #F7F8FA">単価</th></tr></thead><tbody><tr><td style="padding: 6px 10px; border: 1px solid #DDE2E9; color: #8A94A3">空なら AI が見積から作る</td><td style="padding: 6px 10px; border: 1px solid #DDE2E9"></td><td style="padding: 6px 10px; border: 1px solid #DDE2E9"></td></tr></tbody></table>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">実施事項</h2>
+      <div style="display: flex; flex-direction: column; gap: 4px; color: #4A5563"><label style="display: flex; gap: 8px"><input type="checkbox">見積の月額を確かめる</label><label style="display: flex; gap: 8px"><input type="checkbox">請求書 PDF を作る</label><label style="display: flex; gap: 8px"><input type="checkbox">メールで送る</label></div>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">テスト仕様 <span style="font-size: 11px; color: #4A5563; font-weight: 400">完了の条件から AI が案を出した ・ 種類と判定のしかたを確かめる</span></h2>
+      <div style="border: 1px solid #DDE2E9; border-radius: 8px; overflow: hidden">
+       <sc-for list="{{tests}}" as="t" hint-placeholder-count="4">
+        <div style="display: flex; gap: 8px; align-items: center; padding: 7px 10px; border-bottom: 1px solid #EDF0F4; flex-wrap: wrap"><input type="checkbox" checked aria-label="この項目を使う"><span style="flex: 1 1 240px">{{t.item}}</span><span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 4px; padding: 0 6px">{{t.kind}}</span><span style="font-size: 12px; color: #4A5563; flex: 0 1 240px">{{t.how}}</span></div>
+       </sc-for>
+       <div style="display: flex; gap: 12px; padding: 7px 10px; font-size: 12px; background: #FAFBFC"><a role="button" tabindex="0" data-act style="cursor: pointer; ">＋ 項目を足す</a><a role="button" tabindex="0" data-act style="cursor: pointer; ">抜けを点検する</a></div>
+      </div>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">参照するもの</h2>
+      <p style="margin: 0; color: #8A94A3"># でチケット、ナレッジのページ名、添付を置く</p>
+      <h2 style="font-size: 16px; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid #DDE2E9">未決事項と質問・リスクと懸念</h2>
+      <p style="margin: 0; color: #8A94A3">「/注意」で注意の枠、「/質問」で質問の枠</p>
+      <p style="margin: 18px 0 0; color: #8A94A3; border-top: 1px dashed #DDE2E9; padding-top: 10px">＋ 見出しを足す（相手・成果物・決定ログ・申し送り・自由欄 など）</p>
+     </div>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 16px">
+     <h2 style="font-size: 14px; margin: 0 0 10px">振り分け</h2>
+     <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px">
+      <sc-for list="{{fields}}" as="f" hint-placeholder-count="10">
+       <div style="display: grid; grid-template-columns: 96px 1fr; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid #EDF0F4">
+        <span style="font-size: 12px; color: #4A5563">{{f.label}}<sc-if value="{{f.req}}" hint-placeholder-val="{{ false }}"> <b style="color: #B91C1C">*</b></sc-if></span>
+        <span style="display: flex; gap: 6px; align-items: center"><select style="flex: 1; min-width: 0"><option>{{f.value}}</option></select><sc-if value="{{f.extra}}" hint-placeholder-val="{{ false }}"><button type="button" style="height: 30px; white-space: nowrap; border-radius: 9999px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">{{f.extra}}</button></sc-if></span>
+       </div>
+      </sc-for>
+     </div>
+    </section>
+
+    <section style="background: #FFFFFF; border: 1px dashed #b8c0cc; border-radius: 8px; padding: 16px; text-align: center; color: #4A5563">ファイルをここに置くか、貼り付ける　<button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">ファイルを選ぶ</button></section>
+    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">作ったことを知らせる人<input type="text" placeholder="名前で絞り込む（担当者と承認する人には自動で届く）"></label>
+   </form>
+
+   <aside style="flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; gap: 12px">
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 8px">作る前に</h2>
+     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px">
+      <span style="color: #166534">✓ 題名</span><span style="color: #166534">✓ 種別</span><span style="color: #166534">✓ 担当者</span><span style="color: #166534">✓ 期限</span><span style="color: #166534">✓ 目的</span><span style="color: #166534">✓ 完了の条件</span>
+      <span style="color: #7A4A05">△ テスト仕様の ③ 人の項目を誰が見るか未定（承認する人＝担当者になる）</span>
+     </div>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px 14px">
+     <h2 style="font-size: 13px; margin: 0 0 6px; display: flex; gap: 6px; align-items: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>高本のAI から</h2>
+     <div style="font-size: 12px; display: flex; flex-direction: column; gap: 6px">
+      <span>先月の EG-128 とほぼ同じです。複製して日付と金額だけ変えますか？</span>
+      <span style="color: #4A5563">業務の型の候補：請求書を作る v3（ワークスペース）・請求書（シンプル）v1（自分）→ 2 つあるので選んでください</span>
+      <span style="color: #4A5563">取引先のルール「セイコー様は経理部 山田様宛」が効きます</span>
+     </div>
+    </section>
+   </aside>
+  </div>
+
+  <div style="position: sticky; bottom: 0; background: #FFFFFF; border-top: 1px solid #DDE2E9; padding: 10px 24px; display: flex; gap: 8px; align-items: center">
+   <span style="font-size: 12px; color: #4A5563">作るとチケットになり、担当者に知らせが届きます</span>
+   <span style="margin-left: auto; display: flex; gap: 8px"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">下書きのまま閉じる</button><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 18px; font-size: 13px; font-weight: 500">作る</button></span>
+  </div>
+ </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      tools: [ { name: "太字", label: "B" }, { name: "斜体", label: "I" }, { name: "見出し", label: "見出し" }, { name: "箇条書き", label: "・" }, { name: "番号つき", label: "1." }, { name: "チェックリスト", label: "☐" }, { name: "表", label: "表" }, { name: "画像・添付", label: "画像" }, { name: "引用", label: "引用" }, { name: "コード", label: "</>" }, { name: "注意の枠", label: "注意" }, { name: "チケットを引く", label: "#" }, { name: "人を呼ぶ", label: "@" }, { name: "リンク", label: "リンク" } ],
+      tests: [
+        { item: "金額が見積の月額と一致", kind: "① 機械", how: "数値の一致（EG-097 の月額）" },
+        { item: "インボイスの必須記載事項", kind: "① 機械", how: "必須項目がそろう（ワークスペースの型）" },
+        { item: "宛名と敬称が取引先のルールどおり", kind: "② AI", how: "別のセッションで 2 回判定・引用つき" },
+        { item: "送る前に PDF を目で見る", kind: "③ 人", how: "承認する人がチェック" }
+      ],
+      fields: [
+        { label: "担当者", req: true, value: "高本 聖斗", extra: "自分" },
+        { label: "AI に任せる", req: false, value: "作ったらすぐ任せる（担当者の AI）", extra: "" },
+        { label: "業務の型", req: false, value: "選んでください（候補 2）", extra: "" },
+        { label: "期限", req: true, value: "12/01（月）", extra: "" },
+        { label: "開始日", req: false, value: "11/28（金）", extra: "" },
+        { label: "予定", req: false, value: "30 分", extra: "" },
+        { label: "分類", req: false, value: "請求", extra: "" },
+        { label: "節目", req: false, value: "12月 月次の締め", extra: "" },
+        { label: "取引先", req: false, value: "セイコー株式会社", extra: "" },
+        { label: "優先度", req: false, value: "中", extra: "" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
