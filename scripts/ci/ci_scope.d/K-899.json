@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/app/(dev)/dev/mock/f11/mocks.tsx", "apps/web/app/(dev)/dev/mock/f11/render-cu-rq.tsx", "apps/web/app/(dev)/dev/mock/f11/render-cu-frame.tsx", "scripts/ci/gen_built_routes.py"], "tests": ["apps/web/tests/k/k899-guest-avatar-draft.spec.ts"]}
+ ]
+}
