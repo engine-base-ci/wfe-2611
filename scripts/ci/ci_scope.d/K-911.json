@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F11/portal/**", "apps/web/app/(portal)/**", "apps/web/app/(dev)/dev/mock/f11/**"], "tests": ["apps/web/tests/k/k911-portal-home.spec.ts"]}
+ ]
+}
