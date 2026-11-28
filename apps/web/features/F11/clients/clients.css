@@ -1,0 +1,38 @@
+/* 段 12（F11）の小さな共通部品（印・頭文字の丸）。値は正本のトークン（--k-*）だけ。クラスの頭は k-f11c-（取引先の登録をやめたあとも名前は残す） */
+.k-f11c-sub-mark {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--k-s-md);
+  height: var(--k-s-md);
+  border-radius: var(--k-r-sm);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-label-xs);
+}
+
+/* ---- 頭文字の丸 ---- */
+.k-f11c-av {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  border-radius: var(--k-r-md);
+  background: var(--k-d-indigo);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f11c-av[data-tone="teal"] {
+  background: var(--k-d-teal);
+  border-radius: var(--k-r-full);
+}
+.k-f11c-av[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-f11c-av[data-tone="plum"] {
+  background: var(--k-d-plum);
+  border-radius: var(--k-r-full);
+}
