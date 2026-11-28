@@ -1,0 +1,78 @@
+{
+ "status": "PASS（記録どおり：A・B・C・T・P・L・G・H は緑。D・F は KN-50 で走るようになったが、地図の古い所で赤のまま＝KN-121 で直す。スキルの読み違いではない）",
+ "run_id": "20261104-D128.124-release-age",
+ "executed_at": "2026-11-04T05:18:18",
+ "change": "D-128.124（部品は出てから 21 日を過ぎた版だけ・pnpm の minimumReleaseAge で守らせる）。KN-116（Better Auth の部品の版をそろえた）・KN-118（Base UI を新しい名前の 1.9 に）・KN-50（spec-sync の検査をリポジトリに写して直した）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "02_tech_stack/selected-stack.json（supply_chain・packages）",
+  "pnpm-workspace.yaml（minimumReleaseAge・例外）・pnpm-lock.yaml",
+  "scripts/ci/stack_gate.py（S4・S5）・deprecated_baseline.json",
+  "apps/web/components/k（Base UI の読み込み先）",
+  "scripts/spec-sync/（D・F・G・H の検査）",
+  "11_tickets（KN-50・KN-116・KN-118〜KN-121）"
+ ],
+ "checks": [
+  {
+   "tier": "impl_gate",
+   "status": "pass",
+   "detail": "skill_impl_gate：名乗っている検査は全部実物がある"
+  },
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0（spec_check.py）"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.124 は 02_tech_stack/selected-stack.json の supply_chain に反映）。要件一覧を --index で作り直した"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit：ディスクの成果物は全部地図の上"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run：spec-sync の行の外は全部緑"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "scripts/spec-sync/spec-validator.py --tier g（KN-50 で直した版）"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "scripts/spec-sync/spec-validator.py --tier h（台帳から X-003 を消すと赤になるのを確かめた）"
+  },
+  {
+   "tier": "D",
+   "status": "fail",
+   "ticket": "KN-121",
+   "detail": "走る。赤は地図の古い所：alignment_decisions に D-125〜D-128 が無い（D0）・確かめる手段の決まっていない 9 組（D8）・今の flow に無い画面を指す行（AD-007・AD-025）・古い見本を指す検査（AD-003-2）・AD-123"
+  },
+  {
+   "tier": "F",
+   "status": "fail",
+   "ticket": "KN-121",
+   "detail": "走る。赤は地図の下流の検査が、しまった見本（06_mockup/v1）と、しまった機能の分解（09_features）を指したまま"
+  }
+ ],
+ "next": [
+  "KN-121：地図を今の正本に合わせ、D・F を緑にする",
+  "高本さん：.qa/spec-sync/KN-50/spec-sync-orchestrator.patch を組織のスキルに当てる"
+ ]
+}
