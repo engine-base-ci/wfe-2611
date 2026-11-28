@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/billing/**",
+    "apps/web/app/(work)/billing/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k960-billing.spec.ts",
+    "apps/web/test/k960-billing-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F7/notice/notice-text.ts"
+   ],
+   "tests": [
+    "apps/web/test/k960-notice-text.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k960-billing.spec.ts": "f12-user-match.ts（K-956 が持ち込む）を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-960"
+ }
+}
