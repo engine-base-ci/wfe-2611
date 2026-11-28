@@ -1,0 +1,33 @@
+{
+ "ops": {
+  "recordPayment": {
+   "file": "apps/api/test/features/F12/ops-invoice-payments.test.ts",
+   "reason": "請求書と前の入金の行・本人確認の取り直しで答えが変わり、入金と記録を書く。種では作れない（K-982）",
+   "covers": {
+    "test_post_ops_invoices_id_payments_ok": "K982-API-001",
+    "test_post_ops_invoices_id_payments_shape": "K982-API-001",
+    "test_post_ops_invoices_id_payments_not_found": "K982-API-009",
+    "test_post_ops_invoices_id_payments_conflict": "K982-API-006",
+    "test_post_ops_invoices_id_payments_rejected_401": "K982-API-012",
+    "test_post_ops_invoices_id_payments_rejected_403": "K982-API-012",
+    "test_post_ops_invoices_id_payments_rejected_422": "K982-API-013",
+    "test_post_ops_invoices_id_payments_rate_limited": "K982-API-016",
+    "test_post_ops_invoices_id_payments_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_invoices_id_payments_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_invoices_id_payments_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_ops_invoices_id_payments_mfa_pending": "運営はパスキーだけで入る（K-944）。付けるまで進めないの印は会社の人のセッションの入口の共通（K-321）"
+   }
+  }
+ }
+}
