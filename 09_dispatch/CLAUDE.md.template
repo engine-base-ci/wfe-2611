@@ -1,0 +1,45 @@
+# {id} {title}
+
+Group {group} / layer {layer} / wave {wave} / Human {hours_h} h・AI wall-clock {hours_ai} h
+行為 {acts} ／ 画面 {screens} ／ 表 {entities} ／ 関門 {chokes} ／ 依存 {depends}
+
+## 根拠となる決定（逐語）
+{decisions}
+
+## 触るファイル
+新規:
+{new}
+変更:
+{modify}
+読むだけ:
+{shared}
+触らない:
+{forbidden}
+
+## 生 API の直接呼び出し禁止（関門の外から）
+{forbidden_apis}
+
+## 受け入れ条件
+### Tier 1 structural
+{t1}
+### Tier 2 functional（EARS）
+{t2}
+### Tier 3 regression
+{t3}
+
+## テストの筋書き
+{scenarios}
+
+## L1 行（正本 07_qa/test-specs・merge 前に staging で全行）
+{l1}
+L2（揃ったら流す）: {l2}
+
+## 仕様へのリンク
+{spec}
+
+## 完了の定義
+1. 上の AC が全部 pass（stub・echo・境界 throw は完了でない）
+2. 実装した全操作要素を実ブラウザで押し、別 GET で再取得して反映を確認（G-01・G-03）
+3. `python3 scripts/ci/qa-ladder.py gate --task {id}` PASS
+4. `{audit}` に impl line を書く（generic 文言禁止）
+5. PR 件名に {id} を含める（done 判定）
