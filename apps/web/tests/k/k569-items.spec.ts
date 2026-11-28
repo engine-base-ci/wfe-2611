@@ -36,7 +36,9 @@ const clean = (t: string): string => t.replace(/[＊\s]/g, "");
 const namesOf = async (page: Page): Promise<string[]> =>
   (await grid(page).locator(".k-f4d-name").allTextContents()).map(clean);
 const make = (page: Page) => page.getByRole("button", { name: "作る", exact: true });
-const box = (page: Page, name: string) => grid(page).getByLabel(name, { exact: true });
+// 必須の欄の名前（label）は「支払期日*」（印 * は読み上げない・components/k の Field）。getByLabel は印を含む字で比べるので、印の有無を許す
+const labelRe = (name: string): RegExp => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\*?$`);
+const box = (page: Page, name: string) => grid(page).getByLabel(labelRe(name));
 const fid = (name: string, master: FieldApi[] = MASTER_ALL): string => byName(master, name).id;
 /** チェックの型の箱：名前は説明の字（下絵の「原本を郵送する」）。説明が無ければ項目の名前 */
 const check = (page: Page, label: string) => grid(page).getByRole("checkbox", { name: label, exact: true });

@@ -1,9 +1,12 @@
 // 詳細（/tickets/:id）の新しい形の試験の道具（K-571 が持つ）。口は網の手前で差し替える：
 //   GET /api/v1/tickets/:id        → K-560 の答え（body・fields・spec_count・spec_unchecked・no_spec_reason・parent・child_count・link_count・results。sections は前の形の物だけ）
 //   GET /api/v1/tickets/:id/runs   → []
+//   GET /api/v1/shell              → 外枠の口 getShell の答え（グループは営業 EG・K-466。外枠とグループの行はここから読む）
+//   GET /api/v1/tickets/:id/decisions → 決定ログの区画の口（K-397・listTicketDecisions）。答えの results.decisions を口の形にして返す
 //   ほか外枠の口（me・scopes・approvals/queue・bridge/devices）は最小の答え。本人の Bridge（127.0.0.1:38617）は届かせない。
 //   詳細の画面が呼んだ口を数える（口の数の行）。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, type Page, type Request, type Route } from "@playwright/test";
+import { shellReply } from "./shell-answer";
 
 export const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 export const ME = "11111111-0000-4000-8000-000000000001";
@@ -150,6 +153,15 @@ export const RESULTS = {
   },
 };
 
+/** 答えの results.decisions の 1 行（決定ログの区画の口の形に直して返す） */
+interface DecisionIn {
+  id: string;
+  text: string;
+  reason: string | null;
+  decided_at: string;
+  decided_by_name: string | null;
+}
+
 export interface DetailMock {
   /** 詳細の答え。書き換えると次の読み込みに効く */
   a: DetailAnswer;
@@ -179,6 +191,23 @@ export async function mockDetail(page: Page, o: Partial<DetailAnswer> & { status
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
     else if (p === "/api/v1/scopes")
       r = ok([{ id: SCOPE, name: "営業", tenant_id: WS, ticket_prefix: "EG" }], { limit: 200, writable: [SCOPE] });
+    else if (p === "/api/v1/shell") r = shellReply();
+    else if (p === `/api/v1/tickets/${TID}/decisions`)
+      r = ok(
+        ((m.a.results as { decisions?: DecisionIn[] } | undefined)?.decisions ?? []).map((d) => ({
+          id: d.id,
+          text: d.text,
+          reason: d.reason,
+          decided_by: d.decided_by_name ? { id: ME, display_name: d.decided_by_name } : null,
+          decided_note: null,
+          decided_at: d.decided_at,
+          source: null,
+          revises_id: null,
+          superseded_by_id: null,
+          cancelled: null,
+        })),
+        { can_write: true },
+      );
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 1, counts: { total: 0 }, cursor: null });
     else if (p === "/api/v1/bridge/devices") r = ok([]);
     else if (p === `/api/v1/tickets/${TID}`)

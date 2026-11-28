@@ -33,6 +33,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import glob as globmod
 import json
 import math
@@ -86,6 +87,7 @@ class Change(NamedTuple):
 
 
 # ---------------------------------------------------------------- 小さな道具
+@functools.lru_cache(maxsize=None)
 def glob_re(pattern: str) -> re.Pattern:
     out, i = "", 0
     while i < len(pattern):
@@ -424,7 +426,8 @@ def root_kind(path: str, rules: dict, repo: str) -> str:
 # ---------------------------------------------------------------- 読む試験・src の棚卸し
 def _read(repo: str, f: str) -> str:
     try:
-        return open(os.path.join(repo, f), encoding="utf-8", errors="replace").read()
+        with open(os.path.join(repo, f), encoding="utf-8", errors="replace") as fh:
+            return fh.read()
     except OSError:
         return ""
 
@@ -468,14 +471,19 @@ def no_test_path_reads(repo: str, rules: dict) -> list[tuple[str, str]]:
     for l in rules["data_links"]:
         for who in list(l.get("tests", [])) + list(l.get("readers", [])):
             declared.setdefault(who, set()).update(l["paths"])
+    kinds: dict[str, str] = {}  # 同じ文字は多くのファイルに出る。1 回の呼び出しの中では root_kind を 1 文字 1 回だけ数える
     for f in walk_files(repo, SCAN_EXT):
         found = _paths_in(_read(repo, f))
+        # q.startswith(p + "/") を全部の組で当たらず、各 q の「/ の手前まで」の頭を集めて引く（同じ答え）
+        heads = {q[:i] for q in found | declared.get(f, set()) for i, c in enumerate(q) if c == "/"}
         for p in sorted(found):
             # join(ROOT, "08_api", "endpoints.json") の "08_api" は読んだパスの一部。読んだ物は全部のパス（同じファイルの文字か、
             #   data_links にこのファイルが読むと書いた物）で見る（入れ子の括弧の join は文字を拾えないため・K-156）
-            if any(q.startswith(p + "/") for q in found | declared.get(f, set())):
+            if p in heads:
                 continue
-            if root_kind(p, rules, repo) not in ("doc", "spec"):
+            if p not in kinds:
+                kinds[p] = root_kind(p, rules, repo)
+            if kinds[p] not in ("doc", "spec"):
                 continue
             # 実ブラウザの試験が jobs.web.paths の物を読むのは、その物を変えると web の組が流れるので赤にしない
             if f.startswith(WEB_E2E_PREFIX) and match(p, web_paths):

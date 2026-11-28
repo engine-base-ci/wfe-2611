@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { NoAccess, Toaster } from "@/components/k";
+import { NoAccess } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
@@ -45,11 +45,9 @@ export function TicketSettingsPage({ tab, id }: { tab: SettingsTabKey; id?: stri
       </UnsavedProvider>
     );
   return (
-    <Toaster>
-      <TicketShell screen="masters" crumbs={CRUMBS}>
-        {body}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen="masters" crumbs={CRUMBS}>
+      {body}
+    </TicketShell>
   );
 }
 

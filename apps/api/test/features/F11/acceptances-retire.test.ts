@@ -158,7 +158,8 @@ describe("K-926 検収の口を契約から外す", () => {
   it("K926-API-007 文書：08_取引先とクライアントの場所.md と 01_チケット.md に、検収の道（`POST /tickets/:id/acceptances`・`POST /acceptances/:id/remind`・`GET /portal/acceptances/:id`・`POST /portal/acceptances/:id/answer`）の行が無く、検収の機能を書いた文（「検収」の字）も無い（D-155.44）。依頼・クライアントの場所のほかの行は残る", () => {
     const rx =
       /(POST \/tickets\/(:id|\{id\})\/acceptances|POST \/acceptances\/(:id|\{id\})\/remind|GET \/portal\/acceptances\/(:id|\{id\})|POST \/portal\/acceptances\/(:id|\{id\})\/answer)/;
-    const doc = read("08_api", "phase1", "08_取引先とクライアントの場所.md");
+    // 表の行は葉ごとの断片（08_取引先とクライアントの場所.d/）に移った（K-1112・PM の決め 2026-11-28）。読む人は断片を合わせた写しを読む
+    const doc = read("08_api", "phase1", "合わせた", "08_取引先とクライアントの場所.md");
     expect(doc).not.toMatch(rx);
     expect(read("08_api", "phase1", "01_チケット.md")).not.toMatch(rx);
     // 検収の機能を書いた文も残さない（「足した表」「置き換えた表」の節は事実の記録なので除く。今の 2 つの文書には無い）

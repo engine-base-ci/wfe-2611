@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:cd54bb4c60ff13a4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:f843c899467799f5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -303,7 +303,7 @@ export interface Ops {
   delegateTicket: { params: { id: string }; query: never; body: T.TicketDelegateInput; data: T.TicketDelegation };
   previewTicketDelete: { params: { id: string }; query: never; body: never; data: T.TicketDeletePreview };
   dryRunTicket: { params: { id: string }; query: never; body: T.DryRunInput; data: T.DryRunStarted };
-  listTicketGuestShares: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketGuestShares[] };
+  listTicketGuestShares: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketGuestShares[] };
   updateTicketGuestShares: { params: { id: string }; query: never; body: T.TicketGuestSharesInput; data: T.TicketGuestSharesUpdated };
   previewTicketHandover: { params: { id: string }; query: never; body: never; data: T.HandoverPreview };
   listTicketHandovers: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketHandover[] };

@@ -13,7 +13,7 @@ export const fromCatalog = (code: string, status: number, detail: Record<string,
   return { status, body };
 };
 
-/** 権限が無い（入口の 403 と同じ番号・E-GRP-018 は作らない） */
+/** 権限が無い（入口の 403 と同じ番号を使い、この口だけの番号は作らない） */
 export const forbidden = (): HookReply => ({ status: 403, body: { error: "forbidden", code: "FORBIDDEN" } });
 
 /** 止める側に倒す（fail-closed・503・E-PAGE-003）。ログには場所と言葉（か例外の種類）だけ */
