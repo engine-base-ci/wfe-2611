@@ -1,0 +1,59 @@
+{
+ "ops": {
+  "requestWorkspaceDeletion": {
+   "file": "apps/api/test/features/F10/workspace-deletion.test.ts",
+   "reason": "消す手続きは、名前・本人確認・押せる人・すでに手続き中・同時の開始で答えが変わる。生成の試験の種では作れない（K-830）",
+   "covers": {
+    "test_post_workspace_deletion_ok": "K830-API-001",
+    "test_post_workspace_deletion_shape": "K830-API-001",
+    "test_post_workspace_deletion_rejected_401": "K830-API-006",
+    "test_post_workspace_deletion_rejected_403": "K830-API-006",
+    "test_post_workspace_deletion_rejected_422": "K830-API-007",
+    "test_post_workspace_deletion_conflict": "K830-API-003",
+    "test_post_workspace_deletion_rejected_403_2": "K830-API-004",
+    "test_post_workspace_deletion_session_unresolved": "K830-API-010",
+    "test_post_workspace_deletion_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_workspace_deletion_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_workspace_deletion_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_workspace_deletion_rate_limited": "上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-419・K-421・K-829 の口と同じ扱い）",
+    "test_post_workspace_deletion_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421・K-829 と同じ扱い）"
+   }
+  },
+  "cancelWorkspaceDeletion": {
+   "file": "apps/api/test/features/F10/workspace-deletion.test.ts",
+   "reason": "取り消しは、14 日の境・手続き中かどうか・押せる人で答えが変わる（K-830）",
+   "covers": {
+    "test_delete_workspace_deletion_ok": "K830-API-014",
+    "test_delete_workspace_deletion_shape": "K830-API-014",
+    "test_delete_workspace_deletion_rejected_401": "K830-API-018",
+    "test_delete_workspace_deletion_rejected_403": "K830-API-018",
+    "test_delete_workspace_deletion_conflict": "K830-API-016",
+    "test_delete_workspace_deletion_rejected_403_2": "K830-API-018",
+    "test_delete_workspace_deletion_session_unresolved": "K830-API-020",
+    "test_delete_workspace_deletion_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_workspace_deletion_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_workspace_deletion_rate_limited": "上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-419・K-421・K-829 の口と同じ扱い）",
+    "test_delete_workspace_deletion_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421・K-829 と同じ扱い）"
+   }
+  }
+ }
+}
