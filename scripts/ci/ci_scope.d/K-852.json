@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["packages/db/migrations/20261126005200_reinvite_return.sql", "apps/api/src/features/F1/login/shared.ts", "apps/api/src/features/F2/invitations/preview.ts", "apps/api/src/features/F2/invitations/accept.ts", "apps/api/src/features/F2/invitations/signed.ts", "packages/auth/src/index.ts", "apps/api/src/app.ts"], "tests": ["apps/api/test/features/F10/reinvite-login.test.ts", "apps/api/test/features/F1/passkey-gate.test.ts"]}
+ ]
+}

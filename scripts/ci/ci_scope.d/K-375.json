@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k375-bridge-reinstall.spec.ts": "文言の正本 07_qa/test-specs/errors.json と、会話の帯の行き先を見るために apps/web/components/ai/agent-chat.tsx を読む。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-375"
+ }
+}
