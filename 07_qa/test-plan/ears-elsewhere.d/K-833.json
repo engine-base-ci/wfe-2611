@@ -1,0 +1,49 @@
+{
+ "ops": {
+  "getMe": {
+   "file": "apps/api/test/features/F10/me-profile.test.ts",
+   "reason": "自分の設定の読みは、顔・入っている会社・兼務・抜けられるか・担当で答えが変わる。生成の試験の種では作れない（K-833）",
+   "covers": {
+    "test_get_me_ok": "K833-API-001",
+    "test_get_me_shape": "K833-API-001",
+    "test_get_me_rejected_401": "K833-API-014",
+    "test_get_me_rejected_403": "K833-API-014",
+    "test_get_me_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_rejected_422": "入力を受けない GET（道の値も問い合わせも無い）",
+    "test_get_me_rejected_422_2": "入力を受けない GET（道の値も問い合わせも無い）",
+    "test_get_me_rate_limited": "上限は入口の共通の確かめ（K-144）が全部の口で見る"
+   }
+  },
+  "updateMe": {
+   "file": "apps/api/test/features/F10/me-profile.test.ts",
+   "reason": "自分の設定の保存は、名前・呼ばれ方の長さ・見え方の値・アカウント全体・同時の保存で答えが変わる（K-833）",
+   "covers": {
+    "test_patch_me_ok": "K833-API-007",
+    "test_patch_me_shape": "K833-API-007",
+    "test_patch_me_rejected_401": "K833-API-014",
+    "test_patch_me_rejected_403": "K833-API-014",
+    "test_patch_me_rejected_422": "K833-API-008",
+    "test_patch_me_rejected_422_2": "K833-API-011",
+    "test_patch_me_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_patch_me_rate_limited": "上限は入口の共通の確かめ（K-144）が全部の口で見る",
+    "test_patch_me_terms_pending": "同意し直しの止めは入口の共通の確かめ（K-53）が見る",
+    "test_patch_me_mfa_pending": "付けるまで進めないの止めは入口の共通の確かめ（K-321）が見る",
+    "test_patch_me_rejected_422_3": "保存の失敗は 503・E-PAGE-003（K833-API-015）で返し、E-ACT-040 の答えは使わない（この口はパスワード・2 段階・メールを書かない。メールは K-835・パスワードと 2 段階は段 2 の口）"
+   }
+  }
+ }
+}
