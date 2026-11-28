@@ -242,6 +242,7 @@
   --k-c-auth-code-height: 52px;
   --k-c-auth-alt-col-gap: 6px;
   --k-c-popup-layer-z: 70;
+  --k-c-popup-layer-max-width: calc(100vw - 2 * var(--k-s-lg));
   --k-c-popup-layer-field-z: 82;
   --k-c-dialog-bg: var(--k-card);
   --k-c-dialog-radius: var(--k-r-lg);

@@ -258,7 +258,13 @@ function SlotMenu({
         {face}
       </M.Trigger>
       <M.Portal>
-        <M.Positioner className="k-popup-layer" sideOffset={6} align="start">
+        {/* 中身（自分のメニュー・会社の切り替え）は字の幅で広がる。端で揃え直すと画面を越えることがあるので、揃えはそのままずらして収める（K844-UI-016） */}
+        <M.Positioner
+          className="k-popup-layer"
+          sideOffset={6}
+          align="start"
+          collisionAvoidance={{ side: "flip", align: "shift", fallbackAxisSide: "none" }}
+        >
           <M.Popup
             role="presentation"
             aria-labelledby={undefined}
@@ -425,7 +431,8 @@ export function Shell(p: ShellProps) {
           </span>
         )}
         <b className="k-nav-label k-ws-name">
-          {p.workspace.name}
+          {/* 名前だけを … で切る（▾ は切らない。長い会社名で ▾ が隠れ、押せなくなっていた・K844-UI-012） */}
+          <span className="k-ws-name-t">{p.workspace.name}</span>
           {p.workspace.name ? " " : ""}
           {p.orgMenu !== undefined && (inSheet || !markSwitches) ? (
             <SlotMenu trigger={<button type="button" className="k-ws-switch" />} face="▾" label={ORG_LABEL}>

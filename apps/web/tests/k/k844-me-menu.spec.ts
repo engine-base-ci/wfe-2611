@@ -306,7 +306,8 @@ test("K844-UI-016 幅 320・375・768・1024・1440：箱を開いても横の�
     await start(page, { me: long, width: w });
     await meBtn(page).click();
     await expect(menu(page)).toBeVisible();
-    expect(await overflowX(page), `幅 ${w}`).toBe(0);
+    // 開いた直後の 1 描画は、置き場がずらして収める前の位置（引き金の端）にある。収まるのを待ってから測る
+    await expect.poll(() => overflowX(page), { message: `幅 ${w}` }).toBe(0);
     await page.keyboard.press("Escape");
   }
 });

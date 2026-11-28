@@ -95,6 +95,12 @@ button.k-ws-switch {
   font-size: var(--k-text-body-sm);
 }
 .k-ws-name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  white-space: pre;
+}
+.k-ws-name-t {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

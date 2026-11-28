@@ -101,7 +101,9 @@ COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "ro
              # 浮く箱の上からの位置・小さな印の縦の位置（K-251：表示設定の箱・炎の印）
              "top": "top", "verticalAlign": "va",
              # 浮く箱の重なりの順（K-381：メニュー・選ぶ欄の開いた箱の置き場）
-             "zIndex": "z"}
+             "zIndex": "z",
+             # 浮く箱の幅の上限（K-844：外枠のメニューの中身が画面の幅を越えない）
+             "maxWidth": "max-width"}
 
 
 def ref(v: str) -> str:

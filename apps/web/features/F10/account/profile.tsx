@@ -173,26 +173,42 @@ function Preview({ p }: { p: ProfileState }) {
 
 /** 自分のカード（顔・名前・呼ばれ方・メール） */
 /** 欄を離れたとき・Enter で渡す（Enter は欄に残ったまま） */
-const commitOn = (fn: ((text: string) => void) | undefined) =>
+const commitOn = (fn: ((text: string) => void) | undefined, done?: () => void) =>
   fn
     ? {
-        onBlur: (e: { currentTarget: HTMLInputElement }) => fn(e.currentTarget.value),
+        onBlur: (e: { currentTarget: HTMLInputElement }) => {
+          done?.();
+          fn(e.currentTarget.value);
+        },
         onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
-          if (e.key === "Enter" && !e.nativeEvent.isComposing) fn(e.currentTarget.value);
+          if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+          done?.();
+          fn(e.currentTarget.value);
         },
       }
     : {};
 
-/** 打った字（親が値を差し替えたら合わせる） */
-function useTyped(value: string): [string, (v: string) => void] {
+/** 打った字（親が値を差し替えたら合わせる）。ただし渡した後に打ち始めた字は、前に渡した分の保存の答えで上書きしない
+ *  （呼ばれ方を空にして離れ、答えが返る前に打った 21 字が空に戻っていた・K839-UI-007）。done＝欄を離れた・Enter で渡した */
+function useTyped(value: string): [string, (v: string) => void, () => void] {
   const [typed, setTyped] = useState(value);
-  useEffect(() => setTyped(value), [value]);
-  return [typed, setTyped];
+  const editing = useRef(false);
+  useEffect(() => {
+    if (!editing.current) setTyped(value);
+  }, [value]);
+  const type = (v: string) => {
+    editing.current = true;
+    setTyped(v);
+  };
+  const done = () => {
+    editing.current = false;
+  };
+  return [typed, type, done];
 }
 
 function SelfCard({ p, a }: { p: ProfileState; a: ProfileActions }) {
-  const [typed, setTyped] = useTyped(p.name);
-  const [nick, setNick] = useTyped(p.nick);
+  const [typed, setTyped, typedDone] = useTyped(p.name);
+  const [nick, setNick, nickDone] = useTyped(p.nick);
   const count = Array.from(typed).length;
   const live = p.live || Boolean(a.onName);
   const err = live
@@ -231,7 +247,7 @@ function SelfCard({ p, a }: { p: ProfileState; a: ProfileActions }) {
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           error={err}
-          {...commitOn(a.onName)}
+          {...commitOn(a.onName, typedDone)}
         />
         <div className="k-f10a-meta">
           {saved ? <span className="k-f10a-ok">✓ 保存しました ・ {saved}</span> : null}
@@ -249,7 +265,7 @@ function SelfCard({ p, a }: { p: ProfileState; a: ProfileActions }) {
             ? { value: nick, onChange: (e: { target: HTMLInputElement }) => setNick(e.target.value) }
             : { defaultValue: p.nick })}
           error={nickErr}
-          {...commitOn(a.onNick)}
+          {...commitOn(a.onNick, nickDone)}
         />
       </li>
       <SettingRow

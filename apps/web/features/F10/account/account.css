@@ -142,6 +142,16 @@
 .k-f10a-pop[data-side="left"] {
   inset-inline-start: var(--k-s-sm);
 }
+/* 本番：外枠のメニュー（SlotMenu の置き場 .k-popup-layer・transform あり）の中では、位置は置き場が決める。
+   貼り付け（fixed）のままだと置き場が包む箱になり、幅が min-width に詰まって字が折り返していた（下絵は字の幅で広がる・K844-UI-001）。
+   幅の上限は画面の幅から余白を引いた長さ（長い名前でも画面を越えない・K844-UI-016）。置き場は .k-root の外なので字の書体・大きさ・行の高さもそろえる */
+.k-popup-layer .k-f10a-pop {
+  position: static;
+  max-width: var(--k-c-popup-layer-max-width);
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
 .k-f10a-pop-item {
   display: grid;
   gap: var(--k-s-xs);
