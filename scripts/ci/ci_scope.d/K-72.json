@@ -1,0 +1,149 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-team-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_ops_members_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/inquiry-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_inquiries.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/inquiry-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-951.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_inquiries_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_workspaces_id_billing.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/plans.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_workspace_plans.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-team-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ops_members_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ops_plan_proposals_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-invoices-issue.test.ts",
+    "apps/api/test/features/F12/ops-invoices-pdf.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_invoices_issue.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_plan_proposals.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-decide.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_plan_proposals_id_decide.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-decide.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_plan_proposals_id_return.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-write.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_plan_proposals_id_submit.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-resend-verification.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_workspaces_id_members_mid_resend_verification.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ops_workspaces_id_plan.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F12/plans.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_workspace_plan.test.ts"
+   ]
+  }
+ ]
+}
