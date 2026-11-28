@@ -1,0 +1,95 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-003",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "もう止めている会社をもう一度止めた・止める日が決まっている会社に日を決め直した",
+   "false_when": "止める予定も止めた印も無い会社を止めた／止める日が決まっている会社をすぐ止めた",
+   "message": "このワークスペースはもう止める日が決まっているか、止めています",
+   "action": "日を変えるときは再開で取り消してから",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止める日が決まっていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止める小窓で日を決めて止める",
+     "もう一度、日を決めて止める"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-003"
+  },
+  {
+   "id": "E-OPS-004",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "止める予定も止めた印も無い会社を再開した",
+   "false_when": "止める日が決まっている・止めている会社を再開した",
+   "message": "このワークスペースは止めていません",
+   "action": "画面を読み直して今の状態を確かめる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止めていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止めていないワークスペースで再開を送る"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-004"
+  },
+  {
+   "id": "E-OPS-006",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-tenant",
+    "state": "op-stop"
+   },
+   "when": "日を決めて止めるのに、止める日が日本の今日か昔",
+   "false_when": "止める日が明日以降",
+   "message": "止める日は明日以降にしてください",
+   "action": "止める日を明日以降に選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "止める日が決まっていない顧客のワークスペースを開いておく",
+    "steps": [
+     "止める小窓で止める日を今日にして送る"
+    ],
+    "needs": "止める（stop）を持ち、本人確認を取り直した運営の人"
+   },
+   "severity": "low",
+   "source": [
+    "D-156.23"
+   ],
+   "support_code": "OPS-006"
+  }
+ ]
+}
