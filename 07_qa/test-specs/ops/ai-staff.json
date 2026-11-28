@@ -1,0 +1,189 @@
+{
+ "screen": "ai-staff",
+ "mock": "06_mockup/v1/v1-ai-staff.html",
+ "state_labels": {
+  "n": "一覧",
+  "a": "作る",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:営業社員運営配布発注ナビの取り込み ／ アプローチ文の下書き効く範囲 会社止まっている（覚え直し待ち）→ai-staff-detail",
+   "kind": "link",
+   "label": "営業社員運営配布発注ナビの取り込み ／ アプローチ文の下書き効く範囲 会社止まっている（覚え直し待ち）",
+   "target": "ai-staff-detail",
+   "states": [
+    "一覧",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:経理社員運営配布請求書の作成 ／ 入金の照合効く範囲 会社稼働中→ai-staff-detail",
+   "kind": "link",
+   "label": "経理社員運営配布請求書の作成 ／ 入金の照合効く範囲 会社稼働中",
+   "target": "ai-staff-detail",
+   "states": [
+    "一覧",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:CS社員会社作成問い合わせの一次返信 ／ 近況メール効く範囲 会社稼働中→ai-staff-detail",
+   "kind": "link",
+   "label": "CS社員会社作成問い合わせの一次返信 ／ 近況メール効く範囲 会社稼働中",
+   "target": "ai-staff-detail",
+   "states": [
+    "一覧",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:AI社員を作るあと 2体",
+   "kind": "link",
+   "label": "AI社員を作るあと 2体",
+   "target": null,
+   "states": [
+    "一覧",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "input:名前",
+   "kind": "input",
+   "label": "名前",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:運営配布から選ぶ定義は編集できない。個人ルールだけ足せる",
+   "kind": "radio",
+   "label": "運営配布から選ぶ定義は編集できない。個人ルールだけ足せる",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:会社で作る担当業務を高本AIと一緒に定義する",
+   "kind": "radio",
+   "label": "会社で作る担当業務を高本AIと一緒に定義する",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "radio:個人で作る自分だけが使う。会社には見えない",
+   "kind": "radio",
+   "label": "個人で作る自分だけが使う。会社には見えない",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "select:誰に託す",
+   "kind": "select",
+   "label": "誰に託す",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本AIと担当業務を決める",
+   "kind": "button",
+   "label": "高本AIと担当業務を決める",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:選ぶ",
+   "kind": "button",
+   "label": "選ぶ",
+   "target": null,
+   "states": [
+    "作る"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:AI社員を作る",
+   "kind": "button",
+   "label": "AI社員を作る",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
