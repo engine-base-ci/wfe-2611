@@ -1,0 +1,67 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-009",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-new"
+   },
+   "when": "出したお知らせ（出した・予定の時刻を過ぎた・直った）の書き直しで、種類・誰に・出す場所・出す日時を送った",
+   "false_when": "下書きか予定の時刻の前のお知らせを直した／出した後でも題・本文・影響・メンテの時間だけを直した",
+   "message": "出したお知らせの 種類・誰に・出す場所・出す日時 は変えられません",
+   "action": "新しいお知らせとして書き直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "お知らせを 1 つ出しておく",
+    "steps": [
+     "出したお知らせを開いて書き直す",
+     "誰にを変えて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33",
+    "D-156.64"
+   ],
+   "support_code": "OPS-009"
+  },
+  {
+   "id": "E-OPS-014",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-notices",
+    "state": "oq-notice-new"
+   },
+   "when": "メンテの終わりが始まりより前か同じ（直すときは保存の値と合わせて）",
+   "false_when": "メンテの終わりが始まりより後／メンテの時間を付けない",
+   "message": "メンテの終わりは始まりより後にしてください",
+   "action": "時間を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "運営の人でお知らせの画面を開いておく",
+    "steps": [
+     "メンテのお知らせを書く",
+     "終わりを始まりより前にして保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-156.33"
+   ],
+   "support_code": "OPS-014"
+  }
+ ]
+}
