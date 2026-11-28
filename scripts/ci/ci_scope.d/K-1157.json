@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["packages/db/migrations/20261128032600_plan_now_version.sql"],
+   "tests": ["apps/api/test/features/F12/plan-now-version.test.ts", "apps/api/test/features/F12/ops-plans-impact.test.ts",
+             "apps/api/test/features/F12/ops-plans-decide.test.ts", "apps/api/test/features/F12/ops-plans-read.test.ts",
+             "apps/api/test/features/F12/plan-trial.test.ts"]}
+ ]
+}
