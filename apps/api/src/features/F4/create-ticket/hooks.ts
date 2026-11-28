@@ -322,11 +322,19 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
         //   完了（K-165）：呼んだ人が完了にできるか（can.complete）と、完了の時刻と押した人の名前（completed）
         //   進める（K-387）：段を変えられるか（can.progress）・実績を入れられるか（can.actual）・AI の分の時間・保留の帯。帯と同じ 1 文で読む
         //   見せる相手（K-905）：見せているゲストのグループの id と名前・変えられるか（guest_share）。同じ 1 文の列（文は増やさない）
-        const extras = await withTenant(
-          appPool,
-          a.ctx,
-          async (cl) => (await cl.query<DetailExtras>(DETAIL_EXTRAS_SQL, [a.id])).rows[0],
-        );
+        //   上でチケットを読んだ後、この文の前に別の要求が消すと、見せる相手の関数（app.ticket_guest_share_state）が見えないとして 42501 で止まる。
+        //   読んだ後に消えたチケットは 404（guest-shares/read.ts の読む口と同じ扱い）。ほかの誤りはそのまま投げる
+        let extras: DetailExtras | undefined;
+        try {
+          extras = await withTenant(
+            appPool,
+            a.ctx,
+            async (cl) => (await cl.query<DetailExtras>(DETAIL_EXTRAS_SQL, [a.id])).rows[0],
+          );
+        } catch (e) {
+          if ((e as { code?: unknown })?.code === "42501") return fail(404, "not_found", "NOT_FOUND");
+          throw e;
+        }
         return {
           status: 200,
           body: {
