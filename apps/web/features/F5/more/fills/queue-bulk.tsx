@@ -124,8 +124,11 @@ function Band({ at, rows }: { at: "table" | "mobile"; rows: readonly QueueRow[] 
         <p>{pickedText(picked.length)}</p>
         <Button
           size="sm"
-          disabled={reading || flow !== null}
-          onClick={() => void preview("selected", inListOrder(rows, picked))}
+          // 小窓が開いている間も見た目は押せる形のまま（下絵と同じ・小窓が前に出るので押せない）。押しても確かめ直さない（二度押しの止めは小窓の主ボタン・K769-UI-009）
+          disabled={reading}
+          onClick={() => {
+            if (flow === null) void preview("selected", inListOrder(rows, picked));
+          }}
         >
           {PICKED_LABEL}
         </Button>

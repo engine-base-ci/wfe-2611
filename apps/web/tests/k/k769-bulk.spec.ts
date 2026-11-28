@@ -608,6 +608,9 @@ test("K769-UI-018 下絵との突き合わせ：bulk-done・bulk-partial（承�
   });
   await match(browser, "bulk-partial", async (pg, w) => {
     const b = await setup(pg);
+    // 下絵 bulk-partial のデータ：承認した物（EG-128）と先に決められていた物（EG-127）は一覧から消え、残りは AI の成果物 1 つと渡された行（下絵の QROWS の 2 つ目と 3 つ目）
+    b.queueRows = (rows) =>
+      b.approves.length === 0 ? rows : rows.filter((r) => r["id"] !== A_INLINE && r["id"] !== A_NODUE);
     b.on.approve = () => ({
       status: 201,
       body: {

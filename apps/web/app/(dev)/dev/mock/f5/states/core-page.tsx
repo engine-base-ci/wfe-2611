@@ -170,11 +170,13 @@ interface QueuePageProps {
   total: number;
   /** 頭の「続けて裁く」を押せる形にするか（0 件のときは出さない） */
   next?: boolean;
+  /** 頁の下の入口（NextBottom）を置くか。置くとスマホでは見出しのボタンが隠れる（more.css）。既定は next と同じ */
+  bottom?: boolean;
   children: ReactNode;
   dialog?: ReactNode;
 }
 
-export function QueuePage({ theme, total, next = true, children, dialog }: QueuePageProps) {
+export function QueuePage({ theme, total, next = true, bottom = next, children, dialog }: QueuePageProps) {
   return (
     <Toaster>
       <Shell
@@ -197,7 +199,7 @@ export function QueuePage({ theme, total, next = true, children, dialog }: Queue
           </header>
           <div className="k-ap-body">
             {children}
-            {next ? <NextBottom total={total} /> : null}
+            {next && bottom ? <NextBottom total={total} /> : null}
           </div>
         </section>
       </Shell>

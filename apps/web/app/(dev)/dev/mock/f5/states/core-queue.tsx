@@ -45,8 +45,11 @@ function Card({ rows = QROWS, chips = CHIPS_ALL, sortOpen = false, picked = [] }
 }
 
 export function queueView(id: string, theme: Theme): ReactNode | null {
+  // まとめて承認（bulk-*）は本番の今の決めに合わせ、頁の下の入口を置かない（K752-UI-014：スマホでも見出しのボタンから開く。
+  //   下の入口は K-730 に 2 つ目の置き場を足す決めが要る・K-752 の申し送り・PM の決め 2026-11-28）
+  const bottom = !id.startsWith("bulk-");
   const page = (body: ReactNode, dialog?: ReactNode, total = 9) => (
-    <QueuePage theme={theme} total={total} dialog={dialog}>
+    <QueuePage theme={theme} total={total} dialog={dialog} bottom={bottom}>
       {body}
     </QueuePage>
   );
