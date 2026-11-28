@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/members/**", "apps/web/features/F10/invite/**", "apps/web/app/(work)/members/page.tsx"], "tests": ["apps/web/tests/k/k818-members-list.spec.ts", "apps/web/tests/k/k420-members-invite.spec.ts", "apps/web/tests/k/k710-members-groups.spec.ts"]}
+ ]
+}
