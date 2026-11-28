@@ -6,6 +6,7 @@
   {
    "paths": [
     "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
     "08_api/openapi.yaml",
     "08_api/endpoints.json",
     "08_api/types.ts",

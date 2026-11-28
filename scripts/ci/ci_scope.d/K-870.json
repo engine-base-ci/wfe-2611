@@ -8,6 +8,7 @@
     "05_flow/flows.json",
     "05_flow/phase1.py",
     "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
     "apps/web/lib/nav.ts",
     "apps/web/lib/routes.ts",
     "apps/web/lib/built-routes.ts",
