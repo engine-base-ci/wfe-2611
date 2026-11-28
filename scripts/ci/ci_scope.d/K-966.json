@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F12/ops/**",
+    "apps/api/src/hooks/ops-workspace.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-workspace.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-workspace.test.ts",
+    "apps/api/test/features/F12/ops-ws.harness.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-966.json"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_workspaces_id.test.ts",
+    "apps/api/test/generated/get_ops_workspaces_id_members.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-966.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-966"
+ }
+}
