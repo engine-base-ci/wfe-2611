@@ -1,0 +1,46 @@
+{
+ "status": "PASS",
+ "run_id": "20260914-threepane-D072",
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass"
+  },
+  {
+   "tier": "B",
+   "status": "pass"
+  },
+  {
+   "tier": "C",
+   "status": "pass"
+  },
+  {
+   "tier": "T",
+   "status": "pass"
+  },
+  {
+   "tier": "flow G1-G10",
+   "status": "pass"
+  },
+  {
+   "tier": "mock S0-S5",
+   "status": "pass"
+  },
+  {
+   "tier": "ui_lint",
+   "status": "pass"
+  },
+  {
+   "tier": "links",
+   "status": "pass"
+  },
+  {
+   "tier": "wide",
+   "status": "pass"
+  },
+  {
+   "tier": "errors E1-E9",
+   "status": "pass"
+  }
+ ]
+}
