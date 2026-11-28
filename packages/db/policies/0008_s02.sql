@@ -1,0 +1,127 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table goal_kinds enable row level security;
+alter table goal_kinds force row level security;
+drop policy if exists goal_kinds_all_read on goal_kinds;
+create policy goal_kinds_all_read on goal_kinds for select using (coalesce(current_setting('app.user_id', true), '') <> '' AND (true));
+drop policy if exists goal_kinds_ops_write_insert on goal_kinds;
+create policy goal_kinds_ops_write_insert on goal_kinds for insert with check (current_setting('app.role', true) = 'ops');
+drop policy if exists goal_kinds_ops_write_update on goal_kinds;
+create policy goal_kinds_ops_write_update on goal_kinds for update using (current_setting('app.role', true) = 'ops') with check (current_setting('app.role', true) = 'ops');
+drop policy if exists goal_kinds_ops_write_delete on goal_kinds;
+create policy goal_kinds_ops_write_delete on goal_kinds for delete using (current_setting('app.role', true) = 'ops');
+
+alter table units enable row level security;
+alter table units force row level security;
+drop policy if exists units_tenant_read on units;
+create policy units_tenant_read on units for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists units_permission_write_insert on units;
+create policy units_permission_write_insert on units for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'units', scope_id, 'edit')));
+drop policy if exists units_permission_write_update on units;
+create policy units_permission_write_update on units for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'units', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'units', scope_id, 'edit')));
+drop policy if exists units_permission_write_delete on units;
+create policy units_permission_write_delete on units for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'units', scope_id, 'edit')));
+drop policy if exists units_ops_read_with_grant on units;
+create policy units_ops_read_with_grant on units for select using (app.ops_grant_ok(units.tenant_id));
+
+alter table rollup_kinds enable row level security;
+alter table rollup_kinds force row level security;
+drop policy if exists rollup_kinds_all_read on rollup_kinds;
+create policy rollup_kinds_all_read on rollup_kinds for select using (coalesce(current_setting('app.user_id', true), '') <> '' AND (true));
+drop policy if exists rollup_kinds_ops_write_insert on rollup_kinds;
+create policy rollup_kinds_ops_write_insert on rollup_kinds for insert with check (current_setting('app.role', true) = 'ops');
+drop policy if exists rollup_kinds_ops_write_update on rollup_kinds;
+create policy rollup_kinds_ops_write_update on rollup_kinds for update using (current_setting('app.role', true) = 'ops') with check (current_setting('app.role', true) = 'ops');
+drop policy if exists rollup_kinds_ops_write_delete on rollup_kinds;
+create policy rollup_kinds_ops_write_delete on rollup_kinds for delete using (current_setting('app.role', true) = 'ops');
+
+alter table goals enable row level security;
+alter table goals force row level security;
+drop policy if exists goals_tenant_read on goals;
+create policy goals_tenant_read on goals for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists goals_permission_write_insert on goals;
+create policy goals_permission_write_insert on goals for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goals', scope_id, 'edit')));
+drop policy if exists goals_permission_write_update on goals;
+create policy goals_permission_write_update on goals for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goals', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goals', scope_id, 'edit')));
+drop policy if exists goals_permission_write_delete on goals;
+create policy goals_permission_write_delete on goals for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goals', scope_id, 'edit')));
+drop policy if exists goals_ops_read_with_grant on goals;
+create policy goals_ops_read_with_grant on goals for select using (app.ops_grant_ok(goals.tenant_id));
+
+alter table goal_allocations enable row level security;
+alter table goal_allocations force row level security;
+drop policy if exists goal_allocations_tenant_read on goal_allocations;
+create policy goal_allocations_tenant_read on goal_allocations for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists goal_allocations_permission_write_insert on goal_allocations;
+create policy goal_allocations_permission_write_insert on goal_allocations for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_allocations', NULL, 'edit')));
+drop policy if exists goal_allocations_permission_write_update on goal_allocations;
+create policy goal_allocations_permission_write_update on goal_allocations for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_allocations', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_allocations', NULL, 'edit')));
+drop policy if exists goal_allocations_permission_write_delete on goal_allocations;
+create policy goal_allocations_permission_write_delete on goal_allocations for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_allocations', NULL, 'edit')));
+drop policy if exists goal_allocations_ops_read_with_grant on goal_allocations;
+create policy goal_allocations_ops_read_with_grant on goal_allocations for select using (app.ops_grant_ok(goal_allocations.tenant_id));
+
+alter table goal_contributions enable row level security;
+alter table goal_contributions force row level security;
+drop policy if exists goal_contributions_tenant_read on goal_contributions;
+create policy goal_contributions_tenant_read on goal_contributions for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists goal_contributions_permission_write_insert on goal_contributions;
+create policy goal_contributions_permission_write_insert on goal_contributions for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_contributions', NULL, 'edit')));
+drop policy if exists goal_contributions_permission_write_update on goal_contributions;
+create policy goal_contributions_permission_write_update on goal_contributions for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_contributions', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_contributions', NULL, 'edit')));
+drop policy if exists goal_contributions_permission_write_delete on goal_contributions;
+create policy goal_contributions_permission_write_delete on goal_contributions for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_contributions', NULL, 'edit')));
+drop policy if exists goal_contributions_ops_read_with_grant on goal_contributions;
+create policy goal_contributions_ops_read_with_grant on goal_contributions for select using (app.ops_grant_ok(goal_contributions.tenant_id));
+
+alter table goal_versions enable row level security;
+alter table goal_versions force row level security;
+drop policy if exists goal_versions_tenant_read on goal_versions;
+create policy goal_versions_tenant_read on goal_versions for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists goal_versions_permission_write_insert on goal_versions;
+create policy goal_versions_permission_write_insert on goal_versions for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_versions', NULL, 'edit')));
+drop policy if exists goal_versions_permission_write_update on goal_versions;
+create policy goal_versions_permission_write_update on goal_versions for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_versions', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_versions', NULL, 'edit')));
+drop policy if exists goal_versions_permission_write_delete on goal_versions;
+create policy goal_versions_permission_write_delete on goal_versions for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'goal_versions', NULL, 'edit')));
+drop policy if exists goal_versions_ops_read_with_grant on goal_versions;
+create policy goal_versions_ops_read_with_grant on goal_versions for select using (app.ops_grant_ok(goal_versions.tenant_id));
+
+alter table hypotheses enable row level security;
+alter table hypotheses force row level security;
+drop policy if exists hypotheses_tenant_read on hypotheses;
+create policy hypotheses_tenant_read on hypotheses for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists hypotheses_permission_write_insert on hypotheses;
+create policy hypotheses_permission_write_insert on hypotheses for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'hypotheses', scope_id, 'edit')));
+drop policy if exists hypotheses_permission_write_update on hypotheses;
+create policy hypotheses_permission_write_update on hypotheses for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'hypotheses', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'hypotheses', scope_id, 'edit')));
+drop policy if exists hypotheses_permission_write_delete on hypotheses;
+create policy hypotheses_permission_write_delete on hypotheses for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'hypotheses', scope_id, 'edit')));
+drop policy if exists hypotheses_ops_read_with_grant on hypotheses;
+create policy hypotheses_ops_read_with_grant on hypotheses for select using (app.ops_grant_ok(hypotheses.tenant_id));
+
+alter table measures enable row level security;
+alter table measures force row level security;
+drop policy if exists measures_tenant_read on measures;
+create policy measures_tenant_read on measures for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND scope_id = ANY(visible_scopes(app.user_id()))));
+drop policy if exists measures_permission_write_insert on measures;
+create policy measures_permission_write_insert on measures for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'measures', scope_id, 'edit')));
+drop policy if exists measures_permission_write_update on measures;
+create policy measures_permission_write_update on measures for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'measures', scope_id, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'measures', scope_id, 'edit')));
+drop policy if exists measures_permission_write_delete on measures;
+create policy measures_permission_write_delete on measures for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'measures', scope_id, 'edit')));
+drop policy if exists measures_ops_read_with_grant on measures;
+create policy measures_ops_read_with_grant on measures for select using (app.ops_grant_ok(measures.tenant_id));
+
+alter table validations enable row level security;
+alter table validations force row level security;
+drop policy if exists validations_tenant_read on validations;
+create policy validations_tenant_read on validations for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists validations_permission_write_insert on validations;
+create policy validations_permission_write_insert on validations for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'validations', NULL, 'edit')));
+drop policy if exists validations_permission_write_update on validations;
+create policy validations_permission_write_update on validations for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'validations', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'validations', NULL, 'edit')));
+drop policy if exists validations_permission_write_delete on validations;
+create policy validations_permission_write_delete on validations for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'validations', NULL, 'edit')));
+drop policy if exists validations_ops_read_with_grant on validations;
+create policy validations_ops_read_with_grant on validations for select using (app.ops_grant_ok(validations.tenant_id));
