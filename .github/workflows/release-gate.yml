@@ -1,0 +1,36 @@
+# .github/workflows/release-gate.yml — 本番に出す前の関門（05_flow/build_testplan.py が生成。手で直さない・D-128.113）
+# 本番へのデプロイは、この関門が緑のときだけにする（Vercel の本番デプロイを、このワークフローの成功に結び付ける）
+name: release-gate
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+  release:
+    types: [published]
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  release-gate:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: "ゼロトラストの実装の残りが 0（--strict）"
+        run: pnpm ci:zt:strict
+      - name: "権限の試験（契約の全 API）"
+        run: pnpm ci:authz
+      - name: "契約の外の道すじが無い"
+        run: pnpm ci:endpoints
+      - name: "秘密の混入が無い"
+        run: pnpm ci:secret-scan
+      - name: "本番で使う部品に moderate 以上の弱点が無い"
+        run: pnpm audit --prod --audit-level=moderate

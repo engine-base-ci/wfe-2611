@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["scripts/dev/up.sh"], "tests": ["apps/web/tests/k/k340-local-texts.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k340-local-texts.spec.ts": "手元の立ち上げ scripts/dev/up.sh（data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json・画面のコード apps/web/{app,features,components,lib} を読む（古い文が残っていないか）。どれも jobs.web.paths か data_links に在る（実ブラウザの試験は web の組が流す）・K-340"
+ }
+}
