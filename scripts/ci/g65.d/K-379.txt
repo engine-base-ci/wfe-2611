@@ -1,0 +1,1 @@
+python3 scripts/ci/k379_bridge_gate_test.py
