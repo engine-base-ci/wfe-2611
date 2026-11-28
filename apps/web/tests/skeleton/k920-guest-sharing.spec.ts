@@ -199,8 +199,9 @@ test("K920-M3-03 見せる前の社内の話・社内の変更は先方に効か
   expect(await shareOnScreen(page, [`Ａ社 m3-03`])).toBe(200);
   expect((await postTicketMessage(page, r.me.token, r.t, AFTER)).status).toBe(201);
   expect(await guestOpens(r.a1, r.t)).toBe(200);
-  await expect(r.a1.page.getByText(AFTER, { exact: true })).toBeVisible();
-  expect(await textOf(r.a1.page), "見せる前の社内の話は見えない").not.toContain(BEFORE);
+  // 口の入口は字を NFKC でそろえて書く（op.ts の normalize・「：」は「:」になる）。見えるのはそろえた字
+  await expect(r.a1.page.getByText(AFTER.normalize("NFKC"), { exact: true })).toBeVisible();
+  expect(await textOf(r.a1.page), "見せる前の社内の話は見えない").not.toContain(BEFORE.normalize("NFKC"));
   // 社内が期限・担当を変える（ゲストの答えは変わらず、期限・担当の字は出ない）
   const newDue = new Date(Date.now() + 9 * 3600_000 + 30 * 86400_000).toISOString().slice(0, 10);
   await admin("update tickets set due_on = $2::date where id = $1", [r.t, newDue]);
