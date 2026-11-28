@@ -1,0 +1,13 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/bridge/src/request-draft.ts",
+    "apps/bridge/src/loop.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/request-draft.test.ts"
+   ]
+  }
+ ]
+}
