@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>幅を変えて見る</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#E9ECF1;font-family:'M PLUS 2','Hiragino Sans',sans-serif;color:#131B27}
+.bar{position:sticky;top:0;z-index:5;background:#131B27;color:#fff;padding:8px 16px;display:flex;gap:12px;align-items:center;font-size:12.5px;flex-wrap:wrap}
+.bar b{font-weight:600}.bar a{color:#fff;opacity:.8}.bar .sp{flex:1}
+.bar button{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:rgba(255,255,255,.8);cursor:pointer;min-height:24px}
+.bar button:hover,.bar button[aria-pressed="true"]{background:#fff;color:#131B27}
+.bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.wrap{padding:20px;display:flex;justify-content:center;align-items:flex-start;min-height:calc(100vh - 40px)}
+.dev{background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;border:10px solid #131B27;transition:width .2s}
+.dev.pc{border-width:6px;border-radius:10px}
+iframe{display:block;border:0;width:100%;height:100%;background:#fff}
+.meta{font-size:11.5px;color:#4A5563;text-align:center;margin-top:10px}
+</style></head><body>
+<div class="bar"><b>幅を変えて見る</b><span id="name"></span><span class="sp"></span>
+<span>幅</span><button data-w="375" data-h="812">スマホ 375</button><button data-w="768" data-h="1024">タブレット 768</button><button data-w="1024" data-h="768">タブレット横 1024</button><button data-w="1440" data-h="900">PC 1440</button><button data-w="1920" data-h="1000">PC 1920</button>
+<a id="open" href="#" target="_top">この幅を閉じて開く</a><a href="v1-index.html" target="_top">手順の一覧</a></div>
+<div class="wrap"><div><div class="dev" id="dev"><iframe id="fr" title="画面"></iframe></div><div class="meta" id="meta"></div></div></div>
+<script>
+const q=new URLSearchParams(location.search); const p=q.get('p')||'v1-today.html'; let w=+(q.get('w')||375);
+const fr=document.getElementById('fr'), dev=document.getElementById('dev');
+document.getElementById('name').textContent=p.replace(/^v1-|\.html$/g,''); document.getElementById('open').href=p;
+fr.src=p;
+const apply=()=>{ const b=[...document.querySelectorAll('.bar button')].find(x=>+x.dataset.w===w)||document.querySelector('.bar button'); const h=+b.dataset.h;
+ document.querySelectorAll('.bar button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+ dev.classList.toggle('pc',w>=1024); dev.style.width=(w+(w>=1024?12:20))+'px'; dev.style.height=(h+(w>=1024?12:20))+'px';
+ document.getElementById('meta').textContent=`${w} × ${h}px · 横溢れ：`+(fr.contentDocument?(fr.contentDocument.documentElement.scrollWidth-fr.contentDocument.documentElement.clientWidth)+'px':'—');
+ history.replaceState(null,'',`?p=${encodeURIComponent(p)}&w=${w}`); };
+document.querySelectorAll('.bar button').forEach(b=>b.addEventListener('click',()=>{w=+b.dataset.w;apply();}));
+fr.addEventListener('load',()=>setTimeout(apply,300)); apply();
+</script></body></html>
