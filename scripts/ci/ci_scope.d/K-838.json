@@ -1,0 +1,25 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-leave.ts",
+    "apps/api/src/features/F10/me/leave.ts",
+    "packages/db/migrations/20261126003800_me_leave.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-leave.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-leave.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_me_workspaces_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-838.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-838"
+ }
+}
