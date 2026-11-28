@@ -247,7 +247,8 @@ test("K482-UI-004 まとめ方・担当者：まとめ方は「親子」（選�
   await openGantt(page);
   const group = tools(page).getByRole("combobox", { name: "まとめ方", exact: true });
   await expect(group).toHaveValue("親子");
-  for (const name of ["担当者", "節目"]) await expect(group.getByRole("option", { name, exact: true })).toBeDisabled();
+  for (const name of ["担当者", "節目"])
+    await expect(group.getByRole("option", { name, exact: true })).toHaveJSProperty("disabled", true); // option の disabled は toBeDisabled が見ない（Playwright 1.63）
   await tools(page).getByRole("combobox", { name: "担当者", exact: true }).selectOption({ label: "鈴木" });
   await expect.poll(() => queryOf(c.list[c.list.length - 1]!)["assignee_id"]).toBeTruthy();
 });
@@ -452,16 +453,16 @@ test("K482-UI-014 日を入れる：「EG-131 に日を入れる」を押すと�
   await tools(page).getByRole("button", { name: "開始・期限が無い 4 件", exact: true }).click();
   await page.getByRole("button", { name: "EG-131 に日を入れる", exact: true }).click();
   const d = page.getByRole("dialog", { name: "期限を決めますか", exact: true });
-  await d.getByLabel("期限", { exact: true }).fill("2026-11-12");
+  await d.getByRole("textbox", { name: "期限", exact: true }).fill("2026-11-12");
   await d.getByRole("button", { name: "11/12 にする", exact: true }).click();
   await expect(d.getByText(TEXT.noReason, { exact: true })).toBeVisible();
-  await d.getByLabel("期限", { exact: true }).fill("2026-10-30");
+  await d.getByRole("textbox", { name: "期限", exact: true }).fill("2026-10-30");
   await d.getByRole("textbox", { name: "理由", exact: true }).fill("来期の提案日を決めた");
   await d.getByRole("button", { name: "10/30 にする", exact: true }).click();
   await expect(d.getByText(TEXT.past, { exact: true })).toBeVisible();
   expect(c.patches).toEqual([]);
   // 手元の確かめを抜けた日を、口が 409 E-VAL-012 で断った：同じ文が期限の欄の下に出て、小窓は開いたまま
-  await d.getByLabel("期限", { exact: true }).fill("2026-11-12");
+  await d.getByRole("textbox", { name: "期限", exact: true }).fill("2026-11-12");
   c.next = () => fail(409, "E-VAL-012");
   await d.getByRole("button", { name: "11/12 にする", exact: true }).click();
   await expect.poll(() => c.patches.length).toBe(1);

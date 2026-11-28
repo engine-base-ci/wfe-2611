@@ -247,7 +247,7 @@ export interface LiveCreate {
 function Unread({ onRetry }: { onRetry: () => void }) {
   return (
     <p className="k-f11c-sub-text">
-      読めませんでした{" "}
+      <span>読めませんでした</span>{" "}
       <Button size="sm" variant="outlined" onClick={onRetry}>
         もう一度
       </Button>

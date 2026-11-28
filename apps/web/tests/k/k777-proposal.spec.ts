@@ -35,12 +35,12 @@ const AI_SAY = "11 月分のチケットを見て案を作りました。欄に�
 
 async function withProposal(page: Page, pr?: Record<string, unknown>, w = 1440): Promise<CreateTalkMock> {
   const t = await mockCreateTalk(page);
+  // 行の id は読み直しでも同じ（本物の口と同じ）。読むたびに作り直すと id が乱数で替わり、使った結果を覚えたカードが別の案に見える（K-762 の流れの読み直し）
+  const messages = [ME_LINE(), AI_LINE(AI_SAY), proposalMsg(pr)];
   t.on.view = () => ({
     status: 200,
     body: {
-      data: draftView({
-        messages: [ME_LINE(), AI_LINE(AI_SAY), proposalMsg(pr)],
-      }),
+      data: draftView({ messages }),
     },
   });
   await openCreate(page, w);

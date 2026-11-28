@@ -335,7 +335,8 @@ test("K905-UI-006 見せるのをやめる：確かめ「セイコー株式会�
   await sec(page).getByRole("button", { name: "見せるのをやめる", exact: true }).click();
   const before = s.details;
   await page.getByRole("alertdialog").getByRole("button", { name: "見せるのをやめる", exact: true }).click();
-  await expect(sec(page).locator(".k-badge")).toHaveText("社内だけ");
+  // 見せている間は「見えない物」の札（見せない・K-874）も .k-badge なので、札の並びが「社内だけ」1 つになるのを待つ
+  await expect(sec(page).locator(".k-badge")).toHaveText(["社内だけ"]);
   await page.waitForLoadState("networkidle");
   expect(s.details - before, "外した後に詳細を 1 回だけ読み直す").toBe(1);
   expect(s.patches).toHaveLength(1);
@@ -352,7 +353,8 @@ test("K905-UI-007 複数に見せているとき「見せるのをやめる」�
   await sec(page).getByRole("button", { name: "見せるのをやめる", exact: true }).click();
   await expect(page.getByRole("alertdialog")).toContainText("2 つのゲストのグループに見せるのをやめますか");
   await page.getByRole("alertdialog").getByRole("button", { name: "見せるのをやめる", exact: true }).click();
-  await expect(sec(page).locator(".k-badge")).toHaveText("社内だけ");
+  // 見せている間は「見えない物」の札（見せない・K-874）も .k-badge なので、札の並びが「社内だけ」1 つになるのを待つ
+  await expect(sec(page).locator(".k-badge")).toHaveText(["社内だけ"]);
   expect([...(s.patches[0]!.body.remove ?? [])].sort()).toEqual([GG.seiko.id, GG.kyogi.id].sort());
 });
 
@@ -447,7 +449,8 @@ test("K905-UI-012 小窓を開いたときに見せる相手の口が読めな�
   await expect(page.locator(DLG).getByRole("checkbox")).toHaveCount(0);
   await expect(decide(page)).toBeDisabled();
   await expect(sec(page).locator(".k-badge")).toHaveText("社内だけ");
-  await expect(page.getByRole("heading", { level: 1, name: /11 月分の請求書を送る/ })).toBeVisible();
+  // 小窓（モーダル）の後ろは読み上げの木から外れるので、役割でなく要素で、詳細の題がそのまま出ていることを見る
+  await expect(page.locator("h1", { hasText: /11 月分の請求書を送る/ })).toBeVisible();
   s.on.read = () => ({ status: 200, body: view(s) });
   await page.locator(DLG).getByRole("button", { name: "もう一度読む", exact: true }).click();
   await expect(page.locator(DLG).getByRole("checkbox")).toHaveCount(3);

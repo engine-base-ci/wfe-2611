@@ -34,6 +34,15 @@ export const RED_TEXT = "rgb(185, 28, 28)";
 
 export const overflowX = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+/** 時計を止めた試験で、条件が満たされるまで 16 ミリ秒ずつ時計を進める。口の答え・動的に読む部品は止めた時計の
+ *  setTimeout の上で描かれる（TanStack Query の知らせ・next/dynamic）ので、時計を進めないと出てこない */
+export async function stepUntil(page: Page, done: () => Promise<boolean>, steps = 300): Promise<void> {
+  for (let i = 0; i < steps; i++) {
+    if (await done()) return;
+    await page.clock.runFor(16);
+  }
+  expect(await done(), `時計を ${steps * 16} ミリ秒進めても出ない`).toBe(true);
+}
 export const box = async (loc: Locator) => (await loc.first().boundingBox())!;
 export const cssOf = (loc: Locator, prop: string) =>
   loc.first().evaluate((el, p) => getComputedStyle(el).getPropertyValue(p), prop);

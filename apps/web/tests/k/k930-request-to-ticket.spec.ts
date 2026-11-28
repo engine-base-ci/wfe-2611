@@ -98,7 +98,10 @@ async function mockWorld(page: Page, w: World) {
     const body = (req.postDataJSON() as Record<string, unknown> | null) ?? null;
     if (p === "/api/v1/members" && method === "GET") {
       w.calls.push({ method, path: p, body: null });
-      return send(route, w.once.members ?? okMeta(MEMBERS, { limit: 200 }));
+      // once は 1 回だけ当てる（ほかの口の take と同じ。消さないと「もう一度」の読み直しも 503 のまま）
+      const once = w.once.members;
+      delete w.once.members;
+      return send(route, once ?? okMeta(MEMBERS, { limit: 200 }));
     }
     if (p === "/api/v1/shell" && method === "GET") {
       w.calls.push({ method, path: p, body: null });

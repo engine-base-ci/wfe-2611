@@ -759,11 +759,10 @@ test("K571-UI-025 口の数：詳細を開いたときの口は台帳の 6 本�
   const api = m.seen.filter((s) => !s.includes("get-session"));
   const kinds = new Set(api.map((s) => s.replace(TID, ":id")));
   expect([...kinds].sort()).toEqual(
-    // 外枠の 3 本（approvals/queue・bridge/devices・scopes）は getShell 1 本に（K-466）。障害の帯の service-status（K-957）・
+    // 外枠の 3 本（approvals/queue・bridge/devices・scopes）は getShell 1 本に（K-466）。障害の帯の稼働状況は getShell の答え service_status に入った（K-957 fix 0631a39f82・口を増やさない PM の決め 2026-11-28）。
     // 決定ログの区画の decisions（K-397）・やり取りの timeline（K-392）は、それぞれの葉が足した口。本文・項目のための口は 0 のまま
     [
       "GET /api/auth-ext/me",
-      "GET /api/v1/service-status",
       "GET /api/v1/shell",
       "GET /api/v1/tickets/:id",
       "GET /api/v1/tickets/:id/decisions",

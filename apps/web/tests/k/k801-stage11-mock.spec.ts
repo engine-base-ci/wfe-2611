@@ -114,8 +114,24 @@ const sources = (dir: string): string[] =>
     const p = join(dir, n);
     return statSync(p).isDirectory() ? sources(p) : /\.(tsx?|css)$/.test(n) ? [p] : [];
   });
-const runPy = (args: string[]) =>
-  execFileSync("python3", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 300_000 });
+const runPy = (args: string[]): string => {
+  try {
+    return execFileSync("python3", args, {
+      cwd: ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 300_000,
+    });
+  } catch (e) {
+    // 赤のときは検査の出した行を試験の記録に残す（CI の報告に「Command failed」だけが出て元が読めなかった・統合の枝 2026-11-28）
+    const x = e as { stdout?: string; stderr?: string; signal?: string | null; status?: number | null };
+    const tail = (s?: string) => (s ?? "").split("\n").slice(-40).join("\n");
+    throw new Error(
+      `python3 ${args.join(" ")} が赤（終わりの番号 ${x.status ?? "-"}・信号 ${x.signal ?? "-"}）\n${tail(x.stdout)}\n${tail(x.stderr)}`,
+      { cause: e },
+    );
+  }
+};
 
 async function guard(page: Page) {
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
@@ -324,7 +340,10 @@ test("K801-UI-005 メンバー（mb-role-menu）：役割の ▾ は 管理者�
     await expect(menu.getByRole("menuitem", { name, exact: true }), name).toBeVisible();
   }
   await expect(menu.getByRole("menuitem", { name: /ゲスト/ })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "管理者 ▾", exact: true })).toHaveAttribute("aria-disabled", "true");
+  // 役割の ▾ の読み上げの名前は「〈名前〉の役割を変える（いま 〈役割〉）」（K-818）
+  await expect(
+    page.getByRole("button", { name: "高本 聖斗の役割を変える（いま 管理者）", exact: true }),
+  ).toHaveAttribute("aria-disabled", "true");
 });
 
 test("K801-UI-006 メンバーの 1 人（md-view）：区画は グループと役割・担当しているもの・分身・ログイン・最近の記録 の 5 つで、「できること」の欄も「取引先」の行も無い。2 段階認証を戻す（md-2fa-reset）は押せない形で、確かめの小窓は開かない", async ({
@@ -400,7 +419,8 @@ test("K801-UI-010 ワークスペースの切り替え（me-org）：入って�
   await openState(page, "me-org", 1440);
   const menu = page.getByRole("menu", { name: "ワークスペースを切り替える", exact: true });
   await expect(menu).toBeVisible();
-  await expect(menu.getByRole("button", { name: /京蟻システム株式会社/ })).toBeEnabled();
+  // ほかのワークスペースの行は押せる項目（role="menuitem"・K-844）
+  await expect(menu.getByRole("menuitem", { name: /京蟻システム株式会社/ })).toBeEnabled();
   // 届いた招待を押した先は代表の答え待ち（D-154.81）。答えが出たらリンクに戻す
   await expect(menu.getByRole("link", { name: /届いた招待/ })).toHaveCount(0);
   const invited = menu.locator('[aria-disabled="true"]').filter({ hasText: "届いた招待" });

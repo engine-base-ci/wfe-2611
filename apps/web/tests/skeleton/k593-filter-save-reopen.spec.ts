@@ -119,7 +119,8 @@ test("K593-M3-02 保存する（自分だけ）：絞った条件に名前を付
     [w.me.memberId, name],
   );
   expect(row, "DB に 1 件").toMatchObject({ share: "self", member_id: w.me.memberId });
-  expect(row!.filters.params, "絞りがそのまま入っている").toMatchObject({ done: false });
+  // 絞りは URL の字のまま入る（K-479：params は知っている欄の文字だけ・open-view.ts の readFilters）
+  expect(row!.filters.params, "絞りがそのまま入っている").toMatchObject({ done: "false" });
   const mine = (await viewsFor(page, w.me.token)).filter((v) => v.name === name);
   expect(mine, "別の GET の読み直しに 1 件").toHaveLength(1);
   // 口の答えは 13 個の鍵を返す（id・scope_id・filters …）。必要な鍵だけを比べる（toEqual は余分な鍵で落ちる）
