@@ -1,0 +1,71 @@
+{
+ "meta": {
+  "project": "Kaname",
+  "created_at": "2026-11-10",
+  "skill_version": "v3",
+  "total_features": 134,
+  "parallel_groups": 16
+ },
+ "context": {
+  "project_type": "SaaS（マルチテナント・AI社員・運営コンソール）",
+  "scale": "大規模（59 画面・83 表・56 endpoint）",
+  "priority": "quality"
+ },
+ "decision_log": [
+  {
+   "decision": "Group A に関門 8 本と権限の土台を置き、Backend を用事ごとの縦割りに",
+   "reason": "外界に出る道は関門だけ。権限は DB 層で 1 回",
+   "alternatives": [
+    "機能ごとに認可を書く"
+   ],
+   "tradeoffs": "Foundation が重い（Wave 0〜1）",
+   "source": [
+    "D-050.2",
+    "D-073.1"
+   ]
+  },
+  {
+   "decision": "UI は画面ごと 1 PR",
+   "reason": "モックと 1 対 1・役割ごとの中身・状態を落とさない",
+   "alternatives": [
+    "用事ごとに画面をまとめる"
+   ],
+   "tradeoffs": "PR 数が多い（59）",
+   "source": [
+    "D-053.1",
+    "D-073.8"
+   ]
+  },
+  {
+   "decision": "結線（D）を独立機能に",
+   "reason": "部品を作っても価値経路が通らないと stub のまま完了に見える",
+   "alternatives": [
+    "結合テストだけ"
+   ],
+   "tradeoffs": "結線に工数が要る",
+   "source": [
+    "D-010.1",
+    "D-012.1"
+   ]
+  }
+ ],
+ "decomposition_patterns": [
+  {
+   "pattern_name": "関門先行 Foundation",
+   "applicable_to": "外部に副作用を出す SaaS",
+   "description": "C1〜C8 を最初に作り、迂回を CI で落とす"
+  },
+  {
+   "pattern_name": "用事ごとの縦割り Backend ＋ 画面ごとの UI ＋ 結線 D",
+   "applicable_to": "モック先行のプロジェクト",
+   "description": "B は用事、C は画面、D が両者を実経路でつなぐ"
+  }
+ ],
+ "research": {
+  "sources": [],
+  "findings": [
+   "結線機能を独立させないと stub のまま完了に見える（本スキルの汎用規則）"
+  ],
+  "research_date": "2026-11-10"
+ }
+}
