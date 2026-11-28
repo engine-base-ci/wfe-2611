@@ -516,7 +516,7 @@ test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：
   expect(names).toEqual(["期限切れ", "今日まで", "自分が承認", "AI が動いている"]);
   for (const c of await cards.locator(":scope > *").all()) await expect(c).not.toHaveAttribute("aria-disabled", "true");
   expect((await cards.innerText()).replace(/期限切れ|今日まで|自分が承認|AI が動いている/g, "").trim()).toBe("");
-  const bar = page.locator('[aria-label="自分に関わるものの絞り込み"]');
+  const bar = page.locator('.k-list-filter[aria-label="自分に関わるものの絞り込み"]');
   await expect(bar).toContainText("自分に関わるもの");
   const chips = page.getByRole("group", { name: "絞りの札", exact: true });
   for (const t of ["すべて", "自分が担当", "AI に任せている", "自分が承認"])
@@ -826,7 +826,7 @@ for (const check of ["empty", "fail"] as const) {
     await expect(table(page).getByRole("columnheader")).toHaveText(COLUMNS);
     await expect(rowsOf(page)).toHaveCount(0);
     await expect(page.locator('[aria-label="数の札"]')).toBeVisible();
-    await expect(page.locator('[aria-label="自分に関わるものの絞り込み"]')).toBeVisible();
+    await expect(page.locator('.k-list-filter[aria-label="自分に関わるものの絞り込み"]')).toBeVisible();
     await expect(page.getByRole("region", { name: "自分の承認を待っているもの" })).toBeVisible();
     await expect(page.getByText("ようこそ")).toHaveCount(0);
     await expect(page.locator('[data-state="empty"]')).toHaveCount(0);
