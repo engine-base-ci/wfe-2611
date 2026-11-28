@@ -165,8 +165,11 @@ export async function mockStopped(page: Page, o: StopOptions = {}): Promise<Stop
       },
     },
   };
+  // getTicket を読んだ数は本当の要求で数える（土台は実行の一覧の答えを作るときにも on.ticket を読む・同じ形を数えない）
+  page.on("request", (r) => {
+    if (r.method() === "GET" && new URL(r.url()).pathname === `/api/v1/tickets/${TICKET}`) s.ticketReads++;
+  });
   api.on.ticket = () => {
-    s.ticketReads++;
     const base = ticketOf(band) as unknown as { ticket: Record<string, unknown> } & Record<string, unknown>;
     return ok(
       withBand(band, {
