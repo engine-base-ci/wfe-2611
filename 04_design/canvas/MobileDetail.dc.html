@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>スマホ チケットの詳細</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:#131B27;font-size:13px;line-height:1.6}
+a{color:#22345C}a:hover{color:#1A2848}
+button{font-family:inherit}
+/* kn-narrow */
+@media (max-width: 767px) { input, textarea, select { font-size: 16px !important } }
+@media (max-width: 767px) { select { min-width: 0; max-width: 100% } label:has(> select) { min-width: 0 } }
+</style>
+</helmet>
+<div style="width: 100%; max-width: 390px; height: 844px; background: #FFFFFF; display: flex; flex-direction: column; overflow: hidden">
+ <div class="kn-mbar" style="height: 48px; flex: none; background: #FFFFFF; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; box-sizing: border-box"><span aria-hidden="true" style="width: 24px; height: 24px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px; font-weight: 700">E</span><span style="flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 600; color: #131B27">ENGINE BASE</span><span style="display: flex; align-items: center"><button type="button" aria-label="探す" style="width: 44px; height: 44px; border: 0; background: transparent; color: #4A5563; display: grid; place-items: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></button><a href="MbNotify.dc.html" aria-label="お知らせ（3 件）" style="position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><b style="position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; border-radius: 9999px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</b></a><a href="TopMe.dc.html" aria-label="自分のメニュー" style="display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 4px; color: #4A5563; text-decoration: none"><span style="width: 28px; height: 28px; border-radius: 9999px; background: #6B5B99; color: #FFFFFF; display: grid; place-items: center; font-size: 12px">高</span>▾</a></span></div>
+ <div style="display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #EDF0F4">
+  <a href="MobileList.dc.html" aria-label="一覧へ戻る" style="text-decoration: none; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></a>
+  <span style="font-size: 12px; color: #4A5563">営業 › EG-128</span>
+  <button type="button" aria-label="高本のAI と話す" style="margin-left: auto; width: 44px; height: 44px; border: 0; background: transparent; color: #131B27"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg></button>
+ </div>
+ <div style="flex: 1; overflow: auto; padding: 10px 16px 16px">
+  <h1 style="font-size: 18px; margin: 0 0 10px; line-height: 1.45">セイコー様へ 11月分の請求書を送る</h1>
+  <div role="status" style="border: 1px solid #F3D3A7; background: #FCEBD5; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px">
+   <b style="color: #7A4A05">あなたの承認を待っています</b>
+   <div style="color: #7A4A05; font-size: 12px; margin: 2px 0 8px">確認 ① 2 件確実・② 1 件 AI 判定・③ 1 件 人が見る</div>
+   <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+    <button type="button" style="height: 44px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; font-size: 13px; font-weight: 500">承認して送る</button>
+    <button type="button" style="height: 44px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; font-size: 13px; color: #131B27">自分で直す</button>
+    <button type="button" style="height: 44px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; font-size: 13px; color: #131B27">差し戻す</button>
+    <button type="button" style="height: 44px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; font-size: 13px; color: #131B27">止める</button>
+   </div>
+  </div>
+  <div style="display: grid; grid-template-columns: 72px 1fr; gap: 8px; align-items: center; padding-bottom: 10px">
+   <span style="color: #4A5563">状態</span><span><span style="font-size: 12px; border-radius: 9999px; padding: 2px 8px; background: #FCEBD5; color: #7A4A05">承認待ち</span></span>
+   <span style="color: #4A5563">担当者</span><span>高本 <span style="font-size: 11px; border: 1px solid #DDE2E9; border-radius: 9999px; padding: 0 6px; color: #4A5563">高本のAI に任せている</span></span>
+   <span style="color: #4A5563">期限</span><span style="color: #B91C1C; font-weight: 500">11/01（1 日過ぎ）</span>
+  </div>
+  <a href="TicketDetail.dc.html" style="border: 0; background: transparent; color: #22345C; font-size: 12px; padding: 0 0 10px; text-decoration: underline; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; cursor: pointer">ほかの項目（7）を開く</a>
+  <section style="border-top: 1px solid #DDE2E9; padding: 12px 0"><h3 style="font-size: 13px; margin: 0 0 4px">目的</h3><p style="margin: 0">セイコー様に 11 月分の保守費を請求する</p></section>
+  <section style="border-top: 1px solid #DDE2E9; padding: 12px 0"><h3 style="font-size: 13px; margin: 0 0 4px">完了の条件</h3><p style="margin: 0">金額が見積（EG-097）と一致し、インボイスの記載事項を満たした PDF が山田様に送られている</p></section>
+  <section style="border-top: 1px solid #DDE2E9; padding: 12px 0"><h3 style="font-size: 13px; margin: 0 0 4px">成果物</h3><p style="margin: 0">請求書 No.2026-1101.pdf（1,826,000 円）　<a href="MbApproveOne.dc.html">中身を見る</a></p></section>
+  <section style="border-top: 1px solid #DDE2E9; padding: 12px 0; display: flex; flex-direction: column; gap: 4px"><h3 style="font-size: 13px; margin: 0">確認の結果</h3>
+   <span>✓ 金額が見積と一致　<span style="font-size: 11px; color: #4A5563">① 確実</span></span>
+   <span>✓ インボイスの必須記載事項　<span style="font-size: 11px; color: #4A5563">① 確実</span></span>
+   <span>✓ 宛名と敬称　<span style="font-size: 11px; color: #4A5563">② AI 判定</span></span>
+   <span>□ 送る前に PDF を目で見る　<span style="font-size: 11px; color: #4A5563">③ 人</span></span></section>
+  <section style="border-top: 1px solid #DDE2E9; padding: 12px 0"><h3 style="font-size: 13px; margin: 0 0 6px; display: flex">やり取りと記録<a href="MbTalk.dc.html" style="margin-left: auto; font-weight: 400; font-size: 12px">やり取りを開く ›</a></h3>
+   <div style="color: #4A5563; font-size: 12px">11/01 09:12　高本のAI が成果物を作った（12 分）</div>
+   <div style="color: #4A5563; font-size: 12px">11/01 09:13　状態を「承認待ち」にした</div></section>
+ </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
