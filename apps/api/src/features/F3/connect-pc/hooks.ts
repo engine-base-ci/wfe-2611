@@ -19,6 +19,7 @@ import {
   releaseState,
 } from "../../../auth/bridge-release.js";
 import { cleanLabel, newCode, newDeviceToken, normalizeCode, normalizeMachineId, sha256 } from "./code.js";
+import { rawBody } from "../../F5/delegate/bridge.js";
 
 /** この版より古い Bridge には仕事を渡さない（apps/bridge/src/loop.ts の BRIDGE_PROTOCOL と揃える） */
 export const BRIDGE_PROTOCOL_MIN = 5;
@@ -154,7 +155,10 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
         const sid = a.ctx.sessionId;
         if (!sid) return { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
         const outdated = !(Number(a.input["protocol"]) >= BRIDGE_PROTOCOL_MIN);
-        const raw = a.input["health"];
+        // 自己診断の行は Bridge が書いたとおりに残す：入口（op.ts）は字を NFKC でそろえるので「（Claude in Chrome）」が「(Claude in Chrome)」になり、
+        //   画面が行の名前で Chrome の行を見つけられず一手が出なかった（K1150-M1-03）。正規化の前の体を読む（K-742 の rawBody と同じ作り）
+        const body = await rawBody(a);
+        const raw = "health" in body ? body["health"] : a.input["health"];
         const health = Array.isArray(raw)
           ? raw
               .map(cleanCheck)
