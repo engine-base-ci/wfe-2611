@@ -1,0 +1,62 @@
+{
+ "screen": "ops-services",
+ "mock": "06_mockup/v1/v1-ops-services.html",
+ "state_labels": {
+  "n": "サービス台帳",
+  "ge": "空"
+ },
+ "ops": [
+  {
+   "key": "button:サービスを足す",
+   "kind": "button",
+   "label": "サービスを足す",
+   "target": null,
+   "states": [
+    "サービス台帳"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:直す",
+   "kind": "button",
+   "label": "直す",
+   "target": null,
+   "states": [
+    "サービス台帳"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:規約を読んで判定",
+   "kind": "button",
+   "label": "規約を読んで判定",
+   "target": null,
+   "states": [
+    "サービス台帳"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:版を出す",
+   "kind": "button",
+   "label": "版を出す",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  }
+ ]
+}
