@@ -1,0 +1,11 @@
+{
+  "data_links": [
+    {
+      "paths": ["apps/web/features/F4/items/", "apps/web/app/(dev)/dev/f4-items/"],
+      "tests": ["apps/web/tests/k/k569-items.spec.ts"]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/items-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-569）"
+  }
+}
