@@ -15,7 +15,7 @@ import {
   RoomOverview,
   TalkEntry,
 } from "@/features/F5/room/overview";
-import { CreateForm } from "@/features/F4/doc/views";
+import { CreateForm, DocEditor } from "@/features/F4/doc/views";
 import { CreateTalk, EMPTY_VALUES, type CreateValues } from "@/features/F5/room/create-talk";
 import { TalkBody, TalkNotice } from "@/features/F5/room/talk";
 import { AiPanel, RunningBandTalk } from "@/features/F5/room/ticket-talk";
@@ -79,11 +79,26 @@ function ct(
   ps: "PS0" | "PS2" = "PS2",
 ): ReactNode {
   // 左は K-442 の作る面 v2（本番と同じ並び・PM の決め 2026-11-28）。欄の字は下絵の値（題名・確認項目）、本文は書いてあれば自由な 1 枚・無ければ種別のひな形
+  // 人が直した本文（marks.body = edited）は、ひな形を消して書いた形：本物の書く欄と同じ枠（DocEditor）に、書いた字を段落ごとに描く
+  const typed = values.marks?.body === "edited" && values.body !== "";
   const form = (
     <CreateForm
       head={<></>}
       titleValue={values.title}
-      body={values.body ? "free" : "template"}
+      body={typed ? "blank" : values.body ? "free" : "template"}
+      {...(typed
+        ? {
+            editor: (
+              <DocEditor note="Markdown を貼ると変換します">
+                <div className="k-f4d-big">
+                  {values.body.split("\n").map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
+              </DocEditor>
+            ),
+          }
+        : {})}
       specs={values.checks.map((text) => ({ text }))}
       customSlot={<></>} // 会社の項目は持たない種別（K-767 の会話の状態は会社の項目を使わない）
     />

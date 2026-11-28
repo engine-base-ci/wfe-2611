@@ -32,6 +32,28 @@ const openTalk = async (p: Page, w = 1440) => {
   await expect(chatSide(p)).toBeVisible();
 };
 const bubbles = (p: Page) => chatSide(p).locator(".k-room-msg");
+// 試験の準備を下絵 create-talk-edited のデータに合わせる（下絵の作り手の EDITED と同じ題名・本文・確認項目 3 つを欄に打つ。期待は変えない）
+const EDITED_TITLE = "セイコー様へ 12 月分の作業報告書を 12/26 までに送る";
+const EDITED_BODY = [
+  "11 月分と同じ形で、12 月分の作業報告書を作ります。",
+  "できたら PDF にして、セイコー商事の山田様と鈴木さんにメールで送ってください。12/26 までに送ります。",
+];
+const EDITED_CHECKS = ["作業時間の合計が稼働記録と同じ", "宛名が山田様になっている", "12/26 までに送っている"];
+const typeEdited = async (p: Page) => {
+  await titleBox(p).fill(EDITED_TITLE);
+  await p.getByRole("button", { name: "ひな形を消す", exact: true }).click();
+  await p.getByRole("textbox", { name: "本文", exact: true }).click();
+  await p.keyboard.type(EDITED_BODY[0]!);
+  await p.keyboard.press("Enter");
+  await p.keyboard.type(EDITED_BODY[1]!);
+  for (const c of EDITED_CHECKS) {
+    await p.getByRole("button", { name: "＋ 確認項目を足す" }).click();
+    const dlg = p.getByRole("dialog");
+    await dlg.getByRole("textbox").fill(c);
+    await dlg.getByRole("button", { name: /足す$/ }).click();
+    await expect(dlg).toHaveCount(0);
+  }
+};
 
 test("K767-UI-001 入口：作り方の「AI と話して作る」が押せる形になり、押すと欄の右に会話（頭「高本のAIと話して作る」・「何を作りたいか、話しかけてください」と例 3 つ）が開き、道に how=ai が付く。会話の口はまだ呼ばない", async ({
   page,
@@ -483,15 +505,16 @@ test("K767-UI-019 下絵との突き合わせ：create-talk-edited（直した�
     text: "",
     proposal: {
       title: "セイコー様へ 12 月分の作業報告書を送る",
-      body: "11 月分と同じ形で…",
+      // 案の本文は下絵 create-talk-edited と同じ（room-data の ITEMS_NEW。前は「…」で、案の行の高さが下絵と 18px 違った）
+      body: "11 月分と同じ形で 12 月分の作業報告書を作り、PDF で山田様にメールで送る",
       checks: ["作業時間の合計が稼働記録と同じ", "宛名が山田様になっている", "12/26 までに送っている"],
     },
   });
   await match(
     browser,
     "create-talk-edited",
-    (pg, w) =>
-      sayOnce(pg, w, {
+    async (pg, w) => {
+      await sayOnce(pg, w, {
         messages: [
           ME_LINE(),
           AI_LINE(
@@ -504,7 +527,9 @@ test("K767-UI-019 下絵との突き合わせ：create-talk-edited（直した�
             "直した題名の「12/26 までに」と、本文の「鈴木さん」を踏まえました。確認項目に「鈴木さんにも送っている」を足す案です。",
           ),
         ],
-      }),
+      });
+      await typeEdited(pg);
+    },
     [768, 1440],
   );
 });
