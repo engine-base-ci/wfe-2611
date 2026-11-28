@@ -1,0 +1,128 @@
+{
+ "screen": "mfa-setup",
+ "mock": "06_mockup/v1/v1-mfa-setup.html",
+ "state_labels": {
+  "pw": "パスワードの確認",
+  "n": "登録",
+  "rc": "回復コード"
+ },
+ "ops": [
+  {
+   "key": "input:パスワード",
+   "kind": "input",
+   "label": "パスワード",
+   "target": null,
+   "states": [
+    "パスワードの確認"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:パスワードを表示",
+   "kind": "button",
+   "label": "パスワードを表示",
+   "target": null,
+   "states": [
+    "パスワードの確認"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:認証アプリを登録する",
+   "kind": "button",
+   "label": "認証アプリを登録する",
+   "target": null,
+   "states": [
+    "パスワードの確認"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "input:アプリに出た6桁",
+   "kind": "input",
+   "label": "アプリに出た6桁",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:登録する",
+   "kind": "button",
+   "label": "登録する",
+   "target": null,
+   "states": [
+    "登録"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:コピー",
+   "kind": "button",
+   "label": "コピー",
+   "target": null,
+   "states": [
+    "回復コード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "button:ファイルで保存",
+   "kind": "button",
+   "label": "ファイルで保存",
+   "target": null,
+   "states": [
+    "回復コード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "checkbox:安全な場所に保管しました",
+   "kind": "checkbox",
+   "label": "安全な場所に保管しました",
+   "target": null,
+   "states": [
+    "回復コード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  },
+  {
+   "key": "link:次へ（PCをつなぐ）→bridge-setup",
+   "kind": "link",
+   "label": "次へ（PCをつなぐ）",
+   "target": "bridge-setup",
+   "states": [
+    "回復コード"
+   ],
+   "roles": [],
+   "ps": [
+    "PS0"
+   ]
+  }
+ ]
+}
