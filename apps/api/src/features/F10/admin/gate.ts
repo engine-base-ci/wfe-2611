@@ -58,6 +58,14 @@ const PLAIN: Record<string, readonly [number, string]> = {
 const PERSON_STATE: Record<string, string> = { suspended: "止まっています", invited: "招待中です" };
 const asText = (v: unknown): string => (typeof v === "string" ? v : "");
 
+/** 読むだけの口（app.member_detail・app.member_remove_preview）の断り：権限が無い 403・人が居ない 404（E-MEM-002）だけ。
+ *  ほかの言葉は止める側（503）。直す口の読み替え replyOf（番号つき・止めた人・閲覧のみ など）は使わない（K-144 の SHAPE_010・ふるまいは同じ） */
+export function readRefused(v: { error: string }, where = "答え"): HookReply {
+  if (v.error === "forbidden") return forbidden();
+  if (v.error === "member_gone") return fromCatalog("E-MEM-002", 404);
+  return down(where, `知らない答え（${v.error}）`);
+}
+
 /** DB の関数の答え { error: <言葉>, … } → 答え */
 export function replyOf(v: { error: string; [k: string]: unknown }, where = "答え"): HookReply {
   const word = v.error;

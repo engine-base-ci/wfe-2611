@@ -20,19 +20,25 @@ export function useMemberState(id: string, kind: StateKind, onResult: (r: StateR
   const sending = useRef(false);
   const [busy, setBusy] = useState(false);
   const [stepUp, setStepUp] = useState<StepUpAsk | null>(null);
+  // 口が取り直しを求めた後は、やめて押し直しても送らず取り直しの小窓から（前の送りを繰り返さない・K-820 の形に揃える PM の決め 2026-11-28）
+  const needStepUp = useRef<StepUpAsk | null>(null);
 
   const askStepUp = async () => {
     const s = await call("getMySecurity", { screenId: SCREEN, keepOn401: true });
     const sec = s.ok ? s.data : {};
-    setStepUp({ withCode: sec.two_factor === true, withPasskey: sec.has_password === false });
+    const need = { withCode: sec.two_factor === true, withPasskey: sec.has_password === false };
+    needStepUp.current = need;
+    setStepUp(need);
   };
 
   const run = async (retried: boolean): Promise<void> => {
     if (sending.current) return;
+    if (!retried && needStepUp.current) return setStepUp(needStepUp.current);
     sending.current = true;
     setBusy(true);
     try {
       const r = await call(OP[kind], { params: { id }, body: {}, screenId: SCREEN });
+      if (r.ok || r.kind !== "step_up") needStepUp.current = null;
       if (r.ok) return onResult({ ok: true });
       if (r.kind === "step_up" && !retried) return await askStepUp();
       onResult({ ok: false, error: r });

@@ -109,7 +109,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
         # K-437：payload.ts の checkFields・checkSpecs・checkBody（本文の木は doc_shape・K-432 と同じ定義）
-        "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
+        "fields": {"propertyNames": {"format": "uuid"},
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
@@ -201,6 +201,16 @@ def is_uuid(p: dict) -> bool:
     return p.get("type") == "string" and p.get("format") == "uuid"
 
 
+def _uuid_text(s: str) -> bool:
+    """正式な uuid の字か（版の桁 1〜8・変種の桁 8〜b・36 字。入口の isUuid と同じ決まりを python の uuid で見る）"""
+    import uuid as _uuid
+    try:
+        u = _uuid.UUID(s)
+    except ValueError:
+        return False
+    return len(s) == 36 and str(u) == s.lower() and 1 <= u.version <= 8 if u.variant == _uuid.RFC_4122 else False
+
+
 def catalog_status() -> dict[str, int]:
     """エラーの正本（packages/errors）の ID → 状態コード（cls → STATUS_OF）"""
     idx = (ROOT / "packages/errors/src/index.ts").read_text(encoding="utf-8")
@@ -283,6 +293,32 @@ def op_block(src: str, op: str) -> str | None:
     return None
 
 
+def _ops_by_id() -> dict[str, tuple[str, str, dict]]:
+    return {op["operationId"]: (path, method, op) for path, methods in OA["paths"].items() for method, op in methods.items()
+            if isinstance(op, dict) and "operationId" in op}
+
+
+def _namespace_run(files: list[pathlib.Path], texts: dict, name: str, defs: dict[str, str]) -> str | None:
+    """`import * as <name> from "./x.js"` のファイルの run の中身。そのファイルの定義と、そのファイルが読むファイルの定義を defs に足す"""
+    for f in files[1:]:
+        m = re.search(rf'import \* as {re.escape(name)} from "(\.{{1,2}}/[^"]+)"', texts[f])
+        if not m:
+            continue
+        g = (f.parent / m.group(1)).resolve()
+        g = g.with_suffix(".ts") if g.suffix == ".js" else g
+        if not g.exists():
+            continue
+        src = g.read_text(encoding="utf-8")
+        own = definitions(src)
+        for h in [g] + _imported_files(g, src):
+            if h.parent == HOOKS_DIR:
+                continue
+            for k, v in definitions(h.read_text(encoding="utf-8")).items():
+                defs.setdefault(k, v)
+        return own.get("run")
+    return None
+
+
 def hook_regions() -> dict[str, tuple[str, dict[str, str]]]:
     """今ある口の全部（apps/api/src/hooks/*.ts に並ぶ口）→（振る舞いの中身・そこから呼べる定義）。
     中身の書き方は 3 つ：その場の { before: async … }／機能のフォルダの hooks に預ける { ...h["op"] }／機能の関数に預ける { before: f.name, input: fn }"""
@@ -315,8 +351,27 @@ def hook_regions() -> dict[str, tuple[str, dict[str, str]]]:
             for name in re.findall(r"(?:before|input|after):\s*(?:\w+\.)?(\w+)", body):
                 if name in defs:
                     parts.append(defs[name])
+                else:   # 機能の束（K-800 の adminFeature）の bind：名前空間の import（import * as name）のファイルの run を辿る（統合の直し・PM 2026-11-28）
+                    run = _namespace_run(files, texts, name, defs)
+                    if run:
+                        parts.append(run)
+            # その場の矢印（before: (a) => readX(appPool, a)）：呼んだ名前の定義を辿る（統合の直し・PM 2026-11-28）
+            for name in re.findall(r"(?:before|input|after):\s*\([^)]*\)\s*=>\s*(\w+)\(", body):
+                if name in defs:
+                    parts.append(defs[name])
             if parts:
                 out[op_id] = ("\n".join(parts), defs)
+        # 機能のファイルが口の一覧ごと返す（return createXHooks(d.appPool)）：機能のファイルの口の中身を読む（統合の直し・PM 2026-11-28）
+        for made in re.findall(r"return\s+(\w+Hooks)\(", src):
+            for f in files[1:]:
+                if f.parent == HOOKS_DIR or not re.search(rf"\b(?:function|const)\s+{made}\b", texts[f]):
+                    continue
+                for op_id, (_m, _p, _o) in _ops_by_id().items():
+                    if op_id in out:
+                        continue
+                    b = op_block(texts[f], op_id)
+                    if b:
+                        out[op_id] = (b, defs)
     assert out, "hooks の口が 1 本も拾えない（apps/api/src/hooks の書き方が変わった）"
     lost = sorted(listed - set(out))
     assert not lost, f"hooks のファイルに並ぶのに中身を読めない口：{', '.join(lost)}（書き方が変わった・拾い方を直す）"
@@ -332,11 +387,13 @@ def statuses_in(block: str, cat: dict[str, int], defs: dict[str, str] | None = N
     defs = defs or {}
     s = {int(x) for x in re.findall(r"\bstatus:\s*(\d{3})\b", block)}
     s |= {int(x) for x in re.findall(r"\b\w+\(\s*([1-5]\d\d)\s*,", block)}
-    for code in re.findall(r'\b(\w+)\(\s*"(E-[A-Z]+-\d{3})"', block):
+    for code in re.findall(r'\b(\w+)\(\s*"(E-[A-Z]+-\d{3})"(\s*,\s*[1-5]\d\d\b)?', block):
         if code[0] in ("kanameError", "KanameError"):
             continue
         assert code[1] in cat, f"エラーの正本に {code[1]} が無い"
-        s.add(cat[code[1]])
+        # 状態を 2 つ目の引数で直に渡す呼び出し（fromCatalog("E-PAGE-003", 503)・bare("E-…", 404)）はその数（統合の直し 2026-11-28：
+        #   正本の分類 dependency の数 409 と、口が返す 503 が違う）。渡さない呼び出しは正本の分類の数
+        s.add(int(code[2].split(",")[1]) if code[2] else cat[code[1]])
     for name, extra in SHARED_HELPERS.items():
         if re.search(rf"\b{name}\(", block):
             s |= extra
@@ -889,9 +946,12 @@ class ContractShapeTest(unittest.TestCase):
             if not isinstance(v, dict):
                 return False
             pn = (sc.get("propertyNames") or {}).get("pattern")
+            pn_uuid = (sc.get("propertyNames") or {}).get("format") == "uuid"   # 欄の名前が uuid（K-144 の決め：手で正規表現を書かず format: uuid）
             ap = sc.get("additionalProperties")
             for k, x in v.items():
                 if pn and not re.search(pn, k):
+                    return False
+                if pn_uuid and not _uuid_text(k):
                     return False
                 if isinstance(ap, dict) and not ContractShapeTest._fits(x, ap):
                     return False

@@ -217,7 +217,9 @@ test("K841-UI-008 今いる会社から抜ける：200 のあとセッション�
     workspaces: base.workspaces.map((w, i) => (i === 0 ? { ...w, role: "member" as const, last_admin: false } : w)),
   };
   const mk = await mockOps(page, { me: mine });
-  await openAt(page, owner.token, PATH);
+  // 抜けた後の signOut は本物の口でセッションを切る。同じ組のほかの試験が使う owner を切らないよう、この試験だけの人で入る
+  const solo = await signupViaApi(WS_NAME);
+  await openAt(page, solo.token, PATH);
   await rows(page).first().getByRole("button", { name: "抜ける", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page

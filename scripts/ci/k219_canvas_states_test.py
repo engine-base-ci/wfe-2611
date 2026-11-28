@@ -53,7 +53,7 @@ NEW = {
     "StDone": ("StRunning", "states", "tickets", "band-done", "band", "/tickets/{ticket}", "K-228", ["完了しました"]),
     "StDelegated": ("StRunning", "states", "tickets", "band-delegated", "band", "/tickets/{ticket}", "K-228", ["に任せました"]),
     "StCompleteModal": ("StModal", "states", "tickets", "complete-modal", "dialog", "/tickets/{ticket}", "K-229",
-                        ["完了にする", "完了の条件"]),
+                        ["完了にする", "このまま完了にする"]),   # K-572 の形で描き直した（PM の決め 2026-11-28）
     "ApEmpty": ("Approvals", "approvals", "approvals", "approvals-empty", "page", "/approvals", "K-231",
                 ["いま決めるものはありません"]),
     "MePCInstalled": ("MePC", "me", "bridge-setup", "bridge-installed", "page", "/setup/bridge", "K-230", ["この PC の Bridge"]),

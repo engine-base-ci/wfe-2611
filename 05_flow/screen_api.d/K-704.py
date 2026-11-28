@@ -99,3 +99,8 @@ ERRORS_4XX = {
         _E503,
     ],
 }
+
+# 口が返す成功の状態コード（統合の枝で足した）
+SUCCESS_STATUS = {
+    "reorderTicketKinds": 200,   # 作らず並びを変えるだけ・口は 200 を返す（K-144 の SHAPE_010）
+}

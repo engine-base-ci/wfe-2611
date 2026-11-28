@@ -22,7 +22,7 @@ type Fn = { error?: unknown; detail?: unknown; data?: unknown } & Record<string,
 /** 止める側に倒す（503・E-PAGE-003）。ログは場所と言葉だけ */
 const down = (where: string, word: string): HookReply => {
   console.error(`[ops] ${where}（${word}）`);
-  return fromCatalog("E-PAGE-003", 503);
+  return { status: 503, body: kanameError("E-PAGE-003", {}).toJSON() }; // 体は fromCatalog と同じ。正本の分類（dependency）の状態の数と答えの 503 が違うので、番号は直に書く（K-144 の SHAPE_010）
 };
 
 /** 関数の断りの言葉 → 答え（言葉 → 番号は会社の人の口と同じ）。知らない言葉は止める側（503） */
@@ -63,7 +63,9 @@ export function getOpsWorkspaceBilling(d: OpsWorkspaceBillingDeps) {
     const where = "workspace-billing";
     const v = await callOps(d, a, "select app.ops_workspace_billing($1) as v", [a.id ?? ""], where);
     if (isReply(v)) return v;
-    if (v.error !== undefined) return replyOf(v, where);
+    // 読む関数（app.ops_workspace_billing）は断りの言葉を返さない（無い会社・権限は DB の例外 → opsErrorReply）。
+    //   言葉が来たら止める側（503）。変える口の読み替え replyOf は使わない（K-144 の SHAPE_010・ふるまいは同じ）
+    if (v.error !== undefined) return down(where, `unknown:${String(v.error)}`);
     return {
       status: 200,
       body: {

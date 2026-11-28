@@ -9,7 +9,7 @@ import { withTenant } from "@kaname/db/context";
 import type { Config } from "@kaname/config";
 import type { ObjectStore } from "@kaname/storage";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { down, replyOf } from "./errors.js";
+import { down, forbiddenOf, replyOf } from "./errors.js";
 import { loadInvoiceIssuer } from "./issuer.js";
 
 /** PDF の署名 URL の期限（秒）。10 分 */
@@ -41,7 +41,7 @@ export function getBilling(d: BillingDeps) {
       return down(e);
     }
     if (!v) return down({ name: "empty" });
-    if (v.error) return replyOf(v.error);
+    if (v.error) return forbiddenOf(v.error);
     return {
       status: 200,
       body: {

@@ -242,11 +242,9 @@ test("K54-M1-04 確定済みでもう一度：同じリンクをもう一度 →
     await b.ctx.close();
   }
   // 確定したブラウザ（ログイン中）で同じリンク → 二重に作らない（もう一度「登録できました」にしない）。
-  //   行き先（中へ入るか・ログインの案内か）は K52-UI-010 が持つ。本物の口では自分の取得（GET /api/v1/me・K-70・K-121）が 501 なので、いまは案内が出る。
-  //   今出る文言そのもので確かめる：K-70 が入って中へ入るようになったら、ここが赤になって気づける（そのときこの行を直す）
+  //   自分の取得（GET /api/v1/me・K-70）が入ったので、K52-UI-010 のとおり中（チケットの画面）へ入る（前の注の読み替え・PM の決め 2026-11-28）
   await openLink(page, url);
-  await expect(heading(page, "登録は終わっています")).toBeVisible();
-  await expect(page.getByText(MSG.done)).toBeVisible();
+  await expect(page).toHaveURL(/\/tickets(\?|$)/);
   await expect(heading(page, "登録できました")).toHaveCount(0);
   expect(await confirmed(w.email), "本人は 1 人のまま").toHaveLength(1);
 });
