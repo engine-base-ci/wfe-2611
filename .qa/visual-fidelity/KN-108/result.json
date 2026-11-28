@@ -1,0 +1,292 @@
+{
+ "at": "2026-11-04T01:16:08.816Z",
+ "canvas": "04_design/canvas/Main.dc.html",
+ "app": "/dev/k/showcase",
+ "viewport": {
+  "width": 1440,
+  "height": 1000
+ },
+ "rows": [
+  {
+   "part": "左のバー",
+   "prop": "width",
+   "canvas": "216px",
+   "app": "216px",
+   "ok": true
+  },
+  {
+   "part": "左のバー",
+   "prop": "background-color",
+   "canvas": "rgb(238, 240, 244)",
+   "app": "rgb(238, 240, 244)",
+   "ok": true
+  },
+  {
+   "part": "左のバー",
+   "prop": "border-right-color",
+   "canvas": "rgb(221, 226, 233)",
+   "app": "rgb(221, 226, 233)",
+   "ok": true
+  },
+  {
+   "part": "左のバー",
+   "prop": "padding-top",
+   "canvas": "10px",
+   "app": "10px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "height",
+   "canvas": "32px",
+   "app": "32px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "background-color",
+   "canvas": "rgb(34, 52, 92)",
+   "app": "rgb(34, 52, 92)",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "color",
+   "canvas": "rgb(255, 255, 255)",
+   "app": "rgb(255, 255, 255)",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "border-radius",
+   "canvas": "6px",
+   "app": "6px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "font-size",
+   "canvas": "13px",
+   "app": "13px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "font-weight",
+   "canvas": "500",
+   "app": "500",
+   "ok": true
+  },
+  {
+   "part": "左のバーの今の項目",
+   "prop": "padding-left",
+   "canvas": "10px",
+   "app": "10px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの項目",
+   "prop": "height",
+   "canvas": "32px",
+   "app": "32px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの項目",
+   "prop": "color",
+   "canvas": "rgb(19, 27, 39)",
+   "app": "rgb(19, 27, 39)",
+   "ok": true
+  },
+  {
+   "part": "左のバーの項目",
+   "prop": "border-radius",
+   "canvas": "6px",
+   "app": "6px",
+   "ok": true
+  },
+  {
+   "part": "左のバーの項目",
+   "prop": "font-size",
+   "canvas": "13px",
+   "app": "13px",
+   "ok": true
+  },
+  {
+   "part": "チケットを作る",
+   "prop": "height",
+   "canvas": "34px",
+   "app": "34px",
+   "ok": true
+  },
+  {
+   "part": "チケットを作る",
+   "prop": "background-color",
+   "canvas": "rgb(34, 52, 92)",
+   "app": "rgb(34, 52, 92)",
+   "ok": true
+  },
+  {
+   "part": "チケットを作る",
+   "prop": "color",
+   "canvas": "rgb(255, 255, 255)",
+   "app": "rgb(255, 255, 255)",
+   "ok": true
+  },
+  {
+   "part": "チケットを作る",
+   "prop": "border-radius",
+   "canvas": "6px",
+   "app": "6px",
+   "ok": true
+  },
+  {
+   "part": "上の帯",
+   "prop": "height",
+   "canvas": "48px",
+   "app": "48px",
+   "ok": true
+  },
+  {
+   "part": "上の帯",
+   "prop": "background-color",
+   "canvas": "rgb(255, 255, 255)",
+   "app": "rgb(255, 255, 255)",
+   "ok": true
+  },
+  {
+   "part": "上の帯",
+   "prop": "border-bottom-color",
+   "canvas": "rgb(221, 226, 233)",
+   "app": "rgb(221, 226, 233)",
+   "ok": true
+  },
+  {
+   "part": "上の帯",
+   "prop": "padding-left",
+   "canvas": "24px",
+   "app": "24px",
+   "ok": true
+  },
+  {
+   "part": "探す",
+   "prop": "width",
+   "canvas": "280px",
+   "app": "280px",
+   "ok": true
+  },
+  {
+   "part": "探す",
+   "prop": "height",
+   "canvas": "32px",
+   "app": "32px",
+   "ok": true
+  },
+  {
+   "part": "探す",
+   "prop": "border-radius",
+   "canvas": "9999px",
+   "app": "9999px",
+   "ok": true
+  },
+  {
+   "part": "探す",
+   "prop": "background-color",
+   "canvas": "rgb(247, 248, 250)",
+   "app": "rgb(247, 248, 250)",
+   "ok": true
+  },
+  {
+   "part": "探す",
+   "prop": "border-top-color",
+   "canvas": "rgb(221, 226, 233)",
+   "app": "rgb(221, 226, 233)",
+   "ok": true
+  },
+  {
+   "part": "自分の顔",
+   "prop": "width",
+   "canvas": "28px",
+   "app": "28px",
+   "ok": true
+  },
+  {
+   "part": "自分の顔",
+   "prop": "height",
+   "canvas": "28px",
+   "app": "28px",
+   "ok": true
+  },
+  {
+   "part": "自分の顔",
+   "prop": "background-color",
+   "canvas": "rgb(107, 91, 153)",
+   "app": "rgb(107, 91, 153)",
+   "ok": true
+  },
+  {
+   "part": "自分の顔",
+   "prop": "color",
+   "canvas": "rgb(255, 255, 255)",
+   "app": "rgb(255, 255, 255)",
+   "ok": true
+  },
+  {
+   "part": "自分の顔",
+   "prop": "border-radius",
+   "canvas": "9999px",
+   "app": "9999px",
+   "ok": true
+  },
+  {
+   "part": "知らせの数",
+   "prop": "height",
+   "canvas": "16px",
+   "app": "16px",
+   "ok": true
+  },
+  {
+   "part": "知らせの数",
+   "prop": "background-color",
+   "canvas": "rgb(180, 83, 9)",
+   "app": "rgb(180, 83, 9)",
+   "ok": true
+  },
+  {
+   "part": "知らせの数",
+   "prop": "color",
+   "canvas": "rgb(255, 255, 255)",
+   "app": "rgb(255, 255, 255)",
+   "ok": true
+  },
+  {
+   "part": "本文の書体",
+   "prop": "font-family",
+   "canvas": "\"Noto Sans JP\", system-ui, sans-serif",
+   "app": "\"Noto Sans JP\", \"Noto Sans JP Variable\", \"Hiragino Sans\", \"Hiragino Kaku Gothic ProN\", \"Yu Gothic UI\", system-ui, sans-serif",
+   "ok": true
+  },
+  {
+   "part": "本文の書体",
+   "prop": "font-size",
+   "canvas": "13px",
+   "app": "13px",
+   "ok": true
+  },
+  {
+   "part": "本文の書体",
+   "prop": "color",
+   "canvas": "rgb(19, 27, 39)",
+   "app": "rgb(19, 27, 39)",
+   "ok": true
+  },
+  {
+   "part": "読み込んだ書体",
+   "prop": "document.fonts",
+   "canvas": "Noto Sans JP",
+   "app": "Noto Sans JP Variable",
+   "ok": true
+  }
+ ],
+ "mismatches": 0
+}
