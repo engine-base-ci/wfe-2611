@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "packages/db/test/ticket_body_move.test.ts": "migration の本文 packages/db/migrations/20261122101500_ticket_body_move.sql を読み、全部の会社に移す関数を呼ぶことを見る（K-575 の最後の行）。migration は DB の組で流れるので、読む物を地図で結ばなくてよい（K-575）"
+ }
+}
