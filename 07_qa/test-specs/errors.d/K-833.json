@@ -1,0 +1,97 @@
+{
+ "errors": [
+  {
+   "id": "E-ME-001",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "名前が空・空白だけ（全角の空白も）で保存した（前後の空白を削った後に 0 文字）",
+   "false_when": "前後の空白を削って 1〜100 文字の名前",
+   "message": "名前を入れてください",
+   "action": "名前を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "名前の欄を空にして欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  },
+  {
+   "id": "E-ME-002",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "名前が前後の空白を削って 101 文字以上（文字の数で数える・サロゲート対は 1 文字）",
+   "false_when": "100 文字までの名前",
+   "message": "名前は 100 文字までです。短くしてください",
+   "action": "名前を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "名前の欄に 101 文字を入れて欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  },
+  {
+   "id": "E-ME-003",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "profile"
+   },
+   "when": "呼ばれ方が前後の空白を削って 21 文字以上（文字の数で数える）",
+   "false_when": "20 文字までの呼ばれ方・空（呼ばれ方を消す）",
+   "message": "呼ばれ方は 20 文字までです。短くしてください",
+   "action": "呼ばれ方を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールを開く",
+    "steps": [
+     "呼ばれ方の欄に 21 文字を入れて欄から離れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.55",
+    "D-154.56"
+   ]
+  }
+ ]
+}
