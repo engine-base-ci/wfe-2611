@@ -1,0 +1,19 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F5/room/room-frame.tsx",
+        "apps/web/features/F5/room/room-now.tsx",
+        "apps/web/features/F5/room/use-clone.ts",
+        "apps/web/features/F5/room/room-words.ts",
+        "apps/web/features/F5/room/head.tsx",
+        "apps/web/features/F5/room/overview.tsx",
+        "apps/web/app/(work)/ai/"
+      ],
+      "tests": ["apps/web/tests/k/k755-room.spec.ts"]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/room-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（K-755）"
+  }
+}
