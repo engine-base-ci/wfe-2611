@@ -1,0 +1,21 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "04_design/DESIGN-kaname.md",
+        "design-gate.json",
+        "scripts/ci/design_gate.py",
+        "02_tech_stack/selected-stack.json",
+        "07_functional/段8-F7/カレンダーの部品.md",
+        "apps/web/styles/k-tokens.css"
+      ],
+      "tests": [
+        "apps/web/tests/k/k460-stage8-mock.spec.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/k460-stage8-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f7/（mocks.tsx・types.ts・states/*.tsx）・部品 apps/web/features/F7/（区画の .tsx・.css・overview/tones.css・gantt/gantt-inner.tsx・delete/undo-toast.tsx・delete.css）・お知らせ apps/web/components/k/notice.tsx と k.css・道の一覧 apps/web/lib/built-routes.ts・中間の試験の道具 apps/web/tests/_lib/f7-flow.ts と skeleton の中間の試験・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json・apps/web/package.json・02_tech_stack/selected-stack.json・07_functional/段8-F7/カレンダーの部品.md を読み、scripts/ci/design_gate.py を子プロセスで流す（K-460）",
+    "apps/web/features/F7/gantt/gantt-chart.tsx": "next/dynamic の import() で同じ区画の gantt-inner.tsx を画面の側だけで読む（ファイル・子プロセスは読まない・K-460）"
+  }
+}
