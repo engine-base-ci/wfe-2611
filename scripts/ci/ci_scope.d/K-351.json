@@ -1,0 +1,27 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credentials-list.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credentials-list.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_credentials.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F3/credentials.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/credentials-*.ts を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-351"
+ }
+}
