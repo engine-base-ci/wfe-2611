@@ -12,7 +12,8 @@ import { MATCH_WIDTHS, matchMock } from "./stage2-match";
 const PATH = "/notifications";
 const SEC = 'section[aria-labelledby="notify-title"]';
 const tab = (page: Page, name: string) => page.getByRole("tab", { name, exact: true });
-const panel = (page: Page) => page.getByRole("tabpanel");
+// タブを替えた直後は、閉じる途中の前の面（inert・data-ending-style）も tabpanel として残る。いま見ている面だけを指す（showcase.spec.ts と同じ形）
+const panel = (page: Page) => page.getByRole("tabpanel").and(page.locator(":not([inert])"));
 const exactText = (s: string) => new RegExp(`^\\s*${s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`);
 /** 行の名前の欄（.k-set-name）の字が name と完全に同じ行だけ（「承認を待っている」が「承認を待っている（期限が今日）」に当たらない） */
 const evRow = (page: Page, name: string) =>
