@@ -1,0 +1,134 @@
+# ai-team.yaml — Kaname の ai-team-delivery の設定（2026-11-08・K-103 で入れた・決める人の決定 D-129）
+# スキル：~/.claude/skills/ai-team-delivery（雛形 assets/ai-team.example.yaml）
+
+project: Kaname
+state_dir: .ai-team # .gitignore に .ai-team/ と .ai-team-out/ を足す（doctor が見る）
+base_branch: claude/modest-lamport-77ue02
+
+tickets: 11_tickets/tickets.json # build_index.py が作る一覧（手で直さない）
+ticket_fields:
+  list: tickets
+  id: id
+  depends: depends_on
+  rows: l1_rows # Kaname のチケットには無い（行は 07_qa/test-specs の表）。無くても動く
+  group: area
+
+# いまの段階（2026-11-08 決める人）：段 1 歩く骨格＝K-103 の子のチケット
+# 2026-11-08 決める人：段階を広げて土台（K-1 の子孫）も入れる（D-129.49）
+# 2026-11-10 決める人：staging（K-77 の子の K-37・K-133）も含めて今日の 10 本（answer=b86a2f3639a6）
+scope:
+  field: parent
+  values: [K-103, K-1, K-77]
+  descendants: true
+  label: 段 1 歩く骨格と土台と環境
+
+# ── 進める順番（B1〜B7・2026-11-08 決める人の決定。2026-11-09 D-132 で 1 チケット＝1 セッションに）
+flow:
+  decider: 決める人 # 承認・順の入れ替え・割り込みの --by に書く役名（Kaname の決める人は高本さん）
+  limits: { ticket: 3, merge: 1 } # D-132（2026-11-09）：1 チケット＝1 セッション。同時に走るチケット 3・取り込み 1（D-129 の 作る 1・実装 2 は廃止）
+  daily_target: 10 # 1 日に取り込む目標の本数（B5）。予定が届かないときは plan propose --note に差の理由
+  order:
+    parent_field: parent # 大分類の題名の「段 N」から、やる順の段を出す（K-50「段 2 …」など）
+    title_field: title
+    done_values: [完了, 確認中] # 取り込み済み（確認中＝決める人の実機の確かめ待ち）は列に入れない
+  status:
+    field: stage # tickets.json の状態の欄の名前
+    mode: rows # B4：版に入らない置き場（.ai-team/status.json）。盤とチケットの一覧はそこから作る
+    words: { ready: 未着手, ticket: 作業中, merge: 確認中, done: 完了, blocked: 保留 }
+  # board: .ai-team/board.html   # 既定のまま（版に入れる所に置かない）
+  id_pattern: '\bK-\d+\b'
+  # pm_decisions: .ai-team      # PM が決めたこと（pm-decisions-<日付>.md）。既定のまま。1 日の報告に必ず載る
+  # 決める人への問い合わせの答えの記録：01_hearing/decider-answers.jsonl（.claude/settings.json の decider_log が追記・CI の G60 が照らす）
+  # 決める人の役名は「決める人」。Kaname の決める人は高本さん（決定ログの行の終わりの名前）
+
+# ── 役に出す指示（C1〜C7・L-013）。PM が手で書いていた「役の共通の決まり.md」はやめ、中身をここへ移した（C5）
+brief:
+  sections: [目的, 完了の条件, 決めた判断]
+  sections_field: sections
+  file_field: file
+  ticket_fields: [tests, decisions, depends_on, screens, apis, choke_points]
+  tests_field: tests
+  ports: # C4：役とチケットごとに機械で割る。使ってはいけない番号は役の共通の決まり.md（2026-11-07）から
+    reserved: [5432-5440, 5450, 5461, 5471, 3011, 3021, 3031, 3041, 3124, 3134, 3144, 3191-3195, 8790]
+    kinds: { db: 5481, api: 3051, web: 3154 }
+    step: 10
+  common_extra:
+    - "試験の DB は docker の pgvector/pgvector:pg16 を、割り当てられた番号で立て、DATABASE_URL で指す。終わったら止めて消す。docker が止まっていたら nohup dockerd >/dev/null 2>&1 & で立ち上げてよい"
+    - "画面を組み立てると apps/web/tsconfig.json が書き換わる。組み立ての前に写しを取り、終わったら写しで戻す（git で戻さない）"
+    - "生成物（flow.json・openapi・registry・test-plan・catalog・要件一覧）は直に直さず、作り手（05_flow/phase1.py → build_flow.py、screen_api.py → build_api.py → build_testplan.py、contract.mjs gen、build_catalog.py）を回す"
+    - "migration を足した・直したときは、UTC の時刻の名前（packages/db/migrations/YYYYMMDDHHMMSS_名前.sql）で作り、python3 scripts/ci/gen_migrations.py で packages/db/src/migrations.generated.ts の MIGRATIONS を作り直し、空の DB に当てて pnpm db:columns → python3 05_flow/build_api.py → pnpm ci:contract:gen を回す"
+    - "試験の結果の欄（07_qa/test-specs の「結果」）は手で書かない。CI の記録から機械で書く"
+    - "作ったチケットの tests: と screens: に、作った試験と画面を書く（G53・G14）"
+  role_extra:
+    ticket:
+      - "これまでのレビューで何度も出た指摘の型を最初から守る：戻る先・next は new URL(next, location.origin) で読み origin が同じときだけ使う／守りの所で例外になったら止める側（503）に倒す／セッションや人は「最新の 1 つ」「その人の全部」で選ばず、その要求のものを直に指す／security definer の関数は search_path に pg_temp・execute は要る役だけ（D-128.171）／入力は契約の strict な形で必ず確かめる／時間で隠さない（猶予の秒・再試行・waitForTimeout）／追記だけの記録は消さない・ログにメール・IP・トークンを出さない"
+      - "試験は仕様から書く。何でも通る形にしない（new Date(null) が 0 など）。決定ログの決まりとずれていないか、チケットの decisions を読み直す"
+      - "テストは実装より先に「<チケット> test:」のコミットで積む。実装に入った後にテストを直すときは、コミットの文に Tests-Changed: <理由> を書く（無いと取り込みで止まる・D-132）"
+      - "テスターに渡す前に本線（claude/modest-lamport-77ue02）を自分の枝に取り込み、衝突は自分の作業場所で解く（取り込んでいない枝は pm_merge が受けない・D-132）"
+  required_extra: {}
+
+brief_gate:
+  tools: [Agent, Task, SendMessage] # C1
+  after_max: 1500 # C7
+  allow: [] # C2：止めない例外は作らない
+  forbid: []
+
+evidence_dir: 07_qa/evidence
+
+ci:
+  act_ci: ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh
+  workflows: .github/workflows
+verify: bash ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh # CI は act（取り込みの判定は pm_merge.sh）
+
+# レーンは使わない（2026-11-09 D-132）。作業場所はチケットごと（.claude/worktrees/<名前>）。成果物の重なりは state.py start が警告し、pm_merge の守りが止める
+
+lock_exempt: [packages/db/src/migrations.generated.ts] # MIGRATIONS の一覧（作り手 gen_migrations.py の生成物・ぶつかったら作り直す）
+required_rules: [test-ladder.md, lessons-learned.md, ai-driven-process.md, choke-points.md]
+scan_ignore_files: [eslint.config.mjs] # .claude/** の除外は K-103 で足した
+
+coverage_required: true
+coverage_min: 80
+limits: { l1_rows_per_session: 25, screens_per_session: 1, max_loops: 3 }
+# ③ の「した証拠」（D-129.53・K-146）：チケットの頭の prior_impl（なし か <枝>@<sha>）が無いチケットは state.py が精査に入れない。<枝>@<sha> のときは review_map_gate が R の報告の「## 突き合わせた分かれ道」をその版で確かめる
+review: { prior_impl_field: prior_impl }
+merge:
+  pm_may_merge: true # 2026-11-08 決める人：今までどおり。テスターの OK と、そのチケットの CI の緑の後だけ
+
+# ── 試験の結果の欄（K-143・D-129.51・ai-driven-process.md §8）。結果の欄は手で書かない。取り込みの台本（pm_merge.sh）が
+#    緑だった CI の回の記録を records に写し、`<script> write --specs <specs> --records <records> --sha <その回>` で書き、
+#    本文に `Results-Written-By: ci_results.py write CI <40 字の sha>` を持つ、そのチケットの番号のコミットにし、
+#    `<script> check --specs <specs> --ledger <ledger> --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>` が緑のときだけ本線に入れる
+#    （順：写す → write → Results-Written-By つきでコミット → check → 本線へ・PM の判断 2026-11-08 17:40 ⑤）。write は印を付けた行を台帳から消す（台帳は減らすだけ・K143-CI-034）。
+#    記録は CI の web の段（G48）が `<script> record --report <report>… --sha <回>` で作る。
+#    pm_merge.sh がこの設定を読む口は PM がスキル側で足す（K-143 の外）
+results:
+  script: "python3 scripts/ci/ci_results.py"
+  records: 07_qa/ci-results
+  specs: "07_qa/test-specs/**/*.md"
+  report: [apps/web/pw-reports/k.json]
+  ledger: 07_qa/test-plan/result-ledger.json # まだ流し直していない印の無い PASS（減らすだけ・流し直しは K-150）
+# CI に出す前の範囲の検査（2026-11-10・K-133 で affects の書き漏れと地図の抜けが CI まで行き、全部に倒れて 15 分を無駄にした）。
+#   state.py が impl → check の前に流す。範囲の道具の JSON の full_reasons の種類が block_kinds にあれば止める（このチケットのせいで全部に倒れる）。
+#   全部は大分類の最後の 1 回だけ（正本 §8.2）。種類は scripts/ci/ci_scope.py の頭の「止める理由」と「続ける理由」（2026-11-11・K-169：文の一部で当てるのをやめた）
+ci_scope:
+  cmd: "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope auto --json"
+  block_kinds: [unmapped, mismatch, no-declaration, ticket]
+# CI の速い段（static・spec）を、CI に出す前に手元で同じに流す（スキルの local_jobs・2026-11-11・K-169）。
+#   前の prechecks（命令の一覧）は、同じ検査が static・spec の段に入っているので消した（取り込む順 G56・一覧・トレース・整形・lint）
+local:
+  workflow: .github/workflows/v3-gate.yml
+  jobs: [static, spec]
+  inputs: { scope: auto, base: "{base}", target: "{base_branch}" }
+  skip: [pnpm install, pip install, playwright install]
+  skip_steps: {}
+  deps_dirs: [node_modules, .venv]
+# 試験の 3 つの役の役 3（CI の記録で行が全部緑かを機械が判定・決める人 2026-11-10「この形で決める」）。
+#   judge の設定は K-167 が enabled: false のまま入れ、記録の出どころをそろえて true にするのは K-168（PM の判断 2026-11-10 21:59）。
+#   K-167 は本線を取り込むとき、judge: を 1 つにまとめる：K-167 の鍵にこの reason を残す（2 つ残さない・reason を落とすと doctor が赤）
+judge:
+  enabled: false
+  reason: "記録の出どころ（vitest・中間・node と python の試験）がまだ画面の試験だけ。true にするのは K-168（PM の判断 2026-11-10 21:59）。それまでは ran.py の記録の関門で見る"
+# 切ったチケットに書いていないファイルを実装で変えたら止める（スキルの scope_files_gate）。いつでも通す道：
+#   チケットを直すたびに作り直す一覧（build_index.py の生成物）と、決める人の答えの記録（2026-11-11・K-169）
+scope_files:
+  always: [11_tickets/tickets.json, 11_tickets/tickets.csv, 11_tickets/README.md, 01_hearing/decider-answers.jsonl]
