@@ -1,0 +1,11 @@
+{
+ "data_links": [
+  {
+   "paths": ["apps/web/features/F4/body-edit/"],
+   "tests": ["apps/web/tests/k/k447-body-edit.spec.ts"]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/body-edit-mock.ts": "正本の誤りの文（07_qa/test-specs/errors.json）を readFileSync で読み、赤い箱の字と比べる（K-447）"
+ }
+}

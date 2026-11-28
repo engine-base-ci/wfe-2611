@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops2/inbox-*", "apps/web/features/F12/ops2/use-ops-inbox.ts", "apps/web/features/F12/ops2/views-inbox.tsx", "apps/web/app/(ops)/ops/support/**"], "tests": ["apps/web/tests/k/k976-inbox.spec.ts", "apps/web/test/k976-inbox-shape.test.ts", "apps/web/tests/k/k942-f12-ops2-parts.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k976-inbox.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops2 を開き scripts/ci/fidelity_compare.mjs を読む。答えの見本 ops-inbox-mock.ts・ops-answers.ts を読む（実ブラウザの試験は web の組が流す）・K-976",
+  "apps/web/test/k976-inbox-shape.test.ts": "下絵の見本 apps/web/features/F12/ops2/ops2-sample.ts と答えの見本 apps/web/tests/k/ops-inbox-mock.ts を読む（画面の外の純粋な関数の試験）・K-976"
+ }
+}
