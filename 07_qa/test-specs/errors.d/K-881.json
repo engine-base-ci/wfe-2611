@@ -1,0 +1,67 @@
+{
+ "errors": [
+  {
+   "id": "E-GST-040",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "guest_share"
+   },
+   "when": "チケットの見せる相手に選んだゲストのグループが、この会社に無い・消した・別の会社の物",
+   "false_when": "今あるゲストのグループを選ぶ",
+   "message": "このゲストのグループは見つかりません",
+   "action": "選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細で見せる相手を選ぶ欄を開く",
+    "steps": [
+     "別の画面でそのゲストのグループを消す",
+     "見せる相手に足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.41"
+   ]
+  },
+  {
+   "id": "E-GST-041",
+   "class": "limit",
+   "where": {
+    "screen": "tickets",
+    "state": "guest_share"
+   },
+   "when": "チケットの見せる相手が 20 を超える（外す分を引いた結果）",
+   "false_when": "見せる相手が 20 以下",
+   "message": "見せる相手は 20 までです",
+   "action": "外してから足す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "見せる相手が 20 のチケットの詳細を開く",
+    "steps": [
+     "見せる相手をもう 1 つ足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-155.26",
+    "D-155.41"
+   ]
+  }
+ ]
+}
