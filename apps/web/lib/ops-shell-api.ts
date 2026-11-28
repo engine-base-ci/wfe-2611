@@ -70,7 +70,11 @@ export async function fetchOpsShell(): Promise<OpsShellResult> {
   if (res.ok) {
     const body: unknown = await res.json().catch(() => null);
     // data は頁が使う（一覧の上の数・K-965）。operator.caps は拾い直した物で上書きする（K-1108・K-971）
-    return { kind: "ok", counts: countsOf(body), data: { ...obj(obj(body)?.["data"]), ...dataOf(body) } };
+    // operator は拾い直した caps だけで置き換えず、ほかの欄（member_id＝受信箱の「自分」の見分け・K-976）を残す
+    const raw = obj(obj(body)?.["data"]) ?? {};
+    const picked = dataOf(body);
+    const operator = picked.operator ? { ...obj(raw["operator"]), ...picked.operator } : undefined;
+    return { kind: "ok", counts: countsOf(body), data: { ...raw, ...(operator ? { operator } : {}) } };
   }
   if (res.status === 401) return { kind: "login" };
   if (res.status === 403) {
