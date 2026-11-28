@@ -24,14 +24,14 @@ import {
 
 const PATH = "/workspace/ticket-settings";
 const LIST = 'ul[aria-label="会社が足した項目"]';
-const FORM = (name: string) => `form[aria-label="項目「${name}」を直す"]`;
+const FORM = (name: string) => `form[aria-label="項目「${name.replace(/["\\]/g, "\\$&")}」を直す"]`;
 const DLG = ".k-dialog";
 const WIDTHS = [320, 375, 768, 1024, 1440] as const;
 const overflowX = (p: Page) =>
   p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const item = (page: Page, name: string) => page.locator(LIST).getByRole("link", { name: new RegExp(`^${name}`) });
 const save = (page: Page) => page.getByRole("button", { name: "保存する", exact: true });
-const nameBox = (page: Page, f: string) => page.locator(FORM(f)).getByLabel("名前", { exact: true });
+const nameBox = (page: Page, f: string) => page.locator(FORM(f)).getByRole("textbox", { name: "名前", exact: true });
 // 型の ▾ は部品 components/k の Select（Base UI）。素の <select> は無いので、▾ を押して開いた portal の role=option を押す
 const typeSel = (page: Page, f: string) => page.locator(FORM(f)).getByRole("combobox", { name: "型", exact: true });
 async function pickType(page: Page, f: string, label: string): Promise<void> {
@@ -70,8 +70,8 @@ async function open(page: Page, id = F_AMOUNT, name = "請求額"): Promise<SMoc
 // 比べない 3 つ（チケットの決めとモックの差・PM の決め 2026-11-24）：値の入った項目（PJコード）は型の欄の下に
 //   「値が入っている項目は、型を変えられません」が出るがモック set-fields には無いので、その下の選ぶ物（options）と
 //   ボタン（acts）の縦の位置 y がずれる。「この項目を消す…」はこの葉では押せない形（K-720 がつなぐ）なので、acts の
-//   薄さ（opacity）がモックと違う。K-720 が消すをつないだら "acts:opacity" は外す
-const UI001_SKIP = ["options:y", "acts:y", "acts:opacity"] as const;
+//   薄さ（opacity）がモックと違った。K-720 が消すをつないだので "acts:opacity" は外した（統合の枝 2026-11-28・K-720.md の申し送り）
+const UI001_SKIP = ["options:y", "acts:y"] as const;
 for (const w of WS_WIDTHS) {
   test(`K709-UI-001 set-fields 幅 ${w}：一覧・必須の印・右の欄（名前・型・選ぶ物・必須・説明・どの種別で出すか・ボタン）の位置と大きさと字がモックと同じ（matchWs の bad が 0）`, async ({
     browser,
@@ -127,7 +127,7 @@ test("K709-UI-003 一覧：名前・必須の印（PJコードと支払期日だ
   await expect(items.nth(0)).toContainText("必須");
   await expect(items.nth(0)).toContainText("1 つ選ぶ");
   await expect(items.nth(1)).toContainText("請求額");
-  await expect(items.nth(1)).toContainText("数");
+  await expect(items.nth(1)).toContainText("金額");
   await expect(items.nth(1)).not.toContainText("必須");
   await expect(items.nth(2)).toContainText("日付");
   await expect(items.nth(3)).toContainText("複数選ぶ");
@@ -430,6 +430,8 @@ test("K709-UI-018 保存していない変更のまま別の項目・別のタ�
   await dlg.getByRole("button", { name: "捨てて移る", exact: true }).click();
   await expect(page).toHaveURL(/tab=kinds/);
   await page.getByRole("tab", { name: "項目", exact: true }).click();
+  // タブを押した道は ?id= を持たないので先頭（PJコード）が選ばれる（「無い id は先頭」）。請求額を選び直して、変更が消えたことを見る
+  await item(page, "請求額").click();
   await expect(nameBox(page, "請求額")).toHaveValue("請求額");
 });
 
