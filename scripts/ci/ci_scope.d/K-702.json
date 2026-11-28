@@ -1,0 +1,16 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F9/knowledge/**",
+        "apps/web/features/F6/thread/to-items.ts",
+        "apps/web/features/F6/thread/views.tsx",
+        "apps/web/app/(dev)/dev/mock/f9/**"
+      ],
+      "tests": ["apps/web/tests/k/k702-knowledge-thread-rows.spec.ts", "apps/web/test/k702-ticket-rows-shape.test.ts"]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/k702-knowledge-thread-rows.spec.ts": "下絵の描き手 apps/web/app/(dev)/dev/mock/f9/ticket-mocks.tsx・部品 features/F9/knowledge/ticket-rows*・段 7 の変換 features/F6/thread/to-items.ts と views.tsx を readFileSync で読む（K702-MK-001・002・K-702）"
+  }
+}
