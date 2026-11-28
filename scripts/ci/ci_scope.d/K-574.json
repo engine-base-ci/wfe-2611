@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F4/thread-lines/",
+    "apps/web/features/F6/thread/to-items.ts"
+   ],
+   "tests": [
+    "apps/web/test/k574-change-text.test.ts",
+    "apps/web/tests/k/k574-change-lines.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k574-change-lines.spec.ts": "やり取りの画面を段 7 の試験の道具 apps/web/tests/k/thread-mock.ts（K-392 の物）で開き、口の答えを差し替える。道具の import だけでファイルは読まない・K-574"
+ }
+}
