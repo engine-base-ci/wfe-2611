@@ -1,0 +1,22 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/help/**",
+    "apps/web/app/(work)/inquiry/[id]/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1007-inquiry-thread.spec.ts",
+    "apps/web/test/k1007-thread-shape.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F7/notice/notice-text.ts"
+   ],
+   "tests": [
+    "apps/web/test/k1007-notice-text.test.ts"
+   ]
+  }
+ ]
+}
