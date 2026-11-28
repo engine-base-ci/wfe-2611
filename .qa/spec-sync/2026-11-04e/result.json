@@ -1,0 +1,69 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.125-process",
+ "executed_at": "2026-11-04T09:36:06",
+ "change": "D-128.125（開発の進め方を正本に替える）・D-128.126（利用者の流れ 12）・D-128.127（使わない表を凍結）。KN-123 の最初の分：05_flow/flows.json・03_architecture/db-catalog.json・G51（flow_db_gate.py）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "05_flow/flows.json",
+  "03_architecture/db-catalog.json",
+  "scripts/ci/flow_db_gate.py（G51）・05_flow/build_testplan.py・.github/workflows/v3-gate.yml・07_qa/test-plan",
+  "spec-dependencies.yaml（導出物と地図）",
+  "11_tickets/KN-123"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.125〜127 は flows.json・db-catalog.json に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "spec-validator --tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator --tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "spec-validator --tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "spec-validator --tier h"
+  }
+ ],
+ "next": [
+  "KN-123：流れの境目・目録の骨組み・共通の決まり・歩く骸骨・チケットの切り直し"
+ ]
+}
