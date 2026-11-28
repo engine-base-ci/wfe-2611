@@ -1,0 +1,23 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F10/admin/members/groups.ts",
+    "packages/db/migrations/20261126001200_member_groups.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-groups.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F10/admin-member-groups.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_members_id_groups.test.ts"
+   ]
+  }
+ ]
+}
