@@ -1,0 +1,36 @@
+{
+ "ops": {
+  "dryRunTicket": {
+   "file": "apps/api/test/features/F5/dry-run.test.ts",
+   "reason": "試し打ちは、承認待ちの成果物・担当者かどうか・任せた人の AI と PC・メールアドレスで答えが変わる。生成の試験の種ではその組を作れない（K-746）",
+   "covers": {
+    "test_post_tickets_id_dry_run_ok": "K746-API-001",
+    "test_post_tickets_id_dry_run_shape": "K746-API-001",
+    "test_post_tickets_id_dry_run_rejected_401": "K746-API-006",
+    "test_post_tickets_id_dry_run_rejected_403": "K746-API-006",
+    "test_post_tickets_id_dry_run_not_found": "K746-API-006",
+    "test_post_tickets_id_dry_run_conflict": "K746-API-003",
+    "test_post_tickets_id_dry_run_conflict_2": "K746-API-005",
+    "test_post_tickets_id_dry_run_conflict_3": "K746-API-007",
+    "test_post_tickets_id_dry_run_conflict_4": "K746-API-008",
+    "test_post_tickets_id_dry_run_rejected_422": "K746-API-022",
+    "test_post_tickets_id_dry_run_rate_limited": "K746-API-005",
+    "test_post_tickets_id_dry_run_upstream_failed": "K746-API-021",
+    "test_post_tickets_id_dry_run_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_dry_run_session_unresolved": "K746-API-021",
+    "test_post_tickets_id_dry_run_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_dry_run_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  }
+ }
+}
