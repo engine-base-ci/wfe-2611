@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-190 帯の下絵</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#222;--sub:#666;--line:#ddd;--warn:#fff4e5;--warn-b:#e0a040;--bad:#fdecec;--bad-b:#d05050;--btn:#222}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Hiragino Sans",sans-serif;font-size:14px;line-height:1.6}
+main{max-width:880px;margin:0 auto;padding:24px 16px}
+h1{font-size:20px;margin:0 0 4px}
+p.lead{color:var(--sub);margin:0 0 24px}
+section.state{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:20px}
+.state h2{font-size:15px;margin:0 0 4px}
+.state .who{color:var(--sub);font-size:12px;margin:0 0 12px}
+.ticket-title{font-size:16px;font-weight:600;margin:0 0 8px}
+.band{border-left:4px solid;border-radius:6px;padding:10px 12px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.band.warn{background:var(--warn);border-color:var(--warn-b)}
+.band.bad{background:var(--bad);border-color:var(--bad-b)}
+.band b{display:block}
+.band .body{flex:1 1 280px;min-width:0}
+button{background:var(--btn);color:#fff;border:0;border-radius:6px;padding:6px 12px;font-size:13px;white-space:nowrap}
+button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.kari{font-size:11px;color:#a05a00;border:1px dashed #a05a00;border-radius:4px;padding:0 4px;margin-left:4px}
+.dialog{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:14px;max-width:420px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.dialog .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.rest{color:var(--sub);font-size:12px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+</style></head><body><main>
+<h1>チケットの詳細：承認と実行の帯（K-190）</h1>
+<p class="lead">題名のすぐ下の帯だけを描いています（ほかは今の画面のまま）。<span class="kari">仮</span> は字が決まっていない所です。</p>
+
+<section class="state"><h2>1. いま（参考）：実行待ち・PC が閉じている</h2><p class="who">だれが見ても同じ</p>
+<p class="ticket-title">11 月分の請求書を送る</p>
+<div class="band warn"><div class="body"><b>実行待ち ・ PC が閉じています</b>実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます</div><button class="ghost">PC をつなぐ</button></div>
+</section>
+
+<section class="state"><h2>2. 新：片付けに失敗している（担当者が見る）</h2><p class="who">担当者（高本 聖斗）</p>
+<p class="ticket-title">11 月分の請求書を送る</p>
+<div class="band bad" role="alert"><div class="body"><b>片付けに失敗しています</b>この実行は待ったままで、PC には渡していません。止めると、もう一度「AI に任せる」から始められます。<span class="kari">仮</span><br><small>11/24 17:40 から ・ 決めた時間がたつと自動で止めます <span class="kari">仮</span></small></div><button>この実行を止める <span class="kari">仮</span></button></div>
+</section>
+
+<section class="state"><h2>3. 新：止める前の確かめ（担当者が「この実行を止める」を押した）</h2><p class="who">担当者</p>
+<div class="dialog"><b>この実行を止めますか</b> <span class="kari">仮</span><p>承認した中身は実行しません。チケットは作業中に戻ります。</p><div class="acts"><button class="ghost">やめる</button><button>止める</button></div></div>
+</section>
+
+<section class="state"><h2>4. 新：片付けに失敗している（担当者でない人が見る）</h2><p class="who">同じグループの書ける人（佐藤 花子）</p>
+<p class="ticket-title">11 月分の請求書を送る</p>
+<div class="band bad" role="alert"><div class="body"><b>片付けに失敗しています</b>この実行は待ったままです。担当者が止められます。<span class="kari">仮</span></div></div>
+</section>
+
+<section class="state"><h2>5. 止めた後（担当者が止めた）：今の「実行が止まりました」の帯</h2><p class="who">だれが見ても同じ</p>
+<p class="ticket-title">11 月分の請求書を送る</p>
+<div class="band bad" role="alert"><div class="body"><b>実行が止まりました</b>片付けに失敗していたので、高本 聖斗が止めました <span class="kari">仮</span></div><button class="ghost">完了にする</button></div>
+<p class="rest">やり取りに 1 行：「高本 聖斗が実行を止めました（片付けに失敗していたため）」<span class="kari">仮</span></p>
+</section>
+
+<section class="state"><h2>6. 決めた時間がたって自動で止まった後</h2><p class="who">だれが見ても同じ</p>
+<p class="ticket-title">11 月分の請求書を送る</p>
+<div class="band bad" role="alert"><div class="body"><b>実行が止まりました</b>片付けに失敗したまま 1 時間たったので止めました。もう一度「AI に任せる」を押せます <span class="kari">仮</span></div><button class="ghost">完了にする</button></div>
+</section>
+
+<section class="state"><h2>7. 狭い幅（375）：2 の帯</h2><p class="who">担当者</p>
+<div style="max-width:343px"><div class="band bad" role="alert"><div class="body"><b>片付けに失敗しています</b>この実行は待ったままで、PC には渡していません。止めると、もう一度「AI に任せる」から始められます。</div><button>この実行を止める</button></div></div>
+</section>
+</main></body></html>
