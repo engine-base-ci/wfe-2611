@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/members/**", "apps/web/features/F10/invite/**"], "tests": ["apps/web/tests/k/k806-group-edit.spec.ts"]}
+ ]
+}
