@@ -1,0 +1,23 @@
+{
+ "_doc": "CI から回らない検査・道具の目録（D-128.123・K-38）。scripts/ci/ci_wiring_gate.py が、package.json の ci:* と自己試験（*.test.mjs・--selftest）が CI（v3-gate.yml・release-gate.yml）か層の棚卸し（spec-dependencies.yaml の検査）から回っているかを見る。回らないものはここに理由を書く",
+ "generator": {
+  "ci:contract:gen": "作り手。G38（generated_gate.py）が回して最新かを見る",
+  "ci:errors:gen": "作り手。G38 が回す",
+  "ci:ears:gen": "作り手。G38 が回す",
+  "ci:routes:gen": "作り手。G38 が回す"
+ },
+ "manual": {
+  "ci:layer-audit": "G27 と同じもの（CI は python3 scripts/ci/layer_audit.py --run を直に呼ぶ）",
+  "ci:choke:all": "G16〜G24 を 1 回で回す手元用（CI は関門ごとに分けて回す）",
+  "ci:ops": "前の作業の仕組み（07_tasks）の作り手。しまった（D-128.114）",
+  "ci:handoff": "前の作業の仕組み（07_tasks）の作り手。しまった（D-128.114）",
+  "scripts/ci/build_test_xlsx.py": "テストの表を xlsx に書き出す道具（検査ではない）",
+  "scripts/ci/gen_ears_tests.mjs": "作り手（名前に test が入るだけ）。G38 が回す",
+  "scripts/ci/ticket_affects_test.py --selftest": "試験のファイル（K-107 の K8）。--selftest の文字は scripts/tickets/build_index.py --selftest を呼ぶため。試験は G57 が python3 scripts/ci/ticket_affects_test.py で回す",
+  "scripts/ci/ticket_process_test.py --selftest": "試験のファイル（K-146）。--selftest の文字は写し（ticket_rows_gate.py・answers_merge.py）の --selftest を呼ぶためにあるだけ。試験は G64 が python3 scripts/ci/ticket_process_test.py で回す",
+  "scripts/ci/ci_lean_test.py --selftest": "試験のファイル（K-156）。--selftest の文字は説明の文（stack_gate.py の --selftest がそのまま通る）にあるだけ。試験は G62 が python3 scripts/ci/ci_lean_test.py で回す",
+  "scripts/ci/k238_fidelity_ci_test.py --selftest": "試験のファイル（K-238）。--selftest の文字は CI の定義に fidelity_config.py --selftest が在るかを確かめる文にあるだけ。試験は G69 が python3 scripts/ci/k238_fidelity_ci_test.py で回す",
+  "scripts/ci/k376_gate_lists_test.py --selftest": "試験のファイル（K-376）。--selftest の文字は、移す前の G65・G47 の命令の並び（fidelity_config.py --selftest・ci_wiring_gate.py --selftest・qa_delta.py --selftest）を写した表にあるだけ。試験は G65 が python3 scripts/ci/k376_gate_lists_test.py で回す"
+ },
+ "known_broken": {}
+}
