@@ -6,7 +6,7 @@
 //   小さな知らせ（戻した・コピーした）の置き場 Toaster はこの頁が持つ（外枠は持たない・members-page と同じ）
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { NoticeBox, Toaster, errorText } from "@/components/k";
+import { NoticeBox, errorText } from "@/components/k";
 import { PAGE_ERROR } from "@/components/k/error-of";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import "@/features/F4/doc/doc.css";
@@ -28,7 +28,7 @@ export function VersionsPage({ id, of, from, to }: VersionsPageProps): ReactNode
     (v.loaded.state === "error" && v.loaded.code === PAGE_ERROR.notFound);
   const headError = v.ticket.state === "error" && !gone ? v.ticket.code : null;
   return (
-    <Toaster>
+    <>
       <TicketShell
         screen="tickets"
         crumbs={[{ label: "チケット", href: "/tickets" }, ...(t ? [{ label: t.number }] : []), { label: "版と差分" }]}
@@ -74,6 +74,6 @@ export function VersionsPage({ id, of, from, to }: VersionsPageProps): ReactNode
           )}
         </div>
       </TicketShell>
-    </Toaster>
+    </>
   );
 }

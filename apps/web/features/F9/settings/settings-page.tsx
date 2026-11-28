@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { NoAccess, Toaster } from "@/components/k";
+import { NoAccess } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
@@ -23,6 +23,8 @@ const PATH = "/workspace/ticket-settings";
 const ADMIN_ROLES = ["R1", "R2"];
 const SUB_ITEMS: WsSubItemOverrides = {
   rules: { label: "チケットの設定", icon: SlidersHorizontal, href: PATH },
+  // 「メンバー」は一覧へ（既定の #members は一覧の画面の中の道）
+  members: { href: "/members" },
 };
 const SUB_ENABLED = ["members", "rules"] as const;
 const CRUMBS = [{ label: "ワークスペースの管理", disabled: true }, { label: "チケットの設定" }];
@@ -45,11 +47,11 @@ export function TicketSettingsPage({ tab, id }: { tab: SettingsTabKey; id?: stri
       </UnsavedProvider>
     );
   return (
-    <Toaster>
+    <>
       <TicketShell screen="masters" crumbs={CRUMBS}>
         {body}
       </TicketShell>
-    </Toaster>
+    </>
   );
 }
 

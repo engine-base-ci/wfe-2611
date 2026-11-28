@@ -20,7 +20,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import type { Ops } from "@kaname/contracts";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Band, Callout, Confirm, Loading, NoAccess, Toaster, useNotify } from "@/components/k";
+import { Band, Callout, Confirm, Loading, NoAccess, useNotify } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { me } from "@/lib/auth/ext";
@@ -202,24 +202,24 @@ export function MembersPage() {
   const { roles } = useMyRoles();
   if (roles === undefined)
     return (
-      <Toaster>
+      <>
         <TicketShell
           screen="members"
           crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}
         >
           <Loading />
         </TicketShell>
-      </Toaster>
+      </>
     );
   if (!roles.some((r) => CAN_SEE.includes(r)))
     return (
-      <Toaster>
+      <>
         <TicketShell screen="members" crumbs={[{ label: "メンバー" }]}>
           <section aria-label="メンバー">
             <NoAccess acts={[() => router.back(), "/tickets"]} />
           </section>
         </TicketShell>
-      </Toaster>
+      </>
     );
   return <MembersScreen />;
 }
@@ -574,7 +574,7 @@ function MembersScreen() {
           : null;
   const tabs = <Tabs guest={guestTab} members={view?.count ?? 0} guests={gview?.count ?? 0} />;
   return (
-    <Toaster>
+    <>
       <TicketShell screen="members" crumbs={[{ label: "ワークスペースの管理", disabled: true }, { label: "メンバー" }]}>
         {members.isPending || who.isPending ? (
           <Loading />
@@ -748,6 +748,6 @@ function MembersScreen() {
         />
         {editing.dialogs}
       </TicketShell>
-    </Toaster>
+    </>
   );
 }

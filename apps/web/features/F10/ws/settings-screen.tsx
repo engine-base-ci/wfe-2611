@@ -6,7 +6,7 @@
 //   K-832：消す手続きの小窓（SETTINGS_DIALOGS の delete）に読み直しと権限なしを渡し、手続き中の帯（読みの deletion）と取り消し（cancelWorkspaceDeletion）をつなぐ
 import { useRef, useState, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Button, ErrorState, Loading, NoAccess, Toaster } from "@/components/k";
+import { Button, ErrorState, Loading, NoAccess } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { useMyRoles } from "@/lib/auth/role";
@@ -56,11 +56,11 @@ const failText = (r: CallErr): string => (r.status === 503 ? DOWN : (r.message ?
 
 function Frame({ children }: { children: ReactNode }) {
   return (
-    <Toaster>
+    <>
       <TicketShell screen="company-settings" crumbs={CRUMBS}>
         {children}
       </TicketShell>
-    </Toaster>
+    </>
   );
 }
 
@@ -206,7 +206,7 @@ export function SettingsScreen() {
     <Frame>
       <WsHead name={company} initial={initialOf(company)} />
       <div className="k-me-wrap">
-        <WsSub active="settings" />
+        <WsSub active="settings" items={{ members: { href: "/members" } }} />
         <SettingsPage
           s={{
             name: company,

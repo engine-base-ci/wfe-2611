@@ -9,7 +9,7 @@ import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, type ReactNode } from "react";
-import { Loading, NoAccess, Toaster, type Crumb } from "@/components/k";
+import { Loading, NoAccess, type Crumb } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { ONCE, TicketShell } from "@/features/F4/create-ticket/ticket-shell";
@@ -40,11 +40,11 @@ const CRUMBS_ONE: Crumb[] = [{ label: "記録" }];
 
 function Frame({ crumbs, children }: { crumbs: Crumb[]; children: ReactNode }) {
   return (
-    <Toaster>
+    <>
       <TicketShell screen={SCREEN} crumbs={crumbs}>
         {children}
       </TicketShell>
-    </Toaster>
+    </>
   );
 }
 
@@ -127,7 +127,7 @@ export function AuditScreen() {
     <Frame crumbs={CRUMBS_ALL}>
       <AdminHead />
       <div className="k-me-wrap">
-        <WsSub active="log" />
+        <WsSub active="log" items={{ members: { href: "/members" } }} />
         {page}
       </div>
     </Frame>

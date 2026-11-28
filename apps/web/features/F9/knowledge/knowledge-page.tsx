@@ -7,7 +7,7 @@ import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Doc } from "@kaname/contracts";
-import { Button, Empty, Loading, Toaster, useNotify } from "@/components/k";
+import { Button, Empty, Loading, useNotify } from "@/components/k";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { useMyRoles } from "@/lib/auth/role";
 import { NAV } from "@/lib/nav";
@@ -155,11 +155,11 @@ export function KnowledgePage({ pageId }: { pageId?: string }) {
       : crumbsOf(pageId ? page.data : undefined).map((label) => ({ label }))),
   ];
   return (
-    <Toaster>
+    <>
       <TicketShell screen="knowledge" crumbs={crumbs}>
         {allowed === false ? <Forbidden /> : <KnowledgeBody pageId={pageId} ready={allowed === true} />}
       </TicketShell>
-    </Toaster>
+    </>
   );
 }
 
