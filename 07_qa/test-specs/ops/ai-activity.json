@@ -1,0 +1,149 @@
+{
+ "screen": "ai-activity",
+ "mock": "06_mockup/v1/v1-ai-activity.html",
+ "state_labels": {
+  "n": "今日の動き",
+  "one": "1本の流れ",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "link:覚え直させる→automation-repair",
+   "kind": "link",
+   "label": "覚え直させる",
+   "target": "automation-repair",
+   "states": [
+    "今日の動き",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:今日は止めておく",
+   "kind": "button",
+   "label": "今日は止めておく",
+   "target": null,
+   "states": [
+    "今日の動き",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:セッションを見る",
+   "kind": "button",
+   "label": "セッションを見る",
+   "target": null,
+   "states": [
+    "今日の動き",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:動きを見る",
+   "kind": "button",
+   "label": "動きを見る",
+   "target": null,
+   "states": [
+    "今日の動き",
+    "AI が止まっている"
+   ],
+   "roles": [
+    "R1",
+    "R2"
+   ],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:承認待ちで押す→approvals",
+   "kind": "link",
+   "label": "承認待ちで押す",
+   "target": "approvals",
+   "states": [
+    "1本の流れ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:会話を見る→clone-chat",
+   "kind": "link",
+   "label": "会話を見る",
+   "target": "clone-chat",
+   "states": [
+    "1本の流れ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:証跡で全部見る→audit",
+   "kind": "link",
+   "label": "証跡で全部見る",
+   "target": "audit",
+   "states": [
+    "1本の流れ"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:止まっているところへ",
+   "kind": "button",
+   "label": "止まっているところへ",
+   "target": null,
+   "states": [
+    "空"
+   ],
+   "roles": [],
+   "ps": [
+    "PS2"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
