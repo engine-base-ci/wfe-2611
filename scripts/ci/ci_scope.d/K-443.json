@@ -1,0 +1,19 @@
+{
+  "data_links": [
+    {
+      "paths": [
+        "apps/web/features/F4/parent/",
+        "apps/web/features/F4/pick/",
+        "apps/web/features/F4/parent/create-slot.tsx",
+        "apps/web/features/F4/parent/detail-row-slot.tsx",
+        "apps/web/app/(dev)/dev/mock/f4/"
+      ],
+      "tests": [
+        "apps/web/tests/k/k443-parent.spec.ts"
+      ]
+    }
+  ],
+  "reads_ok": {
+    "apps/web/tests/k/parent-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-443）"
+  }
+}
