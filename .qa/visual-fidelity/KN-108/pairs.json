@@ -1,0 +1,130 @@
+{
+ "_doc": "キャンバスの要素と新しい画面の要素の組（KN-108）。scripts/ci/visual_fidelity.mjs が両方を実ブラウザで描き、見た目の値を比べる",
+ "canvas": "04_design/canvas/Main.dc.html",
+ "app": "/dev/k/showcase",
+ "viewport": {
+  "width": 1440,
+  "height": 1000
+ },
+ "pairs": [
+  {
+   "name": "左のバー",
+   "canvas": "nav.kn-nav",
+   "app": ".k-nav",
+   "props": [
+    "width",
+    "background-color",
+    "border-right-color",
+    "padding-top"
+   ]
+  },
+  {
+   "name": "左のバーの今の項目",
+   "canvas": ".kn-item[aria-current=page]",
+   "app": ".k-nav .k-nav-item[aria-current=page]",
+   "props": [
+    "height",
+    "background-color",
+    "color",
+    "border-radius",
+    "font-size",
+    "font-weight",
+    "padding-left"
+   ]
+  },
+  {
+   "name": "左のバーの項目",
+   "canvas": ".kn-nav .kn-item:not([aria-current])",
+   "app": ".k-nav .k-nav-item:not([aria-current])",
+   "props": [
+    "height",
+    "color",
+    "border-radius",
+    "font-size"
+   ]
+  },
+  {
+   "name": "チケットを作る",
+   "canvas": ".kn-create",
+   "app": ".k-nav .k-nav-create",
+   "props": [
+    "height",
+    "background-color",
+    "color",
+    "border-radius"
+   ]
+  },
+  {
+   "name": "上の帯",
+   "canvas": ".kn-bar",
+   "app": ".k-bar",
+   "props": [
+    "height",
+    "background-color",
+    "border-bottom-color",
+    "padding-left"
+   ]
+  },
+  {
+   "name": "探す",
+   "canvas": ".kn-bar label",
+   "app": ".k-search label",
+   "props": [
+    "width",
+    "height",
+    "border-radius",
+    "background-color",
+    "border-top-color"
+   ]
+  },
+  {
+   "name": "自分の顔",
+   "canvas": ".kn-bar [aria-label='自分のメニュー'] span",
+   "app": ".k-avatar",
+   "props": [
+    "width",
+    "height",
+    "background-color",
+    "color",
+    "border-radius"
+   ]
+  },
+  {
+   "name": "知らせの数",
+   "canvas": ".kn-bar [aria-label^='知らせ'] b",
+   "app": ".k-bell b",
+   "props": [
+    "height",
+    "background-color",
+    "color"
+   ]
+  },
+  {
+   "name": "本文の書体",
+   "canvas": "main",
+   "app": ".k-main",
+   "props": [
+    "font-family",
+    "font-size",
+    "color"
+   ]
+  }
+ ],
+ "extra": [
+  [
+   "dark",
+   "dark",
+   1440
+  ],
+  [
+   "375",
+   "light",
+   375
+  ],
+  [
+   "375-dark",
+   "dark",
+   375
+  ]
+ ]
+}
