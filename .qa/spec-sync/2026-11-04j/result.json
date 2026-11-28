@@ -1,0 +1,65 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.133-branches",
+ "executed_at": "2026-11-04T12:09:44",
+ "change": "D-128.133（分岐の型を 8 つの観点に・書いていない＝漏れ・状態 × 入口 × 利用者の状態の表）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "03_architecture/共通の決まり.md"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate 緑（D-128.133 は 共通の決まり.md に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "tier h"
+  }
+ ],
+ "next": [
+  "見本のチケットの確認・スキルの更新"
+ ]
+}
