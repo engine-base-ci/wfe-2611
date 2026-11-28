@@ -586,9 +586,16 @@ test("K684-UI-023 キーボードだけ：「＋」に焦点して Enter で小�
   for (let i = 0; i < 20; i++) await page.keyboard.press("Tab");
   expect(await page.evaluate(() => Boolean(document.activeElement?.closest(".k-dialog")))).toBe(true);
   await page.keyboard.press("Escape");
-  // 小窓は閉じたあと焦点を開いた「＋」へ戻す（部品 Dialog）。戻り終わる前に「…」へ焦点を置くと、Enter が「＋」に当たって足す小窓が開き直す
+  // 小窓を閉じると焦点を開いた「＋」へ戻し、2 こま続けて乗るまで戻し続ける（use-tree-ops.ts の focusLoop）。
+  //   戻り終わる前に「…」へ焦点を置くと「＋」へ引き戻され、Enter が「＋」に当たって足す小窓が開き直す。乗ったのを見てから 3 こま待つ
   await expect(dlg).toHaveCount(0);
   await expect(plus(page, "会社")).toBeFocused();
+  await page.evaluate(
+    () =>
+      new Promise<void>((r) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
+      ),
+  );
   await more(page).focus();
   await page.keyboard.press("Enter");
   await page.keyboard.press("ArrowDown");
