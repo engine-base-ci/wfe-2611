@@ -4,7 +4,7 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { BrowserContext, Page, Request, Route } from "@playwright/test";
-import { expect, missingRows, row, rowsOf } from "../../_lib/row";
+import { controlsOf, expect, missingRows, row, rowsOf } from "../../_lib/row";
 import { WIDTHS } from "../../_lib/api";
 // 期限の入れ方（日付の欄でも小窓のボタンでも通る）は K-431 が create-mock.ts に 1 か所だけ持つ
 import { TEMPLATE_ISSUE, TEMPLATE_TASK, bodyBox, dueIsDialog, fillDue, writeBody } from "../../k/create-mock";
@@ -23,6 +23,7 @@ const BOSS = "11111111-0000-4000-8000-000000000003";
 const STOPPED = "11111111-0000-4000-8000-000000000004";
 const SCOPE = "22222222-0000-4000-8000-000000000001";
 const VIEW_ONLY_SCOPE = "22222222-0000-4000-8000-000000000002";
+const DEV_SCOPE = "22222222-0000-4000-8000-000000000003";
 const TASK = "44444444-0000-4000-8000-000000000001";
 const ISSUE = "44444444-0000-4000-8000-000000000002";
 // 種別の答え（K-560：body_template を足した。sections は K-575 まで残るので空の並び）。ひな形は create-mock.ts の物と同じ（薄い字の節）
@@ -321,8 +322,14 @@ row(R["K60-UI-000"], async (page) => {
   // 知らせる人（人の数だけ並ぶ）は K60-UI-015 の行が受け持つ。本文は 1 枚の欄（K-442・本文の道具は K-567 の試験が受け持つ）
   const generated = new Set([...MEMBERS.map((x) => x.display_name)]);
   // 外枠（左のメニュー・下のタブ）の要素は外枠の試験が受け持つ（D-143.1）。ここは本文だけを見る。外枠が出ることは K60-UI-031
+  // K-442 の新しい作る面で、ほかの葉が受け持つ区画の要素はその葉の試験が見る（Tests-Changed: K-442）：
+  //   作り方の 3 つ（.k-create-how・K-442／K-767／複製）・親の入口（.k-f4d-parent・K-443）・本文の箱の中（section.k-f4d-box：
+  //   本文の道具は K-567・ひな形を消すは K-442・つながりは K-580・項目の表は K-569・確認項目は K-450）
+  const owned = new Set<string>();
+  for (const sel of [".k-create-how", ".k-f4d-parent", "section.k-f4d-box"])
+    for (const c of await controlsOf(page, sel)) owned.add(`（${c.role}）「${c.name}」`);
   const missing = (await missingRows(page, ROWS, "[data-ticket-shell]")).filter(
-    (x) => !generated.has(/「(.+)」/.exec(x)?.[1] ?? ""),
+    (x) => !generated.has(/「(.+)」/.exec(x)?.[1] ?? "") && !owned.has(x),
   );
   expect(missing).toEqual([]);
 });
@@ -413,7 +420,19 @@ row(R["K60-UI-006"], async (page) => {
 });
 
 row(R["K60-UI-007"], async (page) => {
-  await mockApi(page);
+  const m = await mockApi(page);
+  // K-442：書けるグループが 1 つなら欄を出さない（そのグループで作る・K442-UI-021）。書ける 2 つと見るだけ 1 つの形で、見るだけは選べないことを見る（Tests-Changed: K-442）
+  m.on.scopes = () => ({
+    status: 200,
+    body: {
+      data: [
+        { id: SCOPE, name: "営業", tenant_id: WS_A },
+        { id: DEV_SCOPE, name: "受託開発", tenant_id: WS_A },
+        { id: VIEW_ONLY_SCOPE, name: "経理（見るだけ）", tenant_id: WS_A },
+      ],
+      meta: { limit: 200, writable: [SCOPE, DEV_SCOPE] },
+    },
+  });
   await open(page);
   await page.getByRole("combobox", { name: "グループ" }).click();
   await expect(page.getByRole("option", { name: "営業" })).toBeVisible();
@@ -1056,6 +1075,14 @@ row(R["K60-UI-031"], async (page) => {
       }),
     });
   });
+  // 外枠は役を getShell の member.role_id から読む（K-466）。閲覧のみ（viewer）の答えを外枠の口にも返す（Tests-Changed: K-442 の回の直し）
+  await page.route(/\/api\/v1\/shell$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ data: shellData({ roleId: "viewer", name: "山田" }), meta: {} }),
+    }),
+  );
   for (const path of ["", `/${ID}`]) {
     await page.setViewportSize({ width: 1440, height: 1000 });
     const res = await page.goto(`/tickets${path}`);
