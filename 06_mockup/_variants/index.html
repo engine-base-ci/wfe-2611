@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>今日 ── 3 案を並べて見る</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'M PLUS 2','Hiragino Sans',sans-serif;background:#F1F1F3;color:#1B1D22}
+.bar{background:#1B1D22;color:#fff;padding:10px 18px;display:flex;gap:14px;align-items:center;font-size:13px;position:sticky;top:0;z-index:2}
+.bar b{font-weight:600}.bar .sp{flex:1}
+.bar button{font:inherit;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;border:0;background:rgba(255,255,255,.14);color:rgba(255,255,255,.85);cursor:pointer}
+.bar button[aria-pressed="true"]{background:#fff;color:#1B1D22}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:14px}
+.grid.one{grid-template-columns:1fr}
+.v{background:#fff;border:1px solid #E6E6EA;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.v h2{font-size:14px;margin:0;padding:12px 14px 4px}
+.v h2 small{display:block;font-weight:400;color:#5B5F6B;font-size:12.5px;margin-top:2px;line-height:1.6}
+.v .f{position:relative;background:#fff;border-top:1px solid #EEEEF1;overflow:hidden}
+.v iframe{border:0;width:1440px;height:900px;transform-origin:0 0;display:block}
+.v .open{position:absolute;right:10px;top:10px;font-size:12px;background:#1B1D22;color:#fff;padding:4px 10px;border-radius:999px;text-decoration:none}
+.grid.one .v iframe{transform:none!important}
+</style></head><body>
+<div class="bar"><b>今日 ── 3 案</b><span>Linear / Notion 寄り。主役は「押してほしいもの」と「今日やる分」、会話は常に見える。紺の面をやめて中間色 1 つ</span><span class="sp"></span>
+<button data-mode="3" aria-pressed="true">3 つ並べる</button><button data-mode="1">1 つずつ実寸</button></div>
+<div class="grid" id="g">
+ <div class="v"><h2>A 一本の受信箱（Linear 型）<small>承認と今日やる分を 1 本の一覧に。1 行 36px・キーボードで裁く。会話は右に常駐、申し送りは会話の最初の 1 通</small></h2><div class="f"><a class="open" href="today-A.html" target="_blank">開く</a><iframe src="today-A.html"></iframe></div></div>
+ <div class="v"><h2>B 一枚の紙（Notion 型）<small>日付を大見出しに、申し送りは 3 行の文章。押してほしいもの → 今日やる分（まずこれを大きく）。枠はアイコンの帯だけ、会話は右</small></h2><div class="f"><a class="open" href="today-B.html" target="_blank">開く</a><iframe src="today-B.html"></iframe></div></div>
+ <div class="v"><h2>C 選んで裁く（三画面）<small>左に一覧、中央に選んだ件の中身（承認カードなら本文全部）、下に「この件について」の会話。承認が多い人向け</small></h2><div class="f"><a class="open" href="today-C.html" target="_blank">開く</a><iframe src="today-C.html"></iframe></div></div>
+</div>
+<script>
+const g=document.getElementById('g');
+const fit=()=>{ const one=g.classList.contains('one'); document.querySelectorAll('.v .f').forEach(f=>{ const w=f.clientWidth; const s=one?1:w/1440; const fr=f.querySelector('iframe'); fr.style.transform=one?'none':`scale(${s})`; f.style.height=(one?900:900*s)+'px'; }); };
+document.querySelectorAll('.bar button').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('.bar button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); g.classList.toggle('one',b.dataset.mode==='1'); fit(); }));
+window.addEventListener('resize',fit); window.addEventListener('load',fit); fit();
+</script>
+</body></html>
