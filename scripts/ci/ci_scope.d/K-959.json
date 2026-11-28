@@ -1,0 +1,32 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/billing-contact.ts",
+    "apps/api/src/features/F12/billing/contact.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/billing-contact.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/billing-contact.test.ts",
+    "apps/api/test/features/F7/notifications-list.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/billing-contact.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_workspace_billing_contact.test.ts"
+   ]
+  }
+ ]
+}
