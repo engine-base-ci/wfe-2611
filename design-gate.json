@@ -1,0 +1,686 @@
+{
+  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）。raw_lengths は D8（画面の CSS の生の長さ・--raw-lengths を付けた回だけ・K-261）：paths 見る置き場・token_css トークンの定義元・token_prefix トークンの頭・allow 許す値（理由つき・0 はどの単位の零にも当たる）・ledger 台帳（減らすだけ）",
+  "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
+  "allow_colors": [
+    {
+      "value": "#2A3444",
+      "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない"
+    }
+  ],
+  "allow_sizes": [],
+  "component_selectors": {
+    "button-primary": {
+      "selector": ".k-btn[data-variant=\"primary\"]",
+      "shape": ".k-btn"
+    },
+    "button-primary-lg": {
+      "selector": ".k-btn[data-size=\"lg\"]",
+      "shape": [".k-btn", ".k-btn[data-variant=\"primary\"]"]
+    },
+    "button-outlined": {
+      "selector": ".k-btn[data-variant=\"outlined\"]",
+      "shape": ".k-btn"
+    },
+    "input": ".k-input",
+    "input-lg": {
+      "selector": ".k-field[data-size=\"lg\"] .k-input",
+      "shape": ".k-input"
+    },
+    "label": ".k-label",
+    "label-lg": {
+      "selector": ".k-field[data-size=\"lg\"] .k-label",
+      "shape": ".k-label"
+    },
+    "popup-layer": ".k-popup-layer",
+    "popup-layer-field": ".k-popup-layer:has(> .k-select-field)",
+    "dialog": ".k-dialog",
+    "dialog-title": ".k-dialog-title",
+    "state-empty": ".k-state[data-state=\"empty\"]",
+    "auth-page": ".k-auth",
+    "auth-logo": ".k-auth-logo",
+    "auth-card": ".k-auth-card",
+    "auth-card-wide": ".k-auth[data-wide] .k-auth-card",
+    "legal-body": ".k-auth-card .k-legal",
+    "auth-lead-sub": ".k-auth-lead[data-kind=\"sub\"]",
+    "auth-lead-body": ".k-auth-lead[data-kind=\"body\"]",
+    "auth-badge": ".k-auth-badge",
+    "auth-alt": ".k-auth-alt",
+    "auth-foot": ".k-auth-foot",
+    "auth-card-login": ".k-auth-card:has(> form[data-auth=\"login\"])",
+    "auth-sep": ".k-login-sep",
+    "auth-sep-line": ".k-login-sep-line",
+    "auth-code-row": ".k-login-code",
+    "auth-code": ".k-login-code-box",
+    "auth-alt-col": ".k-login-alt-col",
+    "auth-spin": ".k-auth-card > .k-state[data-state=\"loading\"] .k-spin",
+    "button-secondary": {
+      "selector": ".k-btn[data-variant=\"secondary\"]",
+      "shape": ".k-btn"
+    },
+    "button-inverted": {
+      "selector": ".k-btn[data-variant=\"inverted\"]",
+      "shape": ".k-btn"
+    },
+    "button-disabled": ".k-btn:disabled",
+    "input-disabled": ".k-input:disabled",
+    "tab-disabled": ".k-tab[data-disabled]",
+    "field": ".k-field",
+    "field-lg": {
+      "selector": ".k-field[data-size=\"lg\"]",
+      "shape": ".k-field"
+    },
+    "dialog-head": ".k-dialog-head",
+    "dialog-body": ".k-dialog-body",
+    "dialog-actions": ".k-dialog-actions",
+    "dialog-close": ".k-dialog-close",
+    "dialog-confirm": ".k-dialog[data-size=\"confirm\"]",
+    "dialog-form": ".k-dialog",
+    "dialog-button": ".k-dialog-actions .k-btn[data-size=\"md\"]",
+    "dialog-caution": ".k-dialog-caution",
+    "dialog-target": ".k-dialog-target",
+    "dialog-group": ".k-dialog-group",
+    "dialog-check": ".k-dialog-check",
+    "dialog-stack": ".k-dialog-stack",
+    "dialog-select": ".k-dialog-stack select.k-input",
+    "dialog-textarea": ".k-dialog-stack textarea.k-input",
+    "field-required": ".k-field-required",
+    "page-head-button": ".k-page-head .k-btn:not([data-size=\"sm\"])",
+    "callout-info": {
+      "selector": ".k-callout[data-tone=\"info\"]",
+      "shape": ".k-callout"
+    },
+    "callout-warn": {
+      "selector": ".k-callout[data-tone=\"warn\"]",
+      "shape": ".k-callout"
+    },
+    "callout-danger": {
+      "selector": ".k-callout[data-tone=\"danger\"]",
+      "shape": ".k-callout"
+    },
+    "doc-toolbar": ".k-doc-tools",
+    "doc-tool": ".k-doc-tools button",
+    "detail-card": ".k-detail-card",
+    "detail-meta": ".k-detail-meta",
+    "detail-meta-side": ".k-detail-meta-side",
+    "detail-kind": ".k-detail-kind",
+    "detail-stage": ".k-detail-stage",
+    "detail-stage-locked": ".k-detail-stage.k-prog-stage-locked",
+    "detail-head": ".k-detail-card > .k-page-head",
+    "detail-title": ".k-detail-card > .k-page-head h1",
+    "detail-doc": ".k-detail-doc",
+    "detail-doc-toolbar": ".k-detail-card .k-doc-tools",
+    "detail-links-title": ".k-detail-links h2",
+    "detail-panel": ".k-detail-panel",
+    "detail-panel-title": ".k-detail-panel h2",
+    "create-head": ".k-create-head",
+    "create-how": {
+      "selector": ".k-create-how > span",
+      "shape": ".k-create-how"
+    },
+    "create-body": ".k-create-body",
+    "create-assign": ".k-create-assign",
+    "create-options": ".k-create-options",
+    "create-drop": ".k-create-drop",
+    "create-chip": ".k-create-chip",
+    "create-target": ".k-create-chip > button",
+    "create-assign-row": ".k-create-assign-row",
+    "approvals-body": ".k-ap-body",
+    "approvals-card": ".k-ap-card",
+    "approvals-tools": ".k-ap-tools",
+    "approvals-chips": ".k-ap-chips",
+    "approvals-chip": ".k-ap-chip",
+    "approvals-chip-on": {
+      "selector": ".k-ap-chip[aria-pressed=\"true\"]",
+      "shape": ".k-ap-chip"
+    },
+    "approvals-th": ".k-ap-table th",
+    "approvals-td": ".k-ap-table td",
+    "approvals-group": ".k-ap-group > td",
+    "approvals-title": ".k-ap-title > a",
+    "approvals-late": ".k-ap-table td[data-late]",
+    "approvals-kind": ".k-ap-kind",
+    "approvals-avatar": ".k-ap-avatar",
+    "approvals-acts": ".k-ap-acts",
+    "approvals-note": ".k-ap-note",
+    "state-empty-icon": ".k-state-icon",
+    "approvals-from": ".k-ap-from",
+    "approvals-next": {
+      "selector": ".k-page-head.k-ap-head .k-btn.k-ap-next",
+      "shape": ".k-btn"
+    },
+    "approvals-empty-title": ".k-ap-body .k-state-title",
+    "approvals-empty-body": ".k-ap-body .k-state-body",
+    "list-head-row": ".k-list-head-row",
+    "list-views": ".k-list-views",
+    "list-view": {
+      "selector": ".k-list-view[aria-current=\"page\"]",
+      "shape": ".k-list-view"
+    },
+    "list-body": ".k-list-body",
+    "list-body-first": ".k-list-body[data-first]",
+    "list-main": ".k-list-main",
+    "list-first": ".k-list-first",
+    "list-greet": ".k-list-greet",
+    "list-empty-mark": ".k-list-empty-mark",
+    "list-empty-desc": ".k-list-empty-desc",
+    "list-act": ".k-btn.k-list-act",
+    "list-suggest": ".k-list-suggest",
+    "list-side": ".k-list-side",
+    "list-side-box": ".k-list-side-box",
+    "list-side-title": ".k-list-side-title",
+    "list-progress": ".k-list-progress",
+    "list-task": ".k-list-task",
+    "list-task-mark": ".k-list-task-mark",
+    "list-task-label": ".k-list-task-label",
+    "list-setup-foot": ".k-list-setup-foot",
+    "list-anytime": ".k-list-anytime",
+    "list-target": ".k-list-text-btn",
+    "list-cards": ".k-list-cards",
+    "list-card": ".k-list-card",
+    "list-card-value": ".k-list-card-value",
+    "list-panel": ".k-list-panel",
+    "list-filter": ".k-list-filter",
+    "list-chip": ".k-list-chip",
+    "list-tool": ".k-list-tool",
+    "list-th": ".k-list-table th",
+    "list-td": ".k-list-table td",
+    "list-tag": ".k-list-tag",
+    "list-avatar": ".k-list-avatar",
+    "list-ai": ".k-list-ai",
+    "list-more": ".k-list-more",
+    "list-box": ".k-list-box",
+    "list-box-title": ".k-list-box-title",
+    "list-box-row": ".k-list-box-row",
+    "list-section": ".k-list-section > td",
+    "list-columns": ".k-list-columns",
+    "list-columns-item": ".k-list-columns-item",
+    "list-chips": ".k-list-chips",
+    "list-tools": ".k-list-tools",
+    "list-who": ".k-list-who",
+    "list-late-icon": ".k-list-late svg",
+    "list-ai-icon": ".k-list-ai svg",
+    "list-scope-mark": ".k-list-scope-mark",
+    "list-search": ".k-list-search",
+    "list-search-row": ".k-list-search-row",
+    "list-search-chips": ".k-list-search-chips",
+    "list-search-label": ".k-list-search-group:first-child .k-list-search-label",
+    "list-search-chip": ".k-list-search-chip",
+    "list-search-seg": ".k-list-search-seg",
+    "list-search-seg-item": ".k-list-search-seg-item",
+    "list-search-fields": ".k-list-search-fields",
+    "list-search-field": ".k-list-search-field",
+    "list-search-input": ".k-list-search-input",
+    "list-pick": ".k-list-table .k-list-pick",
+    "list-detail-side": ".k-list-detail",
+    "list-detail-side-title": ".k-list-detail-title",
+    "shell-bar": ".k-bar",
+    "detail-body": ".k-detail > .k-page",
+    "detail-copy": ".k-detail-copy",
+    "detail-acts": ".k-detail-card > .k-page-head .k-page-acts",
+    "detail-act": ".k-detail-card > .k-page-head .k-page-acts .k-btn",
+    "detail-more": ".k-detail-card > .k-page-head .k-page-acts .k-detail-more",
+    "detail-bands": ".k-detail-bands:not(:empty)",
+    "detail-links-head": ".k-detail-links-head",
+    "detail-link": ".k-detail-link",
+    "detail-panel-close": ".k-detail-panel-close",
+    "detail-tabs": ".k-detail-tabs",
+    "detail-tab": ".k-detail-tabs button",
+    "detail-panel-sec": ".k-detail-panel-sec",
+    "detail-fields": ".k-detail-fields",
+    "detail-who": ".k-detail-who",
+    "detail-avatar": ".k-detail-avatar",
+    "run-band": ".k62-band",
+    "run-sheet": ".k62-run-sheet",
+    "run-chip": ".k62-run-chip",
+    "band-approval": {
+      "selector": ".k-band[data-tone=\"approval\"]",
+      "shape": ".k-band"
+    },
+    "band-title": ".k-band .k-band-title",
+    "band-sub": ".k-band-sub",
+    "band-acts": ".k-band-acts",
+    "band-button": ".k-band-acts .k-btn[data-variant=\"outlined\"]",
+    "band-caution": ".k-band-caution",
+    "band-notice": ".k-band-notice",
+    "band-state": ".k-band:not([data-tone=\"approval\"])",
+    "band-info": ".k-band[data-tone=\"info\"]",
+    "band-danger": ".k-band[data-tone=\"danger\"]",
+    "band-ok": ".k-band[data-tone=\"ok\"]",
+    "band-wait": ".k-band[data-tone=\"wait\"]",
+    "band-plain": ".k-band[data-tone=\"plain\"]",
+    "band-state-button": ".k-band:not([data-tone=\"approval\"]) .k-band-acts .k-btn",
+    "band-button-info": ".k-band[data-tone=\"info\"] .k-band-acts .k-btn[data-variant=\"outlined\"]",
+    "band-button-danger": ".k-band[data-tone=\"danger\"] .k-band-acts .k-btn[data-variant=\"outlined\"]",
+    "band-notice-warn": ".k-band-notice[data-tone=\"warn\"]",
+    "run-steps": ".k-run-steps",
+    "run-step": ".k-run-steps > li",
+    "run-step-done": ".k-run-steps > li[data-state=\"done\"]",
+    "run-step-now": ".k-run-steps > li[data-state=\"now\"]",
+    "check-stack": ".k-check-stack",
+    "check-table-head": ".k-check-table th",
+    "check-empty": ".k-check-empty",
+    "artifact-card": ".k-artifact-card",
+    "artifact-head": ".k-artifact-head",
+    "artifact-meta": ".k-artifact-meta",
+    "artifact-acts": ".k-artifact-acts",
+    "artifact-button": ".k-artifact-acts .k-artifact-btn",
+    "dialog-connect": ".k-dialog[data-size=\"connect\"]",
+    "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
+    "member-remove-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn.k-f10d-act",
+    "members-group-button": ".k-f10m-head .k-btn[data-size=\"sm\"]",
+    "dialog-sub": ".k-dialog-sub",
+    "pc-step": ".k-steps > li",
+    "pc-step-dot": ".k-step-dot",
+    "pc-step-title": ".k-steps .k-step-title",
+    "pc-step-desc": ".k-step-desc",
+    "pc-code": ".k-code",
+    "pc-code-cell": ".k-code-cell",
+    "pc-code-foot": ".k-code-foot",
+    "pc-text-button": ".k-pc-text-btn",
+    "pc-note": ".k-pc-shared-note",
+    "pc-note-mark": ".k-pc-shared-note > b",
+    "pc-wait": ".k-pc-wait",
+    "pc-wait-dot": ".k-wait-dot",
+    "pc-button": ".k-btn.k-pc-btn[data-variant]",
+    "pc-button-primary": ".k-btn.k-pc-btn[data-variant=\"primary\"]",
+    "pc-wake": ".k-btn.k-pc-wake[data-variant]",
+    "pc-card": ".k-pc-card",
+    "pc-card-wide": ".k-pc-card.k-pc-this",
+    "pc-card-head": ".k-pc-card-head",
+    "pc-row": ".k-pc-row",
+    "pc-pill": ".k-pc-pill",
+    "pc-detail": ".k-pc-detail",
+    "pc-fix": ".k-pc-fix",
+    "f4d-sample-ink": ".k-f4d-sample-ink",
+    "f4d-sample-mark": ".k-f4d-sample-mark",
+    "pc-more": ".k-pc-more",
+    "pc-usage": ".k-pc-card.k-pc-usage",
+    "pc-bar": ".k-pc-bar",
+    "pc-bar-fill": ".k-pc-bar > span",
+    "pc-set-row": ".k-pc-set-row",
+    "pc-switch": ".k-pc-switch",
+    "pc-switch-knob": ".k-pc-switch > span",
+    "pc-pick": ".k-pc-pick",
+    "pc-card-title": ".k-pc-card h2",
+    "auth-choice": ".k-auth-choice",
+    "auth-choice-title": ".k-auth-choice-main b",
+    "auth-choice-desc": ".k-auth-choice-main span",
+    "auth-icon": ".k-auth-icon",
+    "auth-note-box": ".k-auth-note-box",
+    "auth-ok-box": ".k-auth-result",
+    "auth-bad-box": ".k-auth-result[data-tone=\"bad\"]",
+    "auth-ok-icon": ".k-auth-result-icon",
+    "status-strip": ".k-status-strip",
+    "status-strip-maint": ".k-status-strip[data-kind=\"maintenance\"]",
+    "auth-status-page": ".k-auth-status-page",
+    "auth-qr": ".k-auth-qr",
+    "auth-secret": ".k-auth-secret",
+    "backup-codes": ".k-backup-codes",
+    "backup-code": ".k-backup-code",
+    "sec-summary": ".k-sec-summary",
+    "sec-summary-warn": ".k-sec-summary[data-tone=\"warn\"]"
+  },
+  "component_exempt": [
+    {
+      "part": "f9s-swatch-ring",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。選んだ色の見本の輪郭とその離しを、.k-f9s-swatch:has(input:checked) の outline・outline-offset が var(--k-c-f9s-…) で読む。D5 が比べる性質（border・width など素の性質）に無いので比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f9s-swatch-ring-gap",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。選んだ色の見本の輪郭とその離しを、.k-f9s-swatch:has(input:checked) の outline・outline-offset が var(--k-c-f9s-…) で読む。D5 が比べる性質（border・width など素の性質）に無いので比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "kn-pane",
+      "reason": "ナレッジの画面（features/F9/knowledge/knowledge.css の .k-f9-wrap・.k-f9-tree）。値は上の帯 shell-bar の高さを引く calc の中で使い（min-height・height）、D5 が素の値で比べられない。CSS はこのトークンだけを読む（K-670）"
+    },
+    {
+      "part": "card",
+      "reason": "components/k にカードの部品のクラスがまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "chat-bubble-me",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-bubble-ai",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-composer",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-work-line",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-chip",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "code-block",
+      "reason": "components/k に規則がまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "kbd",
+      "reason": "components/k に規則がまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "page-head",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "page-body",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-title",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-body",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-list",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "shell-tabs",
+      "reason": "外枠の下のタブ（components/k/shell.css の .k-tabs）の高さは幅 767 以下の @media の中の規則にだけ在り、素の規則に高さが無い（D5 は @media の中を比べない）。作る画面の足元の帯（K-224）がこの高さのトークンを読む"
+    },
+    {
+      "part": "room-page",
+      "reason": "スマホの分身の部屋・チケットの右のパネルの AI・作る画面の会話の頁の高さの元。room.css の 767 以下の @media の中で上の帯と下のタブを calc で引いて使い、素の規則に height が無い（D5 は @media の中を比べない）"
+    },
+    {
+      "part": "shell-bar-tool",
+      "reason": "外枠の上の帯の道具（components/k/shell.css の .k-bar-tools .k-icon-btn）の 44px は幅 767 以下の @media の中の規則にだけ在る（D5 は @media の中を比べない）。CSS はこのトークンだけを読む（K-350・D-147）"
+    },
+    {
+      "part": "shell-bar-search",
+      "reason": "スマホの上の帯で開いた探す欄（components/k/shell.css の .k-bar[data-searching] .k-search label）の高さは幅 767 以下の @media の中の規則にだけ在る（D5 は @media の中を比べない）。CSS はこのトークンだけを読む（K-350・D-147）"
+    },
+    {
+      "part": "create-cards-basis",
+      "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-assign-label",
+      "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は grid の列の幅（grid-template-columns） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-options-max",
+      "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は 高さの上限（max-height） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-aside",
+      "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-aside-max",
+      "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-main-basis",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-first-basis",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-empty-desc-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-tag-min",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-title-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-side-main",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-side-main-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "doc-tool-min",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 最小の幅（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-body-basis",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-title-basis",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "artifact-info",
+      "reason": "成果物のカードの部品（K-227・features/F5/approve-complete/approve.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-reopen",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis）と上の余白 で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-panel-close-at",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 位置（top・right） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-fields-label",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は grid の列の幅（grid-template-columns） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-due",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 最小の幅（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-rule",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-doc",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css）。幅 900 は CSS の max-width で持つ。D5 は width としか比べず、CSS を width にすると幅 375 で溢れる（K225-UI-009）。幅は K225-UI-009 と突き合わせの組が見る。余白はこのトークンだけを読む"
+    },
+    {
+      "part": "section-title-form-first",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-doc h2:first-of-type）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は K225-UI-002・K225-UI-013 が数で見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-number",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick > .k-create-number）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の幅 375 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-label",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick .k-label・.k-create-title .k-label）。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（D5 は地・字・線・角丸・余白・高さ・太さ・文字を比べる）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-usage-col",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は grid の列の最小の幅（grid-template-columns の minmax） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-set-label",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-pick-min",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-menu-min",
+      "reason": "PC と使った量の PC の行の部品（K-369・features/F3/connect-pc/pc-row-parts.css の .k-pc-menu）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-code-next",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-fix-msg",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-late",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-rule",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-rule-soft",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-rule-strong",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-rule-warning",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-quote",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-log",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-ring",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-ring-done",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-ring-out",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-ring-in",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-ring-near",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-sr",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f4d-caret",
+      "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "search-focus",
+      "reason": "探す欄の型の部品（段 9・components/k/search-field.css の .k-search-field:focus-within）。値は 焦点の輪（outline） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-panel",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。お知らせの箱の幅。features/F7/notice/notice.css が min() の中で var(--k-c-notice-panel-width) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "search-panel",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。探す箱の幅と上端。features/F7/search/search.css が min()・top・max-height の calc の中で var(--k-c-search-panel-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-avatar",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。お知らせの行の丸い印の大きさ。features/F7/notice/notice.css が var(--k-c-notice-avatar-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "more-menu-min",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。詳細の「…」の箱の幅の下限。features/F7/delete/delete.css の min-width が var(--k-c-more-menu-min-width) を読む（D5 は min-width を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-day",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。カレンダーの日のセルの高さ。features/F7/calendar/calendar.css が var(--k-c-calendar-day-height) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-day-compact",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホのカレンダーの日のセルの高さ。features/F7/calendar/calendar.css の幅 767 以下の @media の中で読む（D5 は @media の中を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "calendar-tray",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。カレンダーの期限なしの置き場の重なる箱の幅。features/F7/calendar/calendar.css が var(--k-c-calendar-tray-width) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "f7-dot",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。種別の色の小さな丸の大きさ。features/F7/calendar/calendar.css が var(--k-c-f7-dot-*) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-body",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの本体の高さ。features/F7/gantt/gantt.css が var(--k-c-gantt-body-height) を読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-row",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの行の高さ。svar-gantt が数（px）で受ける props なので、features/F7/gantt/gantt-inner.tsx が read-len.ts で var を読んで渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-scale",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの目盛りの高さ。gantt-inner.tsx が read-len.ts で読んで svar-gantt の scaleHeight に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-day",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの日のセルの幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt の cellWidth に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-week",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの週のセルの幅と左の表の列の幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "gantt-cell-month",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。ガントの月のセルの幅。gantt-inner.tsx が read-len.ts で読んで svar-gantt の cellWidth に渡す（CSS の規則が無い）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "overview-phone",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホの概要の頁の高さの元（画面の高さ）。features/F7/overview/overview.css の @media の中で calc から上の帯と下のタブを引いて読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "saved-nav-group",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。保存した検索条件の並びのグループの行の高さと左右の余白。features/F7/saved/saved.css の .k-f7-saved-nav-link が min-height と padding で読む（D5 は min-height を比べない）。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "saved-nav-mark",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。保存した検索条件の並びのグループの札の大きさ。features/F7/saved/saved.css の .k-f7-saved-nav-mark が読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "notice-sheet-back",
+      "reason": "段 8 の下絵の値だけの部品（K-460）。スマホのお知らせの頁の「戻る」の大きさ。features/F7/notice/notice.css の .k-f7-notice-sheet-back が読む。値は寸法だけで、D5 が比べる面・角丸・余白の規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-pick",
+      "reason": "作る画面の部品（K-225）の規則は K-442 が create-ticket.css から消した（下絵 v2 の並びは doc.css）。値（幅 160・間 10）は features/F4/links/links.css が var(--k-c-create-pick-width) で読むだけで、部品の規則としては比べない（PM の決め 2026-11-28）"
+    },
+    {
+      "part": "f9s-pill",
+      "reason": "段 10 の下絵 v2 の値だけの部品（K-672・features/F9/settings の settings.css）。札の行の高さ 1.8 を .k-f9s-pill が var(--k-c-f9s-pill-lh) で読む。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（比べた値 0 個のまま緑にしない・K218-DS-025）"
+    }
+  ],
+  "max_type_sizes": 10,
+  "raw_lengths": {
+    "paths": ["apps/web"],
+    "token_css": ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"],
+    "token_prefix": "--k-",
+    "allow": [
+      {
+        "value": "0",
+        "reason": "零は長さを持たない（どの単位でも同じ）"
+      },
+      {
+        "value": "100%",
+        "reason": "親いっぱいはトークンにしない（大きさの決まりではなく親に合わせる指定）"
+      }
+    ],
+    "ledger": "scripts/ci/raw_length_ledger.json"
+  }
+}

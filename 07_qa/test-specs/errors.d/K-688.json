@@ -1,0 +1,64 @@
+{
+ "errors": [
+  {
+   "id": "E-KNW-110",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "もう決まった頼み（承認・断り・取り下げ済み）を承認する・断る",
+   "false_when": "承認待ちの頼みを 1 度だけ承認する・断る",
+   "message": "この頼みはもう決まっています",
+   "action": "画面を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理 › 承認待ちを開く",
+    "steps": [
+     "もう決まった頼み（承認・断り・取り下げ済み）を承認する・断る（口 approveKnowledgeRequest・declineKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  },
+  {
+   "id": "E-KNW-111",
+   "class": "conflict",
+   "where": {
+    "screen": "knowledge"
+   },
+   "when": "自分の棚のページを上げる頼みを、頼んだ人が先のグループを抜けた後に承認する",
+   "false_when": "頼んだ人がまだ先のグループにいる・グループの棚のページの頼み",
+   "message": "頼んだ人がもうそのグループにいないので、承認できません",
+   "action": "断る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "管理 › 承認待ちを開く",
+    "steps": [
+     "自分の棚のページを上げる頼みを、頼んだ人が先のグループを抜けた後に承認する（口 approveKnowledgeRequest）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-152.2",
+    "D-152.13"
+   ]
+  }
+ ]
+}
