@@ -1,0 +1,140 @@
+/* 04_design/DESIGN-kaname.md のトークン（正本）。ここ以外に色・寸法を書かない（T-US-05・D-052.1）。
+   06_mockup/_tokens.py と同じ名前の CSS 変数も出す（モックとの照合が名前で取れる） */
+@theme {
+  --color-primary: #22345c;
+  --color-on-primary: #ffffff;
+  --color-primary-c: #dce4f2;
+  --color-on-primary-c: #101c33;
+  --color-secondary: #186f69;
+  --color-on-secondary: #ffffff;
+  --color-secondary-c: #cfeae7;
+  --color-on-secondary-c: #0a3330;
+  --color-tertiary: #6d4aa6;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-c: #e9e0f5;
+  --color-on-tertiary-c: #33235c;
+  --color-surface: #f7f8fa;
+  --color-on-surface: #131b27;
+  --color-sv: #e9ecf1;
+  --color-on-sv: #4a5563;
+  --color-error: #b91c1c;
+  --color-on-error: #ffffff;
+  --color-neutral: #8a94a3;
+  --color-neutral-strong: #6b7585;
+  --color-card: #ffffff;
+  --color-line: #dde2e9;
+  --color-line-soft: #edf0f4;
+  --color-side-bg: #eef0f4;
+  --color-side-on: #ffffff;
+  /* 状態色は面（D-052） */
+  --color-st-success: #166534;
+  --color-st-warning: #b45309;
+  --color-st-danger: #b91c1c;
+  --color-st-progress: #1d4ed8;
+  /* データ色 6 色は点と線（D-023・D-052） */
+  --color-d-indigo: #2f4b7c;
+  --color-d-teal: #186f69;
+  --color-d-amber: #7e570d;
+  --color-d-coral: #a34a3e;
+  --color-d-sage: #516f46;
+  --color-d-plum: #6b3f5e;
+
+  --font-sans: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  /* 書体の段（DESIGN typography） */
+  --text-body: 15px;
+  --text-body--line-height: 1.7;
+  --text-h1: 24px;
+  --text-h1--line-height: 1.3;
+  --text-h2: 18px;
+  --text-h2--line-height: 1.4;
+  --text-h3: 15px;
+  --text-label: 12px;
+  --text-label-sm: 11px;
+  --text-label--letter-spacing: 0.05em;
+  --text-metric: 34px;
+  --text-metric--line-height: 1;
+}
+
+:root {
+  /* モックと同じ名前（06_mockup/_tokens.py）。部品はこちらを var() で読む */
+  --primary: #22345c;
+  --on-primary: #ffffff;
+  --primary-c: #dce4f2;
+  --on-primary-c: #101c33;
+  --secondary: #186f69;
+  --secondary-c: #cfeae7;
+  --on-secondary-c: #0a3330;
+  --tertiary: #6d4aa6;
+  --tertiary-c: #e9e0f5;
+  --on-tertiary-c: #33235c;
+  --surface: #f7f8fa;
+  --on-surface: #131b27;
+  --sv: #e9ecf1;
+  --on-sv: #4a5563;
+  --error: #b91c1c;
+  --neutral: #8a94a3;
+  --neutral-strong: #6b7585;   /* 面に使う中立（白文字で 4.5:1）*/
+  --card: #ffffff;
+  --line: #dde2e9;
+  --line-soft: #edf0f4;
+  --st-success: #166534;
+  --st-warning: #b45309;
+  --st-danger: #b91c1c;
+  --st-progress: #1d4ed8;
+  /* 状態の淡い面と濃い文字の対・会話の書式（D-104：蛍光ペン・AI の印・コードの色分け）。06_mockup/_tokens.py と同じ値 */
+  --st-success-c: #dcfce7;
+  --on-st-success-c: #2e5b26;
+  --st-warning-c: #fcebd5;
+  --on-st-warning-c: #7a4a05;
+  --st-danger-c: #fdecec;
+  --on-st-danger-c: #991b1b;
+  --st-progress-c: #dbeafe;
+  --on-st-progress-c: #1e40af;
+  --mark: #fff1b8;
+  --ai-c: #edeaf6;
+  --on-code: #d8dee9;
+  --syn-keyword: #22345c;
+  --syn-string: #186f69;
+  --syn-number: #7e570d;
+  --syn-comment: #4a5563;
+  --syn-function: #6b3f5e;
+  --syn-type: #2f4b7c;
+  --d-indigo: #2f4b7c;
+  --d-teal: #186f69;
+  --d-amber: #7e570d;
+  --d-coral: #a34a3e;
+  --d-sage: #516f46;
+  --d-plum: #6b3f5e;
+  --font: "M PLUS 2", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --side-bg: #eef0f4;
+  --side-hover: rgba(19, 27, 39, 0.06);
+  --side-on: #ffffff;
+  /* 余白の段（DESIGN spacing）。Tailwind の --spacing-* 名前空間には置かない。
+     置くと max-w-2xl / w-xl などが 96px・48px に化ける（実際に 404 と権限なしの画面が潰れた） */
+  --s-xs: 4px;
+  --s-sm: 8px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 48px;
+  --s-2xl: 96px;
+
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 12px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+  --sidebar-w: 216px;
+  --subnav-w: 230px;
+  --queue-w: 380px;
+  --panel-w: 340px;
+  --dur: 0.15s;
+  --ring: var(--primary);
+}
