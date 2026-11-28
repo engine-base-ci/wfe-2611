@@ -1,0 +1,38 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F11/acceptances-retire.test.ts": "契約と生成物（08_api/openapi.yaml・endpoints.json・types.ts・lint-mapping.json・retired-endpoints.json・packages/contracts/src/registry.ts・ops.ts・apps/api/src/routes/*・03_architecture/catalog.*）と 05_flow/screen_api.py・build_functional.py・scripts/ci/row_rules.mjs・08_api/phase1/*.md・11_tickets/K-71.md・01_hearing/決定ログ_進行中.md を readFileSync で読み、git grep で外した操作 ID を探す（K926-API-002〜010）"
+ },
+ "data_links": [
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "08_api/openapi.yaml",
+    "08_api/endpoints.json",
+    "08_api/types.ts",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/**",
+    "05_flow/build_functional.py",
+    "apps/api/src/routes/acceptances.ts",
+    "apps/api/src/routes/tickets.ts",
+    "apps/api/src/routes/portal.ts",
+    "08_api/phase1/08_取引先とクライアントの場所.md",
+    "08_api/phase1/01_チケット.md",
+    "scripts/ci/row_rules.mjs",
+    "11_tickets/K-71.md",
+    "01_hearing/決定ログ_進行中.md",
+    "08_api/phase1/合わせた/08_取引先とクライアントの場所.md",
+    "08_api/phase1/08_取引先とクライアントの場所.d/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/acceptances-retire.test.ts"
+   ]
+  }
+ ]
+}
