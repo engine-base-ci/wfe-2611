@@ -1,0 +1,21 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F12/ops2/plan*",
+    "apps/web/features/F12/ops2/use-ops-plans.ts",
+    "apps/web/features/F12/ops2/views-plans.tsx",
+    "apps/web/app/(ops)/ops/skills/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k991-plans.spec.ts",
+    "apps/web/test/k991-plans-shape.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k991-plans.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops2 を開き scripts/ci/fidelity_compare.mjs を読む。答えの見本 ops-plans-mock.ts を読む（実ブラウザの試験は web の組が流す）・K-991",
+  "apps/web/test/k991-plans-shape.test.ts": "下絵の見本 apps/web/features/F12/ops2/ops2-sample.ts と答えの見本 apps/web/tests/k/ops-plans-mock.ts を読む（画面の外の純粋な関数の試験）・K-991",
+  "apps/web/features/F12/ops2/ops2-sample.ts": "下絵の見本（IMPACT_ROWS）。部品 views-plans.tsx と k991-plans-shape.test.ts が読む（K-991）"
+ }
+}
