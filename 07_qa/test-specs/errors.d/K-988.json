@@ -1,0 +1,90 @@
+{
+ "errors": [
+  {
+   "id": "E-OPS-019",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を作るとき、そのプランにもう開いた案（下書き・決める人を待っている）が在る（同時に 2 回作った後の 1 つも）",
+   "false_when": "そのプランに開いた案が無い（差し戻された案だけ・決めた案だけ）",
+   "message": "このプランにはもう変える案があります",
+   "action": "今の案を直すか、決めてもらってから作ってください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "チーム のプランに案を作る",
+     "もう一度 チーム のプランに案を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  },
+  {
+   "id": "E-OPS-020",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を作る・直すとき、値段と人数が今のプランと同じ",
+   "false_when": "値段か人数のどちらかが今と違う",
+   "message": "変えるところがありません",
+   "action": "値段か人数を変えてから保存してください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "今と同じ値段と人数で案を作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  },
+  {
+   "id": "E-OPS-021",
+   "class": "conflict",
+   "where": {
+    "screen": "ops-skills"
+   },
+   "when": "値段を変える案を直す・回すとき、その案がいま直せない・回せない状態（直すは下書きか差し戻しでない・回すは下書きでない）",
+   "false_when": "下書きの案を直す・回す",
+   "message": "この案はいま直せません",
+   "action": "案の状態を確かめてください",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "値段の案を持つ運営の人で 運営 › 配るもの › プラン を開く",
+    "steps": [
+     "案を決める人に回す",
+     "回した案を直す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.72"
+   ]
+  }
+ ]
+}
