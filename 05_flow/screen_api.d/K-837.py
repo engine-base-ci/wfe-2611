@@ -13,8 +13,8 @@ INPUTS = {
 }
 
 RESPONSES = {
-    "getNotificationSettings": ("NotificationSettings", {"workspace_id": "uuid", "email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
-    "updateNotificationSettings": ("NotificationSettings", {"workspace_id": "uuid", "email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
+    "getNotificationSettings": ("NotificationSettings", {"workspace_id": "uuid", "email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "string[]", "events": "array"}),
+    "updateNotificationSettings": ("NotificationSettings", {"workspace_id": "uuid", "email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "string[]", "events": "array"}),
     "copyNotificationSettings": ("NotificationSettingsCopied", {"copied_to": "array"}),
 }
 
