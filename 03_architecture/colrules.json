@@ -1,0 +1,11 @@
+{
+  "_doc": "列の型と参照の規則のうち、プロジェクトで決める分（scripts/ci/colrules.py が gen_ddl.py と build_api.py の両方で読む）。alias＝引けない *_id の参照先（値 text なら値の集合）",
+  "aliases": {
+    "service": "service_registry",
+    "event": "account_events",
+    "choke_point": "text",
+    "on_missed": "text",
+    "auth_session": "text"
+  },
+  "vector_dim": 1536
+}
