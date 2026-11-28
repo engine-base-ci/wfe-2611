@@ -1,0 +1,67 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.130-conventions",
+ "executed_at": "2026-11-04T09:59:52",
+ "change": "D-128.130（共通の決まりの残り 4 つ：日付と時刻・お金・ログ・フォルダ）。03_architecture/共通の決まり.md に全部の一覧",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "03_architecture/共通の決まり.md",
+  "spec-dependencies.yaml",
+  "11_tickets/KN-123"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.130 は 共通の決まり.md に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "spec-validator --tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator --tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "spec-validator --tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "spec-validator --tier h"
+  }
+ ],
+ "next": [
+  "KN-123：歩く骸骨の範囲・チケットの切り直し"
+ ]
+}
