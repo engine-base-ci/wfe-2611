@@ -266,6 +266,8 @@
     "artifact-button": ".k-artifact-acts .k-artifact-btn",
     "dialog-connect": ".k-dialog[data-size=\"connect\"]",
     "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
+    "member-remove-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn.k-f10d-act",
+    "members-group-button": ".k-f10m-head .k-btn[data-size=\"sm\"]",
     "dialog-sub": ".k-dialog-sub",
     "pc-step": ".k-steps > li",
     "pc-step-dot": ".k-step-dot",

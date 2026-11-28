@@ -182,3 +182,8 @@
     padding-left: 0;
   }
 }
+
+/* グループの見出しの小さいボタン（「直す」）：押せる高さ 32（正本 members-group-button・K806-UI-017。ほかの sm の 28 は替えない） */
+.k-f10m-head .k-btn[data-size="sm"] {
+  min-height: var(--k-c-members-group-button-height);
+}

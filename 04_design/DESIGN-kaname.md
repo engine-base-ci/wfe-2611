@@ -892,6 +892,10 @@ components:
     width: "580px"
   dialog-connect-button: # PC をつなぐの小窓の足のボタンの高さ（EdPC「あとで」30）
     height: "30px"
+  member-remove-button: # メンバーを外す小窓の足のボタンの高さ。押せる高さは 32 より下げない（K822-UI-017・PM の決め 2026-11-28。PC をつなぐの 30 は替えない）
+    height: "32px"
+  members-group-button: # メンバーのグループの見出しの小さいボタン（「直す」）の高さ。押せる高さは 32 より下げない（K806-UI-017・PM の決め 2026-11-28。ほかの sm の 28 は替えない）
+    height: "32px"
   dialog-sub:           # 小窓の頭の題の下の補足（「分身はこの PC で動く。3 分ほど」12px・灰）
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
