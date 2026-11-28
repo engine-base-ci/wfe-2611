@@ -1,0 +1,60 @@
+{
+ "ops": {
+  "createPortalRequest": {
+   "file": "apps/api/test/features/F11/portal-request.test.ts",
+   "reason": "依頼を出す口は、ゲストの所属・添付の下書き・二重・届け先の人・メールで答えが変わる。生成の試験の種ではゲストも下書きも作れない（K-907）",
+   "covers": {
+    "test_post_portal_requests_ok": "K907-API-001",
+    "test_post_portal_requests_shape": "K907-API-001",
+    "test_post_portal_requests_rejected_401": "K907-API-010",
+    "test_post_portal_requests_rejected_403": "K907-API-010",
+    "test_post_portal_requests_rejected_422": "K907-API-003",
+    "test_post_portal_requests_rejected_422_2": "K907-API-004",
+    "test_post_portal_requests_rate_limited": "K907-API-012",
+    "test_post_portal_requests_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_portal_requests_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_portal_requests_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_portal_requests_not_found": "K907-API-006"
+   },
+   "na": {
+    "test_post_portal_requests_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-906 と同じ扱い・K-907）"
+   }
+  },
+  "getPortalRequest": {
+   "file": "apps/api/test/features/F11/portal-request.test.ts",
+   "reason": "依頼を読む口は、依頼のグループ・状態・やり取りの種類で答えが変わる。生成の試験の種ではゲストも依頼も作れない（K-907）",
+   "covers": {
+    "test_get_portal_requests_id_ok": "K907-API-015",
+    "test_get_portal_requests_id_shape": "K907-API-015",
+    "test_get_portal_requests_id_rejected_401": "K907-API-019",
+    "test_get_portal_requests_id_rejected_403": "K907-API-019",
+    "test_get_portal_requests_id_not_found": "K907-API-018",
+    "test_get_portal_requests_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-907.ts",
+     "mark": "K144-API-1207"
+    },
+    "test_get_portal_requests_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_portal_requests_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_portal_requests_id_rate_limited": "読むだけの口で、数え方は入口の共通（K-144）。出す口の上限は K907-API-012 が受ける",
+    "test_get_portal_requests_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-906 と同じ扱い・K-907）"
+   }
+  }
+ }
+}
