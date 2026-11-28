@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/app/(dev)/dev/mock/f11/mocks.tsx", "11_tickets/K-931.md"], "tests": ["apps/web/tests/k/k931-guest-suspend-remove.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k931-guest-suspend-remove.spec.ts": "K931-UI-008 が番号の文の正本 07_qa/test-specs/errors.json と 07_qa/test-specs/errors.d/ を読み、K931-UI-011 がモックの置き場 apps/web/app/(dev)/dev/mock/f11/mocks.tsx（K-931 の状態の持ち主）と 11_tickets/K-931.md の頭の mock: を読む。突き合わせ（K931-UI-001）は下絵 /dev/mock/f11 を開く（K-931）"
+ }
+}
