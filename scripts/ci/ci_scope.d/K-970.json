@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-stop.ts",
+    "apps/api/src/features/F12/ops/stop.ts",
+    "packages/db/migrations/20261128011000_ops_stop.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-stop.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_stop.test.ts",
+    "apps/api/test/generated/post_ops_workspaces_id_resume.test.ts",
+    "apps/api/test/features/F12/service-status-member.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F7/notifications/kinds.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-970.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-970"
+ }
+}
