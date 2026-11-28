@@ -1,0 +1,451 @@
+{
+ "screen": "member-detail",
+ "mock": "06_mockup/v1/v1-member-detail.html",
+ "state_labels": {
+  "n": "佐藤 健",
+  "c": "権限を変えるとき",
+  "o": "抜ける",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:範囲を変える",
+   "kind": "button",
+   "label": "範囲を変える",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:無効にする",
+   "kind": "button",
+   "label": "無効にする",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "select:制作の長（制作の 直す・配る・承認 が付く）",
+   "kind": "select",
+   "label": "制作の長（制作の 直す・配る・承認 が付く）",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "checkbox:制作の長（制作の 直す・配る・承認 が付く）",
+   "kind": "checkbox",
+   "label": "制作の長（制作の 直す・配る・承認 が付く）",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作",
+   "kind": "button",
+   "label": "制作",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:会社",
+   "kind": "button",
+   "label": "会社",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作 → 人",
+   "kind": "button",
+   "label": "制作 → 人",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作の配分",
+   "kind": "button",
+   "label": "制作の配分",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作のAI社員へ",
+   "kind": "button",
+   "label": "制作のAI社員へ",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作の変更",
+   "kind": "button",
+   "label": "制作の変更",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作 → 人に託す",
+   "kind": "button",
+   "label": "制作 → 人に託す",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作のAI社員の外向き",
+   "kind": "button",
+   "label": "制作のAI社員の外向き",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:制作の確認待ち",
+   "kind": "button",
+   "label": "制作の確認待ち",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:保存する",
+   "kind": "button",
+   "label": "保存する",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:既定に戻す",
+   "kind": "button",
+   "label": "既定に戻す",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:AI社員を託す→ai-staff",
+   "kind": "link",
+   "label": "AI社員を託す",
+   "target": "ai-staff",
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:全部切る",
+   "kind": "button",
+   "label": "全部切る",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:切る",
+   "kind": "button",
+   "label": "切る",
+   "target": null,
+   "states": [
+    "佐藤 健",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:権限の表に戻る",
+   "kind": "button",
+   "label": "権限の表に戻る",
+   "target": null,
+   "states": [
+    "権限を変えるとき"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:この案で",
+   "kind": "button",
+   "label": "この案で",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:自分で選ぶ",
+   "kind": "button",
+   "label": "自分で選ぶ",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本にする",
+   "kind": "button",
+   "label": "高本にする",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:配り直す→goal-allocation",
+   "kind": "link",
+   "label": "配り直す",
+   "target": "goal-allocation",
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:会社に移す",
+   "kind": "button",
+   "label": "会社に移す",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:消す",
+   "kind": "button",
+   "label": "消す",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:高本へ移管",
+   "kind": "button",
+   "label": "高本へ移管",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:無効にする（引き継ぎ 3／7 決定）",
+   "kind": "button",
+   "label": "無効にする（引き継ぎ 3／7 決定）",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:佐藤AIの案を全部採る",
+   "kind": "button",
+   "label": "佐藤AIの案を全部採る",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:やめる",
+   "kind": "button",
+   "label": "やめる",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "button:本人の分を書き出す",
+   "kind": "button",
+   "label": "本人の分を書き出す",
+   "target": null,
+   "states": [
+    "抜ける"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
