@@ -1,0 +1,59 @@
+# login テスト仕様（L1・機械生成）
+
+> 05_flow/build_tasks.py がタスクと同時に生成。ID は変えない。途中変更は qa_delta.py で差分。結果列は staging で流した人が書く（再生成しても残る。今の行 36・結果あり 36 行）。
+
+| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SCR-LOGIN-001 | login | 状態 | 状態「通常」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-login.html の状態 n と一致 | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-05 | L1 |
+| SCR-LOGIN-002 | login | 状態 | 状態「6桁の入力」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-login.html の状態 m と一致 | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-05 | L1 |
+| SCR-LOGIN-003 | login | 状態 | 状態「失敗」がモックどおりに出る（h1・第2ナビ・列の値がダミー固定でない） | その状態を作る | 画面を開く | モック 06_mockup/v1/v1-login.html の状態 e と一致 | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | G-06・G-07 | T-U-05 | L1 |
+| SCR-LOGIN-004 | login | 役割 | 役割 R1 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R1 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1〜R4 同じ（入口）。役割で変わる中身は無い。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-005 | login | 役割 | 役割 R2 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R2 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1〜R4 同じ（入口）。役割で変わる中身は無い。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-006 | login | 役割 | 役割 R3 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R3 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1〜R4 同じ（入口）。役割で変わる中身は無い。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-007 | login | 役割 | 役割 R4 で開くと、その役割の中身（data-roles）が出て、他の役割の中身は出ない | R4 でログイン | 画面を開く | 役割ごとの中身（G15） | PASS（role-same：R1〜R4 同じ（入口）。役割で変わる中身は無い。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-008 | login | 主アクション | 「ログイン」を押すと対応する endpoint が呼ばれ、別 GET で再取得した画面に反映される | 権限のある会員 | 押す | DB と画面が変わる（G-01・G-03） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | GET /api/members | T-U-05 | L1 |
+| SCR-LOGIN-009 | login | 到達性 | リンク先 password-reset が実在ルートで 200 で開く | — | 押す | /password-reset が開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） |  | T-U-05 | L1 |
+| SCR-LOGIN-010 | login | 到達性 | リンク先 signup が実在ルートで 200 で開く | — | 押す | /signup が開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） |  | T-U-05 | L1 |
+| SCR-LOGIN-011 | login | 到達性 | リンク先 today が実在ルートで 200 で開く | — | 押す | /today が開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | 画面 today はまだ無い（T-U-*）。無い間はリンクを出さない（WizardLayout・reachability.spec）。2026-09-16 | T-U-05 | L1 |
+| SCR-LOGIN-012 | login | 横溢れ | 375・768・1024・1440 で scrollWidth - clientWidth <= 1、1180+ で本文 720 以上 | — | 各幅で開く | 溢れ 0 | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | G-05 | T-U-05 | L1 |
+| SCR-LOGIN-013 | login | 空・止まっている | データ 0 件の状態と AI が止まっている状態が cover 宣言どおりに出る | PS2 / PS4 | 開く | 空状態と止まっている帯 | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | G18 | T-U-05 | L1 |
+| SCR-LOGIN-014 | login | 表記ゆらぎ | 全角／半角：メール・数値・コードを全角で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-05 | L1 |
+| SCR-LOGIN-015 | login | 表記ゆらぎ | 前後と途中の空白：空白付きで入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-05 | L1 |
+| SCR-LOGIN-016 | login | 表記ゆらぎ | 記号の種別（ハイフン・長音）：‐ ー − を混ぜる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-05 | L1 |
+| SCR-LOGIN-017 | login | 表記ゆらぎ | Unicode 正規化（NFC/NFD）：macOS の入力（NFD）で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-05 | L1 |
+| SCR-LOGIN-018 | login | 表記ゆらぎ | 大文字小文字：メールを大文字で入れる | 入力欄がある状態 | 入力して保存 | 同一として扱われ、サーバー側で正規化されて保存される（クライアント側だけに頼らない） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | human-grade-qa 第11軸 | T-U-05 | L1 |
+| SCR-LOGIN-019 | login | G-11 外部リソースの実在 | N/A：外部リソースを触らない | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | PASS（該当なし：外部リソースは触らない。メールの送出（Resend）は鍵が無ければ URL をログに。staging は infra/STAGING.md。2026-09-16） | 環境ごと | T-U-05 | L1 |
+| SCR-LOGIN-020 | login | G-12 切り替わりの瞬間 | Bridge が切れた直後 0 秒・鮮度窓の内側に操作する | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | PASS（該当なし：この画面は Bridge を使わない。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-021 | login | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（同じ人の二重送信は冪等キー（API）・ロックは app.login_attempts で後勝ちにしない。別ロール同時は T-I-*。2026-09-16） | features.json combination_points | T-U-05 | L1 |
+| SCR-LOGIN-022 | login | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（毎要求で session_alive（失効の正は public.sessions）。パスワード再設定で全端末失効（packages/auth のテスト・password-reset の文言）。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-023 | login | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | PASS（API の失敗は文言と一手に落とす（AuthExtError）。黙って成功にしない。2026-09-16） |  | T-U-05 | L1 |
+| SCR-LOGIN-024 | login | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（1 要求 1 接続以下（関門 C2 のプール）・ログインの試行は表で数える。実測は L4。2026-09-16） | L4 で負荷試験 | T-U-05 | L1 |
+| SCR-LOGIN-026 | login | 操作 | 入力欄「メールアドレス」（状態 通常・失敗） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=input:メールアドレス | T-U-05 | L1 |
+| SCR-LOGIN-027 | login | 操作 | 入力欄「パスワード」（状態 通常・失敗） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=input:パスワード | T-U-05 | L1 |
+| SCR-LOGIN-036 | login | 操作 | ボタン「パスワードを表示」（状態 通常・失敗） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=button:パスワードを表示 | T-U-05 | L1 |
+| SCR-LOGIN-037 | login | 操作 | ボタン「ログイン」（状態 通常・失敗） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/qa-c-onboard.spec.ts・実 Chrome・2026-10-01） | op=button:ログイン | T-U-05 | L1 |
+| SCR-LOGIN-028 | login | 操作 | リンク「パスワードをお忘れの方」（状態 通常・失敗） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | /password-reset が実在ルートで 200 で開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=link:パスワードをお忘れの方→password-reset | T-U-05 | L1 |
+| SCR-LOGIN-029 | login | 操作 | リンク「アカウントを作る」（状態 通常） | 状態 通常 を作る（全役割） | 押す／入れる（実ブラウザ） | /signup が実在ルートで 200 で開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=link:アカウントを作る→signup | T-U-05 | L1 |
+| SCR-LOGIN-030 | login | 操作 | 入力欄「6桁」（状態 6桁の入力） | 状態 6桁の入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 入力が受け付けられ、送信に載って別 GET で読める（G-01・反映） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=input:6桁 | T-U-05 | L1 |
+| SCR-LOGIN-031 | login | 操作 | チェック「この端末では30日間きかない」（状態 6桁の入力） | 状態 6桁の入力 を作る（全役割） | 押す／入れる（実ブラウザ） | 切り替わり、送信に載る | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=checkbox:この端末では30日間きかない | T-U-05 | L1 |
+| SCR-LOGIN-032 | login | 操作 | リンク「今日の画面へ」（状態 6桁の入力） | 状態 6桁の入力 を作る（全役割） | 押す／入れる（実ブラウザ） | /today が実在ルートで 200 で開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=link:今日の画面へ→today | T-U-05 | L1 |
+| SCR-LOGIN-033 | login | 操作 | リンク「端末を失くした（回復コードで入る）」（状態 6桁の入力） | 状態 6桁の入力 を作る（全役割） | 押す／入れる（実ブラウザ） | /password-reset が実在ルートで 200 で開く（G-04） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=link:端末を失くした（回復コードで入る）→password-reset | T-U-05 | L1 |
+| SCR-LOGIN-034 | login | 操作 | エラー文言「メールアドレスかパスワードが違います。あと4回で15分間ロックします。」（状態 失敗） | 状態 失敗 を作る（全役割） | その条件を作る | その条件を実際に作ると文言が出て、一手（直す導線）がある。作れないならデッドコード（G-08） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=error:メールアドレスかパスワードが違います。あと4回で15分間ロックします。 | T-U-05 | L1 |
+| SCR-LOGIN-035 | login | 発注者確認 | 手順 07_tasks/handoff/T-U-05.md を発注者が実際に触って OK を出す（Rule 12） | staging か ローカル | 手順どおりに触る | 手順の末尾に「OK: 日付 名前」が書かれる。無い間は BLOCKED（発注者の確認待ち） | BLOCKED（発注者の確認待ち：手順 07_tasks/handoff/T-U-05.md を高本さんが触って OK: を書く。ローカル 3123 で触れる・staging は無い） | Rule 12 | T-U-05 | L1 |
+
+## もう無い行（10 行）
+
+> モックや決定が変わって今の画面には無くなった行。ID と当時の結果を残すためだけに置く（同じ ID を二度使わない）。確かめる対象ではない。
+
+| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SCR-LOGIN-025 | login | 操作 | ボタン「ログイン」（状態 共通・通常・失敗） | 状態 共通 を作る（全役割） | 押す／入れる（実ブラウザ） | 押すと処理が起き、結果（遷移・DB の変化・表示の変化）が確認できる。押しても何も起きないなら未実装（G-01） | PASS（screens/login.spec.ts・実 Chrome・2026-10-01） | op=button:ログイン／削除（生成元から消えた・2026-10-01。結果は残す） | T-U-05 | L1 |
+| API-03-001 | login | API 正常 | GET /api/v1/members：取得（members）— メールを確認して本人だと示す／2段階認証を設定する | 権限のある会員 | 呼ぶ | 200 と { data: Members[], meta?: { cursor, limi | PASS（生成テスト test_patch_members_id_ok：権限のある会員で 2xx と { data }。形は test_patch_members_id_shape。apps/api/test/generated/patch_members_id.test.ts。2026-09-16） | A02 A04 A13 A31／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-002 | login | API 異常 | GET /api/v1/members：10/min/ip | — | 条件を作って呼ぶ | 429 RATE_LIMITED。副作用なし | PASS（test_patch_members_id_rejected_401：文脈なしで 401 UNAUTHENTICATED・行数は変わらない。apps/api/test/generated/patch_members_id.test.ts。2026-09-16） | UNWANTED: IF 10/min/ip を超えたら、Kaname は 42／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-003 | login | 状態 | GET /api/v1/members：0 件／大量（1,000）／重複／初回／2 回目 | — | 各状態で呼ぶ | 0 件は空配列、大量はページング、重複は 409、2 回目は冪等 | PASS（test_patch_members_id_rejected_403：権限なし（担当者）／許可の無い会社の運営／会社の人が運営の口 で 403（無い行は 404）・行数は変わらない。apps/api/test/generated/patch_members_id.test.ts。2026-09-16） | UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-004 | login | G-11 外部リソースの実在 | 触る外部リソースが staging と production に存在する | migration/IaC 適用後 | 起動時の存在確認を読む | 無ければ起動時に落ちる（黙って 502 にならない） | PASS（test_patch_members_id_not_found：無い id は 404 NOT_FOUND。apps/api/test/generated/patch_members_id.test.ts。2026-09-16） | 環境ごと／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-005 | login | G-12 切り替わりの瞬間 | N/A：状態の切替を持たない | 本番稼働中 | PC を閉じた直後に主アクションを押す | 「AI は止まっています」が出て、押した内容は失われない | PASS（test_patch_members_id_rejected_422：知らない項目・型違い・壊れた JSON で 422 と details・行数不変。文字列は NFKC＋trim で正規化してから判定（表記ゆらぎ）。apps/api/test/generated/patch_members_id.test.ts。2026-09-16） | UNWANTED: IF 入力が受け付けられないなら、Kaname は 422／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-006 | login | G-13 機能の組み合わせ | 実行中 × 切替／中断 × 再開／別ロール同時 の直積のうち該当分 | — | 同時に起こす | 後勝ちでなく、規則どおり（承認は 1 人 1 回・切替は次の実行から） | PASS（0 件＝空配列（一覧は limit ≤ 200・cursor で続き：op.ts）・初回／2 回目＝冪等の再送（test_patch_members_id_conflict）・重複＝409。大量 1,000 件の実測は L4 の負荷試験。2026-09-16） | features.json combination_points／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-007 | login | G-14 口座状態の波及 | 退会・停止・権限変更・パスワード変更の後に、この機能の既存セッション・接続・共有リンクが無効 | ログイン中の別端末と Bridge | 権限を変える | 別端末と Bridge は 0 秒で 401（sessions が revoked） | PASS（該当なし：この endpoint は外部リソースを触らない。表は G12 fresh-migrate・バケット等は T-F-16 の起動時確認。2026-09-16） | 環境ごと／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-008 | login | G-15 信号なし終了 | N/A：外部を呼ばない | 外部を故意に切る | 実行する | 成功扱いにせず、502 と次の一手（人へのハンドオフ） | BLOCKED（Bridge が切れた直後の扱いは Bridge 側（T-I-*）の実装で。API は 502 EXTERNAL_FAILED と handoff の形まで（test_*_upstream_failed）。2026-09-16） | Bridge が切れた直後の扱いは Bridge 側（T-I-*）の実装で。API は 502 EXTERNAL_FAILED と handoff の形まで（t／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
+| API-03-009 | login | G-16 有限資源 | 消費する資源：DB 接続（プール経由）・メモリ。1 要求あたり 1 接続以下・上限時は待機列 | 同時 50 要求 | 同時に叩く | ログインが落ちない・接続上限に張り付かない（関門 C2 のプール） | PASS（同時の書き込みは冪等キー（409）と RLS の行ロックで後勝ちにしない。承認 1 人 1 回・切替は次の実行から は該当 endpoint の hook で（T-A-07／T-A-08）。2026-09-16） | L4 で負荷試験／削除（生成元から消えた・2026-09-27。結果は残す） | T-A-03 | L1 |
