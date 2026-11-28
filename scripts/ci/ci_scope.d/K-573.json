@@ -1,0 +1,1 @@
+{"data_links": [{"paths": ["apps/web/features/F5/delegate/"], "tests": ["apps/web/tests/k/k573-nospecs.spec.ts", "apps/web/tests/features/F5/delegate.spec.ts"]}], "reads_ok": {"apps/web/tests/k/nospecs-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-573）"}}
