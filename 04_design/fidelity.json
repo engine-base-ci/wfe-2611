@@ -1702,7 +1702,7 @@
     {
      "name": "主ボタン",
      "role": "primary",
-     "canvas": "section[role=\"dialog\"] button[data-primary]",
+     "canvas": "section[role=\"dialog\"] button[style*=\"#22345C\"]",
      "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
      "props": [
       "height",
@@ -1715,7 +1715,49 @@
       "y"
      ]
     }
-   ]
+   ],
+   "at": {
+    "1440": {
+     "canvas": "StCompleteModal",
+     "pairs": {
+      "小窓": {
+       "canvas": "section[role=\"dialog\"]",
+       "app": ".k-dialog"
+      },
+      "小窓の題": {
+       "canvas": "section[role=\"dialog\"] > div:first-child b",
+       "app": ".k-dialog-title"
+      },
+      "主ボタン": {
+       "canvas": "section[role=\"dialog\"] button[data-primary]",
+       "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]"
+      }
+     },
+     "ticket": "K-229",
+     "decision": "D-146.1",
+     "why": "K-229 の描き直し（b691643571・PM の決め 2026-11-28：後の葉 K-572 ほかの新しい決めが正）で完了にするの主ボタンが緑（#166534）になり、紺の色では探せなくなった。組と前の探し方は残し、どちらの幅でも data-primary の印で主ボタンを探す"
+    },
+    "375": {
+     "canvas": "StCompleteModal",
+     "pairs": {
+      "小窓": {
+       "canvas": "section[role=\"dialog\"]",
+       "app": ".k-dialog"
+      },
+      "小窓の題": {
+       "canvas": "section[role=\"dialog\"] > div:first-child b",
+       "app": ".k-dialog-title"
+      },
+      "主ボタン": {
+       "canvas": "section[role=\"dialog\"] button[data-primary]",
+       "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]"
+      }
+     },
+     "ticket": "K-229",
+     "decision": "D-146.1",
+     "why": "K-229 の描き直し（b691643571・PM の決め 2026-11-28：後の葉 K-572 ほかの新しい決めが正）で完了にするの主ボタンが緑（#166534）になり、紺の色では探せなくなった。組と前の探し方は残し、どちらの幅でも data-primary の印で主ボタンを探す"
+    }
+   }
   },
   {
    "id": "approvals-empty",

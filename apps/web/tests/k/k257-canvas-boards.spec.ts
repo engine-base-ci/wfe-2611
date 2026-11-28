@@ -6,7 +6,13 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { MISSING, readVals, type FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+import {
+  groupAt,
+  MISSING,
+  readVals,
+  type FidelityAt,
+  type FidelityPair,
+} from "../../../../scripts/ci/fidelity_compare.mjs";
 import { routeCanvasFonts } from "../_lib/fidelity-states";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -200,6 +206,7 @@ interface Group {
   canvas: string;
   widths: number[];
   pairs: FidelityPair[];
+  at?: Record<string, FidelityAt>;
 }
 const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
 const MINE = new Set([
@@ -220,14 +227,16 @@ test("K257-UI-018 起こし直した絵を使う突き合わせの組：組の�
   const bad: string[] = [];
   for (const g of CFG.groups.filter((x) => MINE.has(x.canvas))) {
     for (const w of g.widths) {
-      const page = await open(browser, g.canvas, w);
-      for (const p of g.pairs) {
+      // 幅ごとの絵（組の at・K-1301）が在れば、その幅の絵とセレクタで開く（値と幅は組のまま）
+      const r = groupAt(g, w);
+      const page = await open(browser, r.canvas, w);
+      for (const p of r.pairs) {
         const n = await page.locator(p.canvas).filter({ visible: true }).count();
         const many = p.props.includes("texts") ? n >= 1 : n === 1;
         if (!many) bad.push(`${g.id} 幅 ${w}：${p.name} に当たった数 ${n}`);
       }
-      const vals = (await readVals(page, g.pairs, "canvas")) as Record<string, unknown>[];
-      g.pairs.forEach((p, i) => {
+      const vals = (await readVals(page, r.pairs, "canvas")) as Record<string, unknown>[];
+      r.pairs.forEach((p, i) => {
         for (const prop of p.props) {
           const got = vals[i]?.[prop];
           if (got === undefined || got === null || got === MISSING || (Array.isArray(got) && got.length === 0))

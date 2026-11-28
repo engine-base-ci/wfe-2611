@@ -8,7 +8,13 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, test } from "@playwright/test";
-import { MISSING, readVals, type FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+import {
+  groupAt,
+  MISSING,
+  readVals,
+  type FidelityAt,
+  type FidelityPair,
+} from "../../../../scripts/ci/fidelity_compare.mjs";
 import { routeCanvasFonts } from "../_lib/fidelity-states";
 
 interface Group {
@@ -17,6 +23,7 @@ interface Group {
   canvas: string;
   widths: number[];
   pairs: FidelityPair[];
+  at?: Record<string, FidelityAt>;
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -62,12 +69,14 @@ for (const id of NEW_GROUPS) {
       });
       const page = await context.newPage();
       await routeCanvasFonts(page);
-      await page.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
-      for (const p of g!.pairs) await page.locator(p.canvas).first().waitFor({ state: "visible" });
+      // 幅ごとの絵（組の at・K-1301）が在れば、その幅の絵とセレクタで開く（値と幅は組のまま）
+      const r = groupAt(g!, w);
+      await page.goto(pathToFileURL(join(ROOT, `04_design/canvas/${r.canvas}.dc.html`)).href);
+      for (const p of r.pairs) await page.locator(p.canvas).first().waitFor({ state: "visible" });
       await page.evaluate(() => document.fonts.ready);
-      const vals = await readVals(page, g!.pairs, "canvas");
+      const vals = await readVals(page, r.pairs, "canvas");
       const bad: string[] = [];
-      g!.pairs.forEach((p, i) => {
+      r.pairs.forEach((p, i) => {
         const v = vals[i];
         if (!v) {
           bad.push(`${p.name}：要素が無い`);
