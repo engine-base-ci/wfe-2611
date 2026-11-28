@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F4/versions/item-restore.ts", "apps/web/features/F4/versions/item-restore-notes.tsx"], "tests": ["apps/web/tests/k/k579-item-restore.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/versions-mock.ts": "文言の正本 07_qa/test-specs/errors.json を readFileSync で読む（口の差し替えの答えの文・K-449。この葉も重ねて使う）"
+ }
+}

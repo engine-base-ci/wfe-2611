@@ -1,0 +1,1140 @@
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 72 本（05_flow/build_testplan.py が生成。手で直さない）
+# 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ spec-parts（置き場の変数 SPEC_SHARDS が 2 以上の回だけ G57 と G65 を分けて同時に・K-1307）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
+# GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
+# G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
+#   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
+name: v3-gate
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "CI の範囲（ticket＝そのチケットの中身だけ・full＝全部。全部は大分類の統合のときだけ・ticket-flow）"
+        type: choice
+        options: [ticket, full]
+        default: full
+      ticket:
+        description: "チケットの番号（scope=ticket のとき。コミットのチケットの番号と違えば止める）"
+        type: string
+        default: ''
+      base:
+        description: "比べる元（40 桁のコミット。チケットの回の範囲と、全部の回の migration の lint に使う）"
+        type: string
+        default: ''
+      leaves:
+        description: "段の葉の番号（空白区切り）。scope=full のとき ticket-flow の stageq が渡す。無い全部の回は止める（K-1305）"
+        type: string
+        default: ''
+      rerun:
+        description: "赤を直した回：前の回で赤だった行 ID（空白区切り）。since と両方あるときだけ、チケットの試験はこの行を持つファイルだけ・関わる物は since から変えた物だけ（ticket-flow の ci.py が渡す・K-1156）"
+        type: string
+        default: ''
+      since:
+        description: "赤を直した回：前の回の版（40 桁のコミット）。全部（scope=full）の回は使わない"
+        type: string
+        default: ''
+      target:
+        description: "取り込む先の枝の名前（G61 が比べる元の先祖かを確かめる。act_ci.sh が台の側で決めて渡す・枝の中のファイルから読まない・K-143）"
+        type: string
+        default: ''
+      web:
+        description: "画面の試験の組（web）を流すか。defer ならこの回は流さず、鎖の終わりに同じチケットの版でまとめて流す（ticket-flow の ci.py web）"
+        type: choice
+        options: [run, defer]
+        default: run
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  static:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+      unit: ${{ steps.scope.outputs.unit }}
+      database: ${{ steps.scope.outputs.database }}
+      web: ${{ steps.scope.outputs.web }}
+      unit_shards: ${{ steps.scope.outputs.unit_shards }}
+      unit_files: ${{ steps.scope.outputs.unit_files }}
+      migration_files: ${{ steps.scope.outputs.migration_files }}
+      coverage_args: ${{ steps.scope.outputs.coverage_args }}
+      base: ${{ steps.scope.outputs.base }}
+      gates: ${{ steps.scope.outputs.gates }}
+      py_tests: ${{ steps.scope.outputs.py_tests }}
+      web_g48: ${{ steps.scope.outputs.web_g48 }}
+      web_g59: ${{ steps.scope.outputs.web_g59 }}
+      web_gates: ${{ steps.scope.outputs.web_gates }}
+      web_tasks: ${{ steps.scope.outputs.web_tasks }}
+      web_shards: ${{ steps.shards.outputs.web_shards }}
+      web_parts: ${{ steps.shards.outputs.web_parts }}
+      spec_shards: ${{ steps.spec_shards.outputs.spec_shards }}
+      spec_parts: ${{ steps.spec_shards.outputs.spec_parts }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+          CI_RERUN_INPUT: ${{ inputs.rerun }}
+          CI_SINCE_INPUT: ${{ inputs.since }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --rerun "$CI_RERUN_INPUT" --since "$CI_SINCE_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "画面の試験の組の分け方（置き場の変数 WEB_SHARDS・無ければ 1＝今と同じ 1 組・K-1304）"
+        id: shards
+        env:
+          WEB_SHARDS_VAR: ${{ vars.WEB_SHARDS }}
+        run: python3 scripts/ci/web_run.py shards --github-output "$GITHUB_OUTPUT"
+      - name: "spec の重い段（G57・G65）の組の分け方（置き場の変数 SPEC_SHARDS・無ければ 1＝今と同じ spec の組・K-1307）"
+        id: spec_shards
+        if: ${{ !cancelled() }}
+        env:
+          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}
+        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"
+      - name: "G1 lint"
+        if: ${{ !cancelled() }}
+        run: pnpm lint
+      - name: "G2 type check"
+        if: ${{ !cancelled() }}
+        run: pnpm type-check
+      - name: "G5 auth.uid() 検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:no-vendor-sql
+      - name: "G7 import 境界検査 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:boundary
+      - name: "G8 Open Core ee/ 検出"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:license-boundary
+      - name: "G9 ポータビリティ台帳の整合"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:ledger-sync
+      - name: "G10 動的クエリの文字列連結禁止 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:no-sql-concat
+      - name: "G11 OpenAPI 破壊的変更検出"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:openapi-diff
+      - name: "G13 env 整合"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:env-audit
+      - name: "G14 AC validator（4-tier）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:ac-validate
+      - name: "G16 関門C1 ネットワークの迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C1
+      - name: "G17 関門C2 永続化の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C2
+      - name: "G18 関門C3 モデル呼び出しの迂回検出"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C3
+      - name: "G19 関門C4 ファイルの迂回検出"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C4
+      - name: "G20 関門C5 プロセス起動の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C5
+      - name: "G21 関門C6 通知の迂回検出"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C6
+      - name: "G22 関門C7 決済の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C7
+      - name: "G23 関門C8 秘密の迂回検出 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke -- --id C8
+      - name: "G24 動的呼び出し禁止 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:no-dynamic-call && pnpm ci:test-imports
+      - name: "G25 関門例外台帳の整合"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:choke-exceptions
+      - name: "G26 チケットの触る関門の宣言"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:task-choke-declared
+      - name: "G27 画面の route の生成物が最新（flow.json → apps/web/lib/routes.ts）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:routes
+      - name: "G28 実ブラウザで押した証拠（操作要素 1 つ＝1 行。行 ID を名前に持つ Playwright が通っている）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:op-gate
+      - name: "G39 外へ出る口の宛先（apps/bridge・apps/web の fetch は Kaname か Bridge の口だけ・関門 C1 の例外 X-009／X-010 の代替統制） [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:net-boundary && pnpm ci:net-boundary:selftest && pnpm ci:choke:selftest
+      - name: "G40 ゼロトラストの決まり（設計の赤 0・実装の残りが記録より増えない） [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:zt
+      - name: "G41 権限の試験（契約の全 API で、役が合わない人・ログインしていない人を止め、副作用に届かせない） [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:authz
+      - name: "G42 契約の外の道すじが無い（登録した道すじ＝契約） [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:endpoints
+      - name: "G43 秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env） [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:secret-scan
+      - name: "G44 部品の弱点（本番で使う部品に high 以上の弱点が無い）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:deps-audit
+      - name: "G45 Kaname を作るためのチケットの形（番号・親子 3 段・区画・決定 ID・先に要るもの）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:tickets
+      - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:resource-static
+      - name: "G66 コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/author_gate.py --base-ref "$CI_BASE"
+      - name: "画面の型の確かめ（next typegen ＋ tsc・web=defer の回も画面の組み立ての型は流す。web=run の回は web の組の next build が同じ型を見る・K-631）"
+        if: ${{ !cancelled() && steps.scope.outputs.web == 'true' && inputs.web != 'run' }}
+        run: NEXT_DIST_DIR=.next-prod pnpm --filter @kaname/web exec next typegen && pnpm --filter @kaname/web exec tsc --noEmit
+
+  database:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.database == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_MIGRATION_FILES: ${{ needs.static.outputs.migration_files }}
+          CI_BASE: ${{ needs.static.outputs.base }}
+        run: python3 scripts/ci/ci_scope.py run-squawk
+      - name: "G4 RLS 全テーブル有効 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:rls-enabled
+      - name: "G6 テナント文脈の網羅 [CRITICAL]"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:context-set
+      - name: "G12 実Postgresでmigration+seed適用"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:migration-integration
+      - name: "G33 RLS の場合表（access-matrix.json 全行）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:access-matrix -- --matrix 07_qa/test-plan/access-matrix.json
+      - name: "G34 EARS → test の対応（mapping の test が全部存在）"
+        if: ${{ !cancelled() }}
+        run: pnpm ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json
+      - name: "G36 契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）"
+        if: ${{ !cancelled() && (needs.static.outputs.full == 'true' || contains(needs.static.outputs.gates, ',36,')) }}
+        run: pnpm ci:schemathesis
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  unit-1:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 1/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.1 単体の試験の 1 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 1
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-1, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-1, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit-2:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 2/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 2 }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.2 単体の試験の 2 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 2
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-2, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-2, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit-3:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 3/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 3 }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.3 単体の試験の 3 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 3
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-3, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-3, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit-4:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 4/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 4 }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.4 単体の試験の 4 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 4
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-4, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-4, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit-5:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 5/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 5 }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.5 単体の試験の 5 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 5
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-5, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-5, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit-6:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 単体の試験の 6/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
+    needs: [static]
+    if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 6 }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "G3.6 単体の試験の 6 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+        run: python3 scripts/ci/ci_scope.py run-unit --shard 6
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: vitest-blob-6, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-unit-6, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  unit:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
+    needs: [static, unit-1, unit-2, unit-3, unit-4, unit-5, unit-6]
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - uses: actions/download-artifact@v4
+        if: ${{ needs.static.outputs.unit == 'true' }}
+        with: { pattern: vitest-blob-*, path: .vitest-reports, merge-multiple: true }
+      - name: "G3 unit test + coverage（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_UNIT_FILES: ${{ needs.static.outputs.unit_files }}
+          CI_COVERAGE_ARGS: ${{ needs.static.outputs.coverage_args }}
+          CI_UNIT_SHARDS: ${{ needs.static.outputs.unit_shards }}
+          CI_FULL: ${{ needs.static.outputs.full }}
+        run: |
+          [ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が空（G0 が流れていない）"; exit 1; }
+          if [ "$CI_UNIT_SHARDS" = "0" ]; then echo "流す試験 0 本（チケットの CI の範囲・G0）"; exit 0; fi
+          n=$(ls .vitest-reports/blob-*-"$CI_UNIT_SHARDS".json 2>/dev/null | wc -l)
+          [ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }
+          python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report .vitest-reports/merged.json
+  spec:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
+    #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばさない（K-143）のは if の !cancelled() で守る。
+    #   G61 が要る本線との分かれ目（base）は、この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
+    needs: [static]
+    if: ${{ !cancelled() }}
+    # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+          CI_RERUN_INPUT: ${{ inputs.rerun }}
+          CI_SINCE_INPUT: ${{ inputs.since }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --rerun "$CI_RERUN_INPUT" --since "$CI_SINCE_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "チケットの Python の試験（tests: の .py を JUnit に・K-172）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_PY_TESTS: ${{ steps.scope.outputs.py_tests }}
+        run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
+      - name: "spec の重い段（G57・G65）の組の分け方（spec の組が自分で・static を待たない・K-1307）"
+        id: spec_shards
+        if: ${{ !cancelled() }}
+        env:
+          SPEC_SHARDS_VAR: ${{ vars.SPEC_SHARDS }}
+        run: python3 scripts/ci/spec_run.py shards --github-output "$GITHUB_OUTPUT"
+      - name: "G27 層の棚卸し（G21）"
+        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',27,')) }}
+        env:
+          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}
+        run: "set -o pipefail; mkdir -p \"$RUNNER_TEMP/gate-logs\"; python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\" 2>&1 | tee \"$RUNNER_TEMP/gate-logs/g27.log\""
+      - name: "G28 正本 ↔ tickets の参照整合（qa-ladder validate）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+      - name: "G29 エラー一覧 E1〜E9（引数を省かない）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+      - name: "G30 スキル一式 SK1〜SK6"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/skill_pkg_gate.py 10_skills
+      - name: "G31 テスト計画の整合 TV1〜TV8"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/tv_gate.py
+      - name: "G37 デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4・部品の値 D5・文字の段 D6／D7・プレビュー）"
+        if: ${{ !cancelled() }}
+        run: python3 04_design/gen_tokens.py --web --check && python3 04_design/gen_preview.py --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --scales --usage apps/web apps/bridge/src && python3 scripts/ci/k218_design_canvas_test.py
+      - name: "G38 生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）"
+        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',38,')) }}
+        run: python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py
+      - name: "G46 使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py --base-ref "$CI_BASE"
+      - name: "G47 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験・D-128.123）"
+        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',47,')) }}
+        run: python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py && python3 scripts/ci/k185_hook_regions_test.py && python3 scripts/ci/fuzz_targets_test.py
+      - name: "G51 利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py
+      - name: "G53 試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py
+      - name: "G54 決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）"
+        if: ${{ !cancelled() }}
+        run: cp 01_hearing/要件一覧.md $RUNNER_TEMP/req.md && python3 scripts/ci/trace_gate.py --index && cmp $RUNNER_TEMP/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py
+      - name: "G55 No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py
+      - name: "G62 CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156）"
+        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',62,')) }}
+        run: python3 scripts/ci/ci_lean_test.py
+      - name: "G57 チケットの CI の範囲の台本の試験（K-107）"
+        if: ${{ !cancelled() && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2 && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}
+        run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
+      - name: "G60 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130
+      - name: "G63 決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_ANSWERS_BASE: ${{ steps.scope.outputs.base }}
+          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}
+        run: python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base "$CI_ANSWERS_BASE" --target "$CI_TARGET_REF"
+      - name: "G64 着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
+      - name: "G65 CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）"
+        if: ${{ !cancelled() && fromJSON(steps.spec_shards.outputs.spec_shards || '1') < 2 }}
+        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k219_canvas_states_test.py && python3 scripts/ci/k257_canvas_boards_test.py && python3 scripts/ci/k258_web_defer_test.py && python3 scripts/ci/k232_fidelity_doc_test.py && python3 scripts/ci/k262_staging_edge_test.py && python3 scripts/ci/k237_perf_ledger_test.py && python3 scripts/ci/k237_staging_perf_test.py && python3 scripts/ci/k330_cut_check_test.py && python3 scripts/ci/k323_spec_split_test.py && python3 scripts/ci/k325_registries_test.py && python3 scripts/ci/k326_ts_registries_test.py && python3 scripts/ci/k327_migrations_gen_test.py && python3 scripts/ci/k328_secrets_parents_test.py && python3 scripts/ci/k343_test_timeout_test.py && python3 scripts/ci/k376_gate_lists_test.py && python3 scripts/ci/k377_fidelity_removed_test.py && python3 scripts/ci/k379_bridge_gate_test.py && python3 scripts/ci/k418_staging_spec_test.py && python3 scripts/ci/k424_fuzz_limited_test.py && python3 scripts/ci/k425_decision_log_test.py && python3 scripts/ci/k430_decision_log_test.py && python3 scripts/ci/k440_ears_merge_test.py && python3 scripts/ci/k456_staging_spec_test.py && python3 scripts/ci/k596_staging_spec_test.py && python3 scripts/ci/k601_decision_log_test.py && python3 scripts/ci/k622_spec_sync_tools_test.py && python3 scripts/ci/k623_decisions_registered_test.py && python3 scripts/ci/k624_d6_mock_only_test.py && python3 scripts/ci/k625_layer_ledgers_test.py && python3 scripts/ci/k626_p_audit_closed_test.py && python3 scripts/ci/k627_db_fresh_run_test.py && python3 scripts/ci/k631_web_types_test.py && python3 scripts/ci/k638_contract_test.py && python3 scripts/ci/k639_contract_test.py && python3 scripts/ci/k640_runs_on_test.py && python3 scripts/ci/k641_hosted_tools_test.py && python3 scripts/ci/k643_merge_not_impl_test.py && python3 scripts/ci/k644_migrate_auth_test.py && python3 scripts/ci/k673_decision_log_test.py && python3 scripts/ci/k716_staging_spec_test.py && python3 scripts/ci/k722_flow_test.py && python3 scripts/ci/k723_ears_bind_test.py && python3 scripts/ci/k724_ears_bind_test.py && python3 scripts/ci/k727_flow_test.py && python3 scripts/ci/k731_flow_test.py && python3 scripts/ci/k773_staging_spec_test.py && python3 scripts/ci/k780_decision_log_test.py && python3 scripts/ci/k781_decision_log_test.py && python3 scripts/ci/k846_staging_spec_test.py && python3 scripts/ci/k847_decision_log_test.py && python3 scripts/ci/k870_guest_docs_test.py && python3 scripts/ci/k883_clients_freeze_test.py && python3 scripts/ci/k922_staging_spec_test.py && python3 scripts/ci/k923_f11_close_test.py && python3 scripts/ci/k925_canvas_guest_test.py && python3 scripts/ci/k940_decision_log_test.py && python3 scripts/ci/k947_ops_definer_test.py && python3 scripts/ci/ops_definer_gate.py && python3 scripts/ci/k948_inquiry_contract_test.py && python3 scripts/ci/k999_staging_spec_test.py && python3 scripts/ci/k1000_flow_test.py && python3 scripts/ci/k1004_notice_contract_test.py && python3 scripts/ci/k1005_billing_contract_test.py && python3 scripts/ci/k1006_ops_workspace_contract_test.py && python3 scripts/ci/k1102_staging_spec_test.py && python3 scripts/ci/k1114_build_dir_skip_test.py && python3 scripts/ci/k1115_cut_take_test.py && python3 scripts/ci/k1116_fuzz_contract_test.py && python3 scripts/ci/k1117_portable_contract_test.py && python3 scripts/ci/k1120_body_append_tree_test.py && python3 scripts/ci/k1121_build_api_d_test.py && python3 scripts/ci/k1122_op_gate_titles_test.py && python3 scripts/ci/k1151_staging_spec_test.py && python3 scripts/ci/k1152_staging_spec_test.py && python3 scripts/ci/k1154_order_head_test.py && python3 scripts/ci/k1156_rerun_test.py && python3 scripts/ci/k1300_fidelity_removed_groups_test.py && python3 scripts/ci/k1301_fidelity_at_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k1301-mjs.xml scripts/ci/k1301_fidelity_at.test.mjs && python3 scripts/ci/k1304_web_shards_test.py && python3 scripts/ci/k1305_full_py_junit_test.py && python3 scripts/ci/k1307_spec_shards_test.py && python3 scripts/ci/k248_scope_reach_test.py
+      - name: "G68 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+          CI_TICKET: ${{ inputs.ticket }}
+        run: python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py && python3 scripts/ci/k300_mock_field_test.py
+      - name: "G69 キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+          CI_TICKET: ${{ inputs.ticket }}
+        run: "python3 scripts/ci/fidelity_config.py --base-ref \"$CI_BASE\" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref \"$CI_BASE\" ${CI_TICKET:+--ticket \"$CI_TICKET\"} && python3 scripts/ci/k238_fidelity_ci_test.py"
+      - name: "G71 キャンバスの値が正本の段（色・書体・角丸・文字）・幅の台帳は減らすだけ・台帳の形と作り手の流し直し（K-254）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/canvas_design_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k254_canvas_values_test.py
+      - name: "G72 画面の CSS の生の長さ（大きさ・余白・間・行の高さ・影・枠の太さが正本のトークンを通る・D8・台帳は減らすだけ・K-261）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k261_raw_lengths_test.py
+      - name: "G74 共通の台帳の本体に葉が直に行を足さない（足す分は葉ごとのファイル .d・猶予の台帳は減らすだけ・K-1112）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/body_append_gate.py --base-ref "$CI_BASE" && python3 scripts/ci/api_doc_d.py --check && python3 scripts/ci/k1112_body_append_test.py
+      - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}
+          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}
+        run: python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit "$RUNNER_TEMP/gate-logs"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-spec, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  spec-2:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # spec の組を分けた 1 つ（K-323）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+          CI_RERUN_INPUT: ${{ inputs.rerun }}
+          CI_SINCE_INPUT: ${{ inputs.since }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --rerun "$CI_RERUN_INPUT" --since "$CI_SINCE_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "G56 取り込む順（depends_on の実装が先に枝にある・K-94）"
+        if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',56,')) }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/k341_order_gate_speed_test.py && python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  spec-3:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # spec の組を分けた 1 つ（K-323）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+          CI_RERUN_INPUT: ${{ inputs.rerun }}
+          CI_SINCE_INPUT: ${{ inputs.since }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --rerun "$CI_RERUN_INPUT" --since "$CI_SINCE_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "G67 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  spec-parts:
+    name: ${{ format('spec ({0})', matrix.part) }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # spec の重い段を分けた組（K-1307）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{ !cancelled() && fromJSON(needs.static.outputs.spec_shards || '1') > 1 }}
+    strategy:
+      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）
+      matrix:
+        part: ${{ fromJSON(needs.static.outputs.spec_parts || '["off"]') }}
+    env:
+      SPEC_PART: ${{ matrix.part }}
+      SPEC_SHARDS: ${{ needs.static.outputs.spec_shards }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
+          CI_LEAVES_INPUT: ${{ inputs.leaves }}
+          CI_RERUN_INPUT: ${{ inputs.rerun }}
+          CI_SINCE_INPUT: ${{ inputs.since }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --leaves "$CI_LEAVES_INPUT" --rerun "$CI_RERUN_INPUT" --since "$CI_SINCE_INPUT" --github-output "$GITHUB_OUTPUT"
+      - name: "G57.p チケットの CI の範囲の台本の試験（K-107）（分けた組 g57・K-1307）"
+        if: ${{ !cancelled() && matrix.part == 'g57' && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',57,')) }}
+        run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
+      - name: "G65.p CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）（G65 の並びを SPEC_SHARDS の数に分けた 1 組・K-1307）"
+        if: ${{ !cancelled() && startsWith(matrix.part, 'g65-') }}
+        run: python3 scripts/ci/spec_run.py g65
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('junit/*.xml') != '' }}
+        with:
+          name: junit-spec-parts-${{ matrix.part }}
+          path: junit/
+          if-no-files-found: error
+          retention-days: 7
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+
+  task-gate:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
+    needs: [spec, spec-2, spec-3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
+        run: echo "TASK_ID=${{ github.head_ref }}" | sed 's#task/##' >> "$GITHUB_ENV"
+      - name: "G32 そのタスクの L1 行（ブランチ task/<ID>）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
+
+  web-build:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 画面の組み立て（next build）は最初にこの組で 1 回だけ（K-1304）。web の組（何台でも）はこの成果物を取って立ち上げるだけで、組み立て直さない。
+    #   static を待たずに並べて走る。組み立てが赤なら web の組は始まらない（記録は junit の組がまとめる）。env は web の組と同じ（NEXT_PUBLIC_* は組み立てで埋まる）
+    if: ${{ !cancelled() && inputs.web != 'defer' }}
+    env:
+      KANAME_DEV_PAGES: '1'
+      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
+      API_BASE: http://127.0.0.1:3011
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml   # 絶対の道（Playwright は設定の置き場 apps/web からの道で読む・K-176）
+      # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す
+      QA_MAILBOX_PORT: '3191'
+      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
+      OPERATOR_ADDRESS: 東京都千代田区試験 1-1
+      LEGAL_COURT: 東京地方裁判所
+      LEGAL_HOSTING_PROVIDER: 試験のホスティング
+      LEGAL_MAIL_PROVIDER: 試験のメール
+      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
+      LEGAL_STORAGE_PROVIDER: 試験の置き場
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - run: echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # web の組と同じ値（サーバ側の (dev) が読む）
+      - run: pnpm --filter @kaname/web build:test && rm -rf apps/web/.next-prod/cache   # 組み立ての cache は next start に要らない（上げ下ろしを軽く）
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: apps/web/.next-prod/
+          include-hidden-files: true   # .next-prod は . で始まる（v4 の既定では上がらない）
+          if-no-files-found: error
+          retention-days: 1
+  web:
+    name: ${{ matrix.part == 'all' && 'web' || format('web ({0})', matrix.part) }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
+    # 組は static の web_parts（K-1304）：WEB_SHARDS が 1 か無ければ all の 1 組（今と同じ）。2 以上なら G48 を分けた組・G59・専用の段の組が同時に走り、
+    #   組ごとに自分の DB・API・画面を立てる（準備は同じ）。どの段を流すかは web_run.py が WEB_PART で決める（段の名前・if は変えない）
+    needs: [static, web-build]
+    # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
+    #   入力が空の回（push・入力を渡さない回）は今までどおり流れる。組み立て（web-build）が緑の回だけ
+    if: ${{ !cancelled() && needs.static.outputs.web == 'true' && inputs.web != 'defer' && needs.web-build.result == 'success' }}
+    # 取りに行く台（pull-<i>）は、CI の置き場の取り台の印（refs/tf-claim/…）を作る（K-1304・scripts/ci/web_pull.py）
+    permissions: { contents: write }
+    strategy:
+      fail-fast: false   # 1 組が赤でもほかの組を止めない（赤を全部いっぺんに見る）
+      matrix:
+        part: ${{ fromJSON(needs.static.outputs.web_parts || '["all"]') }}
+    # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
+    #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
+    # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）
+    env:
+      WEB_PART: ${{ matrix.part }}
+      WEB_SHARDS: ${{ needs.static.outputs.web_shards || '1' }}
+      KANAME_DEV_PAGES: '1'
+      NEXT_PUBLIC_KANAME_DEV_PAGES: '1'
+      # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
+      API_BASE: http://127.0.0.1:3011
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml   # 絶対の道（Playwright は設定の置き場 apps/web からの道で読む・K-176）
+      # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す
+      QA_MAILBOX_PORT: '3191'
+      # 規約・プライバシーポリシーの文面のページ（K-53）が埋める値。試験の値（本番の値は K-85・K-86 が決める）
+      OPERATOR_ADDRESS: 東京都千代田区試験 1-1
+      LEGAL_COURT: 東京地方裁判所
+      LEGAL_HOSTING_PROVIDER: 試験のホスティング
+      LEGAL_MAIL_PROVIDER: 試験のメール
+      LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
+      LEGAL_STORAGE_PROVIDER: 試験の置き場
+      # 押す・入れるの待ちの上限（apps/web/playwright.config.ts の actionTimeout）。expect と同じ 15 秒：押せない部品で 60 秒待たない（K-1304）
+      PW_ACTION_TIMEOUT: '15000'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: DB を立てる（組の中・空いている番号・K-172）
+        env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
+        run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
+          docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
+          port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
+      - uses: actions/cache@v4   # GitHub の台だけ（K-1304）
+        if: ${{ runner.environment == 'github-hosted' }}
+        with: { path: ~/.cache/ms-playwright, key: "ms-playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}" }
+      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
+      - name: 台の道具をそろえる（lsof・入っていれば飛ばす・K-641）
+        run: command -v lsof >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq lsof; }
+      - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
+        run: |
+          for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 番号 $port が使われている（手元の開発のサーバーなど）。止めてから流し直す"; exit 1; fi; done
+          echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # 口の記録の置き場（画面の試験が読む・回ごとの置き場）
+      - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53。メールは試験用の受け箱へ・K-54）
+        run: |
+          pnpm db:migrate
+          (env NODE_ENV=development PORT=3011 BASE_URL=http://127.0.0.1:3011 WEB_BASE_URL=http://127.0.0.1:3124             DATABASE_URL=postgres://kaname_app:kaname_app@localhost:$PGPORT/kaname_test             AUTH_DATABASE_URL=postgres://kaname_auth:kaname_auth@localhost:$PGPORT/kaname_test             AUTH_SECRET=ci-web-secret-0123456789-abcdefghijklmnop SECRETS_MASTER_KEY=BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc=             STORAGE_ENDPOINT=http://127.0.0.1:9000 STORAGE_REGION=ap-northeast-1 STORAGE_BUCKET=kaname-ci STORAGE_ACCESS_KEY_ID=ci STORAGE_SECRET_ACCESS_KEY=ci             KANAME_DEV_FAKE_BUCKET=1 KANAME_DEV_STORAGE_DIR=$RUNNER_TEMP/kaname-storage             RESEND_API_KEY=re_qa_mailbox RESEND_BASE_URL=http://127.0.0.1:3191             pnpm exec tsx apps/api/src/dev.ts > $RUNNER_TEMP/api.log 2>&1 & echo $! > $RUNNER_TEMP/api.pid)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3011/health && exit 0; sleep 2; done
+          cat $RUNNER_TEMP/api.log; exit 1
+      - uses: actions/download-artifact@v4   # 組み立ては web-build の組で 1 回だけ（K-1304）
+        with: { name: web-build, path: apps/web/.next-prod }
+      - name: 画面を立ち上げる
+        run: |
+          (pnpm --filter @kaname/web start:test > $RUNNER_TEMP/web.log 2>&1 & echo $! > $RUNNER_TEMP/web.pid)
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
+          cat $RUNNER_TEMP/web.log; exit 1
+      - name: Bridge を組み立てる（配布と同じ build・専用の段 G73 が使う・K-379）
+        run: pnpm --filter @kaname/bridge build
+      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+        run: BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48
+      - name: "G59 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-skeleton.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59
+      - name: "G70 キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70
+      - name: "G73 Bridge の輪が Chrome を動かす通しの画面の試験（組み立てた Bridge・頭なしの Chrome・的のログイン画面・K-379）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-bridge.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 73
+      - uses: actions/upload-artifact@v4
+        # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
+        if: ${{ !cancelled() && matrix.part == 'all' }}
+        with: { name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && matrix.part == 'all' }}
+        with: { name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        # 分けた組の物（G48 の blob の報告と終わりの番号・G59 と専用の段の JUnit）。web-report の組が合わせる（K-1304）
+        if: ${{ always() && matrix.part != 'all' }}
+        with:
+          name: web-part-${{ matrix.part }}
+          path: |
+            web-part/
+            junit/
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        # 赤の組だけ、立てた口（API）と画面のサーバーの記録を残す（照らしには使わない・赤の訳を後から読むため・PM の決め 2026-11-28）
+        if: ${{ failure() }}
+        with:
+          name: web-logs-${{ matrix.part }}
+          path: |
+            ${{ runner.temp }}/api.log
+            ${{ runner.temp }}/web.log
+          if-no-files-found: warn
+          retention-days: 7
+      - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
+        if: always()
+        run: |
+          bash scripts/ci/kill_tree.sh "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"   # 孫以下（node・next-server）まで
+          # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
+          for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
+      - name: DB を消す（赤でも必ず）
+        if: always()
+        run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
+  web-report:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 分けて流した画面の試験を合わせる（K-1304）：G48 の blob を merge-reports で 1 つの報告（pw-reports/k.json）と JUnit（junit/web.xml）にし、
+    #   今と同じ記録（ci_results.py record）と照らし（op_gate.py）を 1 回。G59・専用の段の JUnit と合わせて junit-web・ci-results を上げる。
+    #   WEB_SHARDS が 1 か無い回は飛ぶ（web の組の all が今までどおり全部を流す）。web が飛ばされた回（defer・範囲の外）は一緒に飛ぶ
+    needs: [static, web]
+    if: ${{ !cancelled() && needs.web.result != 'skipped' && fromJSON(needs.static.outputs.web_shards || '1') > 1 }}
+    env:
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/web.xml
+      WEB_SHARDS: ${{ needs.static.outputs.web_shards }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - uses: actions/download-artifact@v4
+        with: { pattern: web-part-*, path: ., merge-multiple: true }
+      - name: "取りに行って流した G48・G59 を合わせ、記録して照らす（並びのどの番号にも結果がちょうど 1 つ・試験の集合が並びと同じ・G48 が赤なら記録しない・K-1304）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+        run: python3 scripts/ci/web_run.py g48-report
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: junit-web, path: junit/, if-no-files-found: error, retention-days: 7 }
+  web-release:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 取りに行く台（K-1304）が作った取り台の印（refs/tf-claim/<回>-<試み>-…）を消す。web-report と並べて走る（待たせない）。
+    #   web の組が終わってから（どの台ももう取らない）・赤でも消す。WEB_SHARDS が 1 か無い回は印が無いので飛ぶ
+    needs: [static, web]
+    if: ${{ always() && needs.web.result != 'skipped' && fromJSON(needs.static.outputs.web_shards || '1') > 1 }}
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - run: python3 scripts/ci/web_run.py release
+  junit:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
+    needs: [unit-1, unit-2, unit-3, unit-4, unit-5, unit-6, spec, spec-2, spec-3, spec-parts, web, web-report]
+    if: always()
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with: { name: junit, pattern: junit-*, delete-merged: false }
+  auto-merge:
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
+    needs: [static, database, unit, spec, spec-2, spec-3, task-gate]
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
+    permissions: { contents: write, pull-requests: write }
+    steps:
+      - name: Enable auto-merge (squash)
+        run: gh pr merge --squash --auto "${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
