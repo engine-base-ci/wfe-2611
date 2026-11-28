@@ -71,6 +71,8 @@ export interface ShellAnswer {
   banner?: unknown;
   /** 任意の鍵（保存した条件・K-479 が読む）。外枠は読まない・形を確かめない */
   saved_views?: unknown;
+  /** ログイン後の稼働状況と帯（K-957・getServiceStatusForMember と同じ形）。帯と画面いっぱいの形が読む（口を 1 本増やさない・PM の決め 2026-11-28） */
+  service_status?: unknown;
 }
 /** 外枠の問い合わせの答え：getShell の答えに、グループの口の前の形（rows・writable）を足す */
 export type ShellData = ShellAnswer & Scopes;
@@ -231,7 +233,7 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
     void signOut().finally(() => window.location.assign("/login"));
   };
   return (
-    <ServiceGate>
+    <ServiceGate status={data?.service_status} retry={() => void shell.refetch()}>
       <Toaster>
         <Shell
           {...notice.shellProps}
@@ -256,7 +258,7 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
           orgMenu={<OrgMenuBox screen={screen} workspaceName={company} />}
         >
           <div data-ticket-shell>
-            <ServiceBands screen={screen} />
+            <ServiceBands screen={screen} status={data?.service_status} retry={() => void shell.refetch()} />
             {children}
           </div>
           <F7.NoticeSlot slot={notice} />

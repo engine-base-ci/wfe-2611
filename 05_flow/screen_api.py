@@ -1067,7 +1067,7 @@ RESPONSES = {
     # K-1006：role_label は 管理者・マネージャー・メンバー・閲覧のみ・ゲスト。pc は connected・paired・never・none。運営は役割も中身も変えない
     "listOpsWorkspaceMembers": ("OpsWorkspaceMember", {"member_id": "uuid", "name": "string", "email": "string?", "role_label": "string", "last_seen_at": "string?", "pc": "string", "login_methods": "string[]", "verified": "boolean"}),
     "getOpsWorkspaceBilling": ("OpsWorkspaceBilling", {"plan": "object", "members": "object", "payment_terms": "string", "invoices": "array"}),   # K-1005：利用量は人数だけ（D-156.36）
-    "getShell": ("Shell", {"member": "object", "approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object", "saved_views": "array?"}),
+    "getShell": ("Shell", {"member": "object", "approvals_waiting": "integer", "notifications_unread": "integer", "groups": "array", "pc": "object", "setup_left": "integer", "banner": "object", "workspace": "object", "saved_views": "array?", "service_status": "object?"}),   # service_status：K-957 の帯（getServiceStatusForMember と同じ形・PM の決め 2026-11-28）
     # K-1006：上の数をここに寄せる（D-156.4）。operator は { member_id, caps }・inbox は { unassigned, mine, waiting, later }・invoices は { overdue_count, overdue_amount } か null（お金を持たない人）
     #   workspaces は { total, active, stopped, closing, attention, by_plan: { free, team, business } }・runs_month は { count, prev_ratio }・pwned は { unchecked }（D-156.35）
     "getOpsShell": ("OpsShell", {"operator": "object", "inbox": "object", "invoices": "object?", "workspaces": "object", "runs_month": "object", "pwned": "object"}),

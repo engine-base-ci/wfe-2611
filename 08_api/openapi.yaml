@@ -21639,6 +21639,9 @@ components:
           items:
             type: object
           nullable: true
+        service_status:
+          type: object
+          nullable: true
       x-operation: getShell
     OpsShell:
       type: object
