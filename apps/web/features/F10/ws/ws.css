@@ -1,0 +1,143 @@
+/* ワークスペースの管理 › 記録・設定（段 11・F10 ws 束）の並べ方。色・字・余白は正本のトークン（--k-*）だけ。クラスの頭は k-f10w- */
+
+/* ---- 記録：探す欄と札 ---- */
+.k-f10w-tools {
+  display: grid;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+.k-f10w-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+}
+.k-f10w-chip {
+  min-height: var(--k-s-lg);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-full);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f10w-chip[aria-pressed="true"] {
+  background: var(--k-primary-container);
+  color: var(--k-on-primary-container);
+  border-color: var(--k-primary-line);
+}
+.k-f10w-chip[aria-disabled="true"] {
+  color: var(--k-on-surface-variant);
+  cursor: not-allowed;
+}
+
+/* ---- 記録：1 件 1 行（日時・誰が何を・戻す） ---- */
+.k-f10w-entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-f10w-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--k-s-md);
+  padding: var(--k-s-sm) var(--k-s-md);
+}
+.k-f10w-entry + .k-f10w-entry {
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-f10w-when {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  white-space: nowrap;
+}
+.k-f10w-what {
+  display: grid;
+  min-width: 0;
+}
+.k-f10w-line {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .k-f10w-entry {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--k-s-xs);
+  }
+}
+
+/* ---- 設定：名前の行・ロゴ・選ぶ ▾ ---- */
+.k-f10w-fieldrow {
+  display: grid;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+}
+.k-f10w-fieldrow .k-field {
+  max-width: none;
+}
+.k-f10w-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
+.k-f10w-ok {
+  color: var(--k-st-on-success-container);
+}
+.k-f10w-mark {
+  display: grid;
+  place-items: center;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+}
+.k-f10w-pick {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-s-lg);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f10w-pick-menu {
+  min-width: calc(var(--k-s-2xl) * 2);
+}
+.k-f10w-pick-title {
+  padding: var(--k-s-xs) var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-f10w-check {
+  display: inline-block;
+  width: var(--k-s-md);
+  color: var(--k-primary);
+}
+.k-btn.k-f10w-danger {
+  color: var(--k-error);
+}
+
+/* ---- 消す小窓 ---- */
+.k-f10w-bullets {
+  display: grid;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding-left: var(--k-s-md);
+  font-size: var(--k-text-body);
+}
