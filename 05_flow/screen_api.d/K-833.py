@@ -3,7 +3,7 @@
 #   strict（ほかの欄は 422。顔は K-834・メールは K-835 の口）。call_name の空文字・null は「消す」（null に戻す）
 #   getMe の答えの形（"getMe": ("Me", …)・K-253 が workspace_name を足した）は本体の screen_api.py のまま（member・workspaces の中の形は口と試験が決める）
 INPUTS = {
-    "updateMe": ("MeUpdateInput", {"name": "string?", "call_name": "string?", "language": "string?", "theme": "string?", "week_start": "integer?", "timezone": "string?"}),
+    "updateMe": ("MeUpdateInput", {"name": "string", "call_name": "string?", "language": "string?", "theme": "string?", "week_start": "integer?", "timezone": "string?"}),   # name は null を許さない形（送らないのが「直さない」・null は口が 422 E-ME-001・K-144 の startOpsSetup と同じ）
 }
 
 # 直した答え：今いる会社の自分の member（getMe の member と同じ形）と、保存した時刻（同じ値への保存は前の時刻のまま）
@@ -30,7 +30,7 @@ VALUE_RANGES = {
 }
 
 UNEXPRESSIBLE_422 = {
-    "updateMe": ["名前が null（空と同じ・E-ME-001）", "前後の空白・NFKC を除いて 101 文字以上の名前（E-ME-002・文字の数で数える）",
+    "updateMe": ["前後の空白・NFKC を除いて 101 文字以上の名前（E-ME-002・文字の数で数える）",
                  "前後の空白・NFKC を除いて 21 文字以上の呼ばれ方（E-ME-003・文字の数で数える）"],
 }
 
