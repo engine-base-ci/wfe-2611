@@ -567,6 +567,8 @@ test("K692-UI-021 承認する人・フォルダ名・理由・相手の名前�
   await choose(page, d, "入れるフォルダ", "<b>見積もり</b>");
   await message(d).fill("<u>お願い</u>");
   await submit(d).click();
+  // 送るの口が網に届くのを待ってから体を見る（ほかの行は帯が出るのを待ってから見ている）
+  await expect.poll(() => r.calls.length).toBeGreaterThan(0);
   expect(r.calls[0]!.body["message"]).toBe("<u>お願い</u>");
   mk.pages.set(P_MINE, minePage({ request: declinedRequest({ who_name: evil, reason: "<i>理由</i>" }) }));
   await page.reload();
