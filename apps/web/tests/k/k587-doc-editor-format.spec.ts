@@ -27,6 +27,8 @@ async function open(page: Page, doc: string, width = 1440) {
   const res = await page.goto(`${BASE}?doc=${doc}`);
   expect(res?.status(), "頁を開けない").toBe(200);
   await expect(page.locator('[data-mock="f4v2-editor-format"]')).toBeVisible();
+  // 本文の部品ができ終わるのを待つ（帯の道具は部品ができた後に描き直される。前に掴むと「DOM に付いていない」で落ちる）
+  await expect(page.getByRole("textbox", { name: "本文", exact: true })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
 }
 
