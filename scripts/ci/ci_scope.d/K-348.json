@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "packages/db/test/credential_service_tenant.test.ts": "この葉の migration のファイルを読み、取引の中でもう一度当てる（migration の道で db の組に当たる）・K-348"
+ }
+}

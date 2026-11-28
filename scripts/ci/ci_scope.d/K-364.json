@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/device-*.ts",
+    "apps/api/src/hooks/bridge-browser.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-pick.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-pick.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_bridge_devices_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
+  "apps/api/test/features/contract/k144.d/K-364.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts を動的 import する。ファイルは読まない（K-378）"
+ }
+}
