@@ -34,13 +34,15 @@ BUILDER_TEXT = BUILDER.read_text(encoding="utf-8")
 WEB_GATES = ("G48 ", "G59 ", "G70 ")
 
 
-def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = False) -> bool:
+def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = False, web_build: str = "success") -> bool:
     """組の if（${{ … }}）を、この試験で使う語だけの小さな読み手で評価する。知らない語があれば止める（黙って真にしない）"""
     m = re.fullmatch(r"\s*\$\{\{(.*)\}\}\s*", expr, re.S)
     body = m.group(1) if m else expr
     known = {
         "inputs.web": repr(inputs_web),
         "needs.static.outputs.web": repr(static_web),
+        # K-1304：組み立ては最初に 1 回（web-build）。web の組はそれが緑のときだけ走る（無い式なら置き換えは何もしない）
+        "needs.web-build.result": repr(web_build),
     }
     py = body
     for k, v in known.items():
@@ -119,7 +121,8 @@ class WebConcurrency(unittest.TestCase):
                     # K-631：画面の型の確かめ（static の組の 1 段）は、web=run の回に二重に流さないため inputs.web を読む
                     is_types = name == "static" and "next typegen" in str(st.get("run", "")) and "inputs.web != 'run'" in str(st.get("if", ""))
                     hits.append(f"{name}: types" if is_types else f"{name}: {st.get('name')}")
-        self.assertEqual(hits, ["static: types", "web.if"], "inputs.web を読むのは web の組の if と、画面の型の確かめの段（K-631）だけ（ほかの組・段は今までどおり）")
+        # K-1304：組み立てを 1 回にした web-build も、defer の回は web と一緒に飛ぶので if で inputs.web を読む
+        self.assertEqual(hits, ["static: types", "web-build.if", "web.if"], "inputs.web を読むのは web と web-build の組の if と、画面の型の確かめの段（K-631）だけ（ほかの組・段は今までどおり）")
         self.assertNotIn("inputs.web", str(WF.get("env", "")))
 
 
@@ -130,7 +133,7 @@ class OtherJobs(unittest.TestCase):
         self.assertEqual(str(junit.get("if")), "always()", "web が飛ばされた（skipped）回でも junit の組は走って緑で終わる")
         self.assertNotIn("web", JOBS["auto-merge"].get("needs") or [], "取り込みの組は web を待たない（今までどおり）")
         for name, job in JOBS.items():
-            if name in ("web", "junit", "web-report"):
+            if name in ("web", "junit", "web-report", "web-release"):
                 continue
             with self.subTest(name):
                 self.assertNotIn("web", job.get("needs") or [], "web を待つ組を新しく作らない（飛ばされると連れて飛ぶ）")
@@ -141,6 +144,11 @@ class OtherJobs(unittest.TestCase):
         self.assertIn("needs.web.result != 'skipped'", str(rep.get("if")).replace('"', "'"))
         self.assertNotIn("inputs.web", str(rep))
         self.assertIn("web-report", junit.get("needs") or [])
+        # K-1304：取り台の印を消す web-release も web を待つ（どの台ももう取らない後に消す）。web が飛ばされたら印が無いので一緒に飛ぶ。inputs.web は読まない
+        rel = JOBS["web-release"]
+        self.assertEqual(rel.get("needs"), ["static", "web"])
+        self.assertIn("needs.web.result != 'skipped'", str(rel.get("if")).replace('"', "'"))
+        self.assertNotIn("inputs.web", str(rel))
 
     def test_K258_CI_006_web_steps_kept(self):
         names = [str(s.get("name", "")) for s in JOBS["web"]["steps"]]

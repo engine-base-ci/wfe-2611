@@ -510,7 +510,8 @@ class ManyWorkflow(unittest.TestCase):
                          ["web", "web-release", "auto-merge"])
         rel = JOBS["web-release"]
         self.assertEqual(rel["needs"], ["static", "web"])
-        self.assertEqual([s.get("run") for s in rel["steps"] if "run" in s], ["python3 scripts/ci/web_run.py release"])
+        # Python の部品は台に置いた venv（K172-CI-003）で流す
+        self.assertEqual([s.get("run") for s in rel["steps"] if "run" in s], ["bash scripts/ci/ci_venv.sh", "python3 scripts/ci/web_run.py release"])
         for result, n, want in (("failure", "4", True), ("success", "4", True), ("skipped", "4", False), ("success", "1", False), ("success", "", False)):
             self.assertEqual(ev(rel["if"], {**web_ctx("all", n), "needs.web.result": result}), want, (result, n))
         self.assertNotIn("web-release", JOBS["junit"]["needs"], "印を消すのを待たない")

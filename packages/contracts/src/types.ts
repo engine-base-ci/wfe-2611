@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9365517df3b5a174
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:01620ab32d5156c8
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -432,7 +432,7 @@ export type WorkspaceUpdateInput = { name: string };
 export type WorkspaceLogoInput = Record<string, never>;
 export type WorkspacePermissionsInput = { billing?: string; delete_workspace?: string };
 export type WorkspaceDeletionInput = { confirm_name: string };
-export type MeUpdateInput = { name?: string | null; call_name?: string | null; language?: string | null; theme?: string | null; week_start?: number | null; timezone?: string | null };
+export type MeUpdateInput = { name?: string; call_name?: string | null; language?: string | null; theme?: string | null; week_start?: number | null; timezone?: string | null };
 export type AvatarUploadInput = Record<string, never>;
 export type EmailChangeInput = { email: string };
 export type EmailChangeVerifyInput = { token: string };

@@ -273,7 +273,8 @@ export function CreateTicket({ choices, seed, onCreated, onClose, onExpired }: C
     if (r.kind === "unauthenticated") return onExpired();
     if (r.kind === "rate_limited") return setWait(r.retryAfterSec ?? 60);
     if (r.kind === "too_large") return setTooLarge(r.message ?? TOO_LARGE);
-    if (r.kind === "forbidden") return setBox(PAGE_ERROR.forbidden);
+    // 作る口の 403 は作る操作の断り（E-SEC-006・K-452 と同じ操作の文。決める人 answer=13cf83d4f60d）
+    if (r.kind === "forbidden") return setBox("E-SEC-006");
     if (r.status === 409 || r.status === 404 || r.status === 422) {
       const placed = placeCreateError(r, { master, values: d.fields ?? {} });
       setErrors(placed.fields);

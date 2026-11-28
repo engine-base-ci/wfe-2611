@@ -866,7 +866,8 @@ row(R["K60-UI-022"], async (page) => {
   await open(page);
   await fillAll(page);
   await create(page).click();
-  await expect(page.getByText(/この画面を見る権限がありません/)).toBeVisible();
+  // 作る口の 403 は操作の断りの文（E-SEC-006・K-452 と同じ。決める人 answer=13cf83d4f60d）
+  await expect(page.getByText(/この操作をする権限がありません/)).toBeVisible();
   await expect(bodyBox(page)).toContainText("月末の請求を出す");
 });
 

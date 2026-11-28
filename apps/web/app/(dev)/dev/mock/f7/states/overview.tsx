@@ -307,8 +307,8 @@ function MineDesktop({ theme }: { theme: Theme }) {
             <NumberCards cards={CARDS} />
             <div className="k-list-panel">
               <div className="k-list-filter" role="group" aria-label="自分に関わるものの絞り込み">
+                {/* 件数は出さない（口が総数を返さない・D-144.3。2026-11-28 PM の決めで下絵からも外した） */}
                 <b>自分に関わるもの</b>
-                <span className="k-list-dim">{MINE_ROWS.length} 件</span>
                 <MineChips chips={CHIPS} current="all" />
                 <span className="k-list-tools">
                   <button type="button" className="k-list-tool" aria-haspopup="menu">
@@ -357,7 +357,8 @@ function MinePhone({ theme }: { theme: Theme }) {
   return (
     <Frame theme={theme} crumbs={MINE_CRUMBS}>
       <div className="k-root k-list-page">
-        <ScopeHead title="チケット" sub={`${MINE_ROWS.length} 件`} tabs={<ViewTabs current="mine" hrefs={HREFS} />} />
+        {/* 件数は出さない（口が総数を返さない・D-144.3。2026-11-28 PM の決めで f7-mine と同じく下絵から外した） */}
+        <ScopeHead title="チケット" sub="すべてのグループ" tabs={<ViewTabs current="mine" hrefs={HREFS} />} />
         <MobileMineBody chips={PHONE_CHIPS} current="all" sections={PHONE_SECTIONS} />
       </div>
     </Frame>

@@ -32,7 +32,9 @@ def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = Fa
     """段・組の if（${{ … }}）を、この試験で使う語だけの小さな読み手で評価する。知らない語があれば止める（黙って真にしない）"""
     m = re.fullmatch(r"\s*\$\{\{(.*)\}\}\s*", str(expr), re.S)
     py = m.group(1) if m else str(expr)
-    known = {"inputs.web": repr(inputs_web), "needs.static.outputs.web": repr(static_web), "steps.scope.outputs.web": repr(static_web)}
+    known = {"inputs.web": repr(inputs_web), "needs.static.outputs.web": repr(static_web), "steps.scope.outputs.web": repr(static_web),
+             # K-1304：組み立ては最初に 1 回（web-build）。web の組はそれが緑のときだけ走る（ここでは緑の回を見る）
+             "needs.web-build.result": repr("success")}
     for k, v in known.items():
         py = py.replace(k, v)
     py = py.replace("!cancelled()", repr(not cancelled)).replace("cancelled()", repr(cancelled))
@@ -100,8 +102,9 @@ class DeferStillChecksTypes(unittest.TestCase):
         self.assertIn("static", CFG["preflight_jobs"], "出す前の手元の検査は static を流す。この段もそこで流れる")
         self.assertNotIn("web", CFG["preflight_jobs"], "出す前の手元の検査は web の組を流さない（だから型の段は static に要る）")
         self.assertTrue(step_runs("", "true"), "出す前の手元の検査は web の入力を渡さない（空）。それでも流れる")
-        builds = [s for s in JOBS["web"]["steps"] if "build:test" in str(s.get("run", ""))]
-        self.assertEqual(len(builds), 1, "web の組の next build（build:test）は前のまま 1 つ")
+        # K-1304：next build（build:test）は組み立ての組 web-build で 1 回だけ（web の組はそれを取って立ち上げる）
+        builds = [s for n in ("web", "web-build") for s in JOBS[n]["steps"] if "build:test" in str(s.get("run", ""))]
+        self.assertEqual(len(builds), 1, "画面の next build（build:test）は 1 回だけ（web-build の組）")
         self.assertIn("inputs.web != 'defer'", str(JOBS["web"]["if"]).replace('"', "'"), "web の組の条件（defer は組ごと流さない）は変えない")
 
     def test_K631_CI_004_a_red_type_check_fails_the_step(self):

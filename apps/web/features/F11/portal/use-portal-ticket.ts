@@ -6,6 +6,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { call, type CallErr } from "@/lib/api/call";
+import { momentOf } from "./when";
 import type { WorkMessage, WorkTicket } from "./work";
 
 export interface PortalTicketData {
@@ -34,7 +35,7 @@ export function toPortalTicket(raw: unknown): PortalTicketData {
         id: str(r["id"]) || `m${i}`,
         side: r["side"] === "we" ? "we" : "they",
         name: str(r["name"]),
-        at: str(r["at"]),
+        at: momentOf(str(r["at"])),
         text: str(r["text"]),
         ...(r["from_request"] === true ? { from_request: true } : {}),
       };

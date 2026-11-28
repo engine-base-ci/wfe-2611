@@ -148,8 +148,8 @@ export function Panel({ values = {} }: { values?: PanelValues }) {
   );
 }
 
-/** 詳細の題名の行（今の detail-head.tsx の DetailTitle と同じクラスと並び。「…」だけ差し込める） */
-function MockTitle({ title, me, more }: { title: string; me: string; more?: ReactNode }) {
+/** 詳細の題名の行（今の detail-head.tsx の DetailTitle と同じクラスと並び。「…」と、その左の入口の並びを差し込める） */
+function MockTitle({ title, me, more, acts }: { title: string; me: string; more?: ReactNode; acts?: ReactNode }) {
   return (
     <header className="k-page-head">
       <div className="k-detail-title">
@@ -158,11 +158,15 @@ function MockTitle({ title, me, more }: { title: string; me: string; more?: Reac
         </h1>
       </div>
       <div className="k-page-acts">
-        <InertButton>複製</InertButton>
-        <InertButton>
-          <Bot size={13} aria-hidden="true" />
-          {`${me}のAI と話す`}
-        </InertButton>
+        {acts ?? (
+          <>
+            <InertButton>複製</InertButton>
+            <InertButton>
+              <Bot size={13} aria-hidden="true" />
+              {`${me}のAI と話す`}
+            </InertButton>
+          </>
+        )}
         {more ?? (
           <InertButton label="ほかの操作" className="k-detail-more">
             …
@@ -181,6 +185,8 @@ export interface DetailFrameProps {
   tools?: ReactNode;
   /** 題名の行の「…」の差し込み（無ければ押せない「…」） */
   more?: ReactNode;
+  /** 題名の行の「…」の左の入口（無ければ前の並び：複製・〈名前〉のAI と話す） */
+  headActs?: ReactNode;
   /** 子・つながりの区画（無ければ押せない 2 つのボタン） */
   links?: ReactNode;
   panel?: PanelValues;
@@ -189,7 +195,7 @@ export interface DetailFrameProps {
 }
 
 /** チケットの詳細（今の ticket-detail.tsx と同じクラスと並び。差し込む物だけ props） */
-export function DetailFrame({ theme, doc, tools, more, links, panel, dialog, toast }: DetailFrameProps) {
+export function DetailFrame({ theme, doc, tools, more, headActs, links, panel, dialog, toast }: DetailFrameProps) {
   return (
     <Frame
       theme={theme}
@@ -205,7 +211,7 @@ export function DetailFrame({ theme, doc, tools, more, links, panel, dialog, toa
         <section className="k-root k-page" aria-labelledby="ticket-title">
           <article className="k-detail-card">
             <DetailMeta ticket={TICKET} kind={KIND} stage={STAGE} />
-            <MockTitle title={TICKET.title} me={ME.name} more={more} />
+            <MockTitle title={TICKET.title} me={ME.name} more={more} acts={headActs} />
             <DocTools label="本文の道具" note="「/」で部品を入れる ・ 本文の版 1">
               {tools ?? (
                 <InertButton size="sm" className="k-detail-versions">

@@ -149,7 +149,9 @@ function AllPage({
             {middle}
             <div className="k-list-panel">
               <div className="k-list-filter" role="group" aria-label="一覧の道具">
-                <span className="k-list-dim">全 72 件中 1〜20 件</span>
+                {/* 件数は出さない（口が総数を返さない・D-144.3・K-478。本番の ListTools と同じ空の字）。ボタンの名前は前からの「表示設定」
+                    （K-478「表示設定の箱は 1 つ・名前は前からのまま」）。幅 375 で道具が 1 行に収まり、箱の y が本番とそろう（2026-11-28） */}
+                <span className="k-list-dim" data-value />
                 <span className="k-list-tools">
                   <span className="k-list-tool" aria-disabled="true" title="まとめて操作（準備中）">
                     まとめて操作
@@ -157,7 +159,7 @@ function AllPage({
                   <span className="k-list-tool" aria-disabled="true" title="CSV で取り込む（準備中）">
                     CSV で取り込む
                   </span>
-                  <SettingsButton label="表示設定（列）" {...(settings ? { settings } : {})} />
+                  <SettingsButton label="表示設定" {...(settings ? { settings } : {})} />
                 </span>
               </div>
               <ListTable
@@ -199,9 +201,10 @@ function MinePage({
             <NumberCards cards={CARDS} pressed={pressed} {...(note ? { pressedNote: note } : {})} />
             <div className="k-list-panel">
               <div className="k-list-filter" role="group" aria-label="自分に関わるものの絞り込み">
+                {/* 件数は出さない（口が総数を返さない・D-144.3）。数の札を押している間は絞りの札「すべて」は外れる
+                    （数の札と絞りの札は同時に 1 つ・本番の mine-focus.ts。2026-11-28 決める人 answer=8b228b743062） */}
                 <b>自分に関わるもの</b>
-                <span className="k-list-dim">{pressed === "overdue" ? "2 件" : "14 件"}</span>
-                <MineChips chips={CHIPS} current="all" />
+                <MineChips chips={CHIPS} current={pressed ? "" : "all"} />
                 <span className="k-list-tools">
                   <span className="k-list-off k-list-dim" aria-disabled="true" title="並び（準備中）">
                     並び：期限の近い順 ▾
