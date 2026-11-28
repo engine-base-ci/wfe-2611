@@ -1,0 +1,20 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261128033100_seat_count_live.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/seat-count-live.test.ts",
+    "apps/api/test/features/F12/plans.test.ts",
+    "apps/api/test/features/F12/ops-workspaces.test.ts",
+    "apps/api/test/features/F12/ops-workspace.test.ts",
+    "apps/api/test/features/F12/ops-workspace-billing.test.ts",
+    "apps/api/test/features/F12/seat-limit.test.ts",
+    "apps/api/test/features/F12/plan-terms.test.ts",
+    "apps/api/test/features/F12/plan-trial.test.ts",
+    "apps/api/test/features/F12/ops-invoices-issue.test.ts"
+   ]
+  }
+ ]
+}
