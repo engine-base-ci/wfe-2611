@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-invitations.ts",
+    "apps/api/src/features/F10/invite/**",
+    "packages/db/migrations/20261121091900_workspace_invitations.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419"
+ }
+}
