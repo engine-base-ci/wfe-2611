@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/me-profile.ts",
+    "apps/api/src/features/F10/me/**",
+    "packages/db/migrations/20261126003300_me_profile.sql",
+    "apps/api/test/features/F10/me.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/me-profile.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/me-profile.test.ts",
+    "apps/api/test/features/F10/me.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me.test.ts",
+    "apps/api/test/generated/patch_me.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F10/me.harness.ts": "段 11 の自分の設定の土台。葉の hooks のファイル（apps/api/src/hooks/me-*.ts）を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-833"
+ }
+}
