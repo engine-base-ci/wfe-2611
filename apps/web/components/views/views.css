@@ -1,0 +1,14 @@
+/* タイムライン（D-079）：右に詳細 360。1023 以下は一覧と詳細を切り替える */
+.timeline {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1024px) {
+  .timeline.has-detail {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+}
+@media (max-width: 1023px) {
+  .timeline.has-detail .timeline-chart {
+    display: none;
+  }
+}
