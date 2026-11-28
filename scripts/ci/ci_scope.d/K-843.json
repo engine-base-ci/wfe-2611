@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F10/account/notify*.ts*",
+    "apps/web/features/F10/account/use-notify.ts",
+    "apps/web/app/(work)/notifications/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k843-notify.spec.ts"
+   ]
+  }
+ ]
+}
