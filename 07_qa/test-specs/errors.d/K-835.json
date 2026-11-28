@@ -1,0 +1,209 @@
+{
+ "errors": [
+  {
+   "id": "E-ME-020",
+   "class": "validation",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールに、メールの形でない字（空・@ だけ・ドットの無いドメイン・255 字以上）を入れて送った",
+   "false_when": "そろえた後に「名前@ドメイン.末尾」の形で 254 字まで",
+   "message": "メールの形が違います。「名前@会社.example」のように入れてください",
+   "action": "メールを直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに takamoto@engine-base と入れて［確かめのメールを送る］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-021",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールが、もう別のアカウント（ほかの会社の人も）で使われている（頼むとき・確かめるまでの間に取られたとき）",
+   "false_when": "どのアカウントも使っていない宛て",
+   "message": "このメールは、もう別のアカウントで使われています。別のメールを入れてください",
+   "action": "別のメールを入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに、別の人がログインに使っているアドレスを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-022",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email-confirm"
+   },
+   "when": "確かめのリンクを、送ってから 24 時間たってから開いた",
+   "false_when": "送ってから 24 時間の内",
+   "message": "リンクの期限が切れました。もう一度、確かめのメールを送ってください",
+   "action": "確かめのメールを送り直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "確かめのメールを受け取る",
+    "steps": [
+     "確かめのメールを送ってから 24 時間待つ",
+     "確かめのメールのリンクを開く（/account/email-confirm）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12"
+   ]
+  },
+  {
+   "id": "E-ME-023",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email-confirm"
+   },
+   "when": "確かめのリンクを 2 回目に開いた（1 回目でもう変わっている）",
+   "false_when": "まだ使っていないリンク",
+   "message": "このリンクはもう使いました。メールはもう変わっています",
+   "action": "ログインする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "確かめのメールを受け取る",
+    "steps": [
+     "確かめのメールのリンクを開く（/account/email-confirm）",
+     "同じリンクをもう一度開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.12"
+   ]
+  },
+  {
+   "id": "E-ME-024",
+   "class": "limit",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "1 時間の内に、メールを変える頼みを 6 回目に送った",
+   "false_when": "1 時間の内に 5 回まで",
+   "message": "メールを送りすぎです。しばらくしてからやり直してください",
+   "action": "しばらく待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "［確かめのメールを送る］を 1 時間の内に 6 回押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-025",
+   "class": "external",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "確かめのメールを送れなかった（メールの送出が落ちた）",
+   "false_when": "確かめのメールが送れた",
+   "message": "確かめのメールを送れませんでした。少し待ってやり直してください",
+   "action": "少し待ってやり直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "メールの送出が落ちている間に［確かめのメールを送る］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-154.58"
+   ]
+  },
+  {
+   "id": "E-ME-026",
+   "class": "conflict",
+   "where": {
+    "screen": "account",
+    "state": "email"
+   },
+   "when": "新しいメールに、今のログインのメールと同じ宛て（大文字・全角でも同じ）を入れて送った",
+   "false_when": "今のメールと違う宛て",
+   "message": "今のメールと同じです",
+   "action": "別のメールを入れる",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の設定 › プロフィールでメールの［変える］を開く",
+    "steps": [
+     "新しいメールに今のメールを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-154.58"
+   ]
+  }
+ ]
+}
