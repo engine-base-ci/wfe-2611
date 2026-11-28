@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/bridge/test/k1302-no-tools.test.ts": "仕事の一時の場所（作った空のフォルダ）が空かを existsSync・readdirSync・readFileSync で見る。読むのは試験が作った一時の場所だけでリポジトリのファイルは読まない・K-1302"
+ }
+}
