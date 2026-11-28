@@ -466,7 +466,9 @@ test("K414-UI-018 失敗：「渡す」が 409 E-HND-003（AI が動いている
   h.on.answer = () => errReply(409, E.aiRunning);
   await openQueue(page);
   await offerRowOf(page).getByRole("button", { name: "渡す", exact: true }).click();
-  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: msg(E.aiRunning) })).toBeVisible();
+  await expect(
+    page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: msg(E.aiRunning) }),
+  ).toBeVisible();
   await expect(offerRowOf(page)).toHaveCount(1);
 });
 
@@ -485,7 +487,9 @@ test("K414-UI-019 時間の流れ：もう決まっていた（申し出が取�
   };
   await openQueue(page);
   await offerRowOf(page).getByRole("button", { name: "渡す", exact: true }).click();
-  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: msg(E.decided) })).toBeVisible();
+  await expect(
+    page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: msg(E.decided) }),
+  ).toBeVisible();
   await expect(offerRowOf(page)).toHaveCount(0);
 });
 

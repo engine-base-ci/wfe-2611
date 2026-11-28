@@ -115,7 +115,9 @@ test.describe("K-1108 請求書の型の見た目", () => {
         m.on.put = () => ({ status: 409, body: { error: "conflict", code: "E-BILL-007" } });
         await btn(page, "直す").click();
         await btn(page, "保存する").click();
-        await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText("保存できませんでした");
+        await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText(
+          "保存できませんでした",
+        );
       },
     ],
   ];
@@ -223,7 +225,9 @@ test.describe("K-1108 見る・直す", () => {
     await field(page, "振込先").fill("別の銀行 普通 7654321");
     for (let i = 0; i < 2; i++) {
       await btn(page, "保存する").click();
-      await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText("保存できませんでした");
+      await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').first()).toContainText(
+        "保存できませんでした",
+      );
       await expect(field(page, "振込先")).toHaveValue("別の銀行 普通 7654321");
     }
     expect(count(m, PUTS)).toBe(2);

@@ -109,12 +109,16 @@ test.describe("K-1016 中身と選ぶ", () => {
     expect(count(m, "POST /api/v1/ticket_kinds/template-updates/")).toBe(1);
   });
 
-  test("K1016-UI-006 もう選んだ：409 E-OPS-025 で alert「この版はもう選んであります。別の版を選んでください」・読み直して空の形", async ({ page }) => {
+  test("K1016-UI-006 もう選んだ：409 E-OPS-025 で alert「この版はもう選んであります。別の版を選んでください」・読み直して空の形", async ({
+    page,
+  }) => {
     const m = await open(page);
     m.on.apply = () => ({ status: 409, body: { error: "conflict", code: "E-OPS-025" } });
     m.on.updates = () => ({ status: 200, body: { data: count(m, "POST") > 0 ? [] : UPDATES_A } });
     await btn(page, "変える").click();
-    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText("この版はもう選んであります。別の版を選んでください");
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText(
+      "この版はもう選んであります。別の版を選んでください",
+    );
     await expect(page.getByText("届いている新しい版はありません", { exact: true })).toBeVisible();
   });
 

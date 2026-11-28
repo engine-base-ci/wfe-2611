@@ -192,7 +192,9 @@ test("K229-UI-009 決まっていた（409）：小窓が閉じ、知らせ（ro
   m.on.ticket = runningAfter;
   await approveVia(page, sendBtn(page));
   await expect(approveDialog(page)).toHaveCount(0);
-  await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: MSG.decided })).toHaveCount(1);
+  await expect(
+    page.locator('[role="alert"]:not(#__next-route-announcer__)').filter({ hasText: MSG.decided }),
+  ).toHaveCount(1);
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
 });
 
@@ -313,7 +315,11 @@ test("K229-UI-015 完了の小窓の型（K-572 で替えた）：題「完了�
   await openComplete(page);
   const d = dialog(page);
   // 主ボタンの色は K-572 の試験（k572-complete-notice）が見る（緑・正本の st-success）
-  await expectModalShape(d, "完了にする", { cancel: "戻って付ける", primary: ".k-dialog-actions .k-f4d-done", primaryBg: null });
+  await expectModalShape(d, "完了にする", {
+    cancel: "戻って付ける",
+    primary: ".k-dialog-actions .k-f4d-done",
+    primaryBg: null,
+  });
   await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText(["戻って付ける", "このまま完了にする"]);
   const b = await box(d);
   expect(Math.round(b.width)).toBe(420);

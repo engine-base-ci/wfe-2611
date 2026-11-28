@@ -293,7 +293,10 @@ test("K226-UI-008 まだ使えない操作（複製・ほかの操作・版と�
   // 後ろの葉が本物にする 5 つ（DETAIL_LATER：K-446 複製・K-458 ほかの操作・K-449 版と差分・K-452 子を足す・つながりを足す）は
   //   「在る」だけ見て、押せないかは見ない（押せるようになっても赤にならない・K-431 が 1 回だけ替えた）
   // K-452：子チケット・つながりのカードは畳んだ形で始まる（［開く］で子を足す・つながりを足すが出る）
-  await main.getByRole("region", { name: "子チケット・つながり" }).getByRole("button", { name: "開く", exact: true }).click();
+  await main
+    .getByRole("region", { name: "子チケット・つながり" })
+    .getByRole("button", { name: "開く", exact: true })
+    .click();
   for (const n of DETAIL_LATER) await expect(main.getByRole("button", { name: n, exact: true }), n).toHaveCount(1);
   for (const n of DETAIL_INERT) await expectInert(page, main.getByRole("button", { name: n, exact: true }), n, writes);
   const ai = panel(page)

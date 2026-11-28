@@ -166,7 +166,9 @@ test.describe("K-991 一覧と作る", () => {
     m.on.create = () => ({ status: 409, body: { error: "conflict", code: "E-OPS-019" } });
     await page.getByLabel(/^理由\*?$/).fill("理由");
     await btn(page, "下書きにする").click();
-    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText("このプランにはもう変える案があります");
+    await expect(page.locator('[role="alert"]:not(#__next-route-announcer__)')).toContainText(
+      "このプランにはもう変える案があります",
+    );
     await expect(page).toHaveURL(/\/new\?plan=team$/);
   });
 
