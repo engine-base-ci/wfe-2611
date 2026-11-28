@@ -23724,6 +23724,7 @@ components:
           nullable: true
         topic:
           type: string
+          nullable: true
         state:
           type: string
         created_at:
@@ -23745,6 +23746,7 @@ components:
           nullable: true
         topic:
           type: string
+          nullable: true
         state:
           type: string
         created_at:
@@ -23808,6 +23810,7 @@ components:
           nullable: true
         topic:
           type: string
+          nullable: true
         state:
           type: string
         workspace:
@@ -26132,9 +26135,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AuditEvents'
+                    $ref: '#/components/schemas/AuditEvents'
                   meta:
                     type: object
         '401':
@@ -33454,9 +33455,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/GuestGroups'
+                    $ref: '#/components/schemas/GuestGroups'
                   meta:
                     type: object
         '401':

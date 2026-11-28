@@ -101,13 +101,13 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
         _pm = _sa.PERMS[e["operation_id"]]; e["permission"] = {"who": _pm[0], "scope": _pm[1], "step_up": _pm[2]}
     e["path_params"] = params; e["returns_list"] = (m == "GET" and (e["operation_id"].startswith(("list", "search")) or e["operation_id"] in getattr(_sa, "LIST_OPS", set())) and e["operation_id"] not in getattr(_sa, "OBJECT_OPS", set())) if e.get("operation_id") else (m == "GET" and ":id" not in p)
     e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH", "PUT") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
-    _many = e["returns_list"] or e.get("operation_id") in getattr(_sa, "LIST_RESULT_OPS", {})   # 一覧でないのに答えが並びの口（K-705）
+    _many = (e["returns_list"] or e.get("operation_id") in getattr(_sa, "LIST_RESULT_OPS", {})) and e.get("operation_id") not in getattr(_sa, "PAGE_RESULT_OPS", {})   # 一覧でないのに答えが並びの口（K-705）・一覧でも答えが 1 つの形の口（PAGE_RESULT_OPS）
     e["outputs_2xx"] = {"status": getattr(_sa, "SUCCESS_STATUS", {}).get(e.get("operation_id"), 201 if m == "POST" else 200), "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if _many else ''}, meta?: {{ cursor, limit, total }} }}"}
     _ld = getattr(_sa, "LIST_DETAILS", {}).get(e.get("operation_id"))   # 一覧の口の細目（K-92）：問い合わせと答えの meta をその口の形に
     if _ld:
         e["inputs"]["query"] = list(_sa.QUERIES.get(e["operation_id"], ["scope_id"])) + ["cursor", "limit"] + (["sort"] if _ld.get("sort", True) else [])
         _meta = f", meta: {_ld['meta']}" if "meta" in _ld else ""   # meta を返さない一覧（K-351）は data だけ
-        e["outputs_2xx"]["body"] = f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}[]{_meta} }}"
+        e["outputs_2xx"]["body"] = f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if _many else ''}{_meta} }}"
     e["id"] = f"EP-{len(endpoints)+1:03d}"; e["feature_id"] = e["features"][0] if e["features"] else None
     endpoints.append(e)
 # 行為 → endpoint の逆被覆
@@ -288,6 +288,8 @@ for _op, _names in _QR.items():   # 表の口・名前がその口の問い合�
     _have = set(_sa.QUERIES.get(_op, [])) | ({"cursor", "limit"} | ({"sort"} if getattr(_sa, "LIST_DETAILS", {}).get(_op, {}).get("sort", True) else set()) if _e["returns_list"] else set())
     for _n in _names:
         if _n not in _have: raise SystemExit(f"QUERY_RANGES の {_op}.{_n} がその口の問い合わせに無い")
+for _op in getattr(_sa, "PAGE_RESULT_OPS", {}):   # 答えが 1 つの形の一覧の口は、一覧の口（list・search）だけ
+    if not any(x.get("operation_id") == _op and x["returns_list"] for x in endpoints): raise SystemExit(f"PAGE_RESULT_OPS の口 {_op} が一覧の口に無い")
 paths = {}
 for e in endpoints:
     tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
@@ -302,7 +304,7 @@ for e in endpoints:
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     _in = _in_of.get(op["operationId"]) or getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH", "PUT"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
-    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if (e["returns_list"] or op["operationId"] in getattr(_sa, "LIST_RESULT_OPS", {})) else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
+    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if ((e["returns_list"] or op["operationId"] in getattr(_sa, "LIST_RESULT_OPS", {})) and op["operationId"] not in getattr(_sa, "PAGE_RESULT_OPS", {})) else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
     if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"][getattr(_sa, "RAW_200_TYPES", {}).get(e["operation_id"], "application/octet-stream")] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）・流れは text/event-stream（K-759）
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる

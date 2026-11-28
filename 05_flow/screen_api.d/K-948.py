@@ -40,11 +40,12 @@ VALUE_RANGES = {
 }
 
 # 利用者の問い合わせの 1 件（一覧の 1 行・作った・済みにした の答え）。state は waiting・replied・done
-_MY = {"id": "uuid", "title": "string?", "topic": "string", "state": "string", "created_at": "string", "last_reply_at": "string?", "has_unread_reply": "boolean"}
+#   topic は列 topic_key が null を許す（前からの行・20261128004900_inquiries.sql）ので null もある（契約 fuzz の ST108）
+_MY = {"id": "uuid", "title": "string?", "topic": "string?", "state": "string", "created_at": "string", "last_reply_at": "string?", "has_unread_reply": "boolean"}
 # やり取りの 1 件（利用者に見せる分・社内メモは含めない）。from は me・ops。attachments は { id, name, size } の並び
 _MY_MESSAGE = {"id": "uuid", "from": "string", "author_name": "string?", "body": "string?", "attachments": "array?", "created_at": "string"}
 # 受信箱の 1 行。state は open・waiting・later・done。workspace は { id, name }・asker は { name }・owner は { member_id, name } か null
-_OPS_ROW = {"id": "uuid", "title": "string?", "topic": "string", "state": "string", "workspace": "object", "asker": "object",
+_OPS_ROW = {"id": "uuid", "title": "string?", "topic": "string?", "state": "string", "workspace": "object", "asker": "object",
             "owner": "object?", "later_until": "string?", "created_at": "string", "last_message_at": "string?"}
 # 運営のやり取りの 1 件。kind は customer・reply・note（社内メモ）
 _OPS_MESSAGE = {"id": "uuid", "kind": "string?", "author_name": "string?", "body": "string?", "attachments": "array?", "created_at": "string"}

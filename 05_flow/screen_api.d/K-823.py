@@ -38,3 +38,6 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 探すことばが空・空白だけ・101 字以上なら、Kaname は 422 と E-AUD-010 を欄 q の理由つきで返し、記録を読まない"},
     ],
 }
+
+# 一覧の口だが答えの data は 1 つの形（統合の枝・契約 fuzz の ST108・直しの担当 XC）。一覧の問い合わせは契約に残す
+PAGE_RESULT_OPS = {"listAuditEvents": "答えの data は並びでなく { entries, next_cursor, scope, scan_capped }（続きの印は next_cursor・D-154.11）"}

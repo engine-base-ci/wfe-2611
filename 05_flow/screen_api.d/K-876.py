@@ -47,3 +47,6 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も作らない"},
     ],
 }
+
+# 一覧の口だが答えの data は 1 つの形（統合の枝・契約 fuzz の ST108・直しの担当 XC）。一覧の問い合わせは契約に残す
+PAGE_RESULT_OPS = {"listGuestGroups": "答えの data は並びでなく { groups }（ゲストのグループを 1 度に全部返す）"}
