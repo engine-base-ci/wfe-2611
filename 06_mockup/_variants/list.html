@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>左の一覧 ── 3 案</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--fg:#131B27;--fg2:#3B4453;--fg3:#5B6472;--line:#D9DEE6;--line2:#E9ECF1;--bg:#F7F8FA;--card:#fff;--sel:#DCE4F2;--warn:#B45309;--danger:#B91C1C;--ai:#6D4AA6;--ok:#166534;--run:#1D4ED8;--accent:#22345C}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'M PLUS 2','Hiragino Sans',sans-serif;background:#ECEEF2;color:var(--fg);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.bar{background:#1B1D22;color:#fff;padding:10px 18px;font-size:13px;display:flex;gap:16px;align-items:center}.bar b{font-weight:600}
+.wrap{display:grid;grid-template-columns:repeat(3,480px);gap:24px;padding:24px;justify-content:start}
+.v h2{font-size:14px;margin:0 0 10px;font-weight:700}.v h2 small{display:block;font-weight:400;color:var(--fg3);font-size:12.5px;line-height:1.6;margin-top:2px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:820px}
+.grp{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;font-size:13px;font-weight:700;color:var(--fg2)}
+.grp .n{font-weight:500;color:var(--fg3)}.grp .sp{flex:1}.grp a{font-weight:500;color:var(--fg3);font-size:12.5px;text-decoration:none}
+.late{color:var(--danger);font-weight:600}.aiw{color:var(--ai);font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--warn);display:inline-block;flex:none}.dot.run{background:var(--run)}.dot.ok{background:var(--ok)}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);margin:0;flex:none}
+/* A 罫線の表風 */
+.A .grp{background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:9px 16px}
+.A .grp:first-child{border-top:0}
+.A .row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line2);min-height:58px}
+.A .row .t{font-size:15px;font-weight:600;line-height:1.4}
+.A .row .m{font-size:13px;color:var(--fg3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.A .row .r{font-size:13px;color:var(--fg3);white-space:nowrap;text-align:right}
+.A .row.sel{background:var(--sel);box-shadow:inset 3px 0 0 var(--accent)}
+.A .row.done .t{text-decoration:line-through;color:var(--fg3);font-weight:400}
+/* B カード */
+.B{padding:0 12px 12px}.B .grp{padding:14px 6px 8px}
+.B .row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 14px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--card)}
+.B .row .t{font-size:15px;font-weight:600;line-height:1.4}
+.B .row .m{font-size:13px;color:var(--fg3);margin-top:4px;line-height:1.5}
+.B .row .r{font-size:13px;color:var(--fg3);white-space:nowrap}
+.B .row.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:#F4F7FC}
+.B .row.done{opacity:.7}.B .row.done .t{text-decoration:line-through;font-weight:400}
+.B .row>.dot,.B .row>input{margin-top:5px}
+/* C 列を揃えた表 */
+.C table{width:100%;border-collapse:collapse;font-size:14px}
+.C th{font-size:12px;font-weight:700;color:var(--fg3);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--bg);white-space:nowrap}
+.C td{padding:11px 12px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.C td.t{font-weight:600;font-size:15px}.C td.t small{display:block;font-weight:400;font-size:12.5px;color:var(--fg3)}
+.C td.r{text-align:right;white-space:nowrap;color:var(--fg3);font-size:13px;font-variant-numeric:tabular-nums}
+.C tr.sel td{background:var(--sel)}.C tr.done td.t{text-decoration:line-through;color:var(--fg3);font-weight:400}
+.C tbody tr:nth-child(even) td{background:#FAFBFC}.C tr.sel:nth-child(even) td{background:var(--sel)}
+.C .ck{width:36px;text-align:center}
+</style></head><body>
+<div class="bar"><b>左の一覧 ── 3 案</b><span>幅 480px・題名 15px。境が分かるように 3 つの区切り方</span></div>
+<div class="wrap">
+
+<div class="v"><h2>A 罫線で区切る（表風）<small>群の見出しは灰色の帯。1 件＝1 行 58px、下に罫線。題名は太く、2 行目は 1 行に省略。選択は左の縦線＋青</small></h2>
+<div class="q A">
+ <div class="grp">押してほしいもの<span class="n">3</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <div class="row sel"><span class="dot"></span><div><div class="t">セイコー 山田様へ 追いメール</div><div class="m">メール送信 · 営業社員</div></div><div class="r late">先方の期限 明後日</div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">京蟻 請求書 1,826,000円（税込）</div><div class="m">請求書送付 · 経理社員</div></div><div class="r">待ち 14 時間</div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">X 週次の実績投稿</div><div class="m">投稿 · 営業社員</div></div><div class="r">待ち 1 日</div></div>
+ <div class="grp">今日やる分<span class="n">残り 3 · 見込み 1h35 / 使える 4h00</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <div class="row"><input type="checkbox"><div><div class="t">セイコー様へ提案の一次返信を取りに行く</div><div class="m">山田様に電話（11:00 の商談前）</div></div><div class="r">30分 · <span class="late">今日</span></div></div>
+ <div class="row"><input type="checkbox"><div><div class="t">京蟻 契約書案を送る</div><div class="m">押印欄だけ足す</div></div><div class="r">45分 · 明日</div></div>
+ <div class="row"><input type="checkbox"><div><div class="t">ScoliVio 会津データ受領の段取り確認</div><div class="m aiw">次の一手が空 · 高本AIが下書きします</div></div><div class="r">20分 · 9/12</div></div>
+ <div class="row"><span class="dot run"></span><div><div class="t">発注ナビ 新着の確認（今日ぶん）</div><div class="m"><span class="aiw">AI営業社員 · 実行中</span></div></div><div class="r">今日</div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">セイコー 着手金の請求書</div><div class="m"><span class="aiw">AI経理社員 · 承認待ち</span></div></div><div class="r">今日</div></div>
+ <div class="row done"><input type="checkbox" checked><div><div class="t">週次の売上を台帳から締める</div><div class="m">実 11分</div></div><div class="r">完了</div></div>
+</div></div>
+
+<div class="v"><h2>B 1 件ずつカードにする<small>行ごとに枠と角丸、間に 8px。境はいちばんはっきりする。選択は青い枠。2 行目は折り返してよい</small></h2>
+<div class="q B">
+ <div class="grp">押してほしいもの<span class="n">3</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <div class="row sel"><span class="dot"></span><div><div class="t">セイコー 山田様へ 追いメール</div><div class="m">メール送信 · 営業社員 · <span class="late">先方の期限 明後日</span></div></div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">京蟻 請求書 1,826,000円（税込）</div><div class="m">請求書送付 · 経理社員 · 待ち 14 時間</div></div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">X 週次の実績投稿</div><div class="m">投稿 · 営業社員 · 待ち 1 日</div></div></div>
+ <div class="grp">今日やる分<span class="n">残り 3 · 見込み 1h35 / 使える 4h00</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <div class="row"><input type="checkbox"><div><div class="t">セイコー様へ提案の一次返信を取りに行く</div><div class="m">山田様に電話（11:00 の商談前）。出なければ追いメールを承認へ</div></div><div class="r">30分 · <span class="late">今日</span></div></div>
+ <div class="row"><input type="checkbox"><div><div class="t">京蟻 契約書案を送る</div><div class="m">台帳の添付「契約書ひな形」に押印欄だけ足す</div></div><div class="r">45分 · 明日</div></div>
+ <div class="row"><input type="checkbox"><div><div class="t">ScoliVio 会津データ受領の段取り確認</div><div class="m aiw">次の一手が空 · 高本AIが下書きします</div></div><div class="r">20分 · 9/12</div></div>
+ <div class="row"><span class="dot run"></span><div><div class="t">発注ナビ 新着の確認（今日ぶん）</div><div class="m"><span class="aiw">AI営業社員 · 実行中</span> · 12件を条件で絞って台帳へ</div></div><div class="r">今日</div></div>
+ <div class="row"><span class="dot"></span><div><div class="t">セイコー 着手金の請求書</div><div class="m"><span class="aiw">AI経理社員 · 承認待ち</span> · 押すと送る</div></div><div class="r">今日</div></div>
+ <div class="row done"><input type="checkbox" checked><div><div class="t">週次の売上を台帳から締める</div><div class="m">実 11分（見込み 15分）</div></div><div class="r">完了</div></div>
+</div></div>
+
+<div class="v"><h2>C 列を揃えた表<small>見出し行（題名・担当・見込み・期限）を置き、列で揃える。1 行おきに薄い縞。数字は右揃え。承認と今日で表を分ける</small></h2>
+<div class="q C">
+ <div class="grp">押してほしいもの<span class="n">3</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <table><thead><tr><th></th><th>内容</th><th>作った人</th><th style="text-align:right">待ち</th></tr></thead><tbody>
+ <tr class="sel"><td class="ck"><span class="dot"></span></td><td class="t">セイコー 山田様へ 追いメール<small>メール送信</small></td><td>営業社員</td><td class="r late">先方の期限 明後日</td></tr>
+ <tr><td class="ck"><span class="dot"></span></td><td class="t">京蟻 請求書 1,826,000円（税込）<small>請求書送付</small></td><td>経理社員</td><td class="r">14 時間</td></tr>
+ <tr><td class="ck"><span class="dot"></span></td><td class="t">X 週次の実績投稿<small>投稿</small></td><td>営業社員</td><td class="r">1 日</td></tr>
+ </tbody></table>
+ <div class="grp">今日やる分<span class="n">残り 3 · 見込み 1h35 / 使える 4h00</span><span class="sp"></span><a href="#">全部 →</a></div>
+ <table><thead><tr><th></th><th>タスク</th><th>担当</th><th style="text-align:right">見込み</th><th style="text-align:right">期限</th></tr></thead><tbody>
+ <tr><td class="ck"><input type="checkbox"></td><td class="t">セイコー様へ提案の一次返信を取りに行く<small>山田様に電話（11:00 の商談前）</small></td><td>高本</td><td class="r">30分</td><td class="r late">今日</td></tr>
+ <tr><td class="ck"><input type="checkbox"></td><td class="t">京蟻 契約書案を送る<small>押印欄だけ足す</small></td><td>高本</td><td class="r">45分</td><td class="r">明日</td></tr>
+ <tr><td class="ck"><input type="checkbox"></td><td class="t">ScoliVio 会津データ受領の段取り確認<small class="aiw">次の一手が空 · 高本AIが下書き</small></td><td>高本</td><td class="r">20分</td><td class="r">9/12</td></tr>
+ <tr><td class="ck"><span class="dot run"></span></td><td class="t">発注ナビ 新着の確認（今日ぶん）<small>12件を条件で絞って台帳へ</small></td><td class="aiw">AI営業</td><td class="r">—</td><td class="r">今日</td></tr>
+ <tr><td class="ck"><span class="dot"></span></td><td class="t">セイコー 着手金の請求書<small>承認待ち · 押すと送る</small></td><td class="aiw">AI経理</td><td class="r">—</td><td class="r">今日</td></tr>
+ <tr class="done"><td class="ck"><input type="checkbox" checked></td><td class="t">週次の売上を台帳から締める<small>実 11分</small></td><td>高本</td><td class="r">15分</td><td class="r">完了</td></tr>
+ </tbody></table>
+</div></div>
+</div></body></html>
