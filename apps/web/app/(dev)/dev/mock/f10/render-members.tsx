@@ -151,7 +151,8 @@ type ListProps = { theme: Theme; dialog?: ReactNode; groups?: readonly GroupData
 
 function List({ theme, dialog, groups = GROUPS, ...rest }: ListProps) {
   return (
-    <WsFrame theme={theme} active="members" dialog={dialog}>
+    // 人数の札は下絵の 5 人＋招待中 1 人（重ならない数・K-419）
+    <WsFrame theme={theme} active="members" members={6} dialog={dialog}>
       <MembersPage groups={groups} open={ALL} {...rest} />
     </WsFrame>
   );
