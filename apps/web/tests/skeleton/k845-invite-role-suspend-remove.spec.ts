@@ -96,6 +96,7 @@ async function scopeOf(page: Page, token: string, body: Record<string, unknown>)
   if (r.status !== 201) throw new Error(`グループを足す口が ${r.status}`);
   return String(r.data?.["id"]);
 }
+// 招く小窓の「グループ」「役割」は、選びの箱を包む label（読み上げの名前は「グループ 会社」のように今の値が続く）。名前の頭で探す
 async function ticketIn(page: Page, p: Person, scopeId: string, title: string): Promise<string> {
   const kinds = await asPerson(page, p.token, "GET", "/ticket_kinds");
   const kind = ((kinds.data as unknown as { id: string; name: string }[] | null) ?? []).find(
@@ -196,8 +197,8 @@ test("K845-M1-01 招く → 参加：管理者がメンバーの画面の「＋ 
     await dlg.getByLabel(MAIL_LABEL).fill(e);
     await dlg.getByRole("button", { name: "足す", exact: true }).click();
   }
-  await dlg.getByLabel("グループ", { exact: true }).selectOption({ label: G.sales });
-  await dlg.getByLabel("役割", { exact: true }).selectOption({ label: "メンバー" });
+  await dlg.getByRole("combobox", { name: /^グループ/ }).selectOption({ label: G.sales });
+  await dlg.getByRole("combobox", { name: /^役割/ }).selectOption({ label: "メンバー" });
   const sent = answered(page, "POST", /^\/api\/v1\/invitations$/);
   await dlg.getByRole("button", { name: "2 人を招く", exact: true }).click();
   expect((await sent).status(), "招く口が受ける").toBe(201);
@@ -444,8 +445,8 @@ test("K845-M1-08 30 日の内に招き直す：同じメールで営業部に招
   const dlg = page.locator(".k-dialog");
   await dlg.getByLabel(MAIL_LABEL).fill(s.b.email);
   await dlg.getByRole("button", { name: "足す", exact: true }).click();
-  await dlg.getByLabel("グループ", { exact: true }).selectOption({ label: G.sales });
-  await dlg.getByLabel("役割", { exact: true }).selectOption({ label: "メンバー" });
+  await dlg.getByRole("combobox", { name: /^グループ/ }).selectOption({ label: G.sales });
+  await dlg.getByRole("combobox", { name: /^役割/ }).selectOption({ label: "メンバー" });
   const sent = answered(page, "POST", /^\/api\/v1\/invitations$/);
   await dlg.getByRole("button", { name: "招く", exact: true }).click();
   expect((await sent).status()).toBe(201);
