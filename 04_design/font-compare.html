@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaname — 書体比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=BIZ+UDPGothic:wght@400;700&family=M+PLUS+2:wght@400;500;600;700&family=Murecho:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#22345C;--sv:#E9ECF1;--on-sv:#4A5563;--line:#D8DDE5;--success:#166534}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#EEF0F4;color:#131B27;font-family:'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased}
+.hd{background:var(--primary);color:#fff;padding:40px 48px}
+.hd h1{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-bottom:10px}
+.hd p{font-size:15px;line-height:1.85;opacity:.9;max-width:820px}
+.hd .k{background:rgba(255,255,255,.16);padding:2px 8px;border-radius:4px}
+.wrap{padding:36px 48px 80px;display:grid;gap:26px;max-width:1560px}
+@media(min-width:1120px){.wrap{grid-template-columns:1fr 1fr}}
+.opt{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.opt-hd{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;background:#FBFCFD}
+.opt-id{font-size:11px;font-weight:700;letter-spacing:.1em;color:#fff;background:var(--primary);padding:4px 9px;border-radius:4px}
+.opt-name{font-size:16px;font-weight:700}
+.opt-note{font-size:12.5px;color:var(--on-sv);line-height:1.65;width:100%}
+.demo{padding:24px 20px}
+.demo .ttl{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-bottom:3px}
+.demo .sub{font-size:13px;color:var(--on-sv);margin-bottom:18px}
+.kpi{display:flex;align-items:flex-end;gap:14px;margin-bottom:6px}
+.kpi .big{font-size:40px;font-weight:600;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .pct{font-size:14px;font-weight:600;color:var(--success);padding-bottom:5px;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:13px;color:var(--on-sv);font-variant-numeric:tabular-nums;margin-bottom:14px}
+.bar{height:6px;background:var(--sv);border-radius:3px;overflow:hidden;margin-bottom:22px}
+.bar i{display:block;height:100%;width:69.4%;background:var(--primary)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:20px}
+th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-sv);padding:0 8px 7px;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:9px 8px;border-bottom:1px solid #EFF1F4}
+td.n{font-variant-numeric:tabular-nums;font-weight:500}
+.dot{display:inline-block;width:4px;height:4px;border-radius:50%;margin-right:8px;vertical-align:2px}
+.body-cp{font-size:14px;line-height:1.9;color:#2A3441;margin-bottom:18px}
+.pill{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;background:#E9E0F5;color:#33235C}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border:0;cursor:pointer;padding:10px 20px;border-radius:6px;font-size:13.5px;font-weight:600;letter-spacing:.02em;font-family:inherit}
+.btn-p{background:var(--primary);color:#fff}
+.btn-o{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
+.f-a{font-family:'Noto Sans JP',sans-serif}
+.f-b{font-family:'BIZ UDPGothic','Noto Sans JP',sans-serif}
+.f-c{font-family:'M PLUS 2','Noto Sans JP',sans-serif}
+.f-d{font-family:'Murecho','Noto Sans JP',sans-serif}
+.f-e{font-family:'Inter','Noto Sans JP',sans-serif}
+.f-f{font-family:'Zen Kaku Gothic New','Noto Sans JP',sans-serif}
+.f-g{font-family:'Noto Sans JP',sans-serif}
+.f-g .big,.f-g td.n,.f-g .kpi-sub,.f-g .pct{font-family:'IBM Plex Mono',monospace}
+</style>
+</head>
+<body>
+<header class="hd">
+  <h1>Kaname — 書体比較</h1>
+  <p>同じ画面を<span class="k">書体だけ</span>変えて並べています。内容・色・余白・文字サイズは全案とも同一です。数字の桁は<b>どの案でも揃います</b>（等幅書体でなくても揃う設定を入れてあります）。<br>
+  見るところ ── <b>① 日本語が読みやすいか</b>／<b>② 数字が締まって見えるか</b>／<b>③ 日本語と数字が並んだとき、数字だけ浮かないか</b></p>
+</header>
+<div class="wrap">
+<section class="opt f-a">
+  <div class="opt-hd"><span class="opt-id">A</span><span class="opt-name">Noto Sans JP 単体</span><span class="opt-note">日本語も数字も1書体。最も無難で、どの環境でも同じに出る。姉妹製品 Atelier と同じ書体になるため、製品としての区別はつかない。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-b">
+  <div class="opt-hd"><span class="opt-id">B</span><span class="opt-name">BIZ UDPGothic</span><span class="opt-note">日本の業務文書向けUD書体。帳票・公共で使われる系統で誤読が少ない。太さが2段階（400/700）しかないため、見出しと本文の階層が作りにくい。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-c">
+  <div class="opt-hd"><span class="opt-id">C</span><span class="opt-name">M PLUS 2</span><span class="opt-note">可変ウェイトのモダンな和文。字面がやや大きく数字が締まって見える。SaaS の管理画面と相性が良い。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-d">
+  <div class="opt-hd"><span class="opt-id">D</span><span class="opt-name">Murecho</span><span class="opt-note">可変ウェイト。ふところがやや狭く上品で、長文の可読性が高い。数字はやや細く見える。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-e">
+  <div class="opt-hd"><span class="opt-id">E</span><span class="opt-name">Inter ＋ Noto Sans JP</span><span class="opt-note">数字と英字は Inter、和文は Noto Sans JP。数字が最も締まる。和欧が切り替わる境目がわずかに出る。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-f">
+  <div class="opt-hd"><span class="opt-id">F</span><span class="opt-name">Zen Kaku Gothic New（現行案）</span><span class="opt-note">角にわずかな丸みがある。柔らかく親しみがあるが、数値主体の管理画面ではやや緩く見える。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+<section class="opt f-g">
+  <div class="opt-hd"><span class="opt-id">G</span><span class="opt-name">和文 Noto Sans JP ＋ 数字だけ等幅</span><span class="opt-note">数字だけ IBM Plex Mono。★これが「嫌だ」と言われた方針。比較のために残しています。</span></div>
+  <div class="demo">
+  <div class="ttl">今期の売上目標</div>
+  <div class="sub">2026年度 第3四半期 ／ 全社</div>
+  <div class="kpi">
+    <div class="big">8,330,000</div>
+    <div class="pct">+12.4%</div>
+  </div>
+  <div class="kpi-sub">目標 12,000,000 に対して 69.4%（残り 3,670,000）</div>
+  <div class="bar"><i></i></div>
+  <table>
+    <thead><tr><th>部署</th><th class="r">実績</th><th class="r">達成率</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#2F4B7C"></span>営業</td><td class="n r">1,320,000</td><td class="n r">68%</td></tr>
+      <tr><td><span class="dot" style="background:#7E570D"></span>カスタマーサクセス</td><td class="n r">892,400</td><td class="n r">41%</td></tr>
+      <tr><td><span class="dot" style="background:#516F46"></span>制作</td><td class="n r">11,050,000</td><td class="n r">93%</td></tr>
+    </tbody>
+  </table>
+  <div class="body-cp"><span class="pill">AIの提案</span>　カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。日程調整を自動化する案を作りました。</div>
+  <div class="row">
+    <button class="btn btn-p">承認して実行</button>
+    <button class="btn btn-o">修正を指示</button>
+  </div>
+</div>
+</section>
+</div>
+</body>
+</html>
