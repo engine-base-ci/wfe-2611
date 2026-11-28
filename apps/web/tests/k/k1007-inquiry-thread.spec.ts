@@ -4,7 +4,7 @@
 //   （help-mock.ts・K-956）。本人の Bridge は届かせない。固定の待ちは使わない。テストはチケットを作る人が書き、実装する人は変えない
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { loginAs, signupViaApi } from "../_lib/api";
-import { USER_WIDTHS, matchUser, overflowX } from "./f12-user-match";
+import { USER_PAIRS, USER_WIDTHS, matchUser, overflowX } from "./f12-user-match";
 import { GONE, ME, Q_STUCK, err, mockHelp, threadTaka, type HMock } from "./help-mock";
 
 const ONE = `/inquiry/${Q_STUCK}`;
@@ -62,6 +62,14 @@ const DRIVES: Record<string, (page: Page) => Promise<void>> = {
     await expect(page.locator('[data-code="E-PAGE-001"]')).toBeVisible();
   },
 };
+// 見つからないの箱（E-PAGE-001 は重さ medium で role を持たない・外枠の [role] の組に当たらない）も比べる
+const ERROR_PAIR = {
+  name: "error",
+  role: "error",
+  canvas: ".k-state[data-state='error']",
+  app: ".k-state[data-state='error']",
+  props: ["width", "height", "x", "y", "texts"],
+};
 for (const id of Object.keys(DRIVES)) {
   for (const w of USER_WIDTHS) {
     test(`K1007-UI-001 ${id} 幅 ${w}：見出し・やり取り・書く欄・右の注・見つからないの位置と大きさと字がモックと同じ`, async ({
@@ -69,7 +77,7 @@ for (const id of Object.keys(DRIVES)) {
     }: {
       browser: Browser;
     }) => {
-      const { bad, rows } = await matchUser(browser, id, w, DRIVES[id]!);
+      const { bad, rows } = await matchUser(browser, id, w, DRIVES[id]!, { pairs: [...USER_PAIRS, ERROR_PAIR] });
       expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);
     });
@@ -101,11 +109,11 @@ test("K1007-UI-003 開いた後に困ったとき・お知らせへ戻ると、�
 }) => {
   const mk = await mockHelp(page);
   await openAt(page, "/notices");
-  await expect(page.locator('section:has(h2:text-is("自分の問い合わせ")) li')).toHaveCount(2);
+  await expect(page.locator('section.k-section:has(> h2:text-is("自分の問い合わせ")) li')).toHaveCount(2);
   await page.getByRole("link", { name: "PC をつけているのに実行待ちのまま", exact: true }).click();
   await expect(page.locator(MSGS)).toHaveCount(2);
   await page.goBack();
-  await expect(page.locator('section:has(h2:text-is("自分の問い合わせ")) li')).toHaveCount(2);
+  await expect(page.locator('section.k-section:has(> h2:text-is("自分の問い合わせ")) li')).toHaveCount(2);
   expect(mk.count("inquiries")).toBe(2);
 });
 

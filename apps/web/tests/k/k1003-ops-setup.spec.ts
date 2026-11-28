@@ -112,8 +112,10 @@ async function openSetup(page: Page, base: string, width = 1440, hash = `#token=
   await expect(page.locator(`${BOX} h1`)).toHaveText(TXT.h1);
   await page.evaluate(() => document.fonts.ready);
 }
+// 画面の知らせ。Next の読み上げの部品（next-route-announcer）も role=alert なので外す（k217・k417 と同じ）
+const alertOf = (page: Page) => page.locator('[role="alert"]:not(#__next-route-announcer__)');
 const press = async (page: Page, name: string = MY_NAME) => {
-  await page.getByLabel(TXT.name, { exact: true }).fill(name);
+  await page.getByRole("textbox", { name: TXT.name, exact: true }).fill(name);
   await page.getByRole("button", { name: TXT.button, exact: true }).click();
 };
 
@@ -186,7 +188,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     await authenticator(page);
     await openSetup(page, local(baseURL));
     await press(page);
-    const alert = page.getByRole("alert");
+    const alert = alertOf(page);
     await expect(alert).toContainText(TXT.invalid);
     await expect(alert).toContainText(TXT.invalidAction);
     await expect(page.getByRole("button", { name: TXT.button, exact: true })).toHaveCount(0);
@@ -201,7 +203,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     for (const hash of ["", "#token=abc"]) {
       await page.goto(`${local(baseURL)}/ops/setup${hash}`);
-      await expect(page.getByRole("alert")).toContainText(TXT.invalid);
+      await expect(alertOf(page)).toContainText(TXT.invalid);
     }
     expect(m.calls).toEqual([]);
   });
@@ -226,7 +228,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     await authenticator(page);
     await openSetup(page, local(baseURL));
     await press(page);
-    await expect(page.getByRole("alert")).toHaveText(TXT.failed);
+    await expect(alertOf(page)).toHaveText(TXT.failed);
     await press(page);
     await expect(page.getByText(TXT.done, { exact: true })).toBeVisible();
     expect(m.setupBodies.length).toBe(1);
@@ -240,7 +242,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     m.on.setup = () => "abort";
     await openSetup(page, local(baseURL));
     await press(page);
-    await expect(page.getByRole("alert")).toHaveText(TXT.network);
+    await expect(alertOf(page)).toHaveText(TXT.network);
     await expect(page.getByRole("button", { name: TXT.button, exact: true })).toBeEnabled();
   });
 
@@ -253,7 +255,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     await openSetup(page, local(baseURL));
     for (const blank of ["", "\u3000 "]) {
       await press(page, blank);
-      await expect(page.getByRole("alert")).toHaveText(TXT.nameEmpty);
+      await expect(alertOf(page)).toHaveText(TXT.nameEmpty);
     }
     expect(m.calls).toEqual([]);
     await press(page);
@@ -265,9 +267,13 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     const m = await mockApi(page);
     await authenticator(page);
     await openSetup(page, local(baseURL));
-    await page.getByLabel(TXT.name, { exact: true }).fill(MY_NAME);
+    await page.getByRole("textbox", { name: TXT.name, exact: true }).fill(MY_NAME);
     const b = page.getByRole("button", { name: TXT.button, exact: true });
-    await Promise.all([b.click(), b.click({ force: true }).catch(() => undefined)]);
+    // 同じ瞬間に 2 回押す（先に force の 1 回が押せない形にすると、ふつうの click が押せるのを待ち続けて時間切れになる）
+    await b.evaluate((el: HTMLElement) => {
+      el.click();
+      el.click();
+    });
     await expect(page.getByText(TXT.done, { exact: true })).toBeVisible();
     expect(m.setupBodies.length).toBe(1);
   });
@@ -286,7 +292,7 @@ test.describe("K-1003 パスキーを付ける画面", () => {
     ]) {
       m.on.setup = () => r;
       await press(page);
-      await expect(page.getByRole("alert")).toHaveText(TXT.network);
+      await expect(alertOf(page)).toHaveText(TXT.network);
       await expect(page.getByRole("button", { name: TXT.button, exact: true })).toBeEnabled();
     }
     expect(m.setupBodies.length).toBe(3);
