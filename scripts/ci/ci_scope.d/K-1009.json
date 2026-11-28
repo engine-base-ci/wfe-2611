@@ -1,0 +1,18 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-team-edit.ts",
+    "apps/api/src/features/F12/ops/team-edit.ts",
+    "packages/db/migrations/20261128014900_ops_team_edit.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-team-edit.test.ts",
+    "apps/api/test/features/F12/ops-team.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-1009.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-1009"
+ }
+}
