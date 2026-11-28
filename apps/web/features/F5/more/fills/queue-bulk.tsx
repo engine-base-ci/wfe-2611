@@ -137,11 +137,7 @@ function Band({ at, rows }: { at: "table" | "mobile"; rows: readonly QueueRow[] 
   if (at === "table") return bar;
   return (
     <>
-      {note ? (
-        <div className="k-more-bulk-note">
-          <Callout tone={note.tone}>{note.text}</Callout>
-        </div>
-      ) : null}
+      <BulkNoteView note={note} />
       {bar}
       {flow ? (
         <BulkApproveConfirm
@@ -155,4 +151,18 @@ function Band({ at, rows }: { at: "table" | "mobile"; rows: readonly QueueRow[] 
       ) : null}
     </>
   );
+}
+
+function BulkNoteView({ note }: { note: ReturnType<typeof useBulkState>["note"] }): ReactNode {
+  if (!note) return null;
+  return (
+    <div className="k-more-bulk-note">
+      <Callout tone={note.tone}>{note.text}</Callout>
+    </div>
+  );
+}
+
+/** 空の画面に出す、まとめて承認の結果の知らせ。全部を決め終えて表が空になると帯（Band）ごと消えるので、空の画面の上にも同じ知らせを出す（K772-M3-08） */
+export function BulkNoteFill(): ReactNode {
+  return <BulkNoteView note={useBulkState().note} />;
 }

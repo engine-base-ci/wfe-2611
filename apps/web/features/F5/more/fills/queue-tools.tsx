@@ -12,6 +12,7 @@ import {
   useQueueParams,
 } from "@/features/F5/queue-tools/queue-tools";
 import type { QueueEmptyProps, QueueToolsProps } from "../slots";
+import { BulkNoteFill } from "./queue-bulk";
 
 export interface QueueQuery {
   query: Record<string, string>;
@@ -48,11 +49,22 @@ export function QueueToolsFill({ total, layout, end }: QueueToolsProps): ReactNo
 export function QueueEmptyFill({ empty }: QueueEmptyProps): ReactNode {
   const { kind, setKind } = useQueueParams();
   const qc = useQueryClient();
-  if (!kind) return <>{empty}</>;
+  if (!kind)
+    return (
+      <>
+        <BulkNoteFill />
+        {empty}
+      </>
+    );
   // すべてに戻すときは、前に読んだ「すべて」の答えをそのまま使わず読み直す（絞った間に変わっているかもしれない・K749-UI-009）
   const reset = () => {
     setKind(null);
     void qc.invalidateQueries({ queryKey: queueKey });
   };
-  return <FilteredEmptyView kind={kind} onReset={reset} />;
+  return (
+    <>
+      <BulkNoteFill />
+      <FilteredEmptyView kind={kind} onReset={reset} />
+    </>
+  );
 }
