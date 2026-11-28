@@ -32,6 +32,7 @@ import {
 } from "./create-mock";
 import { MASTER_3, MASTER_ALL, byName, conflict, field, notFound, optId } from "./items-mock";
 import { matchMock } from "./stage2-match";
+import { shellData } from "./shell-answer";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const ERRORS = (
@@ -44,6 +45,24 @@ const WIDTHS = [375, 768, 1440] as const;
 const NOTE = "種別「タスク」のひな形が入っています。消しても、自由に書き換えても構いません";
 const make = (page: Page) => page.locator("header.k-page-head").getByRole("button", { name: "作る", exact: true });
 const titleBox = (page: Page) => page.getByRole("textbox", { name: "題名", exact: true });
+// 会社の必須の項目の見出しは「支払期日*」（印 * は読み上げない）。getByLabel の exact は印を含む字で比べるので、読み上げの名前で探す
+const dueField = (page: Page) => page.getByRole("textbox", { name: "支払期日", exact: true });
+// 書けるグループ（外枠の口 getShell の groups・K-466。作る面は /api/v1/scopes を呼ばない）
+const twoGroups = (page: Page, second: { id: string; name: string; ticket_prefix: string }) =>
+  page.route(/\/api\/v1\/shell$/, (r) =>
+    r.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: shellData({
+          groups: [
+            { id: SCOPE, name: "営業", ticket_prefix: "EG", writable: true, open_count: 0 },
+            { ...second, writable: true, open_count: 0 },
+          ],
+        }),
+      }),
+    }),
+  );
 const items = (page: Page) => page.getByRole("group", { name: "項目", exact: true });
 const open = async (page: Page, o: Parameters<typeof mockCreate>[1] = {}, width = 1440) => {
   const m = await mockCreate(page, o);
@@ -122,6 +141,7 @@ test("K442-UI-003 本文を書く：薄い説明に打つと打った字が普�
 
 test("K442-UI-004 ひな形を消す：薄い節だけ消え（書いた字は残る）・注とボタンが消える。本文が空でも作れて、body は空の木（薄い節なし）", async ({
   page,
+  browser,
 }) => {
   const m = await open(page);
   await writeBody(page, "残す字");
@@ -130,7 +150,8 @@ test("K442-UI-004 ひな形を消す：薄い節だけ消え（書いた字は�
   await expect(bodyBox(page)).toContainText("残す字");
   await expect(page.getByText(NOTE)).toHaveCount(0);
   await expect(page.getByRole("button", { name: "ひな形を消す", exact: true })).toHaveCount(0);
-  const p2 = await page.context().newPage();
+  // 開き直しは別の窓で（同じ窓だと、1 つ目が残したこの PC の下書きの写し〔K-60〕が続きとして戻る）
+  const p2 = await (await browser.newContext()).newPage();
   const m2 = await mockCreate(p2);
   await openCreate(p2);
   await loaded(p2);
@@ -169,7 +190,7 @@ test("K442-UI-006 種別を変える（書いた後）：書いた本文は残�
   await expect(page.getByRole("textbox", { name: "問い合わせ元", exact: true })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "先方の担当者名", exact: true })).toHaveCount(0);
   await fillRequired(page);
-  await page.getByLabel("支払期日", { exact: true }).fill(jstDay(10));
+  await dueField(page).fill(jstDay(10));
   await make(page).click();
   await expect.poll(() => m.creates.length).toBe(1);
   expect(lastCreate(m).kind_id).toBe(ISSUE);
@@ -213,7 +234,7 @@ test("K442-UI-009 会社の必須の項目が空：項目の行の欄の下に�
   await expect(page.getByText("支払期日を選んでください")).toBeVisible();
   await expect(page.getByText("PJコードを選んでください")).toBeVisible();
   expect(m.creates).toHaveLength(0);
-  await page.getByLabel("支払期日", { exact: true }).fill(jstDay(7));
+  await dueField(page).fill(jstDay(7));
   await page.getByRole("combobox", { name: "PJコード" }).click();
   await page.getByRole("option", { name: /SK-2026-11/ }).click();
   await make(page).click();
@@ -451,7 +472,7 @@ test("K442-UI-019 409 E-FLD-002・004：画面が番号とマスタから決め�
   await fillRequired(page);
   const due = byName(MASTER_ALL, "支払期日");
   const pj = byName(MASTER_ALL, "PJコード");
-  await page.getByLabel("支払期日", { exact: true }).fill(jstDay(9));
+  await dueField(page).fill(jstDay(9));
   await page.getByRole("combobox", { name: "PJコード" }).click();
   await page.getByRole("option", { name: /SK-2026-11/ }).click();
   m.createReplies.push(conflict("E-FLD-002"), conflict("E-FLD-001"));
@@ -459,7 +480,8 @@ test("K442-UI-019 409 E-FLD-002・004：画面が番号とマスタから決め�
   await expect(page.getByRole("combobox", { name: "PJコード" })).toHaveAccessibleDescription(
     new RegExp(msg("E-FLD-002")),
   );
-  expect(optId(pj, "SK-2026-11")).toBeTruthy();
+  // 選択肢の名前は「SK-2026-11 セイコー商事 保守」（items-mock の MASTER_ALL。前は頭の番号だけで探していて、optId が投げていた）
+  expect(optId(pj, "SK-2026-11 セイコー商事 保守")).toBeTruthy();
   expect(due.id).toBeTruthy();
   await make(page).click();
   await expect(page.locator('[data-state="error"][data-code="E-FLD-001"]')).toBeVisible();
@@ -495,6 +517,7 @@ test("K442-UI-020 口の他の断り：422（題名の欄つき）は題名の�
 
 test("K442-UI-021 グループ：書けるグループが 1 つなら欄を出さず、そのグループで作る（scope_id）。2 つ以上なら種別の左に選ぶ欄が出る", async ({
   page,
+  browser,
 }) => {
   const m = await open(page);
   await expect(page.getByRole("combobox", { name: "グループ" })).toHaveCount(0);
@@ -502,21 +525,10 @@ test("K442-UI-021 グループ：書けるグループが 1 つなら欄を出�
   await make(page).click();
   await expect.poll(() => m.creates.length).toBe(1);
   expect(lastCreate(m).scope_id).toBe(SCOPE);
-  const p2 = await page.context().newPage();
+  // 別の窓（この PC の下書きの写しを持ち越さない）・書けるグループ 2 つは外枠の口の答えで渡す
+  const p2 = await (await browser.newContext()).newPage();
   await mockCreate(p2);
-  await p2.route(/\/api\/v1\/scopes$/, (r) =>
-    r.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        data: [
-          { id: SCOPE, name: "営業", ticket_prefix: "EG" },
-          { id: "22222222-0000-4000-8000-000000000009", name: "経理", ticket_prefix: "KE" },
-        ],
-        meta: { limit: 200, writable: [SCOPE, "22222222-0000-4000-8000-000000000009"] },
-      }),
-    }),
-  );
+  await twoGroups(p2, { id: "22222222-0000-4000-8000-000000000009", name: "経理", ticket_prefix: "KE" });
   await openCreate(p2);
   await loaded(p2);
   await expect(p2.getByRole("combobox", { name: "グループ" })).toBeVisible();
@@ -552,14 +564,13 @@ test("K442-UI-023 キーボードと読み上げ：本文は textbox「本文」
   for (let i = 0; i < 6; i += 1) {
     await page.keyboard.press("Tab");
     seen.push(
-      await page.evaluate(() =>
-        (
-          document.activeElement?.getAttribute("aria-label") ??
-          document.activeElement?.getAttribute("name") ??
-          document.activeElement?.textContent ??
-          ""
-        ).trim(),
-      ),
+      await page.evaluate(() => {
+        // 選ぶ欄の開くボタンは名前を aria-labelledby（見出し「種別」）で持つ。その字も読む
+        const a = document.activeElement;
+        const by = a?.getAttribute("aria-labelledby");
+        const lab = by ? document.getElementById(by)?.textContent : null;
+        return (a?.getAttribute("aria-label") ?? lab ?? a?.getAttribute("name") ?? a?.textContent ?? "").trim();
+      }),
     );
   }
   const idx = (re: RegExp) => seen.findIndex((s) => re.test(s));
@@ -638,27 +649,23 @@ for (const [row, ids] of [
           id,
           w,
           async (page) => {
-            await mockCreate(page, { masters: { [TASK]: [...MASTER_ALL] } });
+            // 試験の準備を下絵のデータに合わせる：下絵の項目の表の会社の項目は 3 つ（支払期日・PJコード・請求額＝MASTER_3）
+            await mockCreate(page, { masters: { [TASK]: [...MASTER_3] } });
             if (id === "f4v2-create-group")
-              await page.route(/\/api\/v1\/scopes$/, (r) =>
-                r.fulfill({
-                  status: 200,
-                  contentType: "application/json",
-                  body: JSON.stringify({
-                    data: [
-                      { id: SCOPE, name: "営業", ticket_prefix: "EG" },
-                      { id: "22222222-0000-4000-8000-000000000009", name: "受託開発", ticket_prefix: "JD" },
-                    ],
-                    meta: { limit: 200, writable: [SCOPE, "22222222-0000-4000-8000-000000000009"] },
-                  }),
-                }),
-              );
+              await twoGroups(page, {
+                id: "22222222-0000-4000-8000-000000000009",
+                name: "受託開発",
+                ticket_prefix: "JD",
+              });
             await openCreate(page, w);
             await loaded(page);
             await titleBox(page).fill("セイコー商事の 11 月分の請求書を送る");
             if (id === "f4v2-create-blank")
               await page.getByRole("button", { name: "ひな形を消す", exact: true }).click();
             await fillDue(page, jstDay(3));
+            // 下絵 f4v2-create-head は保存の状態の字が出た形。書いた後の自動の保存の答えが届くまで待つ（固定の待ちは使わない）
+            if (id === "f4v2-create-head")
+              await expect(page.locator(".k-create-saved")).toContainText("下書きを自動で保存しました");
           },
           {
             base: "/dev/mock/f4v2",
