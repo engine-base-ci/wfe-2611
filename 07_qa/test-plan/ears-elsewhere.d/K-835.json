@@ -1,0 +1,64 @@
+{
+ "ops": {
+  "requestEmailChange": {
+   "file": "apps/api/test/features/F10/me-email.test.ts",
+   "reason": "メールを変える頼みは、宛ての形・使われている宛て・頼みすぎ・メールの送れない・本人確認で答えが変わる。生成の試験の種では作れない（K-835）",
+   "covers": {
+    "test_post_me_email_change_ok": "K835-API-001",
+    "test_post_me_email_change_shape": "K835-API-001",
+    "test_post_me_email_change_rejected_401": "K835-API-016",
+    "test_post_me_email_change_rejected_403": "K835-API-002",
+    "test_post_me_email_change_rejected_422": "K835-API-003",
+    "test_post_me_email_change_rejected_422_2": "K835-API-003",
+    "test_post_me_email_change_conflict": "K835-API-004",
+    "test_post_me_email_change_rate_limited": "K835-API-007",
+    "test_post_me_email_change_upstream_failed": "K835-API-008",
+    "test_post_me_email_change_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_email_change_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_me_email_change_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_me_email_change_rate_limited_2": "口ごとの 1 分の上限（60/分）は入口の共通（op.ts の limits）で数え、入口の共通の試験が見る。この口の頼みすぎ（1 時間に 5 回・E-ME-024）は K835-API-007",
+    "test_post_me_email_change_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421 と同じ扱い）"
+   }
+  },
+  "verifyEmailChange": {
+   "file": "apps/api/test/features/F10/me-email.test.ts",
+   "reason": "確かめる口は、リンクの印・期限・1 回だけ・宛ての取られ方・同時で答えが変わる（K-835）",
+   "covers": {
+    "test_post_me_email_change_verify_ok": "K835-API-009",
+    "test_post_me_email_change_verify_shape": "K835-API-009",
+    "test_post_me_email_change_verify_rejected_401": "K835-API-016",
+    "test_post_me_email_change_verify_rejected_403": "K835-API-016",
+    "test_post_me_email_change_verify_rejected_422": "K835-API-012",
+    "test_post_me_email_change_verify_rejected_422_2": "K835-API-012",
+    "test_post_me_email_change_verify_conflict": "K835-API-010",
+    "test_post_me_email_change_verify_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_email_change_verify_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_me_email_change_verify_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_me_email_change_verify_rate_limited": "上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-421 と同じ扱い）",
+    "test_post_me_email_change_verify_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421 と同じ扱い）"
+   }
+  }
+ }
+}
