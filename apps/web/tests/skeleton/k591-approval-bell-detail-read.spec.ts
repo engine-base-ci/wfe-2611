@@ -202,7 +202,7 @@ test("K591-M1-03 すべて既読にする：承認待ちのお知らせ 1 つと
   await openBell(page);
   const all = answered(page, "POST", READ_ALL_RE);
   await noticeBox(page).getByRole("button", { name: "すべて既読にする" }).click();
-  expect((await all).status(), "全部既読の口が受ける（K462-API-008：200）").toBe(200);
+  expect((await all).status(), "全部既読の口が受ける（K462-API-008：201・POST の成功は契約で 201）").toBe(201);
   await expect(bell(page)).toHaveAttribute("aria-label", "お知らせ");
   await expect(
     noticeBox(page).getByRole("button", { name: "すべて既読にする" }),

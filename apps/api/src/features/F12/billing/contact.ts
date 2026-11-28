@@ -7,8 +7,9 @@
 import type pg from "pg";
 import { EMAIL_RE } from "@kaname/auth/signup";
 import { withTenant } from "@kaname/db/context";
+import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { fromCatalog, kindOf, replyOf } from "./errors.js";
+import { forbiddenOf, kindOf } from "./errors.js";
 
 export interface BillingContact {
   company: string;
@@ -47,7 +48,7 @@ const badField = (c: BillingContact): { field: keyof BillingContact; message: st
 /** 止める側に倒す（503・E-PAGE-003）。ログは決まった字と例外の種類だけ */
 const contactDown = (e: unknown): HookReply => {
   console.error(`[billing] 請求先を書けなかった（${kindOf(e)}）`);
-  return fromCatalog("E-PAGE-003", 503);
+  return { status: 503, body: kanameError("E-PAGE-003", {}).toJSON() }; // 体は fromCatalog と同じ。番号は直に書く（K-144 の SHAPE_010）
 };
 
 export function updateBillingContact(appPool: pg.Pool) {
@@ -87,7 +88,7 @@ export function updateBillingContact(appPool: pg.Pool) {
       return contactDown(e);
     }
     if (!v) return contactDown({ name: "empty" });
-    if (v.error) return replyOf(v.error);
+    if (v.error) return forbiddenOf(v.error);
     if (!v.data) return contactDown({ name: "no_data" });
     return {
       status: 200,
