@@ -1,0 +1,214 @@
+"use client";
+// 決定ログの区画が読む・足す口のつなぎ（K-397）。口は契約の listTicketDecisions・createTicketDecision と、前からの listMembers だけ。
+//   一覧の問い合わせの器 decisionsQuery は先読み（prefetch.ts）と区画が同じ物を使う（先読みの答えを読み直さない・失敗の後に既定の読み直しをしない）
+import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
+import { useCallback, useRef, useState } from "react";
+import { catalogMessage } from "@/features/F5/approve-complete/message";
+import { call } from "@/lib/api/call";
+import { me } from "@/lib/auth/ext";
+import { timelineKey } from "../thread/use-timeline";
+import type { DecisionFormValues, PersonOption } from "./views";
+import { failureOf, networkNotice } from "./send";
+import type { DecisionRow } from "./to-view";
+
+const SCREEN = "tickets";
+const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
+/** 決めた人の候補を読めなかったときの欄の下の文（仮・代表に聞くことに書いた） */
+export const PEOPLE_FAILED = "ほかのメンバーを読み込めませんでした（自分を選べます）";
+
+export interface DecisionsAnswer {
+  rows: DecisionRow[];
+  canWrite: boolean;
+}
+
+export const decisionsKey = (id: string) => ["f6", "decisions", id] as const;
+
+export function decisionsQuery(id: string): UseQueryOptions<DecisionsAnswer, Error> {
+  return {
+    queryKey: decisionsKey(id),
+    queryFn: async () => {
+      const r = await call("listTicketDecisions", { params: { id }, query: {}, screenId: SCREEN });
+      if (!r.ok) throw new Error(`決定を読めませんでした（${r.status}）`);
+      return { rows: r.data as unknown as DecisionRow[], canWrite: r.meta["can_write"] === true };
+    },
+    staleTime: Infinity,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  };
+}
+
+/** 区画の頭の知らせ（書けなくなった・消されたなど）。区画と書き込みの「決定にする」が同じ物を見る（問い合わせの鍵で持つ・DOM を共有しない） */
+const noticeKey = (id: string) => ["f6", "decision-notice", id] as const;
+export function useSectionNotice(id: string): [string | undefined, (m: string | undefined) => void] {
+  const qc = useQueryClient();
+  // 消すときは null を置く（undefined を置いても react-query は答えを替えない）
+  const q = useQuery<string | null>({ queryKey: noticeKey(id), enabled: false });
+  const set = useCallback(
+    (m: string | undefined) => qc.setQueryData<string | null>(noticeKey(id), m ?? null),
+    [qc, id],
+  );
+  return [q.data ?? undefined, set];
+}
+
+export interface DecisionsRead {
+  status: "loading" | "failed" | "ready";
+  rows: readonly DecisionRow[];
+  canWrite: boolean;
+  /** 読み直す（「もう一度読む」・足した後） */
+  reload: () => Promise<unknown>;
+}
+
+export function useDecisions(id: string): DecisionsRead {
+  const q = useQuery(decisionsQuery(id));
+  const { refetch } = q;
+  const reload = useCallback(() => refetch(), [refetch]);
+  const status = q.data ? "ready" : q.isError ? "failed" : "loading";
+  return { status, rows: q.data?.rows ?? [], canWrite: q.data?.canWrite ?? false, reload };
+}
+
+interface Member {
+  id: string;
+  display_name: string;
+  deleted_at?: string | null;
+  suspended_at?: string | null;
+  kind_id?: string;
+}
+
+export interface AddDecision {
+  open: boolean;
+  busy: boolean;
+  errors: { text?: string; by?: string } | undefined;
+  /** 小窓の上の知らせ */
+  notice: string | undefined;
+  /** 区画の頭の知らせ（書けなくなった・消されたなど） */
+  sectionNotice: string | undefined;
+  by: string;
+  people: PersonOption[];
+  peopleFailed: string | undefined;
+  start: () => void;
+  cancel: () => void;
+  submit: (v: DecisionFormValues) => Promise<void>;
+}
+
+/** 「＋ 決定を足す」の小窓の流れ。reload は決定の一覧を 1 回読み直す・onClosed は小窓を閉じた後（焦点を戻す）。
+ *  sourceMessageId があれば書き込みから決定にする（体に source_message_id を足す・K-398） */
+export function useAddDecision(
+  ticketId: string,
+  myName: string,
+  reload: () => Promise<unknown>,
+  onClosed: () => void,
+  sourceMessageId?: string,
+): AddDecision {
+  const [open, setOpen] = useState(false);
+  const [wantMembers, setWantMembers] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<AddDecision["errors"]>(undefined);
+  const [notice, setNotice] = useState<string | undefined>(undefined);
+  const [sectionNotice, setSectionNotice] = useSectionNotice(ticketId);
+  const sending = useRef(false); // 答えが来るまで 2 本目を送らない
+  const who = useQuery({ queryKey: ["me"], queryFn: me, ...ONCE });
+  // 同じ会社の今のメンバー（scope_id は付けない・作る画面と同じ読み方）。小窓を初めて開いたときに 1 回
+  const members = useQuery({
+    queryKey: ["f6", "decision-members"],
+    enabled: wantMembers,
+    queryFn: async () => {
+      const r = await call("listMembers", { query: { limit: 200 }, screenId: SCREEN });
+      if (!r.ok) throw new Error(`メンバーを読めませんでした（${r.status}）`);
+      return r.data as unknown as Member[];
+    },
+    ...ONCE,
+  });
+  const meId = who.data?.member_id ?? "";
+  const meName = who.data?.display_name ?? myName;
+  const self: PersonOption[] = meId ? [{ value: meId, label: meName }] : [];
+  const listed: PersonOption[] = (members.data ?? [])
+    .filter((m) => !m.deleted_at && !m.suspended_at && (m.kind_id ?? "human") === "human")
+    .map((m) => ({ value: m.id, label: m.display_name }));
+  const people = members.isSuccess ? (listed.some((p) => p.value === meId) ? listed : [...self, ...listed]) : self;
+
+  const close = useCallback(() => {
+    setOpen(false);
+    onClosed();
+  }, [onClosed]);
+
+  const submit = async (v: DecisionFormValues) => {
+    if (sending.current) return;
+    if (!v.text.trim()) return setErrors({ text: catalogMessage("E-VAL-042") });
+    sending.current = true;
+    setBusy(true);
+    setNotice(undefined);
+    try {
+      const r = await call("createTicketDecision", {
+        params: { id: ticketId },
+        body: {
+          text: v.text,
+          reason: v.reason.trim() ? v.reason : null,
+          decided_by_member_id: v.by || null,
+          decided_note: v.note.trim() ? v.note : null,
+          ...(sourceMessageId ? { source_message_id: sourceMessageId } : {}),
+        },
+        screenId: SCREEN,
+      });
+      if (r.ok) {
+        close();
+        await reload();
+        return;
+      }
+      const f = failureOf(r);
+      if (f.kind === "login") return; // 入り直し（共通の扱い）
+      if (f.kind === "fields") return setErrors({ ...(f.text ? { text: f.text } : {}), ...(f.by ? { by: f.by } : {}) });
+      if (f.kind === "gone") {
+        close();
+        setSectionNotice(f.message);
+        await reload();
+        return;
+      }
+      setNotice(f.message);
+    } catch {
+      setNotice(networkNotice()); // 網の切れ
+    } finally {
+      sending.current = false;
+      setBusy(false);
+    }
+  };
+
+  return {
+    open,
+    busy,
+    errors,
+    notice,
+    sectionNotice,
+    by: meId,
+    people,
+    peopleFailed: members.isError ? PEOPLE_FAILED : undefined,
+    start: () => {
+      setErrors(undefined);
+      setNotice(undefined);
+      setSectionNotice(undefined);
+      setWantMembers(true);
+      setOpen(true);
+    },
+    cancel: () => {
+      if (!sending.current) close();
+    },
+    submit,
+  };
+}
+
+/** 決定にした・改めた・取り消した後の読み直し：決定の一覧とやり取りを 1 回ずつ（開いている問い合わせだけが読む）。
+ *  詳細の読み直し（reloadDetail・SlotTicket.reload）を渡されたら詳細も 1 回読む：決定ログの場所は詳細の答えの results.decisions が
+ *  在るときだけ出るので、はじめの 1 つを決めた後に場所が出ない（K399-T1-003） */
+export function useReloadAll(ticketId: string, reloadDetail?: () => Promise<void>): () => Promise<unknown> {
+  const qc = useQueryClient();
+  return useCallback(
+    () =>
+      Promise.all([
+        qc.refetchQueries({ queryKey: decisionsKey(ticketId), exact: true }),
+        qc.invalidateQueries({ queryKey: timelineKey(ticketId) }),
+        ...(reloadDetail ? [reloadDetail()] : []),
+      ]),
+    [qc, ticketId, reloadDetail],
+  );
+}
