@@ -1,0 +1,151 @@
+{
+  "project_name": "Kaname",
+  "former_name": "jobrain",
+  "created_at": "2026-09-04",
+  "client": "株式会社ENGINE BASE（自社事業）",
+  "project_type": "B2B SaaS（AI社員プラットフォーム）",
+  "goal": {
+    "surface_request": "jobrainを1から作り直し、将来の拡張も考慮して徹底的に設計する",
+    "underlying_need": "人間の会社組織と同型のAI社員組織を業種を問わず適用し、営業・事務・CS等の仕事を代行させる。人間の意思決定を再現性高く実行し、人間同士の状況も同じ場所で管理する",
+    "essential_goal": "会社の目標を、人間とAI社員の両方で達成しにいく運営基盤を作り、2028年9月に65社・ARR7,560万円を、運営3人で100社を回せる効率で実現する",
+    "success_definition": {
+      "quantitative": "2028-09に65社／MRR630万／ARR7,560万。エントリー3万×20・スタンダード8万×15・プロ15万×30。ブレンドARPU96,923円、churn2.5%/月、プロ層ARR比率72%維持。ローンチ2026-11。運営100社を3人",
+      "qualitative": "顧客がAI社員を役割を持つ社員として扱える／人間の意思決定が実行で歪まない／運営の個別対応なしで顧客が自分で運用できる"
+    },
+    "first_milestone": "高本さん自身の受託業務がKanameで実際に回ること。次に身近な10社/人が問題なく使えること"
+  },
+  "constraints": {
+    "deadline": "2026-11（ローンチ想定）",
+    "deadline_policy": "期限に合わせた手抜き・スコープ削減は禁止",
+    "budget": "未確定",
+    "pricing": {
+      "entry": 30000,
+      "standard": 80000,
+      "pro": 150000,
+      "enterprise": "検討中"
+    },
+    "team_size": 1,
+    "team_note": "高本さん1人 + Claude（AIペア）",
+    "tech_stack_constraints": [
+      "未確定。世界中の選択肢からセキュリティ込みで選定する",
+      "旧版（Next.js+Supabase+Anthropic）の踏襲を前提としない",
+      "SSPL / AGPL / Elastic License 2.0 は組み込まない",
+      "Open Core は ee/ を import しないことをCIで機械検査",
+      "GPL は別プロセス呼び出しのみ",
+      "基盤は複数プロバイダ前提。実装はClaude先行"
+    ],
+    "llm_cost_policy": "サービス料金は利用料のみ。LLMは顧客のサブスクまたは顧客のAPIキー。運営マネージドは既定OFFで管理画面から個別許可",
+    "existing_systems": [
+      "旧jobrain（停止中・顧客なし・データ移行不要・参照専用）",
+      "Atelier（自社サービス・稼働中・運用方法論とAI社員データモデルの参照元）",
+      "ENGINE BASE HQ（会社運営をClaudeで回す実例・担当業務カタログの原料）"
+    ]
+  },
+  "core_concept": {
+    "hub": "会社モデル。目標の木・台帳の定義・担当業務・組織・ポリシー・記憶を1つの定義に持ち、画面もAI社員も自動実行もそこだけを読む",
+    "moat": "閉じたループ（目標→逆算→タスク配布→実行→測定→再計画）。担当業務の数ではない",
+    "moat_reason": "競合はLindy/Sintra/JAPAN AI=目標を知らない、n8n/Dify/Genspark=組織も目標も持たない、Agentforce=CRMの外に出られない、Asana等=実行しない",
+    "asset": "スキルではなく、その会社固有の修正履歴・仮説と検証の履歴",
+    "skill_building": "OJT型。AIがたたき台を作り人が直す。縛るのは手順でなく制約と承認済み実例",
+    "execution": "ブラウザ操作が標準の万能手段（実装ゼロ）。API/MCPは速度と堅牢性の後付け最適化",
+    "executor": "Bridge（顧客PC常駐）。本人のブラウザ・本人のIP・ログイン済みセッションで動く"
+  },
+  "requirements": {
+    "must": [
+      "会社モデル（目標の木・台帳の定義・担当業務・組織・ポリシー・記憶）",
+      "目標（階層・配分・配られた/自主の2種・双方向）",
+      "仮説/施策/検証（目標とタスクの間の器）",
+      "タスク（人間にもAIにも同じ形）",
+      "台帳（ファネル型・取引型の動的定義。外部で計算された結果も持つ）",
+      "組織（人間・自分のAI・AI社員。層は省略可）",
+      "担当業務（制約＋承認済み実例＋改訂履歴＋目標との紐づけ）",
+      "アクション（ブラウザ・API/MCP・ローカル・人へのハンドオフ）",
+      "覚えた操作（記録・再生・自己修復）",
+      "ポリシー（auto/approve/off）",
+      "承認画面（入口を1箇所に集約）",
+      "会話（人↔自分のAI↔AI社員・人↔人・AI↔AI）",
+      "記憶3層（明示ルール・学習した好み・承認済み事例）",
+      "トリガー（時間/イベント/手動＋未実行時3挙動）",
+      "証跡",
+      "資格情報保管（vault・TOTP含む・AIには見せない）",
+      "サービス台帳（外部サービスごとの自動操作可否）",
+      "テストモード（外に一切出さない）",
+      "認証・テナント分離（権限・RLS・実行分離）",
+      "課金（3プラン＋制限の適用）",
+      "マルチデバイス（スマホ・タブレット・PCで機能同等）",
+      "Bridge（顧客PC常駐の万能実行器）",
+      "構築メタスキル群（非公開・運営の資産）",
+      "API/MCP連携（Gmail・カレンダー・会計・チャット）",
+      "部署層と承認フロー・SSO/SAML",
+      "複数プロバイダ対応の基盤",
+      "ふりかえりの自動提案",
+      "通知（Slack/LINE/メール）",
+      "文書生成（PDF/PPTX/Excel）",
+      "運営コンソール",
+      "業界別テンプレ配布・中身非公開の担当業務配布"
+    ],
+    "should": [],
+    "could": [
+      "ローカルLLM（法人向け初期構築）",
+      "ファインチューニング（LoRA）",
+      "エンタープライズ枠",
+      "運営業務のAI社員化"
+    ],
+    "wont": [
+      "分析画面（顧客別ランキング・チャネル別・期間比較）",
+      "フローエディタ（n8n型）",
+      "会計ソフトとしての計算機能（確定申告・年末調整・給与計算）※結果は台帳に持つ",
+      "顧客が自由に出品する公開マーケット ※運営が作って配るのはやる",
+      "CAPTCHA突破",
+      "業界別パッケージ（別製品）※業界別テンプレは用意する",
+      "リアルタイム共同編集"
+    ]
+  },
+  "phases": [
+    {"id": 0, "name": "土台", "content": "認証・テナント分離・会社モデルの器・Bridgeの骨格・運用統制", "gate": "CIゲートが全部緑"},
+    {"id": 1, "name": "一人で回る", "content": "目標・仮説層・タスク・台帳・担当業務・アクション・覚えた操作・承認・会話・テストモード・マルチデバイス", "gate": "高本さん自身の受託業務が実際に回る"},
+    {"id": 2, "name": "他人が使える", "content": "課金・オンボーディング・構築メタスキル群・運営コンソール・業界別テンプレ", "gate": "身近な10社/人が問題なく使える"},
+    {"id": 3, "name": "組織で使える", "content": "会社層・部署層・権限・目標の配分・人間メンバー・会社配布・承認フロー・SSO", "gate": "数人〜数十人の会社が使える"},
+    {"id": 4, "name": "繋がる", "content": "API/MCP連携・通知・ふりかえりの自動提案・複数プロバイダ・監査", "gate": "外販開始（2026-11想定）"},
+    {"id": 5, "name": "広がる", "content": "ローカルLLM・エンタープライズ・ファインチューニング・運営のAI社員化", "gate": "65社へ"}
+  ],
+  "stakeholders": [
+    {"role": "決裁者・開発者（高本さん）", "involvement": "high", "concerns": "65社到達、運営3人で100社、同じ失敗を繰り返さない"},
+    {"role": "初期利用者10社/人", "involvement": "high", "concerns": "設定に時間を取られず、自分の業務が実際に減る"},
+    {"role": "顧客側の人間社員", "involvement": "high", "concerns": "仕事が置き換わる不安。意思決定の主導権が残るか"},
+    {"role": "顧客側の情シス・コンプラ", "involvement": "medium", "concerns": "認証情報の預け先・データの所在・学習非利用"},
+    {"role": "将来の運営メンバー", "involvement": "medium", "concerns": "運営業務がAI社員化され人が張り付かないか"},
+    {"role": "直接競合", "involvement": "high", "concerns": "Lindy／Sintra／Genspark Claw／JAPAN AI AGENT"},
+    {"role": "基盤提供者（Anthropic等）", "involvement": "high", "concerns": "規約変更が事業に直結。複数プロバイダで依存を避ける"}
+  ],
+  "mvp_concept": "一人社長が一人で完結する形。目標・今日・承認・会話・組織・担当業務・台帳・ふりかえりの8画面で、高本さん自身の受託業務（商談パイプライン＋請求＋経理）が実際に回ること",
+  "risks": [
+    {"risk": "「全部やる」で開発量が破綻（旧jobrainの死因）", "impact": "critical", "mitigation": "仕分け基準を機械適用。要望はgap-tracker経由でしか入らない"},
+    {"risk": "動的台帳の実装難度", "impact": "high", "mitigation": "高本さんの受託業務で1つ動かしてから一般化する。抽象から作らない"},
+    {"risk": "ブラウザ操作の信頼性", "impact": "high", "mitigation": "必須機能に組み込まず、失敗は必ず人へのハンドオフに落とす"},
+    {"risk": "外部サービスのアカウント凍結", "impact": "critical", "mitigation": "サービス台帳で事前判定。本人環境・本人資格情報・人間らしい速度。銀行は正規連携のみ"},
+    {"risk": "Anthropicの規約変更", "impact": "high", "mitigation": "BYOK・複数プロバイダ・ローカルLLMへの切替経路を最初から持つ"},
+    {"risk": "承認が多すぎて人が疲れる", "impact": "medium", "mitigation": "OJTで信頼が溜まったら段階的に自動化。外向き操作は最後まで承認"},
+    {"risk": "セキュリティ事故（資格情報・テナント越え）", "impact": "critical", "mitigation": "vault分離・AIに見せない・退会で即失効・上流を故意に壊す検証"},
+    {"risk": "一人開発の限界", "impact": "high", "mitigation": "Atelierの運用統制を初日から入れる"},
+    {"risk": "2027Q4に営業が一人で回らない", "impact": "high", "mitigation": "運営業務のAI社員化を段階2から始める"},
+    {"risk": "自分が使わない機能を作る", "impact": "medium", "mitigation": "段階1の合格条件を「実業務が回る」に固定"}
+  ],
+  "unresolved": [
+    {"question": "技術スタックの確定", "importance": "high", "resolve_in": "tech-stack"},
+    {"question": "各プランで何ができるか（制限3軸を入力）", "importance": "high", "resolve_in": "pricing-design"},
+    {"question": "エンタープライズ枠の要否と内容", "importance": "medium", "resolve_in": "pricing-design"},
+    {"question": "目標の種類・重み付け・期中変更の履歴・他人の目標の可視範囲", "importance": "medium", "resolve_in": "requirements-definition"},
+    {"question": "ドメイン・商標の調査（kaname.app等）", "importance": "medium", "resolve_in": "別途"},
+    {"question": "ロゴの確定", "importance": "low", "resolve_in": "別途（保留中）"},
+    {"question": "AnthropicのAgent SDKクレジット施行停止のその後", "importance": "high", "resolve_in": "tech-stack"},
+    {"question": "AtelierのInngest（SSPL）問題の共有", "importance": "medium", "resolve_in": "別途"}
+  ],
+  "next_skill": "tech-stack",
+  "reference_files": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/ヒアリングサマリー.md",
+    "00_research/OSS候補一覧.md",
+    "https://claude.ai/code/artifact/31b6f083-dc63-4ec5-b678-820b5ae82745"
+  ]
+}
