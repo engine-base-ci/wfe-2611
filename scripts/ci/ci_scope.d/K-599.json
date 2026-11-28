@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/web/features/F7/shell-slots.tsx",
+    "apps/web/features/F7/detail-slots.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k599-f7-slots.spec.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k599-f7-slots.spec.ts": "段 8 の差し込み口の入口 apps/web/features/F7/shell-slots.tsx・detail-slots.tsx と区画のファイル 7 個（notice/notice-slot・search/search-slot・saved/saved-view-slot・due/due-slot・delete/more-menu-slot・stopped/stopped-hand-slot・overview/group-link-slot）、前からのファイル F4 の ticket-shell.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.tsx、F5 の delegate-band.tsx・use-run.ts、components/k/shell.tsx を文字で読む（data_links で結ぶ・K-599）",
+  "apps/web/features/F7/notice/notice-slot.tsx": "画面の部品 ./notice-live を next/dynamic で後から読む（同じフォルダの部品の import。ファイルを読む所ではない）・K-599"
+ }
+}
