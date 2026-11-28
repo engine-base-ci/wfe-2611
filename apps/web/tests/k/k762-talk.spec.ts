@@ -368,11 +368,20 @@ test("K762-UI-018 会話が読めない：getConversation が 404（消した・
   await page.goto(`/ai/talk?c=${C2}`);
   await expect(chat(page)).toContainText("この会話はありません");
   await expect(convList(page).locator(".k-room-conv")).toHaveCount(3);
-  t.on.view = () => err(503, "E-PAGE-003");
+  // 流れの ready（つなぎ直しの ready も）でも読み直す（K-762）。押す前に 200 へ替えると、その読み直しが先に通って
+  //   読めない箱と［もう一度］が消え、押せなくなる。押すまでは 503 のまま返し、押す直前に 200 へ替える
+  let pressed = false;
+  t.on.view = (id) => (pressed ? { status: 200, body: { data: view({}, { id }) } } : err(503, "E-PAGE-003"));
+  const streams0 = t.streams.length;
   await page.reload();
   await expect(chat(page).locator(".k-state")).toBeVisible();
-  t.on.view = (id) => ({ status: 200, body: { data: view({}, { id }) } });
-  await chat(page).getByRole("button", { name: "もう一度", exact: true }).click();
+  await expect.poll(() => t.streams.length).toBeGreaterThan(streams0);
+  const again = chat(page).getByRole("button", { name: "もう一度", exact: true });
+  await expect(again).toBeVisible();
+  const reads0 = t.reads.length;
+  pressed = true;
+  await again.click();
+  await expect.poll(() => t.reads.length).toBeGreaterThan(reads0);
   await expect(bubbles(page)).toHaveCount(2);
 });
 
