@@ -605,7 +605,8 @@ const MOVE_PAIRS = [
   pair("dates", ".k-f7-gantt-move-dates", ["height", "x"]),
   pair("parent", ".k-f7-gantt-move-parent", ["height", "x", "color"]),
   pair("follow", ".k-f7-gantt-move-follow", ["x", "opacity"]),
-  pair("check", ".k-f7-gantt-move-check", ["height", "x"]),
+  // 押せる方のチェック（土日を飛ばす）で比べる。「あとに続くものも動かす」は準備中で、見本の 2 行目（続くチケットと日付）の中身が本番に無い
+  pair("check", ".k-f7-gantt-move-check:not([aria-disabled])", ["height", "x"]),
 ];
 const NODATE_PAIRS = [
   pair("tray", ".k-f7-calendar-tray-panel", ["width", "background-color", "border-top-left-radius"]),
@@ -621,11 +622,20 @@ test("K482-UI-020 モック f7-gantt・f7-gantt-move・f7-gantt-nodate・f7-hold
 }) => {
   const bad: string[] = [];
   const run = async (id: string, pairs: ReturnType<typeof pair>[], drive: (p: Page) => Promise<void>) => {
-    const r = await matchMock(browser, id, 1440, drive, { pairs, base: "/dev/mock/f7" });
+    // 見本のガントの本体（svar）はあとから読む。棒が出るまで待ってから比べる（見出しだけでは棒がまだ 0 本のことがある）
+    const mockReady = async (m: Page) => {
+      if (id === "f7-gantt") await expect(m.locator(".k-f7-gantt-bar").first()).toBeAttached();
+    };
+    const r = await matchMock(browser, id, 1440, drive, { pairs, base: "/dev/mock/f7", mockReady });
     bad.push(...r.bad);
   };
   await run("f7-gantt", GANTT_PAIRS, async (p) => {
-    await setup(p);
+    // 見本の最初の棒は親（【親】セイコー様 保守契約の更新・作業中）。最初の棒と状態の札が同じ物になるよう、親とその子を先に並べる（中身は比べない）
+    const family = new Set(["EG-124", "EG-125", "EG-126", "EG-129", "EG-130"]);
+    const head = ROWS.filter((r) => family.has(r.number)).map((r) =>
+      r.number === "EG-124" ? { ...r, stage: { id: "st-doing", name: "作業中", key: "doing" } } : r,
+    );
+    await setup(p, { rows: [...head, ...ROWS.filter((r) => !family.has(r.number))] });
     await openGantt(p);
   });
   await run("f7-gantt-move", MOVE_PAIRS, async (p) => {
