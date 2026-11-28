@@ -68,20 +68,19 @@ body:has(#kn-tg-search:checked) .kn-bar>:not(span[style*="margin-left: auto"]),b
 </helmet>
 <div data-shell style="min-height: 100vh; position: relative; overflow: hidden; background: rgba(19,27,39,0.42)">
  <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
- <div style="position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">
+ <div class="kc-sheet" style="position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">
+  <style>@media (max-width: 767px){.kc-sheet{align-items:flex-end !important;padding:16px !important}.kc-sheet>section{width:100% !important}.kc-sheet-foot>button{flex:1 1 0}}</style>
   <section role="dialog" aria-label="差し戻す" style="width: 420px; max-width: 100%; box-sizing: border-box; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">
    <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center"><b style="font-size: 15px">差し戻す</b><button type="button" aria-label="閉じる" style="margin-left: auto; width: 28px; height: 28px; border: 0; background: transparent; color: #4A5563">×</button></div>
-   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px">
-    <div style="font-size: 12px; color: #4A5563">EG-128 セイコー様へ 11月分の請求書を送る</div>
-    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563">どこを直すか<select disabled aria-disabled="true" style="opacity: 0.55"></select></label>
-    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #4A5563"><span>理由 <span style="color: #B91C1C">必須</span></span><textarea aria-label="差し戻す理由" style="min-height: 64px">10/19 の追加対応は無償なので外してください</textarea></label>
-    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0"><legend style="font-size: 12px; color: #4A5563; padding: 0 4px">次は誰が直すか</legend>
-     <label style="display: flex; gap: 6px; font-size: 12px"><input type="radio" name="who" checked disabled aria-disabled="true" style="opacity: 0.55">AI に直させて、確認からやり直す</label>
-     <label style="display: flex; gap: 6px; font-size: 12px"><input type="radio" name="who" disabled aria-disabled="true" style="opacity: 0.55">自分で直す</label>
+   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; font-size: 13px; line-height: 20.8px">
+    <div style="font-size: 12px; line-height: 19.2px; color: #4A5563">EG-133 11 月分の請求書を送る</div>
+    <label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 12px; line-height: 19.2px; color: #4A5563">理由 <span style="color: #B91C1C">必須</span></span><textarea aria-label="差し戻す理由" style="height: 64px; resize: vertical"></textarea></label>
+    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0; min-height: 80px; box-sizing: border-box"><legend style="font-size: 12px; line-height: 19.2px; color: #4A5563; padding: 0; margin-bottom: 4px">次は誰が直すか</legend>
+     <label style="display: flex; gap: 6px; font-size: 12px; line-height: 19.2px"><input type="radio" name="who" checked>AI に直させる（作り直しを任せます）</label>
+     <label style="display: flex; gap: 6px; font-size: 12px; line-height: 19.2px"><input type="radio" name="who">自分で直す（チケットは作業中に戻ります）</label>
     </fieldset>
-    <label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox" disabled aria-disabled="true" style="opacity: 0.55">この理由を AI に覚えさせる候補にする（ナレッジ更新の候補）</label>
    </div>
-   <div style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">差し戻す</button></div>
+   <div class="kc-sheet-foot" style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button><button type="button" data-primary style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">差し戻す</button></div>
   </section>
  </div>
 </div>
