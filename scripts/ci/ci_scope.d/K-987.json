@@ -1,0 +1,37 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261128012700_ops_plans_read.sql",
+    "apps/api/src/features/F12/ops/plans/**",
+    "apps/api/src/hooks/ops-plans-read.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-plans-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-plans-read.test.ts",
+    "apps/api/test/features/F12/ops-plans-write.test.ts",
+    "apps/api/test/features/F12/ops-plans-impact.test.ts",
+    "apps/api/test/features/F12/ops-plans-decide.test.ts",
+    "apps/api/test/features/F12/plan-terms.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-plans-read.test.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-987.json"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ops_plans.test.ts",
+    "apps/api/test/generated/get_ops_plan_proposals.test.ts",
+    "apps/api/test/generated/get_ops_plan_history.test.ts"
+   ]
+  }
+ ]
+}
