@@ -1,0 +1,78 @@
+{
+ "meta": {
+  "skill_name": "spec-sync-orchestrator",
+  "run_id": "20260909-105038-goal-unit-rollup",
+  "executed_at": "2026-09-09T10:50:38.673929",
+  "project_root": "/Users/masato0420/Downloads/受託開発/自社事業/kaname",
+  "status": "completed",
+  "display_mode": "silent"
+ },
+ "change_declaration": {
+  "raw_input": "目標の親子関係で単位が変わるケースが設計に入っていない",
+  "parsed_changes": [
+   {
+    "type": "custom",
+    "target": "goals / units / rollup",
+    "decision_id": "AD-005",
+    "scope": [
+     "ER図",
+     "決定ログ§32",
+     "flow",
+     "モック3画面"
+    ]
+   }
+  ]
+ },
+ "impact_scan": {
+  "scanned_concept": "AD-005",
+  "affected_files_count": 18,
+  "affected_locations_count": 110,
+  "hand_edited": [
+   "03_architecture/ER図.md",
+   "01_hearing/決定ログ_進行中.md",
+   "05_flow/data.py",
+   "06_mockup/s_p34.py",
+   "06_mockup/s_p1.py",
+   "spec-dependencies.yaml"
+  ],
+  "regenerated": [
+   "05_flow/flow.json",
+   "05_flow/flow.html",
+   "05_flow/使ってもらい方.md",
+   "06_mockup/v1/*.html（36）",
+   "06_mockup/mock-contract-hints.json"
+  ]
+ },
+ "audit": {
+  "loops": 1,
+  "checks": [
+   {
+    "cmd": "python3 scripts/ci/spec_check.py",
+    "exit": 0,
+    "tail": "PASS — A / B / C すべて緑"
+   },
+   {
+    "cmd": "python3 scripts/ci/flow_gate.py --mocks 06_mockup/v1 --choke 03_architecture/choke-points.json",
+    "exit": 0,
+    "tail": "PASS — G1〜G10 すべて緑。ui-mockup に進めます。"
+   },
+   {
+    "cmd": "cd 06_mockup && python3 check_links.py v1",
+    "exit": 0,
+    "tail": "404: 0 本  ── すべて実在ファイルを指しています"
+   },
+   {
+    "cmd": "cd 06_mockup && python3 check_wide.py v1",
+    "exit": 0,
+    "tail": "横に広い要素はすべてスクロールする箱の中にあります"
+   }
+  ]
+ },
+ "output": {
+  "commit_message_draft": "feat(goals): 目標の親子で単位が変わるケースに対応\\n\\n- units をマスタ化（顧客が作れる。運営が列挙しない）\\n- goals に rollup_kind（足す/変換して足す/足さない）と rollup_spec(jsonb) を追加\\n- goal_contributions を新設（足さない型を仮説で親に繋ぐ）\\n- 未配分の赤は「足す」型のときだけ計算する条件つきに訂正（決定ログ §32 ②）\\n- 行為 A23「未配分・遅れを直す」→「目標の下ろし方を決める・直す」\\n- 目標画面に状態「単位が変わる木」を追加、配分画面を「目標の下ろし方」に作り替え",
+  "recommended_next_actions": [
+   "ui-mockup STEP 3 の完了報告",
+   "functional-breakdown へ"
+  ]
+ }
+}

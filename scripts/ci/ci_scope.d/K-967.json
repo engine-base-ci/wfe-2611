@@ -1,0 +1,14 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-resend-verification.ts",
+    "apps/api/src/features/F12/ops/resend-verification.ts",
+    "packages/db/migrations/20261128010700_ops_resend_verification.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-resend-verification.test.ts"
+   ]
+  }
+ ]
+}
