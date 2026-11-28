@@ -96,7 +96,15 @@ function AllButton(): ReactNode {
   const { reading, flow } = useBulkState();
   const preview = useBulkPreview();
   return (
-    <Button variant="outlined" size="sm" disabled={reading || flow !== null} onClick={() => void preview("all", [])}>
+    // 確かめの小窓を開いている間も押せる形のまま（下絵 bulk-confirm-all。小窓が開いている間は押しても何もしない）
+    <Button
+      variant="outlined"
+      size="sm"
+      disabled={reading}
+      onClick={() => {
+        if (flow === null) void preview("all", []);
+      }}
+    >
       {ALL_LABEL}
     </Button>
   );

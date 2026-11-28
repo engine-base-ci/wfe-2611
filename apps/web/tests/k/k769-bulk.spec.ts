@@ -527,30 +527,46 @@ async function match(
 ) {
   const bad: string[] = [];
   for (const w of widths) {
-    const r = await matchMock(browser, id, w, (pg) => drive(pg, w), {
-      pairs: BULK_PAIRS,
-      base: "/dev/mock/f5",
-      skip: SKIP,
-    });
+    // 試験の準備：openQueue は窓の高さを 1000 にする。下絵を開いた窓と同じ高さ（stage2-match の vp）に戻してから比べる（期待は変えない）
+    const vh = w === 375 ? 812 : 900;
+    const r = await matchMock(
+      browser,
+      id,
+      w,
+      async (pg) => {
+        await drive(pg, w);
+        await pg.setViewportSize({ width: w, height: vh });
+      },
+      {
+        pairs: BULK_PAIRS,
+        base: "/dev/mock/f5",
+        skip: SKIP,
+      },
+    );
     bad.push(...r.bad);
   }
   expect(bad, bad.join("\n")).toEqual([]);
 }
-const pick2 = async (pg: Page, w: number) => {
-  await setup(pg);
+// at：選ぶ行の並び（AI の成果物の行だけを数える・0 から）。既定は 1 つ目と 2 つ目
+const pick2 = async (pg: Page, w: number, at: readonly [number, number] = [0, 1]) => {
+  const b = await setup(pg);
   await openQueue(pg, w);
   const lst =
     w < 768
       ? pg.getByRole("region", { name: "承認待ちの一覧（スマホ）" }).getByRole("checkbox")
       : pg.getByRole("table").getByRole("checkbox");
-  await lst.nth(w < 768 ? 0 : 1).check();
-  await lst.nth(w < 768 ? 1 : 2).check();
+  const off = w < 768 ? 0 : 1; // 表は頭の四角が 1 つ目
+  await lst.nth(at[0] + off).check();
+  await lst.nth(at[1] + off).check();
+  return b;
 };
 
 test("K769-UI-016 下絵との突き合わせ：bulk-select（2 件を選んだ帯）・bulk-confirm-selected（選んだものの確かめ）", async ({
   browser,
 }) => {
-  await match(browser, "bulk-select", pick2);
+  await match(browser, "bulk-select", async (pg, w) => {
+    await pick2(pg, w);
+  });
   await match(browser, "bulk-confirm-selected", async (pg, w) => {
     await pick2(pg, w);
     await bar(pg).getByRole("button", { name: "選んだものを承認", exact: true }).click();
@@ -576,7 +592,14 @@ test("K769-UI-018 下絵との突き合わせ：bulk-done・bulk-partial（承�
   browser,
 }) => {
   await match(browser, "bulk-done", async (pg, w) => {
-    await pick2(pg, w);
+    // 試験の準備を下絵のデータに合わせる：下絵 bulk-done は AI の成果物の 1 つ目と 3 つ目（EG-128・EG-127）を承認した後（PICKED）。
+    //   残るのは 2 つ目の AI の成果物と渡された行
+    const b = await pick2(pg, w, [0, 2]);
+    // 下絵 bulk-done のデータ：承認した 2 件は一覧から消える（本物の口と同じ。前は承認の後も同じ 4 件を返していた）
+    b.queueRows = (rows) => {
+      const done = new Set(b.approves.flatMap((a) => (a["approval_ids"] as string[] | undefined) ?? []));
+      return rows.filter((r) => !done.has(String(r["id"])));
+    };
     await bar(pg).getByRole("button", { name: "選んだものを承認", exact: true }).click();
     await confirmDlg(pg)
       .getByRole("button", { name: /件を承認する$/ })

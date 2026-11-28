@@ -35,9 +35,10 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
   );
   return (
     <>
+      {/* 選んだ N 件の帯は一覧の箱の上（下絵 bulk-select・K-769） */}
+      <QueueBulkSlot part="band" at="table" rows={rows} total={total} />
       <section className="k-ap-card k-hnd-q-table" aria-label="承認待ちの一覧">
         <Tools total={total} />
-        <QueueBulkSlot part="band" at="table" rows={rows} total={total} />
         <div className="k-ap-scroll">
           <table className="k-ap-table">
             <thead>

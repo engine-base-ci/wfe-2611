@@ -26,3 +26,12 @@
 .k-more-focus-stage {
   min-height: var(--k-s-xs);
 }
+
+/* スマホのカードの並びの道具の行（まとめて承認・決めた履歴）：下絵の札の下の行と同じ並び（左に寄せ、両端に分ける・K769-UI-016） */
+@media (max-width: 767px) {
+  .k-hnd-mq > .k-ap-tools-end {
+    margin-left: 0;
+    justify-content: space-between;
+    gap: var(--k-s-sm);
+  }
+}
