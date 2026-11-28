@@ -1,0 +1,543 @@
+#!/usr/bin/env python3
+"""K-261 design_gate の D8（画面の CSS の生の長さ）と、その台帳・CI の配線の試験。
+
+作りものの木は tempfile の中に作り、design_gate.py を子プロセスで流す。本物の木は読むだけ（CI の段の命令を流すだけ）。
+行 ID は K261-RL-001〜018（チケット 11_tickets/K-261.md の表）。
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+GATE = ROOT / "scripts" / "ci" / "design_gate.py"
+CFG = ROOT / "design-gate.json"
+TESTPLAN = ROOT / "05_flow" / "build_testplan.py"
+WORKFLOW = ROOT / ".github" / "workflows" / "v3-gate.yml"
+LEDGER_CAP_ROWS = 1303       # 台帳を入れた時点の行の数（K-261・Q の指摘 6 つを入れた後）。減らすだけ
+LEDGER_CAP_COUNT = 1427      # 台帳を入れた時点の生の値の数（count の和）
+
+DESIGN = """---
+colors:
+  primary: "#22345C"
+typography:
+  body:
+    fontSize: 13px
+rounded:
+  sm: 4px
+---
+# 作りもの
+"""
+TOKENS = ":root {\n  --k-s-sm: 8px;\n  --k-s-md: 16px;\n  --k-lh-body: 1.6;\n  --k-shadow: 0 8px 24px #000;\n}\n"
+BASE_CFG = {
+    "raw_lengths": {
+        "paths": ["web"],
+        "token_css": ["web/tokens.css"],
+        "token_prefix": "--k-",
+        "allow": [{"value": "0", "reason": "零は長さを持たない"}, {"value": "100%", "reason": "親いっぱいはトークンにしない"}],
+        "ledger": "ledger.json",
+    }
+}
+
+
+class Tree:
+    """作りものの木：DESIGN.md・design-gate.json・web/tokens.css・web/a.css・ledger.json"""
+
+    def __init__(self, css: str, cfg: dict | None = None, ledger: list[dict] | None = None) -> None:
+        self.dir = Path(tempfile.mkdtemp(prefix="k261-"))
+        (self.dir / "DESIGN.md").write_text(DESIGN, encoding="utf-8")
+        (self.dir / "web").mkdir()
+        (self.dir / "web" / "tokens.css").write_text(TOKENS, encoding="utf-8")
+        self.css(css)
+        self.cfg(BASE_CFG if cfg is None else cfg)
+        self.ledger(ledger or [])
+
+    def css(self, text: str) -> None:
+        (self.dir / "web" / "a.css").write_text(text, encoding="utf-8")
+
+    def put(self, rel: str, text: str) -> None:
+        (self.dir / rel).parent.mkdir(parents=True, exist_ok=True)
+        (self.dir / rel).write_text(text, encoding="utf-8")
+
+    def cfg(self, cfg: dict) -> None:
+        (self.dir / "design-gate.json").write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
+
+    def ledger(self, entries: list[dict]) -> None:
+        (self.dir / "ledger.json").write_text(json.dumps({"_doc": "試験", "entries": entries}, ensure_ascii=False),
+                                              encoding="utf-8")
+
+    def read_ledger(self) -> list[dict]:
+        return json.loads((self.dir / "ledger.json").read_text(encoding="utf-8"))["entries"]
+
+    def run(self, *extra: str, base: bool = False) -> subprocess.CompletedProcess:
+        args = [sys.executable, str(GATE), "--design", str(self.dir / "DESIGN.md"), "--mocks", str(self.dir / "web"),
+                "--css", str(self.dir / "web" / "tokens.css"), "--part", "--no-components", *extra]
+        if not base and "--ledger-base-ref" not in extra and "--raw-lengths" in extra:
+            args.append("--no-base")
+        return subprocess.run(args, cwd=self.dir, capture_output=True, text=True, timeout=120)
+
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", "-c", "user.email=t@example.invalid", "-c", "user.name=t", *args], cwd=self.dir,
+                       check=True, capture_output=True, text=True)
+
+    def close(self) -> None:
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+
+def d8_lines(out: str) -> list[str]:
+    return [ln.strip() for ln in out.splitlines() if ln.strip().startswith("D8 ")]
+
+
+def entry(sel: str, prop: str, value: str, count: int = 1, reason: str = "前からの値。その画面のチケットが直す") -> dict:
+    return {"file": "web/a.css", "selector": sel, "prop": prop, "value": value, "count": count, "reason": reason}
+
+
+class D8(unittest.TestCase):
+    def tree(self, css: str, **kw) -> Tree:
+        t = Tree(css, **kw)
+        self.addCleanup(t.close)
+        return t
+
+    def assertRed(self, css: str, why: str = "") -> subprocess.CompletedProcess:
+        r = self.tree(css).run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, f"{why}\n{css}\n{r.stdout}{r.stderr}")
+        self.assertTrue(d8_lines(r.stdout), f"{why}：D8 の行が無い\n{r.stdout}")
+        return r
+
+    def assertGreen(self, css: str, why: str = "") -> subprocess.CompletedProcess:
+        r = self.tree(css).run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, f"{why}\n{css}\n{r.stdout}{r.stderr}")
+        self.assertEqual(d8_lines(r.stdout), [], why)
+        return r
+
+    # ---------------------------------------------------------------- 赤と緑
+    def test_K261_RL_001_raw_padding_red(self) -> None:
+        """K261-RL-001 生の padding を足すと 1 で終わり、ファイル:行・宣言・値を出す"""
+        r = self.assertRed(".a {\n  color: inherit;\n  padding: 10px 12px;\n}\n")
+        lines = d8_lines(r.stdout)
+        self.assertEqual(len(lines), 1, r.stdout)
+        self.assertIn("web/a.css:3", lines[0])
+        self.assertIn(".a", lines[0])
+        self.assertIn("padding: 10px 12px", lines[0])
+        self.assertRegex(r.stdout, r"D8_生の長さ: 1 件")
+        # 注釈の中の { } ; と値は数えず、注釈の後の宣言の行も合う
+        r = self.assertRed("/* .x { padding: 10px; } gap: 2px; }\n */\n.b {\n  color: inherit;\n  gap: 6px;\n}\n")
+        lines = d8_lines(r.stdout)
+        self.assertEqual(len(lines), 1, r.stdout)
+        self.assertIn("web/a.css:5", lines[0])
+        self.assertIn(".b { gap: 6px }", lines[0])
+
+    def test_K261_RL_002_token_green(self) -> None:
+        """K261-RL-002 同じ所をトークンにすると 0 で終わる"""
+        r = self.assertGreen(".a {\n  color: inherit;\n  padding: var(--k-s-sm) var(--k-s-md);\n}\n")
+        self.assertRegex(r.stdout, r"D8_生の長さ: 0 件")
+
+    def test_K261_RL_003_each_property_red(self) -> None:
+        """K261-RL-003 大きさ・余白・間・行の高さ・影・枠の太さ・位置・格子・字の間の生の値はどれも赤"""
+        decls = [
+            "width: 240px", "height: 32px", "min-width: 120px", "max-width: 720px", "min-height: 44px",
+            "max-height: 80vh", "padding-top: 4px", "padding-inline: 12px", "margin: 0 auto 16px",
+            "margin-left: -2px", "gap: 6px", "row-gap: 4px", "column-gap: 8px", "inset: 0 4px",
+            "top: 8px", "right: 8px", "bottom: 8px", "left: 50%", "line-height: 1.9", "line-height: 20px",
+            "box-shadow: 0 8px 24px #000", "border-width: 2px", "border-top-width: 1px", "border: 1px solid #000",
+            "border-bottom: 2px solid currentColor", "outline: 2px solid #000", "outline-offset: 2px",
+            "flex-basis: 240px", "flex: 1 1 240px", "grid-template-columns: 240px 1fr",
+            "grid-template-rows: auto 48px", "transform: translateY(4px)", "letter-spacing: .02em",
+            "font: 14px/1.5 sans-serif", "translate: 0 2px",
+            # 表に名前の無い性質も見る（性質を決め打ちしない）
+            "text-indent: 1em", "scroll-margin-top: 64px", "background-size: 12px 12px",
+            "background-position: 30% 4px", "word-spacing: 2px", "stroke-width: 1.5px",
+        ]
+        for d in decls:
+            with self.subTest(d):
+                self.assertRed(f".a {{ {d}; }}\n", d)
+
+    def test_K261_RL_004_each_unit_red(self) -> None:
+        """K261-RL-004 単位ごと（px・rem・em・%・vw・vh・ch・大文字の PX）に赤"""
+        for v in ("12px", "1rem", "1.5em", "50%", "10vw", "20vh", "60ch", "12PX", ".5rem", "100dvh", "100svh",
+                  "50vmin", "40cqi", "10pt", "2lh", "1e1px"):
+            with self.subTest(v):
+                self.assertRed(f".a {{ width: {v}; }}\n", v)
+
+    def test_K261_RL_005_loopholes_red(self) -> None:
+        """K261-RL-005 抜け道はどれも赤：予備の値・自前の変数（定義と使う所）・無いトークン・calc・入れ子・@layer/@supports/@media の中・!important"""
+        cases = {
+            "予備の値": ".a { gap: var(--k-s-sm, 12px); }",
+            "無いトークン": ".a { gap: var(--k-nope); }",
+            "calc": ".a { width: calc(100% - 12px); }",
+            "min": ".a { width: min(400px, 100%); }",
+            "max": ".a { width: max(var(--k-s-md), 12px); }",
+            "clamp": ".a { width: clamp(var(--k-s-sm), 50%, var(--k-s-md)); }",
+            "入れ子": ".a { color: inherit; &:hover { gap: 6px; } }",
+            "@layer": "@layer x { .a { gap: 6px; } }",
+            "@supports": "@supports (display: grid) { .a { gap: 6px; } }",
+            "@media の中": "@media (max-width: 767px) { .a { gap: 6px; } }",
+            "important": ".a { gap: 6px !important; }",
+            "自前の --k- の定義": ".a { --k-mine: 240px; }",
+        }
+        for why, css in cases.items():
+            with self.subTest(why):
+                self.assertRed(css + "\n", why)
+        r = self.assertRed(".a { --w: 240px; }\n.b { width: var(--w); }\n", "自前の変数")
+        lines = d8_lines(r.stdout)
+        self.assertEqual(len(lines), 2, f"定義と使う所の 2 つ：{r.stdout}")
+        self.assertTrue(any("--w: 240px" in ln for ln in lines), r.stdout)
+        self.assertTrue(any("width: var(--w)" in ln for ln in lines), r.stdout)
+
+    def test_K261_RL_006_allowed_green(self) -> None:
+        """K261-RL-006 許しの値（0・0px・-0・auto・100%）・line-height の normal とトークンは緑。許しに無い 50% は赤"""
+        self.assertGreen(".a { margin: 0 auto; padding: 0px; top: -0; width: 100%; height: auto; "
+                         "line-height: normal; }\n.b { line-height: var(--k-lh-body); box-shadow: var(--k-shadow); "
+                         "min-width: 0%; }\n")
+        self.assertRed(".a { width: 50%; }\n", "許しに無い %")
+
+    def test_K261_RL_007_conditions_green(self) -> None:
+        """K261-RL-007 @media・@container の条件の区切りの幅と @keyframes の区切りは見ない"""
+        self.assertGreen("@media (max-width: 767px) and (min-width: 320px) { .a { gap: var(--k-s-sm); } }\n"
+                         "@container side (min-width: 400px) { .a { gap: var(--k-s-sm); } }\n"
+                         "@keyframes k { 0% { opacity: 0; } 50% { opacity: .5; } 100% { opacity: 1; } }\n")
+
+    def test_K261_RL_008_not_lengths_green(self) -> None:
+        """K261-RL-008 長さでない物・別の段が比べる物は見ない：font-size の px（D4）・border-radius の px（D3）・色の関数の %・文字・url・時間・数だけの値・
+        長さでない自前の変数・どこにも定義の無い頭の違う変数。D3・D4 が比べない書き方（rem の字・% の角丸・角ごとの角丸）は D8 が赤"""
+        r = self.assertGreen(
+            ".a { --c: #22345C; color: var(--c); width: var(--from-js); font-size: 13px; border-radius: 4px; "
+            "background: color-mix(in srgb, #22345C 20%, transparent); color: hsl(0 0% 50%); "
+            "content: \"12px\"; background-image: url(a-12px.svg); transition: opacity .2s ease 100ms; "
+            "z-index: 10; opacity: .5; flex: 1; font-weight: 600; aspect-ratio: 16 / 9; "
+            "grid-template-columns: repeat(3, minmax(0, 1fr)); }\n")
+        self.assertRegex(r.stdout, r"D4_文字_段に無い: 0 件")
+        for d in ("font-size: 1.1rem", "border-radius: 50%", "border-top-left-radius: 7px"):
+            with self.subTest(d):
+                self.assertRed(f".a {{ {d}; }}\n", d)
+
+    def test_K261_RL_009_token_file_ignored(self) -> None:
+        """K261-RL-009 token_css の宣言と、組み立ての置き場（node_modules・.next）の .css は見ない。
+        ignore_files（D1〜D7 の外し）は D8 を外さない"""
+        t = self.tree(".a { gap: var(--k-s-sm); }\n")
+        for d in ("node_modules/x", ".next/static"):
+            (t.dir / "web" / d).mkdir(parents=True)
+            (t.dir / "web" / d / "z.css").write_text(".z { gap: 6px; }\n", encoding="utf-8")
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertNotIn("tokens.css", "\n".join(d8_lines(r.stdout)))
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["ignore_files"] = ["a.css"]
+        t = self.tree(".a { gap: 6px; }\n", cfg=cfg)
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "ignore_files で D8 が黙った\n" + r.stdout)
+
+    # ---------------------------------------------------------------- 設定
+    def test_K261_RL_010_config_failures_red(self) -> None:
+        """K261-RL-010 設定の誤りは黙って緑にしない：raw_lengths が無い・比べ方の指定が無い・理由の無い許し・無い token_css・.css が 0"""
+        css = ".a { gap: var(--k-s-sm); }\n"
+        t = self.tree(css, cfg={})
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("raw_lengths", r.stdout)
+        t = self.tree(css)
+        r = t.run("--raw-lengths", base=True)
+        self.assertEqual(r.returncode, 1, "比べ方の指定が無いのに緑\n" + r.stdout)
+        self.assertIn("--ledger-base-ref", r.stdout + r.stderr)
+        bad = json.loads(json.dumps(BASE_CFG))
+        bad["raw_lengths"]["allow"].append({"value": "1px"})
+        r = self.tree(css, cfg=bad).run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "理由の無い許しで緑\n" + r.stdout)
+        bad = json.loads(json.dumps(BASE_CFG))
+        bad["raw_lengths"]["token_css"] = ["web/none.css"]
+        r = self.tree(css, cfg=bad).run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "無い token_css で緑\n" + r.stdout)
+        bad = json.loads(json.dumps(BASE_CFG))
+        bad["raw_lengths"]["paths"] = ["nothing"]
+        r = self.tree(css, cfg=bad).run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, ".css が 0 で緑\n" + r.stdout)
+
+    # ---------------------------------------------------------------- 台帳
+    def test_K261_RL_011_ledger(self) -> None:
+        """K261-RL-011 台帳：載っていれば緑・数が増えたら赤・直ったのに残れば赤・同じ行 2 つ・理由が空・count 0 は赤"""
+        css = ".a { gap: 6px; }\n"
+        t = self.tree(css, ledger=[entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        t.css(".a { gap: 6px; }\n.a { gap: 6px; }\n")
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "同じ宣言が 2 つに増えたのに緑\n" + r.stdout)
+        t.css(".a { gap: var(--k-s-sm); }\n")
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "直ったのに台帳に残って緑\n" + r.stdout)
+        self.assertIn("台帳", r.stdout)
+        for why, led in {
+            "同じ行 2 つ": [entry(".a", "gap", "6px"), entry(".a", "gap", "6px")],
+            "理由が空": [entry(".a", "gap", "6px", reason=" ")],
+            "count 0": [entry(".a", "gap", "6px", count=0)],
+        }.items():
+            with self.subTest(why):
+                r = self.tree(css, ledger=led).run("--raw-lengths")
+                self.assertEqual(r.returncode, 1, f"{why}で緑\n{r.stdout}")
+
+    def test_K261_RL_012_ledger_vs_base(self) -> None:
+        """K261-RL-012 分かれ目の台帳と比べる：足した行・増やした count は赤・同じか減らすのは緑・読めない版は赤"""
+        css = ".a { gap: 6px; }\n.b { gap: 4px; }\n"
+        t = self.tree(css, ledger=[entry(".a", "gap", "6px"), entry(".b", "gap", "4px")])
+        t.git("init", "-q")
+        t.git("add", "-A")
+        t.git("commit", "-q", "-m", "base")
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        t.css(css + ".c { gap: 2px; }\n")
+        t.ledger([entry(".a", "gap", "6px"), entry(".b", "gap", "4px"), entry(".c", "gap", "2px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "台帳に足して通った\n" + r.stdout)
+        self.assertIn("分かれ目", r.stdout)
+        t.css(css + ".a { gap: 6px; }\n")
+        t.ledger([entry(".a", "gap", "6px", count=2), entry(".b", "gap", "4px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "count を増やして通った\n" + r.stdout)
+        t.css(".a { gap: 6px; }\n")
+        t.ledger([entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 0, "減らしたのに赤\n" + r.stdout)
+        r = t.run("--raw-lengths", "--ledger-base-ref", "no-such-ref")
+        self.assertEqual(r.returncode, 1, "読めない版で緑\n" + r.stdout)
+        # 入れ替え：1 行消して別の 1 行を足す（行の数も count の和も同じ）
+        t.css(".b { gap: 4px; }\n.c { gap: 2px; }\n")
+        t.ledger([entry(".b", "gap", "4px"), entry(".c", "gap", "2px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "入れ替えで通った\n" + r.stdout)
+        # 台帳の道を変えても、分かれ目の設定が指す台帳と比べる
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["raw_lengths"]["ledger"] = "ledger2.json"
+        t.cfg(cfg)
+        (t.dir / "ledger2.json").write_text(json.dumps({"entries": [entry(".b", "gap", "4px"), entry(".c", "gap", "2px")]}),
+                                           encoding="utf-8")
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "台帳の道を変えて足した行が通った\n" + r.stdout)
+
+    def test_K261_RL_012b_base_without_config(self) -> None:
+        """K261-RL-012 分かれ目の設定に raw_lengths が無い回（台帳を入れる回）だけ比べずに通す。設定が在って台帳が無ければ赤"""
+        t = self.tree(".a { gap: 6px; }\n", cfg={}, ledger=[])
+        t.git("init", "-q")
+        t.git("add", "-A")
+        t.git("commit", "-q", "-m", "base")
+        t.cfg(BASE_CFG)
+        t.ledger([entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("台帳を入れる回", r.stdout)
+        (t.dir / "ledger.json").unlink()
+        t.git("add", "-A")
+        t.git("commit", "-q", "-m", "config only")
+        t.ledger([entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "分かれ目に台帳が無いのに通った\n" + r.stdout)
+
+    def test_K261_RL_013_shrink(self) -> None:
+        """K261-RL-013 --shrink-ledger は直った行を消し count を今の数に下げるだけで、台帳に無い赤は足さない"""
+        t = self.tree(".a { gap: 6px; }\n.c { gap: 2px; }\n",
+                      ledger=[entry(".a", "gap", "6px", count=3), entry(".b", "gap", "4px")])
+        r = t.run("--raw-lengths", "--shrink-ledger")
+        led = t.read_ledger()
+        self.assertEqual([(e["selector"], e["count"]) for e in led], [(".a", 1)], r.stdout)
+        self.assertEqual(led[0]["reason"], entry(".a", "gap", "6px")["reason"])
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "台帳に無い .c が足されて緑になった\n" + r.stdout)
+
+    def test_K261_RL_014_json(self) -> None:
+        """K261-RL-014 --json に D8_生の長さ（赤の並び）が在り、fails に数える"""
+        r = self.tree(".a { gap: 6px; padding: 2px; }\n").run("--raw-lengths", "--json")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        out = json.loads(r.stdout)
+        self.assertEqual(len(out["D8_生の長さ"]), 2, out)
+        self.assertGreaterEqual(out["fails"], 2)
+
+    def test_K261_RL_018_off_without_flag(self) -> None:
+        """K261-RL-018 --raw-lengths を付けない回は D8 を流さず「掛けていません」と出す（前からの使い方を変えない）"""
+        r = self.tree(".a { gap: 6px; }\n").run()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertRegex(r.stdout, r"D8_生の長さ: 掛けていません")
+
+    # ---------------------------------------------------------------- レビュー Q の指摘（2026-11-17）
+    def test_K261_RL_019_at_rules_inside_rules(self) -> None:
+        """K261-RL-019 規則の中の @media・@supports・@container・@layer・@scope・@starting-style に直に書いた宣言も見る。
+        一番上の @font-face の記述子は宣言にしない"""
+        for at in ("@media (min-width: 600px)", "@supports (display: grid)", "@container (min-width: 400px)",
+                   "@layer x", "@scope (.b)", "@starting-style"):
+            with self.subTest(at):
+                r = self.assertRed(f".a {{ color: inherit; {at} {{ padding: 10px; }} }}\n", at)
+                self.assertIn("padding: 10px", "\n".join(d8_lines(r.stdout)))
+        self.assertGreen("@font-face { font-family: x; src: url(a.woff2); size-adjust: 90%; }\n")
+
+    def test_K261_RL_020_at_property(self) -> None:
+        """K261-RL-020 @property の initial-value の生の長さは定義として赤、その変数を読む所も赤"""
+        r = self.assertRed("@property --gap { syntax: '<length>'; inherits: false; initial-value: 12px; }\n"
+                           ".a { gap: var(--gap); }\n")
+        lines = "\n".join(d8_lines(r.stdout))
+        self.assertIn("12px", lines)
+        self.assertIn("gap: var(--gap)", lines)
+        self.assertGreen("@property --gap { syntax: '<length>'; inherits: false; initial-value: 0px; }\n"
+                         ".a { gap: var(--gap); }\n")
+
+    def test_K261_RL_021_unitless_line_height_paths(self) -> None:
+        """K261-RL-021 単位の無い行の高さ：font の略記の /1.4・自前の変数（--lh: 1.9）を line-height や font の / の後ろで読む所は赤。
+        トークンの行の高さは緑"""
+        for why, css in {
+            "font の / の後ろ": ".a { font: 600 var(--k-s-md)/1.4 sans-serif; }",
+            "font の /1": ".a { font: 400 var(--k-s-md)/1 sans-serif; }",
+            "line-height で読む": ".a { --lh: 1.9; }\n.b { line-height: var(--lh); }",
+            "font の / の後ろで読む": ".a { --lh: 1.9; }\n.b { font: 600 var(--k-s-md)/var(--lh) sans-serif; }",
+        }.items():
+            with self.subTest(why):
+                r = self.assertRed(css + "\n", why)
+                if "読む" in why:
+                    self.assertTrue(any(".b" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        self.assertGreen(".a { font: 600 var(--k-s-md)/var(--k-lh-body) sans-serif; line-height: var(--k-lh-body); "
+                         "--z: 3; z-index: var(--z); }\n")
+
+    def test_K261_RL_022_vars_any_depth(self) -> None:
+        """K261-RL-022 自前の変数を何段でも辿る：--a: 12px → --b → --c を padding で読む所が赤"""
+        r = self.assertRed(".r { --a: 12px; --b: var(--a); --c: var(--b); }\n.x { padding: var(--c); }\n")
+        self.assertTrue(any("padding: var(--c)" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        r = self.assertRed(".r { --a: 12px; --b: var(--a); }\n.x { padding: var(--b); }\n")
+        self.assertTrue(any("padding: var(--b)" in ln for ln in d8_lines(r.stdout)), r.stdout)
+
+    def test_K261_RL_023_d3_d4_coverage(self) -> None:
+        """K261-RL-023 px だけの font-size・border-radius を D8 から外すのは、D3・D4 が読む置き場（--mocks・--css）にあるときだけ。
+        外の置き場の値・関数や変数の予備の値の中の px は D8 が赤"""
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["raw_lengths"]["paths"] = ["web", "old"]
+        cases = {
+            ("web", "font-size: 13px"): 0, ("old", "font-size: 13px"): 1,
+            ("web", "border-radius: 4px"): 0, ("old", "border-radius: 4px"): 1,
+            ("web", "font-size: max(12px, 13px)"): 1, ("web", "font-size: clamp(12px, 1vw, 13px)"): 1,
+            ("web", "border-radius: var(--k-r, 7px)"): 1, ("web", "font-size: 1.1rem"): 1,
+        }
+        for (where, d), want in cases.items():
+            with self.subTest(where=where, decl=d):
+                t = self.tree(".a { color: inherit; }\n", cfg=cfg)
+                t.put(f"{where}/b.css", f".b {{ {d}; }}\n")
+                r = t.run("--raw-lengths")
+                got = [ln for ln in d8_lines(r.stdout) if f"{where}/b.css" in ln]
+                self.assertEqual(len(got), want, f"{where} {d}\n{r.stdout}")
+
+    def test_K261_RL_024_markup(self) -> None:
+        """K261-RL-024 画面のコード（.tsx など）の Tailwind の任意値・style 属性・DOM の style へ書く値も数える（台帳で減らすだけ）。
+        試験の台本（.spec.tsx・tests/ の下）は数えない"""
+        for why, code in {
+            "任意値": 'export const P = () => <p className="max-w-[920px] p-4" />;',
+            "任意の性質": 'export const P = () => <p className="[padding:10px]" />;',
+            "calc の任意値": 'export const P = () => <p className="w-[calc(100%-12px)]" />;',
+            "変種つき": 'export const P = () => <p className="md:hover:text-[13.5px]" />;',
+            "style 属性": "export const P = () => <p style={{ gap: 6 }} />;",
+            "DOM の style": 'export function f(el: HTMLElement) { el.style.width = "12px"; }',
+            "DOM の setProperty": 'export function f(el: HTMLElement) { el.style.setProperty("gap", "6px"); }',
+            "DOM の Object.assign": 'export function f(el: HTMLElement) { Object.assign(el.style, { gap: "6px" }); }',
+            "DOM の setAttribute": 'export function f(el: HTMLElement) { el.setAttribute("style", "gap: 6px"); }',
+        }.items():
+            with self.subTest(why):
+                t = self.tree(".a { color: inherit; }\n")
+                t.put("web/p.tsx", code + "\n")
+                r = t.run("--raw-lengths")
+                self.assertEqual(r.returncode, 1, f"{why}\n{r.stdout}")
+                self.assertTrue(any("web/p.tsx:1" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        t = self.tree(".a { color: inherit; }\n")
+        t.put("web/p.tsx", 'export const P = () => <p className="grid-cols-[minmax(0,1fr)_auto] bg-[#fff] '
+                           'w-[var(--k-s-md)] w-full" />;\n')
+        t.put("web/x.spec.tsx", 'const s = "max-w-[920px]"; el.style.width = "12px";\n')
+        t.put("web/tests/y.ts", 'const s = "max-w-[920px]";\n')
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        t = self.tree(".a { color: inherit; }\n",
+                      ledger=[{"file": "web/p.tsx", "selector": "className", "prop": "任意値", "value": "max-w-[920px]",
+                               "count": 1, "reason": "前からの値。その画面のチケットが直す"}])
+        t.put("web/p.tsx", 'export const P = () => <p className="max-w-[920px]" />;\n')
+        self.assertEqual(t.run("--raw-lengths").returncode, 0, "台帳に載った任意値で赤")
+        t.put("web/p.tsx", 'export const P = () => <><p className="max-w-[920px]" /><i className="max-w-[920px]" /></>;\n')
+        self.assertEqual(t.run("--raw-lengths").returncode, 1, "任意値を増やして緑")
+        # style 属性の鍵の値は中身の全部（途中で切らない）
+        body = "{{ " + ", ".join(f"p{i}: \"var(--k-s-md)\"" for i in range(8)) + ", gap: 6 }}"
+        self.assertGreater(len(body), 130)
+        t = self.tree(".a { color: inherit; }\n",
+                      ledger=[{"file": "web/p.tsx", "selector": "style 属性", "prop": "style", "value": body,
+                               "count": 1, "reason": "前からの値。その画面のチケットが直す"}])
+        t.put("web/p.tsx", f"export const P = () => <p style={body} />;\n")
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        t.put("web/p.tsx", f"export const P = () => <p style={body[:-3]}, padding: \"12px\" }}}} />;\n")
+        self.assertEqual(t.run("--raw-lengths").returncode, 1, "長い style 属性の後ろに足して緑")
+
+
+class RealTree(unittest.TestCase):
+    def gate_entry(self) -> tuple[str, str]:
+        src = TESTPLAN.read_text(encoding="utf-8")
+        line = next((ln for ln in src.splitlines() if "k261_raw_lengths_test.py" in ln and '"script"' in ln), None)
+        self.assertIsNotNone(line, "build_testplan.py に K-261 の段が無い")
+        script = re.search(r'"script": "((?:[^"\\]|\\.)*)"', line).group(1).replace('\\"', '"')
+        env = re.search(r'"env": "((?:[^"\\]|\\.)*)"', line)
+        self.assertIn('"job": "spec"', line)
+        self.assertIn('"blocking": True', line)
+        return script, (env.group(1) if env else "")
+
+    def test_K261_RL_015_real_tree(self) -> None:
+        """K261-RL-015 本物の設定と台帳：置き場・トークン・許しの理由・台帳の上限と形、CI の命令が本物の木で 0 で終わる"""
+        conf = json.loads(CFG.read_text(encoding="utf-8"))["raw_lengths"]
+        # 設定を変えて D8 を黙らせない（置き場を狭める・トークンの定義元に画面の CSS を足す・見ない物を足す）
+        self.assertEqual(set(conf), {"paths", "token_css", "token_prefix", "allow", "ledger"})
+        self.assertEqual(conf["paths"], ["apps/web"])
+        self.assertEqual(sorted(conf["token_css"]), ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"])
+        self.assertEqual(conf["token_prefix"], "--k-")
+        for a in conf["allow"]:
+            self.assertGreaterEqual(len(str(a.get("reason") or "").strip()), 6, a)
+        self.assertEqual({str(a["value"]) for a in conf["allow"]}, {"0", "100%"})
+        led = json.loads((ROOT / conf["ledger"]).read_text(encoding="utf-8"))["entries"]
+        self.assertLessEqual(len(led), LEDGER_CAP_ROWS, "台帳の行が入れた時点より増えた")
+        self.assertLessEqual(sum(e["count"] for e in led), LEDGER_CAP_COUNT, "台帳の生の値が入れた時点より増えた")
+        for e in led:
+            self.assertTrue((ROOT / e["file"]).is_file(), e)
+            self.assertGreaterEqual(len(e["reason"].strip()), 10, e)
+        script, _ = self.gate_entry()
+        cmd = script.replace("&& python3 scripts/ci/k261_raw_lengths_test.py", "")
+        r = subprocess.run(["bash", "-c", cmd], cwd=ROOT, capture_output=True, text=True, timeout=300,
+                           env={**os.environ, "CI_BASE": "HEAD"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertRegex(r.stdout, r"D8_生の長さ: 0 件")
+
+    def test_K261_RL_016_ci_wiring(self) -> None:
+        """K261-RL-016 CI の配線：作り手の spec の段が D8 を分かれ目と比べて流し、この試験も流す。v3-gate.yml に同じ段が 1 つ"""
+        script, env = self.gate_entry()
+        for need in ("scripts/ci/design_gate.py", "--raw-lengths", '--ledger-base-ref "$CI_BASE"',
+                     "python3 scripts/ci/k261_raw_lengths_test.py"):
+            self.assertIn(need, script)
+        self.assertNotIn("--no-base", script)
+        self.assertIn("CI_BASE: ${{ steps.scope.outputs.base }}", env)
+        yml = WORKFLOW.read_text(encoding="utf-8")
+        runs = [ln for ln in yml.splitlines() if "k261_raw_lengths_test.py" in ln and "run:" in ln]
+        self.assertEqual(len(runs), 1, "v3-gate.yml に K-261 の段がちょうど 1 つでない（作り手で作り直す）")
+        self.assertIn('--raw-lengths --ledger-base-ref "$CI_BASE"', runs[0])
+        i = yml.index(runs[0])
+        self.assertIn("CI_BASE: ${{ steps.scope.outputs.base }}", yml[i - 600:i + 600])
+
+    def test_K261_RL_017_division_with_class_gate(self) -> None:
+        """K261-RL-017 分担：style={…} は class_gate が新しい層で赤にし、前の世代と app/ は D8 が台帳で数える。D8 が見ない書き方（.scss など・.tsx の <style>）が無い"""
+        sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+        import class_gate  # noqa: PLC0415
+
+        self.assertIn("style", class_gate.KINDS)
+        self.assertIn("apps/web/features/", class_gate.NEW_LAYERS)
+        self.assertIn("apps/web/components/k/", class_gate.NEW_LAYERS)
+        files = [f for f in subprocess.run(["git", "ls-files", "-z", "apps/web"], cwd=ROOT, capture_output=True,
+                                           text=True).stdout.split("\0") if f]
+        other = [f for f in files if re.search(r"\.(scss|sass|less|styl|pcss)$", f)]
+        self.assertEqual(other, [], "D8 が読まない書き方の CSS がある")
+        tagged = [f for f in files if f.endswith((".tsx", ".jsx")) and "<style" in (ROOT / f).read_text(encoding="utf-8")]
+        self.assertEqual(tagged, [], ".tsx に <style> がある（D8 が読まない）")
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
