@@ -47,6 +47,12 @@ import {
 } from "./body-edit-mock";
 import { matchMock } from "./stage2-match";
 
+// 画面の赤い箱。Next の読み上げの部品（next-route-announcer）も role=alert なので外す（k217・k417・k1003 と同じ）
+const alertOf = (page: Page) => page.locator('[role="alert"]:not(#__next-route-announcer__)');
+/** 写しの自動の保存が済む（帯の印が「自動で保存しました」か「保存できません」になる）まで待つ。下絵の帯は印が出た形 */
+const copyMarked = (page: Page) =>
+  expect(page.locator('.k-f4d-editband [role="status"]')).not.toHaveAttribute("data-kind", "none");
+
 test.use({ timezoneId: "Asia/Tokyo" });
 
 const ADDED = "（急ぎ）";
@@ -157,7 +163,7 @@ test("K447-UI-005 道具で書いた木：太字とチェックの箱を足し�
   const sent = JSON.stringify(s.calls[0]!.doc);
   expect(sent).toContain('"type":"bold"');
   expect(sent).toContain('"type":"taskList"');
-  await expect(readBody(page).locator("strong", { hasText: "太い字" })).toBeVisible();
+  await expect(readBody(page).locator("b", { hasText: "太い字" })).toBeVisible(); // 読む形の太字は b（K-577）
   await expect(readBody(page).getByRole("checkbox", { name: "控えを残す" })).toBeDisabled();
 });
 
@@ -247,7 +253,7 @@ test("K447-UI-011 写しが壊れている（JSON でない・木でない）：
   await openDetail(page);
   await expect(enterBtn(page)).toBeVisible();
   await expect(frame(page)).toHaveCount(0);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(alertOf(page)).toHaveCount(0);
   await expect.poll(() => copyOf(page).catch(() => "broken")).toBeNull();
 });
 
@@ -306,7 +312,7 @@ test("K447-UI-014 先に直された（口の 409・E-SEC-004）：本文の上�
       .or(band.getByRole("link", { name: "読み直す", exact: true })),
   ).toBeVisible();
   await expect(editor(page)).toContainText(ADDED);
-  await expect(page.getByRole("alert")).toHaveCount(1);
+  await expect(alertOf(page)).toHaveCount(1);
   expect(m.seen.filter((x) => x === `GET /api/v1/tickets/${TID}`)).toHaveLength(reads + 1);
   expect(s.version).toBe(4);
 });
@@ -432,7 +438,7 @@ test("K447-UI-020 口が 503（E-PAGE-003）：赤い箱に文・書いた字は
   await expect(editor(page)).toContainText(ADDED);
   await finishBtn(page).click();
   await expect(frame(page)).toHaveCount(0);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(alertOf(page)).toHaveCount(0);
   expect(s.calls).toHaveLength(2);
   expect(JSON.stringify(s.calls[1]!.doc)).toBe(JSON.stringify(s.calls[0]!.doc));
 });
@@ -702,6 +708,7 @@ const STATES: { id: string; pairs: FidelityPair[]; setup: (page: Page, w: number
       await mockBodyEdit(page, bodyServer());
       await startEdit(page, w);
       await typeAtEnd(page, "。");
+      await copyMarked(page);
       await cancelBtn(page).click();
       await expect(page.getByRole("dialog", { name: "書いた内容を捨てますか", exact: true })).toBeVisible();
     },
@@ -710,10 +717,12 @@ const STATES: { id: string; pairs: FidelityPair[]; setup: (page: Page, w: number
     id: "f4v2-detail-edit-conflict",
     pairs: [...PAIRS.filter((p) => p.name === "band"), ...NOTICE_PAIRS],
     setup: async (page, w) => {
+      await fixClock(page); // 下絵の帯の時刻（10:42）にそろえる（discard・session と同じ）
       const s = bodyServer();
       await mockBodyEdit(page, s);
       await startEdit(page, w);
       await typeAtEnd(page, ADDED);
+      await copyMarked(page);
       s.elsewhere();
       await finishBtn(page).click();
       await expect(conflictBand(page)).toBeVisible();
@@ -728,6 +737,7 @@ const STATES: { id: string; pairs: FidelityPair[]; setup: (page: Page, w: number
       await mockBodyEdit(page, s);
       await startEdit(page, w);
       await typeAtEnd(page, ADDED);
+      await copyMarked(page);
       s.replies.push(fail(401, "UNAUTHENTICATED", "unauthenticated"));
       await finishBtn(page).click();
       await expect(lostBand(page)).toBeVisible();
@@ -742,6 +752,7 @@ const STATES: { id: string; pairs: FidelityPair[]; setup: (page: Page, w: number
       await mockBodyEdit(page, s);
       await startEdit(page, w);
       await typeAtEnd(page, ADDED);
+      await copyMarked(page);
       s.replies.push(fail(403, "FORBIDDEN", "forbidden"));
       await finishBtn(page).click();
       await expect(failBox(page, msg("E-PAGE-002"))).toBeVisible();
