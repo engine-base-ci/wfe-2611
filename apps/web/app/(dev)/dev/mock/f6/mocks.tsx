@@ -198,7 +198,8 @@ export const MOCKS: readonly MockEntry[] = [
     label: "本文の決定ログ：一覧（改められた・取り消した・元の書き込みへ）",
     ticket: "K-397",
   },
-  { id: "dec-empty", screen: "tickets", ps: "PS0", label: "決定がまだ無い", ticket: "K-397" },
+  // dec-empty は K-397 の正の組から外れた（D-150.41：0 件の詳細には決定ログの場所が無い）。段 7 の下絵の一覧（K-382 の mock）には残るので持ち主は K-382
+  { id: "dec-empty", screen: "tickets", ps: "PS0", label: "決定がまだ無い", ticket: "K-382" },
   {
     id: "dec-from-message",
     screen: "tickets",
