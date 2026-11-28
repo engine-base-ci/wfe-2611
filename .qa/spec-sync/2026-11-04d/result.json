@@ -1,0 +1,69 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-KN120-toolchain",
+ "executed_at": "2026-11-04T05:54:05",
+ "change": "KN-120：eslint 10・electron-builder 26 に上げた。D-128.124 の守りに S6（lockfile の版の出た日）を足した",
+ "impact": [
+  "package.json・apps/bridge/package.json・pnpm-lock.yaml・pnpm-workspace.yaml（next 15.5.28 の例外）",
+  "02_tech_stack/selected-stack.json（supply_chain の how）",
+  "scripts/ci/stack_gate.py（S6）・deprecated_baseline.json",
+  "apps・packages の 7 ファイル（eslint 10 の no-useless-assignment）",
+  "11_tickets/KN-120"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.124 は selected-stack.json の supply_chain に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "spec-validator --tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator --tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "spec-validator --tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "spec-validator --tier h"
+  }
+ ],
+ "next": [
+  "KN-119：11/20 以降に @smithy/core を上げる",
+  "next 15.5.28 ほかの例外を 21 日を過ぎたら外す"
+ ]
+}
