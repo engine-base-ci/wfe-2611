@@ -1,0 +1,72 @@
+{
+ "ops": {
+  "resendInvitation": {
+   "file": "apps/api/test/features/F10/admin-invite-manage.test.ts",
+   "reason": "送り直す口は、招待の状態（期限切れ・使われた・取り消した）・1 日 1 回の境・メールの成否・同時の組み合わせで答えが変わる。生成の試験の種では作れない（K-807）",
+   "covers": {
+    "test_post_invitations_id_resend_ok": "K807-API-001",
+    "test_post_invitations_id_resend_shape": "K807-API-001",
+    "test_post_invitations_id_resend_rejected_401": "K807-API-008",
+    "test_post_invitations_id_resend_rejected_403": "K807-API-008",
+    "test_post_invitations_id_resend_not_found": "K807-API-005",
+    "test_post_invitations_id_resend_conflict": "K807-API-004",
+    "test_post_invitations_id_resend_rate_limited": "K807-API-008",
+    "test_post_invitations_id_resend_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-800.ts",
+     "mark": "K144-API-1102"
+    },
+    "test_post_invitations_id_resend_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_invitations_id_resend_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_invitations_id_resend_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_invitations_id_resend_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_invitations_id_resend_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421 と同じ扱い）"
+   }
+  },
+  "revokeInvitation": {
+   "file": "apps/api/test/features/F10/admin-invite-manage.test.ts",
+   "reason": "取り消す口は、招待の状態（使われた・取り消した）と権限で答えが変わる（K-807）",
+   "covers": {
+    "test_delete_invitations_id_ok": "K807-API-011",
+    "test_delete_invitations_id_shape": "K807-API-011",
+    "test_delete_invitations_id_rejected_401": "K807-API-013",
+    "test_delete_invitations_id_rejected_403": "K807-API-013",
+    "test_delete_invitations_id_not_found": "K807-API-012",
+    "test_delete_invitations_id_conflict": "K807-API-012",
+    "test_delete_invitations_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-800.ts",
+     "mark": "K144-API-1103"
+    },
+    "test_delete_invitations_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_invitations_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_invitations_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_invitations_id_rate_limited": "上限は入口の共通（op.ts の limits）で、取り消す口の上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-421 と同じ扱い）",
+    "test_delete_invitations_id_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419・K-421 と同じ扱い）"
+   }
+  }
+ }
+}
