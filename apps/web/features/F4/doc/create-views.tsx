@@ -158,26 +158,28 @@ export const CHOSEN: readonly ChosenLink[] = [
   { kind: "関連", no: "EG-097", title: "セイコー様 保守契約の見積", stage: "完了", tone: "success" },
 ];
 
-/** 「＋ つながりを足す」の行と、足した相手の並び（派生元が関連より前） */
+/** 「＋ つながりを足す」の行と、足した相手の並び（派生元が関連より前）。まだ足していないときは並びを出さない（本番と同じ・K580-UI-001） */
 export function ChosenLinks({ rows }: { rows: readonly ChosenLink[] }) {
   return (
     <div className="k-f4d-chosen-wrap">
       <button type="button" className="k-f4d-addlink">
         ＋ つながりを足す<span className="k-f4d-hint">関連・派生元のチケットを足します</span>
       </button>
-      <ul className="k-f4d-chosen" aria-label="足したつながり">
-        {rows.map((r) => (
-          <li key={r.no} className="k-f4d-chosen-row">
-            <span className="k-f4d-chosen-kind">{r.kind}</span>
-            <b className="k-f4d-chosen-no">{r.no}</b>
-            <span className="k-f4d-chosen-title">{r.title}</span>
-            <Badge tone={r.tone}>{r.stage}</Badge>
-            <Button variant="ghost" size="sm" aria-label={`${r.no} とのつながりを外す`}>
-              外す
-            </Button>
-          </li>
-        ))}
-      </ul>
+      {rows.length ? (
+        <ul className="k-f4d-chosen" aria-label="足したつながり">
+          {rows.map((r) => (
+            <li key={r.no} className="k-f4d-chosen-row">
+              <span className="k-f4d-chosen-kind">{r.kind}</span>
+              <b className="k-f4d-chosen-no">{r.no}</b>
+              <span className="k-f4d-chosen-title">{r.title}</span>
+              <Badge tone={r.tone}>{r.stage}</Badge>
+              <Button variant="ghost" size="sm" aria-label={`${r.no} とのつながりを外す`}>
+                外す
+              </Button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }
@@ -195,18 +197,11 @@ const CANDS: readonly {
   linked?: boolean;
   on?: boolean;
 }[] = [
-  {
-    no: "EG-110",
-    title: "山田様からの問い合わせを受ける",
-    group: "営業",
-    stage: "完了",
-    tone: "success",
-    linked: true,
-  },
   { no: "EG-097", title: "セイコー様 保守契約の見積", group: "営業", stage: "完了", tone: "success", on: true },
   { no: "JD-150", title: "京蟻 保守運用（年間）", group: "受託開発", stage: "作業中", tone: "progress" },
 ];
 
+/** 候補は「保守」の検索に当たる 2 件（題名に保守を含む・本番の検索と同じ。2026-11-28 決める人 answer=13cf83d4f60d で描き直した） */
 /** つながりを足す小窓の作る面の形：「子チケットを作る」のタブは無く、対象は作成中、主ボタンは「足す」 */
 export function CreateLinkAddDialog({ title }: { title: string }): ReactNode {
   return (

@@ -139,7 +139,8 @@ export function renderMore(id: string, theme: Theme): ReactNode | null {
     case "f4v2-create-link-add":
       return create(
         theme,
-        { links: <ChosenLinks rows={CHOSEN.slice(0, 1)} /> },
+        // 足した行は無し・候補は「保守」に当たる 2 件（2026-11-28 決める人 answer=13cf83d4f60d）
+        { links: <ChosenLinks rows={[]} /> },
         <CreateLinkAddDialog title={FILLED} />,
       );
     case "f4v2-detail-item-edit":

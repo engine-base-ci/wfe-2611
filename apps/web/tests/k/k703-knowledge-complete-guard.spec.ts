@@ -111,7 +111,7 @@ test("K703-UI-003 ナレッジから入った行は文と「外す」が押せ�
 
 // ---------------------------------------------------------------- 完了を止める小窓
 
-test("K703-UI-004 「完了にする」で、必ず守るから入った確認項目にチェックの無い行が 2 つ：小窓「まだ完了にできません」（対象の行つき）に注意「…物が 2 つあります」「これにチェックが付くと、完了にできます。」・2 つの行（文と「ナレッジ：ページの名前」）・外に出る操作は別に人の承認の 1 行・足は「閉じる」「確認項目に戻る」。この時点で完了の口は 0 回・確認項目の口は 1 回", async ({
+test("K703-UI-004 「完了にする」で、必ず守るから入った確認項目にチェックの無い行が 2 つ：小窓「まだ完了にできません」（対象の行つき）に注意「…物が 2 つあります」「これにチェックが付くと、完了にできます。」・2 つの行（文と「ナレッジ：ページの名前」）・外に出る操作は別に人の承認の 1 行・足は「確認項目に戻る」だけ（閉じるは右上の ×・部品 Dialog の決まり）。この時点で完了の口は 0 回・確認項目の口は 1 回", async ({
   page,
 }) => {
   const g = await mockGuard(page, TWO());
@@ -128,7 +128,9 @@ test("K703-UI-004 「完了にする」で、必ず守るから入った確認�
     /『外に出す前の確かめ』を守った\s*ナレッジ：外に出す前の確かめ/,
   ]);
   await expect(d.getByText(KEEP_LINE, { exact: true })).toBeVisible();
-  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText([CLOSE, BACK]);
+  // 足に「閉じる」を重ねない（部品 Dialog の決まり・2026-11-28 PM の決め）。閉じるは右上の ×（名前「閉じる」）
+  await expect(d.locator(".k-dialog-actions").getByRole("button")).toHaveText([BACK]);
+  await expect(d.getByRole("button", { name: CLOSE, exact: true })).toHaveCount(1);
   expect(g.complete.api.completes).toHaveLength(0);
   expect(g.reads).toBe(1);
 });
@@ -162,7 +164,7 @@ test("K703-UI-006 止める行と人が足した未チェックの行が混ざ�
   ).toHaveCount(1);
   await expect(d.getByText("先月と同じ書式になっている", { exact: true })).toHaveCount(0);
   await expect(d.getByText(cautionNote(2), { exact: true })).toBeVisible();
-  await d.locator(".k-dialog-actions").getByRole("button", { name: CLOSE, exact: true }).click();
+  await d.getByRole("button", { name: CLOSE, exact: true }).click();
 
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await mockGuard(page, [kn(1, P_OUT, "外に出す前の確かめ")]);
@@ -219,24 +221,18 @@ test("K703-UI-009 409 E-KNW-240 の体が読めない（detail が無い・残�
   expect(g.complete.api.completes).toHaveLength(1);
 });
 
-test("K703-UI-010 小窓の「閉じる」・右上の ×・Esc：口を呼ばずに閉じ、キーボードの場所は「完了にする」に戻る。押し直すとまた最初から（確認項目の口が 1 回増える）", async ({
+test("K703-UI-010 小窓の右上の ×（名前「閉じる」）・Esc：口を呼ばずに閉じ、キーボードの場所は「完了にする」に戻る。押し直すとまた最初から（確認項目の口が 1 回増える）", async ({
   page,
 }) => {
   const g = await mockGuard(page, TWO());
   await openTicketSettled(page);
   let reads = 0;
-  for (const how of ["close", "x", "esc"] as const) {
+  // 足には「閉じる」を置かない（部品 Dialog の決まり・2026-11-28 PM の決め）。閉じるのは右上の ×（名前「閉じる」）と Esc
+  for (const how of ["x", "esc"] as const) {
     await openComplete(page);
     reads += 1;
     expect(g.reads).toBe(reads);
-    // 右上の × も読み上げの名前が「閉じる」（部品 Dialog）。足のボタンは足の中で探す
-    if (how === "close")
-      await dialog(page).locator(".k-dialog-actions").getByRole("button", { name: CLOSE, exact: true }).click();
-    else if (how === "x")
-      await dialog(page)
-        .getByRole("button", { name: /閉じる|×/ })
-        .first()
-        .click();
+    if (how === "x") await dialog(page).getByRole("button", { name: CLOSE, exact: true }).click();
     else await page.keyboard.press("Escape");
     await expect(dialog(page)).toHaveCount(0);
     await expect(completeBtn(page)).toBeFocused();

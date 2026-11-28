@@ -5,6 +5,7 @@
 import type { ReactNode } from "react";
 import type { Theme } from "@/lib/theme";
 import { LinkAddDialog, LinksSection, UnlinkConfirm } from "@/features/F4/links/views";
+import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import { MoreMenu } from "@/features/F4/detail-more/views";
 import { DetailFrame, TICKET } from "./frame";
 import { CANDIDATES, CHILDREN, LINKS, LINKS_VARIANTS } from "./detail-samples";
@@ -42,7 +43,19 @@ const linkDialog = (
 export function renderDetail(id: string, theme: Theme): ReactNode | null {
   switch (id) {
     case "f4-more-menu":
-      return <DetailFrame theme={theme} more={<MoreMenu defaultOpen />} />;
+      // 頭は本番の並び（複製・版と差分・…）。AI と話すは右のパネルのタブに移った（2026-11-28 決める人 answer=8b228b743062）
+      return (
+        <DetailFrame
+          theme={theme}
+          headActs={
+            <>
+              <InertButton>複製</InertButton>
+              <InertButton className="k-detail-versions">版と差分</InertButton>
+            </>
+          }
+          more={<MoreMenu defaultOpen />}
+        />
+      );
     case "f4-links-collapsed":
       return linksDetail(theme, false, undefined, false, true);
     case "f4-links":
