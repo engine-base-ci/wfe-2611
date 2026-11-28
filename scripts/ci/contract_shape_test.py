@@ -109,7 +109,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
         # K-437：payload.ts の checkFields・checkSpecs・checkBody（本文の木は doc_shape・K-432 と同じ定義）
-        "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
+        "fields": {"propertyNames": {"format": "uuid"},
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
@@ -199,6 +199,16 @@ def table_of(op_id: str) -> str | None:
 
 def is_uuid(p: dict) -> bool:
     return p.get("type") == "string" and p.get("format") == "uuid"
+
+
+def _uuid_text(s: str) -> bool:
+    """正式な uuid の字か（版の桁 1〜8・変種の桁 8〜b・36 字。入口の isUuid と同じ決まりを python の uuid で見る）"""
+    import uuid as _uuid
+    try:
+        u = _uuid.UUID(s)
+    except ValueError:
+        return False
+    return len(s) == 36 and str(u) == s.lower() and 1 <= u.version <= 8 if u.variant == _uuid.RFC_4122 else False
 
 
 def catalog_status() -> dict[str, int]:
@@ -889,9 +899,12 @@ class ContractShapeTest(unittest.TestCase):
             if not isinstance(v, dict):
                 return False
             pn = (sc.get("propertyNames") or {}).get("pattern")
+            pn_uuid = (sc.get("propertyNames") or {}).get("format") == "uuid"   # 欄の名前が uuid（K-144 の決め：手で正規表現を書かず format: uuid）
             ap = sc.get("additionalProperties")
             for k, x in v.items():
                 if pn and not re.search(pn, k):
+                    return False
+                if pn_uuid and not _uuid_text(k):
                     return False
                 if isinstance(ap, dict) and not ContractShapeTest._fits(x, ap):
                     return False
