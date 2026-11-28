@@ -1,0 +1,56 @@
+{
+ "screen": "services",
+ "mock": "06_mockup/v1/v1-services.html",
+ "state_labels": {
+  "n": "外部サービスの連携",
+  "ge": "空",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:つなぐ",
+   "kind": "button",
+   "label": "つなぐ",
+   "target": null,
+   "states": [
+    "外部サービスの連携",
+    "空",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS2",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:外す",
+   "kind": "button",
+   "label": "外す",
+   "target": null,
+   "states": [
+    "外部サービスの連携",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  }
+ ]
+}
