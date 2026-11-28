@@ -11,19 +11,10 @@ import {
   type PortalHomeData,
   type PortalRead,
 } from "./use-portal-home";
+import { whenOf } from "./when";
 import { NotVisible, SessionExpired, Welcome } from "./work";
 
-const TZ = "Asia/Tokyo";
-const day = (d: Date) => d.toLocaleDateString("ja-JP", { timeZone: TZ });
-
-/** 出した時刻：今日なら「今日 10:20」、ほかは「10/12」 */
-export function whenOf(iso: string, now = new Date()): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  if (day(d) === day(now))
-    return `今日 ${d.toLocaleTimeString("ja-JP", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false })}`;
-  return d.toLocaleDateString("ja-JP", { timeZone: TZ, month: "numeric", day: "numeric" });
-}
+export { whenOf };
 
 const requestsOf = (h: PortalHomeData): RequestItem[] =>
   h.requests.map((r) => {

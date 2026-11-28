@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { errorText, PAGE_ERROR } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import type { FormError } from "./request";
+import { momentOf } from "./when";
 
 const SCREEN = "portal";
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
@@ -53,7 +54,7 @@ export function toRequest(raw: unknown): PortalRequestData {
       id: str(m["id"]),
       side: m["side"] === "we" ? "we" : "they",
       name: str(m["name"]),
-      at: str(m["at"]),
+      at: momentOf(str(m["at"])),
       text: str(m["text"]),
     })),
     can_write: d["can_write"] === true,
