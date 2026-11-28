@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops/use-ops-pwned.ts", "apps/web/features/F12/ops/pwned-shape.ts", "apps/web/features/F12/ops/ws-list-screen.tsx", "apps/web/features/F12/ops/views-list.tsx", "apps/web/lib/ops-pwned-api.ts"], "tests": ["apps/web/tests/k/k1019-pwned.spec.ts", "apps/web/test/k1019-pwned-shape.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1019-pwned.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops を開き scripts/ci/fidelity_compare.mjs を読む。差し替えの道具 ops-mock.ts を読む（実ブラウザの試験は web の組が流す）・K-1019",
+  "apps/web/test/k1019-pwned-shape.test.ts": "下絵の見本 apps/web/features/F12/ops/ops-sample.ts を読む（画面の外の純粋な関数の試験）・K-1019"
+ }
+}
