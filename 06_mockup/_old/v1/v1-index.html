@@ -1,0 +1,293 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaname V1 — モックアップ一覧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#22345C; --on-primary:#FFFFFF; --primary-c:#DCE4F2; --on-primary-c:#101C33;
+  --secondary:#186F69; --on-secondary:#FFFFFF; --secondary-c:#CFEAE7; --on-secondary-c:#0A3330;
+  --tertiary:#6D4AA6; --on-tertiary:#FFFFFF; --tertiary-c:#E9E0F5; --on-tertiary-c:#33235C;
+  --surface:#F7F8FA; --on-surface:#131B27; --sv:#E9ECF1; --on-sv:#4A5563;
+  --error:#B91C1C; --on-error:#FFFFFF; --neutral:#8A94A3;
+  --card:#FFFFFF; --line:#DDE2E9; --line-soft:#EDF0F4;
+
+  --st-success:#166534; --st-warning:#B45309; --st-danger:#B91C1C; --st-progress:#1D4ED8;
+  --d-indigo:#2F4B7C; --d-teal:#186F69; --d-amber:#7E570D; --d-coral:#A34A3E; --d-sage:#516F46; --d-plum:#6B3F5E;
+
+  --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px; --s-xl:48px; --s-2xl:96px;
+  --r-sm:4px; --r-md:6px; --r-lg:12px; --r-xl:20px; --r-full:9999px;
+
+  --font:'M PLUS 2','Hiragino Sans',sans-serif;
+  --font-code:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sidebar-w:216px; --subnav-w:230px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--surface);color:var(--on-surface);font-family:var(--font);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+svg{width:16px;height:16px;flex:none}
+/* ★hidden 属性は必ず効かせる。作者スタイルの display 指定に負けないように。
+   （.norole{display:grid} が hidden を上書きして、隠れるはずの要素が幅を奪う事故があった） */
+[hidden]{display:none!important}  /* 既定サイズ。個別指定が無くても巨大化しない */
+.num{font-variant-numeric:tabular-nums}
+
+/* ============ モック帯（実装には含めない印） ============ */
+.mockbar{position:sticky;top:0;z-index:60;background:var(--on-surface);color:#fff;font-size:11.5px;letter-spacing:.02em;padding:7px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.mockbar b{font-weight:600}
+.mockbar .tagv{background:var(--tertiary);padding:2px 8px;border-radius:var(--r-full);font-weight:600;font-size:10.5px}
+.mockbar a{opacity:.72;border-bottom:1px solid rgba(255,255,255,.32)}
+.mockbar a:hover{opacity:1}
+.mockbar .sp{flex:1}
+
+/* ============ シェル ============ */
+.shell{display:flex;min-height:calc(100vh - 34px)}
+
+/* サイドバー */
+.side{width:var(--sidebar-w);flex:none;background:var(--primary);color:var(--on-primary);display:flex;flex-direction:column;position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto}
+.side-brand{padding:18px 18px 14px;display:flex;align-items:center;gap:9px;font-size:17px;font-weight:700;letter-spacing:.01em}
+.side-brand svg{width:20px;height:20px}
+.side-nav{padding:4px 10px 10px;display:flex;flex-direction:column;gap:1px}
+.side-sec{font-size:10px;font-weight:600;letter-spacing:.12em;opacity:.5;padding:14px 10px 5px}
+.side-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-md);font-size:13.5px;font-weight:500;color:rgba(255,255,255,.82);position:relative}
+.side-item svg{width:16px;height:16px;opacity:.9}
+.side-item:hover{background:rgba(255,255,255,.09);color:#fff}
+.side-item.on{background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+.side-item .badge{margin-left:auto;background:var(--st-warning);color:#fff;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:var(--r-full)}
+.side-item .badge.ai{background:var(--tertiary)}
+.side-sub{display:flex;flex-direction:column;gap:1px;padding-left:26px}
+.side-sub a{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:var(--r-md);font-size:12.5px;color:rgba(255,255,255,.66)}
+.side-sub a:hover{background:rgba(255,255,255,.08);color:#fff}
+.side-sub .dot{width:4px;height:4px;border-radius:50%}
+.side-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.14);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.side-foot .av{width:30px;height:30px;border-radius:var(--r-full);background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.side-foot .who{min-width:0}
+.side-foot .nm{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-foot .co{font-size:11px;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 本体 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--card);border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topbar h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.topbar .crumb{font-size:12px;color:var(--on-sv)}
+.topbar .sp{flex:1}
+.content{padding:24px 32px 64px;width:100%}
+
+/* 状態タブ */
+.states{background:var(--card);border-bottom:1px solid var(--line);padding:0 28px;display:flex;gap:2px;overflow-x:auto}
+.states button{padding:11px 15px;font-size:12.5px;font-weight:600;color:var(--on-sv);border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.states button:hover{color:var(--on-surface)}
+.states button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+.states button .mk{width:6px;height:6px;border-radius:50%;background:var(--neutral)}
+.states button[aria-selected="true"] .mk{background:var(--primary)}
+.statepane[hidden]{display:none!important}
+.state-note{background:var(--sv);border-left:3px solid var(--neutral);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 14px;font-size:12.5px;color:var(--on-sv);margin-bottom:20px}
+
+/* ============ 部品 ============ */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.card+.card{margin-top:16px}
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.card-h h2{font-size:15px;font-weight:700}
+.card-h .sp{flex:1}
+.muted{color:var(--on-sv)}
+.grid{display:grid;gap:16px}
+.grid>*{min-width:0}   /* 既定の min-width:auto だと、中の表の min-width が列幅を押し広げる */
+.card{min-width:0}
+@media(min-width:900px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g21{grid-template-columns:2fr 1fr}}
+@media(min-width:1560px){.g21{grid-template-columns:2.4fr 1fr}.g3{grid-template-columns:repeat(4,1fr)}.g3.g3-keep{grid-template-columns:repeat(3,1fr)}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 17px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;transition:.13s}
+.btn svg{width:15px;height:15px}
+.btn-p{background:var(--primary);color:#fff}.btn-p:hover{background:#1a2848}
+.btn-s{background:var(--secondary-c);color:var(--on-secondary-c)}.btn-s:hover{background:#bfe2de}
+.btn-o{border:1.5px solid var(--primary);color:var(--primary)}.btn-o:hover{background:var(--primary-c)}
+.btn-g{color:var(--on-sv)}.btn-g:hover{background:var(--sv);color:var(--on-surface)}
+.btn-d{border:1.5px solid var(--error);color:var(--error)}.btn-d:hover{background:#FBE9E9}
+.btn-sm{padding:6px 12px;font-size:12.5px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--r-full);font-size:11.5px;font-weight:600;color:#fff;white-space:nowrap}
+.pill svg{width:12px;height:12px}
+.p-su{background:var(--st-success)}.p-wa{background:var(--st-warning)}.p-da{background:var(--st-danger)}.p-pr{background:var(--st-progress)}.p-ne{background:var(--neutral)}
+.pill-ai{background:var(--tertiary-c);color:var(--on-tertiary-c)}
+
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--on-sv)}
+.tag .dot{width:4px;height:4px;border-radius:50%;flex:none}
+.rail{border-left:2px solid var(--neutral);padding-left:11px}
+
+.metric{font-size:34px;font-weight:600;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.metric-sm{font-size:22px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.metric-lbl{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--on-sv);margin-bottom:7px}
+.metric-sub{font-size:12.5px;color:var(--on-sv);font-variant-numeric:tabular-nums;margin-top:7px}
+.bar{height:6px;background:var(--sv);border-radius:var(--r-full);overflow:hidden;margin-top:11px}
+.bar>i{display:block;height:100%;background:var(--primary);border-radius:var(--r-full)}
+.bar>i.warn{background:var(--st-warning)}.bar>i.ok{background:var(--st-success)}.bar>i.bad{background:var(--st-danger)}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--on-sv);padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:11px 10px 11px 0;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+td.n{font-variant-numeric:tabular-nums;text-align:right;font-weight:500}
+tr:last-child td{border-bottom:0}
+.t-wrap{overflow-x:auto}
+
+.ai{background:var(--tertiary-c);color:var(--on-tertiary-c);border-left:3px solid var(--tertiary);border-radius:0 var(--r-md) var(--r-md) 0;padding:14px 16px}
+.ai-h{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:.06em;margin-bottom:7px}
+.ai-h svg{width:13px;height:13px}
+
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--on-sv);margin-bottom:6px}
+.inp{width:100%;background:var(--sv);border:1px solid transparent;border-radius:var(--r-md);padding:10px 13px;font-family:inherit;font-size:14px;color:var(--on-surface)}
+.inp:focus{outline:2px solid var(--primary);outline-offset:1px;background:var(--card)}
+.inp.err{outline:2px solid var(--error);background:#FDF2F2}
+.help{font-size:12px;color:var(--on-sv);margin-top:5px}
+.help.err{color:var(--error);font-weight:500;display:flex;gap:6px;align-items:flex-start}
+.help.err svg{width:14px;height:14px;margin-top:3px;flex:none}
+
+.empty{text-align:center;padding:56px 20px;color:var(--on-sv)}
+.empty svg{width:38px;height:38px;opacity:.34;margin-bottom:14px}
+.empty h3{font-size:15px;font-weight:700;color:var(--on-surface);margin-bottom:6px}
+.empty p{font-size:13px;max-width:420px;margin:0 auto 18px}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:13px}
+.kv dt{color:var(--on-sv);white-space:nowrap}
+.kv dd{font-weight:500}
+.code{background:var(--on-surface);color:#D8DEE9;border-radius:var(--r-md);padding:13px 15px;font-family:var(--font-code);font-size:12px;line-height:1.75;white-space:pre;overflow-x:auto}
+
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+.spin.dark{border-color:rgba(19,27,39,.2);border-top-color:var(--primary)}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+
+/* ============ 画面ごとの第2サイドバー（画面によって中身が変わる） ============ */
+.subnav{width:var(--subnav-w);flex:none;background:var(--card);border-right:1px solid var(--line);
+        position:sticky;top:34px;height:calc(100vh - 34px);overflow-y:auto;display:flex;flex-direction:column}
+.subnav-h{padding:16px 16px 12px;border-bottom:1px solid var(--line-soft)}
+.subnav-h .ttl{font-size:14px;font-weight:700;margin-bottom:5px}
+.subnav-h .why{font-size:11.5px;color:var(--on-sv);line-height:1.65}
+.subnav-b{padding:10px;display:flex;flex-direction:column;gap:1px}
+.subnav-sec{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--on-sv);padding:13px 8px 5px}
+.sn{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-md);font-size:13px;color:var(--on-sv)}
+.sn:hover{background:var(--sv);color:var(--on-surface)}
+.sn.on{background:var(--primary-c);color:var(--on-primary-c);font-weight:600}
+.sn .dot{width:4px;height:4px;border-radius:50%;flex:none}
+.sn .n{margin-left:auto;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--on-sv)}
+.sn .n.warn{color:var(--st-warning);font-weight:700}
+.subnav-f{margin-top:auto;padding:12px 14px;border-top:1px solid var(--line-soft)}
+
+/* 権限バー（アカウントタイプの切替＝モック用） */
+.rolebar{display:flex;gap:5px;align-items:center}
+.rolebar b{font-size:10.5px;opacity:.6;font-weight:600;letter-spacing:.06em}
+.rolebar button{font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.14);color:rgba(255,255,255,.72)}
+.rolebar button[aria-pressed="true"]{background:#fff;color:var(--on-surface)}
+.side[data-role]{display:none}
+.side[data-role].on{display:flex}
+.norole{flex:1;min-width:0;display:grid;place-content:center;text-align:center;padding:40px 28px}
+.norole>*{max-width:560px}
+.norole svg{width:34px;height:34px;color:var(--on-sv);margin:0 auto 4px}
+.norole h3{font-size:16px;font-weight:700;margin:12px 0 8px}
+.norole p{font-size:13px;color:var(--on-sv);line-height:1.8}
+
+/* 画面の目的（topbar 下） */
+.purpose{background:var(--card);border-bottom:1px solid var(--line);padding:0 32px 14px;
+  display:flex;gap:11px;align-items:flex-start;font-size:13px;color:var(--on-sv);line-height:1.75}
+.purpose svg{color:var(--primary);margin-top:3px}
+.purpose b{color:var(--on-surface)}
+
+/* モバイル下部タブ */
+.tabbar{display:none}
+@media(max-width:900px){
+  .side{display:none}
+  .content{padding:18px 16px 92px}
+  .topbar{padding:12px 16px}
+  .topbar h1{font-size:18px}
+  .states{padding:0 16px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:10.5px;font-weight:600;color:var(--on-sv);position:relative}
+  .tabbar a svg{width:19px;height:19px}
+  .tabbar a.on{color:var(--primary)}
+  .tabbar a .bdg{position:absolute;top:2px;right:calc(50% - 17px);background:var(--st-warning);color:#fff;font-size:9.5px;font-weight:700;min-width:15px;height:15px;border-radius:var(--r-full);display:grid;place-items:center;padding:0 4px}
+  .grid.g2,.grid.g3,.grid.g21{grid-template-columns:1fr}
+  .purpose{padding:0 16px 12px}
+  .subnav{width:100%;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);flex-direction:column}
+  .subnav-h{padding:12px 16px 10px}
+  .subnav-b{flex-direction:row;overflow-x:auto;gap:6px;padding:10px 16px}
+  .subnav-b .sn{white-space:nowrap;background:var(--sv);flex:none}
+  .subnav-sec{display:none}
+  .subnav-f{display:none}
+  .shell{flex-direction:column}
+  /* 表は縮めずに、表の中だけ横スクロールさせる（本文は絶対に横スクロールさせない） */
+  .t-wrap{margin:0 -16px;padding:0 16px}
+  .t-wrap table{min-width:560px}
+  .card{padding:16px}
+  .metric{font-size:30px}
+}
+
+/* ============ v2 シェル（flow.json 駆動）で足したもの ============ */
+.mockbar .ph{opacity:.55;font-size:11px}
+.mockbar .mut{opacity:.5}
+.topbar .tt{min-width:0}
+.subnav-h .acts{margin-top:9px;display:flex;gap:4px;flex-wrap:wrap}
+.subnav-h .ck.rl{background:var(--sv);color:var(--on-sv)}
+.subnav-h .ck{font-size:10px;font-weight:600;font-family:var(--font-code);background:var(--primary-c);
+  color:var(--on-primary-c);padding:1px 6px;border-radius:var(--r-full)}
+.norole .go{margin-top:14px;font-size:12px;color:var(--on-sv);background:var(--sv);
+  border-radius:var(--r-md);padding:9px 13px;display:inline-block}
+.purpose b{color:var(--on-surface)}
+/* 主アクションは1つだけ。副は枠線・文字だけに落とす */
+.topbar .btn-p{box-shadow:0 1px 0 rgba(0,0,0,.06)}
+
+
+.ix{padding:36px 40px 90px;max-width:1560px}
+.ix-h{display:flex;align-items:center;gap:11px;font-size:26px;font-weight:700;margin-bottom:8px}
+.ix-h svg{width:26px;height:26px;color:var(--primary)}
+.ix-sub{font-size:14px;color:var(--on-sv);line-height:1.9;max-width:900px;margin-bottom:24px}
+.ix-flow{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:26px}
+.ix-flow .fh{font-size:13px;font-weight:700;margin-bottom:12px}
+.ix-flow .fr{display:flex;gap:7px;flex-wrap:wrap;align-items:center;font-size:12.5px}
+.ix-flow .fr a{background:var(--sv);padding:5px 11px;border-radius:var(--r-full);font-weight:600}
+.ix-flow .fr a:hover{background:var(--primary-c)}
+.ix-flow .fr span{color:var(--on-sv)}
+.ix-sec{font-size:12px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--primary);
+  padding:7px 14px;border-radius:var(--r-md);display:inline-block;margin:30px 0 14px}
+.ix-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
+.ix-grid>*{min-width:0}
+.ix-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 17px;display:block;transition:.14s}
+.ix-card:hover{border-color:var(--primary);transform:translateY(-1px)}
+.ix-card .t{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;margin-bottom:6px}
+.ix-card .t svg{color:var(--primary)}
+.ix-step{width:23px;height:23px;border-radius:var(--r-full);background:var(--primary);color:#fff;
+  display:grid;place-items:center;font-size:11.5px;font-weight:700;flex:none;font-variant-numeric:tabular-nums}
+.ix-card .d{font-size:12.5px;color:var(--on-sv);line-height:1.7;margin-bottom:10px;min-height:44px}
+.ix-card .b{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.ix-card .b span{font-size:10.5px;font-weight:600;background:var(--sv);color:var(--on-sv);padding:2px 8px;border-radius:var(--r-full)}
+.ix-card .b .pa{background:var(--primary-c);color:var(--on-primary-c)}
+.ix-card .b .ck{font-family:var(--font-code);background:#EDEAF6;color:var(--on-tertiary-c)}
+.ix-note{background:#FEF6EC;border-radius:var(--r-md);padding:14px 17px;font-size:13px;line-height:1.85;display:flex;gap:11px;margin-bottom:24px}
+.ix-roles{display:grid;gap:12px;margin-bottom:26px}
+@media(min-width:1000px){.ix-roles{grid-template-columns:repeat(4,1fr)}}
+.ix-role{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 16px}
+.ix-role b{font-size:13px}.ix-role .n{font-size:11.5px;color:var(--on-sv);margin:3px 0 9px}
+.ix-role .l{font-size:12px;color:var(--on-sv);line-height:1.7}
+@media(max-width:900px){.ix{padding:24px 16px 90px}.ix-h{font-size:21px}
+ .ix-flow .fr{font-size:12px}.ix-card .d{min-height:0}}
+</style></head><body>
+<div class="mockbar"><b>モックアップ</b><span class="tagv" style="background:#186F69">V1</span>
+<span style="opacity:.7">段階1（最初に出せる状態）</span><span class="sp"></span>
+<span class="mut">実データ・API連携は含みません</span></div>
+<div class="ix">
+ <div class="ix-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 12 3 5M12 12 3 12M12 12 5 20M12 12l9-7M12 12h9M12 12l7 8"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>Kaname — 段階1（最初に出せる状態）</div>
+ <div class="ix-sub"><b>36 画面。</b>すべて <span style="font-family:var(--font-code);font-size:12.5px">05_flow/flow.json</span>
+ の行為から導出しています（画面を先に列挙していません）。<b>並びは使う手順の順</b>です。<br>
+ 各画面の上部で <b>アカウントタイプ</b>（R1〜R4）を切り替えると、<b>主サイドバーの項目そのものが変わります</b>。
+ 権限で見えない画面を開くと、その旨が出ます。</div>
+ <div class="ix-flow"><div class="fh">最初の一周（walking skeleton）── ここが通らない製品は、機能が何個あっても使われない</div>
+  <div class="fr"><a href="v1-signup.html">アカウントを作る</a><span>→</span><a href="v1-setup.html">会社（または屋号）を登録する</a><span>→</span><a href="v1-setup.html">何をしている会社かを伝える</a><span>→</span><a href="v1-setup.html">最初の目標を1つ決める</a><span>→</span><a href="v1-setup.html">最初の台帳を作る</a><span>→</span><a href="v1-bridge.html">自分のPCをつなぐ（Bridge）</a><span>→</span><a href="v1-ai-add.html">最初のAI社員を1体作る</a><span>→</span><a href="v1-duty-test.html">テストで動かして結果を見る</a><span>→</span><a href="v1-duty-detail.html">本番に切り替える</a><span>→</span><a href="v1-today.html">今日ひらいて、いま何をすべきか知る</a><span>→</span><a href="v1-approvals.html">承認箱を片づける</a><span>→</span><a href="v1-ledger.html">案件を次の段階へ動かす</a><span>→</span><a href="v1-goals.html">目標の進みを見る</a><span>→</span><a href="v1-retro.html">ふりかえりを読む</a></div></div>
+ <div class="ix-roles"><div class="ix-role"><b>R1 自分で全部回している人</b><div class="n">主ナビ 16 項目</div><div class="l">今日 / 承認 / 会話 / 探す / 目標 / 台帳 / ふりかえり / メンバー / 担当業務 / 覚えた操作 / 実行ログ / 証跡 / ポリシー / 資格情報 / Bridge 接続 / 設定</div></div><div class="ix-role"><b>R2 代表と、その下に数人がいる会社の代表</b><div class="n">主ナビ 16 項目</div><div class="l">今日 / 承認 / 会話 / 探す / 目標 / 台帳 / ふりかえり / メンバー / 担当業務 / 覚えた操作 / 実行ログ / 証跡 / ポリシー / 資格情報 / Bridge 接続 / 設定</div></div><div class="ix-role"><b>R3 配られた仕事だけをする人</b><div class="n">主ナビ 7 項目</div><div class="l">今日 / 承認 / 会話 / 探す / 目標 / 台帳 / 担当業務</div></div><div class="ix-role"><b>R4 進捗だけ見る外部の人</b><div class="n">主ナビ 4 項目</div><div class="l">今日 / 探す / 目標 / 台帳</div></div></div>
+ <div class="ix-note"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><div>これはモックアップです。<b>実データ・API 連携・ログインは含まれていません。</b>
+  各画面の上部タブで状態（通常／空／エラー／実行中など）を切り替えられます。
+  ブラウザ幅を狭めるとスマートフォン表示になります。</div></div>
+ <div class="ix-sec">P0 契約・登録（1回だけ）</div><div class="ix-grid"><a class="ix-card" href="v1-signup.html"><div class="t"><span class="ix-step">1</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg>登録</div><div class="d">Kaname を使い始めるためにアカウントを作る画面</div><div class="b"><span class="pa">アカウントを作る</span><span class="ck">A01</span></div></a><a class="ix-card" href="v1-verify.html"><div class="t"><span class="ix-step">2</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>メール確認</div><div class="d">届いたメールから本人であることを示す画面</div><div class="b"><span class="pa">確認して続ける</span><span class="ck">A02</span></div></a><a class="ix-card" href="v1-setup.html"><div class="t"><span class="ix-step">3</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2M10 6h4M10 10h4M10 14h4M10 18h4"/></svg>はじめの設定</div><div class="d">会社・事業内容・最初の目標・最初の台帳を4ステップで決める画面</div><div class="b"><span class="pa">次へ</span><span class="ck">A03</span><span class="ck">A07</span><span class="ck">A08</span><span class="ck">A09</span></div></a><a class="ix-card" href="v1-invite-accept.html"><div class="t"><span class="ix-step">4</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>招待の受諾</div><div class="d">招待された人が、自分がやることだけ分かる状態で参加する画面</div><div class="b"><span class="pa">参加する</span><span class="ck">A04</span></div></a><a class="ix-card" href="v1-twofa-setup.html"><div class="t"><span class="ix-step">5</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>2段階認証の設定</div><div class="d">認証アプリを登録し、リカバリコードを受け取る画面</div><div class="b"><span class="pa">認証アプリを登録する</span><span class="ck">A05</span></div></a></div><div class="ix-sec">P1 立ち上げ（初日〜3日・1回だけ）</div><div class="ix-grid"><a class="ix-card" href="v1-ledger-def.html"><div class="t"><span class="ix-step">6</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H14M10 4H3M21 12H12M8 12H3M21 20H16M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>台帳の定義</div><div class="d">台帳の項目と段階を決める画面。ここを変えると台帳の見え方が変わる</div><div class="b"><span class="pa">保存する</span><span class="ck">A09</span></div></a><a class="ix-card" href="v1-bridge.html"><div class="t"><span class="ix-step">7</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M9 8V2M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>Bridge 接続</div><div class="d">自分のPCをつないで、契約中のサブスクの中でAIを動かせるようにする画面</div><div class="b"><span class="pa">Bridge をつなぐ</span><span class="ck">A10</span></div></a><a class="ix-card" href="v1-credentials.html"><div class="t"><span class="ix-step">8</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>資格情報</div><div class="d">AIに使わせるログイン情報を預ける画面。中身はAIに渡さない</div><div class="b"><span class="pa">登録する</span><span class="ck">A11</span></div></a><a class="ix-card" href="v1-ai-add.html"><div class="t"><span class="ix-step">9</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>AI社員を作る</div><div class="d">新しいAI社員を1体作る画面。作った直後は必ずテストモードで動く</div><div class="b"><span class="pa">作ってテストする</span><span class="ck">A12</span><span class="ck">A36</span></div></a><a class="ix-card" href="v1-duty-test.html"><div class="t"><span class="ix-step">10</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 14 9-14 9V3z"/></svg>テスト実行の結果</div><div class="d">外に一切出さずにAI社員を動かし、その結果を見て本番にするか決める画面</div><div class="b"><span class="pa">この定義で本番にする</span><span class="ck">A13</span></div></a><a class="ix-card" href="v1-duty-detail.html"><div class="t"><span class="ix-step">11</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>担当業務の詳細</div><div class="d">1つの担当業務を書き換え、改訂の理由を残す画面</div><div class="b"><span class="pa">改訂して保存</span><span class="ck">A14</span><span class="ck">A28</span></div></a></div><div class="ix-sec">P2 毎日</div><div class="ix-grid"><a class="ix-card" href="v1-signin.html"><div class="t"><span class="ix-step">12</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg>サインイン</div><div class="d">毎日 Kaname に入る画面</div><div class="b"><span class="pa">サインイン</span><span class="ck">A43</span></div></a><a class="ix-card" href="v1-today.html"><div class="t"><span class="ix-step">13</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>今日</div><div class="d">今日やることを上から片づける画面</div><div class="b"><span class="pa">承認して送る</span><span class="ck">A15</span><span class="ck">A17</span><span class="ck">A25</span></div></a><a class="ix-card" href="v1-approvals.html"><div class="t"><span class="ix-step">14</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>承認</div><div class="d">AIが外に出る直前で止めたものを一覧する画面</div><div class="b"><span class="pa">承認へ</span><span class="ck">A16</span><span class="ck">A24</span></div></a><a class="ix-card" href="v1-approval-detail.html"><div class="t"><span class="ix-step">15</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>承認の詳細</div><div class="d">押す前に何が起きるかを確かめて、承認するか止めるか決める画面</div><div class="b"><span class="pa">承認して実行</span><span class="ck">A16</span></div></a><a class="ix-card" href="v1-task-detail.html"><div class="t"><span class="ix-step">16</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>タスクの詳細</div><div class="d">1件のタスクの中身と、つながる目標を見て片づける画面</div><div class="b"><span class="pa">完了にする</span><span class="ck">A17</span></div></a><a class="ix-card" href="v1-record-detail.html"><div class="t"><span class="ix-step">17</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>台帳の行の詳細</div><div class="d">案件・請求1件の中身と履歴を見て、次の段階へ動かす画面</div><div class="b"><span class="pa">段階を動かす</span><span class="ck">A18</span><span class="ck">A19</span></div></a><a class="ix-card" href="v1-ledger.html"><div class="t"><span class="ix-step">18</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>台帳</div><div class="d">台帳の行を一覧・ファネルで見て、次の段階へ動かす画面</div><div class="b"><span class="pa">行を足す</span><span class="ck">A19</span><span class="ck">A24</span></div></a><a class="ix-card" href="v1-chat.html"><div class="t"><span class="ix-step">19</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>会話</div><div class="d">クローン・AI社員・人に話しかけ、そこから台帳もタスクも作る画面</div><div class="b"><span class="pa">送る</span><span class="ck">A20</span></div></a><a class="ix-card" href="v1-search.html"><div class="t"><span class="ix-step">20</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>探す</div><div class="d">台帳・会話・実行・担当業務を横断して、探しているものを見つける画面</div><div class="b"><span class="pa">探す</span><span class="ck">A21</span></div></a></div><div class="ix-sec">P3 毎週</div><div class="ix-grid"><a class="ix-card" href="v1-goals.html"><div class="t"><span class="ix-step">21</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>目標</div><div class="d">数字と単位を決めて誰が追うかを下ろし、届くかどうかを見る画面。親子で単位が変わってよい</div><div class="b"><span class="pa">目標を足す</span><span class="ck">A22</span><span class="ck">A23</span><span class="ck">A25</span><span class="ck">A29</span></div></a><a class="ix-card" href="v1-goal-allocate.html"><div class="t"><span class="ix-step">22</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>目標の下ろし方</div><div class="d">子目標の単位と、親への積み上がり方（足す／変換して足す／足さない）を決める画面</div><div class="b"><span class="pa">この下ろし方で保存</span><span class="ck">A23</span></div></a></div><div class="ix-sec">P4 毎月・四半期</div><div class="ix-grid"><a class="ix-card" href="v1-retro.html"><div class="t"><span class="ix-step">23</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>ふりかえり</div><div class="d">届かなかった理由をAIが出し、次に何を変えるかを決める画面</div><div class="b"><span class="pa">施策を採用する</span><span class="ck">A26</span><span class="ck">A27</span><span class="ck">A29</span></div></a><a class="ix-card" href="v1-duties.html"><div class="t"><span class="ix-step">24</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>担当業務</div><div class="d">AI社員が持つ仕事の定義を一覧する画面</div><div class="b"><span class="pa">担当業務を作る</span><span class="ck">A28</span></div></a></div><div class="ix-sec">P5 例外・困ったとき</div><div class="ix-grid"><a class="ix-card" href="v1-account-recover.html"><div class="t"><span class="ix-step">25</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>入り直す</div><div class="d">パスワードを忘れた・2段階認証の端末を失ったときに、自分で入り直す画面</div><div class="b"><span class="pa">再設定メールを送る</span><span class="ck">A30</span></div></a><a class="ix-card" href="v1-procedures.html"><div class="t"><span class="ix-step">26</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>覚えた操作</div><div class="d">AIが覚えた操作を一覧し、壊れたものを見つける画面</div><div class="b"><span class="pa">操作を教える</span><span class="ck">A31</span></div></a><a class="ix-card" href="v1-procedure-detail.html"><div class="t"><span class="ix-step">27</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>覚えた操作の詳細</div><div class="d">1つの手順を見て、壊れていたら覚え直させる画面</div><div class="b"><span class="pa">覚え直させる</span><span class="ck">A31</span></div></a><a class="ix-card" href="v1-runs.html"><div class="t"><span class="ix-step">28</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2h4"/></svg>実行ログ</div><div class="d">いつ何が実行されたかを一覧する画面</div><div class="b"><span class="pa">詳細へ</span><span class="ck">A32</span></div></a><a class="ix-card" href="v1-run-detail.html"><div class="t"><span class="ix-step">29</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12h-5M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2h4"/></svg>実行の詳細</div><div class="d">1回の実行が何を通り何を書き込んだかを見て、必要なら取り消す画面</div><div class="b"><span class="pa">この実行を取り消す</span><span class="ck">A32</span><span class="ck">A33</span></div></a><a class="ix-card" href="v1-policies.html"><div class="t"><span class="ix-step">30</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>ポリシー</div><div class="d">AIが勝手にやってよいことと、必ず止まることを決める画面</div><div class="b"><span class="pa">保存する</span><span class="ck">A34</span></div></a></div><div class="ix-sec">P6 人が増えたら</div><div class="ix-grid"><a class="ix-card" href="v1-members.html"><div class="t"><span class="ix-step">31</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>メンバー</div><div class="d">人を招いて、見える範囲と権限を決める画面</div><div class="b"><span class="pa">招待する</span><span class="ck">A35</span><span class="ck">A36</span></div></a><a class="ix-card" href="v1-audit.html"><div class="t"><span class="ix-step">32</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>証跡</div><div class="d">誰がいつ何をしたかを追う画面。書き換えも削除もできない</div><div class="b"><span class="pa">期間で絞る</span><span class="ck">A37</span></div></a></div><div class="ix-sec">P7 外に説明する・出る</div><div class="ix-grid"><a class="ix-card" href="v1-bridge-capability.html"><div class="t"><span class="ix-step">33</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Bridge にできること</div><div class="d">Bridge が何をでき、何をサーバーに送るかを社内に説明するための画面</div><div class="b"><span class="pa">一覧を書き出す</span><span class="ck">A38</span></div></a><a class="ix-card" href="v1-audit-export.html"><div class="t"><span class="ix-step">34</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>証跡のエクスポート</div><div class="d">監査に出すために、期間を選んで全操作の記録を書き出す画面</div><div class="b"><span class="pa">書き出す</span><span class="ck">A39</span></div></a><a class="ix-card" href="v1-settings.html"><div class="t"><span class="ix-step">35</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H14M10 4H3M21 12H12M8 12H3M21 20H16M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>設定</div><div class="d">会社の前提とAIの動かし方を決め、データを書き出す画面</div><div class="b"><span class="pa">保存する</span><span class="ck">A40</span><span class="ck">A41</span></div></a><a class="ix-card" href="v1-account-close.html"><div class="t"><span class="ix-step">36</span><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>退会</div><div class="d">退会し、発行済みのトークン・接続・共有リンクを全部無効にする画面</div><div class="b"><span class="pa">先にデータを書き出す</span><span class="ck">A41</span></div></a></div>
+</div></body></html>
