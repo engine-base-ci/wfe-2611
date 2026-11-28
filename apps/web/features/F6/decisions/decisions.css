@@ -1,0 +1,84 @@
+/* 段 7 の決定ログ（本文の中の区画・キャンバス TdDecision の小窓）。下絵の部品（K-66 の切る段）。値は正本のトークン（--k-*）だけ。
+   区画の見出しは本文の区画（.k-section h2）と同じ。見出しの右に「＋ 決定を足す」。新しい決定が上、改められた・取り消した決定は線を引いて下に残す */
+
+.k-dec-head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--k-s-sm);
+  margin: var(--k-c-section-title-margin);
+  border-bottom: var(--k-c-section-title-border);
+}
+/* 見出しの線と余白は箱（見出しと「＋ 決定を足す」の並び）が持つ。線がボタンの下まで通る */
+.k-section .k-dec-head h2 {
+  flex: 1;
+  margin: 0;
+  border-bottom: 0;
+}
+.k-dec-head .k-btn {
+  margin-bottom: var(--k-s-xs);
+}
+.k-dec-intro {
+  margin: 0 0 var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-dec-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-dec-item {
+  padding: var(--k-s-sm) 0;
+  border-bottom: var(--k-c-approvals-note-border-top);
+}
+.k-dec-item:last-child {
+  border-bottom: 0;
+}
+.k-dec-text {
+  font-weight: var(--k-fw-label-md);
+}
+.k-dec-item[data-status="revised"] .k-dec-text,
+.k-dec-item[data-status="cancelled"] .k-dec-text {
+  color: var(--k-on-surface-variant);
+  text-decoration: line-through;
+}
+.k-dec-tag {
+  margin-left: var(--k-s-sm);
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  background: var(--k-select);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body-sm);
+}
+.k-dec-sub {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-dec-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+}
+.k-dec-empty {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 小窓 ---- */
+.k-dec-source {
+  margin: 0;
+  padding: var(--k-s-sm);
+  border: var(--k-c-approvals-note-border-top);
+  border-radius: var(--k-r-md);
+  background: var(--k-page);
+  font-size: var(--k-text-body-sm);
+}
+.k-dec-inert {
+  padding: var(--k-s-sm);
+  border-radius: var(--k-r-md);
+  background: var(--k-select);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  opacity: var(--k-c-button-disabled-opacity);
+}
