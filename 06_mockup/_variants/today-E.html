@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>今日 E ── Things 型（予定が先頭・余りを見出しに）</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="today2.css">
+<style>.app{--listw:420px}
+.list .hd{padding:22px 20px 6px;border-bottom:0}.list .hd h1{font-size:26px}.list .hd .date{font-size:14px}
+.list .sub{padding:0 20px 14px;font-size:13px;color:var(--fg3);border-bottom:1px solid var(--line)}.list .sub b{color:var(--fg);font-weight:700}.list .sub .left{color:var(--ok);font-weight:700}
+.grp{padding:20px 20px 8px;font-size:13px}
+.it{min-height:52px;padding:0 20px;grid-template-columns:22px minmax(0,1fr) auto;gap:12px}
+.it .t{font-size:14.5px}
+.ev{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;align-items:center;padding:6px 20px;min-height:40px;font-size:13.5px}
+.ev .tm{font-variant-numeric:tabular-nums;color:var(--fg3);font-size:12.5px}
+.ev .nm{display:flex;align-items:center;gap:8px}.ev .nm i{width:3px;height:18px;border-radius:2px;background:var(--mtgfg);display:block}
+.ev.past{opacity:.55}
+</style></head><body>
+<div class="app">
+ <nav class="rail"><div class="mk">K</div>
+  <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>今日<span class="n">4</span></a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.2z"/></svg>高本AI</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>仕事</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>目標</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>会社</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg>設定</a>
+  <div class="me">高</div></nav>
+
+ <section class="list">
+  <div class="hd"><div class="row1"><h1>9月10日</h1><span class="date">水曜日 · 今日</span><span class="sp"></span><button class="ic" title="足す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+  <div class="sub">使える <b>4h00</b> · やる分 <b>1h35</b> · 会議 <b>2h00</b> · <span class="left">余り 2h25</span> · 朝の計画 7:42 に確定 <a href="#" style="color:var(--accent);font-weight:600">直す</a></div>
+  <div class="scroll">
+   <div class="grp">予定<span class="n">2</span></div>
+   <div class="ev"><span class="tm">11:00</span><span class="nm"><i></i>SOICO 様 Zoom 商談<span style="color:var(--fg3);font-size:12px">· 1 時間</span></span></div>
+   <div class="ev"><span class="tm">15:00</span><span class="nm"><i></i>ScoliVio 定例<span style="color:var(--fg3);font-size:12px">· 1 時間</span></span></div>
+   <div class="grp">押してほしいもの<span class="n">3</span><span class="sp"></span><a href="#">承認待ちへ →</a></div>
+   <div class="it sel"><span class="dot"></span><div><div class="t">セイコー 山田様へ 追いメール</div><div class="m">メール送信 · 営業社員 · 高本AI確認済み</div></div><div class="r"><span class="late">期限 明後日</span></div></div>
+   <div class="it"><span class="dot"></span><div><div class="t">京蟻 請求書 1,826,000円（税込）</div><div class="m">請求書送付 · 経理社員 · 差し戻し → 修正 → 確認済み</div></div><div class="r">14 時間</div></div>
+   <div class="it"><span class="dot"></span><div><div class="t">X 週次の実績投稿</div><div class="m">投稿 · 営業社員 · 数字は台帳と一致</div></div><div class="r">1 日</div></div>
+   <div class="grp">今日やる分<span class="n">残り 3 · 1h35</span><span class="sp"></span><a href="#">タスクへ →</a></div>
+   <div class="it"><input type="checkbox"><div><div class="t">セイコー様へ提案の一次返信を取りに行く</div><div class="m">山田様に電話（11:00 の商談前）</div></div><div class="r"><b>30分</b> · <span class="late">今日</span></div></div>
+   <div class="it"><input type="checkbox"><div><div class="t">京蟻 契約書案を送る</div><div class="m">押印欄だけ足す</div></div><div class="r"><b>45分</b> · 明日</div></div>
+   <div class="it"><input type="checkbox"><div><div class="t">ScoliVio 会津データ受領の段取り確認</div><div class="m aiw">次の一手が空 · 高本AIが下書きします</div></div><div class="r"><b>20分</b> · 9/12</div></div>
+   <div class="grp">AI社員が進めている<span class="n">2</span><span class="sp"></span><a href="#">動きを見る →</a></div>
+   <div class="it"><span class="dot run"></span><div><div class="t">発注ナビ 新着の確認（今日ぶん）</div><div class="m"><span class="aiw">AI営業社員</span> · 12件を条件で絞って台帳へ</div></div><div class="r">実行中</div></div>
+   <div class="it"><span class="dot"></span><div><div class="t">セイコー 着手金の請求書</div><div class="m"><span class="aiw">AI経理社員</span> · 承認待ち</div></div><div class="r">今日</div></div>
+   <div class="grp">終わった<span class="n">1</span></div>
+   <div class="it done"><input type="checkbox" checked><div><div class="t">週次の売上を台帳から締める</div><div class="m">今期の売上に反映</div></div><div class="r">実 11分</div></div>
+   <div class="grp">夕方<span class="n">18:00</span></div>
+   <div class="it" style="cursor:default"><span></span><div class="m" style="white-space:normal">高本AIが残りの振り分け案（消す／明日へ／引き継いでもらう）を出します。</div><div class="r"><a href="#" style="color:var(--accent);font-weight:600">今すぐ</a></div></div>
+   <div style="height:40px"></div>
+  </div>
+ </section>
+
+ <main class="detail">
+  <div class="kind">承認待ち · メール送信 · 高本AI確認済み</div>
+  <h2>セイコー 山田様へ 追いメール</h2>
+  <dl class="kv"><dt>宛先</dt><dd>山田 様 &lt;yamada@seiko-example.co.jp&gt;</dd><dt>件名</dt><dd>ご提案の件（食品パッケージ画像編集SaaS）</dd><dt>作った人</dt><dd>営業社員</dd><dt>経路</dt><dd>Google Workspace（正規API）</dd><dt>期限</dt><dd style="color:var(--danger);font-weight:600">先方の検討期限 9/12</dd></dl>
+  <div class="mail">山田様
+
+先日はお時間をいただきありがとうございました。
+ご提案した画像編集SaaSについて、もしお時間があればご検討状況をお聞かせください。
+ご不明な点や追加でご説明が必要な点があれば、いつでもお声がけください。
+
+高本</div>
+  <div class="ainote">前回のやり取りで山田様はメールを好まれていたので、電話ではなくメールにしました。文面はあなたの過去の追いメール 3 通の書き方に寄せています。金額や期日には触れていません。</div>
+  <div class="acts"><button class="btn p">承認して送る</button><button class="btn">直してから送る</button><button class="btn g">止める（AI社員に戻す）</button><button class="btn g">誰が何をしたか</button><span style="flex:1"></span><span style="font-size:12px;color:var(--fg3);align-self:center"><kbd>a</kbd> 承認 <kbd>e</kbd> 直す <kbd>j</kbd><kbd>k</kbd> 次へ</span></div>
+  <div class="log"><div class="lh">この件の動き</div><div class="lr"><span class="tm">06:20</span><b>営業社員が下書き</b></div><div class="lr"><span class="tm">06:31</span><b>高本AI 一次確認：言い回しを柔らかく → 差し戻し</b></div><div class="lr"><span class="tm">06:35</span><b>営業社員が直す → 高本AI OK</b></div><div class="lr"><span class="tm">06:36</span><b>承認待ちへ（あなた）</b></div></div>
+ </main>
+
+ <aside class="chat">
+  <div class="h"><span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h1"/></svg></span><div><div class="nm">高本AI</div><div class="ctx">いま見ている：セイコー 追いメール</div></div></div>
+  <div class="b">
+   <div class="msg a"><div class="who">申し送り · 7:30</div>おはようございます。夜のうちに 3 体が動きました。<b>まずセイコー様です。</b>先方の検討期限が明後日なので、今日中に押してもらえると間に合います。<br>京蟻の請求書は税込表示になっていなかったので私が差し戻して直させました。今は問題ありません。今週の成約はあと 1 件で目標です。<div class="ops"><button>差し戻しの経緯</button><button>AI社員の動き</button></div></div>
+   <div class="msg u">今日いちばん大事なのは？</div>
+   <div class="msg a"><div class="who">高本AI</div><b>セイコー様への追いメールの承認</b>です。次に一次返信の電話。契約書案は明日で間に合います。</div>
+  </div>
+  <div class="c"><div class="box"><textarea rows="1" placeholder="高本AIに頼む・聞く"></textarea><button class="btn p" style="padding:6px 10px">送る</button></div><div class="k"><span><kbd>Enter</kbd> 送る</span><span><kbd>/</kbd> 配る・数値・覚えて</span></div></div>
+ </aside>
+</div></body></html>
