@@ -31,14 +31,15 @@ interface MemberRow {
   deleted_at?: string | null;
   suspended_at?: string | null;
   kind_id?: string;
+  role_id?: string | null;
 }
 
 async function readMembers(): Promise<Choice[]> {
   const r = await call("listMembers", { query: { limit: 200 }, screenId: SCREEN });
   if (!r.ok) throw new RequestCallError(r);
-  // 担当に選べるのは、抜けていない・止められていない会社の人だけ（段 4 の作る画面と同じ）
+  // 担当に選べるのは、抜けていない・止められていない会社の人だけ（段 4 の作る画面と同じ）。ゲスト（役 requester・K-918）は会社の人でないので外す
   return (r.data as unknown as MemberRow[])
-    .filter((m) => !m.deleted_at && !m.suspended_at && (m.kind_id ?? "human") === "human")
+    .filter((m) => !m.deleted_at && !m.suspended_at && (m.kind_id ?? "human") === "human" && m.role_id !== "requester")
     .map((m) => ({ id: m.id, name: m.display_name }));
 }
 
