@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261126004900_member_erase.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/admin-member-erase.test.ts"
+   ]
+  }
+ ]
+}
