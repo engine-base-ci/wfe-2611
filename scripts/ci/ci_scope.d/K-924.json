@@ -23,7 +23,9 @@
         "11_tickets/K-59.md",
         "11_tickets/K-71.md",
         "01_hearing/決定ログ_進行中.md",
-        "01_hearing/decider-answers.jsonl"
+        "01_hearing/decider-answers.jsonl",
+        "08_api/phase1/合わせた/08_取引先とクライアントの場所.md",
+        "08_api/phase1/08_取引先とクライアントの場所.d/**"
       ],
       "tests": [
         "apps/api/test/features/F11/clients-retire.test.ts"

@@ -160,7 +160,8 @@ describe("K-924 取引先の口を契約から外す", () => {
 
   it("K924-API-007 文書：08_取引先とクライアントの場所.md の取引先の節（`GET /clients` ほか 12 の道）と 01_チケット.md の `GET /clients` の行が無い。依頼・クライアントの場所の節は残る", () => {
     const rx = /`(GET|POST|PATCH|DELETE) (\/clients|\/client_contacts)/;
-    const doc = read("08_api", "phase1", "08_取引先とクライアントの場所.md");
+    // 表の行は葉ごとの断片（08_取引先とクライアントの場所.d/）に移った（K-1112・PM の決め 2026-11-28）。読む人は断片を合わせた写しを読む
+    const doc = read("08_api", "phase1", "合わせた", "08_取引先とクライアントの場所.md");
     expect(doc).not.toMatch(rx);
     expect(read("08_api", "phase1", "01_チケット.md")).not.toMatch(rx);
     expect(doc, "届いた依頼の節は残る").toContain("`GET /client_requests`");
