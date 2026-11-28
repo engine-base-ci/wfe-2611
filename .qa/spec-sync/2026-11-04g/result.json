@@ -1,0 +1,69 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.129-catalog",
+ "executed_at": "2026-11-04T09:52:28",
+ "change": "D-128.129（目録を実物から作り、チケットを切るときはまず探す）。KN-123：scripts/ci/build_catalog.py → 03_architecture/catalog.json・catalog.md",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "03_architecture/catalog.json・catalog.md",
+  "scripts/ci/build_catalog.py",
+  "scripts/ci/generated.json",
+  "spec-dependencies.yaml",
+  "11_tickets/KN-123"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate T1〜T12 緑（D-128.129 は catalog.json に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "spec-validator --tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "spec-validator --tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "spec-validator --tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "spec-validator --tier h"
+  }
+ ],
+ "next": [
+  "KN-123：共通の決まり・歩く骸骨・チケットの切り直し"
+ ]
+}
