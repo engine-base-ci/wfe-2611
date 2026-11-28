@@ -105,7 +105,10 @@ const STATES: Record<
   "md-remove-none": { prev: preview({ tickets: [], handovers_cancelled: [] }), drive: open },
   "md-remove-last-admin": {
     prev: preview({ blocked_by: "last_admin" }, "佐藤 花子", ID.sato),
-    detail: { member: { ...detailBody().data.member, id: ID.sato, name: "佐藤 花子", role: "admin" } },
+    // 下絵 md-remove-last-admin の佐藤：役割が変わった注は無い（佐藤の役割は変えていない）
+    detail: {
+      member: { ...detailBody().data.member, id: ID.sato, name: "佐藤 花子", role: "admin", role_changed: null },
+    },
     drive: async (page) => {
       await outBtn(page).click();
       await expect(page.locator(".k-callout")).toBeVisible();

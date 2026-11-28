@@ -126,12 +126,13 @@ test("K872-UI-004 失敗：22 状態を描いて pageerror と hydration の知�
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
+// 下絵の頁の後ろ（届いた依頼の詳細・K-898）にも同じ字のボタンと札が在るので、小窓の中で探す
 test("K872-UI-005 返事を送って詳しく聞く（rq-ask・rq-ask-error）：題と、必須の欄「先方に送る返事」・ボタン やめる・送る。空のときは「送る返事を書いてください」", async ({
   page,
 }) => {
   await guard(page);
   await openState(page, "rq-ask", 1440);
-  await expect(page.getByText("返事を送って詳しく聞く", { exact: true })).toBeVisible();
+  await expect(page.getByRole("dialog").getByText("返事を送って詳しく聞く", { exact: true })).toBeVisible();
   await expect(page.getByLabel("先方に送る返事*", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "送る", exact: true })).toBeEnabled();
   await openState(page, "rq-ask-error", 1440);
@@ -143,9 +144,9 @@ test("K872-UI-006 この依頼を断る（rq-decline・rq-decline-error）：題
 }) => {
   await guard(page);
   await openState(page, "rq-decline", 1440);
-  await expect(page.getByText("この依頼を断る", { exact: true })).toBeVisible();
-  await expect(page.getByText("この理由は先方に見えます。", { exact: true })).toBeVisible();
-  await expect(page.getByText("先方に見える", { exact: true })).toBeVisible();
+  await expect(page.getByRole("dialog").getByText("この依頼を断る", { exact: true })).toBeVisible();
+  await expect(page.getByRole("dialog").getByText("この理由は先方に見えます。", { exact: true })).toBeVisible();
+  await expect(page.getByRole("dialog").getByText("先方に見える", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "断る", exact: true })).toBeEnabled();
   await openState(page, "rq-decline-error", 1440);
   await expect(page.getByText("理由を書いてください（先方に届きます）", { exact: true })).toBeVisible();

@@ -96,7 +96,10 @@ for (const [id, st] of Object.entries(STATES)) {
           const mk = await mockApi(page, st.detail ? { detail: st.detail } : {});
           if (st.fail) mk.set("getMember", () => err(404, "E-MEM-002"));
           await openAt(page, owner.token, st.path, w);
-          await expect(page.locator(`${SEC}, [data-state="error"], .k-state`).first()).toBeVisible();
+          // 読み込み中の箱（.k-state[data-state="loading"]）で比べ始めない（答えが来て本文か誤りの箱が出てから読む）
+          await expect(
+            page.locator(`${SEC}, [data-state="error"], .k-state:not([data-state="loading"])`).first(),
+          ).toBeVisible();
         },
         { pairs: F10_PAIRS, base: MOCK_BASE, blur: true, skip: st.skip ?? [] },
       );
@@ -313,7 +316,9 @@ test("K819-UI-013 権限が無い人（閲覧のみ）が直に開く：「こ�
   const mk = await mockApi(page);
   await openAt(page, viewer.token, PATH);
   await expect(page.getByText("この画面を見る権限がありません", { exact: false })).toBeVisible();
-  await expect(page.getByRole("link", { name: "ワークスペースの管理" })).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: "ワークスペースの管理" }),
+  ).toHaveCount(0);
   expect(mk.count("getMember")).toBe(0);
 });
 

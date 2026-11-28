@@ -65,17 +65,20 @@ const STATES: Record<string, (page: Page, width: number) => Promise<KMock>> = {
     const mk = await mockKnowledge(page, { tree: treeEmpty(), pages: [] });
     await openAt(page, "/knowledge", w);
     await expect(page.getByText("まだページがありません", { exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "最初のページを書く", exact: true })).toHaveAttribute(
+    // 動きを差し込む葉（K-684）が入ったので押せる形（K684-UI-021 が押した後の小窓を見る）
+    await expect(page.getByRole("button", { name: "最初のページを書く", exact: true })).not.toHaveAttribute(
       "aria-disabled",
       "true",
-    ); // 動きを差し込む葉（K-684）が入るまでは押せない形
+    );
     return mk;
   },
   "kn-loading": async (page, w) => {
     const mk = await mockKnowledge(page);
     mk.hold("tree");
     await openAt(page, "/knowledge", w);
-    await expect(page.getByRole("status", { name: "木を読み込んでいます", exact: true })).toBeVisible();
+    // 幅 1023 以下の木は閉じた引き出し（下絵も木を出さない）。見えるのは本文の読み込みの箱
+    if (wide(w)) await expect(page.getByRole("status", { name: "木を読み込んでいます", exact: true })).toBeVisible();
+    else await expect(page.locator(".k-f9-card [role='status']")).toBeVisible();
     return mk;
   },
   "kn-failed": async (page, w) => {

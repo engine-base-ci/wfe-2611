@@ -9,7 +9,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, type ReactNode } from "react";
-import { Button, ErrorState, Loading, NoAccess, PAGE_ERROR, Toaster, errorCodeOf, type Crumb } from "@/components/k";
+import { Button, ErrorState, Loading, NoAccess, PAGE_ERROR, errorCodeOf, type Crumb } from "@/components/k";
 import { me } from "@/lib/auth/ext";
 import { useMyRoles } from "@/lib/auth/role";
 import { BUILT_ROUTES } from "@/lib/built-routes";
@@ -62,11 +62,9 @@ export function MemberDetailPage({ id }: { id: string }) {
   else body = <AdminBody id={id} member={member} />;
 
   return (
-    <Toaster>
-      <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
-        {body}
-      </TicketShell>
-    </Toaster>
+    <TicketShell screen={SCREEN} crumbs={crumbsOf(name)}>
+      {body}
+    </TicketShell>
   );
 }
 
@@ -110,7 +108,8 @@ function AdminBody({ id, member }: { id: string; member: ReturnType<typeof useMe
     <>
       <WsHead name={company} initial={company.slice(0, 1)} />
       <div className="k-me-wrap">
-        <WsSub active="members" />
+        {/* 1 人の画面からの「メンバー」は一覧へ（既定の #members は一覧の画面の中の道） */}
+        <WsSub active="members" items={{ members: { href: MEMBERS_PATH } }} />
         {main}
       </div>
       {Dialog && member.data ? (

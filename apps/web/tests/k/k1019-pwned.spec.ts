@@ -150,7 +150,9 @@ test.describe("K-1019 帯と小窓の見た目", () => {
         async (page) => {
           await open(page, baseURL, 4, w);
           await openDialog(page);
-          await expect(dialog(page).getByText("山田 健二", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+          await expect(
+            dialog(page).getByText("山田 健二", { exact: true }).filter({ visible: true }).first(),
+          ).toBeVisible();
         },
         { base: "/dev/mock/f12-ops", pairs: DIALOG_PAIRS },
       );
@@ -214,7 +216,10 @@ test.describe("K-1019 帯と小窓の動き", () => {
   }) => {
     const m = await open(page, baseURL);
     await openDialog(page);
-    const row = dialog(page).getByText("（登録はまだ確定していません）", { exact: true }).filter({ visible: true }).first();
+    const row = dialog(page)
+      .getByText("（登録はまだ確定していません）", { exact: true })
+      .filter({ visible: true })
+      .first();
     await expect(row).toBeVisible();
     await dialog(page).getByRole("button", { name: "（登録はまだ確定していません） を確かめた", exact: true }).click();
     await expect(dialog(page).getByText("（登録はまだ確定していません）", { exact: true })).toHaveCount(0);

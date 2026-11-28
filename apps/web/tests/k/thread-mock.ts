@@ -274,6 +274,8 @@ export interface ThreadOptions {
   extra?: Record<string, unknown>;
   items?: TimelineItem[];
   meta?: Partial<Page1Meta>;
+  /** 決定の一覧の口の can_write（書き込みの下の「決定にする」は書ける人にだけ出る・K-398）。既定は書ける */
+  canDecide?: boolean;
 }
 
 /** 詳細を開く前に呼ぶ。詳細の答えは土台の ticketOf に extra を重ねる */
@@ -322,6 +324,11 @@ export async function mockThread(page: Page, o: ThreadOptions = {}): Promise<Thr
       contentType: "application/json",
       body: r.status === 204 ? "" : JSON.stringify(r.body),
     });
+  // 決定の一覧の口（K-398 の FromMessageAction が can_write を読んで「決定にする」を出す）。決定は 0 件。後から足した差し替えが先に当たる
+  await page.route(`**/api/v1/tickets/${TICKET}/decisions`, async (route, req) => {
+    if (req.method() !== "GET") return route.fallback();
+    return reply(route, { status: 200, body: { data: [], meta: { can_write: o.canDecide ?? true } } });
+  });
   await page.route(new RegExp(`/api/v1/tickets/${TICKET}/timeline(\\?|$)`), async (route, req) => {
     const q = new URL(req.url()).searchParams;
     t.reads.push(q);
