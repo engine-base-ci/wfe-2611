@@ -1,0 +1,154 @@
+{
+ "screen": "disclosure",
+ "mock": "06_mockup/v2/v2-disclosure.html",
+ "state_labels": {
+  "n": "資料",
+  "v": "版の履歴",
+  "x": "PDF が作れない",
+  "gs": "AI が止まっている"
+ },
+ "ops": [
+  {
+   "key": "button:まとめて PDF で出す",
+   "kind": "button",
+   "label": "まとめて PDF で出す",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:できる操作の完全な列挙操作 87 件を 8 つの出口ごとに。ここに無いことはできません第 7 版",
+   "kind": "link",
+   "label": "できる操作の完全な列挙操作 87 件を 8 つの出口ごとに。ここに無いことはできません第 7 版",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:送るもの／送らないもの外に出るデータの決まりから。資格情報・台帳の中身はサーバーに送らない第 7 版",
+   "kind": "link",
+   "label": "送るもの／送らないもの外に出るデータの決まりから。資格情報・台帳の中身はサーバーに送らない第 7 版",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:サブプロセッサ一覧Supabase（東京）・Railway・Vercel・Anthropic／OpenAI／Google",
+   "kind": "link",
+   "label": "サブプロセッサ一覧Supabase（東京）・Railway・Vercel・Anthropic／OpenAI／Google",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:DPA（データ処理契約）雛形 第 2 版（法務確認 8/30）。締結は問い合わせから雛形",
+   "kind": "link",
+   "label": "DPA（データ処理契約）雛形 第 2 版（法務確認 8/30）。締結は問い合わせから雛形",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:アンインストールの検証結果Bridge 第 5 版 · 残留物ゼロ（macOS 14／Windows 11）· 2026",
+   "kind": "link",
+   "label": "アンインストールの検証結果Bridge 第 5 版 · 残留物ゼロ（macOS 14／Windows 11）· 2026",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "link:監査ログの保持と出し方7 年保持。持ち出しから自分で出せる第 7 版",
+   "kind": "link",
+   "label": "監査ログの保持と出し方7 年保持。持ち出しから自分で出せる第 7 版",
+   "target": null,
+   "states": [
+    "資料",
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3",
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:もう一度 PDF を出す",
+   "kind": "button",
+   "label": "もう一度 PDF を出す",
+   "target": null,
+   "states": [
+    "PDF が作れない"
+   ],
+   "roles": [],
+   "ps": [
+    "PS3"
+   ]
+  },
+  {
+   "key": "link:止まっているものを直す→automation-repair",
+   "kind": "link",
+   "label": "止まっているものを直す",
+   "target": "automation-repair",
+   "states": [
+    "AI が止まっている"
+   ],
+   "roles": [],
+   "ps": [
+    "PS4"
+   ]
+  },
+  {
+   "key": "button:PDF で出す",
+   "kind": "button",
+   "label": "PDF で出す",
+   "target": null,
+   "states": [
+    "共通"
+   ],
+   "roles": [],
+   "ps": []
+  }
+ ]
+}
