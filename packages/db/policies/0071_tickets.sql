@@ -1,0 +1,125 @@
+-- RLS（機械生成：scripts/ci/gen_rls.py ← 07_functional/entities.json の access_control_policies。手で直さない）
+
+alter table ticket_kinds enable row level security;
+alter table ticket_kinds force row level security;
+drop policy if exists ticket_kinds_tenant_read on ticket_kinds;
+create policy ticket_kinds_tenant_read on ticket_kinds for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists ticket_kinds_permission_write_insert on ticket_kinds;
+create policy ticket_kinds_permission_write_insert on ticket_kinds for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_kinds', NULL, 'edit')));
+drop policy if exists ticket_kinds_permission_write_update on ticket_kinds;
+create policy ticket_kinds_permission_write_update on ticket_kinds for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_kinds', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_kinds', NULL, 'edit')));
+drop policy if exists ticket_kinds_permission_write_delete on ticket_kinds;
+create policy ticket_kinds_permission_write_delete on ticket_kinds for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_kinds', NULL, 'edit')));
+drop policy if exists ticket_kinds_ops_read_with_grant on ticket_kinds;
+create policy ticket_kinds_ops_read_with_grant on ticket_kinds for select using (app.ops_grant_ok(ticket_kinds.tenant_id));
+
+alter table kind_sections enable row level security;
+alter table kind_sections force row level security;
+drop policy if exists kind_sections_tenant_read on kind_sections;
+create policy kind_sections_tenant_read on kind_sections for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists kind_sections_permission_write_insert on kind_sections;
+create policy kind_sections_permission_write_insert on kind_sections for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'kind_sections', NULL, 'edit')));
+drop policy if exists kind_sections_permission_write_update on kind_sections;
+create policy kind_sections_permission_write_update on kind_sections for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'kind_sections', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'kind_sections', NULL, 'edit')));
+drop policy if exists kind_sections_permission_write_delete on kind_sections;
+create policy kind_sections_permission_write_delete on kind_sections for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'kind_sections', NULL, 'edit')));
+drop policy if exists kind_sections_ops_read_with_grant on kind_sections;
+create policy kind_sections_ops_read_with_grant on kind_sections for select using (app.ops_grant_ok(kind_sections.tenant_id));
+
+alter table ticket_stages enable row level security;
+alter table ticket_stages force row level security;
+drop policy if exists ticket_stages_tenant_read on ticket_stages;
+create policy ticket_stages_tenant_read on ticket_stages for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists ticket_stages_permission_write_insert on ticket_stages;
+create policy ticket_stages_permission_write_insert on ticket_stages for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_stages', NULL, 'edit')));
+drop policy if exists ticket_stages_permission_write_update on ticket_stages;
+create policy ticket_stages_permission_write_update on ticket_stages for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_stages', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_stages', NULL, 'edit')));
+drop policy if exists ticket_stages_permission_write_delete on ticket_stages;
+create policy ticket_stages_permission_write_delete on ticket_stages for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'ticket_stages', NULL, 'edit')));
+drop policy if exists ticket_stages_ops_read_with_grant on ticket_stages;
+create policy ticket_stages_ops_read_with_grant on ticket_stages for select using (app.ops_grant_ok(ticket_stages.tenant_id));
+
+alter table class_axes enable row level security;
+alter table class_axes force row level security;
+drop policy if exists class_axes_tenant_read on class_axes;
+create policy class_axes_tenant_read on class_axes for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists class_axes_permission_write_insert on class_axes;
+create policy class_axes_permission_write_insert on class_axes for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_axes', NULL, 'edit')));
+drop policy if exists class_axes_permission_write_update on class_axes;
+create policy class_axes_permission_write_update on class_axes for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_axes', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_axes', NULL, 'edit')));
+drop policy if exists class_axes_permission_write_delete on class_axes;
+create policy class_axes_permission_write_delete on class_axes for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_axes', NULL, 'edit')));
+drop policy if exists class_axes_ops_read_with_grant on class_axes;
+create policy class_axes_ops_read_with_grant on class_axes for select using (app.ops_grant_ok(class_axes.tenant_id));
+
+alter table class_values enable row level security;
+alter table class_values force row level security;
+drop policy if exists class_values_tenant_read on class_values;
+create policy class_values_tenant_read on class_values for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists class_values_permission_write_insert on class_values;
+create policy class_values_permission_write_insert on class_values for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_values', NULL, 'edit')));
+drop policy if exists class_values_permission_write_update on class_values;
+create policy class_values_permission_write_update on class_values for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_values', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_values', NULL, 'edit')));
+drop policy if exists class_values_permission_write_delete on class_values;
+create policy class_values_permission_write_delete on class_values for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'class_values', NULL, 'edit')));
+drop policy if exists class_values_ops_read_with_grant on class_values;
+create policy class_values_ops_read_with_grant on class_values for select using (app.ops_grant_ok(class_values.tenant_id));
+
+alter table tickets enable row level security;
+alter table tickets force row level security;
+drop policy if exists tickets_read on tickets;
+create policy tickets_read on tickets for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND (scope_id = ANY(visible_scopes(app.user_id())) OR assignee_member_id = app.user_id() OR app.ticket_involved(id, app.user_id()))));
+drop policy if exists tickets_create on tickets;
+create policy tickets_create on tickets for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'tickets', scope_id, 'edit')));
+drop policy if exists tickets_update on tickets;
+create policy tickets_update on tickets for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND (has_permission(app.user_id(), 'tickets', scope_id, 'edit') OR assignee_member_id = app.user_id()))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND (has_permission(app.user_id(), 'tickets', scope_id, 'edit') OR assignee_member_id = app.user_id())));
+drop policy if exists tickets_ops_read_with_grant on tickets;
+create policy tickets_ops_read_with_grant on tickets for select using (app.ops_grant_ok(tickets.tenant_id));
+
+alter table ticket_sections enable row level security;
+alter table ticket_sections force row level security;
+drop policy if exists ticket_sections_ticket_read on ticket_sections;
+create policy ticket_sections_ticket_read on ticket_sections for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_visible(ticket_id)));
+drop policy if exists ticket_sections_ticket_write_insert on ticket_sections;
+create policy ticket_sections_ticket_write_insert on ticket_sections for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_sections_ticket_write_update on ticket_sections;
+create policy ticket_sections_ticket_write_update on ticket_sections for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_sections_ticket_write_delete on ticket_sections;
+create policy ticket_sections_ticket_write_delete on ticket_sections for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_sections_ops_read_with_grant on ticket_sections;
+create policy ticket_sections_ops_read_with_grant on ticket_sections for select using (app.ops_grant_ok(ticket_sections.tenant_id));
+
+alter table ticket_section_versions enable row level security;
+alter table ticket_section_versions force row level security;
+drop policy if exists ticket_section_versions_ticket_read on ticket_section_versions;
+create policy ticket_section_versions_ticket_read on ticket_section_versions for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_visible(ticket_id)));
+drop policy if exists ticket_section_versions_ticket_write on ticket_section_versions;
+create policy ticket_section_versions_ticket_write on ticket_section_versions for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_section_versions_ops_read_with_grant on ticket_section_versions;
+create policy ticket_section_versions_ops_read_with_grant on ticket_section_versions for select using (app.ops_grant_ok(ticket_section_versions.tenant_id));
+
+alter table ticket_class_values enable row level security;
+alter table ticket_class_values force row level security;
+drop policy if exists ticket_class_values_ticket_read on ticket_class_values;
+create policy ticket_class_values_ticket_read on ticket_class_values for select using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_visible(ticket_id)));
+drop policy if exists ticket_class_values_ticket_write_insert on ticket_class_values;
+create policy ticket_class_values_ticket_write_insert on ticket_class_values for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_class_values_ticket_write_update on ticket_class_values;
+create policy ticket_class_values_ticket_write_update on ticket_class_values for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_class_values_ticket_write_delete on ticket_class_values;
+create policy ticket_class_values_ticket_write_delete on ticket_class_values for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND app.ticket_writable(ticket_id)));
+drop policy if exists ticket_class_values_ops_read_with_grant on ticket_class_values;
+create policy ticket_class_values_ops_read_with_grant on ticket_class_values for select using (app.ops_grant_ok(ticket_class_values.tenant_id));
+
+alter table handover_rules enable row level security;
+alter table handover_rules force row level security;
+drop policy if exists handover_rules_tenant_read on handover_rules;
+create policy handover_rules_tenant_read on handover_rules for select using (app.member_ok() AND (tenant_id = app.tenant_id()));
+drop policy if exists handover_rules_permission_write_insert on handover_rules;
+create policy handover_rules_permission_write_insert on handover_rules for insert with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'handover_rules', NULL, 'edit')));
+drop policy if exists handover_rules_permission_write_update on handover_rules;
+create policy handover_rules_permission_write_update on handover_rules for update using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'handover_rules', NULL, 'edit'))) with check (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'handover_rules', NULL, 'edit')));
+drop policy if exists handover_rules_permission_write_delete on handover_rules;
+create policy handover_rules_permission_write_delete on handover_rules for delete using (app.member_ok() AND (tenant_id = app.tenant_id() AND has_permission(app.user_id(), 'handover_rules', NULL, 'edit')));
+drop policy if exists handover_rules_ops_read_with_grant on handover_rules;
+create policy handover_rules_ops_read_with_grant on handover_rules for select using (app.ops_grant_ok(handover_rules.tenant_id));
