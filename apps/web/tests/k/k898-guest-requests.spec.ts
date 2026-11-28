@@ -217,6 +217,9 @@ for (const [mock, w0] of [
           await expect(page.locator("main").first()).toBeVisible();
           // 詳細の頁は見出し（h1）が描き終わるまで待つ（main だけでは、依頼の答えの前の空の本文と比べてしまう）
           if (w0 !== "/requests") await expect(detail(page).getByRole("heading", { level: 1 })).toBeVisible();
+          // 一覧の頁も、1 つ目の依頼の本文（h1）を後から読んで描く（幅 768・1440 は一覧の横か下に出る・375 は隠す）。
+          //   一覧の口の答えだけで比べると、本文の答えの前の空の本文と比べてしまう。隠れる幅もあるので DOM に付いたかで待つ
+          else await expect(detail(page).locator("h1")).toBeAttached();
         },
         { base: "/dev/mock/f11", pairs: [pair("h1", "h1", ["x", "y", "font-size", "color", "texts"])] },
       );
