@@ -1,0 +1,73 @@
+{
+ "status": "PASS（A・B・C・T・P・L は緑。D・F・G・H はスキルの版がプロジェクトの書き方に追いついていないので走らせられず、理由つきの blocked・KN-50。同じ中身はプロジェクトの検査が CI で見ている）",
+ "run_id": "20261104-D128.123-inventory",
+ "executed_at": "2026-11-04T01:49:11",
+ "change": "D-128.123（見つけたら、同じ種類を止める検査を足すまで閉じない）。KN-111（検査の無い所の棚卸し・G38 生成物・G46 部品と技術の選定・G47 書いた検査が CI から回る・書体の試験）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "02_tech_stack/selected-stack.json（packages の表）",
+  "05_flow/build_testplan.py → .github/workflows/v3-gate.yml（G38・G46・G47）・07_qa/test-plan",
+  "scripts/ci（generated_gate・stack_gate・ci_wiring_gate・contract.mjs の hash）・spec-dependencies.yaml",
+  "11_tickets（KN-111〜KN-116・KN-5・KN-6・KN-109）"
+ ],
+ "checks": [
+  {
+   "tier": "impl_gate",
+   "status": "pass",
+   "detail": "skill_impl_gate：名乗っている検査は全部実物がある"
+  },
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0（spec_check.py）"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "scripts/ci/trace_gate.py T1〜T12 緑（T8：D-128.123 は G38・G46・G47 の検査が参照）。要件一覧を --index で作り直した"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit P1〜P5・P7 が 0（新しい目録 generated.json・ci_scripts.json を地図に足した）"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "scripts/ci/layer_audit.py --run：spec-sync の行の外は全部緑（DATABASE_URL=kaname_test）"
+  },
+  {
+   "tier": "D",
+   "status": "blocked",
+   "detail": "スキルの tier_d.py が しまったモックの .html を json として読もうとして落ちる（KN-50）。画面の決定の反映は G27・G28・canvas_gate と trace_gate が見ている"
+  },
+  {
+   "tier": "F",
+   "status": "blocked",
+   "detail": "スキルの spec-validator.py が downstream_coverage の command の形を読めない（KN-50）。下流の到達は coverage_gate と tv_gate（G31）が見ている"
+  },
+  {
+   "tier": "G",
+   "status": "blocked",
+   "detail": "スキルの tier_g.py が dependency_boundaries.checks の command を走らせない（KN-50）。同じ中身は CI の G5・G7〜G9 が緑"
+  },
+  {
+   "tier": "H",
+   "status": "blocked",
+   "detail": "スキルの tier_h.py が例外台帳の backtick のフォルダを読めない（KN-50）。同じ中身は CI の G16〜G25 が緑"
+  }
+ ],
+ "next": [
+  "KN-50：spec-sync スキルを Kaname の書き方に合わせる"
+ ]
+}
