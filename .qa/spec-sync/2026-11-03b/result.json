@@ -1,0 +1,74 @@
+{
+ "status": "PASS（A・B・C・T・P・L は緑。D・F・G・H はスキルの版がプロジェクトの書き方に追いついていないので走らせられず、理由つきの blocked・KN-50。同じ中身はプロジェクトの検査が CI で見ている）",
+ "run_id": "20261103-D128.120-121-session-watch",
+ "executed_at": "2026-11-03T13:48:52",
+ "change": "D-128.120・D-128.121（セッションの見張り：国か端末の変化で入り直し・同じ国の IP の変化は記録だけ・国は x-vercel-ip-country・Bridge は時間では切らない）。KN-56・KN-57",
+ "impact": [
+  "03_architecture/ER図.md（sessions・tenants・security_events）",
+  "03_architecture/ゼロトラストの決まり.md（ZT6）",
+  "01_hearing/第1フェーズ_要件定義書_v1.md（決定の表）",
+  "01_hearing/要件一覧.md（trace_gate --index）",
+  "11_tickets/KN-4・KN-56・KN-57",
+  "scripts/ci/zt_gate.py（ZT6 の確かめ）"
+ ],
+ "checks": [
+  {
+   "tier": "impl_gate",
+   "status": "pass",
+   "detail": "skill_impl_gate：名乗っている検査は全部実物がある"
+  },
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "scripts/ci/spec_check.py"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0（spec_check.py）"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "scripts/ci/trace_gate.py T1〜T12 緑。要件一覧を --index で作り直した"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit P1〜P5・P7 が 0（ローカルの試験の出力 apps/web/test-results は無視リストの生成物なので消した）"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "scripts/ci/layer_audit.py --run：spec-sync の行の外は全部緑（DATABASE_URL=kaname_test を渡して流す）"
+  },
+  {
+   "tier": "D",
+   "status": "blocked",
+   "detail": "スキルの tier_d.py が、alignment_decisions の trace の file に .html（しまったモック）を指す行で json として読もうとして落ちる。スキル側を直す（KN-50）。画面の決定の反映は G27・G28・canvas_gate と trace_gate T6 が見ている"
+  },
+  {
+   "tier": "F",
+   "status": "blocked",
+   "detail": "スキルの spec-validator.py が downstream_coverage の command の形を読めない（id_source.file 未指定）。スキル側を直す（KN-50）。下流の到達は coverage_gate KC1〜KC6（G14）と tv_gate（G31）が見ている"
+  },
+  {
+   "tier": "G",
+   "status": "blocked",
+   "detail": "スキルの tier_g.py が dependency_boundaries.checks の command を走らせない。スキル側を直す（KN-50）。同じ中身は CI の G5（ベンダー固有 SQL）・G7〜G9（boundary.mjs）が緑"
+  },
+  {
+   "tier": "H",
+   "status": "blocked",
+   "detail": "スキルの tier_h.py が例外台帳の `packages/auth/` のように backtick で囲んだフォルダを読めず、台帳にある越境（X-003・X-004）を赤にする。スキル側を直す（KN-50）。同じ中身は CI の G16〜G25（関門と例外台帳）が緑"
+  }
+ ],
+ "next": [
+  "KN-50：spec-sync スキルを Kaname の書き方（command・backtick のフォルダ・しまったモックの trace）に合わせる"
+ ]
+}
