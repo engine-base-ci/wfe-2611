@@ -1,0 +1,5 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/contract/op.ts", "apps/api/src/contract/stop-open.ts", "apps/api/src/middleware/tenant.ts", "packages/db/src/repository.ts", "apps/api/src/features/F5/delegate/bridge.ts", "packages/db/migrations/20261128015200_stop_gate.sql"], "tests": ["apps/api/test/features/F12/ops-stop-gate.test.ts", "apps/api/src/contract/authz.test.ts", "apps/api/test/features/F1/my-security.test.ts", "apps/api/test/features/F3/credential-resolve.test.ts", "apps/api/test/features/contract/k144-contract.test.ts", "apps/api/test/k262_edge.test.ts", "apps/api/test/k427_nul_input.test.ts", "scripts/ci/contract_shape_test.py"]}
+ ]
+}

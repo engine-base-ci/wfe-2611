@@ -1,0 +1,40 @@
+/* 困ったとき（help-view.tsx）。入口の部品と正本の値だけを読む（生の値を書かない・D8） */
+.k-help .k-help-h {
+  text-align: left;
+}
+.k-help-sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+}
+.k-help-sec h2 {
+  margin: 0;
+  font-size: var(--k-c-pc-card-title-text);
+  font-weight: var(--k-c-pc-card-title-fw);
+}
+.k-help-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-help-row {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-pc-row-gap);
+  padding: var(--k-c-pc-row-pad);
+  border-top: var(--k-c-pc-row-border-top);
+}
+.k-help-row > span:first-child,
+.k-help-main {
+  flex: 1;
+  min-width: 0;
+}
+.k-help-main {
+  display: flex;
+  flex-direction: column;
+}
+.k-help-when {
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
