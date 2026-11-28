@@ -18,6 +18,11 @@ export const SWEEP_MINE = "select app.ticket_execute_sweep_read('mine', null) as
 export const SWEEP_MINE_AND_OVERDUE =
   "select app.ticket_execute_sweep_read('mine', null) as n, app.handover_overdue_sweep() as overdue";
 
+/** K417-M2-01：チケットの詳細を読む前の片付け（そのチケット 1 枚）＋ 返事の期限が過ぎた渡しの知らせを、同じ 1 本の文で流す
+ *   （外枠は getShell 1 本になり承認待ちを最初に読まないので、詳細を開いたときにも知らせる・PM の決め 11-28 21:30） */
+export const SWEEP_TICKET_AND_OVERDUE =
+  "select app.ticket_execute_sweep_read('ticket', $1) as n, app.handover_overdue_sweep() as overdue";
+
 /** 包む関数が「片付けに失敗したので戻した」ときの答え */
 const SWEEP_FAILED = -1;
 
@@ -41,11 +46,19 @@ function logOverdueSkipped(where: string): void {
 }
 
 /** 読む前の片付け（mine）と期限切れの知らせを 1 本の文で流す。送るメールの宛てを返す（失敗しても投げず、空を返す） */
-export async function sweepMineAndOverdue(cl: pg.PoolClient, where: string): Promise<OverdueMail[]> {
+export function sweepMineAndOverdue(cl: pg.PoolClient, where: string): Promise<OverdueMail[]> {
+  return sweepWithOverdue(cl, SWEEP_MINE_AND_OVERDUE, [], where);
+}
+
+/** 片付けの文（n と overdue を返す 1 本）を流し、送るメールの宛てを返す（失敗しても投げず、空を返す） */
+export async function sweepWithOverdue(
+  cl: pg.PoolClient,
+  sql: string,
+  args: unknown[],
+  where: string,
+): Promise<OverdueMail[]> {
   try {
-    const r = await cl.query<{ n: number | null; overdue: { ok?: boolean; mails?: OverdueMail[] } | null }>(
-      SWEEP_MINE_AND_OVERDUE,
-    );
+    const r = await cl.query<{ n: number | null; overdue: { ok?: boolean; mails?: OverdueMail[] } | null }>(sql, args);
     const row = r.rows[0];
     if (row?.n === SWEEP_FAILED) logSkipped(where, "DB の中で戻した");
     if (!row?.overdue || row.overdue.ok === false) {

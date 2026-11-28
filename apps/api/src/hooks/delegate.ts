@@ -3,10 +3,14 @@
 import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { delegateHooks as make } from "../features/F5/delegate/index.js";
+import type { HandoverMailer } from "../features/F8/handovers/deps.js";
 import { defineHooks } from "./registry.js";
 
-export function delegateHooks(appPool: pg.Pool): Record<string, Hook> {
-  const h = make(appPool);
+export function delegateHooks(
+  appPool: pg.Pool,
+  o: { mailer?: HandoverMailer; webBaseUrl?: string } = {},
+): Record<string, Hook> {
+  const h = make(appPool, o);
   return {
     delegateTicket: { ...h["delegateTicket"] },
     listTicketRuns: { ...h["listTicketRuns"] },
@@ -23,7 +27,9 @@ export function delegateHooks(appPool: pg.Pool): Record<string, Hook> {
 // getTicket は K-60 の詳細（ticketHooks）に can.delegate を足した物に差し替える（並びに頼らない）
 export const register = defineHooks({
   name: "delegateHooks",
-  make: (d) => delegateHooks(d.appPool),
+  // 詳細を開いたときの期限切れの知らせのメール（K417-M2-01）。材料は承認待ちの口と同じ（mailer・webBaseUrl）
+  make: (d) =>
+    delegateHooks(d.appPool, { ...(d.mailer ? { mailer: d.mailer } : {}), webBaseUrl: d.config?.webBaseUrl ?? "" }),
   fuzz: "same",
   replaces: ["getTicket"],
 });

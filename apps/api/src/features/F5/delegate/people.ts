@@ -7,7 +7,9 @@ import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { listQueryIssues } from "../../../contract/list_query.js";
-import { SWEEP_TICKET, sweepBeforeRead } from "../approve-complete/sweep.js";
+import { mailOverdue, type OverdueMailOptions } from "../approve-complete/queue.js";
+import { SWEEP_TICKET_AND_OVERDUE, sweepWithOverdue } from "../approve-complete/sweep.js";
+import type { OverdueMail } from "../../F8/handovers/overdue.js";
 
 /** PC をつなぐ画面（E-CONN-001 の一手） */
 export const SETUP_BRIDGE = "/setup/bridge";
@@ -28,7 +30,11 @@ const down = (where: string, e: unknown): HookReply => {
 };
 const notFound = (): HookReply => ({ status: 404, body: { error: "not_found", code: "NOT_FOUND" } });
 
-export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<string, Hook> {
+export function peopleHooks(
+  pool: pg.Pool,
+  base: Record<string, Hook>,
+  mo: OverdueMailOptions = {},
+): Record<string, Hook> {
   const inTenant = <T>(a: HookArgs, sql: string, args: unknown[]) =>
     withTenant(pool, a.ctx, async (cl) => (await cl.query<{ v: T }>(sql, args)).rows[0]?.v);
   const getTicket = base["getTicket"];
@@ -92,18 +98,23 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
       },
     },
     // チケットの詳細（K-60）に「見ている人ができること」を足す（can.delegate・D-128.138）。
-    //   読む前に、待っている承認の後の実行の仕事を片付ける（K-164。失敗したら飛ばして読めたものを返す）
+    //   読む前に、待っている承認の後の実行の仕事を片付ける（K-164。失敗したら飛ばして読めたものを返す）。
+    //   同じ 1 本の文で、返事の期限が過ぎた渡しの知らせも流し、メールは取引の後に送る（K-407・K417-M2-01・PM の決め 11-28 21:30）
     getTicket: {
       ...getTicket,
       before: async (a: HookArgs) => {
+        let overdue: OverdueMail[] = [];
         try {
-          await withTenant(pool, a.ctx, (cl) => sweepBeforeRead(cl, SWEEP_TICKET, [a.id], "チケットの詳細"));
+          overdue = await withTenant(pool, a.ctx, (cl) =>
+            sweepWithOverdue(cl, SWEEP_TICKET_AND_OVERDUE, [a.id], "チケットの詳細"),
+          );
         } catch (e) {
           // 片付けの取引そのもの（接続・commit）が失敗しても、読む口は止めない（次に開いたときにまた片付ける）
           console.error(
             `[approve-complete] チケットの詳細：読む前の片付けの取引に失敗したので飛ばした（${(e as Error)?.name ?? "Error"}）`,
           );
         }
+        await mailOverdue(pool, a, mo, overdue);
         const r = getTicket?.before ? await getTicket.before(a) : undefined;
         if (!r || r.status !== 200) return r;
         const body = r.body as { data: Record<string, unknown> };

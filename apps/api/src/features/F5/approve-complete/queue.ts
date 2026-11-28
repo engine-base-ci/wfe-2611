@@ -64,8 +64,8 @@ const toCounts = (c: Partial<Counts> | null | undefined): Counts => ({
   handover: Number(c?.handover ?? 0),
 });
 
-/** 取引の後：渡した人が開いたときの期限切れの知らせのメール（送れなくても答えは変えない） */
-async function mailOverdue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions, overdue: Overdue) {
+/** 取引の後：渡した人が開いたときの期限切れの知らせのメール（送れなくても答えは変えない・チケットの詳細の口も使う） */
+export async function mailOverdue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions, overdue: Overdue) {
   if (overdue.length && a.ctx.tenantId && a.ctx.userId)
     await sendOverdueMails(
       { appPool: pool, ...(mo.mailer ? { mailer: mo.mailer } : {}), config: { webBaseUrl: mo.webBaseUrl ?? "" } },
