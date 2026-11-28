@@ -1,0 +1,38 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/guest-group-edit.ts",
+    "apps/api/src/features/F11/guest-groups/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F11/guest-group-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/guest-group-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_guest_groups_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F11/guest-group-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_guest_groups_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F11/guest-group-edit.test.ts": "口の振る舞いの hooks のファイル（guest-group-edit.ts）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-927",
+  "apps/api/test/features/contract/k144.d/K-927.ts": "同じ hooks のファイルを動的 import で読む。同上・K-927"
+ }
+}
