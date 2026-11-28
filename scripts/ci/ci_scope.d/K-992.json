@@ -1,0 +1,40 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ops-templates-read.ts",
+    "apps/api/src/features/F12/ops/templates/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261128013200_ops_templates.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts",
+    "apps/api/test/features/F9/ticket-kinds-write.test.ts",
+    "apps/api/test/features/F9/ticket-stages-write.test.ts",
+    "apps/api/test/features/F9/ticket-fields-write.test.ts",
+    "apps/api/test/features/F4/ticket-read-adds.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F12/ops-templates.harness.ts",
+    "apps/api/test/features/F12/ops-templates-read.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/ops-templates-read.test.ts",
+    "apps/api/test/features/F9/rules-work-types-retire.test.ts",
+    "apps/api/test/generated/get_ops_templates.test.ts",
+    "apps/api/test/generated/get_ops_templates_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-992.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回・統合の枝で運営の口の入口の uuid の行を足した）・K-992"
+ }
+}
