@@ -583,7 +583,8 @@ test("K1153-UI-023 下絵との突き合わせ（f4v2-detail-item-error）：幅
           detail: [byName(MASTER_ALL, "支払期日"), pjF, byName(MASTER_ALL, "請求額"), byName(MASTER_ALL, "分類")],
           values: {
             [ids.due]: "2026-12-15",
-            [ids.pj]: optId(pjF, "SK-2026-11 セイコー商事 保守"),
+            // 下絵は断られた後の欄に「SK-2026-11 セイコー商事 保守」を出す。選び直した値が欄に残る形なので、保守を選び直して断られる形で開く
+            [ids.pj]: optId(pjF, "SK-2026-12 セイコー商事 追加開発"),
             [ids.amt]: 95000,
             [fid("分類")]: optId(byName(MASTER_ALL, "分類"), "請求"),
           },
@@ -592,7 +593,7 @@ test("K1153-UI-023 下絵との突き合わせ（f4v2-detail-item-error）：幅
         await edit(page, "支払期日", "");
         await valBtn(page, "PJコード").click();
         m.next = [conflict("E-FLD-002")];
-        await choose(panel(page), page, "PJコード", "SK-2026-12 セイコー商事 追加開発");
+        await choose(panel(page), page, "PJコード", "SK-2026-11 セイコー商事 保守");
         await expect(rowOf(page, "PJコード").locator(".k-err")).toHaveText(msg("E-FLD-002"));
       },
       { base: "/dev/mock/f4v2", pairs: EDIT_PAIRS, blur: true },

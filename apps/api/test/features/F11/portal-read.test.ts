@@ -71,7 +71,7 @@ const ctxOf = (w: World, p: { id: string }, role: TenantContext["role"] = "clien
 });
 
 describe("K-906 ホーム（getPortalHome）", () => {
-  it("K906-API-001 形：200・no-store・鍵は group_name・tenant_name・request_scope_name・me・first_visit・requests・tickets（to_review・期限・担当の欄は無い）。me は表示名とその頭の 1 字", async () => {
+  it("K906-API-001 形：200・no-store・鍵は group_name・tenant_name・request_scope_name・me・first_visit・inviter_name・requests・tickets（to_review・期限・担当の欄は無い）。me は表示名とその頭の 1 字", async () => {
     const w = await world(f, "001");
     const a = await guest(f, w, "山田 花子", w.gA);
     const r = await home(a);
@@ -81,6 +81,7 @@ describe("K-906 ホーム（getPortalHome）", () => {
     expect(Object.keys(d).sort()).toEqual([
       "first_visit",
       "group_name",
+      "inviter_name",
       "me",
       "request_scope_name",
       "requests",
@@ -93,6 +94,15 @@ describe("K-906 ホーム（getPortalHome）", () => {
     expect(String(d["group_name"])).toMatch(/^Ａ社/);
     const raw = await r.clone().text();
     for (const k of ["to_review", "due_on", "assignee"]) expect(raw, k).not.toContain(k);
+    // 招いた人（K-911 のようこそ・PM の決め 2026-11-28）：招待を受けていなければ null。受けた招待があれば作った人の表示名（招待の下見と同じ字）
+    expect(d["inviter_name"]).toBeNull();
+    await f.admin.query(
+      `insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by, guest_group_id, accepted_member_id)
+       values ($1, $2, 'requester', $3, now() + interval '7 days', $4, $5, $6)`,
+      [w.tenantId, a.email, `k906-001-${a.id}`, w.boss.id, w.gA, a.id],
+    );
+    const again = (await asJson(await home(a))).data as Json;
+    expect(again["inviter_name"]).toBe("高本");
   });
 
   it("K906-API-002 first_visit：初めて読んだときだけ true・同じ取引で記録を 1 行書く・2 回目からは false で行は増えない・同じグループの別のゲストは別に数える", async () => {
