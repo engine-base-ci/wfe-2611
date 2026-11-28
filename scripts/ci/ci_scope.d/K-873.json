@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k873-f11-portal-mock.spec.ts": "下絵の置き場の状態の一覧 apps/web/app/(dev)/dev/mock/f11/mocks.tsx・描き手 render-cp.tsx・ゲストの場所の部品 apps/web/features/F11/portal/{frame,home,request,work}.tsx と portal.css を読み、状態の数と持ち主・口を呼ばないこと・生の色と px・使わない字を見る（K873-MK-001〜003）。どれも @kaname/web の中なので data_links は要らない（K-873）"
+ }
+}
