@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F10/ws/**", "apps/web/app/(work)/settings/company/**", "apps/web/features/F10/invite/views.tsx", "apps/web/lib/api/call.ts"], "tests": ["apps/web/tests/k/k831-settings.spec.ts", "apps/web/test/k831-call-form.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/features/F10/ws/settings-dialogs.tsx": "k831-settings.spec.ts が小窓の登録（SETTINGS_DIALOGS の delete の行）の有無を字で読む（K831-UI-019・K-832 が足す）",
+  "apps/web/features/F10/ws/settings-screen.tsx": "k831-settings.spec.ts が入れ物に planRow の受け口があるかを字で読む（K831-UI-017・段 13 の K-962 が使う）"
+ }
+}
