@@ -1,0 +1,40 @@
+{
+ "ops": {
+  "updateTicket": {
+   "covers": {
+    "test_patch_tickets_id_conflict_14": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-013"
+    },
+    "test_patch_tickets_id_conflict_15": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-015"
+    },
+    "test_patch_tickets_id_conflict_16": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-016"
+    },
+    "test_patch_tickets_id_conflict_17": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-017"
+    },
+    "test_patch_tickets_id_conflict_18": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-018"
+    },
+    "test_patch_tickets_id_conflict_19": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-007"
+    },
+    "test_patch_tickets_id_rejected_422_3": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-005"
+    },
+    "test_patch_tickets_id_rejected_422_4": {
+     "file": "apps/api/test/features/F7/due-change.test.ts",
+     "mark": "K483-API-005"
+    }
+   }
+  }
+ }
+}
