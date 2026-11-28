@@ -1,0 +1,49 @@
+{
+  "meta": {"project":"Kaname","created_at":"2026-09-08","skill_version":"architecture-design v3.4"},
+  "context": {"project_type":"B2B SaaS（AI社員プラットフォーム）","team_size":"1人 + Claude","scale":"初期10社 → 2028-09に65社","priority":"quality（ただし段階1に早く到達して自分で使う）"},
+  "decision_log": [
+    {"decision":"モジュラーモノリス + 2独立プロセス","reason":"会社モデルが全機能から参照されるため分割すると分散モノリスになる。1人で運用可能","alternatives":["マイクロサービス","単純モノリス","サーバーレス関数の集合","BFF+複数バックエンド"],"tradeoffs":"個別スケールと技術の混在を失う。65社規模では不要"},
+    {"decision":"★関門（choke points）8本で守り、拡張点の列挙で守らない","reason":"拡張点を列挙で守ろうとして3回聞かれ3回とも抜けが出た。列挙は判断であり判断は不完全。外界と接する面は有限なので、そこを塞げば列挙漏れが事故にならない","alternatives":["拡張点の列挙で守る（実績として破れた）","レビューで守る（人の注意力に依存）"],"tradeoffs":"関門を通す分の間接層が増える。前提として動的呼び出しの禁止が必要"},
+    {"decision":"動的台帳をJSONBハイブリッドにし、実DDLを採らない","reason":"実DDLはRLSを動的生成する必要があり1つ漏れたらテナント越え。65社×5型=325テーブルでカタログ肥大。DDLがロックを取る","alternatives":["実DDL（Teable/NocoDB/Baserow）","EAV","Salesforce型flexカラム"],"tradeoffs":"実DDLより集計がやや遅い。段階2で実測し、届かなければ二層構造で方式を差し替える"},
+    {"decision":"RLSをcurrent_setting()で書き、auth.uid()を使わない","reason":"auth.uid()を一度でもRLSに書いた時点でDB層までSupabaseに固定され、後で移行できなくなる","alternatives":["Supabase Auth + auth.uid()（速いが移行不能）"],"tradeoffs":"API層で全リクエストにSET LOCALを発行する必要がある。設定漏れが致命的なのでCIで網羅を検査"},
+    {"decision":"中核をTypeScript単一にし、Pythonを取り込みサービス1つに隔離","reason":"BridgeとフロントがTS固定。中核を寄せると型が端から端まで通り、スキーマ変更で壊れる場所が全部コンパイルエラーで出る","alternatives":["TS+Python（Atelier方式・型がまたがりdriftする）","Python単一（不可能）"],"tradeoffs":"Python製のAIライブラリが即使えない。ただし段階1〜4で必須のものは無い"},
+    {"decision":"依存を追跡せず物理的に閉じ込める（境界7 + CI）","reason":"台帳に書いて追跡する方式は書き忘れ・見落としで必ず漏れる","alternatives":["ポータビリティ台帳のみで追跡"],"tradeoffs":"境界を越える必要がある場面で間接層が増える。現時点で越境0件の見込み"},
+    {"decision":"縦切り（垂直スライス）で開発する","reason":"横切りは全体の60〜70%完了まで誰も触れない。旧jobrainはWave5まで画面が無く、画面QA全PASSでも業務が回らなかった","alternatives":["レイヤー横切り"],"tradeoffs":"並列度が低い。実装者1人なので影響なし"},
+    {"decision":"Supabase+Vercel+Railwayで開始し、AWSへは必要になったら移る","reason":"顧客0社で月8万のAWSは過剰。Neonと移行工数が同じ（4〜6日）と実測見積もりで判明したため、使いやすいSupabaseを選ぶ","alternatives":["Neon（純Postgres・使いにくい実績）","AWS最初から（構築が数日〜2週間）","Azure（Entra ID連携はOIDCで代替可）"],"tradeoffs":"ISMAP非登録。段階4でエンタープライズ商談が来たら5〜8日で移行"},
+    {"decision":"Supabase Realtime / Vercel固有機能を使わない","reason":"どちらも移行時に作り直しになる。越境をゼロで始められる","alternatives":["Realtimeで即時反映（移行コストが発生）"],"tradeoffs":"承認画面の即時反映をSSE+ポーリングで作る"},
+    {"decision":"stagingをdev用Supabaseプロジェクトにし、実データで確認する","reason":"段階1の合格条件が「高本さん自身の受託業務が実際に回る」ためseedでは判定できない","alternatives":["本番内の別スキーマ","ローカルDockerのみ"],"tradeoffs":"実データを扱うため破壊的テストの範囲を明示的に制限する必要がある"},
+    {"decision":"Foundationゲート26本を初日から入れる","reason":"旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ","alternatives":["後から入れる（旧jobrainで失敗した）"],"tradeoffs":"段階0に4〜6日かかる"},
+    {"decision":"Bridgeのコード署名を取得する（年額6〜9万円）","reason":"未署名だとGatekeeper/SmartScreenがブロックし情シスが止める","alternatives":["未署名配布","Macのみ署名"],"tradeoffs":"Windows EVは法人実在確認に数日〜2週間。段階2のうちに申請開始が必要"}
+  ],
+  "architecture_patterns": [
+    {"name":"関門（choke point）方式","applicable_to":"横断的関心事（認可・承認・証跡・課金・隔離）を持つ全プロジェクト","description":"外界に影響を与える経路を数本に絞り、そこを必ず通らせ、迂回をCIの静的解析で検出する。列挙で守るのをやめる。汎用規約として .claude/rules/common/choke-points.md に制定済み"},
+    {"name":"論理層/物理層の二層分離（動的スキーマ）","applicable_to":"ユーザー定義のデータ構造を持つプロジェクト","description":"NocoDBから学んだ。API・画面は物理を知らない。将来の方式差し替え（JSONB↔実DDL）が可能になる"},
+    {"name":"式インデックスの自動生成","applicable_to":"JSONBで動的属性を持つプロジェクト","description":"Salesforceのピボット索引をPostgresに翻訳。定義で is_filterable と印を付けた項目にのみ CREATE INDEX CONCURRENTLY で式インデックスを作る"},
+    {"name":"実行経路と支払者を1関数で決める","applicable_to":"複数の課金経路を持つAIプロダクト","description":"Atelierのllm_route。envの不在に正しい挙動を依存させない"}
+  ],
+  "research": {
+    "sources": [
+      {"url":"https://github.com/teableio/teable","title":"Teable（実Postgresテーブル方式・100万行200ms）","accessed_at":"2026-09-07"},
+      {"url":"https://deepwiki.com/brunostjohn/nocodb-oidc/5.1-tables-and-columns","title":"NocoDBの二層構造","accessed_at":"2026-09-07"},
+      {"url":"https://patents.google.com/patent/US7779039B2/en","title":"Salesforce多テナント特許（flexカラム+ピボット索引）","accessed_at":"2026-09-07"},
+      {"url":"https://docs.bswen.com/blog/2026-04-24-jsonb-vs-eav-postgresql/","title":"JSONB vs EAV（JSONBが約1.3倍速く単一インデックススキャン）","accessed_at":"2026-09-07"},
+      {"url":"https://supabase.com/docs/guides/storage/s3/compatibility","title":"Supabase Storage のS3互換性","accessed_at":"2026-09-07"},
+      {"url":"https://supabase.com/regions","title":"Supabase リージョン（東京 ap-northeast-1 あり）","accessed_at":"2026-09-07"},
+      {"url":"https://codesigningstore.com/electron-code-signing","title":"Electron署名コスト（mac $99 / Win EV $299〜499）","accessed_at":"2026-09-07"},
+      {"url":"https://www.usage.ai/blogs/aws/rds/aurora-serverless-v2/","title":"Aurora Serverless v2（$0.12/ACU-hr・scale to zero）","accessed_at":"2026-09-07"},
+      {"url":"https://www.electron.build/docs/features/code-signing/","title":"electron-builder コード署名","accessed_at":"2026-09-07"},
+      {"url":"https://github.com/microsandbox/microsandbox","title":"Microsandbox（libkrun microVM・Apache-2.0）","accessed_at":"2026-09-07"}
+    ],
+    "findings": [
+      "Teable/NocoDB/Baserowは全て実Postgresテーブル方式。ただし『表そのものが製品』であり、固定の中核を持つKanameとは前提が違う",
+      "SalesforceはMT_Objects/MT_Fields/MT_Dataのflexカラム + ピボット表を索引に使う。Postgresでは式インデックスで同等の効果",
+      "JSONBはEAVより約1.3倍速く、条件が増えてもインデックススキャンが1回で済む",
+      "Supabase StorageはS3互換（Signature V4・presigned URL対応）。移行はエンドポイント変更のみ",
+      "Supabase → AWS と Neon → AWS の移行工数はほぼ同じ（4〜6日）。差はSupabase固有機能を使ったかどうかだけ",
+      "Electron署名は年額$398〜598。2026-03以降の証明書は最長460日。Windows EVは法人実在確認に数日〜2週間",
+      "AWS最小構成は月5,000〜2万（当初の8万は本番グレードの数字で比較として不適切だった）",
+      "Daytonaは2026-06にクローズドソース化。E2Bはランタイムが自前ホスト不可。Microsandboxのみ自前ホスト可"
+    ],
+    "research_date": "2026-09-07/2026-09-08"
+  }
+}
