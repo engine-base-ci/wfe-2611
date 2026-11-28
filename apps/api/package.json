@@ -1,0 +1,30 @@
+{
+  "name": "@kaname/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/app.ts",
+  "scripts": {
+    "type-check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@kaname/actions": "workspace:*",
+    "@kaname/auth": "workspace:*",
+    "@kaname/billing": "workspace:*",
+    "@kaname/config": "workspace:*",
+    "@kaname/contracts": "workspace:*",
+    "@kaname/db": "workspace:*",
+    "@kaname/errors": "workspace:*",
+    "@kaname/notify": "workspace:*",
+    "@kaname/secrets": "workspace:*",
+    "@kaname/storage": "workspace:*",
+    "hono": "^4.10.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "esbuild": "0.28.2",
+    "pg": "^8.16.3",
+    "typescript": "^5.9.3"
+  }
+}
