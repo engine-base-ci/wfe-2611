@@ -118,7 +118,8 @@ test.describe("K-965 一覧の動き", () => {
     await chip(page, "気にかける").click();
     await page.waitForURL(/\/ops\?view=attention$/);
     await expect(chip(page, "気にかける")).toHaveAttribute("aria-pressed", "true");
-    await expect(rowsShown(page)).toHaveCount(3);
+    // 口が返した行（気にかける印のある行）だけが並ぶ。作り物の WS_A は印のある行が 4 つ（数えて比べる）
+    await expect(rowsShown(page)).toHaveCount(WS_A.filter((r) => r.attention.length > 0).length);
     await expect.poll(() => lists(m).at(-1)).toBe(`GET ${LIST}?view=attention`);
     await chip(page, "すべて").click();
     await page.waitForURL(/\/ops$/);
@@ -148,7 +149,7 @@ test.describe("K-965 一覧の動き", () => {
 
   test("K965-UI-008 並びを「人数」に：?sort=members で一覧の口に sort=members", async ({ page, baseURL }) => {
     const m = await open(page, baseURL);
-    await page.getByLabel(/^並び\*?$/).selectOption({ label: "人数" });
+    await page.getByRole("combobox", { name: "並び", exact: true }).selectOption({ label: "人数" });
     await page.waitForURL(/\/ops\?sort=members$/);
     await expect.poll(() => m.listQueries.at(-1)?.get("sort")).toBe("members");
   });

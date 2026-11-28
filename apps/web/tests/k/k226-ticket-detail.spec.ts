@@ -376,7 +376,8 @@ test("K226-UI-016 関連と優先度：グループは名前と接頭辞「営�
   expect((await fieldsOf(page, "担当"))["優先度"]).toBe("高");
   await page.unrouteAll({ behavior: "ignoreErrors" });
   await open(page, { stage: "doing" }, {}, 1440, undefined, {}, true);
-  expect((await fieldsOf(page, "関連"))["グループ"]).toBe("");
+  // グループが分からないときは行ごと出さない（items-panel の group は任意・K-484）。空の行と同じに扱う
+  expect((await fieldsOf(page, "関連"))["グループ"] ?? "").toBe("");
   expect((await fieldsOf(page, "担当"))["優先度"]).toBe("中");
   await expect(page.locator("header.k-page-head h1")).toHaveText("11 月分の請求書を送る");
 });

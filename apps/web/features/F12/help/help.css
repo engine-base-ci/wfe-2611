@@ -149,6 +149,10 @@
   display: grid;
   gap: var(--k-s-sm);
 }
+/* ［ファイル・画面の写し］は字の幅のまま（下絵 uh-ask は押せない形の器に包まれて字の幅。押せる形でも格子いっぱいに伸ばさない） */
+.k-uh-attach > .k-btn {
+  justify-self: start;
+}
 .k-uh-file {
   display: flex;
   flex-wrap: wrap;
