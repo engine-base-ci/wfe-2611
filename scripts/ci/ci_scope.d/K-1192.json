@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "07_qa/test-specs/errors.json"
+   ],
+   "tests": [
+    "apps/web/tests/features/F5/approve-complete-sweep.spec.ts"
+   ]
+  }
+ ]
+}
