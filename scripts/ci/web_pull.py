@@ -127,12 +127,14 @@ def claim(ns: str, i: int, part: str) -> bool:
     last = ""
     for k in range(TRIES):
         r = git("push", "--porcelain", "origin", f"--force-with-lease={ref}:", f"{sha}:{ref}", check=False)
-        text = r.stdout + r.stderr
-        if r.returncode == 0 and re.search(rf"^\*\t[^\n]*{re.escape(ref)}", r.stdout, re.M):
-            return True
-        if re.search(r"already exists|stale info|\[rejected\]|fetch first", text):
-            return False
-        last = text.strip()[-500:]
+        last = (r.stdout + r.stderr).strip()[-400:]
+        # 取れたかは push の答えの文で決めない（作れたのに誤りが返る・答えの形が違う、で 1 本が誰にも流されずに落ちた）。
+        #   置き場の印が今どのコミットを指すかを見て決める：自分のコミットなら取れた・ほかのコミットならほかの台が先・無ければ試し直す
+        now = git("ls-remote", "origin", ref, check=False)
+        if now.returncode == 0:
+            got = now.stdout.split("\t", 1)[0].strip()
+            if got:
+                return got == sha
         time.sleep(2 * (k + 1))
     raise RuntimeError(f"取り台に押し込めない（{ref}）：{last}")
 
