@@ -1,0 +1,21 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/inquiry-reply.ts",
+    "apps/api/src/features/F12/inquiries/reply.ts",
+    "packages/db/migrations/20261128005200_inquiry_reply.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F12/inquiry-reply.test.ts",
+    "apps/api/test/features/F12/inquiry-create.test.ts",
+    "apps/api/test/generated/post_inquiries_id_messages.test.ts",
+    "apps/api/test/generated/post_inquiries_id_resolve.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-952.ts": "口の振る舞いの hooks のファイルを動的 import で読む（試験の土台・最初の要求の前に 1 回）。読む物と使う試験は data_links で結ぶ・K-952"
+ }
+}
