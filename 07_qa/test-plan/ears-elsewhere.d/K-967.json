@@ -1,0 +1,31 @@
+{
+ "ops": {
+  "resendOpsVerification": {
+   "file": "apps/api/test/features/F12/ops-resend-verification.test.ts",
+   "reason": "その人の本人確認の印・会社の所属で答えが変わり、メールを送る（関門 C6）。種では作れない（K-967）",
+   "covers": {
+    "test_post_ops_workspaces_id_members_mid_resend_verification_ok": "K967-API-001",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_shape": "K967-API-001",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_not_found": "K967-API-004",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_conflict": "K967-API-003",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_rejected_401": "K967-API-007",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_rejected_403": "K967-API-007",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_rejected_422": "K967-API-006",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_rate_limited": "K967-API-012",
+    "test_post_ops_workspaces_id_members_mid_resend_verification_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ops_workspaces_id_members_mid_resend_verification_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ops_workspaces_id_members_mid_resend_verification_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  }
+ }
+}

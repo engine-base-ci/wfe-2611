@@ -1,0 +1,3089 @@
+{
+ "version": "v3.1",
+ "skill": "api-design",
+ "frozen_at": "2026-11-28",
+ "summary": {
+  "total_screens": 34,
+  "total_apis": 334,
+  "coverage_rate": 1.0,
+  "uncovered_screens": [],
+  "static_screens": [
+   "legal"
+  ],
+  "acts_without_endpoint": [
+   "A137"
+  ]
+ },
+ "screens": [
+  {
+   "screen_id": "signup",
+   "screen_name": "アカウントを作る",
+   "mock_path": "06_mockup/v1/v1-signup.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-up",
+     "act": "A01"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-up",
+     "act": "A96"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/sign-up/status",
+     "act": "A01"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-up/resend",
+     "act": "A01"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/terms/current",
+     "act": "A96"
+    }
+   ],
+   "transitions": [
+    "login"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "verify-email",
+   "screen_name": "メールを確認する",
+   "mock_path": "06_mockup/v1/v1-verify-email.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-up/verify",
+     "act": "A02"
+    }
+   ],
+   "transitions": [
+    "bridge-setup",
+    "login",
+    "signup"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "invite-accept",
+   "screen_name": "招待を受けて参加する",
+   "mock_path": "06_mockup/v1/v1-invite-accept.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/invitations/:token",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/:token/accept",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/:token/accept",
+     "act": "A96"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/:token/resend-request",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A96"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "mfa-setup",
+   "screen_name": "安全の設定",
+   "mock_path": "06_mockup/v1/v1-mfa-setup.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/security",
+     "act": "A97"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/security",
+     "act": "A04"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/me/passkeys/:id",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/me/passkeys/:id",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/two-factor/enable",
+     "act": "A04"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/two-factor/confirm",
+     "act": "A04"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/me/two-factor",
+     "act": "A04"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/backup-codes",
+     "act": "A04"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/me/password",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/password",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/members/:id/two-factor/reset",
+     "act": "A04"
+    }
+   ],
+   "transitions": [
+    "bridge-setup"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "login",
+   "screen_name": "ログインする",
+   "mock_path": "06_mockup/v1/v1-login.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-in",
+     "act": "A13"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/two-factor/verify",
+     "act": "A13"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/recovery/admin-request",
+     "act": "A13"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/terms/consent",
+     "act": "A96"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/step-up",
+     "act": "A13"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/sign-out",
+     "act": "A13"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/service-status",
+     "act": "A13"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/ops-setup",
+     "act": "A134"
+    }
+   ],
+   "transitions": [
+    "password-reset",
+    "signup",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "password-reset",
+   "screen_name": "パスワードの再設定",
+   "mock_path": "06_mockup/v1/v1-password-reset.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/password/forgot",
+     "act": "A31"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/password/reset",
+     "act": "A31"
+    }
+   ],
+   "transitions": [
+    "login"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "bridge-setup",
+   "screen_name": "PC をつなぐ",
+   "mock_path": "06_mockup/v1/v1-bridge-setup.html",
+   "required_apis": [
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/pairing-codes",
+     "act": "A09"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/devices",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/bridge/devices/:id",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/bridge/devices/:id",
+     "act": "A09"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/releases/latest",
+     "act": "A09"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/releases/:name/file",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/claim",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/heartbeat",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/usage",
+     "act": "A94"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/take",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/progress",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/finish",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/questions",
+     "act": "A91"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/jobs/:id/questions/:qid",
+     "act": "A91"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/jobs/:id/control",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/browser",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/conversation-entries",
+     "act": "A20"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/mirror-targets",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/artifacts",
+     "act": "A95"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/tools/:name",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/credentials/resolve",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/credentials/:id/check-result",
+     "act": "A10"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/bridge/files/:ref",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/devices/:id/browser-check",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/browser",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/jobs/:id/client-request-draft",
+     "act": "A122"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-draft",
+    "onboard-golive",
+    "onboard-interview",
+    "onboard-testrun",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "credentials",
+   "screen_name": "預けたログイン情報",
+   "mock_path": "06_mockup/v1/v1-credentials.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/credentials",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/credentials",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/credentials/:id",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/credentials/:id",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/credentials/:id/login-check",
+     "act": "A10"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/credentials/:id/login-check/answer",
+     "act": "A10"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-draft",
+    "onboard-golive",
+    "onboard-interview",
+    "onboard-testrun",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "approvals",
+   "screen_name": "承認待ち",
+   "mock_path": "06_mockup/v1/v1-approvals.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/approvals/queue",
+     "act": "A15"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/approvals/:id",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/approve",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/edit",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/return",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/stop",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/stop",
+     "act": "A89"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/:id/withdraw",
+     "act": "A89"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/bulk/preview",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/approvals/bulk",
+     "act": "A15"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/approvals/history",
+     "act": "A15"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_handovers/:id",
+     "act": "A110"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/claim",
+     "act": "A111"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "clone-chat",
+   "screen_name": "分身の部屋：会話と知っていること",
+   "mock_path": "06_mockup/v1/v1-clone-chat.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/clones/me",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/clones/me",
+     "act": "A91"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations",
+     "act": "A88"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations",
+     "act": "A88"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations",
+     "act": "A100"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations/:id",
+     "act": "A88"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/conversations/:id",
+     "act": "A88"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/conversations/:id",
+     "act": "A88"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations/:id/messages",
+     "act": "A20"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/conversations/:id/stream",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations/:id/messages",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations/:id/messages",
+     "act": "A100"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations/:id/stop",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations/:id/attachments",
+     "act": "A90"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/conversations/:id/permissions/:pid",
+     "act": "A91"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/messages/:id/artifacts",
+     "act": "A95"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/artifacts/:id",
+     "act": "A95"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/artifact_versions/:id/restore",
+     "act": "A95"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/adopt",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/adopt",
+     "act": "A20"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "ai-staff-detail",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ai-activity",
+   "screen_name": "分身の部屋：やったこと",
+   "mock_path": "06_mockup/v1/v1-ai-activity.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/clones/me/now",
+     "act": "A53"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/clones/me/growth",
+     "act": "A53"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/clones/me/activity",
+     "act": "A53"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/action_runs/:id/takeover",
+     "act": "A57"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "audit",
+   "screen_name": "記録",
+   "mock_path": "06_mockup/v1/v1-audit.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/audit_events",
+     "act": "A33"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/restore",
+     "act": "A116"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "members",
+   "screen_name": "メンバー",
+   "mock_path": "06_mockup/v1/v1-members.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/workspace/members",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/invitations",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/invitations/link",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/invitations/:id/resend",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/invitations/:id",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/members/:id/role",
+     "act": "A61"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/guest-groups",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/guest-groups",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/guest-groups/:id",
+     "act": "A36"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/guest-groups/:id",
+     "act": "A36"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "ai-staff-detail",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-support",
+   "screen_name": "運営：問い合わせ",
+   "mock_path": "06_mockup/v1/v1-ops-support.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/inquiries",
+     "act": "A70"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/inquiries/:id",
+     "act": "A70"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ops/inquiries/:id",
+     "act": "A70"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/inquiries/:id/replies",
+     "act": "A70"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/inquiries/:id/notes",
+     "act": "A70"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-home",
+   "screen_name": "運営：ワークスペースの一覧",
+   "mock_path": "06_mockup/v1/v1-ops-home.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/shell",
+     "act": "A60"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces",
+     "act": "A60"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/pwned",
+     "act": "A138"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/pwned/ack",
+     "act": "A138"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/pwned/pending/ack",
+     "act": "A138"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "account",
+   "screen_name": "自分の設定",
+   "mock_path": "06_mockup/v1/v1-account.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/me",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/avatar",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/sessions",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/me/sessions/:id",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/sessions/revoke-others",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/email-change",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/email-change/verify",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/me/workspaces/:id",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/usage",
+     "act": "A94"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/setup-tasks",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/setup-tasks/dismiss",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/notification-settings",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/me/notification-settings",
+     "act": "A74"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/notification-settings/copy",
+     "act": "A74"
+    }
+   ],
+   "transitions": [
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "company-settings",
+   "screen_name": "ワークスペースの設定",
+   "mock_path": "06_mockup/v1/v1-company-settings.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/workspace",
+     "act": "A75"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/workspace",
+     "act": "A75"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/workspace/logo",
+     "act": "A75"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/workspace/permissions",
+     "act": "A75"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/workspace/plans",
+     "act": "A69"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/workspace/plan",
+     "act": "A69"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/workspace/deletion",
+     "act": "A75"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/workspace/deletion",
+     "act": "A75"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-skills",
+   "screen_name": "運営：配るもの",
+   "mock_path": "06_mockup/v1/v1-ops-skills.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/operations",
+     "act": "A80"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/templates",
+     "act": "A128"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/templates/:id",
+     "act": "A128"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/templates/:id/versions",
+     "act": "A128"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/plans",
+     "act": "A133"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/plan_proposals",
+     "act": "A133"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/plan_proposals",
+     "act": "A133"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ops/plan_proposals/:id",
+     "act": "A133"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/plan_proposals/:id/impact",
+     "act": "A133"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/plan_proposals/:id/submit",
+     "act": "A133"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/plan_proposals/:id/decide",
+     "act": "A133"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/plan_proposals/:id/return",
+     "act": "A133"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/plan_history",
+     "act": "A133"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "inquiry",
+   "screen_name": "問い合わせ",
+   "mock_path": "06_mockup/v1/v1-inquiry.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/inquiries",
+     "act": "A67"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/inquiries",
+     "act": "A67"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/inquiries/:id",
+     "act": "A67"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/inquiries/:id/messages",
+     "act": "A67"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/inquiries/:id/resolve",
+     "act": "A67"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/inquiries/attachments",
+     "act": "A67"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "notices",
+   "screen_name": "お知らせ",
+   "mock_path": "06_mockup/v1/v1-notices.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/notices",
+     "act": "A68"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/notices/:id/read",
+     "act": "A68"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/service-status",
+     "act": "A68"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "billing",
+   "screen_name": "請求書",
+   "mock_path": "06_mockup/v1/v1-billing.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/workspace/billing",
+     "act": "A69"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/invoices/:id/pdf",
+     "act": "A69"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/workspace/billing-contact",
+     "act": "A69"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-notices",
+   "screen_name": "運営：お知らせ",
+   "mock_path": "06_mockup/v1/v1-ops-notices.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/notices",
+     "act": "A71"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/notices",
+     "act": "A71"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/notices/:id",
+     "act": "A71"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ops/notices/:id",
+     "act": "A71"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/notices/:id/publish",
+     "act": "A71"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/notices/:id/updates",
+     "act": "A71"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-billing",
+   "screen_name": "運営：請求",
+   "mock_path": "06_mockup/v1/v1-ops-billing.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/invoices",
+     "act": "A72"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/invoices/issue",
+     "act": "A72"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/invoices/:id/payments",
+     "act": "A72"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/invoice-template",
+     "act": "A72"
+    },
+    {
+     "role": "action",
+     "endpoint": "PUT /api/v1/ops/invoice-template",
+     "act": "A72"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-tenant",
+   "screen_name": "運営：ワークスペースの 1 社",
+   "mock_path": "06_mockup/v1/v1-ops-tenant.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces/:id",
+     "act": "A64"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces/:id/members",
+     "act": "A64"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/members/:mid/resend-verification",
+     "act": "A64"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces/:id/billing",
+     "act": "A64"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/plan",
+     "act": "A64"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces/:id/inquiries",
+     "act": "A64"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/workspaces/:id/audit",
+     "act": "A64"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/peeks",
+     "act": "A64"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ops/peeks/:id",
+     "act": "A64"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/stop",
+     "act": "A127"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/resume",
+     "act": "A127"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/workspaces/:id/notices",
+     "act": "A64"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "member-detail",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "member-detail",
+   "screen_name": "メンバーの 1 人",
+   "mock_path": "06_mockup/v1/v1-member-detail.html",
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/members/:id",
+     "act": "A61"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/members/:id/groups",
+     "act": "A61"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/members/:id/suspend",
+     "act": "A62"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/members/:id/resume",
+     "act": "A62"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/members/:id/remove-preview",
+     "act": "A62"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/members/:id/remove",
+     "act": "A62"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/members/:id/two-factor/reset",
+     "act": "A04"
+    }
+   ],
+   "transitions": [
+    "account",
+    "account-close",
+    "ai-activity",
+    "ai-staff",
+    "approvals",
+    "audit",
+    "automation-repair",
+    "billing",
+    "bridge-setup",
+    "clone-chat",
+    "clone-memory",
+    "clone-thread",
+    "company-model",
+    "company-settings",
+    "credentials",
+    "duties",
+    "export",
+    "goal-allocation",
+    "goal-edit",
+    "goals",
+    "hypotheses",
+    "import",
+    "inquiry",
+    "ledger-def",
+    "members",
+    "my-progress",
+    "notices",
+    "onboard-interview",
+    "ops-audit",
+    "ops-billing",
+    "ops-catalog",
+    "ops-home",
+    "ops-notices",
+    "ops-review",
+    "ops-services",
+    "ops-skills",
+    "ops-support",
+    "ops-tenant",
+    "policies",
+    "records",
+    "review",
+    "security-brief",
+    "services",
+    "tasks",
+    "today"
+   ],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "tickets",
+   "screen_name": "チケット",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets",
+     "act": "A58"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets",
+     "act": "A113"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets",
+     "act": "A99"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/scopes/:id/overview",
+     "act": "A58"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/search",
+     "act": "A21"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id",
+     "act": "A101"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets",
+     "act": "A98"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets",
+     "act": "A129"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id",
+     "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id",
+     "act": "A17"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id",
+     "act": "A115"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id",
+     "act": "A113"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/kind-change-preview",
+     "act": "A103"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/delete-preview",
+     "act": "A116"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/tickets/:id",
+     "act": "A116"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/restore",
+     "act": "A116"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/complete",
+     "act": "A106"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/bulk",
+     "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/bulk",
+     "act": "A113"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/ticket-drafts",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/ticket-drafts",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_imports",
+     "act": "A99"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket_imports/:id",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_imports/:id/commit",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id/body",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/versions",
+     "act": "A101"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/versions/:v/restore",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/item-changes",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/test-specs",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/test-specs",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/test_specs/:id",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/test_specs/:id",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/test-specs/suggest",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/test-specs/lint",
+     "act": "A102"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/delegate",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/dry-run",
+     "act": "A105"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/runs",
+     "act": "A104"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/action_runs/:id",
+     "act": "A104"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/action_runs/:id/stop",
+     "act": "A89"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/references",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/agent-session",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/agent-session/messages",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/agent-session/messages",
+     "act": "A91"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/agent-session/apply",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/timeline",
+     "act": "A107"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/messages",
+     "act": "A107"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_messages/:id",
+     "act": "A107"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_messages/:id",
+     "act": "A107"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_messages/:id/star",
+     "act": "A107"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/decisions",
+     "act": "A108"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/decisions",
+     "act": "A108"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_decisions/:id",
+     "act": "A108"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/handovers",
+     "act": "A51"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/handovers",
+     "act": "A48"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/handovers",
+     "act": "A111"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/handovers",
+     "act": "A112"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_handovers/:id",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/links",
+     "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/links",
+     "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_links/:id",
+     "act": "A103"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/artifacts",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/artifact_versions/:id",
+     "act": "A101"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/attachments",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/saved_views",
+     "act": "A58"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/saved_views",
+     "act": "A58"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/saved_views/:id",
+     "act": "A58"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/saved_views/:id",
+     "act": "A58"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/notifications",
+     "act": "A109"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/shell",
+     "act": "A58"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/notifications/:id",
+     "act": "A109"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/notifications/read-all",
+     "act": "A109"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket_kinds",
+     "act": "A103"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket_stages",
+     "act": "A103"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket-fields",
+     "act": "A103"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/handover_rules",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/members",
+     "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/timeline/seen",
+     "act": "A107"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A51"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A111"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handover-preview",
+     "act": "A48"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A51"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/withdraw",
+     "act": "A51"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/withdraw",
+     "act": "A48"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/withdraw",
+     "act": "A111"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/remind",
+     "act": "A51"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/remind",
+     "act": "A111"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/item-changes/restore",
+     "act": "A101"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/workspaces/:id/switch",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me/invitations",
+     "act": "A74"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/guest-shares",
+     "act": "A123"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/tickets/:id/guest-shares",
+     "act": "A123"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "masters",
+   "screen_name": "チケットの設定",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket_kinds/template-updates",
+     "act": "A120"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_kinds/template-updates/:id/apply",
+     "act": "A120"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_kinds",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_kinds/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_kinds/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_kinds/order",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_stages",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket_stages/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket_stages/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_stages/order",
+     "act": "A118"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ticket-field-master",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket-fields",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket-fields/order",
+     "act": "A118"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "layers",
+   "screen_name": "グループ（メンバーの中）",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/scopes",
+     "act": "A117"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/scopes",
+     "act": "A117"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/scopes/:id",
+     "act": "A117"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/layers",
+     "act": "A117"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/layers/:id",
+     "act": "A117"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/layers",
+     "act": "A117"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "knowledge",
+   "screen_name": "ナレッジ",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge/tree",
+     "act": "A114"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge_pages/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/knowledge_pages/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/knowledge_pages/:id/draft",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge_pages/:id/draft",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/publish",
+     "act": "A114"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge_pages/:id/versions",
+     "act": "A114"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge_pages/:id/versions/:v",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/folders",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge_pages/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PUT /api/v1/knowledge_pages/:id/must",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/similar",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/copy",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/raise",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/requests/:id",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/dismiss",
+     "act": "A136"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge/approvals",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/approve",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/requests/:id/decline",
+     "act": "A136"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge/shares",
+     "act": "A136"
+    },
+    {
+     "role": "action",
+     "endpoint": "PUT /api/v1/knowledge/shares",
+     "act": "A136"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge/review",
+     "act": "A93"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "requests",
+   "screen_name": "届いた依頼",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/client_requests",
+     "act": "A122"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/client_requests/:id",
+     "act": "A122"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/client_requests/:id",
+     "act": "A122"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/client_requests/:id/reply",
+     "act": "A122"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/client_requests/:id/accept",
+     "act": "A122"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/client_requests/:id/decline",
+     "act": "A122"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/client_requests/:id/draft",
+     "act": "A122"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "ops-team",
+   "screen_name": "運営：運営の人",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/ops/members",
+     "act": "A134"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ops/members",
+     "act": "A134"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ops/members/:id",
+     "act": "A134"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ops/members/:id",
+     "act": "A134"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "legal",
+   "screen_name": "規約・プライバシーポリシー",
+   "mock_path": null,
+   "required_apis": [],
+   "transitions": [],
+   "coverage_status": "STATIC",
+   "missing": [],
+   "static_reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る"
+  },
+  {
+   "screen_id": "help",
+   "screen_name": "困ったとき",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/service-status",
+     "act": "A135"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  },
+  {
+   "screen_id": "portal",
+   "screen_name": "ゲストの場所",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/portal",
+     "act": "A125"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/portal/requests/questions",
+     "act": "A124"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/portal/requests",
+     "act": "A124"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/portal/requests/:id",
+     "act": "A124"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/portal/requests/:id/messages",
+     "act": "A124"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/portal/attachments",
+     "act": "A124"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/portal/tickets/:id",
+     "act": "A125"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/portal/notices",
+     "act": "A125"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/portal/tickets/:id/messages",
+     "act": "A125"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
+  }
+ ]
+}
