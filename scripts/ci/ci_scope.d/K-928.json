@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/app/(dev)/dev/mock/f11/mocks.tsx", "11_tickets/K-928.md"], "tests": ["apps/web/tests/k/k928-guest-group-edit.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k928-guest-group-edit.spec.ts": "K928-UI-013 がモックの置き場 apps/web/app/(dev)/dev/mock/f11/mocks.tsx（K-928 の状態の持ち主）と 11_tickets/K-928.md の頭の mock: を読み、突き合わせ（K928-UI-001）が下絵 /dev/mock/f11 を開く（K-928）"
+ }
+}
