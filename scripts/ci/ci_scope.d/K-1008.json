@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/help/**", "apps/web/app/layout.tsx"], "tests": ["apps/web/tests/k/k1008-stop-peek.spec.ts", "apps/web/test/k1008-stop-peek-shape.test.ts"]},
+  {"paths": ["apps/web/features/F7/notice/notice-text.ts"], "tests": ["apps/web/test/k1008-notice-text.test.ts"]}
+ ]
+}
