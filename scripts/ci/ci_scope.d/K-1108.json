@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F12/ops2/invoice-template-*", "apps/web/features/F12/ops2/use-invoice-template.ts", "apps/web/features/F12/ops2/views-invoice-template.tsx", "apps/web/app/(ops)/ops/billing/template/**", "apps/web/app/(dev)/dev/mock/f12-ops-invoice/**"], "tests": ["apps/web/tests/k/k1108-invoice-template.spec.ts", "apps/web/test/k1108-invoice-template-shape.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1108-invoice-template.spec.ts": "stage2-match.ts を通してモックの頁 /dev/mock/f12-ops-invoice を開き scripts/ci/fidelity_compare.mjs を読む。口の差し替えは ops-mock.ts・ops-bills-mock.ts（実ブラウザの試験は web の組が流す）・K-1108"
+ }
+}
