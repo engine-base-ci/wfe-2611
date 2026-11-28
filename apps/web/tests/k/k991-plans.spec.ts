@@ -249,7 +249,8 @@ test.describe("K-991 記録・読めない・幅", () => {
     const m = await open(page, baseURL, `${PATH}/history`);
     await page.locator('[role="group"][aria-label="プラン"]').getByText("チーム", { exact: true }).click();
     await expect(page).toHaveURL(/\/ops\/skills\/plans\/history\?plan=team$/);
-    expect(m.queries.map((q) => q.get("plan_key")).filter(Boolean)).toEqual(["team"]);
+    // 札で ?plan が替わった後、読み直しの口が網に届くのを待つ（移り終わりと口の届きは同じ時ではない）
+    await expect.poll(() => m.queries.map((q) => q.get("plan_key")).filter(Boolean)).toEqual(["team"]);
     await page.goBack();
     await expect(page).toHaveURL(/\/ops\/skills\/plans\/history$/);
   });
