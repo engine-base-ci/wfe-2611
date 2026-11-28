@@ -1,0 +1,1153 @@
+{
+ "project_name": "Kaname",
+ "selected_at": "2026-09-08",
+ "decision_reason": "中核はTypeScript単一で型を端から端まで通す。Pythonは『取り込みサービス』1つに隔離し型がまたがらないようにする。基盤はSupabase/Vercelで立ち上げ（段階 1。サーバー側で長く動かす置き場は段階 2 で決め直す・D-097）、ベンダー固有機能をCIで禁止することで、必要になった時にAWSへ5〜8日で移せる状態を維持する。",
+ "language": {
+  "core": "TypeScript",
+  "isolated_service_only": "Python",
+  "rationale": "Bridge(Electron)とフロント(Next.js)がTS固定のため『Python単一』は選択肢にならない。中核をTSに寄せることでDBスキーマ→API→フロント→Bridgeまで型が通る。Pythonが必要なのは文書理解と音声のみで、どちらも入力=ファイル/出力=JSONの独立サービスに切れる。"
+ },
+ "stack": {
+  "frontend": {
+   "framework": "Next.js 15 (App Router)",
+   "language": "TypeScript",
+   "styling": "Tailwind CSS v4（CSS-first・DESIGN.md のトークンを @theme に写す）+ shadcn/ui（Base UI 版）",
+   "icons": "lucide-react",
+   "state_management": "TanStack Query (server state) + URL state",
+   "forms": "React Hook Form + Zod（主）。react-jsonschema-form は動的台帳の入力欄だけに限定して併用",
+   "dynamic_ui": [
+    "react-jsonschema-form（動的台帳の入力欄のみ）",
+    "TanStack Table"
+   ],
+   "chat_ui": "自前の 1 部品（apps/web/components/ai の AgentChat／Conversation）。会話を出す 5 か所が全部これを使う。会話は人が「新しく話す」で分け、一覧から戻る（D-104.1。D-103.1 の「1 本」を改めた）。assistant-ui は使わない（D-103.4）",
+   "charts": "Recharts（shadcn charts の土台・SVG・SSR 可）。証跡の長期グラフが要るときだけ ECharts を部分導入",
+   "constraint": "業務ロジックをServer Actionsに置かない。画面はAPIを叩くだけにする（ネイティブアプリ対応のため）",
+   "agent_ui_protocol": {
+    "name": "Kaname の API（/api/auth-ext/agent/*・/bridge/*）",
+    "why": "仕事を積む → Bridge が取る → 途中経過・確認・結末を返す（D-090・D-093）。AG-UI は使わない（一度もつながっていなかった・D-103.4）。ネイティブアプリも同じ API を読む",
+    "source": [
+     "D-057",
+     "D-103.4"
+    ]
+   },
+   "ui_primitives": {
+    "name": "shadcn/ui on Base UI",
+    "why": "2026-07 から shadcn の既定が Base UI。コードを自分で持つので DESIGN.md のトークンをそのまま当てられる",
+    "alternatives_rejected": [
+     "shadcn（Radix 版）：買収後に更新が遅い部品あり",
+     "React Aria Components：部品を全部自分で組む工数",
+     "Mantine：見た目が Mantine になり DESIGN.md と二重管理"
+    ],
+    "source": [
+     "D-067"
+    ]
+   },
+   "drag_and_drop": {
+    "name": "pragmatic-drag-and-drop（Atlassian）",
+    "use": "タスクを引き継いでもらう・引き継ぐ（列間ドラッグ）、カンバンの列移動",
+    "source": [
+     "D-067"
+    ]
+   },
+   "extras": {
+    "toast": "sonner（受領カードの取り消しを載せる）",
+    "command_palette": "cmdk（画面全体の検索）。入力欄の @ は会話の部品（AgentChat）が持つ。/ のコマンドは作らない（D-104.10。D-103.1 を改めた）",
+    "date": "react-day-picker（日本語ロケール）",
+    "virtual_list": "TanStack Virtual（会話の履歴・証跡・台帳）",
+    "goal_tree": "自前（details + roving tabindex。層が可変で可視範囲・配分・かけたものを行に持つ）",
+    "web_font": "@fontsource-variable/noto-sans-jp 5.3.1（OFL-1.1）。書体（Noto Sans JP・D-128.3）を画面と同じ所から配る。外の宛先を CSP に足さない。使う字の分だけ読む（unicode-range）",
+    "source": [
+     "D-067"
+    ]
+   },
+   "ui_rules": {
+    "focus": ":focus-visible を全操作要素に。:focus ではなく :focus-visible",
+    "target_size": "24px 以上（WCAG 2.2 2.5.8。文中リンク・間隔の例外あり）。スマホは 44px を目標",
+    "contrast": "4.5:1（大きい文字 3:1）。11px 未満は使わない",
+    "mobile_inputs": "16px（iOS の自動ズームを防ぐ）",
+    "ime": "日本語変換中の Enter は送らない（isComposing と keyCode 229 の両方）",
+    "skeleton": "200ms 遅らせて出し、最低 400ms 見せる",
+    "reduced_motion": "prefers-reduced-motion を尊重",
+    "source": [
+     "D-066",
+     "D-067"
+    ]
+   },
+   "task_views": {
+    "list": "TanStack Table",
+    "kanban": "pragmatic-drag-and-drop（列＝状態 4 つ／担当／台帳の工程。列は増やさせない）",
+    "calendar": "自前の格子（features/F7/calendar・外の部品は入れない・段 8 の切る段の決め・07_functional/段8-F7/カレンダーの部品.md）",
+    "timeline": "svar-gantt（@svar-ui/react-gantt・D-079・features/F7/gantt）",
+    "state": "見え方とフィルタは URL に持つ（?view=）。データは 1 つ",
+    "source": [
+     "D-068"
+    ]
+   },
+   "chat_rendering": {
+    "name": "react-markdown ＋ remark-gfm ＋ 数式は MathML ＋ shiki ＋ mermaid（遅延読込）",
+    "why": "Kaname のカード・トークンに細かく合わせる。数式はブラウザの MathML で書体を増やさない。書きかけの崩れは部品の側で閉じる（2026-09-27 user が推奨を選択）",
+    "alternatives_rejected": [
+     "Streamdown：一式入りで早いが、KaTeX の書体が増え、色を DESIGN.md に合わせる手直しが要る"
+    ],
+    "source": [
+     "D-104.3",
+     "D-104.4",
+     "D-104.21"
+    ]
+   },
+   "voice_input": {
+    "name": "ブラウザの音声認識（Web Speech API）",
+    "why": "何も入れずに使える（2026-09-27 user が推奨を選択）。Chrome は Google、Safari は Apple のサーバーに音声が送られるので開示に書く。使えないブラウザではマイクを出さない",
+    "alternatives_rejected": [
+     "本人の PC で文字にする（Whisper を Bridge が配る）：音声は外に出ないが、モデルの配布と更新が要る"
+    ],
+    "source": [
+     "D-104.10",
+     "D-104.22"
+    ]
+   },
+   "rich_text": {
+    "name": "Tiptap 3.32.2（ProseMirror の包み・MIT）",
+    "why": "保存の形（ProseMirror の JSON）が文書の木（K-561・K-584）に合う。表・チェック・色・寄せ・上付き下付きが MIT の拡張で在り、有料の拡張に頼らない。React 19 と Next の取り込み（immediatelyRender: false）に対応し、編集のときだけ遅く読める。@tiptap/* は 1 つの版にそろえる（21 日の決め D-128.124 で 3.32.2）",
+    "alternatives_rejected": [
+     "Lexical：保存の形が独自の木で、文書の木への変換を全部自前で書く・まだ 1.0 に届いていない",
+     "BlockNote：MPL-2.0・「/」のメニューが前提（作らない D-150.48）・Yjs の peer・保存の形が合わない"
+    ],
+    "source": [
+     "D-150.48",
+     "D-150.35"
+    ]
+   },
+   "rich_text_ui": {
+    "name": "Tiptap UI Components（MIT）の hook を写す",
+    "from": "https://github.com/ueberdosis/tiptap-ui-components（コミット 799929bea4804c73767562b69f8acc2acdb8ac86・2025-10-07）",
+    "copied": [
+     "apps/web/src/components/tiptap-ui/mark-button/use-mark.ts → apps/web/features/F4/doc/editor/bar/use-mark-button.ts",
+     "apps/web/src/components/tiptap-ui/undo-redo-button/use-undo-redo.ts → apps/web/features/F4/doc/editor/bar/use-undo-redo.ts",
+     "apps/web/src/components/tiptap-ui/link-popover/use-link-popover.ts → apps/web/features/F4/doc/editor/bar/use-link-popover.ts",
+     "apps/web/src/components/tiptap-ui/heading-button/use-heading.ts・apps/web/src/components/tiptap-ui/heading-dropdown-menu/use-heading-dropdown-menu.ts → apps/web/features/F4/doc/editor/bar/use-heading.ts",
+     "apps/web/src/components/tiptap-ui/list-button/use-list.ts・apps/web/src/components/tiptap-ui/list-dropdown-menu/use-list-dropdown-menu.ts → apps/web/features/F4/doc/editor/bar/use-list.ts",
+     "apps/web/src/components/tiptap-ui/text-align-button/use-text-align.ts → apps/web/features/F4/doc/editor/bar/use-text-align.ts",
+     "apps/web/src/components/tiptap-ui/blockquote-button/use-blockquote.ts・apps/web/src/components/tiptap-ui/code-block-button/use-code-block.ts → apps/web/features/F4/doc/editor/bar/use-block-button.ts",
+     "apps/web/src/components/tiptap-ui/color-highlight-button/use-color-highlight.ts → apps/web/features/F4/doc/editor/bar/use-color-highlight.ts"
+    ],
+    "why": "道具の今押せるか・押されているか・押したときの命令（hook）だけを写し、見た目は components/k と Base UI・正本のトークンで描く。写す hook は Tiptap の命令を呼ぶだけで依存が増えない",
+    "not_used": [
+     "@tiptap/cli：npm の許諾が Tiptap Pro の許諾文で MIT でなく、CLI を使う許しが確かめられない（MIT のリポジトリから直に写す）",
+     "公式の見た目の部品（radix・@floating-ui/react・react-hotkeys-hook・lodash.throttle・sass）：依存が 5 つ増え、生の色・長さを持ち込む",
+     "文字の色（color-text-popover ほか）・表（table-node）の公式の部品：有料の plan の部品（自前で作る・K-568）"
+    ],
+    "source": [
+     "D-150.61"
+    ]
+   }
+  },
+  "api": {
+   "type": "独立API層",
+   "framework": "Hono",
+   "language": "TypeScript",
+   "contract": "OpenAPI",
+   "clients": [
+    "Web",
+    "Bridge",
+    "将来のネイティブアプリ"
+   ],
+   "rationale": "3クライアントが同じ契約を叩く。Next.jsに寄せると後からアプリを足すときにAPIを作り直すことになる"
+  },
+  "backend": {
+   "type": "Hybrid",
+   "core_service": "Hono (TypeScript)",
+   "ingestion_service": {
+    "language": "Python",
+    "purpose": "文書理解・音声の文字起こし。独立サービスとして型がまたがらない形に隔離",
+    "libraries": [
+     "docling",
+     "faster-whisper"
+    ]
+   }
+  },
+  "database": {
+   "primary": "PostgreSQL (Supabase)",
+   "orm": "Drizzle",
+   "vector": "pgvector",
+   "cache": "未定（段階5で判断）",
+   "constraints": [
+    "RLSは current_setting('app.tenant_id') ベースで書く。auth.uid() を使わない",
+    "Supabase固有拡張（pgsodium / supabase_vault / pg_graphql）を使わない",
+    "Prismaは使わない（SupabaseでRLSが効かなくなるため）"
+   ]
+  },
+  "auth": {
+   "service": "Better Auth",
+   "location": "自前Postgres上",
+   "sso": "OIDC経由（Entra ID / Okta 等）",
+   "rationale": "Supabase Authに寄せるとRLSがauth.uid()に固定され、DB層までロックインされる。Better Authなら認証データがDBごと移る",
+   "device_parsing": {
+    "library": "ua-parser-js 1.0.41",
+    "license": "MIT",
+    "rationale": "セッションの見張り（D-128.120）の端末（ブラウザの種類・OS）の読み取り。自前の正規表現だと新しいブラウザに追いつけない。2 系はライセンスが AGPL に変わったので 1 系に留める（2026-11-03 高本さん了承）"
+   }
+  },
+  "storage": {
+   "service": "Supabase Storage",
+   "access_method": "S3互換API経由のみ",
+   "rationale": "S3互換なので移行はエンドポイント変更のみ。supabase-jsのstorageクライアントは使わない"
+  },
+  "secrets_vault": {
+   "service": "Infisical（クラウド・無料枠）",
+   "purpose": "顧客の資格情報・TOTPシークレット。テナントごとに鍵を分離",
+   "stage": "段階 1 から使う（D-101.1）。Kaname が会社ごとの鍵で暗号化した中身だけを会社ごとの置き場（/tenants/<会社>）に預ける（D-101.2）。入るのは Machine Identity（Universal Auth）で、その鍵は Vercel の環境変数だけ（D-101.3）",
+   "source": [
+    "D-017.1",
+    "D-101.1",
+    "D-101.2",
+    "D-101.3",
+    "D-101.4",
+    "D-102.1",
+    "D-102.2",
+    "D-102.3",
+    "D-102.4",
+    "D-102.5",
+    "D-102.6"
+   ],
+   "cost_model": "費用は identity の数で決まる。入るのはサーバー（staging・本番）と運営の人の 3 つだけで、会社・人・PC が増えても増えない（D-102.1）。Bridge は Infisical に入らない（D-102.2）",
+   "layout": "1 project＋会社ごとのフォルダ（/tenants/<会社>）。サーバーの身元は project の読み書きだけ（D-102.3）",
+   "limits": {
+    "free": {
+     "identities": 5,
+     "projects": "無制限",
+     "environments": 3,
+     "secret_ops_per_min": 120,
+     "read_per_min": 200,
+     "write_per_min": 90,
+     "per_ip_per_min": 600
+    },
+    "pro": {
+     "price": "identity 1 つあたり月 20 ドル（年払い）／23 ドル（月払い）",
+     "secret_ops_per_min": 300
+    },
+    "checked_at": "2026-09-27（公式の料金表と API の上限のページ）",
+    "alert": "毎分 96 回（8 割）で運営にメール（1 時間に 1 回）",
+    "on_limit": "429 は預かったことにせず E-SEC-003",
+    "source": [
+     "D-102.4",
+     "D-102.5",
+     "D-102.6"
+    ]
+   }
+  },
+  "workflow": {
+   "engine": "Hatchet",
+   "purpose": "長時間実行・cron・中断再開・リトライ",
+   "rationale": "Postgres一本で完結。Temporalは別クラスタが要り過剰。Inngestは SSPL で使用不可",
+   "stage": "段階 2（サーバー側で動かす経路が入るとき）に決め直す。段階 1 はサーバーで長く動かす仕事が無い（D-055・D-097.2）",
+   "source": [
+    "D-045.4",
+    "D-097.2"
+   ]
+  },
+  "sandbox": {
+   "service": "Microsandbox (libkrun microVM)",
+   "purpose": "サーバー経路でのコード実行",
+   "note": "Bridge経路ではClaude Codeの実行機構をそのまま使うため不要",
+   "stage": "段階 2 で決め直す（D-097.2）",
+   "source": [
+    "D-044.5",
+    "D-097.2"
+   ]
+  },
+  "agent_harness": {
+   "bridge": "Claude Code CLI / Codex / Gemini CLI（顧客のサブスクで動く）",
+   "server_claude": "Claude Agent SDK (TypeScript)",
+   "server_openai": "OpenAI Agents SDK (TypeScript)",
+   "server_gemini": "LangGraph.js（TS版Agent SDKが存在しないため自前ハーネス）",
+   "server_local": "LangGraph.js"
+  },
+  "browser_automation": {
+   "primary": "Claude in Chrome（本人のサブスクの Claude Code に --chrome でつなぐ・本人の Chrome とそのログインの状態）",
+   "secondary": "Playwright MCP（@playwright/mcp・Bridge 専用のブラウザ・本人の PC に別のログインの状態を持つ）",
+   "retired": "Stagehand（AI の API を自分で呼び料金がかかる。段階 1 はサブスクだけ・D-055）",
+   "rationale": "どちらも本人のサブスクの Claude Code が動かすので API の料金がかからない。2026-09-30 に Claude in Chrome が画面なし（-p・stream-json）で動くことを確かめた。記録再生はこの上に後から足す",
+   "source": [
+    "D-119.1",
+    "D-119.2",
+    "D-119.3"
+   ]
+  },
+  "memory": {
+   "approach": "自前 pgvector + 3層テーブル",
+   "layers": [
+    "明示ルール",
+    "学習した好み",
+    "承認済み事例"
+   ],
+   "rationale": "記憶3層は独自設計。mem0/Graphitiは形が合わず、Pythonサービスが増える"
+  },
+  "hosting": {
+   "_doc": "置き場は段ごとに根拠の決定を持つ（D-097.9）。決定が改められたら、改められた文を根拠に持つ段は trace_gate T12 で赤になる",
+   "stages": [
+    {
+     "id": "stage1",
+     "name": "段階 1（AI は Bridge だけ・D-055）",
+     "frontend": "Vercel（プロジェクト kaname-web・Root apps/web）",
+     "api": "Vercel（別プロジェクト kaname-api・Root apps/api・Node の関数 1 本。API は独立のまま・D-043.3）",
+     "worker": null,
+     "ingestion": null,
+     "database": "Supabase（東京・無料枠。顧客のデータを入れる前に Pro）",
+     "function_region": "hnd1（東京・DB と同じ場所。口は build-vercel.mjs が書く関数の設定 .vc-config.json の regions・画面は vercel.json の regions・決まりは scripts/ci/staging_region.json）",
+     "secrets_env": "Vercel の環境変数（本番用と Preview 用・Sensitive）",
+     "vault": "Infisical（クラウド・無料枠）。起動時に入れるか確かめる（D-101.1・D-101.4）",
+     "polling": "Bridge の問い合わせ 1 回で生存を兼ねる。動いている最中だけ最長 20 秒待ち受け、それ以外は 5 秒あける（D-097.4）",
+     "db_pool_per_function": {
+      "app": 3,
+      "auth": 2
+     },
+     "migration": "API の Build Command（pnpm db:migrate && pnpm provision:bucket）。2 人目が入る前に GitHub Actions へ",
+     "plan_limits": "Vercel Hobby は商用不可 → 顧客に触らせる前に Pro",
+     "source": [
+      "D-043.3",
+      "D-055",
+      "D-097.1",
+      "D-097.3",
+      "D-097.4",
+      "D-097.5",
+      "D-097.6",
+      "D-097.7",
+      "D-101.1",
+      "D-101.4",
+      "D-101.6"
+     ]
+    },
+    {
+     "id": "stage2",
+     "name": "段階 2（サーバー側で動かす経路：BYOK・運営マネージド・PC が閉じている間）",
+     "frontend": "Vercel",
+     "api": "決め直す（長時間実行できる置き場。9/8 時点の候補は Railway）",
+     "worker": "決め直す（9/8 時点は Railway・Hatchet）",
+     "ingestion": "決め直す（9/8 時点は Railway・Python docling／faster-whisper）",
+     "database": "Supabase（Pro）",
+     "secrets_env": "決め直す（アプリの鍵は段階 1 と同じく Vercel の環境変数でもよい）",
+     "vault": "Infisical のまま（段階 1 から・D-101.1）",
+     "source": [
+      "D-045.4",
+      "D-097.2",
+      "D-101.1"
+     ]
+    }
+   ],
+   "migration_target": "AWS（ECS Fargate + Aurora Serverless v2 + S3 + KMS）"
+  },
+  "desktop": {
+   "framework": "Electron",
+   "language": "TypeScript",
+   "name": "Bridge",
+   "purpose": "顧客PC常駐。本人のブラウザ・ローカルファイル・社内システムに届き、本人のサブスクでLLMが動く",
+   "note": "段階 2 から Bridge の窓に Kaname の画面（Web）を出す（D-084.1）",
+   "source": [
+    "D-015",
+    "D-084.1"
+   ]
+  },
+  "payment": "Stripe",
+  "notifications": {
+   "email_outbound_customer": "Gmail API / Microsoft Graph API（顧客自身のアカウントから）",
+   "email_system": "Resend",
+   "future": [
+    "Slack",
+    "LINE",
+    "Push（段階5）"
+   ]
+  },
+  "observability": {
+   "llm_trace": "langfuse (ee/ 不使用)",
+   "rationale": "AI社員の実行証跡とコスト可視化"
+  },
+  "mcp": "公式 TypeScript SDK",
+  "document_generation": [
+   "marp",
+   "SheetJS",
+   "pdfkit",
+   "pptx生成ライブラリ"
+  ],
+  "e2e": "Playwright",
+  "cms": null,
+  "nocode_tools": [],
+  "timeline": {
+   "library": "svar-gantt（@svar-ui/react-gantt v2・MIT・React 19。旧名 wx-react-gantt 1.x は React 18 まで）",
+   "license": "MIT",
+   "why": "依存の線・ドラッグで期限・折りたたみ・親子が最初から付いている（D-079）",
+   "source": [
+    "D-079.1"
+   ]
+  },
+  "testing": {
+   "unit_contract": "Vitest",
+   "e2e": "Playwright",
+   "contract_fuzz": {
+    "library": "Schemathesis 4.33.0",
+    "license": "MIT",
+    "rationale": "G36 の契約 fuzz。CI の database で pip から入れる（K-35）"
+   },
+   "consumer_contract": "なし（段階 1。OpenAPI 生成型＋openapi-diff で代替）",
+   "load": "k6（L4 リリース前のみ）",
+   "rationale": "Hono＋Next.js の TypeScript で標準的・速い・設定が少ない。user 選択 2026-09-15（候補 Vitest／Jest を提示）",
+   "source": [
+    "D-053.1"
+   ]
+  },
+  "environments": {
+   "staging": {
+    "shape": "本番と同じ構成をもう 1 組",
+    "database": "Supabase 別プロジェクト（本番と同じ migration を Drizzle で適用・seed はテスト会社）",
+    "api_worker_ingestion": "段階 1：API は Vercel の別プロジェクト（Preview 環境）。ワーカー・取り込みは段階 1 に無い（D-097.1・D-097.2）",
+    "frontend": "Vercel（kaname-web の Preview。環境変数だけ staging 向け）",
+    "secrets": "アプリの鍵は Vercel の環境変数（Preview 用・Sensitive）（D-097.3）。顧客の資格情報は Infisical の staging 環境（D-101.1）",
+    "rule": "本番と同じ migration／deploy／プロビジョニングコードで作れること（API の Build Command で流す・D-097.6）。L1〜L3 はここで流す。本番は L4 のスモークだけ",
+    "owner_task": "T-F-16（外部リソースのコード化）で最初に作る",
+    "decided": "2026-09-15 user 選択（候補：同構成もう 1 組／Supabase Branching／あとで）",
+    "source": [
+     "D-053.1",
+     "D-097.1",
+     "D-097.3",
+     "D-097.6",
+     "D-101.1"
+    ]
+   },
+   "production": {
+    "frontend": "Vercel（kaname-web）",
+    "api": "Vercel（kaname-api・別プロジェクト）",
+    "database": "Supabase（顧客のデータを入れる前に Pro）",
+    "secrets": "アプリの鍵は Vercel の環境変数（本番用・Sensitive）。顧客の資格情報は Infisical の prod 環境（D-101.1）",
+    "plan": "顧客に触らせる前に Vercel Pro（D-097.7）",
+    "source": [
+     "D-097.1",
+     "D-097.3",
+     "D-097.7",
+     "D-101.1"
+    ]
+   }
+  },
+  "mobile": {
+   "framework": "Capacitor",
+   "language": "TypeScript",
+   "note": "同じ Web を native の殻に入れて App Store／Google Play へ。通知は APNs／FCM。PWA は選ばない（iOS の通知条件・MDM 不可）",
+   "source": [
+    "D-084.2",
+    "D-084.3",
+    "D-084.6"
+   ]
+  },
+  "payments": {
+   "provider": "Stripe（Billing のサブスク・Checkout・Customer Portal・webhook）",
+   "note": "関門 C7 packages/billing の中だけ。カード番号は自社を通らない",
+   "source": [
+    "D-082.1",
+    "D-082.2",
+    "D-082.7"
+   ]
+  },
+  "llm_providers": {
+   "providers": [
+    "Anthropic",
+    "OpenAI",
+    "Google"
+   ],
+   "note": "3 社で能力表を揃える。BYOK と運営マネージド。段階 1 は Bridge だけ",
+   "source": [
+    "D-083.2",
+    "D-055"
+   ]
+  },
+  "search": {
+   "semantic": {
+    "model": "Ruri v3（cl-nagoya/ruri-v3-310m・768 次元・Apache 2.0）",
+    "runs_on": "本人の PC（Bridge）。サブスクでも API でも同じ。PC が無い会社だけ段階 2 のサーバーで同じモデル（D-099.3）",
+    "store": "search_embeddings（pgvector・モデルごとの HNSW 部分索引）",
+    "why": "日本語の JMTEB 77.24（PLaMo-Embedding-1B 76.10・OpenAI text-embedding-3-large 73.97）。外部に送らず費用なし。Anthropic は埋め込みモデルを出していない",
+    "when": "1 社の本文が 5 万件を超える、または探すのに 20 秒以上が 1 週間に 10 回を超えたら入れる（D-099.2）"
+   },
+   "lexical": {
+    "engine": "PGroonga（Supabase 標準の拡張）",
+    "targets": "台帳・記憶・証跡の本文"
+   },
+   "rerank": "自分のAI（Claude・本人のサブスク）が候補を読んで選ぶ",
+   "swap": "embedding_models に building で足す → Bridge が全部作り直す → そろったら active に切り替え・古いものを retired にして消す。そろうまでは古いモデルで探す",
+   "offline": "Bridge が止まっている間は言葉の一致だけで探し、画面にそう出す",
+   "distribution": "Bridge が自分で取る（配布元・sha256・空き容量を先に確かめる・進み具合を出す・自己診断の行・ボタン 1 つで取り直す）。人にダウンロードもインストールもさせない（D-099.4）",
+   "local_db": "ローカル・CI の Postgres も pgvector と PGroonga の両方を入れた像にする",
+   "rejected": [
+    {
+     "name": "Voyage AI（Anthropic の案内先）",
+     "reason": "外部の会社にデータを送る・API キーと従量課金が要る（段階 2 の API の話）"
+    },
+    {
+     "name": "OpenAI text-embedding-3",
+     "reason": "同上。日本語の精度も Ruri v3 より低い"
+    }
+   ],
+   "source": [
+    "D-098.2",
+    "D-098.3",
+    "D-098.4",
+    "D-098.5",
+    "D-098.7",
+    "D-098.9",
+    "D-099.1",
+    "D-099.2",
+    "D-099.3",
+    "D-099.4",
+    "D-099.7"
+   ],
+   "stage1": "自分のAI が PGroonga で言い換えを広げて何度か探し、読んで選ぶ。ベクトルは作らない（D-099.1）",
+   "decide_by_data": "高本さんの実データで質問 20 個（言葉が一致しないもの半分以上）を自分のAI に探させ、17 問に届かなければ境を待たずにベクトルを足す（D-099.7）"
+  },
+  "agent_work_record": {
+   "usage": "仕事ごとに往復数・時間・入力と出力の量・費用の見込み（D-100.1）",
+   "tools": "道具の呼び出しごとに名前・対象・成否・時間（D-100.2）",
+   "not_collected": "ファイルの中身・道具の返り値・途中の文章の全文は本人の PC に置いたまま（D-100.3）",
+   "source": [
+    "D-100.1",
+    "D-100.2",
+    "D-100.3"
+   ]
+  }
+ },
+ "excluded": [
+  {
+   "item": "Inngest",
+   "license": "SSPL",
+   "reason": "SaaS提供時に運用スタック全体の公開義務。Atelierが使用中のため要注意"
+  },
+  {
+   "item": "Nango",
+   "license": "Elastic License 2.0",
+   "reason": "機能を第三者にホスト提供不可に抵触の恐れ。OAuthは自前実装"
+  },
+  {
+   "item": "Skyvern",
+   "license": "AGPL-3.0",
+   "reason": "組み込み不可。『show once, run forever』の設計は参考にする"
+  },
+  {
+   "item": "minio / ToolJet / apitable / zitadel / CloudCLI",
+   "license": "AGPL-3.0",
+   "reason": "組み込み不可"
+  },
+  {
+   "item": "Directus",
+   "license": "MSCL-1.0-GPL (2026変更)",
+   "reason": "動的スキーマの参考にはなるが採用不可"
+  },
+  {
+   "item": "Arize Phoenix",
+   "license": "Elastic License 2.0",
+   "reason": "不可"
+  },
+  {
+   "item": "Daytona",
+   "license": "2026-06にクローズドソース化",
+   "reason": "不可"
+  },
+  {
+   "item": "E2B",
+   "license": "Apache-2.0 (SDKのみ)",
+   "reason": "ランタイムがマネージド。自前ホスト不可"
+  },
+  {
+   "item": "Prisma",
+   "license": "Apache-2.0",
+   "reason": "SupabaseでRLSが効かなくなるケースがある"
+  },
+  {
+   "item": "Firebase / Convex / PocketBase / Cloudflare D1 / MongoDB / PlanetScale",
+   "license": "-",
+   "reason": "RLS+JSONB+pgvectorの同時要件に合わない"
+  },
+  {
+   "item": "Nuxt / Astro / Remix",
+   "license": "-",
+   "reason": "習熟度が低く、払う理由がない"
+  },
+  {
+   "item": "browser-use",
+   "license": "MIT",
+   "reason": "Pythonのため顧客PCのBridgeに同梱できない。サーバー経路では検討可"
+  },
+  {
+   "item": "mem0 / Graphiti",
+   "license": "Apache-2.0",
+   "reason": "記憶3層の独自設計と形が合わない。参考にする"
+  }
+ ],
+ "open_core_note": {
+  "policy": "本体がMIT/Apacheで ee/ 等が商用ライセンスのものは、ee/ を import しないことをCIで機械検査する",
+  "applies_to": [
+   "Infisical",
+   "langfuse",
+   "litellm",
+   "novu",
+   "Stirling-PDF"
+  ]
+ },
+ "portability": {
+  "strategy": "追跡ではなく物理的な閉じ込め",
+  "boundaries": [
+   {
+    "concern": "DB",
+    "allowed_paths": [
+     "lib/db/"
+    ],
+    "vendor": "Supabase/Postgres"
+   },
+   {
+    "concern": "認証",
+    "allowed_paths": [
+     "lib/auth/"
+    ],
+    "vendor": "Better Auth"
+   },
+   {
+    "concern": "ストレージ",
+    "allowed_paths": [
+     "lib/storage/"
+    ],
+    "vendor": "S3互換"
+   },
+   {
+    "concern": "キュー",
+    "allowed_paths": [
+     "lib/queue/"
+    ],
+    "vendor": "Hatchet"
+   },
+   {
+    "concern": "LLMプロバイダ",
+    "allowed_paths": [
+     "lib/llm/"
+    ],
+    "vendor": "複数"
+   },
+   {
+    "concern": "秘密管理",
+    "allowed_paths": [
+     "lib/secrets/"
+    ],
+    "vendor": "Infisical"
+   }
+  ],
+  "ci_gates": [
+   "境界ディレクトリ以外からのベンダーSDK import で fail",
+   "SQL に auth.uid() が出たら fail",
+   "Open Core の ee/ を import したら fail",
+   "ポータビリティ台帳に無い越境で fail"
+  ],
+  "migration_estimate_days": {
+   "database": "4〜6",
+   "frontend": "1〜2",
+   "total": "5〜8"
+  },
+  "migration_triggers": [
+   "ISMAPを要求する商談（官公庁・大企業）",
+   "顧客のセキュリティ監査でサブプロセッサが問題になる",
+   "コストが逆転する規模になる"
+  ]
+ },
+ "infrastructure_monthly_cost": {
+  "at_zero_customers": {
+   "min": 5000,
+   "max": 10000
+  },
+  "at_65_customers": {
+   "min": 30000,
+   "max": 90000
+  },
+  "currency": "JPY",
+  "note": "LLM費用は顧客負担のため含まない。運営マネージドを許可した顧客の分のみ運営負担。コストドライバーは常時起動ワーカーとサンドボックス"
+ },
+ "decomposition": {
+  "method": "縦切り（垂直スライス）",
+  "judgement": "実装者1人（+Claude）で5未満、かつ仕様を触りながら詰めるため",
+  "slice_size": {
+   "days": "2〜4",
+   "owner_verification_minutes": "15〜30",
+   "pr": "1スライス=1PR"
+  },
+  "phase1_slices": 11
+ },
+ "notes": "詳細は 00_research/{OSS候補一覧,プロバイダ能力表,自前実装リスト,影響マップ,拡張設計と開発単位}.md と 01_hearing/決定ログ_進行中.md を参照。次フェーズは architecture-design。",
+ "_decisions": {
+  "_doc": "根拠となる決定（01_hearing/決定ログ_進行中.md）。trace_gate が読む",
+  "cloud": [
+   "D-046"
+  ],
+  "criteria": [
+   "D-048"
+  ],
+  "native": [
+   "D-051"
+  ],
+  "execution": [
+   "D-004",
+   "D-015",
+   "D-045",
+   "D-047"
+  ],
+  "chat": [
+   "D-057"
+  ],
+  "stage1_llm_route": [
+   "D-055"
+  ],
+  "D-067": "画面部品の土台 shadcn/ui（Base UI 版）・RHF＋Zod・Recharts・pragmatic-drag-and-drop",
+  "D-068": "タスクの作法と見え方（一日の型・状態4つ・見え方は URL）",
+  "permissions_layers": [
+   "D-073"
+  ],
+  "account_lifecycle_and_revocation": [
+   "D-074"
+  ],
+  "billing_invoice_phase1_stripe_phase2": [
+   "D-075",
+   "D-002"
+  ],
+  "system_email_resend_for_notices_and_inquiries": [
+   "D-075"
+  ],
+  "integrations_oauth_google_freee": [
+   "D-076"
+  ],
+  "ops_console_tenant_detail": [
+   "D-077"
+  ],
+  "clauses": [
+   "D-041.7",
+   "D-043.3",
+   "D-044.5",
+   "D-045.4",
+   "D-046.1",
+   "D-046.2",
+   "D-046.3",
+   "D-047.4",
+   "D-048.2",
+   "D-048.3",
+   "D-049.2",
+   "D-049.3",
+   "D-050.2",
+   "D-050.4",
+   "D-051.1",
+   "D-055.1",
+   "D-056.3",
+   "D-057.1",
+   "D-057.2",
+   "D-057.3",
+   "D-057.5"
+  ],
+  "timeline_gantt": [
+   "D-079"
+  ],
+  "testing": "2026-09-15 user：Vitest（推奨案を選択）。CI の script は pnpm test のまま",
+  "staging": "2026-09-15 user：本番と同じ構成をもう 1 組（GAP-246 解消）",
+  "agent_harness": [
+   "D-092",
+   "D-093"
+  ]
+ },
+ "notes_20260915": "2026-09-15 凍結時の確認：D-073〜D-077 で新しい基盤は選んでいない。権限・出来事・運営コンソールは Postgres（RLS）＋Better Auth の sessions 表、請求は段階 1 が請求書払い（Stripe は段階 2）、お知らせ・問い合わせの返答メールは Resend、正規連携は各サービスの OAuth（Gmail API / freee API）。ガント（タイムライン）の部品は未定のまま → user に確認",
+ "agent_harness": {
+  "_doc": "公式 CLI を動かす形と、守る規約（D-092・D-093）。一次情報は 2026-09-25 に再取得",
+  "source": [
+   "D-092.1",
+   "D-092.2",
+   "D-092.3",
+   "D-092.4",
+   "D-092.5",
+   "D-092.6",
+   "D-092.7",
+   "D-092.8",
+   "D-093.1",
+   "D-093.2",
+   "D-093.3",
+   "D-093.4",
+   "D-093.5",
+   "D-093.6",
+   "D-093.7",
+   "D-093.8",
+   "D-104.14",
+   "D-107.2"
+  ],
+  "stage1_route": "Bridge のみ（本人の PC・本人のサブスク・未改変の公式 CLI）。サーバー側が代わりに動かす経路は API キーだけ（BYOK か 運営の鍵）",
+  "cli_invocation": {
+   "tty": "要らない（パイプ）",
+   "io": "--input-format stream-json --output-format stream-json（完了イベントで成功を判定・終了コード 0 を成功にしない）",
+   "permission": "--permission-prompt-tool（承認待ちを同じ経路に出す）",
+   "resume": "--resume=<セッション>（中断・再開）",
+   "forbidden_flags": [
+    "--dangerously-skip-permissions",
+    "--allow-dangerously-skip-permissions"
+   ],
+   "events": "init→会話の id／assistant→途中経過／control_request→確認（本人が答える・証跡）／result→is_error で成否"
+  },
+  "bridge_subscription_terms": {
+   "checked_at": "2026-09-25",
+   "primary_sources": [
+    "code.claude.com/docs/en/legal-and-compliance",
+    "Agent SDK overview"
+   ],
+   "third_party_subscription": "不可（事前承認が無い限り、第三者製品が claude.ai のログインや枠を提供することは認められない）。『施行は一時停止中』は誤り",
+   "bridge_form": "許容（未改変のバイナリに本人が自分のサブスクでサインインする形）",
+   "rate_limit_numbers": "公式に無い。上限に当たったときの挙動を製品の設計項目として持つ",
+   "conditions": [
+    {
+     "id": 1,
+     "text": "資格情報・セッショントークンを集めない／保存しない／仲介しない",
+     "how": "サインインは提供元の流れで完結。Bridge は窓を開きコードを渡すだけ",
+     "check": "関門 C8 ／ scripts/ci/claude-terms.mjs ①"
+    },
+    {
+     "id": 2,
+     "text": "バイナリを改変せず、承認の仕組みを無効化・制限しない",
+     "how": "未改変の claude をそのまま起動。弱める引数を渡さない",
+     "check": "scripts/ci/claude-terms.mjs ②"
+    },
+    {
+     "id": 3,
+     "text": "利用者の代わりに支払わない・再販しない・仲介しない",
+     "how": "段階 1 は本人のサブスク。運営の鍵は明示的に選んだときだけ（既定 OFF）",
+     "check": "scripts/ci/claude-terms.mjs ③"
+    },
+    {
+     "id": 4,
+     "text": "製品提供者として商用規約に同意する",
+     "how": "リリース前の運営の手続き",
+     "check": "人（リリース手順）",
+     "status": "未実施",
+     "owner": "運営",
+     "due": "リリース前"
+    },
+    {
+     "id": 5,
+     "text": "名前とロゴを自社の製品名・機能名・会社名・ロゴに使わない",
+     "how": "『公式の CLI を実行します』と正確に述べるのは可。製品の身元には使わない",
+     "check": "scripts/ci/claude-terms.mjs ⑤"
+    }
+   ]
+  },
+  "permission_modes": {
+   "_doc": "許可は Claude と同じ（D-104.14。D-092.2・D-093.6 を改めた）",
+   "modes": [
+    "manual（毎回聞く・既定）",
+    "acceptEdits（編集は自動）",
+    "auto（自動で判断）",
+    "plan（計画だけ）",
+    "bypassPermissions（全部許可）"
+   ],
+   "rule": "全部許可は本人が入力欄で自分で選んだ会話だけに渡す。既定にしない・Kaname が代わりに選ばない。選ぶときに何が起きるかを出す。銀行・規約で自動操作が禁止のサービスは許可のモードに関わらず関門で止める",
+   "check": "scripts/ci/claude-terms.mjs が「本人が選んだとき以外に bypassPermissions を渡していない」を見る（T-B-19 で検査を直す）",
+   "checked_at": "2026-09-27 claude 2.1.283 の --help（choices: acceptEdits, auto, bypassPermissions, manual, dontAsk, plan）。dontAsk は使わない"
+  },
+  "partial_and_usage": "2026-09-27 実測：--include-partial-messages で stream_event の content_block_delta（text_delta）が届く。rate_limit_event.rate_limit_info.unifiedWindows に five_hour／seven_day の utilization と resetsAt が届く（D-104.8・D-104.16 の実現性を確認）"
+ },
+ "notes_20260927": "2026-09-27：D-104 で書式の描画（react-markdown ほか）と声（ブラウザの音声認識）を user が選んだ。D-105（記憶の毎朝のまとめ）は新しい基盤を使わない（Postgres・Bridge・本人の Claude Code のまま）",
+ "supply_chain": {
+  "min_release_age_days": 21,
+  "how": "pnpm-workspace.yaml の minimumReleaseAge（30240 分）。pnpm が解くとき、出て 21 日未満の版を選ばない（中の部品も）。CI の G46（stack_gate.py の S5）が、設定が外れていないか・例外の書き方を見る。CI の install は lockfile のまま解き直さないので、lockfile の全部の版の出た日も npm の registry に聞いて確かめる（S6・K-44）",
+  "exceptions": "弱点の直しで急ぐときだけ minimumReleaseAgeExclude に「名前@版」と出た日を書く。決める前から入っていた 21 日未満の版も、出て 21 日を過ぎるまで例外に書いて外す",
+  "deprecated": "上流が非推奨にした部品は scripts/ci/deprecated_baseline.json に記録し、記録に無い非推奨を赤（G46 の S4）",
+  "source": [
+   "D-128.124",
+   "D-128.123"
+  ]
+ },
+ "packages": {
+  "_doc": "使っている部品（package.json）と技術の選定の対応（D-128.123・K-38）。scripts/ci/stack_gate.py が 1 対 1 で突き合わせる。部品を足したら 1 行足す。@types/* は元の部品がここにあれば要らない",
+  "@base-ui/react": {
+   "for": "画面の部品の土台（動き・読み上げ）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "@types/*": "元の部品の型（元の部品の行に従う）",
+  "@aws-sdk/client-s3": {
+   "for": "ファイルの置き場（S3 互換）",
+   "register": "stack.storage.access_method"
+  },
+  "@aws-sdk/s3-request-presigner": {
+   "for": "外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160）",
+   "register": "stack.storage.access_method"
+  },
+  "@better-auth/utils": {
+   "for": "ログインの部品の中の道具",
+   "register": "stack.auth.service"
+  },
+  "@better-auth/passkey": {
+   "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）",
+   "register": "stack.auth.service"
+  },
+  "@simplewebauthn/browser": {
+   "for": "パスキーを足す・パスキーで本人確認を取り直す画面の端末の手順（startRegistration・startAuthentication。部品 @better-auth/passkey の中と同じ版・チャレンジを頭で受け渡すため部品の addPasskey を使わない・K-318）",
+   "register": "stack.auth.service"
+  },
+  "@simplewebauthn/server": {
+   "for": "パスキーの応答の確かめ（署名の回数が戻ったときに、ほかが正しいかを部品と同じ道具で見る・K-304。部品 @better-auth/passkey の中と同じ版）",
+   "register": "stack.auth.service"
+  },
+  "@eslint/js": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "@fontsource-variable/noto-sans-jp": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@hono/node-server": {
+   "for": "API を Node で動かす",
+   "register": "stack.api.framework"
+  },
+  "@hookform/resolvers": {
+   "for": "入力の形を Zod で確かめる",
+   "register": "stack.frontend.forms"
+  },
+  "@playwright/mcp": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@playwright/test": {
+   "for": "実ブラウザの試験",
+   "register": "stack.testing.e2e"
+  },
+  "@svar-ui/react-gantt": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@tailwindcss/postcss": {
+   "for": "Tailwind を Next.js に入れる",
+   "register": "stack.frontend.styling"
+  },
+  "@tanstack/react-query": {
+   "for": "画面が API から読んだ物の置き場",
+   "register": "stack.frontend.state_management"
+  },
+  "@vitest/coverage-v8": {
+   "for": "単体試験の網羅率",
+   "register": "stack.testing.unit_contract"
+  },
+  "better-auth": {
+   "for": "ログイン",
+   "register": "stack.auth.service"
+  },
+  "class-variance-authority": {
+   "for": "部品の見せ方の組み合わせ（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "clsx": {
+   "for": "クラス名をつなぐ（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "cmdk": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "electron": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "electron-builder": {
+   "for": "Bridge の配布物を作る",
+   "register": "stack.desktop.framework"
+  },
+  "electron-updater": {
+   "for": "Bridge の自動更新",
+   "register": "stack.desktop.framework"
+  },
+  "esbuild": {
+   "for": "API を 1 つにまとめる（Vercel に置く）",
+   "register": "dev_tools"
+  },
+  "eslint": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "hono": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "kysely": {
+   "for": "ログインの部品が DB を読む（Better Auth の決まり）",
+   "register": "stack.auth.service"
+  },
+  "lucide-react": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "mermaid": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "next": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "pg": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "prettier": {
+   "for": "書式をそろえる（G1）",
+   "register": "dev_tools"
+  },
+  "qrcode": {
+   "for": "2 段階の確かめの QR コード",
+   "register": "stack.auth"
+  },
+  "react": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "react-dom": {
+   "for": "画面の土台（React）",
+   "register": "stack.frontend.framework"
+  },
+  "react-hook-form": {
+   "for": "入力の形",
+   "register": "stack.frontend.forms"
+  },
+  "react-markdown": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "rehype-raw": {
+   "for": "会話の書式（HTML を読む）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "rehype-sanitize": {
+   "for": "会話の書式（危ない HTML を消す）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "remark-cjk-friendly": {
+   "for": "会話の書式（日本語の強調）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "remark-gfm": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "remark-math": {
+   "for": "会話の書式（数式）",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "remark-parse": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
+  },
+  "unified": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
+  },
+  "resend": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "shiki": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "sonner": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "squawk-cli": {
+   "for": "migration の lint（変えた・足した migration だけ・G58・K-107）",
+   "register": "dev_tools"
+  },
+  "tailwind-merge": {
+   "for": "Tailwind のクラスの重なりを解く（shadcn の土台）",
+   "register": "stack.frontend.ui_primitives"
+  },
+  "tailwindcss": {
+   "for": "見た目（CSS）",
+   "register": "stack.frontend.styling"
+  },
+  "temml": {
+   "for": "数式を MathML にする",
+   "register": "stack.frontend.chat_rendering"
+  },
+  "tsx": {
+   "for": "TypeScript をそのまま動かす（CLI・試験）",
+   "register": "dev_tools"
+  },
+  "typescript": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "typescript-eslint": {
+   "for": "書き方の検査（G1）",
+   "register": "dev_tools"
+  },
+  "ua-parser-js": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "vitest": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "zod": {
+   "for": "記録にある名前のまま",
+   "register": "(本文)"
+  },
+  "@tiptap/core": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/react": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/pm": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/starter-kit": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-highlight": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-table": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-task-list": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-task-item": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-text-align": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-text-style": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-superscript": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@tiptap/extension-subscript": {
+   "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）",
+   "register": "stack.frontend.rich_text"
+  },
+  "@pdf-lib/fontkit": {
+   "for": "請求書の PDF に日本語の書体を埋め込む（K-1013・D-156.42）",
+   "register": "stack.document_generation"
+  },
+  "pdf-lib": {
+   "for": "請求書の PDF を作る（K-1013・D-156.42）",
+   "register": "stack.document_generation"
+  }
+ }
+}

@@ -1,0 +1,476 @@
+/* チケットの詳細（K-226・キャンバス TicketDetail の実測）。値は正本 DESIGN-kaname.md の components（detail-*・doc-toolbar・shell-bar）と
+   色・文字・角丸・余白の段から作ったトークン（--k-*）だけを読む。生の色・大きさは書かない（@media の区切りのほか）。
+   形：.k-detail（横並び）＝ 本文の箱 section.k-page（白いカード article.k-detail-card と 子チケット・つながりのカード）
+       ＋（閉じたときだけ）パネルを開くボタン ＋ 右の属性パネル aside.k-detail-panel（幅 380・左に線・1024 以上は上に貼り付く）。
+   1023 以下はパネルを本文の下に回す。767 以下はカードの中の左右の余白を spacing.md にし、頭の行の右（開始日・期限・段）は横に並べて頭の行を 2 行までにする（代表の直し answer=fabd031f9b37）。
+   外枠の上の帯（shell-bar の高さ・上に貼り付く）がある幅では、上に貼り付く物（本文の道具の帯・パネル）をその下に置く */
+
+/* ---- 並べ方 ---- */
+.k-detail {
+  display: flex;
+  min-width: 0;
+  min-height: calc(100dvh - var(--k-c-shell-bar-height));
+}
+.k-detail > .k-page {
+  flex: 1 1 var(--k-c-detail-body-basis-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-detail-body-gap);
+  padding: var(--k-c-detail-body-pad);
+  box-sizing: border-box;
+}
+/* ページの型の「子は左右 spacing.lg 内側」をカードに当てない（本文の箱の余白がその役をする） */
+.k-detail > .k-page > * {
+  margin-inline: 0;
+}
+.k-detail [aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 白いカード（本文・子チケット・つながり） ---- */
+.k-detail-card,
+.k-detail-links {
+  background: var(--k-c-detail-card-bg);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-c-detail-card-radius);
+  min-width: 0;
+}
+
+/* ---- 頭の行 ---- */
+.k-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-detail-meta-gap);
+  padding: var(--k-c-detail-meta-pad);
+  line-height: var(--k-c-detail-meta-lh);
+}
+.k-detail-kind {
+  padding: var(--k-c-detail-kind-pad);
+  border-radius: var(--k-c-detail-kind-radius);
+  background: var(--k-secondary);
+  color: var(--k-on-secondary);
+  font-size: var(--k-c-detail-kind-text);
+  font-weight: var(--k-c-detail-kind-fw);
+  white-space: nowrap;
+}
+/* 種別の塗り（口が返す種別の色を正本の色の段に寄せた名前） */
+.k-detail-kind[data-tone="warning"] {
+  background: var(--k-st-warning);
+}
+.k-detail-kind[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-detail-kind[data-tone="primary"] {
+  background: var(--k-primary);
+}
+.k-detail-kind[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-detail-kind[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-detail-kind[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-detail-kind[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-detail-kind[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-detail-kind[data-tone="teal-light"] {
+  background: var(--k-d-teal-light);
+}
+.k-detail-kind[data-tone="tertiary"] {
+  background: var(--k-tertiary);
+}
+.k-detail-number {
+  color: var(--k-on-surface-variant);
+}
+.k-detail-copy {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-detail-copy-width);
+  height: var(--k-c-detail-copy-height);
+  padding: 0;
+  border: var(--k-c-detail-copy-border);
+  border-radius: var(--k-c-detail-copy-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-copy:hover {
+  color: var(--k-primary);
+}
+.k-detail-created {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-detail-meta-side {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-detail-meta-side-gap);
+  font-size: var(--k-c-detail-meta-side-text);
+  line-height: var(--k-c-detail-meta-side-lh);
+  font-weight: var(--k-c-detail-meta-side-fw);
+  color: var(--k-on-surface-variant);
+}
+.k-detail-meta-side b {
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+.k-detail-meta-side b[data-over] {
+  color: var(--k-st-danger);
+  font-weight: var(--k-fw-h1);
+}
+/* 段の札（段ごとの塗りに白字。色は状態の色とデータの色の段から・キャンバス TicketDetail・StRunning・StFailed・K-219・Gantt） */
+.k-detail-stage {
+  padding: var(--k-c-detail-stage-pad);
+  border-radius: var(--k-c-detail-stage-radius);
+  background: var(--k-neutral-strong);
+  color: var(--k-on-primary);
+  font-size: var(--k-c-detail-stage-text);
+  line-height: var(--k-c-detail-stage-lh);
+  font-weight: var(--k-c-detail-stage-fw);
+  white-space: nowrap;
+}
+.k-detail-stage[data-stage="doing"] {
+  background: var(--k-d-indigo);
+}
+.k-detail-stage[data-stage="hold"] {
+  background: var(--k-on-surface-variant);
+}
+.k-detail-stage[data-stage="checking"] {
+  background: var(--k-tertiary);
+}
+.k-detail-stage[data-stage="awaiting_approval"] {
+  background: var(--k-st-warning);
+}
+.k-detail-stage[data-stage="running"] {
+  background: var(--k-st-progress);
+}
+.k-detail-stage[data-stage="done"] {
+  background: var(--k-st-success);
+}
+
+/* ---- 題名の行（ページの型の帯の線と地を外す） ---- */
+.k-detail-card > .k-page-head {
+  align-items: flex-start;
+  gap: var(--k-c-detail-head-gap);
+  padding: var(--k-c-detail-head-pad);
+  background: transparent;
+  border-bottom: 0;
+}
+.k-detail-title {
+  flex: 1 1 var(--k-c-detail-title-basis-width);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.k-detail-card > .k-page-head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--k-c-detail-title-text);
+  font-weight: var(--k-c-detail-title-fw);
+  line-height: var(--k-c-detail-title-lh);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-detail-card > .k-page-head .k-page-acts {
+  margin-left: 0;
+  gap: var(--k-c-detail-acts-gap);
+}
+.k-detail-card > .k-page-head .k-page-acts .k-btn {
+  padding: var(--k-c-detail-act-pad);
+  font-size: var(--k-c-detail-act-text);
+  line-height: var(--k-c-detail-act-lh);
+  font-weight: var(--k-c-detail-act-fw);
+  gap: var(--k-s-xs);
+}
+.k-detail-card > .k-page-head .k-page-acts .k-detail-more {
+  width: var(--k-c-detail-more-width);
+  padding: var(--k-c-detail-more-pad);
+}
+
+/* ---- 帯の場所（中身は K-227・K-228） ---- */
+.k-detail-bands {
+  min-width: 0;
+}
+.k-detail-bands:not(:empty) {
+  display: grid;
+  gap: var(--k-c-detail-bands-gap);
+  padding: var(--k-c-detail-bands-pad);
+}
+
+/* ---- 本文の道具の帯（詳細だけの違い・部品の素の規則は k.css）。外枠の上の帯の下に貼り付く ---- */
+.k-detail-card .k-doc-tools {
+  position: sticky;
+  top: var(--k-c-shell-bar-height);
+  z-index: 1;
+  padding: var(--k-c-detail-doc-toolbar-pad);
+  border-top: var(--k-c-detail-doc-toolbar-border-top);
+}
+.k-detail-card .k-doc-tools .k-detail-versions {
+  margin-left: var(--k-s-xs);
+}
+
+/* ---- 区画 ---- */
+.k-detail-doc {
+  width: var(--k-c-detail-doc-width);
+  max-width: 100%;
+  padding: var(--k-c-detail-doc-pad);
+  box-sizing: border-box;
+}
+/* 本文の場所（下絵 v2 の BodyView・k-f4d-body-wrap）の中では、余白は外の箱が持つ（K-571） */
+.k-detail-body .k-detail-doc {
+  padding: 0;
+}
+.k-detail-doc .k-section .k-pre {
+  margin: 0;
+  line-height: var(--k-c-section-body-lh);
+}
+.k-detail-doc .k-section h2 {
+  scroll-margin-top: var(--k-s-2xl);
+}
+
+/* ---- 子チケット・つながり ---- */
+.k-detail-links-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-detail-links-head-gap);
+  padding: var(--k-c-detail-links-head-pad);
+}
+.k-detail-links h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--k-c-detail-links-title-text);
+  line-height: var(--k-c-detail-links-title-lh);
+  font-weight: var(--k-c-detail-links-title-fw);
+}
+.k-detail-links-head h2 + .k-btn {
+  margin-left: auto;
+}
+
+/* ---- 字のリンクの形（キャンバスでは 版と差分・子を足す・つながりを足す・目次・実行の記録をすべて見る は字のリンク） ---- */
+.k-detail-link,
+.k-detail-card .k-doc-tools .k-detail-versions,
+.k-detail-links-head .k-btn,
+.k-detail-panel .k62-run-all {
+  min-height: var(--k-c-detail-link-height);
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: transparent;
+  color: var(--k-primary);
+  font-size: var(--k-c-detail-link-text);
+  line-height: var(--k-c-detail-link-lh);
+  font-weight: var(--k-c-detail-link-fw);
+  text-decoration: underline;
+}
+
+/* ---- パネルを開く（閉じたときだけ・キャンバスの kn-reopen） ---- */
+.k-detail-reopen {
+  flex: 0 0 var(--k-c-detail-reopen-width);
+  display: flex;
+  justify-content: center;
+  padding: var(--k-c-detail-reopen-pad);
+  border: 0;
+  border-left: var(--k-c-detail-rule-border);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-reopen:hover {
+  color: var(--k-primary);
+}
+
+/* ---- 右の属性パネル ---- */
+.k-detail-panel {
+  position: sticky;
+  top: var(--k-c-shell-bar-height);
+  align-self: flex-start;
+  flex: none;
+  width: var(--k-c-detail-panel-width);
+  height: calc(100dvh - var(--k-c-shell-bar-height));
+  display: flex;
+  flex-direction: column;
+  background: var(--k-card);
+  border-left: var(--k-c-detail-rule-border);
+  box-sizing: border-box;
+}
+.k-detail-panel[hidden] {
+  display: none;
+}
+.k-detail-panel-close {
+  position: absolute;
+  top: var(--k-c-detail-panel-close-at-height);
+  right: var(--k-c-detail-panel-close-at-height);
+  width: var(--k-c-detail-panel-close-width);
+  height: var(--k-c-detail-panel-close-height);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-c-detail-panel-close-radius);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-panel-close:hover {
+  background: var(--k-line);
+}
+.k-detail-tabs {
+  display: flex;
+  flex: none;
+  padding: var(--k-c-detail-tabs-pad);
+  border-bottom: var(--k-c-detail-rule-border);
+}
+.k-detail-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-detail-tab-gap);
+  padding: var(--k-c-detail-tab-pad);
+  border: 0;
+  border-bottom: var(--k-c-detail-tab-border-bottom);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  white-space: nowrap;
+}
+.k-detail-tabs button[aria-current="page"] {
+  border-bottom-color: var(--k-primary);
+  color: var(--k-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-detail-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--k-s-xs) var(--k-s-md) var(--k-s-md);
+}
+.k-detail-panel-sec {
+  padding: var(--k-c-detail-panel-sec-pad);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+}
+.k-detail-panel h2 {
+  margin: 0 0 var(--k-s-sm);
+  padding: 0;
+  border: 0;
+  font-size: var(--k-c-detail-panel-title-text);
+  line-height: var(--k-c-detail-panel-title-lh);
+  font-weight: var(--k-c-detail-panel-title-fw);
+  color: var(--k-c-detail-panel-title-fg);
+}
+.k-detail-fields {
+  display: grid;
+  grid-template-columns: var(--k-c-detail-fields-label-width) minmax(0, 1fr);
+  gap: var(--k-c-detail-fields-gap);
+  align-items: center;
+  margin: 0;
+}
+.k-detail-field {
+  display: contents;
+}
+.k-detail-fields dt {
+  color: var(--k-on-surface-variant);
+}
+.k-detail-fields dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+/* 過ぎた期限：項目の並び（K-484 の items-panel）は印を dd の中の span に持つので、それを持つ dd も赤にする */
+.k-detail-fields dd[data-over],
+.k-detail-fields dd:has(> [data-over]) {
+  color: var(--k-st-danger);
+  font-weight: var(--k-fw-label-md);
+}
+/* 期限を変える（▾）：字の形・最小の幅と押せる高さ */
+.k-detail-fields .k-detail-due-btn {
+  min-width: var(--k-c-detail-due-width);
+  min-height: var(--k-c-detail-link-height);
+  margin-left: var(--k-s-xs);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: var(--k-c-detail-link-text);
+}
+.k-detail-who {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-detail-who-gap);
+}
+.k-detail-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-detail-avatar-width);
+  height: var(--k-c-detail-avatar-height);
+  border-radius: var(--k-c-detail-avatar-radius);
+  background: var(--k-c-detail-avatar-bg);
+  color: var(--k-c-detail-avatar-fg);
+  font-size: var(--k-c-detail-avatar-text);
+  font-weight: var(--k-c-detail-avatar-fw);
+}
+.k-detail-panel .k62-runlog {
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 1023 以下：パネルを本文の下に ---- */
+@media (max-width: 1023px) {
+  .k-detail {
+    flex-direction: column;
+  }
+  .k-detail-panel {
+    position: relative;
+    top: auto;
+    align-self: stretch;
+    width: auto;
+    height: auto;
+    border-left: 0;
+    border-top: var(--k-c-detail-rule-border);
+  }
+  .k-detail-reopen {
+    flex-basis: auto;
+    padding: var(--k-c-detail-reopen-pad);
+    padding-bottom: var(--k-s-sm);
+    border-left: 0;
+    border-top: var(--k-c-detail-rule-border);
+  }
+}
+
+/* ---- 767 以下：外枠の上の帯が無い（上の端に貼り付く）・カードの中の左右 spacing.md・頭の行の右は横に並べて 2 行まで（代表の直し answer=fabd031f9b37） ---- */
+@media (max-width: 767px) {
+  .k-detail {
+    min-height: 0;
+  }
+  .k-detail-card .k-doc-tools {
+    top: 0;
+  }
+  .k-detail-card > .k-detail-meta,
+  .k-detail-card > .k-page-head,
+  .k-detail-card > .k-doc-tools,
+  .k-detail-card > .k-detail-doc {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-detail-bands:not(:empty) {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-detail-meta-side {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--k-s-xs);
+    margin-left: 0;
+  }
+}
