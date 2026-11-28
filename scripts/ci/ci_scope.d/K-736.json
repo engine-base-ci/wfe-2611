@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F5/ai-spec-check.test.ts": "tools.ts（apps/api/src/features/F5/delegate/）を動的 import で読み、道具の一覧 TICKET_TOOLS・toolsFor を見る（K736-API-021）・K-736"
+ }
+}

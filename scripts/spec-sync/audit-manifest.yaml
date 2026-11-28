@@ -1,0 +1,90 @@
+# 監査の台帳 ── SKILL.md が名乗る段と、実際に走るスクリプトの対応。
+#
+# 由来（2026-09-17）：SKILL.md は「八段監査（A/B/C/D/F/G/H/T）」と名乗っていたが、
+# 実際に走るのは A/B/C/F/T の 5 段だった。D・G・H は散文だけで、スクリプトがどこにも無かった。
+# その D が無かったせいで、決定 D-120「一部じゃなく基本どこでも」が画面 1 枚にしか
+# 当たっていないのに、監査は全部緑で「反映率 100%」と報告できた。
+#
+# 散文の指示は飛ばせる。飛ばせる指示は実装されていないのと同じ（L-004）。
+# だからここを台帳にし、skill_impl_gate.py が
+#   ・SKILL.md が名乗る段が全部ここにあるか
+#   ・ここの script が実在するか
+#   ・builtin の段が spec-validator.py に本当に実装されているか
+# を機械で検査する。書いただけの段は、そこで赤になる。
+version: 1
+tiers:
+  - id: A
+    name: 数値整合
+    kind: builtin
+    symbol: tier_a_numeric_consistency
+    prefer_project: scripts/ci/spec_check.py
+    argv: ["--tier", "a"]
+    cwd: "{root}"
+    blocking: true
+  - id: B
+    name: クロスリファレンス
+    kind: builtin
+    symbol: tier_b_cross_reference
+    prefer_project: scripts/ci/spec_check.py
+    argv: ["--tier", "b"]
+    cwd: "{root}"
+    blocking: true
+  - id: C
+    name: 廃止用語
+    kind: builtin
+    symbol: tier_c_deprecated_terms
+    prefer_project: scripts/ci/spec_check.py
+    argv: ["--tier", "c"]
+    cwd: "{root}"
+    blocking: true
+  - id: D
+    name: 振る舞い波及
+    kind: script
+    script: tier_d.py
+    argv: ["--project-root", "{root}", "--json"]
+    blocking: true
+    why: 「どこでも効く」と決めたものが、決めた範囲の全部に届いているか
+  - id: F
+    name: 下流分解カバレッジ
+    kind: builtin
+    symbol: tier_f_downstream_coverage
+    blocking: true
+  - id: G
+    name: 基盤依存の境界
+    kind: script
+    script: tier_g.py
+    argv: ["--project-root", "{root}", "--json"]
+    blocking: true
+    why: 基盤を替えるときに依存箇所を探す羽目にならないか
+  - id: H
+    name: 関門
+    kind: script
+    script: tier_h.py
+    argv: ["--project-root", "{root}", "--json"]
+    blocking: true
+    why: 新しい外部連携・副作用が関門を通っているか
+  - id: T
+    name: 決定のトレーサビリティ
+    kind: script
+    script: trace_gate.py
+    argv: ["--json"]
+    cwd: "{root}"
+    prefer_project: scripts/ci/trace_gate.py
+    blocking: true
+    why: 決めたのに、どの成果物からも参照されていないものが無いか
+  - id: P
+    name: プロジェクト全体の棚卸し
+    kind: script
+    script: project_audit.py
+    argv: ["--project-root", "{root}", "--json"]
+    blocking: true
+    why: 手で並べたリストではなくディスクを分母にして、地図の穴・検査の穴・鮮度・幽霊・未登録の決定を出す
+  - id: L
+    name: 層の棚卸し（G21）
+    kind: script
+    script: layer_audit.py
+    prefer_project: scripts/ci/layer_audit.py
+    argv: ["--run"]
+    cwd: "{root}"
+    blocking: true
+    why: 全成果物に機械の検査か「手で見る理由」があるか。検査の無い層は古いまま残る（L-012）
