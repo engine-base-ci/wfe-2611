@@ -1,0 +1,31 @@
+{
+ "ops": {
+  "postPortalTicketMessage": {
+   "file": "apps/api/test/features/F11/portal-chat.test.ts",
+   "reason": "ゲストの書く口は、チケットが見えるか（見せた・外した・別のグループ・消した）と書く人の役（ゲスト・社内の人）と担当者の状態で答えが変わる。生成の試験の種ではグループ・見せる相手・ゲストを作れない（K-882）",
+   "covers": {
+    "test_post_portal_tickets_id_messages_ok": "K882-API-008",
+    "test_post_portal_tickets_id_messages_shape": "K882-API-008",
+    "test_post_portal_tickets_id_messages_rejected_401": "K882-API-011",
+    "test_post_portal_tickets_id_messages_rejected_403": "K882-API-011",
+    "test_post_portal_tickets_id_messages_not_found": "K882-API-010",
+    "test_post_portal_tickets_id_messages_rejected_422": "K882-API-015",
+    "test_post_portal_tickets_id_messages_rate_limited": "K882-API-020",
+    "test_post_portal_tickets_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_portal_tickets_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_portal_tickets_id_messages_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_portal_tickets_id_messages_rejected_422_2": "K882-API-009"
+   },
+   "na": {}
+  }
+ }
+}

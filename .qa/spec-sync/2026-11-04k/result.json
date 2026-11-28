@@ -1,0 +1,67 @@
+{
+ "status": "PASS（A・B・C・T・P・L・D・F・G・H すべて緑）",
+ "run_id": "20261104-D128.134-test-patterns",
+ "executed_at": "2026-11-04T13:15:09",
+ "change": "D-128.134（テストの型のナレッジを test-verification に置き、どのプロジェクトでも参照する）",
+ "impact": [
+  "01_hearing/決定ログ・要件一覧",
+  "07_qa/test-patterns.local.json",
+  ".qa/skill-patches/test-verification-test-patterns.patch",
+  "spec-dependencies.yaml"
+ ],
+ "checks": [
+  {
+   "tier": "A",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "B",
+   "status": "pass",
+   "detail": "spec_check"
+  },
+  {
+   "tier": "C",
+   "status": "pass",
+   "detail": "廃止用語 0"
+  },
+  {
+   "tier": "T",
+   "status": "pass",
+   "detail": "trace_gate 緑（D-128.134 は test-patterns.local.json に反映）"
+  },
+  {
+   "tier": "P",
+   "status": "pass",
+   "detail": "project_audit 緑"
+  },
+  {
+   "tier": "L",
+   "status": "pass",
+   "detail": "layer_audit --run 緑"
+  },
+  {
+   "tier": "D",
+   "status": "pass",
+   "detail": "tier d"
+  },
+  {
+   "tier": "F",
+   "status": "pass",
+   "detail": "tier f"
+  },
+  {
+   "tier": "G",
+   "status": "pass",
+   "detail": "tier g"
+  },
+  {
+   "tier": "H",
+   "status": "pass",
+   "detail": "tier h"
+  }
+ ],
+ "next": [
+  "スキルの更新（task-decomposition ほか）・骸骨のチケット"
+ ]
+}
